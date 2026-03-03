@@ -1,5 +1,16 @@
 # Immich Auto-Sync for Linux
 
+<div align="center">
+
+![Status](https://img.shields.io/badge/Status-Alpha-FF5722?style=for-the-badge)
+![GitHub Release](https://img.shields.io/github/v/release/nicx17/immich_sync_app?include_prereleases&style=for-the-badge&logo=github&color=2ea44f)
+![Python](https://img.shields.io/badge/Python_3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+![PySide6](https://img.shields.io/badge/PySide6-41CD52?style=for-the-badge&logo=qt&logoColor=white)
+![License](https://img.shields.io/github/license/nicx17/immich_sync_app?style=for-the-badge&color=007EC6)
+
+</div>
+
 A daemon-based synchronization tool for uploading media files from a Linux desktop to an [Immich](https://immich.app/) server.
 
 This application monitors local directories (e.g., `~/Pictures`, `~/Videos`) for new files and automatically uploads them to your Immich instance. It runs as a background service and integrates with the desktop environment.
