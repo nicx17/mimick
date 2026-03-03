@@ -48,3 +48,6 @@ project_tree*.txt
 dist/
 build/
 *.egg-info/
+AI_CONTEXT.md
+convert_icon.py
+filesystem_tree.txt

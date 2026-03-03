@@ -5,7 +5,19 @@ from PySide6.QtCore import Qt
 from settings_window import SettingsWindow
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+import os
+from config import CONFIG_DIR
+if not os.path.exists(CONFIG_DIR):
+    os.makedirs(CONFIG_DIR, exist_ok=True)
+log_file = os.path.join(CONFIG_DIR, "app.log")
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 def main():
     logging.info("Starting Settings Window (Standalone Process)...")
@@ -24,6 +36,9 @@ def main():
     # Run the window
     window = SettingsWindow()
     window.show()
+
+    if "--about" in sys.argv:
+        window.show_about_dialog()
     
     sys.exit(app.exec())
 

@@ -28,6 +28,7 @@ class TrayIcon:
             "Immich Auto-Sync", 
             menu=pystray.Menu(
                 item('Settings', self.show_settings),
+                item('About', self.show_about),
                 item('Quit', self.quit_app)
             )
         )
@@ -62,6 +63,12 @@ class TrayIcon:
         # This completely avoids the Qt vs GTK loop conflict
         script_path = os.path.join(os.path.dirname(__file__), "settings_main.py")
         subprocess.Popen([sys.executable, script_path])
+
+
+    def show_about(self, icon, item):
+        logging.info("Opening About Dialog...")
+        script_path = os.path.join(os.path.dirname(__file__), "settings_main.py")
+        subprocess.Popen([sys.executable, script_path, "--about"])
 
     def run(self):
         # This blocks in pystray

@@ -14,7 +14,19 @@ from monitor import Monitor
 from config import Config
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+import os
+from config import CONFIG_DIR
+if not os.path.exists(CONFIG_DIR):
+    os.makedirs(CONFIG_DIR, exist_ok=True)
+log_file = os.path.join(CONFIG_DIR, "app.log")
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 def main():
     parser = argparse.ArgumentParser(description="Immich Sync - Linux Background Daemon")

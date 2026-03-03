@@ -3,7 +3,7 @@ import os
 import logging
 from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                                QLabel, QLineEdit, QPushButton, QListWidget, 
-                               QListWidgetItem, QMessageBox, QFileDialog, QFormLayout, QProgressBar)
+                               QListWidgetItem, QMessageBox, QFileDialog, QFormLayout, QProgressBar, QTextEdit, QDialog)
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt, QTimer
 from config import Config
@@ -62,87 +62,88 @@ class SettingsWindow(QWidget):
         # Apply a sleek dark theme
         self.setStyleSheet("""
             QWidget {
-                background-color: #1e1e1e;
-                color: #e0e0e0;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                background-color: #000000;
+                color: #ffffff;
+                font-family: "Inter", "Roboto", "Ubuntu", "Segoe UI", system-ui, sans-serif;
                 font-size: 18px;
                 border: none;
             }
             QLineEdit {
-                background-color: #2d2d2d;
-                border: 1px solid #444;
+                background-color: #111111;
+                border: 2px solid #444;
                 border-radius: 6px;
                 padding: 10px;
                 color: #ffffff;
-                selection-background-color: #4285f4;
+                selection-background-color: #ffffff;
+                selection-color: #000000;
             }
             QLineEdit:hover {
-                border: 1px solid #666;
+                border: 2px solid #666;
             }
             QLineEdit:focus {
-                border: 1px solid #4285f4;
-                background-color: #333;
+                border: 2px solid #ffffff;
+                background-color: #222222;
             }
             QPushButton {
-                background-color: #3c3c3c;
-                border: 1px solid #555;
-                color: #eee;
+                background-color: #1a1a1a;
+                border: 2px solid #555;
+                color: #ffffff;
                 border-radius: 6px;
                 padding: 10px 20px;
                 font-weight: 600;
                 min-width: 100px;
             }
             QPushButton:hover {
-                background-color: #4c4c4c;
-                border: 1px solid #777;
+                background-color: #333333;
+                border: 2px solid #888;
             }
             QPushButton:pressed {
-                background-color: #4285f4; 
-                border-color: #4285f4;
-                color: #fff;
+                background-color: #ffffff; 
+                border-color: #ffffff;
+                color: #000000;
             }
             QListWidget {
-                background-color: #2d2d2d;
-                border: 1px solid #444;
+                background-color: #111111;
+                border: 2px solid #444;
                 border-radius: 6px;
                 padding: 5px;
             }
             QListWidget::item {
                 padding: 8px 12px;
                 border-radius: 4px;
-                color: #eee;
+                color: #ffffff;
             }
             QListWidget::item:selected {
-                background-color: #4285f4;
-                color: white;
+                background-color: #ffffff;
+                color: #000000;
             }
             QListWidget::item:hover:!selected {
-                background-color: #383838;
+                background-color: #222222;
             }
             QLabel {
-                color: #ccc;
+                color: #dddddd;
                 font-weight: 500;
                 margin-top: 5px;
             }
             QProgressBar {
                 border: none;
-                background-color: #333333;
+                background-color: #222222;
                 border-radius: 10px;
                 text-align: center;
-                color: #ffffff;
+                color: #000000;
                 font-weight: bold;
-                font-size: 13px;
+                font-size: 14px;
             }
             QProgressBar::chunk {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #4285f4, stop:1 #6ea1f7);
+                background-color: #ffffff;
                 border-radius: 10px;
             }
             QMessageBox {
-                background-color: #1e1e1e;
-                color: #fff;
+                background-color: #000000;
+                color: #ffffff;
             }
             QMessageBox QLabel {
-                color: #fff;
+                color: #ffffff;
             }
             QMessageBox QPushButton {
                 min-width: 80px;
@@ -156,7 +157,7 @@ class SettingsWindow(QWidget):
         
         # --- Connection Header ---
         conn_header = QLabel("Connectivity")
-        conn_header.setStyleSheet("font-size: 18px; font-weight: bold; color: #4285f4; margin-bottom: 5px;")
+        conn_header.setStyleSheet("font-size: 18px; font-weight: bold; color: #ffffff; margin-bottom: 5px;")
         layout.addWidget(conn_header)
 
         # --- Connection Form ---
@@ -189,7 +190,7 @@ class SettingsWindow(QWidget):
         # --- Progress ---
         layout.addSpacing(10)
         status_header = QLabel("Sync Status")
-        status_header.setStyleSheet("font-size: 18px; font-weight: bold; color: #4285f4; margin-top: 5px;")
+        status_header.setStyleSheet("font-size: 18px; font-weight: bold; color: #ffffff; margin-top: 5px;")
         layout.addWidget(status_header)
 
         self.status_label = QLabel("Status: Idle")
@@ -206,7 +207,7 @@ class SettingsWindow(QWidget):
         # --- Watch Paths ---
         layout.addSpacing(10)
         watch_header = QLabel("Watch Folders")
-        watch_header.setStyleSheet("font-size: 18px; font-weight: bold; color: #4285f4; margin-top: 10px; margin-bottom: 5px;")
+        watch_header.setStyleSheet("font-size: 18px; font-weight: bold; color: #ffffff; margin-top: 10px; margin-bottom: 5px;")
         layout.addWidget(watch_header)
         
         self.path_list = QListWidget()
@@ -228,6 +229,12 @@ class SettingsWindow(QWidget):
         # --- Bottom Buttons ---
         bottom_layout = QHBoxLayout()
         
+        self.about_btn = QPushButton("About")
+        self.about_btn.clicked.connect(self.show_about_dialog)
+        bottom_layout.addWidget(self.about_btn)
+
+        bottom_layout.addStretch()
+
         self.close_btn = QPushButton("Close")
         self.close_btn.clicked.connect(self.close)
         bottom_layout.addWidget(self.close_btn)
@@ -239,6 +246,15 @@ class SettingsWindow(QWidget):
         layout.addLayout(bottom_layout)
         
         self.setLayout(layout)
+
+    def show_about_dialog(self):
+        QMessageBox.about(self, "About Immich Auto-Sync", 
+            "<h3>Immich Auto-Sync</h3>"
+            "<p>A daemon-based synchronization tool for uploading media files to an Immich server.</p>"
+            "<p>Version: Alpha<br/>"
+            "License: GPLv3</p>"
+            "<p>Icon by Round Icons on Unsplash.</p>")
+
 
     def _load_values(self):
         self.internal_url_input.setText(self.config.internal_url)

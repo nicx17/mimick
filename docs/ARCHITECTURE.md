@@ -38,7 +38,7 @@ graph TD
 ```
 
 ### 1. Core Daemon (`src/main.py`)
-The entry point of the application. It performs environment setup (forcing X11 backend for GDK to avoid Wayland issues with legacy tray icons) and initializes the `Monitor` and `TrayIcon`.
+The entry point of the application. It performs environment setup (setting `XDG_CURRENT_DESKTOP="Unity"` to enforce AppIndicators via `pystray`, and forcing X11 backend for GDK (`GDK_BACKEND="x11"`) to avoid Wayland issues with legacy tray icons) and initializes the `Monitor` and `TrayIcon`.
 
 ### 2. File Monitor (`src/monitor.py`)
 Uses the `watchdog` library to listen for filesystem events (`IN_CREATE`, `IN_MOVED_TO`).

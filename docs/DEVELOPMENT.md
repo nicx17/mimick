@@ -10,6 +10,7 @@ This guide is for developers who want to contribute to `immich-sync`.
 - `pip`
 - `pytest`
 - `glib-2.0` / `gobject-introspection` development files (for Pystray/PySide6)
+- `Pillow` (for dynamic tray icon rendering)
 
 ### Installation
 
