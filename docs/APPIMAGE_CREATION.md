@@ -114,11 +114,12 @@ chmod +x AppDir/AppRun
 Invoke the `appimagetool` to compress the `AppDir` directory into a monolithic `.AppImage` file using `squashfs`.
 
 ```bash
-# Build the AppImage (Force architecture if needed)
-ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
+# Build the AppImage by extracting the version from pyproject.toml first (Force architecture if needed)
+VERSION=$(grep 'version = ' pyproject.toml | cut -d '"' -f 2)
+VERSION=$VERSION ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
 
-# Rename for cleanliness if necessary, set permissions
-chmod +x Immich_Sync-x86_64.AppImage
+# Rename for cleanliness if necessary, set permissions 
+chmod +x Immich_Sync-$VERSION-x86_64.AppImage
 ```
 
 ---
@@ -132,4 +133,4 @@ rm -rf AppDir
 rm appimagetool-x86_64.AppImage
 ```
 
-The resulting `Immich_Sync-x86_64.AppImage` is now ready for distribution.
+The resulting `Immich_Sync-<VERSION>-x86_64.AppImage` is now ready for distribution.

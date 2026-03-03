@@ -28,8 +28,8 @@ dependencies = [
 requires-python = ">=3.10"
 
 [project.urls]
-"Homepage" = "https://github.com/nick/immich_sync_app"
-"Bug Tracker" = "https://github.com/nick/immich_sync_app/issues"
+"Homepage" = "https://github.com/nicx17/immich_sync_app"
+"Bug Tracker" = "https://github.com/nicx17/immich_sync_app/issues"
 
 [project.scripts]
 immich-sync = "src.main:main"

@@ -250,10 +250,11 @@ class SettingsWindow(QWidget):
     def show_about_dialog(self):
         QMessageBox.about(self, "About Immich Auto-Sync", 
             "<h3>Immich Auto-Sync</h3>"
-            "<p>A daemon-based synchronization tool for uploading media files to an Immich server.</p>"
-            "<p>Version: Alpha<br/>"
+            "<p>A daemon-based synchronization tool for automatically uploading media files to an Immich server.</p>"
+            "<p>Version: 0.2.0-beta<br/>"
             "License: GPLv3</p>"
-            "<p>Icon by Round Icons on Unsplash.</p>")
+            "<p>Icon by Round Icons on Unsplash.</p>"
+            "<p><a href='https://github.com/nicx17/immich_sync_app'>https://github.com/nicx17/immich_sync_app</a></p>")
 
 
     def _load_values(self):

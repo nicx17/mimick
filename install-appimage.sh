@@ -4,15 +4,16 @@
 set -e
 
 APP_NAME="immich-sync"
-APPIMAGE_SRC="Immich_Sync-x86_64.AppImage"
+# Automatically find the latest built AppImage in the directory
+APPIMAGE_SRC=$(ls Immich_Sync-*.AppImage 2>/dev/null | head -n 1)
 USER_BIN="$HOME/.local/bin"
 USER_APPS="$HOME/.local/share/applications"
 USER_ICONS="$HOME/.local/share/icons/hicolor/256x256/apps"
 TARGET_APPIMAGE="$USER_BIN/immich-sync.AppImage"
 AUTOSTART_DIR="$HOME/.config/autostart"
 
-if [ ! -f "$APPIMAGE_SRC" ]; then
-    echo "Error: $APPIMAGE_SRC not found in current directory."
+if [ -z "$APPIMAGE_SRC" ] || [ ! -f "$APPIMAGE_SRC" ]; then
+    echo "Error: No Immich_Sync-*.AppImage found in current directory."
     echo "Please build the AppImage first."
     exit 1
 fi
