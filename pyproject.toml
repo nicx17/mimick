@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A background daemon to auto-sync photos to Immich on Linux"
 readme = "README.md"
 authors = [
-  { name = "Nick", email = "nick@example.com" },
+  { name = "Nick", email = "nick@nickcardoso.com" },
 ]
 license = { file = "LICENSE" }
 classifiers = [

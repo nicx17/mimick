@@ -18,7 +18,7 @@ setup(
         ],
     },
     author="Nick",
-    author_email="nick@example.com",
+    author_email="nick@nickcardoso.com",
     description="A background daemon to auto-sync photos to Immich on Linux",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
