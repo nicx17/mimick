@@ -24,6 +24,18 @@ This application monitors local directories (e.g., `~/Pictures`, `~/Videos`) for
 
 **Status:** Alpha. Supports Immich v1.118+.
 
+## Screenshots
+
+<div align="center">
+  <img src="docs/screenshots/settings_window.png" alt="Settings Window" width="500" />
+  <br>
+  <em>Settings Window</em>
+  <br><br>
+  <img src="docs/screenshots/tray_icon_screenshot.png" alt="System Tray Menu" height="180" style="margin-right: 15px;" />
+  <img src="docs/screenshots/ping_test_screenshot.png" alt="Ping Test Dialog" height="180" style="margin-right: 15px;" />
+  <img src="docs/screenshots/about_dialog.png" alt="About Dialog" height="180" />
+</div>
+
 ## Features
 
 - **File Monitoring**: Uses `inotify` to detect new files.
