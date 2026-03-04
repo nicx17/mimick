@@ -106,14 +106,8 @@ class QueueManager:
                 
                 logging.debug(f"Pop from Queue: {file_info['path']}")
                 
-                # Notify Start item
+                # Notify Start item (Silently update state for UI, suppress desktop notification spam)
                 current_state = self._publish_state(status="uploading", current_file=file_info['path'])
-                
-                self.notifier.send(
-                    f"Uploading ({current_state['progress']}%)", 
-                    f"Processing: {os.path.basename(file_info['path'])}",
-                    progress=current_state['progress']
-                )
                 
                 # Perform Upload
                 t_start = time.time()
