@@ -54,3 +54,13 @@
 - [ ] (Optional) Create a Flatpak manifest for universal distro compatibility.
 
 ---
+
+## 8. GTK4 / Libadwaita Architecture Overhaul (Future Phase)
+
+- [ ] Migrate `PySide6` UI (`settings_window.py`) to `PyGObject` (`gi.repository.Gtk` / `Adw`).
+- [ ] Implement `Gtk.Application` to take advantage of native D-Bus application process locking (deprecating custom Unix Sockets & `QLocalServer`).
+- [ ] Redesign settings UI from raw data grids (`QTableWidget`) to native GNOME `Adw.PreferencesPage` and `Adw.ActionRow` layouts.
+- [ ] Separate the System Tray (`pystray`) into an isolated thread decoupled from the GTK main loop since GTK4 no longer natively supports system trays.
+- [ ] Build a Flathub-ready Flatpak manifest using GNOME Builder with strict `xdg-desktop-portal` filesystem constraints (`--filesystem=xdg-pictures`).
+- [ ] **Memory Optimization (GTK):** Merge the standalone PySide6 UI subprocess and daemon into a unified `Gtk.Application` loop to reduce the memory footprint by utilizing GNOME's pre-loaded shared system libraries (~50MB projected savings).
+- [ ] **Memory Optimization (GTK):** Merge the standalone UI subprocess and daemon into a unified `Gtk.Application` to drastically reduce the memory footprint by utilizing GNOME's pre-loaded shared system libraries instead of detached Qt bindings.
