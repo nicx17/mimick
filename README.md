@@ -51,10 +51,13 @@ The easiest way to install Immich Sync is via the standalone AppImage, which inc
 
 1. Go to the [Releases page](https://github.com/nicx17/immich_sync_app/releases) and download the latest `Immich_Sync-x86_64.AppImage`.
 2. Make it executable:
+
    ```bash
    chmod +x Immich_Sync-*.AppImage
    ```
+
 3. Run it, or use the provided integration script to strictly install it to your Application Launcher menu:
+
    ```bash
    # Optional: Download and run the install script from the repo to set up the .desktop file and systemd auto-start
    ./install-appimage.sh /path/to/downloaded/Immich_Sync-x86_64.AppImage

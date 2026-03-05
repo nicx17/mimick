@@ -42,14 +42,9 @@ jobs:
           VERSION=$(grep 'version = ' pyproject.toml | cut -d '"' -f 2)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           
-      - name: Create Release and Upload Asset
+      - name: Release AppImage
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            Immich_Sync-${{ env.VERSION }}-x86_64.AppImage
-          name: Immich Sync ${{ env.VERSION }}
-          generate_release_notes: true
-          draft: false
-          prerelease: false
+          files: "Immich_Sync-*.AppImage"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
