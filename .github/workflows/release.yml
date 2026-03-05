@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on any tag starting with "v", e.g., v0.2.0
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          
+      - name: Install System Dependencies
+        run: |
+          # FUSE is needed to extract/run the AppImageTool on ubuntu runners
+          sudo apt-get update
+          sudo apt-get install -y fuse file gir1.2-appindicator3-0.1 libgirepository1.0-dev libcairo2-dev python3-dbus || true
+          
+      - name: Run Build Script
+        run: |
+          chmod +x build_test_appimage.sh
+          # The appimagetool requires FUSE
+          # We might need to extract it first or use --appimage-extract-and-run if it fails,
+          # but normally installing fuse on ubuntu-22.04 is enough.
+          APPIMAGE_EXTRACT_AND_RUN=1 ./build_test_appimage.sh
+          
+      - name: Read Version from pyproject.toml
+        id: get_version
+        run: |
+          # Extract version number without the 'v'
+          VERSION=$(grep 'version = ' pyproject.toml | cut -d '"' -f 2)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Immich_Sync-${{ env.VERSION }}-x86_64.AppImage
+          name: Immich Sync ${{ env.VERSION }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
