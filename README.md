@@ -2,8 +2,7 @@
 
 <div align="center">
 
-<img src="src/assets/icon.png" alt="Immich Sync Logo" width="128" />
-<br>
+![Immich Sync Logo](src/assets/icon_128.png)
 
 ![Status](https://img.shields.io/badge/Status-beta-FF90C3?style=for-the-badge)
 ![GitHub Release](https://img.shields.io/github/v/release/nicx17/immich_sync_app?include_prereleases&style=for-the-badge&logo=github&color=FF90C3)
@@ -26,15 +25,11 @@ This application monitors local directories (e.g., `~/Pictures`, `~/Videos`) for
 
 ## Screenshots
 
-<div align="center">
-  <img src="docs/screenshots/settings_window.png" alt="Settings Window" width="500" />
-  <br>
-  <em>Settings Window</em>
-  <br><br>
-  <img src="docs/screenshots/tray_icon_screenshot.png" alt="System Tray Menu" height="180" style="margin-right: 15px;" />
-  <img src="docs/screenshots/ping_test_screenshot.png" alt="Ping Test Dialog" height="180" style="margin-right: 15px;" />
-  <img src="docs/screenshots/about_dialog.png" alt="About Dialog" height="180" />
-</div>
+| Settings Window | System Tray Menu |
+| :---: | :---: |
+| ![Settings Window](docs/screenshots/settings_window.png) | ![System Tray Menu](docs/screenshots/tray_icon_screenshot.png) |
+| **Ping Test Dialog** | **About Dialog** |
+| ![Ping Test Dialog](docs/screenshots/ping_test_screenshot.png) | ![About Dialog](docs/screenshots/about_dialog.png) |
 
 ## Features
 
@@ -57,35 +52,41 @@ This application monitors local directories (e.g., `~/Pictures`, `~/Videos`) for
 - `libnotify` (optional)
 
 **Ubuntu/Debian:**
+
 ```bash
 sudo apt install python3-pip python3-venv libgirepository1.0-dev libcairo2-dev gir1.2-gtk-3.0 gir1.2-appindicator3-0.1
 ```
 
 **Fedora:**
+
 ```bash
 sudo dnf install python3-pip python3-gobject gtk3 libappindicator-gtk3
 ```
 
 **Arch Linux:**
+
 ```bash
 sudo pacman -S python-pip python-gobject gtk3 libappindicator-gtk3
 ```
 
 ### Setup
 
-1.  **Clone the Repository:**
+1. **Clone the Repository:**
+
     ```bash
     git clone https://github.com/yourusername/immich-sync-app.git
     cd immich-sync-app
     ```
 
-2.  **Create a Virtual Environment:**
+2. **Create a Virtual Environment:**
+
     ```bash
     python3 -m venv .venv
     source .venv/bin/activate
     ```
 
-3.  **Install Dependencies:**
+3. **Install Dependencies:**
+
     ```bash
     pip install -r requirements.txt
     ```
@@ -93,6 +94,7 @@ sudo pacman -S python-pip python-gobject gtk3 libappindicator-gtk3
 ## Usage
 
 ### 1. Launch the Application
+
 Run the main script to start the background daemon and the system tray icon.
 
 ```bash
@@ -101,23 +103,28 @@ python src/main.py
 ```
 
 ### 2. Configuration
+
 The first run will open the **Settings Window** (or right-click the tray icon and select "Settings").
 
-1.  **Internal URL**: LAN address (e.g., `http://192.168.1.50:2283`).
-2.  **External URL**: WAN/Public address (e.g., `https://photos.example.com`).
-3.  **API Key**: Generate in Immich Web UI (Account Settings > API Keys).
-4.  **Watch Paths**: Add local folders to sync.
+1. **Internal URL**: LAN address (e.g., `http://192.168.1.50:2283`).
+2. **External URL**: WAN/Public address (e.g., `https://photos.example.com`).
+3. **API Key**: Generate in Immich Web UI (Account Settings > API Keys).
+4. **Watch Paths**: Add local folders to sync.
 
 ### 3. Automatic Start (Systemd)
+
 To start automatically on login:
 
-1.  Copy the service file:
+1. Copy the service file:
+
     ```bash
     mkdir -p ~/.config/systemd/user/
     cp setup/immich-sync.service ~/.config/systemd/user/
     ```
-2.  Edit the service file (`~/.config/systemd/user/immich-sync.service`) to update the path to the python executable and script location.
-3.  Enable and start the service:
+
+2. Edit the service file (`~/.config/systemd/user/immich-sync.service`) to update the path to the python executable and script location.
+3. Enable and start the service:
+
     ```bash
     systemctl --user enable --now immich-sync
     ```
@@ -125,16 +132,20 @@ To start automatically on login:
 ## Documentation
 
 For detailed guides, please refer to:
+
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Configuration Guide](docs/CONFIGURATION.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Development Guide](docs/DEVELOPMENT.md)
 
 ## Contributing
+
 Pull requests are welcome. Check `roadmap.md` for planned features.
 
 ## Acknowledgments
-- Application icon illustration by <a href="https://unsplash.com/@roundicons?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Round Icons</a> on <a href="https://unsplash.com/illustrations/a-white-and-orange-flower-on-a-white-background-IkQ_WrJzZOM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>.
+
+- Application icon illustration by [Round Icons](https://unsplash.com/@roundicons?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/illustrations/a-white-and-orange-flower-on-a-white-background-IkQ_WrJzZOM?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText).
 
 ## License
+
 GPLv3 License
