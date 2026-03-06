@@ -1,6 +1,6 @@
 # Maintainer: Nick <nick@nickcardoso.com>
 pkgname=immich-sync
-pkgver=0.2.0
+pkgver=1.0.0
 pkgrel=1
 pkgdesc="A background daemon to auto-sync photos to Immich on Linux"
 arch=('any')
