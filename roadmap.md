@@ -75,3 +75,7 @@
 
 - [x] **investigate que behaviour**  missed images to be reuploaded once app running again
 - [x] **Analyse api key permissions**
+- [x] bug uploads video files befor they have been completely written in the folder being watched.. eg screencapture video screencasts 
+
+## 10. complete folder sync
+- [ ] **complete folder sync** sync folder added to remote or vice versa.. toggles for config.. sncy remote changes to local and sync local changes to remote

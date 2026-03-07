@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-03-07
+
+### Added
+- **File Move/Rename Support**: `ImmichEventHandler` now captures `on_moved` watchdog events. Temporary file downloads (e.g. `video.mp4.tmp` from web browsers, rsync, Syncthing) that later rename internally to a valid media extension are now successfully captured and pushed to the upload queue.
+
+### Fixed
+- **Incomplete Video File Upload Bug (`wait_for_file_completion`)**: Prevented massive media files (like 30-minute GUI screencasts) from triggering early timeouts before they were fully written. Replaced absolute 10s wait logic with an adaptive 300-second *idle* timeout loop; continuously growing items dynamically rest the counter keeping uploads safe regardless of copy duration.
+- **Strict Directory Route Matching**: Replaced naive `.startswith()` Python logic in multi-folder checks directly to an explicit `os.path.commonpath()` hierarchical evaluation, preventing subfolders with similar names (e.g., `/home/pictures` and `/home/pictures_private`) from crossing trigger actions.
+
+
 ## [1.0.0] - 2026-03-06
 
 ### Added

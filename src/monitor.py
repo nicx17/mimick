@@ -44,7 +44,29 @@ class ImmichEventHandler(FileSystemEventHandler):
         # find corresponding configured path
         matched_config = None
         for base_path, conf in self.path_config.items():
-            if file_path.startswith(base_path):
+            if os.path.commonpath([base_path, file_path]) == base_path:
+                matched_config = conf
+                break
+                
+        self.executor.submit(self._process_file, file_path, matched_config)
+
+    def on_moved(self, event):
+        if event.is_directory:
+            return
+            
+        file_path = event.dest_path
+        _, ext = os.path.splitext(file_path)
+        
+        # Filter by extension (case-insensitive)
+        if ext.lower() not in ALLOWED_EXTENSIONS:
+            logging.debug(f"Ignored moved file (invalid extension): {file_path}")
+            return
+
+        logging.info(f"File moved/renamed detected: {file_path}")
+        
+        matched_config = None
+        for base_path, conf in self.path_config.items():
+            if os.path.commonpath([base_path, file_path]) == base_path:
                 matched_config = conf
                 break
                 
@@ -69,31 +91,41 @@ class ImmichEventHandler(FileSystemEventHandler):
         self.executor.shutdown(wait=True)
 
 
-    def wait_for_file_completion(self, file_path, timeout=10, check_interval=0.1):
+    def wait_for_file_completion(self, file_path, idle_timeout=300, check_interval=1.0):
         """
-        Wait for the file size to stop changing.
-        Returns True if the file is ready, False on timeout or error.
-        Check interval reduced to 0.1s for responsiveness.
+        Wait for the file size to stop changing, indicating it's fully written.
+        Uses an idle timeout (default 5 minutes) rather than an absolute timeout.
+        As long as the file keeps growing (like a long screen recording), it will keep waiting.
+        Requires the file size to remain stable for several consecutive checks.
         """
         last_size = -1
-        start_time = time.time()
+        stable_count = 0
+        required_stable_counts = 3  # Must be stable for 3 consecutive checks
+        last_change_time = time.time()
 
-        while (time.time() - start_time) < timeout:
+        while (time.time() - last_change_time) < idle_timeout:
             try:
                 current_size = os.path.getsize(file_path)
 
                 if current_size == last_size and current_size > 0:
-                    return True
+                    stable_count += 1
+                    if stable_count >= required_stable_counts:
+                        return True
+                else:
+                    stable_count = 0
+                    if current_size != last_size:
+                        last_change_time = time.time()  # Reset timeout because the file is actively growing
                 
                 last_size = current_size
-                time.sleep(check_interval)
             
             except FileNotFoundError:
                 return False
             except OSError:
                 pass
+            
+            time.sleep(check_interval)
         
-        logging.warning(f"[TIMEOUT] File {file_path} unstable for {timeout}s")
+        logging.warning(f"[TIMEOUT] File {file_path} remained locked or inactive for {idle_timeout}s")
         return False
 
 class Monitor:

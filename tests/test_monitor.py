@@ -27,6 +27,7 @@ def test_on_created_allowed_extension(event_handler):
          patch('monitor.calculate_checksum', return_value='da39a3ee5e6b4b0d3255bfef95601890afd80709'):
         
         event_handler.on_created(event)
+        event_handler.shutdown()
         
         # Should call add_to_queue
         event_handler.queue_manager.add_to_queue.assert_called_once()
@@ -59,21 +60,44 @@ def test_on_created_checksum_failure(event_handler):
          patch('monitor.calculate_checksum', return_value=None):
         
         event_handler.on_created(event)
+        event_handler.shutdown()
         event_handler.queue_manager.add_to_queue.assert_not_called()
 
 def test_wait_for_file_completion_success(event_handler):
     """Test file completion check (mocked filesystem calls)."""
     with patch('time.sleep'), \
-         patch('os.path.getsize', side_effect=[100, 100]): # Stable size
+         patch('os.path.getsize', side_effect=[100, 100, 100, 100]): # Stable size needs 3 consecutive checks
         
-        result = event_handler.wait_for_file_completion("/tmp/test.jpg", timeout=1, check_interval=0.1)
+        result = event_handler.wait_for_file_completion("/tmp/test.jpg", idle_timeout=1, check_interval=0.1)
         assert result is True
 
 def test_wait_for_file_completion_timeout(event_handler):
     """Test file completion timeout (size keeps changing)."""
     with patch('time.sleep'), \
-         patch('time.time', side_effect=[0, 0.5, 1.1]), \
-         patch('os.path.getsize', side_effect=[100, 105, 110]):
+         patch('time.time', side_effect=[0, 0, 0, 2.5]), \
+         patch('os.path.getsize', side_effect=[100]):
         
-        result = event_handler.wait_for_file_completion("/tmp/test.jpg", timeout=1, check_interval=0.1)
+        # Simulate size check taking time leading to timeout before stable count is reached
+        result = event_handler.wait_for_file_completion("/tmp/test.jpg", idle_timeout=1, check_interval=0.1)
         assert result is False
+
+class MockMoveEvent:
+    def __init__(self, src_path, dest_path, is_directory=False):
+        self.src_path = src_path
+        self.dest_path = dest_path
+        self.is_directory = is_directory
+
+def test_on_moved_allowed_extension(event_handler):
+    """Test that a valid file extension on a moved/renamed file is processed."""
+    event = MockMoveEvent("/tmp/tempfile.part", "/tmp/photo_final.jpg")
+    
+    with patch.object(event_handler, 'wait_for_file_completion', return_value=True), \
+         patch('monitor.calculate_checksum', return_value='da39a3ee5e6b4b0d3255bfef95601890afd80709'):
+        
+        event_handler.on_moved(event)
+        event_handler.shutdown()
+        
+        event_handler.queue_manager.add_to_queue.assert_called_once()
+        args, _ = event_handler.queue_manager.add_to_queue.call_args
+        assert args[0]['path'] == "/tmp/photo_final.jpg"
+        assert args[0]['checksum'] == 'da39a3ee5e6b4b0d3255bfef95601890afd80709'

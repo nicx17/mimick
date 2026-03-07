@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="immich-sync",
-    version="1.0.0",
+    version="1.0.1",
     packages=find_packages(),
     install_requires=[
         "watchdog>=4.0.0",
