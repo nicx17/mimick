@@ -56,3 +56,4 @@ python-standalone.tar.gz
 logs.txt
 meson.build
 test_gobject.sh
+codebase_analysis.md
