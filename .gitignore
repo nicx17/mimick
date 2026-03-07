@@ -51,3 +51,8 @@ build/
 convert_icon.py
 filesystem_tree.txt
 project_tree.md
+tmp_py
+python-standalone.tar.gz
+logs.txt
+meson.build
+test_gobject.sh
