@@ -50,7 +50,8 @@ Comment=Automatically upload photos to Immich
 Exec=mimick
 Icon=mimick
 Type=Application
-Categories=Utility;Network;
+Categories=Utility;
+Actions=Settings;
 Terminal=false
 Keywords=Photo;Sync;Backup;Immich;
 
