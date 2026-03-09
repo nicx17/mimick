@@ -1,1 +1,0 @@
-# Mimick App Package

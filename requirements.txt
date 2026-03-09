@@ -1,8 +1,0 @@
-watchdog
-requests
-keyring
-pystray
-Pillow
-pytest
-requests-mock
-PyGObject

@@ -37,38 +37,40 @@ chmod +x "$TARGET_APPIMAGE"
 echo "Extracting icon..."
 # The AppImage is an executable that can extract itself if told to
 # But we already have the source, so we'll just use the source icon for ease
-cp src/assets/icon.png "$USER_ICONS/$APP_NAME.png"
-cp src/assets/icon.svg "$USER_ICONS_SCALABLE/$APP_NAME.svg"
+cp src/assets/icon.png "$USER_ICONS/io.github.nicx17.mimick.png"
+cp src/assets/icon.svg "$USER_ICONS_SCALABLE/io.github.nicx17.mimick.svg"
 gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
 
 # 4. Create Desktop Entry
 echo "Creating desktop entry..."
-cat > "$USER_APPS/$APP_NAME.desktop" <<DESKTOP
+DESKTOP_FILE="$USER_APPS/io.github.nicx17.mimick.desktop"
+cat > "$DESKTOP_FILE" <<DESKTOP
 [Desktop Entry]
 Name=Mimick
 Comment=Automatic background sync for Immich
 Exec=$TARGET_APPIMAGE
-Icon=$APP_NAME
+Icon=io.github.nicx17.mimick
 Terminal=false
 Type=Application
 Categories=Utility;Network;
 StartupNotify=false
-StartupWMClass=mimick.desktop
+StartupWMClass=Mimick
 Actions=Settings;
 
 [Desktop Action Settings]
 Name=Open Settings
 Exec=$TARGET_APPIMAGE --settings
 DESKTOP
-chmod +x "$USER_APPS/$APP_NAME.desktop"
+chmod +x "$DESKTOP_FILE"
 
 # 5. Autostart check
 read -p "Do you want to start automatically on login? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    ln -sf "$USER_APPS/$APP_NAME.desktop" "$AUTOSTART_DIR/$APP_NAME.desktop"
+    ln -sf "$DESKTOP_FILE" "$AUTOSTART_DIR/io.github.nicx17.mimick.desktop"
     echo "Autostart enabled."
 else
+    rm -f "$AUTOSTART_DIR/io.github.nicx17.mimick.desktop"
     rm -f "$AUTOSTART_DIR/$APP_NAME.desktop"
     echo "Autostart disabled."
 fi

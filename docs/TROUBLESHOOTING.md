@@ -6,15 +6,8 @@ This guide covers common issues encountered while using `mimick`.
 
 ### 1. System Tray Icon Not Appearing or App Crashes on Start
 If the icon is missing or fails to initialize:
-- **Wayland (GNOME/KDE) & Ubuntu 24+:** Modern desktop environments deprecate or heavily restrict legacy system trays. The app will automatically catch `pystray` initialization failures and gracefully fall back to **headless daemon mode**. 
-- **Auto-Fallback Behavior:** If the tray fails, the daemon continues running in the background normally. If you launch the app directly from your desktop menu while the tray is disabled, it will intelligently open the Settings Window instead so you can still manage the application.
-- **Environment Variables:** If running manually or via Systemd, ensure `XDG_CURRENT_DESKTOP` and `DISPLAY` are set correctly.
-
-**Manual Workaround (Headless Mode):**
-If you wish to force the app to skip trying to load the tray altogether:
-```bash
-python src/main.py --no-tray
-```
+- **Wayland (GNOME/KDE) & Ubuntu 24+:** Modern desktop environments deprecate or heavily restrict legacy system trays. The app uses `ksni` (StatusNotifierItem via D-Bus). 
+- **Auto-Fallback Behavior:** If the tray fails or your desktop doesn't support AppIndicators, the daemon continues running in the background normally. If you launch the app directly from your desktop menu while the tray is disabled, it will intelligently detect the running instance and open the Settings Window instead so you can still manage the application.
 
 ### 2. Notifications Not showing Progress Bars
 If you see multiple individual notifications instead of a single updating bar:
@@ -24,12 +17,12 @@ If you see multiple individual notifications instead of a single updating bar:
 ### 3. Checksums / Deduplication Failures
 If Immich re-uploads existing files:
 - Ensure the server has finished processing existing assets.
-- Verify that `shad1` checksums match.
-- The app checks for `DUPLICATE` response from the server; if the server APIs have changed, this check might fail.
+- Verify that `sha1` checksums match.
+- The app checks for `.device_asset_id` uniqueness from the server using a full 40-character SHA1 hex string.
 
 ### 4. Keyring Access Issues (Headless Servers)
-If you are running on a server without a desktop session (e.g., via SSH only), `keyring` might fail to unlock the login keyring.
-- **Solution:** Use `dbus-run-session` or configure `pam_gnome_keyring` to unlock on login. Alternatively, use a plaintext backend for `keyring` (less secure).
+If you are running on a server without a desktop session (e.g., via SSH only), `secret-tool` might fail to unlock the login keyring.
+- **Solution:** Use `dbus-run-session` or configure `pam_gnome_keyring` to unlock on login.
 
 ## Logs & Diagnostics
 
@@ -45,12 +38,20 @@ If running as a service:
 journalctl --user -u mimick -f
 ```
 
+### View Persistent File Logs
+The application writes rotating debug logs to `.cache`. If something breaks without notification:
+```bash
+tail -f ~/.cache/mimick/mimick.log
+```
+
 ### Manual Debugging
 Run the application directly in a terminal to see `stdout` logs:
 ```bash
-python src/main.py
+mimick
+# or if developing:
+cargo run
 ```
-Look for lines starting with `ERROR` or `CRITICAL`.
+Look for lines starting with `ERROR` or `WARN`.
 
 ### Check Configuration Validity
 Verify your config file is valid JSON:

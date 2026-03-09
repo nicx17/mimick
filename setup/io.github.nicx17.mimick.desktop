@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Mimick
+Comment=Automatically upload photos to Immich
+Exec=mimick
+Icon=io.github.nicx17.mimick
+Terminal=false
+Type=Application
+Categories=Utility;
+Actions=Settings;
+Keywords=Photo;Sync;Backup;Immich;
+StartupNotify=false
+X-GNOME-Autostart-enabled=true
+
+[Desktop Action Settings]
+Name=Open Settings
+Exec=mimick --settings

@@ -1,13 +1,15 @@
 # Building the Mimick AppImage
 
-This document details the process for manually building an AppImage for the Mimick application. This packages the application along with its Python dependencies into a single, portable executable file that doesn't rely on the system's `site-packages`.
+This document details the process for manually building a self-contained AppImage for the Mimick Rust application. This packages the compiled binary along with its icons and desktop files.
+
+> Note: For Rust binaries, we do not package the entire GTK4 dynamic library suite inside the AppImage. The `AppRun` script mounts the AppImage and executes the statically linked parts, but relies on the host system to provide GTK4 and Libadwaita. This keeps the file size around 2MB instead of >100MB while still providing a portable single-file executable.
 
 ## Prerequisites
 
 1. A Linux environment (tested on x86_64).
-2. `wget` and standard GNU utilities (`cp`, `mkdir`, `chmod`).
-3. System Python 3 installed.
-4. `pip` installed (for fetching project dependencies).
+2. Rust toolchain (`cargo`).
+3. GTK4 and Libadwaita development headers.
+4. `wget` and standard GNU utilities (`cp`, `mkdir`, `chmod`).
 
 ---
 
@@ -25,27 +27,38 @@ chmod +x appimagetool-x86_64.AppImage
 
 ---
 
-## Step 2: Create the `AppDir` Structure
+## Step 2: Build the Release Binary
+
+Compile the Rust application with optimizations enabled. The `Cargo.toml` is configured to strip debug symbols and use Link-Time Optimization (LTO) to keep the binary size minimal.
+
+```bash
+cargo build --release
+```
+
+---
+
+## Step 3: Create the `AppDir` Structure
 
 AppImages are built from a specifically structured folder named `AppDir`.
 
 ```bash
 # Create the standard directory tree
 mkdir -p AppDir/usr/bin
-mkdir -p AppDir/usr/lib/python3/site-packages
+mkdir -p AppDir/usr/share/applications
 mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+mkdir -p AppDir/usr/share/icons/hicolor/scalable/apps
+mkdir -p AppDir/usr/share/metainfo
 ```
 
 ---
 
-## Step 3: Migrate Assets and Code
+## Step 4: Migrate Assets and Code
 
-Copy the application source code and graphical assets into the standard locations inside the `AppDir`.
+Copy the compiled binary and graphical assets into the standard locations inside the `AppDir`.
 
 ```bash
-# Copy source code and set permissions
-cp -r src/* AppDir/usr/bin/
-mv AppDir/usr/bin/main.py AppDir/usr/bin/mimick
+# Copy binary
+cp target/release/mimick AppDir/usr/bin/mimick
 chmod +x AppDir/usr/bin/mimick
 
 # Copy icons (root location for AppImage standard, standard location for system)
@@ -55,52 +68,43 @@ cp src/assets/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/mimick.png
 
 ---
 
-## Step 4: Install Dependencies
+## Step 5: Define Application Metadata
 
-We must explicitly install python dependencies into the isolated `AppDir` to ensure they are shipped internally and the app won't crash if the host system lacks them.
-
-```bash
-# Target the built-in system packages folder
-pip install -r requirements.txt --target=AppDir/usr/lib/python3/site-packages
-```
-
----
-
-## Step 5: Define application metadata
-
-Create the standard Desktop entry inside the root of the `AppDir`. This gives the AppImage a name, an icon, and instructions on what to run.
+Create the standard Desktop entry inside the `AppDir`. This gives the AppImage a name, an icon, and instructions on what to run.
 
 ```bash
-cat << 'EOF' > AppDir/mimick.desktop
+cat << 'EOF' > AppDir/usr/share/applications/io.github.nicx17.mimick.desktop
 [Desktop Entry]
 Name=Mimick
+Comment=Automatically upload photos to Immich
 Exec=mimick
 Icon=mimick
 Type=Application
-Categories=Utility;Network;
-Comment=Automatic background sync for Immich
+Categories=Utility;
+Actions=Settings;
 Terminal=false
+Keywords=Photo;Sync;Backup;Immich;
+
+[Desktop Action Settings]
+Name=Open Settings
+Exec=mimick --settings
 EOF
+
+# Provide a root copy for AppImageTool metadata extraction
+cp AppDir/usr/share/applications/io.github.nicx17.mimick.desktop AppDir/io.github.nicx17.mimick.desktop
 ```
 
 ---
 
 ## Step 6: Create the `AppRun` Hook
 
-`AppRun` is the entry point for the AppImage. It calculates where the AppImage was mounted, injects the internal site-packages into the `PYTHONPATH`, and starts the main script using the host's system Python runtime.
+`AppRun` is the entry point for the AppImage. Since this is a compiled Rust binary, we simply execute it.
 
 ```bash
 cat << 'EOF' > AppDir/AppRun
 #!/bin/sh
-
-# Define the absolute path to the AppImage contents
-export HERE="$(dirname "$(readlink -f "${0}")")"
-
-# Force Python to look in our bundled directory first
-export PYTHONPATH="$HERE/usr/lib/python3/site-packages:$PYTHONPATH"
-
-# Execute the python script using the system's python3 interpreter
-exec python3 "$HERE/usr/bin/mimick" "$@"
+HERE="$(dirname "$(readlink -f "$0")")"
+exec "$HERE/usr/bin/mimick" "$@"
 EOF
 
 # Make the hook executable
@@ -114,12 +118,13 @@ chmod +x AppDir/AppRun
 Invoke the `appimagetool` to compress the `AppDir` directory into a monolithic `.AppImage` file using `squashfs`.
 
 ```bash
-# Build the AppImage by extracting the version from pyproject.toml first (Force architecture if needed)
-VERSION=$(grep 'version = ' pyproject.toml | cut -d '"' -f 2)
-VERSION=$VERSION ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
+# Extract version from Cargo.toml
+VERSION=$(grep '^version' Cargo.toml | head -1 | cut -d '"' -f2)
 
-# Rename for cleanliness if necessary, set permissions 
-chmod +x Immich_Sync-$VERSION-x86_64.AppImage
+# Build the AppImage
+ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir "Mimick-$VERSION-x86_64.AppImage"
+
+chmod +x "Mimick-$VERSION-x86_64.AppImage"
 ```
 
 ---
@@ -133,4 +138,4 @@ rm -rf AppDir
 rm appimagetool-x86_64.AppImage
 ```
 
-The resulting `Immich_Sync-<VERSION>-x86_64.AppImage` is now ready for distribution.
+The resulting `Mimick-<VERSION>-x86_64.AppImage` is now ready for distribution. Or simply use the bundled `./build_test_appimage.sh` script to automate all of the above!
