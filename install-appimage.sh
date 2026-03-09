@@ -43,7 +43,7 @@ gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
 
 # 4. Create Desktop Entry
 echo "Creating desktop entry..."
-DESKTOP_FILE="$USER_APPS/com.nickcardoso.mimick.desktop"
+DESKTOP_FILE="$USER_APPS/io.github.nicx17.mimick.desktop"
 cat > "$DESKTOP_FILE" <<DESKTOP
 [Desktop Entry]
 Name=Mimick
@@ -67,10 +67,10 @@ chmod +x "$DESKTOP_FILE"
 read -p "Do you want to start automatically on login? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    ln -sf "$DESKTOP_FILE" "$AUTOSTART_DIR/com.nickcardoso.mimick.desktop"
+    ln -sf "$DESKTOP_FILE" "$AUTOSTART_DIR/io.github.nicx17.mimick.desktop"
     echo "Autostart enabled."
 else
-    rm -f "$AUTOSTART_DIR/com.nickcardoso.mimick.desktop"
+    rm -f "$AUTOSTART_DIR/io.github.nicx17.mimick.desktop"
     rm -f "$AUTOSTART_DIR/$APP_NAME.desktop"
     echo "Autostart disabled."
 fi

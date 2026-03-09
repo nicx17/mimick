@@ -36,19 +36,19 @@ cp "$BINARY" AppDir/usr/bin/mimick
 chmod +x AppDir/usr/bin/mimick
 
 # Icons
-cp src/assets/icon.png AppDir/mimick.png
-cp src/assets/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/mimick.png
-[ -f "src/assets/icon.svg" ] && cp src/assets/icon.svg AppDir/usr/share/icons/hicolor/scalable/apps/mimick.svg
-[ -f "setup/metainfo/com.nickcardoso.mimick.appdata.xml" ] && \
-    cp setup/metainfo/com.nickcardoso.mimick.appdata.xml AppDir/usr/share/metainfo/
+cp src/assets/icon.png AppDir/io.github.nicx17.mimick.png
+cp src/assets/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/io.github.nicx17.mimick.png
+[ -f "src/assets/icon.svg" ] && cp src/assets/icon.svg AppDir/usr/share/icons/hicolor/scalable/apps/io.github.nicx17.mimick.svg
+[ -f "setup/metainfo/io.github.nicx17.mimick.metainfo.xml" ] && \
+    cp setup/metainfo/io.github.nicx17.mimick.metainfo.xml AppDir/usr/share/metainfo/
 
 # Desktop entry
-cat > AppDir/com.nickcardoso.mimick.desktop << 'EOF'
+cat > AppDir/io.github.nicx17.mimick.desktop << 'EOF'
 [Desktop Entry]
 Name=Mimick
 Comment=Automatically upload photos to Immich
 Exec=mimick
-Icon=mimick
+Icon=io.github.nicx17.mimick
 Type=Application
 Categories=Utility;
 Actions=Settings;
@@ -59,7 +59,7 @@ Keywords=Photo;Sync;Backup;Immich;
 Name=Open Settings
 Exec=mimick --settings
 EOF
-cp AppDir/com.nickcardoso.mimick.desktop AppDir/usr/share/applications/com.nickcardoso.mimick.desktop
+cp AppDir/io.github.nicx17.mimick.desktop AppDir/usr/share/applications/io.github.nicx17.mimick.desktop
 
 # AppRun — the GTK4 libraries must come from the host system; do not bundle them
 cat > AppDir/AppRun << 'EOF'

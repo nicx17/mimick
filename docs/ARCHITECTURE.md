@@ -4,7 +4,7 @@ This document describes the high-level architecture of `mimick`, a Linux desktop
 
 ## System Components
 
-The application is a **single-process** Rust daemon using the GTK4/Tokio runtime with application ID `com.nickcardoso.mimick`.
+The application is a **single-process** Rust daemon using the GTK4/Tokio runtime with application ID `io.github.nicx17.mimick`.
 
 ```mermaid
 graph TD
@@ -46,7 +46,7 @@ graph TD
 
 ### 1. Core Daemon (`src/main.rs`)
 
-Initializes the GTK4 `adw::Application` with ID `com.nickcardoso.mimick`. Only the primary instance (determined via D-Bus single-instance enforcement) spawns daemon services. Secondary processes forward their command line to the primary via GTK's single-instance mechanism.
+Initializes the GTK4 `adw::Application` with ID `io.github.nicx17.mimick`. Only the primary instance (determined via D-Bus single-instance enforcement) spawns daemon services. Secondary processes forward their command line to the primary via GTK's single-instance mechanism.
 
 - `connect_command_line` opens the settings window when `--settings` is passed **or** when `cmdline.is_remote()` is true (user clicks the app icon while the daemon is already running)
 - Shared `Arc<Mutex<AppState>>` is created before all closures and threaded into both `connect_startup` (workers) and `connect_command_line` (settings window)

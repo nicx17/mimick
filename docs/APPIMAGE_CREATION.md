@@ -73,7 +73,7 @@ cp src/assets/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/mimick.png
 Create the standard Desktop entry inside the `AppDir`. This gives the AppImage a name, an icon, and instructions on what to run.
 
 ```bash
-cat << 'EOF' > AppDir/usr/share/applications/com.nickcardoso.mimick.desktop
+cat << 'EOF' > AppDir/usr/share/applications/io.github.nicx17.mimick.desktop
 [Desktop Entry]
 Name=Mimick
 Comment=Automatically upload photos to Immich
@@ -91,7 +91,7 @@ Exec=mimick --settings
 EOF
 
 # Provide a root copy for AppImageTool metadata extraction
-cp AppDir/usr/share/applications/com.nickcardoso.mimick.desktop AppDir/com.nickcardoso.mimick.desktop
+cp AppDir/usr/share/applications/io.github.nicx17.mimick.desktop AppDir/io.github.nicx17.mimick.desktop
 ```
 
 ---

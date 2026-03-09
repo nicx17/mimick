@@ -16,25 +16,28 @@ if [ -f "$TARGET_APPIMAGE" ]; then
     echo "Removed executable."
 fi
 
-if [ -f "$USER_APPS/$APP_NAME.desktop" ]; then
-    rm "$USER_APPS/$APP_NAME.desktop"
-    echo "Removed desktop entry."
-fi
+# Remove old and new desktop entries
+for ID in "mimick" "com.nickcardoso.mimick" "io.github.nicx17.mimick"; do
+    if [ -f "$USER_APPS/$ID.desktop" ]; then
+        rm "$USER_APPS/$ID.desktop"
+        echo "Removed desktop entry ($ID)."
+    fi
 
-if [ -f "$AUTOSTART_DIR/$APP_NAME.desktop" ]; then
-    rm "$AUTOSTART_DIR/$APP_NAME.desktop"
-    echo "Removed autostart entry."
-fi
+    if [ -f "$AUTOSTART_DIR/$ID.desktop" ]; then
+        rm "$AUTOSTART_DIR/$ID.desktop"
+        echo "Removed autostart entry ($ID)."
+    fi
 
-if [ -f "$USER_ICONS/$APP_NAME.png" ]; then
-    rm "$USER_ICONS/$APP_NAME.png"
-    echo "Removed PNG icon."
-fi
+    if [ -f "$USER_ICONS/$ID.png" ]; then
+        rm "$USER_ICONS/$ID.png"
+        echo "Removed PNG icon ($ID)."
+    fi
 
-if [ -f "$USER_ICONS_SCALABLE/$APP_NAME.svg" ]; then
-    rm "$USER_ICONS_SCALABLE/$APP_NAME.svg"
-    echo "Removed SVG icon."
-fi
+    if [ -f "$USER_ICONS_SCALABLE/$ID.svg" ]; then
+        rm "$USER_ICONS_SCALABLE/$ID.svg"
+        echo "Removed SVG icon ($ID)."
+    fi
+done
 
 gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
 

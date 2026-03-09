@@ -2,7 +2,7 @@
 Name=Mimick
 Comment=Automatically upload photos to Immich
 Exec=mimick
-Icon=mimick
+Icon=io.github.nicx17.mimick
 Terminal=false
 Type=Application
 Categories=Utility;

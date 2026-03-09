@@ -51,7 +51,7 @@ async fn main() {
         .expect("Failed to initialize logger");
 
     let app = adw::Application::builder()
-        .application_id("com.nickcardoso.mimick")
+        .application_id("io.github.nicx17.mimick")
         .flags(gtk::gio::ApplicationFlags::HANDLES_COMMAND_LINE)
         .build();
 

@@ -30,8 +30,8 @@ package() {
     install -Dm644 src/assets/icon.png "$pkgdir/usr/share/icons/hicolor/128x128/apps/mimick.png"
 
     # Install metainfo
-    install -Dm644 setup/metainfo/com.nickcardoso.mimick.appdata.xml \
-        "$pkgdir/usr/share/metainfo/com.nickcardoso.mimick.appdata.xml"
+    install -Dm644 setup/metainfo/io.github.nicx17.mimick.metainfo.xml \
+        "$pkgdir/usr/share/metainfo/io.github.nicx17.mimick.metainfo.xml"
 
     # Install systemd user service
     install -Dm644 setup/mimick.service "$pkgdir/usr/lib/systemd/user/mimick.service"
