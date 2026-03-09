@@ -21,6 +21,8 @@ use settings_window::build_settings_window;
 use tray_icon::build_tray;
 use state_manager::{StateManager, AppState};
 
+use flexi_logger::{Logger, FileSpec, WriteMode};
+
 /// Holds the primary instance's QueueManager so the shutdown path can flush retries to disk.
 static QM_HANDLE: std::sync::OnceLock<Arc<QueueManager>> = std::sync::OnceLock::new();
 /// Shared API client — created once, reused by the settings window on every open.
@@ -28,9 +30,25 @@ static API_CLIENT_HANDLE: std::sync::OnceLock<Arc<ImmichApiClient>> = std::sync:
 
 #[tokio::main]
 async fn main() {
-    env_logger::Builder::from_env(
-        env_logger::Env::default().default_filter_or("info")
-    ).init();
+    // Configure flexi_logger to write to both stdout and ~/.cache/mimick/mimick.log
+    let log_dir = dirs::cache_dir()
+        .unwrap_or_else(|| std::path::PathBuf::from("/tmp"))
+        .join("mimick");
+
+    let _logger = Logger::try_with_env_or_str("info")
+        .expect("Failed to parse log level")
+        .log_to_file(
+            FileSpec::default()
+                .directory(log_dir)
+                .basename("mimick")
+                .suppress_timestamp() // "mimick.log" instead of "mimick_2026-03-09_10-33-35.log"
+                .suffix("log")
+        )
+        // Also print to stdout for systemd / terminal users
+        .duplicate_to_stdout(flexi_logger::Duplicate::All)
+        .write_mode(WriteMode::Direct)
+        .start()
+        .expect("Failed to initialize logger");
 
     let app = adw::Application::builder()
         .application_id("com.nickcardoso.mimick")

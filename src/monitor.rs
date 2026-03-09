@@ -65,6 +65,12 @@ impl Monitor {
 
             // Debounce map: path -> last seen instant
             let mut debounce_map: HashMap<String, Instant> = HashMap::new();
+            
+            // Track files that are currently waiting for size stability.
+            // Prevents long-running records (like screencasts) from spawning
+            // duplicate tasks every 2 seconds.
+            let active_tasks: std::sync::Arc<std::sync::Mutex<std::collections::HashSet<String>>> = 
+                std::sync::Arc::new(std::sync::Mutex::new(std::collections::HashSet::new()));
 
             for res in notify_rx {
                 match res {
@@ -73,13 +79,11 @@ impl Monitor {
                             event.kind,
                             EventKind::Create(_) | EventKind::Modify(_)
                         );
-                        // Also handle renames (like on_moved in Python)
                         let is_move = matches!(event.kind, EventKind::Modify(_));
                         let _ = is_move;
 
                         if is_relevant {
                             for path in event.paths {
-                                // Skip directories
                                 if path.is_dir() { continue; }
 
                                 let ext = path.extension()
@@ -87,11 +91,16 @@ impl Monitor {
                                 let ext_str = ext.as_deref().unwrap_or("");
 
                                 if !MEDIA_EXTENSIONS.contains(&ext_str) {
-                                    log::debug!("Ignored (extension): {:?}", path);
                                     continue;
                                 }
 
                                 let path_str = path.to_string_lossy().into_owned();
+                                
+                                // Bail immediately if we're already waiting on this file to finish.
+                                if active_tasks.lock().unwrap().contains(&path_str) {
+                                    continue;
+                                }
+
                                 let now = Instant::now();
                                 let debounce_ok = debounce_map
                                     .get(&path_str)
@@ -99,11 +108,9 @@ impl Monitor {
                                     .unwrap_or(true);
 
                                 if !debounce_ok {
-                                    log::debug!("Debounced: {}", path_str);
                                     continue;
                                 }
 
-                                // Cleanup debounce map periodically to prevent unbounded growth
                                 if debounce_map.len() > 1000 {
                                     let cutoff = now - Duration::from_secs(60);
                                     debounce_map.retain(|_, last| *last > cutoff);
@@ -111,22 +118,28 @@ impl Monitor {
 
                                 log::info!("New file event: {}", path_str);
                                 debounce_map.insert(path_str.clone(), now);
+                                active_tasks.lock().unwrap().insert(path_str.clone());
 
                                 let tx_clone = tx.clone();
+                                let active_clone = active_tasks.clone();
                                 handle.spawn(async move {
-                                    match wait_for_file_completion(&path_str).await {
-                                        true => {
-                                            let p_clone = path_str.clone();
-                                            match tokio::task::spawn_blocking(move || compute_sha1_chunked(&p_clone)).await.unwrap() {
-                                                Ok(checksum) => {
-                                                    log::info!("File ready: {} (sha1={})", path_str, checksum);
-                                                    let _ = tx_clone.send((path_str, checksum)).await;
-                                                }
-                                                Err(e) => log::error!("Checksum error for {}: {}", path_str, e),
+                                    let is_complete = wait_for_file_completion(&path_str).await;
+                                    
+                                    if is_complete {
+                                        let p_clone = path_str.clone();
+                                        match tokio::task::spawn_blocking(move || compute_sha1_chunked(&p_clone)).await.unwrap() {
+                                            Ok(checksum) => {
+                                                log::info!("File ready: {} (sha1={})", path_str, checksum);
+                                                let _ = tx_clone.send((path_str.clone(), checksum)).await;
                                             }
+                                            Err(e) => log::error!("Checksum error for {}: {}", path_str, e),
                                         }
-                                        false => log::warn!("File never stabilised, skipping: {}", path_str),
+                                    } else {
+                                        log::warn!("File never stabilised, skipping: {}", path_str);
                                     }
+
+                                    // Clear from active tasks so future modifications can be sensed.
+                                    active_clone.lock().unwrap().remove(&path_str);
                                 });
                             }
                         }

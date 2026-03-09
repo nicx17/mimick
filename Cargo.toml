@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 dirs = "6.0.0"
-env_logger = "0.11.9"
 glib = "0.22.2"
 gtk = { version = "0.11.0", package = "gtk4", features = ["v4_12"] }
 ksni = "0.3.3"
@@ -19,6 +18,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 sha1 = "0.10.6"
 tokio = { version = "1.50.0", features = ["rt-multi-thread", "sync", "time", "fs", "macros", "io-util", "process"] }
+flexi_logger = "0.31.8"
 
 [dev-dependencies]
 tempfile = "3.26.0"
