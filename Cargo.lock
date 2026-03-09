@@ -1383,7 +1383,7 @@ dependencies = [
 
 [[package]]
 name = "mimick"
-version = "2.0.1"
+version = "3.0.0"
 dependencies = [
  "dirs",
  "flexi_logger",

@@ -63,7 +63,7 @@ The application runs a single process with a Tokio async runtime for background 
 - **Checksums:** `sha1`
 - **Testing:** built-in `cargo test`, `tempfile` dev-dep for filesystem isolation
 - **Packaging:** AppImage, PKGBUILD, `.desktop` / `.service` integration
-- **Current Version:** v2.0.1
+- **Current Version:** v3.0.0
 
 ## Common AI Agent Tasks / Context
 

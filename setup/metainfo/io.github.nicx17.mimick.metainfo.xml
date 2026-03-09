@@ -30,4 +30,11 @@
     <category>Network</category>
   </categories>
   <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="3.0.0" date="2026-03-09">
+      <description>
+        <p>Complete rewrite in Rust + GTK4 + Libadwaita. Replaces the Python/PySide6 implementation with a lean, memory-safe daemon. Binary size drops from ~80MB to ~2MB. Concurrent upload workers, in-memory shared state, persistent file logging, and tray via StatusNotifierItem.</p>
+      </description>
+    </release>
+  </releases>
 </component>

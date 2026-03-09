@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-03-09
+
+### Added
+- **Complete Rust Port**: Entire application rewritten from Python/PySide6 to Rust + GTK4 + Libadwaita. Binary drops from ~80MB (PyInstaller bundle) to ~2MB.
+- **Tokio async runtime**: Concurrent upload workers (configurable, default 3) with streaming `reqwest` multipart — constant RAM regardless of file size.
+- **In-memory shared state**: `Arc<Mutex<AppState>>` replaces disk-based IPC polling. No disk I/O during normal operation.
+- **`flexi_logger`**: Logs written to both stdout (systemd) and `~/.cache/mimick/mimick.log` for persistent debugging.
+- **Tray via `ksni`**: StatusNotifierItem tray using a `tokio::sync::watch` channel — no zombie processes, no D-Bus spawn.
+- **Duplicate upload prevention**: `active_tasks` HashSet in the file monitor prevents multiple `wait_for_file_completion` tasks for the same file during long writes (e.g. screencasts).
+- **App ID standardized**: Unified to `io.github.nicx17.mimick` across the binary, `.desktop`, `.metainfo.xml`, icons, and install scripts.
+- **AppImage packaging**: `build_test_appimage.sh` compiles a release binary and assembles a standard AppDir in 5 steps.
+
+### Changed
+- Settings window uses hide-on-close (built once per process) — eliminates repeated GTK widget tree allocations.
+- `ImmichApiClient` is a singleton (`OnceLock`) — single `reqwest` connection pool for the lifetime of the process.
+- Autostart now uses `io.github.nicx17.mimick.desktop` symlink.
+- All documentation (`ARCHITECTURE.md`, `DEVELOPMENT.md`, `TESTING.md`, `TROUBLESHOOTING.md`, `APPIMAGE_CREATION.md`) updated for Rust/Cargo.
+- GitHub Actions release workflow updated for Rust toolchain.
+- CodeQL analysis updated to use `languages: rust` with `build-mode: none`.
+
+### Removed
+- All Python source files (`main.py`, `settings_window.py`, `tray_icon.py`, etc.)
+- `requirements.txt`, `pyproject.toml`, `setup.py`, `MANIFEST.in`
+
 ## [2.0.1] - 2026-03-08
 
 ### Changed

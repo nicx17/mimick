@@ -678,7 +678,7 @@ fn show_about_dialog(parent: &adw::ApplicationWindow) {
     let about = adw::AboutWindow::builder()
         .application_name("Mimick")
         .application_icon("icon")
-        .version("2.0.1")
+        .version("3.0.0")
         .developer_name("Nick Cardoso")
         .website("https://github.com/nicx17/mimick")
         .issue_url("https://github.com/nicx17/mimick/issues")
