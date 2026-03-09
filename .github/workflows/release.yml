@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*' # Trigger on any tag starting with "v", e.g., v0.2.0
+      - 'v*' # Trigger on any tag starting with "v", e.g., v2.0.0
 
 permissions:
   contents: write
@@ -15,33 +15,29 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Install GIRepository dependencies
-        run: sudo apt-get update && sudo apt-get install -y libgirepository1.0-dev libgirepository-2.0-dev gir1.2-glib-2.0
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          
+        
       - name: Install System Dependencies
         run: |
-          # FUSE is needed to extract/run the AppImageTool on ubuntu runners
-          # We also pre-install build tools like libcairo since PyGObject will be installed natively
           sudo apt-get update
-          sudo apt-get install -y fuse file gir1.2-appindicator3-0.1 libgirepository1.0-dev libgirepository-2.0-dev libcairo2-dev pkg-config python3-dev meson ninja-build || true
+          sudo apt-get install -y libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential libsecret-1-dev fuse
+          
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
           
       - name: Run Build Script
         run: |
           chmod +x build_test_appimage.sh
           # The appimagetool requires FUSE
-          # We might need to extract it first or use --appimage-extract-and-run if it fails,
-          # but normally installing fuse on ubuntu-22.04 is enough.
+          # Normally installing fuse on ubuntu-24.04 is enough to run the AppImageTool.
           APPIMAGE_EXTRACT_AND_RUN=1 ./build_test_appimage.sh
           
-      - name: Read Version from pyproject.toml
+      - name: Read Version from Cargo.toml
         id: get_version
         run: |
           # Extract version number without the 'v'
-          VERSION=$(grep 'version = ' pyproject.toml | cut -d '"' -f 2)
+          VERSION=$(grep '^version' Cargo.toml | head -1 | cut -d '"' -f 2)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           
       - name: Release AppImage
