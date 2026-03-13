@@ -8,7 +8,6 @@
   <developer id="io.github.nicx17">
     <name>Nick Cardoso</name>
   </developer>
-  <developer_name>Nick Cardoso</developer_name>
   <description>
     <p>
       Mimick is a Linux daemon running in the background to automatically synchronize your local media files to a designated Immich server.
@@ -17,9 +16,26 @@
       It watches configured folders, utilizes inotify for instantaneous event triggering, tracks deduplication via SHA-1 checksum computations locally, and securely stores configuration parameters leveraging the native secret keyring standard. Includes a system tray indicator for settings and manual controls.
     </p>
   </description>
+  
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_window.png</image>
+      <caption>Settings Window</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/tray_icon_screenshot.png</image>
+      <caption>Tray Icon</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/about_dialog.png</image>
+      <caption>About Dialog</caption>
+    </screenshot>
+  </screenshots>
+
   <launchable type="desktop-id">io.github.nicx17.mimick.desktop</launchable>
   <url type="homepage">https://github.com/nicx17/mimick</url>
   <url type="bugtracker">https://github.com/nicx17/mimick/issues</url>
+  <url type="vcs-browser">https://github.com/nicx17/mimick</url>
   
   <provides>
     <binary>mimick</binary>
