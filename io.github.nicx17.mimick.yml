@@ -48,6 +48,8 @@ modules:
       - install -Dm644 setup/metainfo/io.github.nicx17.mimick.metainfo.xml /app/share/metainfo/io.github.nicx17.mimick.metainfo.xml
       
     sources:
-      - type: dir
-        path: .
+      - type: git
+        url: https://github.com/nicx17/mimick.git
+        tag: v4.0.0
+        commit: 2db0a49a0d3c2e5e1cf84509fed58919a2eb7133
       - cargo-sources.json
