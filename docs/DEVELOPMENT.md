@@ -76,11 +76,17 @@ Unlike traditional Python/PySide loops, `mimick` is built on GTK4 and multi-thre
 
 ## Packaging
 
-To test the final executable bundle:
+To test the final executable bundle via Flatpak:
 
-1. Run `./build_test_appimage.sh`
-2. This script compiles a highly optimised release binary (`target/release/mimick`) stripped of debug symbols and panics, then packages it into a monolithic `.AppImage`.
-3. To install locally, run `./install-appimage.sh /path/to/Mimick-2.0.x-x86_64.AppImage`
+```bash
+# Clean the build directory
+rm -rf build-dir
+# Build the flatpak
+flatpak-builder --user --install --force-clean build-dir io.github.nicx17.mimick.yml
+```
+
+Once installed, you can run it via your application menu or `flatpak run io.github.nicx17.mimick`.
+Note that modifying `Cargo.toml` dependencies requires you to re-run `python3 flatpak-cargo-generator.py Cargo.lock -o cargo-sources.json` to inform the flatpak builder of new crates.
 
 ## Contributing Workflow
 

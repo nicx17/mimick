@@ -46,16 +46,24 @@ Mimick monitors local directories (e.g., `~/Pictures`, `~/Videos`) for new files
 
 ## Installation
 
-### Method 1: AppImage (Recommended)
 
-Download the latest `Mimick-x86_64.AppImage` from the [Releases page](https://github.com/nicx17/mimick/releases), then:
+### Method 1: Build and Install Locally with Flatpak
+
+You can build and install Mimick as a Flatpak locally:
 
 ```bash
-chmod +x Mimick-*.AppImage
-./install-appimage.sh /path/to/Mimick-x86_64.AppImage
+git clone https://github.com/nicx17/mimick.git
+cd mimick
+flatpak-builder --user --install --force-clean build-dir io.github.nicx17.mimick.yml
 ```
 
-### Method 2: Build from Source
+Then run:
+
+```bash
+flatpak run io.github.nicx17.mimick
+```
+
+### Method 2: Build and Install Natively (Rust)
 
 #### Prerequisites
 
@@ -85,10 +93,9 @@ sudo pacman -S gtk4 libadwaita libsecret pkgconf base-devel
 ```bash
 git clone https://github.com/nicx17/mimick.git
 cd mimick
-./install.sh
+cargo build --release
+# Copy the desktop file and icons from setup/ to ~/.local/share/applications and ~/.local/share/icons for launcher integration
 ```
-
-This compiles a release binary and installs it to `~/.local/bin/mimick` along with the desktop entry and icons.
 
 #### Run Directly (Development)
 
@@ -101,7 +108,7 @@ cargo run -- --settings     # open the settings window immediately
 
 ### First Launch
 
-Run `mimick` or open it from your Application Launcher. The settings window opens automatically on first launch.
+Launch Mimick from your Application Launcher. The settings window opens automatically on first launch.
 
 1. **Internal URL** — LAN address (e.g., `http://192.168.1.50:2283`).
 2. **External URL** — WAN/Public address (e.g., `https://photos.example.com`).
@@ -110,19 +117,11 @@ Run `mimick` or open it from your Application Launcher. The settings window open
 
 ### Autostart
 
-The installer will ask if you want to enable autostart via a `.desktop` symlink in `~/.config/autostart`. Alternatively use systemd:
-
-```bash
-mkdir -p ~/.config/systemd/user/
-cp setup/mimick.service ~/.config/systemd/user/
-# Edit ExecStart to point at ~/.local/bin/mimick
-systemctl --user enable --now mimick
-```
+If you want Mimick to start upon login, ensure you have configured it in your desktop environment's startup applications, or copy the `.desktop` file to `~/.config/autostart/`.
 
 ## Documentation
 
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
-- [AppImage Creation](docs/APPIMAGE_CREATION.md)
 - [User Guide](docs/USER_GUIDE.md)
 
 ## Contributing
