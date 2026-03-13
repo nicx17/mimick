@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-03-14
+
+### Changed
+- Added Flatpak packaging support
+- Removed default photo watch path configuration on startup
+- Polished AppStream metadata for Flathub compliance
+
 ## [3.0.0] - 2026-03-09
 
 ### Added
