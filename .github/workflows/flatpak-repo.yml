@@ -27,8 +27,8 @@ jobs:
       - name: Build Flatpak Repository
         run: |
           # Build the app and output it to a folder named 'repo'
-          flatpak-builder --repo=repo --force-clean build-dir io.github.nicx17.mimick.yml
-
+          flatpak-builder --repo=repo --force-clean --install-deps-from=flathub build-dir io.github.nicx17.mimick.yml
+    
       - name: Generate .flatpakrepo file
         run: |
           cat << 'EOF' > repo/mimick.flatpakrepo
