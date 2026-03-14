@@ -43,6 +43,39 @@ jobs:
           Icon=https://raw.githubusercontent.com/nicx17/mimick/main/src/assets/icon.png
           GPGVerify=false
           EOF
+          
+      - name: Generate index.html landing page
+        run: |
+          cat << 'EOF' > repo/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Mimick Flatpak Repository</title>
+              <style>
+                  body { font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; color: #333; background: #f9f9f9; }
+                  .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                  h1 { color: #0056b3; }
+                  pre { background: #2d2d2d; color: #ccc; padding: 15px; border-radius: 5px; overflow-x: auto; }
+                  code { font-family: monospace; font-size: 1.1em; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>Mimick Flatpak Repository</h1>
+                  <p>This is the official Flatpak repository for <strong>Mimick</strong>, a daemon-based synchronization tool for uploading media files to an Immich server.</p>
+                  
+                  <h3>How to install:</h3>
+                  <p>Run these commands in your Linux terminal:</p>
+                  <pre><code>flatpak remote-add --user --if-not-exists mimick-repo https://nicx17.github.io/mimick/mimick.flatpakrepo
+          flatpak install --user mimick-repo io.github.nicx17.mimick</code></pre>
+                  
+                  <p><a href="https://github.com/nicx17/mimick">View source code on GitHub</a></p>
+              </div>
+          </body>
+          </html>
+          EOF    
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v4
