@@ -3,46 +3,51 @@ name: Release
 on:
   push:
     tags:
-      - 'v*' # Trigger on any tag starting with "v", e.g., v2.0.0
+      - "v*"
 
 permissions:
   contents: write
 
 jobs:
-  build-and-release:
+  create-release:
     runs-on: ubuntu-24.04
-    
+
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Install System Dependencies
+
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential libsecret-1-dev fuse
-          
+          sudo apt-get install -y libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential libsecret-1-dev
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          
-      - name: Run Build Script
+
+      - name: Verify tag matches crate version
+        shell: bash
         run: |
-          chmod +x build_test_appimage.sh
-          # The appimagetool requires FUSE
-          # Normally installing fuse on ubuntu-24.04 is enough to run the AppImageTool.
-          APPIMAGE_EXTRACT_AND_RUN=1 ./build_test_appimage.sh
-          
-      - name: Read Version from Cargo.toml
-        id: get_version
-        run: |
-          # Extract version number without the 'v'
-          VERSION=$(grep '^version' Cargo.toml | head -1 | cut -d '"' -f 2)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          
-      - name: Release AppImage
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          CARGO_VERSION=$(grep '^version' Cargo.toml | head -1 | cut -d '"' -f 2)
+
+          echo "Tag version:   ${TAG_VERSION}"
+          echo "Cargo version: ${CARGO_VERSION}"
+
+          if [[ "${TAG_VERSION}" != "${CARGO_VERSION}" ]]; then
+            echo "Tag version does not match Cargo.toml"
+            exit 1
+          fi
+
+      - name: Run tests
+        run: cargo test
+
+      - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: "Mimick-*.AppImage"
+          generate_release_notes: true
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

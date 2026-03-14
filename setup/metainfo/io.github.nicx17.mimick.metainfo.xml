@@ -13,7 +13,7 @@
       Mimick is a Linux daemon running in the background to automatically synchronize your local media files to a designated Immich server.
     </p>
     <p>
-      It watches configured folders, utilizes inotify for instantaneous event triggering, tracks deduplication via SHA-1 checksum computations locally, and securely stores configuration parameters leveraging the native secret keyring standard. Includes a system tray indicator for settings and manual controls.
+      It watches configured folders, uses native filesystem events where available and a polling fallback for sandboxed portal-backed directories, tracks deduplication via SHA-1 checksum computations locally, and securely stores configuration parameters leveraging the native secret keyring standard. Includes a system tray indicator for settings and manual controls.
     </p>
   </description>
   
@@ -47,6 +47,15 @@
   </categories>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="5.0.0" date="2026-03-14">
+      <description>
+        <ul>
+          <li>Added Run on Startup support for both Flatpak and native installs.</li>
+          <li>Switched Flatpak folder access to selected directories only through the file chooser portal.</li>
+          <li>Improved shutdown controls with working Save and Restart, explicit Close and Quit actions, and friendlier folder labels for portal-backed paths.</li>
+        </ul>
+      </description>
+    </release>
     <release version="4.0.0" date="2026-03-14">
       <description>
         <p>Complete rewrite in Rust + GTK4 + Libadwaita. Replaces the Python/PySide6 implementation with a lean, memory-safe daemon. Binary size drops from ~80MB to ~2MB. Concurrent upload workers, in-memory shared state, persistent file logging, and tray via StatusNotifierItem.</p>

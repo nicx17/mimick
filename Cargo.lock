@@ -1452,7 +1452,7 @@ dependencies = [
 
 [[package]]
 name = "mimick"
-version = "4.0.0"
+version = "5.0.0"
 dependencies = [
  "ashpd",
  "dirs",

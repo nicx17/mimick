@@ -7,17 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0] - 2026-03-14
+
 ### Added
 - A built-in **Run on Startup** setting that requests desktop-portal background permission in Flatpak builds and writes a native autostart desktop entry outside Flatpak.
 - Friendly folder labels for portal-backed watch directories, so selected Flatpak folders show names like `Screenshots` instead of raw `/run/user/.../doc/...` paths.
 - Real **Save & Restart** behavior that relaunches Mimick after settings are saved.
 - Explicit **Close** and **Quit** actions in the settings window, plus a launcher **Quit Mimick** desktop action.
+- A published GitHub Pages landing page for the Flatpak repository with direct install instructions and repository links.
 
 ### Changed
 - Flatpak builds now use selected-folder access through the file chooser portal instead of `--filesystem=home`.
 - Folder monitoring inside Flatpak now uses a polling watcher so portal-backed directories continue to sync reliably.
 - Local Flatpak development builds now use the same selected-folder permission model as the deployed app.
 - App quit paths now shut down gracefully instead of using a hard process exit from the tray.
+- The Flatpak repository landing page has been redesigned with a simpler, more cohesive visual style and a one-click copy action for install commands.
 
 ## [4.0.0] - 2026-03-14
 
