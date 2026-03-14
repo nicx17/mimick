@@ -1,7 +1,7 @@
 use reqwest::Client;
+use std::collections::HashMap;
 use std::path::Path;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use std::collections::HashMap;
 use tokio::sync::Mutex;
 
 pub struct ImmichApiClient {
@@ -20,7 +20,7 @@ impl ImmichApiClient {
     pub fn new(internal_url: String, external_url: String, api_key: String) -> Self {
         let client = Client::builder()
             .timeout(Duration::from_secs(300))
-            .pool_max_idle_per_host(1)   // keep at most 1 idle connection per host
+            .pool_max_idle_per_host(1) // keep at most 1 idle connection per host
             .pool_idle_timeout(Duration::from_secs(30)) // drop idle connections after 30s
             .build()
             .unwrap_or_default();
@@ -28,7 +28,11 @@ impl ImmichApiClient {
         let int = internal_url.trim_end_matches('/').to_string();
         let ext = external_url.trim_end_matches('/').to_string();
 
-        log::debug!("ImmichApiClient created: internal={}, external={}", int, ext);
+        log::debug!(
+            "ImmichApiClient created: internal={}, external={}",
+            int,
+            ext
+        );
 
         Self {
             client,
@@ -73,7 +77,8 @@ impl ImmichApiClient {
         let endpoint = format!("{}/api/server/ping", url.trim_end_matches('/'));
         log::debug!("Pinging: {}", endpoint);
 
-        match self.client
+        match self
+            .client
             .get(&endpoint)
             .timeout(Duration::from_secs(2))
             .send()
@@ -81,7 +86,10 @@ impl ImmichApiClient {
         {
             Ok(resp) if resp.status().as_u16() == 200 => {
                 match resp.json::<serde_json::Value>().await {
-                    Ok(json) if json["res"].as_str().map(|s| s.to_lowercase()) == Some("pong".into()) => {
+                    Ok(json)
+                        if json["res"].as_str().map(|s| s.to_lowercase())
+                            == Some("pong".into()) =>
+                    {
                         log::debug!("Ping success: {}", endpoint);
                         true
                     }
@@ -143,7 +151,8 @@ impl ImmichApiClient {
         };
 
         let (created_at, modified_at) = file_timestamps_iso(&meta);
-        let filename = path.file_name()
+        let filename = path
+            .file_name()
             .map(|n| n.to_string_lossy().to_string())
             .unwrap_or_else(|| "upload".to_string());
         let device_asset_id = format!("mimick-rust-{}", checksum);
@@ -151,7 +160,11 @@ impl ImmichApiClient {
         let mime = mime_for_path(path);
 
         log::info!("Uploading: {} ({} bytes)", file_path, meta.len());
-        log::debug!("  device_asset_id={}, created={}", device_asset_id, created_at);
+        log::debug!(
+            "  device_asset_id={}, created={}",
+            device_asset_id,
+            created_at
+        );
 
         // Stream the file instead of loading it entirely into RAM
         let file = match tokio::fs::File::open(path).await {
@@ -180,7 +193,8 @@ impl ImmichApiClient {
 
         let url = format!("{}/api/assets", base_url);
 
-        match self.client
+        match self
+            .client
             .post(&url)
             .header("x-api-key", &self.api_key)
             .header("Accept", "application/json")
@@ -197,7 +211,11 @@ impl ImmichApiClient {
                             log::info!("Upload OK: {} => {:?}", filename, asset_id);
                             asset_id
                         } else {
-                            log::warn!("Upload returned {} but body unreadable: {}", status, filename);
+                            log::warn!(
+                                "Upload returned {} but body unreadable: {}",
+                                status,
+                                filename
+                            );
                             None
                         }
                     }
@@ -256,7 +274,8 @@ impl ImmichApiClient {
         let url = format!("{}/api/albums", base_url);
         log::info!("Fetching album list...");
 
-        match self.client
+        match self
+            .client
             .get(&url)
             .header("x-api-key", &self.api_key)
             .header("Accept", "application/json")
@@ -268,10 +287,9 @@ impl ImmichApiClient {
                 if let Ok(albums) = resp.json::<Vec<serde_json::Value>>().await {
                     let mut cache = self.album_cache.lock().await;
                     for album in &albums {
-                        if let (Some(name), Some(id)) = (
-                            album["albumName"].as_str(),
-                            album["id"].as_str(),
-                        ) {
+                        if let (Some(name), Some(id)) =
+                            (album["albumName"].as_str(), album["id"].as_str())
+                        {
                             cache.insert(name.to_string(), id.to_string());
                         }
                     }
@@ -294,7 +312,10 @@ impl ImmichApiClient {
             self.fetch_all_albums().await;
         }
         let cache = self.album_cache.lock().await;
-        cache.iter().map(|(n, id)| (n.clone(), id.clone())).collect()
+        cache
+            .iter()
+            .map(|(n, id)| (n.clone(), id.clone()))
+            .collect()
     }
 
     /// Create a new album. Returns the new album ID.
@@ -309,7 +330,8 @@ impl ImmichApiClient {
             "description": "Created by Mimick"
         });
 
-        match self.client
+        match self
+            .client
             .post(&url)
             .header("x-api-key", &self.api_key)
             .header("Content-Type", "application/json")
@@ -371,9 +393,14 @@ impl ImmichApiClient {
         let url = format!("{}/api/albums/{}/assets", base_url, album_id);
         let body = serde_json::json!({ "ids": asset_ids });
 
-        log::info!("Adding {} asset(s) to album '{}'", asset_ids.len(), album_id);
+        log::info!(
+            "Adding {} asset(s) to album '{}'",
+            asset_ids.len(),
+            album_id
+        );
 
-        match self.client
+        match self
+            .client
             .put(&url)
             .header("x-api-key", &self.api_key)
             .header("Content-Type", "application/json")
@@ -400,7 +427,8 @@ impl ImmichApiClient {
 }
 
 fn mime_for_path(path: &Path) -> &'static str {
-    match path.extension()
+    match path
+        .extension()
         .map(|e| e.to_string_lossy().to_lowercase())
         .as_deref()
     {
@@ -422,13 +450,15 @@ fn file_timestamps_iso(meta: &std::fs::Metadata) -> (String, String) {
         .unwrap_or_default()
         .as_secs();
 
-    let created = meta.created()
+    let created = meta
+        .created()
         .ok()
         .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
         .unwrap_or(now);
 
-    let modified = meta.modified()
+    let modified = meta
+        .modified()
         .ok()
         .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
@@ -452,25 +482,32 @@ fn unix_to_iso8601(secs: u64) -> String {
     loop {
         let leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
         let days_in_year = if leap { 366 } else { 365 };
-        if rem_days < days_in_year { break; }
+        if rem_days < days_in_year {
+            break;
+        }
         rem_days -= days_in_year;
         year += 1;
     }
     let leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
     let month_days: &[u64] = if leap {
-        &[31,29,31,30,31,30,31,31,30,31,30,31]
+        &[31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     } else {
-        &[31,28,31,30,31,30,31,31,30,31,30,31]
+        &[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     };
     let mut month = 1u64;
     for &md in month_days {
-        if rem_days < md { break; }
+        if rem_days < md {
+            break;
+        }
         rem_days -= md;
         month += 1;
     }
     let day = rem_days + 1;
 
-    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.000Z", year, month, day, h, m, s)
+    format!(
+        "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.000Z",
+        year, month, day, h, m, s
+    )
 }
 
 #[cfg(test)]
@@ -489,6 +526,9 @@ mod tests {
         assert_eq!(mime_for_path(Path::new("test.jpg")), "image/jpeg");
         assert_eq!(mime_for_path(Path::new("test.PNG")), "image/png");
         assert_eq!(mime_for_path(Path::new("test.mp4")), "video/mp4");
-        assert_eq!(mime_for_path(Path::new("test.unknown")), "application/octet-stream");
+        assert_eq!(
+            mime_for_path(Path::new("test.unknown")),
+            "application/octet-stream"
+        );
     }
 }

@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 /// A watch path entry — can be a plain string or a dict with album config.
@@ -73,7 +73,9 @@ impl Default for ConfigData {
     }
 }
 
-fn default_true() -> bool { true }
+fn default_true() -> bool {
+    true
+}
 
 pub struct Config {
     pub data: ConfigData,
@@ -109,7 +111,10 @@ impl Config {
                 }
             }
         } else {
-            log::info!("No config found, creating default at: {}", self.config_file.display());
+            log::info!(
+                "No config found, creating default at: {}",
+                self.config_file.display()
+            );
             self.save();
         }
         false
@@ -161,12 +166,14 @@ impl Config {
         use std::io::Write;
         let mut cmd = std::process::Command::new("secret-tool");
         cmd.arg("store")
-           .arg("--label=Mimick API Key")
-           .arg("service").arg("mimick")
-           .arg("account").arg("api_key")
-           .stdin(std::process::Stdio::piped())
-           .stdout(std::process::Stdio::null())
-           .stderr(std::process::Stdio::null());
+            .arg("--label=Mimick API Key")
+            .arg("service")
+            .arg("mimick")
+            .arg("account")
+            .arg("api_key")
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null());
 
         if let Ok(mut child) = cmd.spawn() {
             if let Some(mut stdin) = child.stdin.take() {
@@ -179,14 +186,18 @@ impl Config {
                 }
             }
         }
-        
+
         log::error!("Failed to save API key via secret-tool.");
         false
     }
 
     /// Return all configured watch paths as plain strings (for the Monitor).
     pub fn watch_path_strings(&self) -> Vec<String> {
-        self.data.watch_paths.iter().map(|e| e.path().to_string()).collect()
+        self.data
+            .watch_paths
+            .iter()
+            .map(|e| e.path().to_string())
+            .collect()
     }
 }
 
@@ -198,7 +209,7 @@ mod tests {
     fn test_watch_path_entry_parsing_simple() {
         let json = r#""/home/nick/Pictures""#;
         let entry: WatchPathEntry = serde_json::from_str(json).unwrap();
-        
+
         assert_eq!(entry.path(), "/home/nick/Pictures");
         assert!(entry.album_id().is_none());
     }
@@ -211,7 +222,7 @@ mod tests {
             "album_name": "My Album"
         }"#;
         let entry: WatchPathEntry = serde_json::from_str(json).unwrap();
-        
+
         assert_eq!(entry.path(), "/home/nick/Pictures");
         assert_eq!(entry.album_id().unwrap(), "abc-123");
         assert_eq!(entry.album_name().unwrap(), "My Album");

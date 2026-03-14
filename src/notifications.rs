@@ -10,7 +10,7 @@ pub fn send(title: &str, message: &str, progress: Option<u8>) {
 
     // Use synchronous hint so notifications replace each other (progress bar effect)
     cmd.arg("-h")
-       .arg("string:x-canonical-private-synchronous:mimick-progress");
+        .arg("string:x-canonical-private-synchronous:mimick-progress");
 
     if let Some(p) = progress {
         cmd.arg("-h").arg(format!("int:value:{}", p));

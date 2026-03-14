@@ -6,7 +6,7 @@ Icon=io.github.nicx17.mimick
 Terminal=false
 Type=Application
 Categories=Utility;
-Actions=Settings;
+Actions=Settings;Quit;
 Keywords=Photo;Sync;Backup;Immich;
 StartupNotify=false
 X-GNOME-Autostart-enabled=true
@@ -15,3 +15,7 @@ StartupWMClass=io.github.nicx17.mimick
 [Desktop Action Settings]
 Name=Open Settings
 Exec=mimick --settings
+
+[Desktop Action Quit]
+Name=Quit Mimick
+Exec=mimick --quit

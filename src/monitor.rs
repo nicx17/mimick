@@ -1,22 +1,23 @@
+use crate::watch_path_display::display_watch_path;
+use notify::{Config as NotifyConfig, EventKind, PollWatcher, RecursiveMode, Watcher};
+use sha1::{Digest, Sha1};
+use std::collections::HashMap;
 use std::fs;
 use std::io::{self, BufReader, Read};
 use std::path::Path;
-use sha1::{Sha1, Digest};
-use notify::{Watcher, RecursiveMode, EventKind};
 use std::time::{Duration, Instant};
-use std::collections::HashMap;
 use tokio::sync::mpsc;
 
 /// Whitelisted media extensions (matches Python ALLOWED_EXTENSIONS)
 const MEDIA_EXTENSIONS: &[&str] = &[
-    "jpg", "jpeg", "png", "heic", "mp4", "mov", "gif", "webp",
-    "tiff", "tif", "raw", "arw", "dng",
+    "jpg", "jpeg", "png", "heic", "mp4", "mov", "gif", "webp", "tiff", "tif", "raw", "arw", "dng",
 ];
 
 /// Consecutive stable size checks required before a file is considered complete.
 const REQUIRED_STABLE_COUNTS: u32 = 3;
 const CHECK_INTERVAL_MS: u64 = 1000;
 const IDLE_TIMEOUT_SECS: u64 = 300;
+const FLATPAK_POLL_INTERVAL_MS: u64 = 2000;
 
 pub struct Monitor {
     watch_paths: Vec<String>,
@@ -34,7 +35,7 @@ impl Monitor {
 
         std::thread::spawn(move || {
             let (notify_tx, notify_rx) = std::sync::mpsc::channel();
-            let mut watcher = match notify::recommended_watcher(notify_tx) {
+            let mut watcher = match create_watcher(notify_tx) {
                 Ok(w) => w,
                 Err(e) => {
                     log::error!("Failed to create file watcher: {:?}", e);
@@ -48,7 +49,7 @@ impl Monitor {
                 if p.exists() {
                     match watcher.watch(p, RecursiveMode::Recursive) {
                         Ok(_) => {
-                            log::info!("Watching: {}", path);
+                            log::info!("Watching: {}", display_watch_path(path));
                             any_watching = true;
                         }
                         Err(e) => log::warn!("Failed to watch '{}': {:?}", path, e),
@@ -65,29 +66,29 @@ impl Monitor {
 
             // Debounce map: path -> last seen instant
             let mut debounce_map: HashMap<String, Instant> = HashMap::new();
-            
+
             // Track files that are currently waiting for size stability.
             // Prevents long-running records (like screencasts) from spawning
             // duplicate tasks every 2 seconds.
-            let active_tasks: std::sync::Arc<std::sync::Mutex<std::collections::HashSet<String>>> = 
+            let active_tasks: std::sync::Arc<std::sync::Mutex<std::collections::HashSet<String>>> =
                 std::sync::Arc::new(std::sync::Mutex::new(std::collections::HashSet::new()));
 
             for res in notify_rx {
                 match res {
                     Ok(event) => {
-                        let is_relevant = matches!(
-                            event.kind,
-                            EventKind::Create(_) | EventKind::Modify(_)
-                        );
+                        let is_relevant =
+                            matches!(event.kind, EventKind::Create(_) | EventKind::Modify(_));
                         let is_move = matches!(event.kind, EventKind::Modify(_));
                         let _ = is_move;
 
                         if is_relevant {
                             for path in event.paths {
-                                if path.is_dir() { continue; }
+                                if path.is_dir() {
+                                    continue;
+                                }
 
-                                let ext = path.extension()
-                                    .map(|e| e.to_string_lossy().to_lowercase());
+                                let ext =
+                                    path.extension().map(|e| e.to_string_lossy().to_lowercase());
                                 let ext_str = ext.as_deref().unwrap_or("");
 
                                 if !MEDIA_EXTENSIONS.contains(&ext_str) {
@@ -95,7 +96,7 @@ impl Monitor {
                                 }
 
                                 let path_str = path.to_string_lossy().into_owned();
-                                
+
                                 // Bail immediately if we're already waiting on this file to finish.
                                 if active_tasks.lock().unwrap().contains(&path_str) {
                                     continue;
@@ -124,15 +125,30 @@ impl Monitor {
                                 let active_clone = active_tasks.clone();
                                 handle.spawn(async move {
                                     let is_complete = wait_for_file_completion(&path_str).await;
-                                    
+
                                     if is_complete {
                                         let p_clone = path_str.clone();
-                                        match tokio::task::spawn_blocking(move || compute_sha1_chunked(&p_clone)).await.unwrap() {
+                                        match tokio::task::spawn_blocking(move || {
+                                            compute_sha1_chunked(&p_clone)
+                                        })
+                                        .await
+                                        .unwrap()
+                                        {
                                             Ok(checksum) => {
-                                                log::info!("File ready: {} (sha1={})", path_str, checksum);
-                                                let _ = tx_clone.send((path_str.clone(), checksum)).await;
+                                                log::info!(
+                                                    "File ready: {} (sha1={})",
+                                                    path_str,
+                                                    checksum
+                                                );
+                                                let _ = tx_clone
+                                                    .send((path_str.clone(), checksum))
+                                                    .await;
                                             }
-                                            Err(e) => log::error!("Checksum error for {}: {}", path_str, e),
+                                            Err(e) => log::error!(
+                                                "Checksum error for {}: {}",
+                                                path_str,
+                                                e
+                                            ),
                                         }
                                     } else {
                                         log::warn!("File never stabilised, skipping: {}", path_str);
@@ -153,6 +169,26 @@ impl Monitor {
     }
 }
 
+fn create_watcher(
+    notify_tx: std::sync::mpsc::Sender<notify::Result<notify::Event>>,
+) -> notify::Result<Box<dyn Watcher>> {
+    if is_flatpak_sandbox() {
+        log::info!(
+            "Using polling file watcher in Flatpak for portal-selected folders ({}ms interval)",
+            FLATPAK_POLL_INTERVAL_MS
+        );
+        let config = NotifyConfig::default()
+            .with_poll_interval(Duration::from_millis(FLATPAK_POLL_INTERVAL_MS));
+        Ok(Box::new(PollWatcher::new(notify_tx, config)?))
+    } else {
+        Ok(Box::new(notify::recommended_watcher(notify_tx)?))
+    }
+}
+
+fn is_flatpak_sandbox() -> bool {
+    Path::new("/.flatpak-info").exists()
+}
+
 /// Wait for a file's size to remain unchanged for REQUIRED_STABLE_COUNTS checks.
 /// Mirrors Python's `wait_for_file_completion`.
 async fn wait_for_file_completion(path: &str) -> bool {
@@ -162,7 +198,11 @@ async fn wait_for_file_completion(path: &str) -> bool {
 
     loop {
         if last_change.elapsed().as_secs() >= IDLE_TIMEOUT_SECS {
-            log::warn!("Timeout: file stayed inactive for {}s: {}", IDLE_TIMEOUT_SECS, path);
+            log::warn!(
+                "Timeout: file stayed inactive for {}s: {}",
+                IDLE_TIMEOUT_SECS,
+                path
+            );
             return false;
         }
 
@@ -198,7 +238,9 @@ fn compute_sha1_chunked(path: &str) -> io::Result<String> {
     let mut buf = vec![0u8; BUF_SIZE];
     loop {
         let n = reader.read(&mut buf)?;
-        if n == 0 { break; }
+        if n == 0 {
+            break;
+        }
         hasher.update(&buf[..n]);
     }
     Ok(format!("{:x}", hasher.finalize()))
@@ -206,17 +248,22 @@ fn compute_sha1_chunked(path: &str) -> io::Result<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use tempfile::NamedTempFile;
+    use super::{compute_sha1_chunked, is_flatpak_sandbox};
     use std::io::Write;
+    use tempfile::NamedTempFile;
 
     #[test]
     fn test_compute_sha1_chunked() {
         let mut file = NamedTempFile::new().unwrap();
         // SHA1 of "hello world" is 2aae6c35c94fcfb415dbe95f408b9ce91ee846ed
         file.write_all(b"hello world").unwrap();
-        
+
         let hash = compute_sha1_chunked(file.path().to_str().unwrap()).unwrap();
         assert_eq!(hash, "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed");
+    }
+
+    #[test]
+    fn test_flatpak_detection_is_false_in_unit_tests() {
+        assert!(!is_flatpak_sandbox());
     }
 }

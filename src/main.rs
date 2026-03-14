@@ -1,27 +1,31 @@
 use gtk::prelude::*;
 use libadwaita as adw;
-use tokio::sync::mpsc;
-use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
+use tokio::sync::mpsc;
 
-mod config;
 mod api_client;
-mod state_manager;
-mod queue_manager;
+mod autostart;
+mod config;
 mod monitor;
 mod notifications;
+mod queue_manager;
+mod restart;
 mod settings_window;
+mod state_manager;
 mod tray_icon;
+mod watch_path_display;
 
-use config::Config;
 use api_client::ImmichApiClient;
-use queue_manager::{QueueManager, FileTask};
+use config::Config;
 use monitor::Monitor;
+use queue_manager::{FileTask, QueueManager};
+use restart::{launch_replacement, take_restart_request};
 use settings_window::build_settings_window;
+use state_manager::{AppState, StateManager};
 use tray_icon::build_tray;
-use state_manager::{StateManager, AppState};
 
-use flexi_logger::{Logger, FileSpec, WriteMode};
+use flexi_logger::{FileSpec, Logger, WriteMode};
 
 /// Holds the primary instance's QueueManager so the shutdown path can flush retries to disk.
 static QM_HANDLE: std::sync::OnceLock<Arc<QueueManager>> = std::sync::OnceLock::new();
@@ -42,7 +46,7 @@ async fn main() {
                 .directory(log_dir)
                 .basename("mimick")
                 .suppress_timestamp() // "mimick.log" instead of "mimick_2026-03-09_10-33-35.log"
-                .suffix("log")
+                .suffix("log"),
         )
         // Also print to stdout for systemd / terminal users
         .duplicate_to_stdout(flexi_logger::Duplicate::All)
@@ -64,7 +68,11 @@ async fn main() {
     let shared_state: Arc<Mutex<AppState>> = Arc::new(Mutex::new({
         let saved = StateManager::new().read_state();
         // Reset volatile fields that shouldn't survive a restart
-        AppState { status: "idle".to_string(), active_workers: 0, ..saved }
+        AppState {
+            status: "idle".to_string(),
+            active_workers: 0,
+            ..saved
+        }
     }));
 
     let shared_state_startup = shared_state.clone();
@@ -99,7 +107,11 @@ async fn main() {
         ));
         let _ = API_CLIENT_HANDLE.set(api_client.clone());
 
-        let qm = Arc::new(QueueManager::new(api_client, 3, shared_state_startup.clone()));
+        let qm = Arc::new(QueueManager::new(
+            api_client,
+            3,
+            shared_state_startup.clone(),
+        ));
 
         // Start file monitor using plain path strings
         let (tx, mut rx) = mpsc::channel(32);
@@ -119,7 +131,12 @@ async fn main() {
                 let mut album_name = None;
                 for entry in &path_configs {
                     use config::WatchPathEntry;
-                    if let WatchPathEntry::WithConfig { path: base, album_id: aid, album_name: aname } = entry {
+                    if let WatchPathEntry::WithConfig {
+                        path: base,
+                        album_id: aid,
+                        album_name: aname,
+                    } = entry
+                    {
                         if path.starts_with(base.as_str()) {
                             album_id = aid.clone();
                             album_name = aname.clone();
@@ -128,7 +145,14 @@ async fn main() {
                     }
                 }
 
-                qm_clone.add_to_queue(FileTask { path, checksum, album_id, album_name }).await;
+                qm_clone
+                    .add_to_queue(FileTask {
+                        path,
+                        checksum,
+                        album_id,
+                        album_name,
+                    })
+                    .await;
             }
         });
 
@@ -136,39 +160,75 @@ async fn main() {
         let _ = QM_HANDLE.set(qm);
 
         let app_clone2 = app.clone();
+        let app_clone3 = app.clone();
         let shared_state2 = shared_state_startup.clone();
 
         // Cross-thread flag: Tokio sets it; the GTK timer reads and clears it.
         // Arc<Mutex<bool>> is Send + Sync, so it can cross the tokio::spawn boundary.
-        let flag = Arc::new(std::sync::Mutex::new(false));
-        let flag_writer = flag.clone(); // moves into tokio::spawn (Send ✓)
+        let settings_flag = Arc::new(std::sync::Mutex::new(false));
+        let settings_flag_writer = settings_flag.clone(); // moves into tokio::spawn (Send ✓)
+        let quit_flag = Arc::new(std::sync::Mutex::new(false));
+        let quit_flag_writer = quit_flag.clone(); // moves into tokio::spawn (Send ✓)
 
         // GTK-side: poll the flag every 250ms on the main thread.
         // app_clone2 / shared_state2 are !Send — they stay here, never enter spawns.
         glib::timeout_add_local(std::time::Duration::from_millis(250), move || {
-            let triggered = {
-                let mut f = flag.lock().unwrap();
-                if *f { *f = false; true } else { false }
+            let settings_triggered = {
+                let mut f = settings_flag.lock().unwrap();
+                if *f {
+                    *f = false;
+                    true
+                } else {
+                    false
+                }
             };
-            if triggered {
+            if settings_triggered {
                 let client = API_CLIENT_HANDLE.get().cloned();
                 open_settings_if_needed(&app_clone2, shared_state2.clone(), client);
             }
+
+            let quit_triggered = {
+                let mut f = quit_flag.lock().unwrap();
+                if *f {
+                    *f = false;
+                    true
+                } else {
+                    false
+                }
+            };
+            if quit_triggered {
+                app_clone3.quit();
+                return glib::ControlFlow::Break;
+            }
+
             glib::ControlFlow::Continue
         });
 
         // Tokio-side: build the tray and forward watch signals into the flag.
-        // Only flag_writer (Send ✓) and settings_rx (Send ✓) are captured here.
+        // Only *_writer flags (Send ✓) and watch receivers (Send ✓) are captured here.
         tokio::spawn(async move {
             log::info!("Starting system tray");
             match build_tray().await {
-                Ok((_handle, mut settings_rx)) => {
-                    while settings_rx.changed().await.is_ok() {
-                        if *settings_rx.borrow() {
-                            *flag_writer.lock().unwrap() = true;
+                Ok((_handle, mut settings_rx, mut quit_rx)) => loop {
+                    tokio::select! {
+                        res = settings_rx.changed() => {
+                            if res.is_err() {
+                                break;
+                            }
+                            if *settings_rx.borrow() {
+                                *settings_flag_writer.lock().unwrap() = true;
+                            }
+                        }
+                        res = quit_rx.changed() => {
+                            if res.is_err() {
+                                break;
+                            }
+                            if *quit_rx.borrow() {
+                                *quit_flag_writer.lock().unwrap() = true;
+                            }
                         }
                     }
-                }
+                },
                 Err(e) => log::warn!("System tray failed to start: {:?}", e),
             }
         });
@@ -176,10 +236,17 @@ async fn main() {
 
     // Handle command line from both the primary and secondary instances.
     app.connect_command_line(move |app, cmdline| {
-        let argv: Vec<String> = cmdline.arguments()
+        let argv: Vec<String> = cmdline
+            .arguments()
             .iter()
             .filter_map(|a| a.to_str().map(|s| s.to_string()))
             .collect();
+
+        let quit_requested = argv.contains(&"--quit".to_string());
+        if quit_requested {
+            app.quit();
+            return 0.into();
+        }
 
         let open_settings = argv.contains(&"--settings".to_string())
             // Also open settings when activated by a secondary instance (e.g. clicking
@@ -211,10 +278,20 @@ async fn main() {
         StateManager::new().write_state(state);
         log::info!("Mimick exiting");
     }
+
+    if take_restart_request() {
+        if let Err(err) = launch_replacement(true) {
+            log::error!("{err}");
+        }
+    }
 }
 
 /// Open the settings window only if one is not already visible.
-fn open_settings_if_needed(app: &adw::Application, shared_state: Arc<Mutex<AppState>>, api_client: Option<Arc<ImmichApiClient>>) {
+fn open_settings_if_needed(
+    app: &adw::Application,
+    shared_state: Arc<Mutex<AppState>>,
+    api_client: Option<Arc<ImmichApiClient>>,
+) {
     if let Some(win) = app.windows().first() {
         win.present();
     } else {

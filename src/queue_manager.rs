@@ -1,10 +1,10 @@
-use tokio::sync::{mpsc, Mutex};
-use std::sync::Arc;
-use std::path::PathBuf;
-use std::fs;
 use crate::api_client::ImmichApiClient;
-use crate::state_manager::AppState;
 use crate::notifications;
+use crate::state_manager::AppState;
+use std::fs;
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::sync::{Mutex, mpsc};
 
 /// A file task with path, checksum, and optional album association (from per-path config).
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -50,7 +50,10 @@ impl QueueManager {
         // Items are re-added only if they fail again this session.
         let loaded_retries = load_retries(&retry_path);
         if !loaded_retries.is_empty() {
-            log::info!("Loaded {} item(s) from retry queue. Clearing file.", loaded_retries.len());
+            log::info!(
+                "Loaded {} item(s) from retry queue. Clearing file.",
+                loaded_retries.len()
+            );
             let _ = fs::write(&retry_path, "[]");
             shared_state.lock().unwrap().failed_count = loaded_retries.len();
         }
@@ -90,12 +93,21 @@ impl QueueManager {
                                 s.current_file = Some(file_task.path.clone());
                                 s.queue_size = s.total_queued.saturating_sub(s.processed_count);
                                 s.progress = if s.total_queued > 0 {
-                                    ((s.processed_count as f32 / s.total_queued as f32) * 100.0) as u8
-                                } else { 0 };
+                                    ((s.processed_count as f32 / s.total_queued as f32) * 100.0)
+                                        as u8
+                                } else {
+                                    0
+                                };
                                 (s.processed_count, s.total_queued)
                             };
 
-                            log::info!("Worker {} uploading [{}/{}]: {}", i, pc + 1, tq, file_task.path);
+                            log::info!(
+                                "Worker {} uploading [{}/{}]: {}",
+                                i,
+                                pc + 1,
+                                tq,
+                                file_task.path
+                            );
 
                             let t_start = std::time::Instant::now();
                             let success = handle_upload(&api, &file_task).await;
@@ -110,10 +122,14 @@ impl QueueManager {
                                     std::mem::take(&mut *rl)
                                 };
                                 if !retries.is_empty() {
-                                    log::info!("Network active. Re-queuing {} retry item(s).", retries.len());
+                                    log::info!(
+                                        "Network active. Re-queuing {} retry item(s).",
+                                        retries.len()
+                                    );
                                     {
                                         let mut s = state_ref.lock().unwrap();
-                                        s.failed_count = s.failed_count.saturating_sub(retries.len());
+                                        s.failed_count =
+                                            s.failed_count.saturating_sub(retries.len());
                                         s.total_queued += retries.len();
                                     }
                                     // Release all locks before await
@@ -122,7 +138,11 @@ impl QueueManager {
                                     }
                                 }
                             } else {
-                                log::warn!("Upload FAILED: {} ({:.2}s). Adding to retry queue.", file_task.path, elapsed);
+                                log::warn!(
+                                    "Upload FAILED: {} ({:.2}s). Adding to retry queue.",
+                                    file_task.path,
+                                    elapsed
+                                );
                                 // Push to in-memory list only — zero disk I/O per failure.
                                 retry_ref.lock().unwrap().push(file_task);
                                 let mut s = state_ref.lock().unwrap();
@@ -148,8 +168,11 @@ impl QueueManager {
                                 } else {
                                     s.queue_size = s.total_queued.saturating_sub(s.processed_count);
                                     s.progress = if s.total_queued > 0 {
-                                        ((s.processed_count as f32 / s.total_queued as f32) * 100.0) as u8
-                                    } else { 0 };
+                                        ((s.processed_count as f32 / s.total_queued as f32) * 100.0)
+                                            as u8
+                                    } else {
+                                        0
+                                    };
                                     s.status = "uploading".to_string();
                                     None
                                 }
@@ -212,7 +235,10 @@ impl QueueManager {
         let retries = self.retry_list.lock().unwrap();
         if !retries.is_empty() {
             save_retries(&self.retry_path, &retries);
-            log::info!("Flushed {} unfinished retry item(s) to disk.", retries.len());
+            log::info!(
+                "Flushed {} unfinished retry item(s) to disk.",
+                retries.len()
+            );
         }
     }
 }
@@ -233,13 +259,11 @@ async fn handle_upload(api: &ImmichApiClient, task: &FileTask) -> bool {
     // Determine album name (fall back to parent directory name like Python does)
     let album_name = match (&task.album_name, &task.album_id) {
         (Some(name), _) if !name.is_empty() && name != "Default (Folder Name)" => name.clone(),
-        _ => {
-            std::path::Path::new(&task.path)
-                .parent()
-                .and_then(|p| p.file_name())
-                .map(|n| n.to_string_lossy().to_string())
-                .unwrap_or_else(|| "Mimick".to_string())
-        }
+        _ => std::path::Path::new(&task.path)
+            .parent()
+            .and_then(|p| p.file_name())
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_else(|| "Mimick".to_string()),
     };
 
     log::info!("Adding '{}' to album '{}'", task.path, album_name);
@@ -257,7 +281,10 @@ async fn handle_upload(api: &ImmichApiClient, task: &FileTask) -> bool {
     if let Some(album_id) = final_album_id {
         api.add_assets_to_album(&album_id, &[asset_id]).await;
     } else {
-        log::warn!("Could not resolve album '{}'. Asset uploaded but not added to album.", album_name);
+        log::warn!(
+            "Could not resolve album '{}'. Asset uploaded but not added to album.",
+            album_name
+        );
     }
 
     true
@@ -268,8 +295,13 @@ fn save_retries(path: &PathBuf, tasks: &[FileTask]) {
         let _ = fs::create_dir_all(dir);
     }
     if let Ok(content) = serde_json::to_string(tasks) {
-        let unique_ext = format!("tmp.{}", std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_nanos());
+        let unique_ext = format!(
+            "tmp.{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_nanos()
+        );
         let tmp = path.with_extension(unique_ext);
         if fs::write(&tmp, content).is_ok() {
             if let Err(e) = fs::rename(&tmp, path) {
@@ -281,7 +313,9 @@ fn save_retries(path: &PathBuf, tasks: &[FileTask]) {
 }
 
 fn load_retries(path: &PathBuf) -> Vec<FileTask> {
-    if !path.exists() { return Vec::new(); }
+    if !path.exists() {
+        return Vec::new();
+    }
     match fs::read_to_string(path) {
         Ok(content) => serde_json::from_str(&content).unwrap_or_default(),
         Err(e) => {

@@ -17,6 +17,8 @@ Clicking on the tray icon reveals a menu:
 * **Settings**: Opens the configuration and status window.
 * **Quit**: Safely shuts down the application and stops all background syncing.
 
+You can also use the launcher action for **Quit Mimick** to stop the already-running app without opening the settings window.
+
 ---
 
 ## 2. Configuring the Application
@@ -45,13 +47,36 @@ Right-click the tray icon and select **Settings**, or launch with `mimick --sett
 3. The application monitors these folders recursively.
 4. **Album Selection**: Each folder row has a dropdown to assign an Immich album. Choose an existing album, type a custom name (a new album will be created), or leave as "Default (Folder Name)" to auto-name from the folder.
 
+Flatpak builds only have access to folders that you add through this picker. If you are upgrading from an older build that had wider filesystem access, remove and re-add existing watch folders once.
+
+Portal-backed folders may appear by folder name in the UI and logs instead of showing the raw `/run/user/.../doc/...` sandbox path.
+
+### Startup Behavior
+
+Use the **Run on Startup** switch in the **Behavior** section if you want Mimick to launch automatically when you log in.
+
+* Flatpak builds ask the desktop for permission using the background portal.
+* Native builds create `~/.config/autostart/io.github.nicx17.mimick.desktop`.
+
+### Saving Changes
+
+Click **Save & Restart** after changing settings. Mimick saves the updated configuration, closes the current instance, and launches a fresh one so the new watcher and connection settings take effect immediately.
+
+### Closing vs Quitting
+
+The settings window has separate actions for hiding the window and quitting the whole app:
+
+* **Close** hides the settings window and keeps Mimick running in the background.
+* **Quit** fully exits Mimick.
+* The window titlebar close button behaves the same as **Close**.
+
 ---
 
 ## 3. How Syncing Works
 
 ### Automatic Detection
 
-Once configured, the application runs silently in the background. When you add a new photo to a watched folder, `mimick` detects it via Linux filesystem events (`inotify`):
+Once configured, the application runs silently in the background. When you add a new photo to a watched folder, `mimick` detects it via filesystem monitoring:
 
 1. Waits for the file size to stabilise (file is fully written to disk).
 2. Calculates a SHA-1 checksum for deduplication.

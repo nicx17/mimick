@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use std::time::SystemTime;
@@ -55,19 +55,29 @@ impl StateManager {
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap_or_default()
             .as_secs_f64();
-            
+
         if let Some(parent) = self.state_file.parent() {
             let _ = fs::create_dir_all(parent);
         }
-        
+
         if let Ok(content) = serde_json::to_string(&state) {
-            let unique_ext = format!("tmp.{}", SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap_or_default().as_nanos());
+            let unique_ext = format!(
+                "tmp.{}",
+                SystemTime::now()
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_nanos()
+            );
             let tmp_file = self.state_file.with_extension(unique_ext);
             if fs::write(&tmp_file, &content).is_ok() {
                 if fs::rename(&tmp_file, &self.state_file).is_ok() {
-                    log::debug!("State written: status={} progress={} processed={}/{}",
-                        state.status, state.progress,
-                        state.processed_count, state.total_queued);
+                    log::debug!(
+                        "State written: status={} progress={} processed={}/{}",
+                        state.status,
+                        state.progress,
+                        state.processed_count,
+                        state.total_queued
+                    );
                 } else {
                     let _ = fs::remove_file(&tmp_file); // cleanup on fail
                     log::warn!("Failed to atomically rename state file");
@@ -80,18 +90,23 @@ impl StateManager {
 
     pub fn read_state(&self) -> AppState {
         match fs::read_to_string(&self.state_file) {
-            Ok(content) => {
-                match serde_json::from_str(&content) {
-                    Ok(state) => {
-                        log::debug!("State read: status={}", { let s: &AppState = &state; s.status.as_str() }.to_string());
-                        state
-                    }
-                    Err(e) => {
-                        log::warn!("Failed to parse state file: {}", e);
-                        AppState::default()
-                    }
+            Ok(content) => match serde_json::from_str(&content) {
+                Ok(state) => {
+                    log::debug!(
+                        "State read: status={}",
+                        {
+                            let s: &AppState = &state;
+                            s.status.as_str()
+                        }
+                        .to_string()
+                    );
+                    state
                 }
-            }
+                Err(e) => {
+                    log::warn!("Failed to parse state file: {}", e);
+                    AppState::default()
+                }
+            },
             Err(_) => AppState::default(),
         }
     }
@@ -114,18 +129,20 @@ mod tests {
     fn test_state_manager_write_read() {
         let dir = tempdir().unwrap();
         let file_path = dir.path().join("status.json");
-        
+
         // We override the state_file manually for testing
-        let manager = StateManager { state_file: file_path.clone() };
-        
+        let manager = StateManager {
+            state_file: file_path.clone(),
+        };
+
         let mut state = AppState::default();
         state.status = "syncing".to_string();
         state.progress = 50;
-        
+
         manager.write_state(state.clone());
-        
+
         assert!(file_path.exists());
-        
+
         let read_state = manager.read_state();
         assert_eq!(read_state.status, "syncing");
         assert_eq!(read_state.progress, 50);

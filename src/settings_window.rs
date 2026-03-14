@@ -1,3 +1,4 @@
+use crate::autostart;
 use crate::config::WatchPathEntry;
 use adw::prelude::*;
 use glib::clone;
@@ -15,7 +16,9 @@ use std::time::Duration;
 
 use crate::api_client::ImmichApiClient;
 use crate::config::Config;
+use crate::restart::request_restart;
 use crate::state_manager::AppState;
+use crate::watch_path_display::{display_watch_path, watch_path_subtitle};
 
 struct FolderRowData {
     pub path: String,
@@ -33,8 +36,8 @@ pub fn build_settings_window(
     let window = adw::ApplicationWindow::builder()
         .application(app)
         .title("Mimick Settings")
-        .default_width(600)
-        .default_height(900)
+        .default_width(680)
+        .default_height(820)
         .build();
     let app_clone = app.clone();
 
@@ -73,7 +76,7 @@ pub fn build_settings_window(
 
     // Clamp
     let clamp = adw::Clamp::builder()
-        .maximum_size(600)
+        .maximum_size(680)
         .margin_top(12)
         .margin_bottom(12)
         .margin_start(12)
@@ -311,13 +314,24 @@ pub fn build_settings_window(
         }
     ));
 
+    let behavior_group = adw::PreferencesGroup::builder().title("Behavior").build();
+    page_box.append(&behavior_group);
+
+    let startup_row = adw::SwitchRow::builder()
+        .title("Run on Startup")
+        .subtitle("Start Mimick automatically when you log in.")
+        .build();
+    behavior_group.add(&startup_row);
+
     // --- WATCH FOLDERS GROUP ---
     let folders_group = adw::PreferencesGroup::builder()
         .title("Watch Folders")
+        .description("Add folders with the picker so Mimick can keep access to them.")
         .build();
     page_box.append(&folders_group);
 
     let config = Config::new();
+    let startup_initial = config.data.run_on_startup;
     let tracked_rows = Rc::new(RefCell::new(Vec::<FolderRowData>::new()));
     let albums: Rc<RefCell<Vec<(String, String)>>> = Rc::new(RefCell::new(Vec::new()));
 
@@ -444,17 +458,55 @@ pub fn build_settings_window(
         );
     });
 
-    // Save & Restart
-    let save_group = adw::PreferencesGroup::new();
-    page_box.append(&save_group);
+    // Window actions
+    let actions_group = adw::PreferencesGroup::new();
+    page_box.append(&actions_group);
+
+    let actions_box = Box::builder()
+        .orientation(Orientation::Horizontal)
+        .spacing(12)
+        .halign(gtk::Align::End)
+        .margin_top(6)
+        .margin_bottom(6)
+        .margin_start(6)
+        .margin_end(6)
+        .build();
+    actions_group.add(&actions_box);
+
+    let close_btn = Button::builder().label("Close").build();
+    actions_box.append(&close_btn);
+
+    let quit_btn = Button::builder()
+        .label("Quit")
+        .css_classes(vec!["destructive-action".to_string()])
+        .build();
+    actions_box.append(&quit_btn);
 
     let save_btn = Button::builder()
         .label("Save & Restart")
         .css_classes(vec!["suggested-action".to_string()])
         .build();
-    save_group.add(&save_btn);
+    actions_box.append(&save_btn);
+
+    close_btn.connect_clicked(clone!(
+        #[weak]
+        window,
+        move |_| {
+            window.set_visible(false);
+        }
+    ));
+
+    quit_btn.connect_clicked(clone!(
+        #[strong]
+        app_clone,
+        move |_| {
+            app_clone.quit();
+        }
+    ));
 
     save_btn.connect_clicked(clone!(
+        #[weak]
+        window,
         #[weak]
         internal_switch,
         #[weak]
@@ -465,6 +517,10 @@ pub fn build_settings_window(
         external_entry,
         #[weak]
         api_key_entry,
+        #[weak]
+        startup_row,
+        #[weak]
+        save_btn,
         #[strong]
         app_clone,
         #[strong]
@@ -472,12 +528,13 @@ pub fn build_settings_window(
         #[strong]
         albums,
         move |_| {
-            let mut config = Config::new();
-            config.data.internal_url_enabled = internal_switch.is_active();
-            config.data.external_url_enabled = external_switch.is_active();
-            config.data.internal_url = internal_entry.text().to_string();
-            config.data.external_url = external_entry.text().to_string();
+            save_btn.set_sensitive(false);
 
+            let internal_url_enabled = internal_switch.is_active();
+            let external_url_enabled = external_switch.is_active();
+            let internal_url = internal_entry.text().to_string();
+            let external_url = external_entry.text().to_string();
+            let run_on_startup = startup_row.is_active();
             let mut watch_paths = Vec::new();
             let albums_map: HashMap<String, String> = albums.borrow().iter().cloned().collect();
 
@@ -504,17 +561,81 @@ pub fn build_settings_window(
                     });
                 }
             }
-            config.data.watch_paths = watch_paths;
 
             let api_key = api_key_entry.text().to_string();
-            if !api_key.is_empty() {
-                config.set_api_key(&api_key);
-            }
+            let startup_changed = run_on_startup != startup_initial;
 
-            config.save();
+            glib::MainContext::default().spawn_local(clone!(
+                #[weak]
+                window,
+                #[weak]
+                startup_row,
+                #[weak]
+                save_btn,
+                #[strong]
+                app_clone,
+                async move {
+                    if startup_changed {
+                        match autostart::apply(&window, run_on_startup).await {
+                            Ok(granted) if granted == run_on_startup => {}
+                            Ok(_) => {
+                                startup_row.set_active(false);
+                                save_btn.set_sensitive(true);
 
-            app_clone.quit();
-            std::process::exit(0);
+                                let dialog = adw::MessageDialog::builder()
+                                    .transient_for(&window)
+                                    .heading("Startup Permission Needed")
+                                    .body("Mimick was not allowed to start automatically at login.")
+                                    .build();
+                                dialog.add_response("ok", "OK");
+                                dialog.present();
+                                return;
+                            }
+                            Err(err) => {
+                                startup_row.set_active(startup_initial);
+                                save_btn.set_sensitive(true);
+
+                                let dialog = adw::MessageDialog::builder()
+                                    .transient_for(&window)
+                                    .heading("Could Not Update Startup Setting")
+                                    .body(&err)
+                                    .build();
+                                dialog.add_response("ok", "OK");
+                                dialog.present();
+                                return;
+                            }
+                        }
+                    }
+
+                    let mut new_config = Config::new();
+                    new_config.data.internal_url_enabled = internal_url_enabled;
+                    new_config.data.external_url_enabled = external_url_enabled;
+                    new_config.data.internal_url = internal_url;
+                    new_config.data.external_url = external_url;
+                    new_config.data.watch_paths = watch_paths;
+                    new_config.data.run_on_startup = run_on_startup;
+
+                    if !api_key.is_empty() {
+                        new_config.set_api_key(&api_key);
+                    }
+
+                    if !new_config.save() {
+                        save_btn.set_sensitive(true);
+
+                        let dialog = adw::MessageDialog::builder()
+                            .transient_for(&window)
+                            .heading("Could Not Save Settings")
+                            .body("Mimick could not write the updated configuration to disk.")
+                            .build();
+                        dialog.add_response("ok", "OK");
+                        dialog.present();
+                        return;
+                    }
+
+                    request_restart();
+                    app_clone.quit();
+                }
+            ));
         }
     ));
 
@@ -525,6 +646,7 @@ pub fn build_settings_window(
     external_entry.set_text(&config.data.external_url);
     internal_entry.set_sensitive(config.data.internal_url_enabled);
     external_entry.set_sensitive(config.data.external_url_enabled);
+    startup_row.set_active(config.data.run_on_startup);
 
     if let Some(key) = config.get_api_key() {
         api_key_entry.set_text(&key);
@@ -647,7 +769,12 @@ fn add_folder_row(
     tracked_rows: &Rc<RefCell<Vec<FolderRowData>>>,
 ) {
     let path = entry.path().to_string();
-    let row = adw::ActionRow::builder().title(&path).build();
+    let row = adw::ActionRow::builder()
+        .title(display_watch_path(&path))
+        .build();
+    if let Some(subtitle) = watch_path_subtitle(&path) {
+        row.set_subtitle(subtitle);
+    }
 
     let string_list = gtk::StringList::new(&["Default (Folder Name)"]);
     for (name, _) in albums {

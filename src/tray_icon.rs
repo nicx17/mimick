@@ -7,6 +7,8 @@ pub struct MimickTray {
     /// Sender used to signal the GTK main loop to open the settings window.
     /// Sending `true` triggers the open; the receiver is polled via glib::timeout_add.
     pub settings_tx: watch::Sender<bool>,
+    /// Sender used to request a graceful application quit from the GTK main loop.
+    pub quit_tx: watch::Sender<bool>,
 }
 
 impl ksni::Tray for MimickTray {
@@ -32,22 +34,37 @@ impl ksni::Tray for MimickTray {
                     let _ = tray.settings_tx.send(true);
                 }),
                 ..Default::default()
-            }.into(),
+            }
+            .into(),
             MenuItem::Separator,
             StandardItem {
                 label: "Quit".into(),
-                activate: Box::new(|_| {
-                    std::process::exit(0);
+                activate: Box::new(|tray: &mut Self| {
+                    let _ = tray.quit_tx.send(true);
                 }),
                 ..Default::default()
-            }.into(),
+            }
+            .into(),
         ]
     }
 }
 
-/// Launch the system tray and return the watch receiver for settings-open signals.
-pub async fn build_tray() -> Result<(ksni::Handle<MimickTray>, watch::Receiver<bool>), ksni::Error> {
-    let (tx, rx) = watch::channel(false);
-    let handle = MimickTray { settings_tx: tx }.spawn().await?;
-    Ok((handle, rx))
+/// Launch the system tray and return watch receivers for settings-open and quit signals.
+pub async fn build_tray() -> Result<
+    (
+        ksni::Handle<MimickTray>,
+        watch::Receiver<bool>,
+        watch::Receiver<bool>,
+    ),
+    ksni::Error,
+> {
+    let (settings_tx, settings_rx) = watch::channel(false);
+    let (quit_tx, quit_rx) = watch::channel(false);
+    let handle = MimickTray {
+        settings_tx,
+        quit_tx,
+    }
+    .spawn()
+    .await?;
+    Ok((handle, settings_rx, quit_rx))
 }

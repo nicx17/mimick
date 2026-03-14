@@ -33,7 +33,7 @@ Mimick monitors local directories (e.g., `~/Pictures`, `~/Videos`) for new files
 
 ## Features
 
-- **File Monitoring**: Uses `inotify` to detect new files and waits for stable size before uploading.
+- **File Monitoring**: Watches selected folders for new files and waits for stable size before uploading.
 - **SHA-1 Checksumming**: Deduplication via checksum before upload — exact same logic as the Immich mobile apps.
 - **Concurrent Uploads**: 10 parallel worker tasks stream files directly from disk, keeping RAM usage constant.
 - **Offline Reliability**: Failed uploads are persisted to `~/.cache/mimick/retries.json` and replayed automatically on next launch.
@@ -41,6 +41,8 @@ Mimick monitors local directories (e.g., `~/Pictures`, `~/Videos`) for new files
 - **Custom Album Mapping**: Select an existing remote album, type a custom name, or let the app create an album from the local folder name (e.g., `~/Pictures/Vacation 2024` → Album `Vacation 2024`).
 - **One-Way Sync**: Uploads media without modifying local files.
 - **Security**: API Key stored in the system keyring via `secret-tool` (libsecret).
+- **Autostart**: Optional login startup with desktop-portal permission inside Flatpak and native autostart integration outside Flatpak.
+- **Clear Window Controls**: `Close` hides the settings window, while `Quit` stops the app completely.
 - **Desktop Integration**:
   - GTK4 / Libadwaita settings UI (dark mode by default).
   - StatusNotifierItem system tray icon (requires AppIndicator support on GNOME).
@@ -76,11 +78,32 @@ Launch Mimick from your Application Launcher. The settings window opens automati
 1. **Internal URL** — LAN address (e.g., `http://192.168.1.50:2283`).
 2. **External URL** — WAN/Public address (e.g., `https://photos.example.com`). *At least one must be enabled.*
 3. **API Key** — Generate in Immich Web UI under Account Settings > API Keys. Needs **Asset** and **Album** read/create permissions.
-4. **Watch Paths** — Add folders to monitor. Each folder can be assigned a target Immich album.
+4. **Watch Paths** — Add folders to monitor with the built-in folder picker. Each folder can be assigned a target Immich album.
+5. **Run on Startup** — Enable this in the **Behavior** section to start Mimick automatically when you log in.
+6. **Save & Restart** — Applies your settings and relaunches Mimick automatically.
+7. **Close / Quit** — `Close` hides the settings window and leaves Mimick running; `Quit` fully exits the app.
 
 ### Autostart
 
-If you want Mimick to start upon login, ensure you have configured it in your desktop environment's startup applications (e.g., GNOME Tweaks), or copy the `.desktop` file to `~/.config/autostart/`.
+Use the built-in **Run on Startup** switch in the settings window.
+
+* Flatpak builds request background/autostart permission through the desktop portal.
+* Native builds write an autostart desktop entry to `~/.config/autostart/io.github.nicx17.mimick.desktop`.
+
+### Folder Access
+
+Mimick now uses selected-folder access instead of full home-directory access in Flatpak.
+
+* Add watch folders from the settings window so the file chooser portal can grant access.
+* If you are upgrading from an older build that had full home access, re-add your existing watch folders once so the new permission model can take effect.
+* Portal-backed folders may appear by name in the UI and logs instead of showing the raw `/run/user/.../doc/...` sandbox path.
+
+### Quitting vs Closing
+
+Mimick is a background app, so closing the settings window does not quit it.
+
+* Use **Close** in the settings window or the window close button to hide the window and keep Mimick running in the tray.
+* Use **Quit** from the tray menu, the settings window, or the launcher action to stop the app completely.
 
 ---
 
@@ -133,7 +156,7 @@ cargo run -- --settings     # open the settings window immediately
 ```bash
 git clone [https://github.com/nicx17/mimick.git](https://github.com/nicx17/mimick.git)
 cd mimick
-flatpak-builder --user --install --force-clean build-dir io.github.nicx17.mimick.yml
+flatpak-builder --user --install --force-clean build-dir io.github.nicx17.mimick.local.yml
 flatpak run io.github.nicx17.mimick
 
 ```

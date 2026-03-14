@@ -41,6 +41,19 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/ashpd/ashpd-0.13.5.crate",
+        "sha256": "0b09507a218cf6eb4ab0659883e54880cea3984e3dbaa4989b6cda3f8f8a97a5",
+        "dest": "cargo/vendor/ashpd-0.13.5"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"0b09507a218cf6eb4ab0659883e54880cea3984e3dbaa4989b6cda3f8f8a97a5\", \"files\": {}}",
+        "dest": "cargo/vendor/ashpd-0.13.5",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/async-broadcast/async-broadcast-0.7.2.crate",
         "sha256": "435a87a52755b8f27fcf321ac4f04b2802e337c8c4872923137471ec39c37532",
         "dest": "cargo/vendor/async-broadcast-0.7.2"
@@ -881,6 +894,58 @@
         "type": "inline",
         "contents": "{\"package\": \"4d322515677e4a12e10efe7e758743c3e5faa56940237f19ba6890ba8edbbb76\", \"files\": {}}",
         "dest": "cargo/vendor/gdk4-sys-0.11.0",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/gdk4-wayland/gdk4-wayland-0.11.0.crate",
+        "sha256": "7027433b8f19075ab22f01d0e0ba4373e303ffdb4ce4f846a2763cb020ea9bdc",
+        "dest": "cargo/vendor/gdk4-wayland-0.11.0"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"7027433b8f19075ab22f01d0e0ba4373e303ffdb4ce4f846a2763cb020ea9bdc\", \"files\": {}}",
+        "dest": "cargo/vendor/gdk4-wayland-0.11.0",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/gdk4-wayland-sys/gdk4-wayland-sys-0.11.0.crate",
+        "sha256": "653cafb8715f2ac1c56edaf8060d9360ae3acbe3c6fb61b676a2917d42b668cf",
+        "dest": "cargo/vendor/gdk4-wayland-sys-0.11.0"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"653cafb8715f2ac1c56edaf8060d9360ae3acbe3c6fb61b676a2917d42b668cf\", \"files\": {}}",
+        "dest": "cargo/vendor/gdk4-wayland-sys-0.11.0",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/gdk4-x11/gdk4-x11-0.11.0.crate",
+        "sha256": "13a00e4c617d6570633e44ba3ff221350669edf6cf3447a40f882dfb6f1dfdc3",
+        "dest": "cargo/vendor/gdk4-x11-0.11.0"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"13a00e4c617d6570633e44ba3ff221350669edf6cf3447a40f882dfb6f1dfdc3\", \"files\": {}}",
+        "dest": "cargo/vendor/gdk4-x11-0.11.0",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/gdk4-x11-sys/gdk4-x11-sys-0.11.0.crate",
+        "sha256": "24d41f2e28f62378b081288914325d73bddbb6ccbbadb41aa6392afc71d27002",
+        "dest": "cargo/vendor/gdk4-x11-sys-0.11.0"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"24d41f2e28f62378b081288914325d73bddbb6ccbbadb41aa6392afc71d27002\", \"files\": {}}",
+        "dest": "cargo/vendor/gdk4-x11-sys-0.11.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {
@@ -4014,6 +4079,19 @@
         "type": "inline",
         "contents": "{\"package\": \"9edde0db4769d2dc68579893f2306b26c6ecfbe0ef499b013d731b7b9247e0b9\", \"files\": {}}",
         "dest": "cargo/vendor/writeable-0.6.2",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/x11-dl/x11-dl-2.21.0.crate",
+        "sha256": "38735924fedd5314a6e548792904ed8c6de6636285cb9fec04d5b1db85c1516f",
+        "dest": "cargo/vendor/x11-dl-2.21.0"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"38735924fedd5314a6e548792904ed8c6de6636285cb9fec04d5b1db85c1516f\", \"files\": {}}",
+        "dest": "cargo/vendor/x11-dl-2.21.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {
