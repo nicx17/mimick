@@ -28,18 +28,68 @@ jobs:
       - name: Install Flatpak & Builder
         run: |
           sudo apt-get update
-          sudo apt-get install -y flatpak flatpak-builder
+          sudo apt-get install -y flatpak flatpak-builder gnupg
           flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
+      - name: Import Flatpak signing key
+        id: signing_key
+        env:
+          FLATPAK_GPG_PRIVATE_KEY: ${{ secrets.FLATPAK_GPG_PRIVATE_KEY }}
+          FLATPAK_GPG_KEY_ID: ${{ secrets.FLATPAK_GPG_KEY_ID }}
+          FLATPAK_GPG_PASSPHRASE: ${{ secrets.FLATPAK_GPG_PASSPHRASE }}
+        run: |
+          if [ -z "$FLATPAK_GPG_PRIVATE_KEY" ] || [ -z "$FLATPAK_GPG_KEY_ID" ]; then
+            echo "Missing FLATPAK_GPG_PRIVATE_KEY or FLATPAK_GPG_KEY_ID secret"
+            exit 1
+          fi
+
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          mkdir -p "$GNUPGHOME"
+          chmod 700 "$GNUPGHOME"
+          printf 'allow-preset-passphrase\n' > "$GNUPGHOME/gpg-agent.conf"
+          printf 'pinentry-mode loopback\n' > "$GNUPGHOME/gpg.conf"
+
+          printf '%s' "$FLATPAK_GPG_PRIVATE_KEY" | gpg --batch --import
+
+          if [ -n "$FLATPAK_GPG_PASSPHRASE" ]; then
+            KEYGRIP=$(gpg --batch --with-keygrip --list-secret-keys "$FLATPAK_GPG_KEY_ID" | awk '/Keygrip/ { print $3; exit }')
+            gpg-connect-agent reloadagent /bye
+            /usr/lib/gnupg/gpg-preset-passphrase --preset --passphrase "$FLATPAK_GPG_PASSPHRASE" "$KEYGRIP"
+          fi
+
+          gpg --batch --export "$FLATPAK_GPG_KEY_ID" > "$RUNNER_TEMP/mimick-repo-public.gpg"
+
+          {
+            echo "gpg_homedir=$GNUPGHOME"
+            echo "gpg_key_id=$FLATPAK_GPG_KEY_ID"
+            echo "public_key_file=$RUNNER_TEMP/mimick-repo-public.gpg"
+            echo "public_key_b64=$(base64 --wrap=0 "$RUNNER_TEMP/mimick-repo-public.gpg")"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Build Flatpak Repository
+        env:
+          GNUPGHOME: ${{ steps.signing_key.outputs.gpg_homedir }}
         run: |
           # Build the app and output it to a folder named 'repo'
-          flatpak-builder --user --repo=repo --force-clean --install-deps-from=flathub build-dir io.github.nicx17.mimick.local.yml
-          flatpak build-update-repo repo --generate-static-deltas
+          flatpak-builder \
+            --user \
+            --repo=repo \
+            --force-clean \
+            --install-deps-from=flathub \
+            --gpg-sign="${{ steps.signing_key.outputs.gpg_key_id }}" \
+            --gpg-homedir="${{ steps.signing_key.outputs.gpg_homedir }}" \
+            build-dir io.github.nicx17.mimick.local.yml
+          flatpak build-update-repo repo \
+            --generate-static-deltas \
+            --gpg-sign="${{ steps.signing_key.outputs.gpg_key_id }}" \
+            --gpg-homedir="${{ steps.signing_key.outputs.gpg_homedir }}" \
+            --gpg-import="${{ steps.signing_key.outputs.public_key_file }}"
     
       - name: Generate .flatpakrepo file
+        env:
+          REPO_GPG_KEY: ${{ steps.signing_key.outputs.public_key_b64 }}
         run: |
-          cat << 'EOF' > repo/mimick.flatpakrepo
+          cat << EOF > repo/mimick.flatpakrepo
           [Flatpak Repo]
           Title=Mimick Repository
           Url=https://nicx17.github.io/mimick/
@@ -47,7 +97,7 @@ jobs:
           Comment=Official repository for the Mimick Immich sync daemon
           Description=A daemon-based synchronization tool for uploading media files from a Linux desktop to an Immich server.
           Icon=https://nicx17.github.io/mimick/icon.png
-          GPGVerify=false
+          GPGKey=$REPO_GPG_KEY
           EOF
           
       - name: Copy landing page assets

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.1] - 2026-03-14
+
+### Added
+- GitHub releases now attach a signed `mimick.flatpakrepo` file and a `SHA256SUMS.txt` checksum file for easier end-user installs.
+
+### Changed
+- The GitHub Pages Flatpak repository workflow now signs published repo metadata with a dedicated GPG key and embeds the public key in the generated `.flatpakrepo` file.
+- The release workflow now uses the same Flatpak signing key material from GitHub Actions secrets so release assets match the published repository trust chain.
+
 ## [5.0.0] - 2026-03-14
 
 ### Added

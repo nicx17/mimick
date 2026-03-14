@@ -11,6 +11,7 @@ permissions:
 jobs:
   create-release:
     runs-on: ubuntu-24.04
+    environment: github-pages
 
     steps:
       - name: Checkout code
@@ -19,7 +20,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential libsecret-1-dev
+          sudo apt-get install -y libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential libsecret-1-dev gnupg
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -43,11 +44,55 @@ jobs:
       - name: Run tests
         run: cargo test
 
+      - name: Import Flatpak signing key
+        id: signing_key
+        env:
+          FLATPAK_GPG_PRIVATE_KEY: ${{ secrets.FLATPAK_GPG_PRIVATE_KEY }}
+          FLATPAK_GPG_KEY_ID: ${{ secrets.FLATPAK_GPG_KEY_ID }}
+        run: |
+          if [ -z "$FLATPAK_GPG_PRIVATE_KEY" ] || [ -z "$FLATPAK_GPG_KEY_ID" ]; then
+            echo "Missing FLATPAK_GPG_PRIVATE_KEY or FLATPAK_GPG_KEY_ID secret"
+            exit 1
+          fi
+
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          mkdir -p "$GNUPGHOME"
+          chmod 700 "$GNUPGHOME"
+
+          printf '%s' "$FLATPAK_GPG_PRIVATE_KEY" | gpg --batch --import
+          gpg --batch --export "$FLATPAK_GPG_KEY_ID" > "$RUNNER_TEMP/mimick-repo-public.gpg"
+
+          {
+            echo "public_key_b64=$(base64 --wrap=0 "$RUNNER_TEMP/mimick-repo-public.gpg")"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build release assets
+        env:
+          REPO_GPG_KEY: ${{ steps.signing_key.outputs.public_key_b64 }}
+        run: |
+          mkdir -p dist
+
+          cat << EOF > dist/mimick.flatpakrepo
+          [Flatpak Repo]
+          Title=Mimick Repository
+          Url=https://nicx17.github.io/mimick/
+          Homepage=https://github.com/nicx17/mimick
+          Comment=Official repository for the Mimick Immich sync daemon
+          Description=A daemon-based synchronization tool for uploading media files from a Linux desktop to an Immich server.
+          Icon=https://nicx17.github.io/mimick/icon.png
+          GPGKey=$REPO_GPG_KEY
+          EOF
+
+          sha256sum dist/mimick.flatpakrepo > dist/SHA256SUMS.txt
+
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           draft: false
           prerelease: false
+          files: |
+            dist/mimick.flatpakrepo
+            dist/SHA256SUMS.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
