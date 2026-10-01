@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bumped Flatpak runtime and CI builder image to GNOME 51.
+- Updated GitHub Actions dependencies (`taiki-e/install-action`, `github/codeql-action`).
+
 ## [9.10.0] - 2026-10-01
 
 ### Added
