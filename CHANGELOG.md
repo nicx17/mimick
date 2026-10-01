@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Made the search view persistent in the sidebar instead of a temporary popover.
 - Addressed multiple SonarCloud and Clippy warnings for code complexity and quality.
+- Bumped Rust dependency tree (`gtk4`, `glib`, `cairo-rs`, `pango`, `reqwest`, `rustls`, `encoding_rs`, `syn`, and many other transitive crates).
 
 ### Fixed
 
