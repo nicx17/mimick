@@ -1,6 +1,6 @@
 app-id: dev.nicx.mimick
 runtime: org.gnome.Platform
-runtime-version: "50"
+runtime-version: "51"
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -35,6 +35,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/nicx17/mimick.git
-        tag: v9.9.0
+        tag: v9.10.0
         commit: e8977f8260e69818b9201b91b5859ecb734d0d35
       - cargo-sources.json
