@@ -39,7 +39,6 @@ Mimick already uses several controls intended to reduce risk:
 - the API key is stored in the desktop keyring instead of plain-text config
 - Flatpak builds use selected-folder access instead of broad home-directory access
 - [Semgrep](https://semgrep.dev) static analysis runs on every push and PR
-- [OpenSSF Scorecard](https://scorecard.dev) reports repository security posture
 - [Dependabot](https://docs.github.com/en/code-security/dependabot) keeps Rust and GitHub Actions dependencies patched
 - CI enforces formatting, linting, tests, and `cargo audit` dependency scanning
 
