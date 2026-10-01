@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.10.0] - 2026-10-01
+
 ### Added
 
 - Added support for 360px minimum window width with a new compact masonry tier and reduced CSS minimums.
