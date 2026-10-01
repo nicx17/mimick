@@ -36,5 +36,5 @@ modules:
       - type: git
         url: https://github.com/nicx17/mimick.git
         tag: v9.9.0
-        commit: 47d32b8307b6d94e41b2d7fa0ef62e00ab521f68
+        commit: e8977f8260e69818b9201b91b5859ecb734d0d35
       - cargo-sources.json
