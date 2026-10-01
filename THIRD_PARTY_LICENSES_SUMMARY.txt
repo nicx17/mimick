@@ -2,7 +2,7 @@ Mimick bundles or links against the third-party Rust crates listed below.
 Full license texts are shipped alongside the application binary.
 
 == Summary ==
-  348 crates: MIT License (MIT)
+  351 crates: MIT License (MIT)
   19 crates: Unicode License v3 (Unicode-3.0)
   6 crates: Apache License 2.0 (Apache-2.0)
   6 crates: BSD 3-Clause "New" or "Revised" License (BSD-3-Clause)
@@ -18,7 +18,7 @@ Full license texts are shipped alongside the application binary.
   moxcms 0.8.1 — Apache-2.0
   pxfm 0.1.30 — Apache-2.0
   openssl 0.10.81 — Apache-2.0
-  blake3 1.8.6 — Apache-2.0
+  blake3 1.8.7 — Apache-2.0
   constant_time_eq 0.4.2 — Apache-2.0
   sync_wrapper 1.0.2 — Apache-2.0
   openjpeg-sys 1.0.12 — BSD-2-Clause
@@ -28,11 +28,11 @@ Full license texts are shipped alongside the application binary.
   alloc-no-stdlib 2.0.4 — BSD-3-Clause
   subtle 2.6.1 — BSD-3-Clause
   alloc-stdlib 0.2.4 — BSD-3-Clause
-  encoding_rs 0.8.35 — BSD-3-Clause
+  encoding_rs 0.8.42 — BSD-3-Clause
   notify 8.2.0 — CC0-1.0
-  mimick 9.9.0 — GPL-3.0-or-later
+  mimick 9.10.0 — GPL-3.0-or-later
   inotify-sys 0.1.8 — ISC
-  inotify 0.11.4 — ISC
+  inotify 0.11.5 — ISC
   rustybuzz 0.20.1 — MIT
   uds_windows 1.2.1 — MIT
   turbojpeg-sys 1.2.0 — MIT
@@ -48,26 +48,26 @@ Full license texts are shipped alongside the application binary.
   idna 1.1.0 — MIT
   percent-encoding 2.3.2 — MIT
   url 2.5.8 — MIT
-  cfg-if 1.0.4 — MIT
-  js-sys 0.3.104 — MIT
+  cfg-if 1.0.5 — MIT
+  js-sys 0.3.106 — MIT
   openssl-probe 0.2.1 — MIT
   openssl-sys 0.9.117 — MIT
   socket2 0.6.5 — MIT
-  wasm-bindgen-futures 0.4.77 — MIT
-  wasm-bindgen-macro-support 0.2.127 — MIT
-  wasm-bindgen-macro 0.2.127 — MIT
-  wasm-bindgen-shared 0.2.127 — MIT
-  wasm-bindgen 0.2.127 — MIT
-  web-sys 0.3.104 — MIT
-  mio 1.2.2 — MIT
+  wasm-bindgen-futures 0.4.79 — MIT
+  wasm-bindgen-macro-support 0.2.129 — MIT
+  wasm-bindgen-macro 0.2.129 — MIT
+  wasm-bindgen-shared 0.2.129 — MIT
+  wasm-bindgen 0.2.129 — MIT
+  web-sys 0.3.106 — MIT
+  mio 1.2.3 — MIT
   errno 0.3.14 — MIT
   mime 0.3.17 — MIT
-  bitflags 2.13.1 — MIT
-  log 0.4.33 — MIT
+  bitflags 2.13.2 — MIT
+  log 0.4.34 — MIT
   num-bigint-dig 0.9.1 — MIT
   num-bigint 0.4.8 — MIT
   num-complex 0.4.6 — MIT
-  num-integer 0.1.46 — MIT
+  num-integer 0.1.47 — MIT
   num-iter 0.1.46 — MIT
   num-rational 0.4.2 — MIT
   num-traits 0.2.19 — MIT
@@ -75,14 +75,14 @@ Full license texts are shipped alongside the application binary.
   regex-automata 0.4.18 — MIT
   regex-syntax 0.8.11 — MIT
   regex 1.13.1 — MIT
-  uuid 1.24.0 — MIT
+  uuid 1.26.1 — MIT
   nom 7.1.3 — MIT
   nom 8.0.0 — MIT
   float-cmp 0.9.0 — MIT
-  flate2 1.1.9 — MIT
-  hyper 1.11.0 — MIT
+  flate2 1.1.10 — MIT
+  hyper 1.11.1 — MIT
   unicase 2.9.0 — MIT
-  either 1.17.0 — MIT
+  either 1.18.0 — MIT
   tempfile 3.27.0 — MIT
   heck 0.5.0 — MIT
   unicode-bidi 0.3.18 — MIT
@@ -93,14 +93,14 @@ Full license texts are shipped alongside the application binary.
   hkdf 0.12.4 — MIT
   httparse 1.10.1 — MIT
   num_cpus 1.17.0 — MIT
-  futures-channel 0.3.33 — MIT
-  futures-core 0.3.33 — MIT
-  futures-executor 0.3.33 — MIT
-  futures-io 0.3.33 — MIT
-  futures-macro 0.3.33 — MIT
-  futures-sink 0.3.33 — MIT
-  futures-task 0.3.33 — MIT
-  futures-util 0.3.33 — MIT
+  futures-channel 0.3.34 — MIT
+  futures-core 0.3.34 — MIT
+  futures-executor 0.3.34 — MIT
+  futures-io 0.3.34 — MIT
+  futures-macro 0.3.34 — MIT
+  futures-sink 0.3.34 — MIT
+  futures-task 0.3.34 — MIT
+  futures-util 0.3.34 — MIT
   hashbrown 0.17.1 — MIT
   gcd 2.3.0 — MIT
   lock_api 0.4.14 — MIT
@@ -109,11 +109,11 @@ Full license texts are shipped alongside the application binary.
   native-tls 0.2.18 — MIT
   kqueue-sys 1.1.2 — MIT
   kqueue 1.2.1 — MIT
-  indexmap 2.14.0 — MIT
+  indexmap 2.14.2 — MIT
   equivalent 1.0.2 — MIT
   scopeguard 1.2.0 — MIT
   cipher 0.4.4 — MIT
-  reqwest 0.13.4 — MIT
+  reqwest 0.13.5 — MIT
   sha1 0.11.0 — MIT
   digest 0.10.7 — MIT
   hmac 0.12.1 — MIT
@@ -127,9 +127,10 @@ Full license texts are shipped alongside the application binary.
   geo-types 0.7.20 — MIT
   foreign-types-shared 0.1.1 — MIT
   foreign-types 0.3.2 — MIT
-  h2 0.4.15 — MIT
+  h2 0.4.19 — MIT
   http 1.5.0 — MIT
   signal-hook-registry 1.4.8 — MIT
+  core_detect 1.0.0 — MIT
   enumflags2 0.7.12 — MIT
   digest 0.11.3 — MIT
   aes 0.8.4 — MIT
@@ -138,7 +139,7 @@ Full license texts are shipped alongside the application binary.
   kurbo 0.13.1 — MIT
   polycool 0.4.0 — MIT
   flexi_logger 0.31.10 — MIT
-  smallvec 1.15.2 — MIT
+  smallvec 1.16.2 — MIT
   svgtypes 0.16.1 — MIT
   ttf-parser 0.25.1 — MIT
   want 0.3.1 — MIT
@@ -148,7 +149,6 @@ Full license texts are shipped alongside the application binary.
   dirs 6.0.0 — MIT
   cbc 0.1.2 — MIT
   try-lock 0.2.5 — MIT
-  getrandom 0.2.17 — MIT
   block-buffer 0.12.1 — MIT
   zeroize 1.9.0 — MIT
   getrandom 0.4.3 — MIT
@@ -163,72 +163,72 @@ Full license texts are shipped alongside the application binary.
   tower 0.5.3 — MIT
   pico-args 0.5.0 — MIT
   tower-http 0.6.11 — MIT
-  http-body-util 0.1.4 — MIT
+  http-body-util 0.1.5 — MIT
   http-body 1.1.0 — MIT
   zeroize_derive 1.5.0 — MIT
   iana-time-zone-haiku 0.1.2 — MIT
   iana-time-zone 0.1.65 — MIT
   four-cc 0.4.0 — MIT
   cpufeatures 0.2.17 — MIT
-  cpufeatures 0.3.0 — MIT
   const-oid 0.10.2 — MIT
+  cpufeatures 0.3.1 — MIT
   crypto-common 0.1.7 — MIT
   crypto-common 0.2.2 — MIT
   openssl-macros 0.1.1 — MIT
   inout 0.1.4 — MIT
   strict-num 0.1.1 — MIT
-  hybrid-array 0.4.14 — MIT
+  hybrid-array 0.4.15 — MIT
   rustls-pki-types 1.15.1 — MIT
   notify-types 2.1.0 — MIT
-  hyper-util 0.1.20 — MIT
-  zbus 5.18.0 — MIT
-  zbus_macros 5.18.0 — MIT
+  hyper-util 0.1.21 — MIT
+  zbus 5.19.0 — MIT
+  zbus_macros 5.19.0 — MIT
   zbus_names 4.3.4 — MIT
-  zvariant 5.13.1 — MIT
-  zvariant_derive 5.13.1 — MIT
+  zvariant 5.15.0 — MIT
+  zvariant_derive 5.15.0 — MIT
+  zcheapstr 1.1.0 — MIT
   toml_datetime 1.1.1+spec-1.1.0 — MIT
-  toml_edit 0.25.13+spec-1.1.0 — MIT
+  toml_edit 0.25.15+spec-1.1.0 — MIT
   toml_parser 1.1.3+spec-1.1.0 — MIT
   libc 0.2.189 — MIT
   idna_adapter 1.2.2 — MIT
   arrayvec 0.7.8 — MIT
-  synstructure 0.13.2 — MIT
-  ipnet 2.12.1 — MIT
+  synstructure 0.14.0 — MIT
+  ipnet 2.12.2 — MIT
   resvg 0.47.0 — MIT
   usvg 0.47.0 — MIT
   rand 0.9.5 — MIT
   rand_core 0.9.5 — MIT
   turbojpeg 1.5.1 — MIT
-  zerocopy-derive 0.8.56 — MIT
-  zerocopy 0.8.56 — MIT
-  encoding_rs 0.8.35 — MIT
+  zerocopy-derive 0.8.59 — MIT
+  zerocopy 0.8.59 — MIT
+  encoding_rs 0.8.42 — MIT
+  multiversion_no_op 1.0.0 — MIT
   utf8_iter 1.0.4 — MIT
   fax 0.2.7 — MIT
-  lru 0.18.2 — MIT
+  lru 0.18.5 — MIT
   field-offset 0.3.6 — MIT
   tiff 0.11.3 — MIT
-  crc32fast 1.5.0 — MIT
+  crc32fast 1.5.2 — MIT
   bytemuck 1.25.2 — MIT
   libheif-rs 2.7.0 — MIT
-  libheif-sys 5.3.0+1.23.0 — MIT
+  libheif-sys 5.3.1+1.23.1 — MIT
   rgb 0.8.53 — MIT
   tokio-macros 2.7.2 — MIT
   ashpd 0.13.13 — MIT
   webp 0.3.1 — MIT
   libraw-rs-sys 0.0.4+libraw-0.20.1 — MIT
-  tinyvec_macros 0.1.1 — MIT
   jpeg2k 0.10.1 — MIT
   oo7 0.6.0 — MIT
-  libredox 0.1.19 — MIT
+  libredox 0.1.25 — MIT
   iso6709parse 0.1.2 — MIT
-  nom-exif 3.6.2 — MIT
+  nom-exif 3.8.0 — MIT
   core_maths 0.1.1 — MIT
   brotli-decompressor 5.0.3 — MIT
   chrono 0.4.45 — MIT
   libm 0.2.16 — MIT
   libwebp-sys 0.9.6 — MIT
   r-efi 6.0.0 — MIT
-  siphasher 1.0.3 — MIT
   windows-core 0.62.2 — MIT
   windows-implement 0.60.2 — MIT
   windows-interface 0.59.3 — MIT
@@ -252,9 +252,11 @@ Full license texts are shipped alongside the application binary.
   zune-core 0.5.3 — MIT
   zune-jpeg 0.5.15 — MIT
   miniz_oxide 0.8.9 — MIT
+  miniz_oxide 0.9.1 — MIT
   fdeflate 0.3.7 — MIT
   image-webp 0.2.4 — MIT
   image 0.25.10 — MIT
+  simdutf8 0.1.5 — MIT
   half 2.7.1 — MIT
   imagesize 0.14.0 — MIT
   unicode-script 0.5.8 — MIT
@@ -271,7 +273,7 @@ Full license texts are shipped alongside the application binary.
   event-listener 5.4.2 — MIT
   fastrand 2.5.0 — MIT
   futures-lite 2.6.1 — MIT
-  hermit-abi 0.5.2 — MIT
+  hermit-abi 0.5.3 — MIT
   itoa 1.0.18 — MIT
   jxl-bitstream 1.1.0 — MIT
   jxl-coding 1.0.1 — MIT
@@ -296,7 +298,7 @@ Full license texts are shipped alongside the application binary.
   proc-macro-crate 3.5.0 — MIT
   proc-macro2 1.0.107 — MIT
   quote 1.0.47 — MIT
-  rustix 1.1.4 — MIT
+  rustix 1.1.5 — MIT
   serde 1.0.229 — MIT
   serde_bytes 0.11.19 — MIT
   serde_core 1.0.229 — MIT
@@ -304,47 +306,47 @@ Full license texts are shipped alongside the application binary.
   serde_json 1.0.151 — MIT
   serde_repr 0.1.21 — MIT
   syn 2.0.119 — MIT
-  syn 3.0.3 — MIT
+  syn 3.0.6 — MIT
   thiserror-impl 1.0.69 — MIT
-  thiserror-impl 2.0.20 — MIT
+  thiserror-impl 2.0.21 — MIT
   thiserror 1.0.69 — MIT
-  thiserror 2.0.20 — MIT
-  unicode-ident 1.0.24 — MIT
+  thiserror 2.0.21 — MIT
+  unicode-ident 1.0.26 — MIT
   wasi 0.11.1+wasi-snapshot-preview1 — MIT
   wasm-streams 0.5.0 — MIT
   x11-dl 2.21.0 — MIT
   zmij 1.0.23 — MIT
-  zvariant_utils 3.5.0 — MIT
-  allocator-api2 0.2.21 — MIT
+  zvariant_utils 4.2.0 — MIT
   winnow 1.0.4 — MIT
-  cairo-rs 0.22.0 — MIT
-  cairo-sys-rs 0.22.0 — MIT
-  gdk-pixbuf-sys 0.22.0 — MIT
+  siphasher 1.0.4 — MIT
+  cairo-rs 0.22.9 — MIT
+  cairo-sys-rs 0.22.9 — MIT
+  gdk-pixbuf-sys 0.22.9 — MIT
   gdk-pixbuf 0.22.0 — MIT
-  gdk4-sys 0.11.4 — MIT
-  gdk4-wayland-sys 0.11.0 — MIT
-  gdk4-wayland 0.11.4 — MIT
-  gdk4-x11-sys 0.11.0 — MIT
-  gdk4-x11 0.11.4 — MIT
-  gdk4 0.11.4 — MIT
-  gio-sys 0.22.8 — MIT
-  gio 0.22.8 — MIT
-  glib-macros 0.22.6 — MIT
-  glib-sys 0.22.8 — MIT
-  glib 0.22.8 — MIT
-  gobject-sys 0.22.6 — MIT
+  gdk4-sys 0.11.5 — MIT
+  gdk4-wayland-sys 0.11.5 — MIT
+  gdk4-wayland 0.11.5 — MIT
+  gdk4-x11-sys 0.11.5 — MIT
+  gdk4-x11 0.11.5 — MIT
+  gdk4 0.11.5 — MIT
+  gio-sys 0.22.9 — MIT
+  gio 0.22.10 — MIT
+  glib-macros 0.22.9 — MIT
+  glib-sys 0.22.9 — MIT
+  glib 0.22.10 — MIT
+  gobject-sys 0.22.9 — MIT
   graphene-rs 0.22.8 — MIT
-  graphene-sys 0.22.8 — MIT
-  gsk4-sys 0.11.4 — MIT
-  gsk4 0.11.4 — MIT
-  gtk4-macros 0.11.4 — MIT
-  gtk4-sys 0.11.4 — MIT
-  gtk4 0.11.4 — MIT
+  graphene-sys 0.22.9 — MIT
+  gsk4-sys 0.11.5 — MIT
+  gsk4 0.11.5 — MIT
+  gtk4-macros 0.11.5 — MIT
+  gtk4-sys 0.11.5 — MIT
+  gtk4 0.11.5 — MIT
   libadwaita-sys 0.9.2 — MIT
   libadwaita 0.9.2 — MIT
-  pango-sys 0.22.0 — MIT
-  pango 0.22.8 — MIT
-  tinyvec 1.12.0 — MIT
+  pango-sys 0.22.9 — MIT
+  pango 0.22.9 — MIT
+  tinyvec 1.13.3 — MIT
   android_system_properties 0.1.6 — MIT
   typenum 1.20.1 — MIT
   phf 0.13.1 — MIT
@@ -363,44 +365,45 @@ Full license texts are shipped alongside the application binary.
   color_quant 1.1.0 — MIT
   same-file 1.0.6 — MIT
   winapi-util 0.1.11 — MIT
-  redox_users 0.5.2 — MIT
+  redox_users 0.5.3 — MIT
   simplecss 0.2.2 — MIT
   unicode-vo 0.1.0 — MIT
   roxmltree 0.20.0 — MIT
   roxmltree 0.21.1 — MIT
   xmlwriter 0.1.0 — MIT
-  crossbeam-deque 0.8.7 — MIT
-  crossbeam-epoch 0.9.20 — MIT
-  crossbeam-utils 0.8.22 — MIT
+  crossbeam-deque 0.8.8 — MIT
+  crossbeam-epoch 0.9.21 — MIT
+  crossbeam-utils 0.8.23 — MIT
   fontdb 0.23.0 — MIT
   unicode-bidi-mirroring 0.4.0 — MIT
   unicode-ccc 0.4.0 — MIT
   async-broadcast 0.7.2 — MIT
+  base64 0.23.1 — MIT
   weezl 0.1.12 — MIT
   crunchy 0.2.4 — MIT
   nu-ansi-term 0.50.3 — MIT
   mime_guess 2.0.5 — MIT
   generic-array 0.14.7 — MIT
   option-ext 0.2.0 — MPL-2.0
-  unicode-ident 1.0.24 — Unicode-3.0
-  icu_collections 2.2.0 — Unicode-3.0
-  icu_locale_core 2.2.0 — Unicode-3.0
-  icu_normalizer 2.2.0 — Unicode-3.0
-  icu_normalizer_data 2.2.0 — Unicode-3.0
-  icu_properties 2.2.0 — Unicode-3.0
-  icu_properties_data 2.2.0 — Unicode-3.0
-  icu_provider 2.2.0 — Unicode-3.0
-  litemap 0.8.2 — Unicode-3.0
-  potential_utf 0.1.5 — Unicode-3.0
-  tinystr 0.8.3 — Unicode-3.0
-  writeable 0.6.3 — Unicode-3.0
-  yoke-derive 0.8.2 — Unicode-3.0
+  unicode-ident 1.0.26 — Unicode-3.0
+  icu_collections 2.3.0 — Unicode-3.0
+  icu_locale_core 2.3.0 — Unicode-3.0
+  icu_normalizer 2.3.0 — Unicode-3.0
+  icu_normalizer_data 2.3.0 — Unicode-3.0
+  icu_properties 2.3.0 — Unicode-3.0
+  icu_properties_data 2.3.0 — Unicode-3.0
+  icu_provider 2.3.1 — Unicode-3.0
+  litemap 0.8.3 — Unicode-3.0
+  potential_utf 0.1.6 — Unicode-3.0
+  tinystr 0.8.4 — Unicode-3.0
+  writeable 0.6.4 — Unicode-3.0
+  yoke-derive 0.8.4 — Unicode-3.0
   yoke 0.8.3 — Unicode-3.0
-  zerofrom-derive 0.1.7 — Unicode-3.0
+  zerofrom-derive 0.1.8 — Unicode-3.0
   zerofrom 0.1.8 — Unicode-3.0
-  zerotrie 0.2.4 — Unicode-3.0
-  zerovec-derive 0.11.3 — Unicode-3.0
-  zerovec 0.11.6 — Unicode-3.0
+  zerotrie 0.2.5 — Unicode-3.0
+  zerovec-derive 0.11.6 — Unicode-3.0
+  zerovec 0.11.8 — Unicode-3.0
   ksni 0.3.6 — Unlicense
   slotmap 1.1.1 — Zlib
   foldhash 0.2.0 — Zlib

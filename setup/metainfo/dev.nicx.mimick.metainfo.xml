@@ -111,6 +111,16 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="9.10.0" date="2026-10-01">
+      <description>
+        <ul>
+          <li>Added a Places filter on the Explore page.</li>
+          <li>Configurable thumbnail borders. set width (0-50px) and color, with uniform edges on all sides.</li>
+          <li>Fixed duplicate back icon in the lightbox view.</li>
+          <li>Fixed disabling autostart in Flatpak not removing the background portal entry.</li>
+        </ul>
+      </description>
+    </release>
     <release version="9.9.0" date="2026-08-08">
       <description>
         <ul>
