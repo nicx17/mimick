@@ -925,4 +925,29 @@ mod tests {
         assert!(restored.show_unnamed_faces);
         assert!(!restored.show_hidden_faces);
     }
+
+    #[test]
+    fn test_api_key_file_fallback() {
+        use tempfile::tempdir;
+        let dir = tempdir().unwrap();
+        let config_file = dir.path().join("config.json");
+
+        let secret_key = "test-secret-key-123";
+
+        // Initially, the key should not exist.
+        assert_eq!(read_api_key_file_fallback(&config_file), None);
+
+        // Write the key.
+        assert!(write_api_key_file_fallback(&config_file, secret_key).is_ok());
+
+        // Read the key and verify base64 decodes back to original.
+        assert_eq!(
+            read_api_key_file_fallback(&config_file),
+            Some(secret_key.to_string())
+        );
+
+        // Removing the fallback file should delete it.
+        remove_api_key_file_fallback(&config_file);
+        assert_eq!(read_api_key_file_fallback(&config_file), None);
+    }
 }
