@@ -7,10 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a file-based fallback (base64-encoded, `0600` permissions) for API key storage on desktops where no keyring service is running (#215).
+
 ### Changed
 
 - Bumped Flatpak runtime and CI builder image to GNOME 51.
 - Updated GitHub Actions dependencies (`taiki-e/install-action`, `github/codeql-action`).
+
+### Fixed
+
+- Fixed an issue where the app would hang on startup if the XDG Secret portal was misconfigured by adding a 5-second timeout to keyring operations (#218).
 
 ## [9.10.0] - 2026-10-01
 

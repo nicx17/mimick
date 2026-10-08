@@ -3,7 +3,9 @@
 //! Configuration lives in a JSON file under the XDG config directory.
 //! Watch-path entries support both simple paths and extended per-folder
 //! rules (sync method, extension filters, size limits). The API key is
-//! stored in the desktop keyring via `oo7` and never written to disk.
+//! stored in the desktop keyring via `oo7` when available, with an
+//! automatic file-based fallback (base64-encoded, `0600` permissions)
+//! for desktops where no keyring service is running.
 
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -429,6 +431,7 @@ impl Config {
     /// When the portal is unavailable (common on Hyprland, Sway, XFCE),
     /// falls back to the D-Bus Secret Service before giving up.
     pub fn get_api_key(&self) -> Option<String> {
+        log::debug!("Attempting to read API key from keyring...");
         let result = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 let keyring = keyring_with_dbus_fallback().await?;
@@ -452,20 +455,31 @@ impl Config {
                 if key.is_some() {
                     log::debug!("API key retrieved via oo7 keyring.");
                 } else {
-                    log::warn!(
-                        "No API key found in keyring. \
-                         User must configure it in Settings."
-                    );
+                    // Keyring accessible but empty -- check file fallback.
+                    let file_key = read_api_key_file_fallback(&self.config_file);
+                    if file_key.is_some() {
+                        log::info!("API key loaded from file fallback (keyring was empty).");
+                    } else {
+                        log::warn!(
+                            "No API key found in keyring or file fallback. \
+                             User must configure it in Settings."
+                        );
+                    }
+                    return file_key;
                 }
                 key
             }
             Err(e) => {
                 log::warn!(
-                    "Keyring lookup failed ({}): {:?}",
+                    "Keyring lookup failed ({}): {:?} -- trying file fallback",
                     keyring_error_hint(&e),
                     e
                 );
-                None
+                let file_key = read_api_key_file_fallback(&self.config_file);
+                if file_key.is_some() {
+                    log::info!("API key loaded from file fallback.");
+                }
+                file_key
             }
         }
     }
@@ -476,6 +490,7 @@ impl Config {
     /// with user-facing guidance tailored to the specific keyring backend
     /// that failed (portal misconfiguration, missing D-Bus service, etc.).
     pub fn set_api_key(&self, key: &str) -> Result<(), String> {
+        log::debug!("Attempting to save API key to keyring...");
         let secret = key.to_string();
         let result = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
@@ -498,15 +513,30 @@ impl Config {
         match result {
             Ok(()) => {
                 log::info!("API key saved via oo7 keyring.");
+                // Clean up any leftover file fallback now that keyring works.
+                remove_api_key_file_fallback(&self.config_file);
                 Ok(())
             }
             Err(e) => {
-                log::error!("Failed to save API key via oo7 keyring: {:?}", e);
-                Err(format!(
-                    "{}\n\nTechnical detail: {}",
-                    keyring_error_message(&e),
+                log::error!(
+                    "Failed to save API key via oo7 keyring: {:?} -- using file fallback",
                     e
-                ))
+                );
+                match write_api_key_file_fallback(&self.config_file, key) {
+                    Ok(()) => {
+                        log::info!("API key saved via file fallback.");
+                        Ok(())
+                    }
+                    Err(file_err) => {
+                        log::error!("File fallback also failed: {}", file_err);
+                        Err(format!(
+                            "{}\n\nFile fallback also failed: {}\n\nTechnical detail: {}",
+                            keyring_error_message(&e),
+                            file_err,
+                            e
+                        ))
+                    }
+                }
             }
         }
     }
@@ -526,25 +556,64 @@ impl Config {
 /// Sway, XFCE, and other non-GNOME/KDE desktops -- explicitly attempt
 /// the D-Bus Secret Service as a fallback before returning an error.
 async fn keyring_with_dbus_fallback() -> Result<oo7::Keyring, Box<oo7::Error>> {
-    match oo7::Keyring::new().await {
-        Ok(keyring) => Ok(keyring),
-        Err(oo7::Error::File(ref file_err)) => {
+    use tokio::time::{Duration, timeout};
+    const KEYRING_TIMEOUT: Duration = Duration::from_secs(5);
+
+    match timeout(KEYRING_TIMEOUT, oo7::Keyring::new()).await {
+        Ok(Ok(keyring)) => Ok(keyring),
+        Ok(Err(oo7::Error::File(ref file_err))) => {
             // Portal errors surface when xdg-desktop-portal doesn't
             // expose org.freedesktop.portal.Secret -- try D-Bus.
             log::info!(
                 "oo7 portal backend unavailable ({}), trying D-Bus Secret Service fallback",
                 file_err
             );
-            let service = oo7::dbus::Service::new()
-                .await
-                .map_err(|e| Box::new(oo7::Error::from(e)))?;
-            let collection = service
-                .default_collection()
-                .await
-                .map_err(|e| Box::new(oo7::Error::from(e)))?;
-            Ok(oo7::Keyring::DBus(collection))
+
+            let service_result = timeout(KEYRING_TIMEOUT, oo7::dbus::Service::new()).await;
+            match service_result {
+                Ok(Ok(service)) => {
+                    let collection_result =
+                        timeout(KEYRING_TIMEOUT, service.default_collection()).await;
+                    match collection_result {
+                        Ok(Ok(collection)) => Ok(oo7::Keyring::DBus(collection)),
+                        Ok(Err(e)) => Err(Box::new(oo7::Error::from(e))),
+                        Err(_) => {
+                            log::error!(
+                                "D-Bus Secret Service default collection timed out after {}s",
+                                KEYRING_TIMEOUT.as_secs()
+                            );
+                            Err(Box::new(oo7::Error::DBus(oo7::dbus::Error::ZBus(
+                                zbus::Error::Failure(
+                                    "Timeout retrieving default collection".to_string(),
+                                ),
+                            ))))
+                        }
+                    }
+                }
+                Ok(Err(e)) => Err(Box::new(oo7::Error::from(e))),
+                Err(_) => {
+                    log::error!(
+                        "D-Bus Secret Service initialization timed out after {}s",
+                        KEYRING_TIMEOUT.as_secs()
+                    );
+                    Err(Box::new(oo7::Error::DBus(oo7::dbus::Error::ZBus(
+                        zbus::Error::Failure(
+                            "Timeout connecting to D-Bus Secret Service".to_string(),
+                        ),
+                    ))))
+                }
+            }
         }
-        Err(e) => Err(Box::new(e)),
+        Ok(Err(e)) => Err(Box::new(e)),
+        Err(_) => {
+            log::error!(
+                "Keyring initialization timed out after {}s",
+                KEYRING_TIMEOUT.as_secs()
+            );
+            Err(Box::new(oo7::Error::DBus(oo7::dbus::Error::ZBus(
+                zbus::Error::Failure("Timeout initializing keyring".to_string()),
+            ))))
+        }
     }
 }
 
@@ -575,6 +644,81 @@ fn keyring_error_hint(e: &oo7::Error) -> &'static str {
     match e {
         oo7::Error::File(_) => "portal backend error",
         oo7::Error::DBus(_) => "D-Bus Secret Service error",
+    }
+}
+
+// ---------------------------------------------------------------------------
+// File-based API key fallback
+// ---------------------------------------------------------------------------
+
+/// Derive the fallback file path from the config file location.
+///
+/// The file is placed alongside the config JSON so it respects profile
+/// isolation and is covered by the same backup/permission scope.
+fn api_key_fallback_path(config_file: &Path) -> PathBuf {
+    let account = crate::profile::keyring_account();
+    config_file
+        .parent()
+        .unwrap_or_else(|| Path::new("."))
+        .join(format!(".{}.key", account))
+}
+
+/// Read the API key from the base64-encoded fallback file.
+fn read_api_key_file_fallback(config_file: &Path) -> Option<String> {
+    use base64::Engine;
+    let path = api_key_fallback_path(config_file);
+    match fs::read_to_string(&path) {
+        Ok(encoded) => {
+            let decoded = base64::engine::general_purpose::STANDARD
+                .decode(encoded.trim())
+                .ok()?;
+            let key = String::from_utf8(decoded).ok()?;
+            let trimmed = key.trim().to_string();
+            if trimmed.is_empty() {
+                None
+            } else {
+                Some(trimmed)
+            }
+        }
+        Err(_) => None,
+    }
+}
+
+/// Write the API key to the base64-encoded fallback file with
+/// restrictive permissions (owner read/write only).
+fn write_api_key_file_fallback(config_file: &Path, key: &str) -> Result<(), String> {
+    use base64::Engine;
+    let path = api_key_fallback_path(config_file);
+
+    // Ensure parent directory exists.
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).map_err(|e| format!("cannot create dir: {}", e))?;
+    }
+
+    let encoded = base64::engine::general_purpose::STANDARD.encode(key.as_bytes());
+    fs::write(&path, encoded.as_bytes())
+        .map_err(|e| format!("cannot write {}: {}", path.display(), e))?;
+
+    // Restrict permissions to owner-only on Unix.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let perms = std::fs::Permissions::from_mode(0o600);
+        let _ = fs::set_permissions(&path, perms);
+    }
+
+    Ok(())
+}
+
+/// Remove the fallback file when the keyring is working again.
+fn remove_api_key_file_fallback(config_file: &Path) {
+    let path = api_key_fallback_path(config_file);
+    if path.exists() {
+        if let Err(e) = fs::remove_file(&path) {
+            log::debug!("Could not remove fallback key file: {}", e);
+        } else {
+            log::info!("Removed file fallback key (keyring is now working).");
+        }
     }
 }
 
