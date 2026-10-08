@@ -20,6 +20,19 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tokio::sync::{Mutex, mpsc};
 use tokio_util::sync::CancellationToken;
 
+#[derive(Clone)]
+struct WorkerContext {
+    api: Arc<ImmichApiClient>,
+    state_ref: Arc<parking_lot::Mutex<AppState>>,
+    retry_ref: Arc<parking_lot::Mutex<Vec<FileTask>>>,
+    pending_ref: Arc<parking_lot::Mutex<HashSet<String>>>,
+    sync_index: Arc<ShardedSyncIndex>,
+    batch_notify: Arc<parking_lot::Mutex<BatchNotifyState>>,
+    connectivity_notified: Arc<parking_lot::Mutex<bool>>,
+    consecutive_failures: Arc<parking_lot::Mutex<usize>>,
+    sender: mpsc::Sender<FileTask>,
+}
+
 /// Helper to generate progress callback callbacks that update global transfer metrics.
 fn upload_progress_callback(
     shared_state: &Arc<parking_lot::Mutex<AppState>>,
@@ -65,9 +78,8 @@ pub struct FileTask {
     /// True if the asset is already on the server and only needs album addition.
     #[serde(default)]
     pub reassociate_only: bool,
-    /// Manual / ad-hoc uploads that must land in the library without being
-    /// pinned to any album. Watch-folder syncs leave this false so the
-    /// existing parent-dir-as-album fallback still applies.
+    /// Uploads that must land in the library without being pinned to an album.
+    /// This is used by manual uploads and explicit library-only watch folders.
     #[serde(default)]
     pub skip_album: bool,
     /// Absolute path to an XMP sidecar file to attach during upload.
@@ -202,6 +214,18 @@ impl QueueManager {
             let worker_limit_ref = worker_limit.clone();
             let cancel = shutdown_token.clone();
 
+            let worker_ctx = WorkerContext {
+                api: api.clone(),
+                state_ref: state_ref.clone(),
+                retry_ref: retry_ref.clone(),
+                pending_ref: pending_ref.clone(),
+                sync_index: sync_index_ref.clone(),
+                batch_notify: batch_notify_ref.clone(),
+                connectivity_notified: connectivity_notified_ref.clone(),
+                consecutive_failures: consec_fail_ref.clone(),
+                sender: tx_clone.clone(),
+            };
+
             tokio::spawn(async move {
                 log::debug!("Worker {} started", i);
                 loop {
@@ -286,15 +310,7 @@ impl QueueManager {
                                 ) => res,
                             };
                             complete_worker_task(
-                                &api,
-                                &state_ref,
-                                &retry_ref,
-                                &pending_ref,
-                                &sync_index_ref,
-                                &batch_notify_ref,
-                                &connectivity_notified_ref,
-                                &consec_fail_ref,
-                                &tx_clone,
+                                &worker_ctx,
                                 &file_task,
                                 sync_target,
                                 t_start,
@@ -572,32 +588,19 @@ impl QueueManager {
 
 #[allow(clippy::too_many_arguments)]
 async fn complete_worker_task(
-    api: &Arc<ImmichApiClient>,
-    state_ref: &Arc<parking_lot::Mutex<AppState>>,
-    retry_ref: &Arc<parking_lot::Mutex<Vec<FileTask>>>,
-    pending_ref: &Arc<parking_lot::Mutex<HashSet<String>>>,
-    sync_index: &Arc<ShardedSyncIndex>,
-    batch_notify: &Arc<parking_lot::Mutex<BatchNotifyState>>,
-    connectivity_notified: &Arc<parking_lot::Mutex<bool>>,
-    consecutive_failures: &Arc<parking_lot::Mutex<usize>>,
-    sender: &mpsc::Sender<FileTask>,
+    ctx: &WorkerContext,
     task: &FileTask,
     sync_target: Option<SyncTarget>,
     started: Instant,
 ) {
     let success = sync_target.is_some();
     let elapsed = started.elapsed().as_secs_f32();
-    let active_route = api.active_route_label().await;
-    let latest_issue = api.latest_issue().await;
+    let active_route = ctx.api.active_route_label().await;
+    let latest_issue = ctx.api.latest_issue().await;
 
     if let Some(target) = sync_target.as_ref() {
         complete_successful_upload(
-            state_ref,
-            retry_ref,
-            pending_ref,
-            sync_index,
-            batch_notify,
-            sender,
+            ctx,
             task,
             target,
             active_route,
@@ -606,8 +609,7 @@ async fn complete_worker_task(
         .await;
     } else {
         record_upload_failure(
-            state_ref,
-            retry_ref,
+            ctx,
             task,
             active_route,
             latest_issue.as_ref(),
@@ -615,34 +617,29 @@ async fn complete_worker_task(
         );
     }
 
-    track_consecutive_failures(success, consecutive_failures, connectivity_notified);
+    track_consecutive_failures(success, &ctx.consecutive_failures, &ctx.connectivity_notified);
     if let Some(batch_id) =
-        finalize_upload_progress(state_ref, batch_notify, sync_index, &task.path, success)
+        finalize_upload_progress(&ctx.state_ref, &ctx.batch_notify, &ctx.sync_index, &task.path, success)
     {
-        schedule_batch_notification(state_ref.clone(), batch_notify.clone(), batch_id);
+        schedule_batch_notification(ctx.state_ref.clone(), ctx.batch_notify.clone(), batch_id);
     }
 }
 
 #[allow(clippy::too_many_arguments)]
 async fn complete_successful_upload(
-    state_ref: &Arc<parking_lot::Mutex<AppState>>,
-    retry_ref: &Arc<parking_lot::Mutex<Vec<FileTask>>>,
-    pending_ref: &Arc<parking_lot::Mutex<HashSet<String>>>,
-    sync_index: &Arc<ShardedSyncIndex>,
-    batch_notify: &Arc<parking_lot::Mutex<BatchNotifyState>>,
-    sender: &mpsc::Sender<FileTask>,
+    ctx: &WorkerContext,
     task: &FileTask,
     target: &SyncTarget,
     active_route: Option<String>,
     elapsed: f32,
 ) {
     log::info!("Upload SUCCESS: {} ({:.2}s)", task.path, elapsed);
-    pending_ref.lock().remove(&task.path);
-    if let Err(err) = sync_index.record_synced(&task.path, &task.checksum, target) {
+    ctx.pending_ref.lock().remove(&task.path);
+    if let Err(err) = ctx.sync_index.record_synced(&task.path, &task.checksum, target) {
         log::warn!("Failed to update sync index for '{}': {}", task.path, err);
     }
-    requeue_retries_after_success(state_ref, retry_ref, batch_notify, sender).await;
-    record_upload_success(state_ref, task, Some(target), active_route, elapsed);
+    requeue_retries_after_success(&ctx.state_ref, &ctx.retry_ref, &ctx.batch_notify, &ctx.sender).await;
+    record_upload_success(&ctx.state_ref, task, Some(target), active_route, elapsed);
 }
 
 async fn requeue_retries_after_success(
@@ -717,8 +714,7 @@ fn record_upload_success(
 
 /// Record state updates after a failed upload.
 fn record_upload_failure(
-    state_ref: &Arc<parking_lot::Mutex<AppState>>,
-    retry_ref: &Arc<parking_lot::Mutex<Vec<FileTask>>>,
+    ctx: &WorkerContext,
     task: &FileTask,
     active_route: Option<String>,
     latest_issue: Option<&crate::api_client::ApiIssue>,
@@ -729,8 +725,8 @@ fn record_upload_failure(
         task.path,
         elapsed
     );
-    retry_ref.lock().push(task.clone());
-    let mut s = state_ref.lock();
+    ctx.retry_ref.lock().push(task.clone());
+    let mut s = ctx.state_ref.lock();
     s.failed_count += 1;
     s.active_server_route = active_route;
     let error_text = latest_issue

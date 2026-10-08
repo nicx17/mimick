@@ -40,6 +40,8 @@ struct FolderRowData {
     path: String,
     /// Target Immich album name.
     album_name: Rc<RefCell<String>>,
+    /// Whether this folder explicitly uploads directly to the library.
+    uploads_to_library: Rc<Cell<bool>>,
     /// Custom path filtering rules.
     rules: Rc<RefCell<FolderRules>>,
     /// Libadwaita row widget representing this watched folder.
@@ -49,6 +51,7 @@ struct FolderRowData {
 }
 
 const DEFAULT_ALBUM_LABEL: &str = "Default (Folder Name)";
+const LIBRARY_ALBUM_LABEL: &str = "Library (No Album)";
 
 /// Display a standard Libadwaita modal alert message dialog to the user.
 fn show_alert(parent: &impl gtk::prelude::IsA<gtk::Widget>, heading: &str, body: &str) {
@@ -667,12 +670,15 @@ pub fn build_settings_window_with_parent(
             let albums_map: HashMap<String, String> = albums.borrow().iter().cloned().collect();
             for row_data in tracked_rows.borrow().iter() {
                 let folder = row_data.path.clone();
-                let rules = row_data.rules.borrow().clone();
+                let mut rules = row_data.rules.borrow().clone();
                 let has_rules = rules != FolderRules::default();
                 let album_name = row_data.album_name.borrow().clone();
 
+                let is_library_target = row_data.uploads_to_library.get();
                 let is_default = album_name.is_empty() || album_name == DEFAULT_ALBUM_LABEL;
-                let resolved_album_name = if is_default {
+                let resolved_album_name = if is_library_target {
+                    None
+                } else if is_default {
                     Path::new(&folder)
                         .file_name()
                         .and_then(|n| n.to_str())
@@ -680,6 +686,10 @@ pub fn build_settings_window_with_parent(
                 } else {
                     Some(album_name)
                 };
+
+                if is_library_target {
+                    rules.restrict_to_library_uploads();
+                }
 
                 if is_default && !has_rules && resolved_album_name.is_none() {
                     watch_paths.push(WatchPathEntry::Simple(folder));

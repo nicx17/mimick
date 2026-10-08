@@ -47,6 +47,16 @@ pub struct FolderRules {
 }
 
 impl FolderRules {
+    /// Restrict this rule set to operations that are safe without an album target.
+    ///
+    /// A library-only watch folder has no remote collection to reconcile, so it
+    /// can upload files but cannot safely mirror downloads or deletions.
+    pub fn restrict_to_library_uploads(&mut self) {
+        self.sync_method = FolderSyncMethod::UploadOnly;
+        self.delete_folder_to_album = false;
+        self.delete_album_to_folder = false;
+    }
+
     /// Return the list of allowed extensions trimmed and lowercased.
     pub fn normalized_extensions(&self) -> Vec<String> {
         self.allowed_extensions
@@ -153,6 +163,22 @@ impl WatchPathEntry {
             WatchPathEntry::Simple(_) => None,
             WatchPathEntry::WithConfig { album_name, .. } => album_name.as_deref(),
         }
+    }
+
+    /// Whether this configured folder explicitly uploads directly to the
+    /// Immich library instead of targeting an album.
+    ///
+    /// Legacy simple paths intentionally return false: they preserve their
+    /// established folder-name-as-album behaviour.
+    pub fn uploads_to_library(&self) -> bool {
+        matches!(
+            self,
+            WatchPathEntry::WithConfig {
+                album_id: None,
+                album_name: None,
+                ..
+            }
+        )
     }
 
     /// Retrieve the folder rules or a default set for simple paths.
@@ -804,6 +830,49 @@ mod tests {
         };
         assert_eq!(album_id.as_deref(), Some("abc-123"));
         assert_eq!(entry.album_name().unwrap(), "My Album");
+        assert!(!entry.uploads_to_library());
+    }
+
+    #[test]
+    fn test_library_watch_path_is_explicit_and_round_trips() {
+        let entry = WatchPathEntry::WithConfig {
+            path: "/home/user/Camera".into(),
+            album_id: None,
+            album_name: None,
+            rules: FolderRules::default(),
+        };
+
+        assert!(entry.uploads_to_library());
+        assert!(!WatchPathEntry::Simple("/home/user/Camera".into()).uploads_to_library());
+        assert!(
+            !WatchPathEntry::WithConfig {
+                path: "/home/user/Camera".into(),
+                album_id: Some("album-id".into()),
+                album_name: Some("Library (No Album)".into()),
+                rules: FolderRules::default(),
+            }
+            .uploads_to_library()
+        );
+
+        let json = serde_json::to_string(&entry).unwrap();
+        let restored: WatchPathEntry = serde_json::from_str(&json).unwrap();
+        assert!(restored.uploads_to_library());
+    }
+
+    #[test]
+    fn test_library_rules_are_limited_to_safe_uploads() {
+        let mut rules = FolderRules {
+            sync_method: FolderSyncMethod::Full,
+            delete_folder_to_album: true,
+            delete_album_to_folder: true,
+            ..FolderRules::default()
+        };
+
+        rules.restrict_to_library_uploads();
+
+        assert_eq!(rules.sync_method, FolderSyncMethod::UploadOnly);
+        assert!(!rules.delete_folder_to_album);
+        assert!(!rules.delete_album_to_folder);
     }
 
     #[test]

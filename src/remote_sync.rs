@@ -120,7 +120,7 @@ fn deletion_watch_entry(
         log::debug!("Deleted file is not under any watch folder: {}", path);
         return None;
     };
-    if !entry.rules().delete_folder_to_album {
+    if entry.uploads_to_library() || !entry.rules().delete_folder_to_album {
         log::debug!("Folder-to-album deletion disabled for: {}", path);
         return None;
     }

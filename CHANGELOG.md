@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added a file-based fallback (base64-encoded, `0600` permissions) for API key storage on desktops where no keyring service is running (#215).
+- Added a library-only target for watch folders, allowing direct uploads without creating or associating an album (#210).
 
 ### Changed
 

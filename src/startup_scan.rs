@@ -30,8 +30,8 @@ struct ScanCandidate {
     path: String,
     /// Watch path entry prefix that matched the candidate.
     watch_path: String,
-    /// Inferred or configured album name.
-    album_name: String,
+    /// Inferred or configured album name. `None` means upload directly to the library.
+    album_name: Option<String>,
     /// Whether XMP sidecar attachment is enabled for this candidate.
     sidecar_enabled: bool,
 }
@@ -97,10 +97,12 @@ pub async fn queue_unsynced_files(
                 let album_name = candidate.album_name.clone();
 
                 // Lookup existing album ID (no lock held across await).
-                let existing_album_id = album_cache.lock().get(&album_name).cloned().flatten();
+                let existing_album_id = album_name
+                    .as_ref()
+                    .and_then(|name| album_cache.lock().get(name).cloned().flatten());
 
                 let target = SyncTarget {
-                    album_name: Some(album_name.clone()),
+                    album_name: album_name.clone(),
                     album_id: existing_album_id,
                 };
 
@@ -129,24 +131,27 @@ pub async fn queue_unsynced_files(
                     }
                 };
 
-                let album_id = match resolve_album(&api_client, &album_name, &album_cache).await {
-                    Ok(id) => id,
-                    Err(err) => {
-                        errors.fetch_add(1, Ordering::Relaxed);
-                        log::warn!(
-                            "Startup scan skipping '{}': album resolution failed: {}",
-                            candidate.path,
-                            err
-                        );
-                        return;
-                    }
+                let album_id = match album_name.as_deref() {
+                    Some(name) => match resolve_album(&api_client, name, &album_cache).await {
+                        Ok(id) => id,
+                        Err(err) => {
+                            errors.fetch_add(1, Ordering::Relaxed);
+                            log::warn!(
+                                "Startup scan skipping '{}': album resolution failed: {}",
+                                candidate.path,
+                                err
+                            );
+                            return;
+                        }
+                    },
+                    None => None,
                 };
 
                 match hash_to_task(
                     candidate.path,
                     candidate.watch_path,
                     album_id,
-                    Some(album_name),
+                    album_name.clone(),
                     reassociate_only,
                     cached_checksum,
                     candidate.sidecar_enabled,
@@ -220,7 +225,7 @@ async fn trash_remote_assets_for_missing_local_files(
 ) {
     for entry in watch_paths {
         let rules = entry.rules();
-        if !rules.delete_folder_to_album {
+        if entry.uploads_to_library() || !rules.delete_folder_to_album {
             continue;
         }
 
@@ -298,6 +303,10 @@ async fn sync_album_to_folder_entries(watch_paths: &[WatchPathEntry], app_ctx: A
 /// items, trash local files removed from the album, and trash remote items
 /// missing locally — gated by the entry's per-folder rules.
 pub async fn reconcile_entry(app_ctx: Arc<AppContext>, entry: &WatchPathEntry) {
+    if entry.uploads_to_library() {
+        return;
+    }
+
     let rules = entry.rules();
     let download_enabled = rules.sync_method != FolderSyncMethod::UploadOnly;
     if !download_enabled && !rules.delete_album_to_folder && !rules.delete_folder_to_album {
@@ -436,7 +445,7 @@ fn prune_index_entries_for_missing_files(
     // records so the next album sync can move the remote asset to trash.
     for entry in watch_paths {
         let rules = entry.rules();
-        if !rules.delete_folder_to_album {
+        if entry.uploads_to_library() || !rules.delete_folder_to_album {
             continue;
         }
         let root = Path::new(entry.path());
@@ -587,24 +596,34 @@ fn enumerate_entry_candidates(
 
     let catchup_mode = entry.startup_catchup_mode(fallback_catchup_mode);
     let sidecar_enabled = entry.rules().xmp_sidecar_enabled(global_xmp_enabled);
+    let ctx = ScanContext {
+        entry,
+        watch_path: &watch_path,
+        catchup_mode: &catchup_mode,
+        last_sync,
+        sidecar_enabled,
+        seen_paths,
+        skipped,
+        errors,
+    };
+
     let mut candidates = Vec::new();
     let mut stack = vec![root.to_path_buf()];
     while let Some(dir) = stack.pop() {
-        scan_candidate_directory(
-            &dir,
-            entry,
-            &watch_path,
-            &catchup_mode,
-            last_sync,
-            sidecar_enabled,
-            seen_paths,
-            skipped,
-            errors,
-            &mut stack,
-            &mut candidates,
-        );
+        scan_candidate_directory(&dir, &ctx, &mut stack, &mut candidates);
     }
     candidates
+}
+
+struct ScanContext<'a> {
+    entry: &'a WatchPathEntry,
+    watch_path: &'a str,
+    catchup_mode: &'a StartupCatchupMode,
+    last_sync: f64,
+    sidecar_enabled: bool,
+    seen_paths: &'a Mutex<HashSet<String>>,
+    skipped: &'a AtomicUsize,
+    errors: &'a AtomicUsize,
 }
 
 fn mark_missing_watch_path(root: &Path, watch_path: &str, shared_state: &Arc<Mutex<AppState>>) {
@@ -624,54 +643,56 @@ fn mark_missing_watch_path(root: &Path, watch_path: &str, shared_state: &Arc<Mut
 #[allow(clippy::too_many_arguments)]
 fn scan_candidate_directory(
     dir: &Path,
-    entry: &WatchPathEntry,
-    watch_path: &str,
-    catchup_mode: &StartupCatchupMode,
-    last_sync: f64,
-    sidecar_enabled: bool,
-    seen_paths: &Mutex<HashSet<String>>,
-    skipped: &AtomicUsize,
-    errors: &AtomicUsize,
+    ctx: &ScanContext,
     stack: &mut Vec<PathBuf>,
     candidates: &mut Vec<ScanCandidate>,
 ) {
     let read_dir = match std::fs::read_dir(dir) {
         Ok(iter) => iter,
         Err(err) => {
-            errors.fetch_add(1, Ordering::Relaxed);
+            ctx.errors.fetch_add(1, Ordering::Relaxed);
             log::warn!("Startup scan could not read '{}': {}", dir.display(), err);
             return;
         }
     };
     for child in read_dir {
-        let entry_fs = match child {
-            Ok(entry_fs) => entry_fs,
-            Err(err) => {
-                errors.fetch_add(1, Ordering::Relaxed);
-                log::warn!("Startup scan directory entry error: {}", err);
-                continue;
-            }
-        };
-        let path = entry_fs.path();
-        if path.is_dir() {
-            stack.push(path);
-            continue;
+        process_candidate_file(child, ctx, stack, candidates);
+    }
+}
+
+fn process_candidate_file(
+    child: std::io::Result<std::fs::DirEntry>,
+    ctx: &ScanContext,
+    stack: &mut Vec<PathBuf>,
+    candidates: &mut Vec<ScanCandidate>,
+) {
+    let entry_fs = match child {
+        Ok(entry_fs) => entry_fs,
+        Err(err) => {
+            ctx.errors.fetch_add(1, Ordering::Relaxed);
+            log::warn!("Startup scan directory entry error: {}", err);
+            return;
         }
-        if !is_eligible_startup_path(entry, &path) {
-            continue;
-        }
-        if should_skip_for_catchup(catchup_mode, &entry_fs, last_sync) {
-            skipped.fetch_add(1, Ordering::Relaxed);
-        } else {
-            let path_str = path.to_string_lossy().into_owned();
-            seen_paths.lock().insert(path_str.clone());
-            candidates.push(ScanCandidate {
-                path: path_str,
-                watch_path: watch_path.to_string(),
-                album_name: effective_album_name(entry, &path),
-                sidecar_enabled,
-            });
-        }
+    };
+    let path = entry_fs.path();
+    if path.is_dir() {
+        stack.push(path);
+        return;
+    }
+    if !is_eligible_startup_path(ctx.entry, &path) {
+        return;
+    }
+    if should_skip_for_catchup(ctx.catchup_mode, &entry_fs, ctx.last_sync) {
+        ctx.skipped.fetch_add(1, Ordering::Relaxed);
+    } else {
+        let path_str = path.to_string_lossy().into_owned();
+        ctx.seen_paths.lock().insert(path_str.clone());
+        candidates.push(ScanCandidate {
+            path: path_str,
+            watch_path: ctx.watch_path.to_string(),
+            album_name: effective_album_name(ctx.entry, &path),
+            sidecar_enabled: ctx.sidecar_enabled,
+        });
     }
 }
 
@@ -746,6 +767,7 @@ async fn hash_to_task(
     } else {
         None
     };
+    let skip_album = album_name.is_none();
 
     Ok(FileTask {
         path,
@@ -754,20 +776,24 @@ async fn hash_to_task(
         album_id,
         album_name,
         reassociate_only,
-        skip_album: false,
+        skip_album,
         sidecar_path,
     })
 }
 
 /// Resolve the effective album name for a file using per-folder configuration.
-fn effective_album_name(entry: &WatchPathEntry, path: &Path) -> String {
+fn effective_album_name(entry: &WatchPathEntry, path: &Path) -> Option<String> {
+    if entry.uploads_to_library() {
+        return None;
+    }
+
     match entry.album_name() {
-        Some(name) if !name.is_empty() && name != "Default (Folder Name)" => name.to_string(),
+        Some(name) if !name.is_empty() && name != "Default (Folder Name)" => Some(name.to_string()),
         _ => path
             .parent()
             .and_then(Path::file_name)
             .map(|n| n.to_string_lossy().to_string())
-            .unwrap_or_else(|| "Mimick".to_string()),
+            .or_else(|| Some("Mimick".to_string())),
     }
 }
 
@@ -796,7 +822,7 @@ async fn resolve_album_ids_for_candidates(
 ) -> Arc<Mutex<HashMap<String, Option<String>>>> {
     let unique_albums: Vec<String> = candidates
         .iter()
-        .map(|c| c.album_name.clone())
+        .filter_map(|c| c.album_name.clone())
         .collect::<HashSet<_>>()
         .into_iter()
         .collect();
@@ -895,6 +921,8 @@ async fn process_reassociation(
 
 #[cfg(test)]
 mod tests {
+    use super::{effective_album_name, hash_to_task};
+    use crate::config::{FolderRules, WatchPathEntry};
     use crate::monitor::is_supported_media_path;
     use std::path::PathBuf;
 
@@ -905,5 +933,43 @@ mod tests {
         assert!(is_supported_media_path(&PathBuf::from("movie.mkv")));
         assert!(is_supported_media_path(&PathBuf::from("movie.mp4")));
         assert!(!is_supported_media_path(&PathBuf::from("notes.txt")));
+    }
+
+    #[test]
+    fn library_only_entry_has_no_effective_album_name() {
+        let entry = WatchPathEntry::WithConfig {
+            path: "/home/user/Camera".into(),
+            album_id: None,
+            album_name: None,
+            rules: FolderRules::default(),
+        };
+
+        assert_eq!(
+            effective_album_name(&entry, std::path::Path::new("/home/user/Camera/photo.jpg")),
+            None
+        );
+    }
+
+    #[tokio::test]
+    async fn library_only_startup_task_skips_album_association() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("photo.jpg");
+        std::fs::write(&path, b"photo").unwrap();
+
+        let task = hash_to_task(
+            path.to_string_lossy().into_owned(),
+            dir.path().to_string_lossy().into_owned(),
+            None,
+            None,
+            false,
+            Some("checksum".into()),
+            false,
+        )
+        .await
+        .unwrap();
+
+        assert!(task.skip_album);
+        assert_eq!(task.album_id, None);
+        assert_eq!(task.album_name, None);
     }
 }

@@ -4,7 +4,7 @@
 //! target album and a rules button. The rules dialog exposes sync method,
 //! extension and size filters, deletion policy, and hidden-file settings.
 
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use adw::prelude::*;
@@ -16,7 +16,7 @@ use libadwaita as adw;
 use crate::config::{FolderRules, FolderSyncMethod, StartupCatchupMode};
 use crate::watch_path_display::{display_watch_path, watch_path_subtitle};
 
-use super::{DEFAULT_ALBUM_LABEL, FolderRowData, WatchPathEntry};
+use super::{DEFAULT_ALBUM_LABEL, FolderRowData, LIBRARY_ALBUM_LABEL, WatchPathEntry};
 
 /// Append a new watched folder row to the settings folders ListBox.
 pub(super) fn add_folder_row(
@@ -44,18 +44,25 @@ pub(super) fn add_folder_row(
         .build();
 
     let album_name = Rc::new(RefCell::new(
-        entry
-            .album_name()
-            .unwrap_or(DEFAULT_ALBUM_LABEL)
-            .to_string(),
+        if entry.uploads_to_library() {
+            LIBRARY_ALBUM_LABEL
+        } else {
+            entry.album_name().unwrap_or(DEFAULT_ALBUM_LABEL)
+        }
+        .to_string(),
     ));
+    let uploads_to_library = Rc::new(Cell::new(entry.uploads_to_library()));
 
-    let rules = Rc::new(RefCell::new(entry.rules()));
+    let mut initial_rules = entry.rules();
+    if entry.uploads_to_library() {
+        initial_rules.restrict_to_library_uploads();
+    }
+    let rules = Rc::new(RefCell::new(initial_rules));
 
     let picker_btn = Button::builder()
         .label(album_name.borrow().clone())
         .valign(gtk::Align::Center)
-        .tooltip_text("Select or create a target Immich album")
+        .tooltip_text("Select a library or album upload target")
         .build();
     if let Some(label) = picker_btn.child().and_downcast::<gtk::Label>() {
         label.set_ellipsize(gtk::pango::EllipsizeMode::End);
@@ -65,6 +72,8 @@ pub(super) fn add_folder_row(
     let picker_btn_clone = picker_btn.clone();
     let album_name_clone = album_name.clone();
     let albums_ref_clone = albums_ref.clone();
+    let rules_for_picker = rules.clone();
+    let uploads_to_library_for_picker = uploads_to_library.clone();
     let on_settings_changed_for_picker = on_settings_changed.clone();
 
     picker_btn.connect_clicked(clone!(
@@ -79,6 +88,8 @@ pub(super) fn add_folder_row(
                 let albums_ref_clone = albums_ref_clone.clone();
                 let album_name_clone = album_name_clone.clone();
                 let picker_btn_clone = picker_btn_clone.clone();
+                let rules_clone = rules_for_picker.clone();
+                let uploads_to_library_clone = uploads_to_library_for_picker.clone();
                 let on_settings_changed_for_picker = on_settings_changed_for_picker.clone();
 
                 glib::idle_add_local_once(move || {
@@ -87,6 +98,8 @@ pub(super) fn add_folder_row(
                         albums_ref_clone,
                         album_name_clone,
                         picker_btn_clone,
+                        rules_clone,
+                        uploads_to_library_clone,
                         on_settings_changed_for_picker,
                     );
                 });
@@ -95,7 +108,7 @@ pub(super) fn add_folder_row(
     ));
 
     let album_subrow = adw::ActionRow::builder()
-        .title("Target Album")
+        .title("Upload Target")
         .title_lines(1)
         .build();
     album_subrow.add_suffix(&picker_btn);
@@ -186,6 +199,7 @@ pub(super) fn add_folder_row(
     tracked_rows.borrow_mut().push(FolderRowData {
         path,
         album_name,
+        uploads_to_library,
         rules,
         action_row: expander_row,
         base_subtitle,
@@ -406,12 +420,14 @@ pub(super) fn show_album_picker_dialog(
     albums_ref: Rc<RefCell<Vec<(String, String)>>>,
     target_album_state: Rc<RefCell<String>>,
     trigger_btn: Button,
+    rules_state: Rc<RefCell<FolderRules>>,
+    uploads_to_library_state: Rc<Cell<bool>>,
     on_settings_changed: Rc<dyn Fn()>,
 ) {
     let dialog = adw::Window::builder()
         .transient_for(parent)
         .modal(true)
-        .title("Select Album")
+        .title("Select Upload Target")
         .default_width(400)
         .default_height(500)
         .width_request(360)
@@ -453,6 +469,8 @@ pub(super) fn show_album_picker_dialog(
         let dialog = dialog.clone();
         let target_album_state = target_album_state.clone();
         let trigger_btn = trigger_btn.clone();
+        let rules_state = rules_state.clone();
+        let uploads_to_library_state = uploads_to_library_state.clone();
 
         move |query: &str| {
             // Clear existing
@@ -462,7 +480,31 @@ pub(super) fn show_album_picker_dialog(
 
             let q = query.trim().to_lowercase();
 
-            // Row 1: Default Folder Name (only if it matches search)
+            // Row 1: Direct library upload (only if it matches search).
+            if q.is_empty() || LIBRARY_ALBUM_LABEL.to_lowercase().contains(&q) {
+                let library_row = adw::ActionRow::builder()
+                    .title(LIBRARY_ALBUM_LABEL)
+                    .subtitle("Uploads directly to the library; album sync and deletion mirroring are disabled")
+                    .activatable(true)
+                    .build();
+                let dialog_clone = dialog.clone();
+                let state_clone = target_album_state.clone();
+                let btn_clone = trigger_btn.clone();
+                let rules_clone = rules_state.clone();
+                let library_state_clone = uploads_to_library_state.clone();
+                let on_settings_changed_clone = on_settings_changed.clone();
+                library_row.connect_activated(move |_| {
+                    *state_clone.borrow_mut() = LIBRARY_ALBUM_LABEL.to_string();
+                    library_state_clone.set(true);
+                    rules_clone.borrow_mut().restrict_to_library_uploads();
+                    btn_clone.set_label(LIBRARY_ALBUM_LABEL);
+                    (on_settings_changed_clone)();
+                    dialog_clone.close();
+                });
+                list_box.append(&library_row);
+            }
+
+            // Row 2: Default Folder Name (only if it matches search)
             if q.is_empty() || DEFAULT_ALBUM_LABEL.to_lowercase().contains(&q) {
                 let default_row = adw::ActionRow::builder()
                     .title(DEFAULT_ALBUM_LABEL)
@@ -472,9 +514,11 @@ pub(super) fn show_album_picker_dialog(
                 let dialog_clone = dialog.clone();
                 let state_clone = target_album_state.clone();
                 let btn_clone = trigger_btn.clone();
+                let library_state_clone = uploads_to_library_state.clone();
                 let on_settings_changed_clone = on_settings_changed.clone();
                 default_row.connect_activated(move |_| {
                     *state_clone.borrow_mut() = DEFAULT_ALBUM_LABEL.to_string();
+                    library_state_clone.set(false);
                     btn_clone.set_label(DEFAULT_ALBUM_LABEL);
                     (on_settings_changed_clone)();
                     dialog_clone.close();
@@ -482,7 +526,7 @@ pub(super) fn show_album_picker_dialog(
                 list_box.append(&default_row);
             }
 
-            // Row 2: Create Custom (if query is typed)
+            // Row 3: Create Custom (if query is typed)
             if !q.is_empty() {
                 let typed_raw = query.trim().to_string();
                 let create_row = adw::ActionRow::builder()
@@ -492,9 +536,11 @@ pub(super) fn show_album_picker_dialog(
                 let dialog_clone = dialog.clone();
                 let state_clone = target_album_state.clone();
                 let btn_clone = trigger_btn.clone();
+                let library_state_clone = uploads_to_library_state.clone();
                 let on_settings_changed_clone = on_settings_changed.clone();
                 create_row.connect_activated(move |_| {
                     *state_clone.borrow_mut() = typed_raw.clone();
+                    library_state_clone.set(false);
                     btn_clone.set_label(&typed_raw);
                     (on_settings_changed_clone)();
                     dialog_clone.close();
@@ -502,7 +548,7 @@ pub(super) fn show_album_picker_dialog(
                 list_box.append(&create_row);
             }
 
-            // Row 3+: Remote Albums
+            // Row 4+: Remote Albums
             for (name, _) in albums_ref_cloned.borrow().iter() {
                 if name == DEFAULT_ALBUM_LABEL {
                     continue; // Skip the "Use default folder name" if we pushed it above
@@ -517,9 +563,11 @@ pub(super) fn show_album_picker_dialog(
                     let state_clone = target_album_state.clone();
                     let btn_clone = trigger_btn.clone();
                     let album_name_clone = album_name.clone();
+                    let library_state_clone = uploads_to_library_state.clone();
                     let on_settings_changed_clone = on_settings_changed.clone();
                     row.connect_activated(move |_| {
                         *state_clone.borrow_mut() = album_name_clone.clone();
+                        library_state_clone.set(false);
                         btn_clone.set_label(&album_name_clone);
                         (on_settings_changed_clone)();
                         dialog_clone.close();
