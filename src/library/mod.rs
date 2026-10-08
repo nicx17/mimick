@@ -800,7 +800,7 @@ fn handle_drop(ui: &LibraryWindowUi, value: &gtk::glib::Value) -> bool {
     let paths: Vec<std::path::PathBuf> = file_list
         .files()
         .iter()
-        .filter_map(|f| f.path())
+        .filter_map(gtk::gio::prelude::FileExt::path)
         .filter(|p| crate::media_kinds::is_supported_path(p))
         .collect();
 
@@ -1572,7 +1572,7 @@ fn setup_album_drop_target(
         let paths: Vec<std::path::PathBuf> = file_list
             .files()
             .iter()
-            .filter_map(|f| f.path())
+            .filter_map(gtk::gio::prelude::FileExt::path)
             .filter(|p| crate::media_kinds::is_supported_path(p))
             .collect();
         if paths.is_empty() {

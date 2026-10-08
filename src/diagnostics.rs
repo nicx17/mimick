@@ -437,7 +437,7 @@ fn redact_path_hint(path: &str) -> String {
         .file_name()
         .and_then(|name| name.to_str())
         .filter(|name| !name.is_empty())
-        .map(|name| name.to_string())
+        .map(ToString::to_string)
         .unwrap_or_else(|| "[path hidden]".to_string())
 }
 

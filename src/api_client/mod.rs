@@ -733,8 +733,7 @@ impl ImmichApiClient {
             Ok(resp) if resp.status().as_u16() == 200 => {
                 match resp.json::<serde_json::Value>().await {
                     Ok(json)
-                        if json["res"].as_str().map(|s| s.to_lowercase())
-                            == Some("pong".into()) =>
+                        if json["res"].as_str().map(str::to_lowercase) == Some("pong".into()) =>
                     {
                         log::debug!("Ping success: {}", endpoint);
                         true

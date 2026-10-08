@@ -261,7 +261,7 @@ impl ImmichApiClient {
                 let json: serde_json::Value = resp.json().await.map_err(|err| err.to_string())?;
                 json.get("id")
                     .and_then(|v| v.as_str())
-                    .map(|s| s.to_string())
+                    .map(ToString::to_string)
                     .ok_or_else(|| "Missing id in /users/me response".to_string())
             }
             Ok(resp) => Err(format!("HTTP {}", resp.status())),

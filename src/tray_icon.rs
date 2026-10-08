@@ -40,7 +40,7 @@ impl ksni::Tray for MimickTray {
     }
 
     fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
-        use ksni::menu::*;
+        use ksni::menu::{MenuItem, StandardItem};
         let library_enabled = self.library_view_enabled;
         let mut items: Vec<ksni::MenuItem<Self>> = Vec::new();
         if library_enabled {

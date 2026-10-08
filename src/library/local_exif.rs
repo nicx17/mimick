@@ -72,8 +72,12 @@ pub fn read_exif(path: &Path) -> Option<LocalExif> {
         iso: integer_u32(&exif, ExifTag::ISOSpeedRatings),
         exposure_time: exposure_time(&exif),
         date_time_original: datetime_rfc3339(&exif),
-        latitude: exif.gps_info().and_then(|g| g.latitude_decimal()),
-        longitude: exif.gps_info().and_then(|g| g.longitude_decimal()),
+        latitude: exif
+            .gps_info()
+            .and_then(nom_exif::GPSInfo::latitude_decimal),
+        longitude: exif
+            .gps_info()
+            .and_then(nom_exif::GPSInfo::longitude_decimal),
         image_width: integer_u32(&exif, ExifTag::ImageWidth)
             .or_else(|| integer_u32(&exif, ExifTag::ExifImageWidth)),
         image_height: integer_u32(&exif, ExifTag::ImageHeight)

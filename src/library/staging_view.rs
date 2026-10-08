@@ -541,7 +541,7 @@ fn connect_staging_drop_target(
         let new_paths: Vec<PathBuf> = file_list
             .files()
             .iter()
-            .filter_map(|f| f.path())
+            .filter_map(gtk::gio::prelude::FileExt::path)
             .filter(|p| media_kinds::is_supported_path(p))
             .filter(|p| !existing.contains(&p.to_string_lossy().to_string()))
             .collect();

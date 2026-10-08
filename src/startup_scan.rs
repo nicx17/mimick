@@ -232,7 +232,7 @@ async fn trash_remote_assets_for_missing_local_files(
 
             let album_name = entry
                 .album_name()
-                .map(|name| name.to_string())
+                .map(ToString::to_string)
                 .or(record.album_name.clone())
                 .or_else(|| {
                     Path::new(&path)
@@ -311,7 +311,7 @@ pub async fn reconcile_entry(app_ctx: Arc<AppContext>, entry: &WatchPathEntry) {
 
     let album_name = entry
         .album_name()
-        .map(|name| name.to_string())
+        .map(ToString::to_string)
         .or_else(|| {
             watch_path
                 .file_name()

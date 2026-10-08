@@ -676,7 +676,7 @@ pub fn build_settings_window_with_parent(
                     Path::new(&folder)
                         .file_name()
                         .and_then(|n| n.to_str())
-                        .map(|s| s.to_string())
+                        .map(ToString::to_string)
                 } else {
                     Some(album_name)
                 };

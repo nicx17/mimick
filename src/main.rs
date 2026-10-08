@@ -599,7 +599,7 @@ async fn main() {
         let argv: Vec<String> = cmdline
             .arguments()
             .iter()
-            .filter_map(|a| a.to_str().map(|s| s.to_string()))
+            .filter_map(|a| a.to_str().map(ToString::to_string))
             .collect();
 
         let quit_requested = argv.contains(&"--quit".to_string());

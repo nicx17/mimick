@@ -134,7 +134,7 @@ fn deletion_album_name(
 ) -> String {
     entry
         .album_name()
-        .map(|name| name.to_string())
+        .map(ToString::to_string)
         .or(record.album_name.clone())
         .or_else(|| parent_folder_name(path_obj))
         .unwrap_or_else(|| "Mimick".to_string())

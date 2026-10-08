@@ -13,7 +13,7 @@ pub fn display_watch_path(path: &str) -> String {
             .file_name()
             .and_then(|name| name.to_str())
             .filter(|name| !name.is_empty())
-            .map(|name| name.to_string())
+            .map(ToString::to_string)
             .unwrap_or_else(|| "Selected Folder".to_string())
     } else {
         path.to_string()

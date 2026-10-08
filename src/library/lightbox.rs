@@ -1090,7 +1090,7 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
                     let probed = tokio::task::spawn_blocking(move || {
                         let path = std::path::Path::new(&path_for_blocking);
                         let meta = std::fs::metadata(path).ok();
-                        let file_size = meta.as_ref().map(|m| m.len());
+                        let file_size = meta.as_ref().map(std::fs::Metadata::len);
                         let mtime_iso = meta
                             .as_ref()
                             .and_then(|m| m.modified().ok())
