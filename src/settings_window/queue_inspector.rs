@@ -211,7 +211,7 @@ fn rebuild_failed_rows(
             .title(
                 Path::new(&task.path)
                     .file_name()
-                    .and_then(|name| name.to_str())
+                    .and_then(std::ffi::OsStr::to_str)
                     .unwrap_or(task.path.as_str()),
             )
             .subtitle(&task.path)
@@ -248,7 +248,7 @@ fn rebuild_event_rows(list: &ListBox, events: &[QueueEvent]) {
             .title(
                 Path::new(&event.path)
                     .file_name()
-                    .and_then(|name| name.to_str())
+                    .and_then(std::ffi::OsStr::to_str)
                     .unwrap_or(event.path.as_str()),
             )
             .subtitle(format!(

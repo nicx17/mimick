@@ -20,7 +20,7 @@ use futures_util::stream::{self, StreamExt};
 use parking_lot::Mutex;
 use rayon::prelude::*;
 use std::collections::{HashMap, HashSet};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -237,7 +237,7 @@ async fn trash_remote_assets_for_missing_local_files(
                 .or_else(|| {
                     Path::new(&path)
                         .parent()
-                        .and_then(|parent| parent.file_name())
+                        .and_then(Path::file_name)
                         .map(|name| name.to_string_lossy().to_string())
                 })
                 .unwrap_or_else(|| "Mimick".to_string());
@@ -543,78 +543,16 @@ fn enumerate_candidates(
     let candidates: Vec<ScanCandidate> = watch_paths
         .par_iter()
         .flat_map(|entry| {
-            if entry.sync_method() == FolderSyncMethod::DownloadOnly {
-                return Vec::new();
-            }
-
-            let catchup_mode = entry.startup_catchup_mode(&fallback_catchup_mode);
-            let watch_path_str = entry.path().to_string();
-            let root = Path::new(&watch_path_str);
-            if !root.exists() {
-                log::warn!(
-                    "Startup scan skipped missing watch path: {}",
-                    root.display()
-                );
-                if let Some(mut state) = shared_state.try_lock() {
-                    let status = state.folder_statuses.entry(watch_path_str).or_default();
-                    status.last_error = Some("Permission lost or folder missing".to_string());
-                }
-                return Vec::new();
-            }
-
-            let mut results = Vec::new();
-            let mut stack = vec![root.to_path_buf()];
-            while let Some(dir) = stack.pop() {
-                let read_dir = match std::fs::read_dir(&dir) {
-                    Ok(iter) => iter,
-                    Err(err) => {
-                        errors.fetch_add(1, Ordering::Relaxed);
-                        log::warn!("Startup scan could not read '{}': {}", dir.display(), err);
-                        continue;
-                    }
-                };
-
-                for child in read_dir {
-                    let entry_fs = match child {
-                        Ok(e) => e,
-                        Err(err) => {
-                            errors.fetch_add(1, Ordering::Relaxed);
-                            log::warn!("Startup scan directory entry error: {}", err);
-                            continue;
-                        }
-                    };
-
-                    let path = entry_fs.path();
-                    if path.is_dir() {
-                        stack.push(path);
-                        continue;
-                    }
-
-                    if !is_supported_media_path(&path)
-                        || is_temporary_file(&path)
-                        || !entry.rules().matches(&path)
-                    {
-                        continue;
-                    }
-
-                    if should_skip_for_catchup(&catchup_mode, &entry_fs, last_sync) {
-                        skipped.fetch_add(1, Ordering::Relaxed);
-                        continue;
-                    }
-
-                    let path_str = path.to_string_lossy().into_owned();
-                    seen_paths.lock().insert(path_str.clone());
-                    let album_name = effective_album_name(entry, &path);
-                    let sidecar_enabled = entry.rules().xmp_sidecar_enabled(global_xmp_enabled);
-                    results.push(ScanCandidate {
-                        path: path_str,
-                        watch_path: watch_path_str.clone(),
-                        album_name,
-                        sidecar_enabled,
-                    });
-                }
-            }
-            results
+            enumerate_entry_candidates(
+                entry,
+                &fallback_catchup_mode,
+                last_sync,
+                shared_state,
+                global_xmp_enabled,
+                &seen_paths,
+                &skipped,
+                &errors,
+            )
         })
         .collect();
 
@@ -624,6 +562,121 @@ fn enumerate_candidates(
         skipped.into_inner(),
         errors.into_inner(),
     )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn enumerate_entry_candidates(
+    entry: &WatchPathEntry,
+    fallback_catchup_mode: &StartupCatchupMode,
+    last_sync: f64,
+    shared_state: &Arc<Mutex<AppState>>,
+    global_xmp_enabled: bool,
+    seen_paths: &Mutex<HashSet<String>>,
+    skipped: &AtomicUsize,
+    errors: &AtomicUsize,
+) -> Vec<ScanCandidate> {
+    if entry.sync_method() == FolderSyncMethod::DownloadOnly {
+        return Vec::new();
+    }
+    let watch_path = entry.path().to_string();
+    let root = Path::new(&watch_path);
+    if !root.exists() {
+        mark_missing_watch_path(root, &watch_path, shared_state);
+        return Vec::new();
+    }
+
+    let catchup_mode = entry.startup_catchup_mode(fallback_catchup_mode);
+    let sidecar_enabled = entry.rules().xmp_sidecar_enabled(global_xmp_enabled);
+    let mut candidates = Vec::new();
+    let mut stack = vec![root.to_path_buf()];
+    while let Some(dir) = stack.pop() {
+        scan_candidate_directory(
+            &dir,
+            entry,
+            &watch_path,
+            &catchup_mode,
+            last_sync,
+            sidecar_enabled,
+            seen_paths,
+            skipped,
+            errors,
+            &mut stack,
+            &mut candidates,
+        );
+    }
+    candidates
+}
+
+fn mark_missing_watch_path(root: &Path, watch_path: &str, shared_state: &Arc<Mutex<AppState>>) {
+    log::warn!(
+        "Startup scan skipped missing watch path: {}",
+        root.display()
+    );
+    if let Some(mut state) = shared_state.try_lock() {
+        let status = state
+            .folder_statuses
+            .entry(watch_path.to_string())
+            .or_default();
+        status.last_error = Some("Permission lost or folder missing".to_string());
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn scan_candidate_directory(
+    dir: &Path,
+    entry: &WatchPathEntry,
+    watch_path: &str,
+    catchup_mode: &StartupCatchupMode,
+    last_sync: f64,
+    sidecar_enabled: bool,
+    seen_paths: &Mutex<HashSet<String>>,
+    skipped: &AtomicUsize,
+    errors: &AtomicUsize,
+    stack: &mut Vec<PathBuf>,
+    candidates: &mut Vec<ScanCandidate>,
+) {
+    let read_dir = match std::fs::read_dir(dir) {
+        Ok(iter) => iter,
+        Err(err) => {
+            errors.fetch_add(1, Ordering::Relaxed);
+            log::warn!("Startup scan could not read '{}': {}", dir.display(), err);
+            return;
+        }
+    };
+    for child in read_dir {
+        let entry_fs = match child {
+            Ok(entry_fs) => entry_fs,
+            Err(err) => {
+                errors.fetch_add(1, Ordering::Relaxed);
+                log::warn!("Startup scan directory entry error: {}", err);
+                continue;
+            }
+        };
+        let path = entry_fs.path();
+        if path.is_dir() {
+            stack.push(path);
+            continue;
+        }
+        if !is_eligible_startup_path(entry, &path) {
+            continue;
+        }
+        if should_skip_for_catchup(catchup_mode, &entry_fs, last_sync) {
+            skipped.fetch_add(1, Ordering::Relaxed);
+        } else {
+            let path_str = path.to_string_lossy().into_owned();
+            seen_paths.lock().insert(path_str.clone());
+            candidates.push(ScanCandidate {
+                path: path_str,
+                watch_path: watch_path.to_string(),
+                album_name: effective_album_name(entry, &path),
+                sidecar_enabled,
+            });
+        }
+    }
+}
+
+fn is_eligible_startup_path(entry: &WatchPathEntry, path: &Path) -> bool {
+    is_supported_media_path(path) && !is_temporary_file(path) && entry.rules().matches(path)
 }
 
 fn should_skip_for_catchup(
@@ -712,7 +765,7 @@ fn effective_album_name(entry: &WatchPathEntry, path: &Path) -> String {
         Some(name) if !name.is_empty() && name != "Default (Folder Name)" => name.to_string(),
         _ => path
             .parent()
-            .and_then(|p| p.file_name())
+            .and_then(Path::file_name)
             .map(|n| n.to_string_lossy().to_string())
             .unwrap_or_else(|| "Mimick".to_string()),
     }

@@ -9,8 +9,12 @@
 
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
+const KEYRING_OPERATION_TIMEOUT: Duration = Duration::from_secs(5);
 
 /// Defines per-folder filters and guardrails applied before a file is queued for upload.
 #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq)]
@@ -434,19 +438,23 @@ impl Config {
         log::debug!("Attempting to read API key from keyring...");
         let result = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
-                let keyring = keyring_with_dbus_fallback().await?;
-                let account = crate::profile::keyring_account();
-                let attributes: Vec<(&str, &str)> =
-                    vec![("service", "mimick"), ("account", account.as_str())];
-                let items = keyring.search_items(&attributes).await.map_err(Box::new)?;
-                if let Some(item) = items.first() {
-                    let secret = item.secret().await.map_err(Box::new)?;
-                    let key = String::from_utf8_lossy(&secret).trim().to_string();
-                    if !key.is_empty() {
-                        return Ok::<Option<String>, Box<oo7::Error>>(Some(key));
+                tokio::time::timeout(KEYRING_OPERATION_TIMEOUT, async {
+                    let keyring = keyring_with_dbus_fallback().await?;
+                    let account = crate::profile::keyring_account();
+                    let attributes: Vec<(&str, &str)> =
+                        vec![("service", "mimick"), ("account", account.as_str())];
+                    let items = keyring.search_items(&attributes).await.map_err(Box::new)?;
+                    if let Some(item) = items.first() {
+                        let secret = item.secret().await.map_err(Box::new)?;
+                        let key = String::from_utf8_lossy(&secret).trim().to_string();
+                        if !key.is_empty() {
+                            return Ok::<Option<String>, Box<oo7::Error>>(Some(key));
+                        }
                     }
-                }
-                Ok(None)
+                    Ok(None)
+                })
+                .await
+                .map_err(|_| keyring_timeout_error("reading API key"))?
             })
         });
 
@@ -494,19 +502,23 @@ impl Config {
         let secret = key.to_string();
         let result = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
-                let keyring = keyring_with_dbus_fallback().await?;
-                let account = crate::profile::keyring_account();
-                let attributes: Vec<(&str, &str)> =
-                    vec![("service", "mimick"), ("account", account.as_str())];
-                let label = match crate::profile::name() {
-                    Some(profile) => format!("Mimick API Key ({})", profile),
-                    None => "Mimick API Key".to_string(),
-                };
-                keyring
-                    .create_item(&label, &attributes, secret.as_bytes(), true)
-                    .await
-                    .map_err(Box::new)?;
-                Ok::<(), Box<oo7::Error>>(())
+                tokio::time::timeout(KEYRING_OPERATION_TIMEOUT, async {
+                    let keyring = keyring_with_dbus_fallback().await?;
+                    let account = crate::profile::keyring_account();
+                    let attributes: Vec<(&str, &str)> =
+                        vec![("service", "mimick"), ("account", account.as_str())];
+                    let label = match crate::profile::name() {
+                        Some(profile) => format!("Mimick API Key ({})", profile),
+                        None => "Mimick API Key".to_string(),
+                    };
+                    keyring
+                        .create_item(&label, &attributes, secret.as_bytes(), true)
+                        .await
+                        .map_err(Box::new)?;
+                    Ok::<(), Box<oo7::Error>>(())
+                })
+                .await
+                .map_err(|_| keyring_timeout_error("saving API key"))?
             })
         });
 
@@ -556,10 +568,9 @@ impl Config {
 /// Sway, XFCE, and other non-GNOME/KDE desktops -- explicitly attempt
 /// the D-Bus Secret Service as a fallback before returning an error.
 async fn keyring_with_dbus_fallback() -> Result<oo7::Keyring, Box<oo7::Error>> {
-    use tokio::time::{Duration, timeout};
-    const KEYRING_TIMEOUT: Duration = Duration::from_secs(5);
+    use tokio::time::timeout;
 
-    match timeout(KEYRING_TIMEOUT, oo7::Keyring::new()).await {
+    match timeout(KEYRING_OPERATION_TIMEOUT, oo7::Keyring::new()).await {
         Ok(Ok(keyring)) => Ok(keyring),
         Ok(Err(oo7::Error::File(ref file_err))) => {
             // Portal errors surface when xdg-desktop-portal doesn't
@@ -569,18 +580,19 @@ async fn keyring_with_dbus_fallback() -> Result<oo7::Keyring, Box<oo7::Error>> {
                 file_err
             );
 
-            let service_result = timeout(KEYRING_TIMEOUT, oo7::dbus::Service::new()).await;
+            let service_result =
+                timeout(KEYRING_OPERATION_TIMEOUT, oo7::dbus::Service::new()).await;
             match service_result {
                 Ok(Ok(service)) => {
                     let collection_result =
-                        timeout(KEYRING_TIMEOUT, service.default_collection()).await;
+                        timeout(KEYRING_OPERATION_TIMEOUT, service.default_collection()).await;
                     match collection_result {
                         Ok(Ok(collection)) => Ok(oo7::Keyring::DBus(collection)),
                         Ok(Err(e)) => Err(Box::new(oo7::Error::from(e))),
                         Err(_) => {
                             log::error!(
                                 "D-Bus Secret Service default collection timed out after {}s",
-                                KEYRING_TIMEOUT.as_secs()
+                                KEYRING_OPERATION_TIMEOUT.as_secs()
                             );
                             Err(Box::new(oo7::Error::DBus(oo7::dbus::Error::ZBus(
                                 zbus::Error::Failure(
@@ -594,7 +606,7 @@ async fn keyring_with_dbus_fallback() -> Result<oo7::Keyring, Box<oo7::Error>> {
                 Err(_) => {
                     log::error!(
                         "D-Bus Secret Service initialization timed out after {}s",
-                        KEYRING_TIMEOUT.as_secs()
+                        KEYRING_OPERATION_TIMEOUT.as_secs()
                     );
                     Err(Box::new(oo7::Error::DBus(oo7::dbus::Error::ZBus(
                         zbus::Error::Failure(
@@ -608,13 +620,24 @@ async fn keyring_with_dbus_fallback() -> Result<oo7::Keyring, Box<oo7::Error>> {
         Err(_) => {
             log::error!(
                 "Keyring initialization timed out after {}s",
-                KEYRING_TIMEOUT.as_secs()
+                KEYRING_OPERATION_TIMEOUT.as_secs()
             );
             Err(Box::new(oo7::Error::DBus(oo7::dbus::Error::ZBus(
                 zbus::Error::Failure("Timeout initializing keyring".to_string()),
             ))))
         }
     }
+}
+
+fn keyring_timeout_error(operation: &str) -> Box<oo7::Error> {
+    log::error!(
+        "Keyring {} timed out after {}s",
+        operation,
+        KEYRING_OPERATION_TIMEOUT.as_secs()
+    );
+    Box::new(oo7::Error::DBus(oo7::dbus::Error::ZBus(
+        zbus::Error::Failure(format!("Timeout while {}", operation)),
+    )))
 }
 
 /// Return a user-facing error message for a keyring failure, tailored
@@ -696,15 +719,45 @@ fn write_api_key_file_fallback(config_file: &Path, key: &str) -> Result<(), Stri
     }
 
     let encoded = base64::engine::general_purpose::STANDARD.encode(key.as_bytes());
-    fs::write(&path, encoded.as_bytes())
-        .map_err(|e| format!("cannot write {}: {}", path.display(), e))?;
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos();
+    let temporary_path = path.with_extension(format!("key.tmp.{}.{}", std::process::id(), nonce));
 
-    // Restrict permissions to owner-only on Unix.
+    let write_result = (|| -> Result<(), String> {
+        let mut options = fs::OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut temporary = options
+            .open(&temporary_path)
+            .map_err(|e| format!("cannot create {}: {}", temporary_path.display(), e))?;
+        temporary
+            .write_all(encoded.as_bytes())
+            .map_err(|e| format!("cannot write {}: {}", temporary_path.display(), e))?;
+        temporary
+            .sync_all()
+            .map_err(|e| format!("cannot sync {}: {}", temporary_path.display(), e))?;
+        fs::rename(&temporary_path, &path)
+            .map_err(|e| format!("cannot replace {}: {}", path.display(), e))?;
+        Ok(())
+    })();
+    if write_result.is_err() {
+        let _ = fs::remove_file(&temporary_path);
+    }
+    write_result?;
+
+    // Ensure pre-existing files are also owner-readable and owner-writable only.
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
         let perms = std::fs::Permissions::from_mode(0o600);
-        let _ = fs::set_permissions(&path, perms);
+        fs::set_permissions(&path, perms)
+            .map_err(|e| format!("cannot secure {}: {}", path.display(), e))?;
     }
 
     Ok(())
@@ -945,6 +998,16 @@ mod tests {
             read_api_key_file_fallback(&config_file),
             Some(secret_key.to_string())
         );
+
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let fallback_path = api_key_fallback_path(&config_file);
+            assert_eq!(
+                fs::metadata(fallback_path).unwrap().permissions().mode() & 0o777,
+                0o600
+            );
+        }
 
         // Removing the fallback file should delete it.
         remove_api_key_file_fallback(&config_file);

@@ -143,7 +143,7 @@ fn deletion_album_name(
 fn parent_folder_name(path_obj: &std::path::Path) -> Option<String> {
     path_obj
         .parent()
-        .and_then(|parent| parent.file_name())
+        .and_then(std::path::Path::file_name)
         .map(|name| name.to_string_lossy().to_string())
 }
 

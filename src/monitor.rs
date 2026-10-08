@@ -478,7 +478,7 @@ pub(crate) fn is_supported_media_path(path: &Path) -> bool {
 
 pub(crate) fn is_temporary_file(path: &Path) -> bool {
     path.file_name()
-        .and_then(|name| name.to_str())
+        .and_then(std::ffi::OsStr::to_str)
         .map(|name| {
             let name = name.to_ascii_lowercase();
             name.ends_with(".tmp")

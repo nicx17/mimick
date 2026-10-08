@@ -73,7 +73,7 @@ fn original_preview_cache_path(
 ) -> std::path::PathBuf {
     let ext = std::path::Path::new(filename)
         .extension()
-        .and_then(|ext| ext.to_str())
+        .and_then(std::ffi::OsStr::to_str)
         .filter(|ext| !ext.is_empty())
         .unwrap_or("bin");
     cache_dir.join(format!("{asset_id}.{ext}"))
@@ -895,7 +895,7 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
                 if full_res {
                     if let Some(cache_dir) = crate::profile::cache_dir().map(|p| p.join("preview"))
                     {
-                        let _ = std::fs::create_dir_all(&cache_dir);
+                        let _ = tokio::fs::create_dir_all(&cache_dir).await;
                         let temp = original_preview_cache_path(&cache_dir, &asset_id, &filename);
                         if temp.exists() {
                             log::debug!(
@@ -931,8 +931,11 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
                                 }
                                 return;
                             }
-                            let downloaded_bytes =
-                                std::fs::metadata(&temp).map(|m| m.len()).unwrap_or(0);
+                            let downloaded_bytes = tokio::fs::metadata(&temp)
+                                .await
+                                .as_ref()
+                                .map(std::fs::Metadata::len)
+                                .unwrap_or(0);
                             log::debug!(
                                 "Lightbox original downloaded for {} in {}ms ({} bytes)",
                                 asset_id,

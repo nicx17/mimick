@@ -276,25 +276,28 @@ impl ImmichApiClient {
 
     async fn read_asset_metadata(&self, file_path: &str) -> Option<std::fs::Metadata> {
         let path = Path::new(file_path);
-        if !path.exists() {
-            log::warn!("File not found, skipping: {}", file_path);
-            self.set_issue(ApiIssue {
-                summary: "A queued file is no longer available".to_string(),
-                guidance: "Check that the watched folder still exists and that the file was not moved or deleted before upload."
-                    .to_string(),
-            })
-            .await;
-            return None;
-        }
-
-        match std::fs::metadata(path) {
+        match tokio::fs::metadata(path).await {
             Ok(m) => Some(m),
             Err(e) => {
-                log::error!("Could not read metadata for {}: {}", file_path, e);
+                let missing = e.kind() == std::io::ErrorKind::NotFound;
+                if missing {
+                    log::warn!("File not found, skipping: {}", file_path);
+                } else {
+                    log::error!("Could not read metadata for {}: {}", file_path, e);
+                }
                 self.set_issue(ApiIssue {
-                    summary: "Mimick could not read a queued file".to_string(),
-                    guidance: "Verify folder permissions and make sure the file is still accessible to the app."
-                        .to_string(),
+                    summary: if missing {
+                        "A queued file is no longer available"
+                    } else {
+                        "Mimick could not read a queued file"
+                    }
+                    .to_string(),
+                    guidance: if missing {
+                        "Check that the watched folder still exists and that the file was not moved or deleted before upload."
+                    } else {
+                        "Verify folder permissions and make sure the file is still accessible to the app."
+                    }
+                    .to_string(),
                 })
                 .await;
                 None

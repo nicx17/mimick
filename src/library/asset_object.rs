@@ -4,8 +4,8 @@
 //! enabling `gtk::SortListModel`, expression bindings, and signal-based reactivity
 //! without a future migration from `BoxedAnyObject`.
 
-use glib::prelude::*;
-use glib::subclass::prelude::*;
+use glib::prelude::ObjectExt;
+use glib::subclass::prelude::{DerivedObjectProperties, ObjectImpl, ObjectSubclass};
 use std::cell::{Cell, RefCell};
 
 mod imp {
@@ -65,7 +65,7 @@ mod imp {
 
     #[glib::object_subclass]
     impl ObjectSubclass for AssetObject {
-        const NAME: &'static str = "MimickAssetObject";
+        const NAME: &str = "MimickAssetObject";
         type Type = super::AssetObject;
     }
 

@@ -18,7 +18,7 @@ pub enum AssetKind {
 
 /// Static set of all supported file extensions for quick membership lookups.
 /// Mirrors Immich's server-accepted formats; MPO is intentionally excluded.
-pub static SUPPORTED: phf::Set<&'static str> = phf_set! {
+pub static SUPPORTED: phf::Set<&str> = phf_set! {
     "3fr", "3gp", "3gpp", "ari", "arw", "avi", "avif", "bmp", "cap", "cin",
     "cr2", "cr3", "crw", "dcr", "dng", "erf", "fff", "flv", "gif", "heic",
     "heif", "hif", "iiq", "insp", "insv", "jp2", "jpe", "jpeg", "jpg", "jxl",
@@ -30,14 +30,14 @@ pub static SUPPORTED: phf::Set<&'static str> = phf_set! {
 
 /// Camera RAW extensions -- subset of SUPPORTED that needs RAW-specific
 /// decoding (libraw) instead of pixbuf or image-rs.
-pub static RAW_EXTENSIONS: phf::Set<&'static str> = phf_set! {
+pub static RAW_EXTENSIONS: phf::Set<&str> = phf_set! {
     "3fr", "ari", "arw", "cap", "cin", "cr2", "cr3", "crw", "dcr", "dng",
     "erf", "fff", "iiq", "k25", "kdc", "mrw", "nef", "nrw", "orf", "ori",
     "pef", "raf", "raw", "rw2", "rwl", "sr2", "srf", "srw", "x3f",
 };
 
 /// Compile-time mapping from lowercased file extensions to standard MIME types.
-static MIME_BY_EXT: phf::Map<&'static str, &'static str> = phf_map! {
+static MIME_BY_EXT: phf::Map<&str, &'static str> = phf_map! {
     "avif" => "image/avif",
     "bmp" => "image/bmp",
     "gif" => "image/gif",
