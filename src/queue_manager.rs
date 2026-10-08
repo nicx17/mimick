@@ -309,13 +309,8 @@ impl QueueManager {
                                     upload_progress_callback(&state_ref, file_task.path.clone()),
                                 ) => res,
                             };
-                            complete_worker_task(
-                                &worker_ctx,
-                                &file_task,
-                                sync_target,
-                                t_start,
-                            )
-                            .await;
+                            complete_worker_task(&worker_ctx, &file_task, sync_target, t_start)
+                                .await;
                         }
                         None => {
                             log::debug!("Worker {} channel closed, exiting.", i);
@@ -599,28 +594,23 @@ async fn complete_worker_task(
     let latest_issue = ctx.api.latest_issue().await;
 
     if let Some(target) = sync_target.as_ref() {
-        complete_successful_upload(
-            ctx,
-            task,
-            target,
-            active_route,
-            elapsed,
-        )
-        .await;
+        complete_successful_upload(ctx, task, target, active_route, elapsed).await;
     } else {
-        record_upload_failure(
-            ctx,
-            task,
-            active_route,
-            latest_issue.as_ref(),
-            elapsed,
-        );
+        record_upload_failure(ctx, task, active_route, latest_issue.as_ref(), elapsed);
     }
 
-    track_consecutive_failures(success, &ctx.consecutive_failures, &ctx.connectivity_notified);
-    if let Some(batch_id) =
-        finalize_upload_progress(&ctx.state_ref, &ctx.batch_notify, &ctx.sync_index, &task.path, success)
-    {
+    track_consecutive_failures(
+        success,
+        &ctx.consecutive_failures,
+        &ctx.connectivity_notified,
+    );
+    if let Some(batch_id) = finalize_upload_progress(
+        &ctx.state_ref,
+        &ctx.batch_notify,
+        &ctx.sync_index,
+        &task.path,
+        success,
+    ) {
         schedule_batch_notification(ctx.state_ref.clone(), ctx.batch_notify.clone(), batch_id);
     }
 }
@@ -635,10 +625,19 @@ async fn complete_successful_upload(
 ) {
     log::info!("Upload SUCCESS: {} ({:.2}s)", task.path, elapsed);
     ctx.pending_ref.lock().remove(&task.path);
-    if let Err(err) = ctx.sync_index.record_synced(&task.path, &task.checksum, target) {
+    if let Err(err) = ctx
+        .sync_index
+        .record_synced(&task.path, &task.checksum, target)
+    {
         log::warn!("Failed to update sync index for '{}': {}", task.path, err);
     }
-    requeue_retries_after_success(&ctx.state_ref, &ctx.retry_ref, &ctx.batch_notify, &ctx.sender).await;
+    requeue_retries_after_success(
+        &ctx.state_ref,
+        &ctx.retry_ref,
+        &ctx.batch_notify,
+        &ctx.sender,
+    )
+    .await;
     record_upload_success(&ctx.state_ref, task, Some(target), active_route, elapsed);
 }
 
