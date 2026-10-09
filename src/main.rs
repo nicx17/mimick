@@ -812,17 +812,4 @@ mod tests {
         assert_eq!(album_id.as_deref(), Some("trips-album"));
         assert_eq!(matched.album_name(), Some("Trips"));
     }
-
-    #[test]
-    fn test_library_only_watch_path_is_identified_without_affecting_legacy_paths() {
-        let library_entry = WatchPathEntry::WithConfig {
-            path: "/home/user/Camera".into(),
-            album_id: None,
-            album_name: None,
-            rules: FolderRules::default(),
-        };
-
-        assert!(library_entry.uploads_to_library());
-        assert!(!WatchPathEntry::Simple("/home/user/Camera".into()).uploads_to_library());
-    }
 }

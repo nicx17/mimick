@@ -18,6 +18,35 @@ use crate::watch_path_display::{display_watch_path, watch_path_subtitle};
 
 use super::{DEFAULT_ALBUM_LABEL, FolderRowData, LIBRARY_ALBUM_LABEL, WatchPathEntry};
 
+/// A folder row's upload target, remembering its rules from before it switched to Library.
+#[derive(Clone)]
+pub(super) struct UploadTargetState {
+    rules: Rc<RefCell<FolderRules>>,
+    library: Rc<Cell<bool>>,
+    rules_before_library: Rc<RefCell<Option<FolderRules>>>,
+}
+
+impl UploadTargetState {
+    fn select_library(&self) {
+        if !self.library.replace(true) {
+            *self.rules_before_library.borrow_mut() = Some(self.rules.borrow().clone());
+        }
+        self.rules.borrow_mut().restrict_to_library_uploads();
+    }
+
+    fn select_album(&self) {
+        if !self.library.replace(false) {
+            return;
+        }
+        if let Some(previous) = self.rules_before_library.borrow_mut().take() {
+            let mut rules = self.rules.borrow_mut();
+            rules.sync_method = previous.sync_method;
+            rules.delete_folder_to_album = previous.delete_folder_to_album;
+            rules.delete_album_to_folder = previous.delete_album_to_folder;
+        }
+    }
+}
+
 /// Append a new watched folder row to the settings folders ListBox.
 pub(super) fn add_folder_row(
     list: &ListBox,
@@ -72,8 +101,11 @@ pub(super) fn add_folder_row(
     let picker_btn_clone = picker_btn.clone();
     let album_name_clone = album_name.clone();
     let albums_ref_clone = albums_ref.clone();
-    let rules_for_picker = rules.clone();
-    let uploads_to_library_for_picker = uploads_to_library.clone();
+    let target_for_picker = UploadTargetState {
+        rules: rules.clone(),
+        library: uploads_to_library.clone(),
+        rules_before_library: Rc::new(RefCell::new(None)),
+    };
     let on_settings_changed_for_picker = on_settings_changed.clone();
 
     picker_btn.connect_clicked(clone!(
@@ -88,8 +120,7 @@ pub(super) fn add_folder_row(
                 let albums_ref_clone = albums_ref_clone.clone();
                 let album_name_clone = album_name_clone.clone();
                 let picker_btn_clone = picker_btn_clone.clone();
-                let rules_clone = rules_for_picker.clone();
-                let uploads_to_library_clone = uploads_to_library_for_picker.clone();
+                let target_clone = target_for_picker.clone();
                 let on_settings_changed_for_picker = on_settings_changed_for_picker.clone();
 
                 glib::idle_add_local_once(move || {
@@ -98,8 +129,7 @@ pub(super) fn add_folder_row(
                         albums_ref_clone,
                         album_name_clone,
                         picker_btn_clone,
-                        rules_clone,
-                        uploads_to_library_clone,
+                        target_clone,
                         on_settings_changed_for_picker,
                     );
                 });
@@ -130,6 +160,7 @@ pub(super) fn add_folder_row(
     let path_clone = path.clone();
     let rules_clone = rules.clone();
     let path_for_rules = path.clone();
+    let library_for_rules = uploads_to_library.clone();
     let on_settings_changed_for_rules = on_settings_changed.clone();
     let fallback_catchup_mode_for_rules = fallback_catchup_mode.clone();
 
@@ -144,6 +175,7 @@ pub(super) fn add_folder_row(
                 let window = window.clone();
                 let path_for_rules = path_for_rules.clone();
                 let rules_clone = rules_clone.clone();
+                let uploads_to_library = library_for_rules.get();
                 let on_settings_changed_for_rules = on_settings_changed_for_rules.clone();
                 let fallback_catchup_mode_for_rules = fallback_catchup_mode_for_rules.clone();
                 glib::idle_add_local_once(move || {
@@ -152,6 +184,7 @@ pub(super) fn add_folder_row(
                         &path_for_rules,
                         fallback_catchup_mode_for_rules.clone(),
                         rules_clone,
+                        uploads_to_library,
                         on_settings_changed_for_rules,
                     );
                 });
@@ -212,6 +245,7 @@ fn show_folder_rules_dialog(
     folder_path: &str,
     fallback_catchup_mode: StartupCatchupMode,
     rules_state: Rc<RefCell<FolderRules>>,
+    uploads_to_library: bool,
     on_settings_changed: Rc<dyn Fn()>,
 ) {
     let dialog = adw::Window::builder()
@@ -314,6 +348,14 @@ fn show_folder_rules_dialog(
         .active(false)
         .sensitive(false)
         .build();
+
+    if uploads_to_library {
+        sync_method.set_subtitle("Library uploads can only upload from this folder.");
+        sync_method.set_sensitive(false);
+        delete_folder_to_album.set_subtitle("Not available for library uploads.");
+        delete_folder_to_album.set_active(false);
+        delete_folder_to_album.set_sensitive(false);
+    }
 
     let include_xmp = adw::SwitchRow::builder()
         .title("Include XMP Sidecars")
@@ -420,8 +462,7 @@ pub(super) fn show_album_picker_dialog(
     albums_ref: Rc<RefCell<Vec<(String, String)>>>,
     target_album_state: Rc<RefCell<String>>,
     trigger_btn: Button,
-    rules_state: Rc<RefCell<FolderRules>>,
-    uploads_to_library_state: Rc<Cell<bool>>,
+    upload_target: UploadTargetState,
     on_settings_changed: Rc<dyn Fn()>,
 ) {
     let dialog = adw::Window::builder()
@@ -469,8 +510,7 @@ pub(super) fn show_album_picker_dialog(
         let dialog = dialog.clone();
         let target_album_state = target_album_state.clone();
         let trigger_btn = trigger_btn.clone();
-        let rules_state = rules_state.clone();
-        let uploads_to_library_state = uploads_to_library_state.clone();
+        let upload_target = upload_target.clone();
 
         move |query: &str| {
             // Clear existing
@@ -490,13 +530,11 @@ pub(super) fn show_album_picker_dialog(
                 let dialog_clone = dialog.clone();
                 let state_clone = target_album_state.clone();
                 let btn_clone = trigger_btn.clone();
-                let rules_clone = rules_state.clone();
-                let library_state_clone = uploads_to_library_state.clone();
+                let target_clone = upload_target.clone();
                 let on_settings_changed_clone = on_settings_changed.clone();
                 library_row.connect_activated(move |_| {
                     *state_clone.borrow_mut() = LIBRARY_ALBUM_LABEL.to_string();
-                    library_state_clone.set(true);
-                    rules_clone.borrow_mut().restrict_to_library_uploads();
+                    target_clone.select_library();
                     btn_clone.set_label(LIBRARY_ALBUM_LABEL);
                     (on_settings_changed_clone)();
                     dialog_clone.close();
@@ -514,11 +552,11 @@ pub(super) fn show_album_picker_dialog(
                 let dialog_clone = dialog.clone();
                 let state_clone = target_album_state.clone();
                 let btn_clone = trigger_btn.clone();
-                let library_state_clone = uploads_to_library_state.clone();
+                let target_clone = upload_target.clone();
                 let on_settings_changed_clone = on_settings_changed.clone();
                 default_row.connect_activated(move |_| {
                     *state_clone.borrow_mut() = DEFAULT_ALBUM_LABEL.to_string();
-                    library_state_clone.set(false);
+                    target_clone.select_album();
                     btn_clone.set_label(DEFAULT_ALBUM_LABEL);
                     (on_settings_changed_clone)();
                     dialog_clone.close();
@@ -536,11 +574,11 @@ pub(super) fn show_album_picker_dialog(
                 let dialog_clone = dialog.clone();
                 let state_clone = target_album_state.clone();
                 let btn_clone = trigger_btn.clone();
-                let library_state_clone = uploads_to_library_state.clone();
+                let target_clone = upload_target.clone();
                 let on_settings_changed_clone = on_settings_changed.clone();
                 create_row.connect_activated(move |_| {
                     *state_clone.borrow_mut() = typed_raw.clone();
-                    library_state_clone.set(false);
+                    target_clone.select_album();
                     btn_clone.set_label(&typed_raw);
                     (on_settings_changed_clone)();
                     dialog_clone.close();
@@ -563,11 +601,11 @@ pub(super) fn show_album_picker_dialog(
                     let state_clone = target_album_state.clone();
                     let btn_clone = trigger_btn.clone();
                     let album_name_clone = album_name.clone();
-                    let library_state_clone = uploads_to_library_state.clone();
+                    let target_clone = upload_target.clone();
                     let on_settings_changed_clone = on_settings_changed.clone();
                     row.connect_activated(move |_| {
                         *state_clone.borrow_mut() = album_name_clone.clone();
-                        library_state_clone.set(false);
+                        target_clone.select_album();
                         btn_clone.set_label(&album_name_clone);
                         (on_settings_changed_clone)();
                         dialog_clone.close();
@@ -587,4 +625,52 @@ pub(super) fn show_album_picker_dialog(
     });
 
     dialog.present();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn target_with(rules: FolderRules) -> UploadTargetState {
+        UploadTargetState {
+            rules: Rc::new(RefCell::new(rules)),
+            library: Rc::new(Cell::new(false)),
+            rules_before_library: Rc::new(RefCell::new(None)),
+        }
+    }
+
+    #[test]
+    fn test_switching_back_from_library_restores_sync_rules() {
+        let target = target_with(FolderRules {
+            sync_method: FolderSyncMethod::Full,
+            delete_folder_to_album: true,
+            ..FolderRules::default()
+        });
+
+        target.select_library();
+        assert_eq!(
+            target.rules.borrow().sync_method,
+            FolderSyncMethod::UploadOnly
+        );
+        assert!(!target.rules.borrow().delete_folder_to_album);
+
+        target.select_album();
+        assert!(!target.library.get());
+        assert_eq!(target.rules.borrow().sync_method, FolderSyncMethod::Full);
+        assert!(target.rules.borrow().delete_folder_to_album);
+    }
+
+    #[test]
+    fn test_selecting_library_twice_keeps_original_rules() {
+        let target = target_with(FolderRules {
+            sync_method: FolderSyncMethod::Full,
+            ..FolderRules::default()
+        });
+
+        target.select_library();
+        target.select_library();
+        target.select_album();
+
+        assert_eq!(target.rules.borrow().sync_method, FolderSyncMethod::Full);
+    }
 }

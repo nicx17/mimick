@@ -640,7 +640,6 @@ fn mark_missing_watch_path(root: &Path, watch_path: &str, shared_state: &Arc<Mut
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 fn scan_candidate_directory(
     dir: &Path,
     ctx: &ScanContext,

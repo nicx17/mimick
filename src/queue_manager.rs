@@ -581,7 +581,6 @@ impl QueueManager {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 async fn complete_worker_task(
     ctx: &WorkerContext,
     task: &FileTask,
@@ -615,7 +614,6 @@ async fn complete_worker_task(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 async fn complete_successful_upload(
     ctx: &WorkerContext,
     task: &FileTask,

@@ -23,8 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed an issue where the app could hang on startup or while saving credentials if the XDG Secret portal was misconfigured by enforcing a 5-second deadline for each complete keyring operation (#218).
+- Fixed an issue where the app could hang on startup or while saving credentials if the XDG Secret portal was misconfigured by enforcing a 5-second deadline for connecting to the keyring (#218).
 - Hardened API-key fallback storage with atomic writes and enforced owner-only (`0600`) permissions on Unix (#215).
+- The API-key fallback file now takes precedence over an older keyring entry, and Settings warns when the key is stored in a file instead of the keyring (#215).
 
 ## [9.10.0] - 2026-10-01
 

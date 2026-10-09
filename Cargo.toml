@@ -81,7 +81,6 @@ turbojpeg = { version = "1.4.0", default-features = false, features = [
 webp = { version = "0.3.1", default-features = false }
 psd = "0.3.5"
 tempfile = "3.27.0"
-zbus = "5.19"
 
 [dev-dependencies]
 
