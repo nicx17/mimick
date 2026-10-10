@@ -74,108 +74,100 @@ fn build_summary(config: &Config, state: &AppState) -> String {
     let mut lines = vec![
         "Mimick diagnostics export".to_string(),
         format!("Version: {}", env!("CARGO_PKG_VERSION")),
-        format!("App status: {}", state.status),
-        format!("Paused: {}", state.paused),
     ];
-    lines.push(format!(
-        "Pause reason: {}",
-        state.pause_reason.as_deref().unwrap_or("none")
-    ));
-    lines.push(format!(
-        "Watched folder count: {}",
-        state.watched_folder_count
-    ));
-    lines.push(format!(
-        "Active server route: {}",
-        state.active_server_route.as_deref().unwrap_or("none")
-    ));
-    lines.push(format!("Queue size: {}", state.queue_size));
-    lines.push(format!("Processed count: {}", state.processed_count));
-    lines.push(format!("Failed count: {}", state.failed_count));
-    lines.push(format!(
-        "Current file: {}",
-        state
-            .current_file
-            .as_deref()
-            .map(redact_path_hint)
-            .unwrap_or_else(|| "none".to_string())
-    ));
-    lines.push(format!(
-        "Last completed file: {}",
-        state
-            .last_completed_file
-            .as_deref()
-            .map(redact_path_hint)
-            .unwrap_or_else(|| "none".to_string())
-    ));
-    lines.push(format!(
-        "Last error: {}",
-        state.last_error.as_deref().unwrap_or("none")
-    ));
-    lines.push(format!(
-        "Suggested fix: {}",
-        state.last_error_guidance.as_deref().unwrap_or("none")
-    ));
-    lines.push(format!(
-        "Configured watch paths: {}",
-        config.data.watch_paths.len()
-    ));
-    lines.push(format!(
-        "Pause on metered network: {}",
-        config.data.pause_on_metered_network
-    ));
-    lines.push(format!(
-        "Pause on battery power: {}",
-        config.data.pause_on_battery_power
-    ));
-    lines.push(format!(
-        "Background sync enabled: {}",
-        config.data.background_sync_enabled
-    ));
-    lines.push(format!(
-        "Notifications enabled: {}",
-        config.data.notifications_enabled
-    ));
-    lines.push(format!(
-        "Startup catchup mode: {:?}",
-        config.data.startup_catchup_mode
-    ));
-    lines.push(format!(
-        "Upload concurrency: {}",
-        config.data.upload_concurrency
-    ));
-    lines.push(format!(
-        "Quiet hours start: {}",
-        config
-            .data
-            .quiet_hours_start
-            .map(|h| h.to_string())
-            .unwrap_or_else(|| "disabled".to_string())
-    ));
-    lines.push(format!(
-        "Quiet hours end: {}",
-        config
-            .data
-            .quiet_hours_end
-            .map(|h| h.to_string())
-            .unwrap_or_else(|| "disabled".to_string())
-    ));
+    lines.extend(state_lines(state));
+    lines.extend(config_lines(config));
     lines.push(
         "Sensitive data policy: URLs, API key, logs, and full local paths omitted".to_string(),
     );
     lines.push(String::new());
     lines.push("Recent queue events:".to_string());
-    for event in &state.recent_events {
-        lines.push(format!(
-            "- {} [{}] attempts={} detail={}",
-            redact_path_hint(&event.path),
-            event.status,
-            event.attempts,
-            event.detail.as_deref().unwrap_or("none")
-        ));
-    }
-
+    lines.extend(event_lines(state));
     lines.join("\n")
+}
+
+fn or_none(value: Option<&str>) -> &str {
+    value.unwrap_or("none")
+}
+
+/// File names only: full local paths are omitted from the export.
+fn redacted_or_none(path: Option<&str>) -> String {
+    path.map(redact_path_hint)
+        .unwrap_or_else(|| "none".to_string())
+}
+
+fn hour_or_disabled(hour: Option<u8>) -> String {
+    hour.map(|h| h.to_string())
+        .unwrap_or_else(|| "disabled".to_string())
+}
+
+fn state_lines(state: &AppState) -> Vec<String> {
+    vec![
+        format!("App status: {}", state.status),
+        format!("Paused: {}", state.paused),
+        format!("Pause reason: {}", or_none(state.pause_reason.as_deref())),
+        format!("Watched folder count: {}", state.watched_folder_count),
+        format!(
+            "Active server route: {}",
+            or_none(state.active_server_route.as_deref())
+        ),
+        format!("Queue size: {}", state.queue_size),
+        format!("Processed count: {}", state.processed_count),
+        format!("Failed count: {}", state.failed_count),
+        format!(
+            "Current file: {}",
+            redacted_or_none(state.current_file.as_deref())
+        ),
+        format!(
+            "Last completed file: {}",
+            redacted_or_none(state.last_completed_file.as_deref())
+        ),
+        format!("Last error: {}", or_none(state.last_error.as_deref())),
+        format!(
+            "Suggested fix: {}",
+            or_none(state.last_error_guidance.as_deref())
+        ),
+    ]
+}
+
+fn config_lines(config: &Config) -> Vec<String> {
+    let data = &config.data;
+    vec![
+        format!("Configured watch paths: {}", data.watch_paths.len()),
+        format!(
+            "Pause on metered network: {}",
+            data.pause_on_metered_network
+        ),
+        format!("Pause on battery power: {}", data.pause_on_battery_power),
+        format!("Background sync enabled: {}", data.background_sync_enabled),
+        format!("Notifications enabled: {}", data.notifications_enabled),
+        format!("Startup catchup mode: {:?}", data.startup_catchup_mode),
+        format!("Upload concurrency: {}", data.upload_concurrency),
+        format!(
+            "Quiet hours start: {}",
+            hour_or_disabled(data.quiet_hours_start)
+        ),
+        format!(
+            "Quiet hours end: {}",
+            hour_or_disabled(data.quiet_hours_end)
+        ),
+    ]
+}
+
+fn event_lines(state: &AppState) -> Vec<String> {
+    state
+        .recent_events
+        .iter()
+        .map(|event| {
+            format!(
+                "- {} [{}] attempts={} detail={}",
+                redact_path_hint(&event.path),
+                event.status,
+                event.attempts,
+                or_none(event.detail.as_deref())
+            )
+        })
+        .collect()
 }
 
 /// Resolve a named file within the system cache root.
@@ -487,6 +479,30 @@ mod tests {
         );
         assert!(summary.contains("a.jpg [failed] attempts=2"));
         assert!(!summary.contains("/photos/a.jpg [failed] attempts=2"));
+    }
+
+    #[test]
+    fn test_build_summary_keeps_section_order_and_defaults() {
+        let config = Config {
+            data: ConfigData::default(),
+            config_file: PathBuf::from("config.json"),
+        };
+        let summary = build_summary(&config, &AppState::default());
+        let lines: Vec<&str> = summary.lines().collect();
+        let position = |prefix: &str| {
+            lines
+                .iter()
+                .position(|line| line.starts_with(prefix))
+                .unwrap_or_else(|| panic!("missing line starting with {prefix:?}"))
+        };
+        assert_eq!(lines[0], "Mimick diagnostics export");
+        assert!(position("Version:") < position("App status:"));
+        assert!(position("Suggested fix:") < position("Configured watch paths:"));
+        assert!(position("Quiet hours end:") < position("Sensitive data policy:"));
+        assert_eq!(lines.last(), Some(&"Recent queue events:"));
+        assert!(summary.contains("Pause reason: none"));
+        assert!(summary.contains("Current file: none"));
+        assert!(summary.contains("Quiet hours start: disabled"));
     }
 
     #[test]

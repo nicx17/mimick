@@ -22,6 +22,30 @@ pub fn show_queue_inspector(
     parent: &impl gtk::prelude::IsA<gtk::Window>,
     queue_manager: Arc<QueueManager>,
 ) {
+    let parts = build_inspector(parent);
+    // Initial population.
+    refresh_inspector(&parts.failed_group, &parts.events_list, &queue_manager);
+    connect_inspector_actions(&parts, &queue_manager);
+    start_live_refresh(&parts, queue_manager);
+
+    let bp = adw::Breakpoint::new(
+        adw::BreakpointCondition::parse("max-width: 500sp").expect("valid breakpoint condition"),
+    );
+    bp.add_setter(&parts.retry_all_btn, "label", Some(&"Retry All".to_value()));
+    bp.add_setter(&parts.clear_failed_btn, "label", Some(&"Clear".to_value()));
+    parts.dialog.add_breakpoint(bp);
+    parts.dialog.present();
+}
+
+struct InspectorParts {
+    dialog: adw::Window,
+    failed_group: adw::PreferencesGroup,
+    events_list: ListBox,
+    retry_all_btn: Button,
+    clear_failed_btn: Button,
+}
+
+fn build_inspector(parent: &impl gtk::prelude::IsA<gtk::Window>) -> InspectorParts {
     let dialog = adw::Window::builder()
         .transient_for(parent)
         .modal(true)
@@ -31,9 +55,6 @@ pub fn show_queue_inspector(
         .width_request(360)
         .height_request(480)
         .build();
-
-    let header = adw::HeaderBar::builder().show_title(true).build();
-
     let content = Box::builder()
         .orientation(Orientation::Vertical)
         .spacing(12)
@@ -42,53 +63,59 @@ pub fn show_queue_inspector(
         .margin_start(12)
         .margin_end(12)
         .build();
-
     let main_scroll = ScrolledWindow::builder()
         .hscrollbar_policy(gtk::PolicyType::Never)
         .child(&content)
         .build();
-
     let toolbar = adw::ToolbarView::builder().build();
-    toolbar.add_top_bar(&header);
+    toolbar.add_top_bar(&adw::HeaderBar::builder().show_title(true).build());
     toolbar.set_content(Some(&main_scroll));
     dialog.set_content(Some(&toolbar));
 
-    let actions = Box::builder()
-        .orientation(Orientation::Horizontal)
-        .spacing(8)
-        .halign(gtk::Align::End)
-        .build();
-    content.append(&actions);
-
-    let retry_all_btn = Button::builder().label("Retry All Failed").build();
-    let clear_failed_btn = Button::builder().label("Clear Failed Queue").build();
-    actions.append(&retry_all_btn);
-    actions.append(&clear_failed_btn);
-
+    let (retry_all_btn, clear_failed_btn) = append_action_buttons(&content);
     let failed_group = adw::PreferencesGroup::builder()
         .title("Failed Retry Queue")
         .build();
     content.append(&failed_group);
-
     let events_group = adw::PreferencesGroup::builder()
         .title("Recent Queue Activity")
         .build();
     content.append(&events_group);
-
     let events_list = ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .css_classes(vec!["boxed-list".to_string()])
         .build();
     events_group.add(&events_list);
+    InspectorParts {
+        dialog,
+        failed_group,
+        events_list,
+        retry_all_btn,
+        clear_failed_btn,
+    }
+}
 
-    // Initial population.
-    refresh_inspector(&failed_group, &events_list, &queue_manager);
+/// Right-aligned "Retry All Failed" / "Clear Failed Queue" buttons.
+fn append_action_buttons(content: &Box) -> (Button, Button) {
+    let actions = Box::builder()
+        .orientation(Orientation::Horizontal)
+        .spacing(8)
+        .halign(gtk::Align::End)
+        .build();
+    let retry_all_btn = Button::builder().label("Retry All Failed").build();
+    let clear_failed_btn = Button::builder().label("Clear Failed Queue").build();
+    actions.append(&retry_all_btn);
+    actions.append(&clear_failed_btn);
+    content.append(&actions);
+    (retry_all_btn, clear_failed_btn)
+}
 
-    // Wire action buttons with immediate UI refresh.
+/// Wire action buttons with an immediate UI refresh.
+fn connect_inspector_actions(parts: &InspectorParts, queue_manager: &Arc<QueueManager>) {
     let qm_retry_all = queue_manager.clone();
-    let fg_retry = failed_group.clone();
-    let el_retry = events_list.clone();
-    retry_all_btn.connect_clicked(move |btn| {
+    let fg_retry = parts.failed_group.clone();
+    let el_retry = parts.events_list.clone();
+    parts.retry_all_btn.connect_clicked(move |btn| {
         btn.set_sensitive(false);
         let qm = qm_retry_all.clone();
         let fg = fg_retry.clone();
@@ -100,17 +127,20 @@ pub fn show_queue_inspector(
     });
 
     let qm_clear = queue_manager.clone();
-    let fg_clear = failed_group.clone();
-    let el_clear = events_list.clone();
-    clear_failed_btn.connect_clicked(move |_| {
+    let fg_clear = parts.failed_group.clone();
+    let el_clear = parts.events_list.clone();
+    parts.clear_failed_btn.connect_clicked(move |_| {
         let _ = qm_clear.clear_failed();
         refresh_inspector(&fg_clear, &el_clear, &qm_clear);
     });
+}
 
-    // Live-update timer: refresh every second while the dialog exists.
+/// Refresh every second while the dialog exists, but only rebuild rows when something changed.
+fn start_live_refresh(parts: &InspectorParts, queue_manager: Arc<QueueManager>) {
     let prev_failed_count = std::cell::Cell::new(queue_manager.failed_tasks().len());
     let prev_event_count = std::cell::Cell::new(queue_manager.recent_events().len());
-    let qm_tick = queue_manager.clone();
+    let failed_group = parts.failed_group.clone();
+    let events_list = parts.events_list.clone();
     glib::timeout_add_local(
         std::time::Duration::from_secs(1),
         clone!(
@@ -121,30 +151,20 @@ pub fn show_queue_inspector(
             #[upgrade_or]
             glib::ControlFlow::Break,
             move || {
-                let failed = qm_tick.failed_tasks();
-                let events = qm_tick.recent_events();
+                let failed = queue_manager.failed_tasks();
+                let events = queue_manager.recent_events();
                 let changed = failed.len() != prev_failed_count.get()
                     || events.len() != prev_event_count.get()
                     || has_status_change(&events, &failed);
                 if changed {
                     prev_failed_count.set(failed.len());
                     prev_event_count.set(events.len());
-                    refresh_inspector(&failed_group, &events_list, &qm_tick);
+                    refresh_inspector(&failed_group, &events_list, &queue_manager);
                 }
                 glib::ControlFlow::Continue
             }
         ),
     );
-
-    let bp = adw::Breakpoint::new(
-        adw::BreakpointCondition::parse("max-width: 500sp").expect("valid breakpoint condition"),
-    );
-    bp.add_setter(&retry_all_btn, "label", Some(&"Retry All".to_value()));
-    bp.add_setter(&clear_failed_btn, "label", Some(&"Clear".to_value()));
-
-    dialog.add_breakpoint(bp);
-
-    dialog.present();
 }
 
 /// Detect whether event statuses differ from what's currently displayed.

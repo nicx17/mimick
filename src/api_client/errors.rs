@@ -28,74 +28,80 @@ pub(super) fn classify_http_issue(
     status: u16,
     subject: Option<&str>,
 ) -> ApiIssue {
-    match status {
-        401 | 403 => ApiIssue {
-            summary: "Immich rejected the API key".to_string(),
-            guidance: "Update the API key in Settings and confirm it still has the required Asset and Album permissions (see README for the full list)."
-                .to_string(),
-        },
-        404 if matches!(context, RequestContext::AlbumAssign | RequestContext::AlbumCreate) => {
-            ApiIssue {
-                summary: "An album reference is no longer valid".to_string(),
-                guidance: "Refresh the album list or choose a different album before retrying."
-                    .to_string(),
-            }
+    known_status_issue(context, status).unwrap_or_else(|| ApiIssue {
+        summary: failure_summary(context, subject),
+        guidance: format!(
+            "The server responded with HTTP {}. Check the server logs and retry after confirming the current configuration.",
+            status
+        ),
+    })
+}
+
+/// Statuses with a specific cause and fix; `None` falls back to a per-context summary.
+fn known_status_issue(context: RequestContext, status: u16) -> Option<ApiIssue> {
+    let (summary, guidance) = match status {
+        401 | 403 => (
+            "Immich rejected the API key",
+            "Update the API key in Settings and confirm it still has the required Asset and Album permissions (see README for the full list).",
+        ),
+        404 if matches!(
+            context,
+            RequestContext::AlbumAssign | RequestContext::AlbumCreate
+        ) =>
+        {
+            (
+                "An album reference is no longer valid",
+                "Refresh the album list or choose a different album before retrying.",
+            )
         }
-        413 => ApiIssue {
-            summary: "Immich rejected a file as too large".to_string(),
-            guidance: "Reduce the file size, raise the server upload limit, or skip oversized files with folder rules."
-                .to_string(),
-        },
-        429 => ApiIssue {
-            summary: "Immich rate-limited the request".to_string(),
-            guidance: "Wait a moment and retry. If this happens often, lower upload concurrency or check reverse proxy limits."
-                .to_string(),
-        },
-        502..=504 => ApiIssue {
-            summary: "Immich is temporarily unavailable".to_string(),
-            guidance: "Wait a moment and retry. If it keeps happening, inspect the server and reverse proxy logs."
-                .to_string(),
-        },
-        _ => ApiIssue {
-            summary: match context {
-                RequestContext::Upload => {
-                    format!("Immich could not accept {}", subject.unwrap_or("the upload"))
-                }
-                RequestContext::Albums => "Immich could not load the album list".to_string(),
-                RequestContext::AlbumCreate => format!(
-                    "Immich could not create album '{}'",
-                    subject.unwrap_or("Unnamed")
-                ),
-                RequestContext::AlbumAssign => {
-                    "Immich could not add the asset to the selected album".to_string()
-                }
-                RequestContext::ThumbnailFetch => {
-                    "Immich could not load a library thumbnail".to_string()
-                }
-                RequestContext::AssetList => {
-                    "Immich could not load library assets".to_string()
-                }
-                RequestContext::SmartSearch => {
-                    "Immich could not run the smart library search".to_string()
-                }
-                RequestContext::MetadataSearch => {
-                    "Immich could not run the metadata library search".to_string()
-                }
-                RequestContext::AssetDownload => {
-                    "Immich could not download the selected asset".to_string()
-                }
-                RequestContext::ServerStats => {
-                    "Immich could not load library statistics".to_string()
-                }
-                RequestContext::ServerAbout => {
-                    "Immich could not load server version information".to_string()
-                }
-            },
-            guidance: format!(
-                "The server responded with HTTP {}. Check the server logs and retry after confirming the current configuration.",
-                status
-            ),
-        },
+        413 => (
+            "Immich rejected a file as too large",
+            "Reduce the file size, raise the server upload limit, or skip oversized files with folder rules.",
+        ),
+        429 => (
+            "Immich rate-limited the request",
+            "Wait a moment and retry. If this happens often, lower upload concurrency or check reverse proxy limits.",
+        ),
+        502..=504 => (
+            "Immich is temporarily unavailable",
+            "Wait a moment and retry. If it keeps happening, inspect the server and reverse proxy logs.",
+        ),
+        _ => return None,
+    };
+    Some(ApiIssue {
+        summary: summary.to_string(),
+        guidance: guidance.to_string(),
+    })
+}
+
+/// What failed, phrased for the request context.
+fn failure_summary(context: RequestContext, subject: Option<&str>) -> String {
+    match context {
+        RequestContext::Upload => {
+            format!(
+                "Immich could not accept {}",
+                subject.unwrap_or("the upload")
+            )
+        }
+        RequestContext::AlbumCreate => format!(
+            "Immich could not create album '{}'",
+            subject.unwrap_or("Unnamed")
+        ),
+        RequestContext::Albums => "Immich could not load the album list".to_string(),
+        RequestContext::AlbumAssign => {
+            "Immich could not add the asset to the selected album".to_string()
+        }
+        RequestContext::ThumbnailFetch => "Immich could not load a library thumbnail".to_string(),
+        RequestContext::AssetList => "Immich could not load library assets".to_string(),
+        RequestContext::SmartSearch => "Immich could not run the smart library search".to_string(),
+        RequestContext::MetadataSearch => {
+            "Immich could not run the metadata library search".to_string()
+        }
+        RequestContext::AssetDownload => "Immich could not download the selected asset".to_string(),
+        RequestContext::ServerStats => "Immich could not load library statistics".to_string(),
+        RequestContext::ServerAbout => {
+            "Immich could not load server version information".to_string()
+        }
     }
 }
 

@@ -107,6 +107,9 @@ Each watched directory operates with isolated logical constraints:
 - **Album Browser:** Built-in album browser with thumbnail grid and Explore landing page.
 - **Advanced Search:** Search modes: filename/metadata, Smart (CLIP), and OCR text lookup.
 - **Media Lightbox:** Download originals and open full-resolution previews in the lightbox.
+- **Manage Assets:** Edit an asset's description, date taken, and favorite flag, or move it to the Immich trash (right-click, lightbox button, or **Delete**).
+- **Tags:** View, add, create, and remove tags in the lightbox details pane; click a tag or use the Tag search filter to find tagged assets.
+- **Trash:** Browse the Immich trash, restore or permanently delete items, or empty it.
 - **Optional Toggle:** Toggle via **Settings → Behavior → Enable Library View** (restart required).
 
 ---
@@ -180,6 +183,9 @@ When generating the API key in Immich (Account Settings → API Keys), grant onl
 | Server Stats Dialog (click server name in Settings)                 | `server.about`, `server.versionCheck`, `server.statistics`, `asset.statistics`                                                                 |
 | Library Footer Statistics (photo/video counts)                      | `asset.statistics`                                                                                                                                             |
 | Library / Explore view (browse photos inside Mimick)                | `asset.read`, `asset.view`, `asset.download`, `person.read`                                                                                                    |
+| Edit info / move to trash from the library                          | `asset.update`, `asset.delete`                                                                                                                                 |
+| Trash view (restore, delete permanently, empty trash)               | `asset.read`, `asset.delete`                                                                                                                                   |
+| Tags in the details pane and tag search                             | `tag.read`; adding/removing tags also needs `tag.asset`, and creating new tags `tag.create`                                                                   |
 | **Sync Method** set to **Full** or **Download Only** (folder rules) | `asset.read`, `asset.download`                                                                                                                                 |
 | **Mirror Folder Deletions to Album** (folder rules toggle)          | `asset.delete` _and_ `albumAsset.delete` (the latter is used when the same asset is referenced by another watch folder, so we just unlink instead of trashing) |
 | **Mirror Album Deletions to Folder** (folder rules toggle)          | No additional remote permissions — the album listing is already covered by `album.read`, the trash happens locally                                             |

@@ -11,15 +11,19 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::api_client::{ExifInfo, ThumbnailSize};
+use crate::api_client::{ExifInfo, Tag, ThumbnailSize};
 use crate::library::asset_object::AssetObject;
 use crate::library::local_exif::{self, LocalExif};
 
-use super::context_menu::show_asset_context_menu;
+use super::actions::{TrashTarget, confirm_trash};
+use super::asset_edit::show_edit_dialog;
+use super::asset_tags::TagSection;
+use super::context_menu::{AssetMenuHooks, show_asset_context_menu};
 use super::download::{
     begin_download_session, finish_download_item, open_local_with_default_app, spawn_video_handoff,
     start_download, track_download_item,
 };
+use super::trash_view;
 use super::{LOCAL_ID_PREFIX, LibraryWindowUi, load_source_page, load_texture_oriented};
 
 /// Everything we can learn about a local file off the main thread before
@@ -474,6 +478,9 @@ struct Lightbox {
     // Original file exported by drag-out. Updated by the load logic whenever an
     // asset is displayed (from its local path or the preview cache).
     drag_path: RefCell<Option<std::path::PathBuf>>,
+    // A capture date was edited: reload the grid when the lightbox closes, since the
+    // asset's timeline position moved (reloading now would shift the open photo).
+    reload_on_close: Cell<bool>,
 }
 
 /// Construct and present the fullscreen lightbox view for a selected asset.
@@ -559,6 +566,7 @@ struct ActionBar {
     bar: gtk::Box,
     resolution_toggle: gtk::ToggleButton,
     download: gtk::Button,
+    trash: gtk::Button,
     zoom_group: gtk::Box,
     zoom_in: gtk::Button,
     zoom_out: gtk::Button,
@@ -570,6 +578,8 @@ struct DetailsPane {
     pane: gtk::ScrolledWindow,
     filename: gtk::Label,
     summary: gtk::Label,
+    edit_btn: gtk::Button,
+    tags: TagSection,
     loading: gtk::Label,
     exif: gtk::Box,
 }
@@ -725,6 +735,7 @@ fn build_action_bar(initial_full: bool) -> ActionBar {
         .active(initial_full)
         .build();
     let download = icon_button("mimick-download-symbolic", "Download asset");
+    let trash = icon_button("user-trash-symbolic", "Move to trash (Delete)");
     let zoom_out = icon_button("zoom-out-symbolic", "Zoom out (Ctrl+-)");
     let zoom_in = icon_button("zoom-in-symbolic", "Zoom in (Ctrl++)");
     let zoom_reset = gtk::Button::builder()
@@ -750,10 +761,12 @@ fn build_action_bar(initial_full: bool) -> ActionBar {
     bar.append(&spacer);
     bar.append(&resolution_toggle);
     bar.append(&download);
+    bar.append(&trash);
     ActionBar {
         bar,
         resolution_toggle,
         download,
+        trash,
         zoom_group,
         zoom_in,
         zoom_out,
@@ -770,18 +783,14 @@ fn build_details_pane() -> DetailsPane {
         .margin_start(10)
         .margin_end(10)
         .build();
-    let pane = gtk::ScrolledWindow::builder()
-        .child(&inner)
-        .hscrollbar_policy(gtk::PolicyType::Never)
-        .vexpand(true)
-        .hexpand(false)
-        .min_content_width(180)
-        .max_content_width(320)
-        .css_classes(vec!["mimick-details-pane".to_string()])
-        .build();
+    let pane = details_scroller(&inner);
     let filename = details_text_label();
     filename.add_css_class("title-3");
     let summary = details_text_label();
+    let edit_btn = gtk::Button::builder()
+        .label("Edit Info…")
+        .halign(gtk::Align::Start)
+        .build();
     let loading = gtk::Label::builder()
         .xalign(0.0)
         .label("Loading details…")
@@ -794,15 +803,32 @@ fn build_details_pane() -> DetailsPane {
         .build();
     inner.append(&filename);
     inner.append(&summary);
+    inner.append(&edit_btn);
+    let tags = TagSection::new();
+    inner.append(&tags.root);
     inner.append(&loading);
     inner.append(&exif);
     DetailsPane {
         pane,
         filename,
         summary,
+        edit_btn,
+        tags,
         loading,
         exif,
     }
+}
+
+fn details_scroller(inner: &gtk::Box) -> gtk::ScrolledWindow {
+    gtk::ScrolledWindow::builder()
+        .child(inner)
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .vexpand(true)
+        .hexpand(false)
+        .min_content_width(180)
+        .max_content_width(320)
+        .css_classes(vec!["mimick-details-pane".to_string()])
+        .build()
 }
 
 fn build_viewer(picture: &PictureArea, actions: &ActionBar) -> gtk::Box {
@@ -887,6 +913,7 @@ impl Lightbox {
             unavailable_path: RefCell::new(None),
             video_badge_target: RefCell::new(None),
             drag_path: RefCell::new(None),
+            reload_on_close: Cell::new(false),
         })
     }
 
@@ -954,6 +981,13 @@ impl Lightbox {
         self.header
             .next_btn
             .connect_clicked(move |_| lb.goto_next());
+
+        let lb = self.clone();
+        self.header.page.connect_hidden(move |_| {
+            if lb.reload_on_close.replace(false) {
+                super::refresh_library_after_mutation(lb.ui.clone(), true);
+            }
+        });
     }
 
     /// Zoom buttons, pinch, drag-to-pan, double/middle click, and Ctrl+scroll.
@@ -1050,7 +1084,14 @@ impl Lightbox {
         right_click.set_button(gtk::gdk::BUTTON_SECONDARY);
         let lb = self.clone();
         right_click.connect_pressed(move |_, _, x, y| {
-            show_asset_context_menu(lb.ui.clone(), &lb.picture.scrolled, lb.pos.get(), x, y);
+            show_asset_context_menu(
+                lb.ui.clone(),
+                &lb.picture.scrolled,
+                lb.pos.get(),
+                x,
+                y,
+                lb.menu_hooks(),
+            );
         });
         self.picture.scrolled.add_controller(right_click);
 
@@ -1094,6 +1135,98 @@ impl Lightbox {
             btn.set_label(if btn.is_active() { "Raw" } else { "Prev" });
             lb.render();
         });
+
+        let lb = self.clone();
+        self.actions
+            .trash
+            .connect_clicked(move |_| lb.confirm_trash_current());
+        let lb = self.clone();
+        self.details
+            .edit_btn
+            .connect_clicked(move |_| lb.edit_current());
+        let lb = self.clone();
+        self.details
+            .tags
+            .bind(self.ui.clone(), Rc::new(move |tag| lb.search_tag(tag)));
+    }
+
+    /// Close the lightbox and show every photo carrying `tag`.
+    fn search_tag(&self, tag: Tag) {
+        self.ui.nav.pop();
+        super::search_by_tag(self.ui.clone(), tag);
+    }
+
+    fn current_item(&self) -> Option<AssetObject> {
+        self.ui
+            .grid
+            .model
+            .item(self.pos.get())
+            .and_downcast::<AssetObject>()
+    }
+
+    /// Hooks for the right-click menu so trash/edit there update this lightbox.
+    fn menu_hooks(self: &Rc<Self>) -> AssetMenuHooks {
+        let lb_trashed = self.clone();
+        let lb_edited = self.clone();
+        AssetMenuHooks {
+            on_trashed: Rc::new(move || lb_trashed.after_trash()),
+            on_edited: Rc::new(move |date_changed| lb_edited.after_edit(date_changed)),
+        }
+    }
+
+    /// Delete key / trash button: move to trash, or delete permanently in the Trash view.
+    fn confirm_trash_current(self: &Rc<Self>) {
+        let Some(target) = self
+            .current_item()
+            .as_ref()
+            .and_then(TrashTarget::from_item)
+        else {
+            return;
+        };
+        let lb = self.clone();
+        if trash_view::is_trash_active(&self.ui) {
+            let ids = vec![target.remote_id().to_string()];
+            trash_view::confirm_delete_permanently(self.ui.clone(), ids, move || lb.after_trash());
+        } else {
+            confirm_trash(self.ui.clone(), vec![target], 0, move || lb.after_trash());
+        }
+    }
+
+    /// The trashed item is already gone from the grid model, so the same index now
+    /// holds the next photo; step back at the end and close once nothing is left.
+    fn after_trash(self: &Rc<Self>) {
+        let n = self.ui.grid.model.n_items();
+        if n == 0 {
+            self.ui.nav.pop();
+            return;
+        }
+        if self.pos.get() >= n {
+            self.pos.set(n - 1);
+        }
+        self.render();
+    }
+
+    fn edit_current(self: &Rc<Self>) {
+        let Some(item) = self.current_item() else {
+            return;
+        };
+        let Some(target) = TrashTarget::from_item(&item) else {
+            return;
+        };
+        let lb = self.clone();
+        show_edit_dialog(
+            self.ui.clone(),
+            target.remote_id().to_string(),
+            item.property("filename"),
+            Rc::new(move |date_changed| lb.after_edit(date_changed)),
+        );
+    }
+
+    fn after_edit(self: &Rc<Self>, date_changed: bool) {
+        if date_changed {
+            self.reload_on_close.set(true);
+        }
+        self.render();
     }
 
     fn handle_swipe(self: &Rc<Self>, vx: f64) {
@@ -1131,6 +1264,7 @@ impl Lightbox {
                 .header
                 .details_btn
                 .set_active(!self.header.details_btn.is_active()),
+            (false, gtk::gdk::Key::Delete) => self.confirm_trash_current(),
             (false, gtk::gdk::Key::Escape) => {
                 self.ui.nav.pop();
             }
@@ -1293,6 +1427,10 @@ impl Lightbox {
             .resolution_toggle
             .set_visible(show_remote_actions);
         self.actions.download.set_visible(show_remote_actions);
+        let on_server = !info.asset_id.starts_with(LOCAL_ID_PREFIX);
+        let in_trash = trash_view::is_trash_active(&self.ui);
+        self.actions.trash.set_visible(on_server && !in_trash);
+        self.details.edit_btn.set_visible(on_server && !in_trash);
         self.actions.zoom_group.set_visible(!info.is_video());
 
         self.start_picture_load(&info);
@@ -1322,6 +1460,7 @@ impl Lightbox {
             self.details.exif.remove(&c);
         }
         self.details.exif.set_visible(false);
+        self.details.tags.clear();
     }
 
     /// Load into the *inactive* picture and commit the slide transition only after
@@ -1596,9 +1735,13 @@ impl Lightbox {
                 return;
             }
             lb.details.loading.set_visible(false);
-            if let Ok(details) = result
-                && let Some(exif) = details.exif_info
-            {
+            let Ok(details) = result else {
+                return;
+            };
+            if !asset_id.starts_with(LOCAL_ID_PREFIX) && !trash_view::is_trash_active(&lb.ui) {
+                lb.details.tags.show(&asset_id, details.tags);
+            }
+            if let Some(exif) = details.exif_info {
                 fill_exif_box(&lb.details.exif, &exif, "Taken");
                 lb.details.exif.set_visible(true);
             }

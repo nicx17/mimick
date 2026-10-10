@@ -78,6 +78,12 @@ pub fn build_sidebar() -> SidebarParts {
         "folder-pictures-symbolic",
         "albums",
     ));
+    fixed_list.append(&action_row(
+        "Trash",
+        "Restore or permanently delete",
+        "user-trash-symbolic",
+        "trash",
+    ));
 
     let albums_header = gtk::Label::builder()
         .label("Albums")

@@ -13,24 +13,22 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::api_client::{LibraryAsset, MetadataSearchFilters};
+use crate::api_client::{LibraryAsset, MetadataSearchFilters, SortOrder, Tag};
 use crate::app_context::AppContext;
-use crate::library::albums_view::{
-    AlbumClick, AlbumsViewParts, build_albums_view, populate_albums,
-};
-use crate::library::explore_view::{ExploreViewParts, build_explore_view};
+use crate::library::albums_view::{AlbumClick, AlbumsViewParts, populate_albums};
+use crate::library::explore_view::ExploreViewParts;
 use crate::library::local_source::{
     LocalAsset, enumerate_local, enumerate_local_for_entry, filter_by_filename,
 };
-use crate::library::masonry::{GridViewParts, build_grid_view};
-use crate::library::search_view::{SearchViewParts, build_search_view};
-use crate::library::sidebar::{SidebarParts, build_sidebar};
+use crate::library::masonry::GridViewParts;
+use crate::library::search_view::SearchViewParts;
+use crate::library::sidebar::SidebarParts;
 use crate::library::state::{LibraryLoadState, LibrarySource};
 use crate::state_manager::TransferDirection;
 
 use self::actions::{connect_bulk_actions, connect_select_mode};
 use self::album_link::{connect_album_link_row, refresh_album_link_row};
-use self::context_menu::show_asset_context_menu;
+use self::context_menu::{AssetMenuHooks, show_asset_context_menu};
 use self::controls::{
     connect_controls, connect_grid_handlers, connect_sidebar_handlers,
     refresh_library_after_mutation, sidebar_dispatch,
@@ -55,6 +53,8 @@ pub mod thumbnail_cache;
 
 mod actions;
 mod album_link;
+mod asset_edit;
+mod asset_tags;
 mod context_menu;
 mod controls;
 mod download;
@@ -63,7 +63,9 @@ pub mod search_filters;
 pub mod search_view;
 mod server_stats_dialog;
 pub mod staging_view;
+mod trash_view;
 mod upload_picker;
+mod window_layout;
 
 const PAGE_SIZE: u32 = 50;
 
@@ -117,6 +119,7 @@ struct LibraryWindowUi {
     back_button: gtk::Button,
     select_toggle: gtk::ToggleButton,
     bulk_bar: gtk::Revealer,
+    trash: trash_view::TrashControls,
     bulk_count_label: gtk::Label,
     album_link_row: libadwaita::ActionRow,
     album_link_button: gtk::Button,
@@ -131,411 +134,36 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     style::ensure_registered();
     register_app_icons();
 
-    let window = libadwaita::ApplicationWindow::builder()
-        .application(app)
-        .title("Mimick Library")
-        .name("mimick-library-window")
-        .default_width(1480)
-        .default_height(780)
-        .width_request(360)
-        .height_request(480)
-        .build();
-
-    let header = libadwaita::HeaderBar::builder()
-        .show_start_title_buttons(true)
-        .show_end_title_buttons(true)
-        .build();
-    let sidebar_toggle = gtk::ToggleButton::builder()
-        .icon_name("sidebar-show-symbolic")
-        .tooltip_text("Toggle sidebar (F9)")
-        .active(true)
-        .css_classes(["mimick-pressable"])
-        .build();
-    let back_button = gtk::Button::builder()
-        .icon_name("go-previous-symbolic")
-        .tooltip_text("Back (Alt+Left)")
-        .sensitive(false)
-        .css_classes(["mimick-pressable"])
-        .build();
-    let menu = gtk::gio::Menu::new();
-    menu.append(Some("Refresh"), Some("win.refresh"));
-    menu.append(Some("Queue Inspector"), Some("win.queue"));
-    menu.append(Some("Settings"), Some("win.settings"));
-    let menu_button = gtk::MenuButton::builder()
-        .icon_name("open-menu-symbolic")
-        .menu_model(&menu)
-        .tooltip_text("Menu")
-        .css_classes(["mimick-pressable"])
-        .build();
-    header.pack_start(&sidebar_toggle);
-    header.pack_start(&back_button);
-    header.pack_end(&menu_button);
-    let select_toggle = gtk::ToggleButton::builder()
-        .icon_name("checkbox-symbolic")
-        .tooltip_text("Select assets (Esc to exit)")
-        .build();
-
-    let toolbar = libadwaita::ToolbarView::builder().build();
-    toolbar.add_top_bar(&header);
-
-    let narrow_flag = Rc::new(Cell::new(false));
-    let sidebar = build_sidebar();
-    let grid = build_grid_view(ctx.clone(), select_toggle.clone(), narrow_flag.clone());
-    let explore = build_explore_view();
-    let albums = build_albums_view();
-
-    let source_mode_model = gtk::StringList::new(&["Remote", "Local", "Unified"]);
-    let source_mode = gtk::DropDown::builder()
-        .model(&source_mode_model)
-        .selected(0)
-        .tooltip_text("Asset source")
-        .build();
-    let timeline_toggle = gtk::ToggleButton::builder()
-        .label("Timeline")
-        .tooltip_text("Timeline view (all assets only)")
-        .build();
-
-    let search_view = build_search_view();
-
-    let sort_model = gtk::StringList::new(&["Newest", "Filename", "File Type"]);
-    let sort_mode = gtk::DropDown::builder()
-        .model(&sort_model)
-        .selected(0)
-        .build();
-
-    let upload_button = gtk::Button::builder()
-        .icon_name("document-send-symbolic")
-        .tooltip_text("Upload to library")
-        .css_classes(["suggested-action", "mimick-pressable"])
-        .build();
-
-    // Source mode (Remote/Local/Unified) is meaningful only inside a linked
-    // album; the revealer is unhidden by `apply_view_chrome` per source kind.
-    let source_revealer = gtk::Revealer::builder()
-        .transition_type(gtk::RevealerTransitionType::SlideRight)
-        .transition_duration(180)
-        .reveal_child(false)
-        .build();
-    source_revealer.set_child(Some(&source_mode));
-
-    let source_group = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(8)
-        .build();
-    source_group.append(&source_revealer);
-    source_group.append(&timeline_toggle);
-
-    let sort_group = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(8)
-        .build();
-    sort_group.append(&sort_mode);
-    sort_group.append(&upload_button);
-
-    let controls = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(12)
-        .margin_top(12)
-        .margin_bottom(12)
-        .margin_start(8)
-        .margin_end(8)
-        .build();
-    controls.append(&source_group);
-    controls.append(&sort_group);
-
-    let timeline_banner = gtk::Label::builder()
-        .xalign(0.0)
-        .css_classes(vec!["mimick-timeline-banner".to_string()])
-        .visible(false)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .max_width_chars(20)
-        .margin_top(4)
-        .margin_bottom(4)
-        .margin_start(12)
-        .build();
-
-    let content_stack = gtk::Stack::builder()
-        .vexpand(true)
-        .hexpand(true)
-        .transition_type(gtk::StackTransitionType::Crossfade)
-        .transition_duration(180)
-        .build();
-    let loading_view = build_loading_view();
-    let empty_view = build_status_view(
-        "image-x-generic-symbolic",
-        "Nothing to show",
-        "No assets match the current view",
+    let parts = window_layout::WindowParts::build(app, &ctx);
+    let window = parts.window.clone();
+    let album_link_listbox = parts.content.album_link.listbox.clone();
+    let bulk = &parts.content.bulk;
+    let (bulk_delete, bulk_download, bulk_clear) = (
+        bulk.delete.clone(),
+        bulk.download.clone(),
+        bulk.clear.clone(),
     );
-    let error_view = build_status_view(
-        "dialog-warning-symbolic",
-        "Library data unavailable",
-        "Could not load library assets",
-    );
-    let error_label = error_view
-        .last_child()
-        .and_downcast::<gtk::Label>()
-        .expect("status-view subtitle label");
-    content_stack.add_named(&loading_view, Some("loading"));
-    content_stack.add_named(&empty_view, Some("empty"));
-    content_stack.add_named(&error_view, Some("error"));
-    content_stack.add_named(&grid.scrolled, Some("grid"));
-    content_stack.add_named(&explore.root, Some("explore"));
-    content_stack.add_named(&albums.root, Some("albums"));
+    let ui = Rc::new(LibraryWindowUi::from_parts(ctx, app, parts));
 
-    let transfer_progress = gtk::ProgressBar::builder()
-        .hexpand(true)
-        .valign(gtk::Align::Center)
-        .css_classes(vec!["mimick-transfer-progress".to_string()])
-        .build();
-    let transfer_icon = gtk::Image::builder()
-        .icon_size(gtk::IconSize::Normal)
-        .css_classes(vec!["dim-label".to_string()])
-        .visible(false)
-        .build();
-    let transfer_label = gtk::Label::builder()
-        .xalign(0.0)
-        .hexpand(true)
-        .wrap(true)
-        .max_width_chars(24)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .css_classes(vec!["caption".to_string(), "dim-label".to_string()])
-        .build();
-    let transfer_bar = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(12)
-        .margin_top(8)
-        .margin_bottom(16)
-        .margin_start(12)
-        .margin_end(12)
-        .css_classes(vec!["mimick-transfer-shell".to_string()])
-        .build();
-    transfer_bar.append(&transfer_progress);
-    transfer_bar.append(&transfer_icon);
-    transfer_bar.append(&transfer_label);
-
-    let album_link_row = libadwaita::ActionRow::builder()
-        .title("No local folder linked")
-        .subtitle("Drop files in the linked folder to sync this album")
-        .title_lines(1)
-        .subtitle_lines(2)
-        .build();
-    let album_sync_button = gtk::Button::builder()
-        .label("Sync")
-        .valign(gtk::Align::Center)
-        .css_classes(vec!["suggested-action".to_string()])
-        .visible(false)
-        .build();
-    let album_link_button = gtk::Button::builder()
-        .label("Link")
-        .valign(gtk::Align::Center)
-        .build();
-    album_link_row.add_suffix(&album_sync_button);
-    album_link_row.add_suffix(&album_link_button);
-    let album_link_listbox = gtk::ListBox::builder()
-        .selection_mode(gtk::SelectionMode::None)
-        .css_classes(vec!["boxed-list".to_string()])
-        .margin_start(12)
-        .margin_end(12)
-        .margin_top(4)
-        .margin_bottom(4)
-        .visible(false)
-        .build();
-    album_link_listbox.append(&album_link_row);
-
-    let bulk_count_label = gtk::Label::builder().xalign(0.0).hexpand(true).build();
-    let bulk_delete = gtk::Button::builder()
-        .icon_name("user-trash-symbolic")
-        .tooltip_text("Delete selected")
-        .css_classes(vec!["destructive-action".to_string()])
-        .build();
-    let bulk_download = gtk::Button::builder()
-        .icon_name("mimick-download-symbolic")
-        .tooltip_text("Download selected")
-        .build();
-    let bulk_clear = gtk::Button::builder()
-        .icon_name("edit-clear-symbolic")
-        .tooltip_text("Clear selection")
-        .css_classes(vec!["flat".to_string()])
-        .build();
-    let bulk_inner = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(8)
-        .margin_top(8)
-        .margin_bottom(16)
-        .margin_start(12)
-        .margin_end(12)
-        .css_classes(vec!["toolbar".to_string()])
-        .build();
-    bulk_inner.append(&bulk_count_label);
-    bulk_inner.append(&bulk_clear);
-    bulk_inner.append(&bulk_download);
-    bulk_inner.append(&bulk_delete);
-    let bulk_bar = gtk::Revealer::builder()
-        .transition_type(gtk::RevealerTransitionType::SlideUp)
-        .reveal_child(false)
-        .child(&bulk_inner)
-        .build();
-
-    let content = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .build();
-    content.append(&controls);
-    content.append(&search_view.root);
-    content.append(&album_link_listbox);
-    content.append(&timeline_banner);
-    content.append(&content_stack);
-    content.append(&bulk_bar);
-    content.append(&transfer_bar);
-
-    // Drop overlay: shown when files are dragged over the window.
-    let (content_with_drop, drop_overlay) = build_drop_overlay(content);
-
-    let split = libadwaita::OverlaySplitView::builder()
-        .sidebar(&sidebar.root)
-        .content(&content_with_drop)
-        .show_sidebar(true)
-        .collapsed(true)
-        .enable_show_gesture(true)
-        .enable_hide_gesture(true)
-        .min_sidebar_width(180.0)
-        .max_sidebar_width(260.0)
-        .sidebar_width_fraction(0.3)
-        .build();
-    split
-        .bind_property("show-sidebar", &sidebar_toggle, "active")
-        .sync_create()
-        .bidirectional()
-        .build();
-    toolbar.set_content(Some(&split));
-
-    let nav = libadwaita::NavigationView::new();
-    let root_page = libadwaita::NavigationPage::builder()
-        .child(&toolbar)
-        .title("Library")
-        .can_pop(false)
-        .build();
-    nav.add(&root_page);
-    window.set_content(Some(&nav));
-
-    let breakpoint = libadwaita::Breakpoint::new(
-        libadwaita::BreakpointCondition::parse("max-width: 600px")
-            .expect("valid breakpoint condition"),
-    );
-    breakpoint.add_setter(&transfer_bar, "visible", Some(&false.to_value()));
-    breakpoint.add_setter(&back_button, "visible", Some(&false.to_value()));
-    let narrow_apply = narrow_flag.clone();
-    let canvas_for_apply = grid.canvas.clone();
-    breakpoint.connect_apply(move |_| {
-        log::info!("NARROW breakpoint APPLIED: setting narrow=true");
-        narrow_apply.set(true);
-        canvas_for_apply.set_narrow(true);
-    });
-    let narrow_unapply = narrow_flag.clone();
-    let canvas_for_unapply = grid.canvas.clone();
-    breakpoint.connect_unapply(move |_| {
-        log::info!("NARROW breakpoint UNAPPLIED: setting narrow=false");
-        narrow_unapply.set(false);
-        canvas_for_unapply.set_narrow(false);
-    });
-    window.add_breakpoint(breakpoint);
-
-    let desktop_bp = libadwaita::Breakpoint::new(
-        libadwaita::BreakpointCondition::parse("min-width: 600px")
-            .expect("valid breakpoint condition"),
-    );
-    let window_for_desktop_apply = window.clone();
-    desktop_bp.connect_apply(move |_| {
-        window_for_desktop_apply.add_css_class("mimick-wide");
-    });
-    let window_for_desktop_unapply = window.clone();
-    desktop_bp.connect_unapply(move |_| {
-        window_for_desktop_unapply.remove_css_class("mimick-wide");
-    });
-    desktop_bp.add_setter(
-        &controls,
-        "orientation",
-        Some(&gtk::Orientation::Horizontal.to_value()),
-    );
-    desktop_bp.add_setter(&split, "collapsed", Some(&false.to_value()));
-    desktop_bp.add_setter(&album_sync_button, "label", Some(&"Sync…".to_value()));
-    desktop_bp.add_setter(
-        &album_link_button,
-        "label",
-        Some(&"Link folder…".to_value()),
-    );
-    window.add_breakpoint(desktop_bp);
-
-    // Tablet-width breakpoint: hide transfer bar and tweak chrome when the
-    // window is narrower than a typical desktop width.
-    let tablet_bp = libadwaita::Breakpoint::new(
-        libadwaita::BreakpointCondition::parse("max-width: 1000px")
-            .expect("valid breakpoint condition"),
-    );
-    window.add_breakpoint(tablet_bp);
-
-    let f9 = gtk::Shortcut::builder()
-        .trigger(&gtk::ShortcutTrigger::parse_string("F9").unwrap())
-        .action(&gtk::CallbackAction::new(clone!(
-            #[strong]
-            split,
-            move |_, _| {
-                split.set_show_sidebar(!split.shows_sidebar());
-                glib::Propagation::Stop
-            }
-        )))
-        .build();
-    let shortcut_controller = gtk::ShortcutController::new();
-    shortcut_controller.add_shortcut(f9);
-    window.add_controller(shortcut_controller);
-
-    let ui = Rc::new(LibraryWindowUi {
-        ctx,
-        app: app.clone(),
-        window: window.clone(),
-        nav: nav.clone(),
-        sidebar,
-        grid,
-        explore,
-        albums,
-        content_stack,
-        error_label,
-        transfer_bar,
-        transfer_progress,
-        transfer_icon,
-        transfer_label,
-        search_view,
-        sort_mode,
-        source_mode,
-        source_revealer,
-        upload_button: upload_button.clone(),
-        timeline_toggle,
-        timeline_banner,
-        source_mode_suppressed: Cell::new(false),
-        sidebar_suppressed: Cell::new(false),
-        back_button: back_button.clone(),
-        select_toggle: select_toggle.clone(),
-        bulk_bar: bulk_bar.clone(),
-        bulk_count_label: bulk_count_label.clone(),
-        album_link_row: album_link_row.clone(),
-        album_link_button: album_link_button.clone(),
-        album_sync_button: album_sync_button.clone(),
-        last_seen_upload_batch: Cell::new(0),
-        split: split.clone(),
-        drop_overlay: drop_overlay.clone(),
-    });
     *ui.grid.context_menu_handler.borrow_mut() = Some(Box::new(clone!(
         #[strong]
         ui,
         move |position, x, y| {
-            show_asset_context_menu(ui.clone(), &ui.grid.canvas, position, x, y);
+            show_asset_context_menu(
+                ui.clone(),
+                &ui.grid.canvas,
+                position,
+                x,
+                y,
+                AssetMenuHooks::for_grid(&ui),
+            );
         }
     )));
 
     connect_album_link_row(ui.clone(), album_link_listbox);
-
-    connect_select_mode(ui.clone(), select_toggle.clone());
+    connect_select_mode(ui.clone(), ui.select_toggle.clone());
     connect_bulk_actions(ui.clone(), bulk_delete, bulk_download, bulk_clear);
-
+    trash_view::connect_trash_controls(ui.clone());
     connect_sidebar_handlers(ui.clone());
     connect_controls(ui.clone());
     connect_grid_handlers(ui.clone());
@@ -550,7 +178,6 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     });
 
     bootstrap_window(ui);
-
     window.present();
 }
 
@@ -1037,6 +664,39 @@ fn album_click_handler(ui: Rc<LibraryWindowUi>) -> AlbumClick {
 }
 
 /// Apply header control layout adjustments when switching view modes.
+/// Refresh the search form's Tag dropdown from the server, then select `select` if given.
+fn refresh_search_tags(ui: Rc<LibraryWindowUi>, select: Option<String>) {
+    glib::MainContext::default().spawn_local(async move {
+        match ui.ctx.api_client.fetch_tags().await {
+            Ok(tags) => {
+                search_view::set_available_tags(&ui.search_view, &tags);
+                if let Some(tag_id) = select {
+                    search_view::select_tag(&ui.search_view, &tag_id);
+                }
+            }
+            // Tags are optional (`tag.read`); the dropdown just stays at "Any".
+            Err(err) => log::debug!("Could not load tags for search: {}", err),
+        }
+    });
+}
+
+/// Show every asset carrying `tag`, with the search form open and its Tag filter set.
+fn search_by_tag(ui: Rc<LibraryWindowUi>, tag: Tag) {
+    search_view::clear_all_filters(&ui.search_view);
+    ui.search_view.root.set_reveal_child(true);
+    refresh_search_tags(ui.clone(), Some(tag.id.clone()));
+    let filters = MetadataSearchFilters {
+        tag_ids: Some(vec![tag.id]),
+        ..Default::default()
+    };
+    show_source(
+        &ui,
+        LibrarySource::AdvancedSearch {
+            filters: Box::new(filters),
+        },
+    );
+}
+
 fn apply_timeline_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
     let timeline_allowed = matches!(source, LibrarySource::AllAssets | LibrarySource::Timeline);
     let timeline_active = matches!(source, LibrarySource::Timeline);
@@ -1073,6 +733,7 @@ fn apply_timeline_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
 
     // Source-mode (Remote/Local/Unified) only relevant inside an album.
     ui.source_revealer.set_reveal_child(in_album);
+    trash_view::set_trash_mode(ui, matches!(source, LibrarySource::Trash));
 
     if in_album {
         ui.upload_button.set_tooltip_text(Some("Upload to album"));
@@ -1204,115 +865,104 @@ fn load_explore_landing(ui: Rc<LibraryWindowUi>) {
         return;
     }
     ui.explore.populated.set(true);
-    let ctx = ui.ctx.clone();
-    explore_view::wire_people_filter(&ui.explore, ctx.clone(), || {});
+    explore_view::wire_people_filter(&ui.explore, ui.ctx.clone(), || {});
     explore_view::show_loading(&ui.explore);
     ui.content_stack.set_visible_child_name("explore");
 
-    let mctx = glib::MainContext::default();
+    load_explore_people(ui.clone());
+    // Fetch places (slow paginated scan) only if not cached.
+    if explore_view::has_cached_places(&ui.explore) {
+        log::debug!("Explore: rendering places from cache");
+        explore_view::render_cached_places(&ui.explore, ui.ctx.clone());
+    } else {
+        log::debug!("Explore: places cache empty, fetching from server");
+        load_explore_places(ui.clone());
+    }
+    load_explore_sections(ui);
+}
 
-    mctx.spawn_local(clone!(
-        #[strong]
-        ui,
-        #[strong]
-        ctx,
-        async move {
-            let people_res = ctx.api_client.fetch_people(false).await;
-            if let Err(e) = &people_res
-                && (e.contains("HTTP 401") || e.contains("HTTP 403"))
-            {
-                show_library_permission_error(&ui.window);
-            }
-            let people = people_res.unwrap_or_default();
-            let click_ui = ui.clone();
-            explore_view::populate_people(&ui.explore, ctx.clone(), people, move |id, _name| {
+/// Switch the grid to `source` and load its first page.
+fn show_source(ui: &Rc<LibraryWindowUi>, source: LibrarySource) {
+    let request = ui.ctx.library_state.lock().switch_source(source);
+    apply_timeline_ui_state(ui, &request.1);
+    load_source_page(ui.clone(), request, false);
+}
+
+/// The fetched value, or its default after telling the user if the API key lacks permission.
+fn unwrap_or_report_permission<T: Default>(ui: &LibraryWindowUi, result: Result<T, String>) -> T {
+    if let Err(e) = &result
+        && (e.contains("HTTP 401") || e.contains("HTTP 403"))
+    {
+        show_library_permission_error(&ui.window);
+    }
+    result.unwrap_or_default()
+}
+
+fn load_explore_people(ui: Rc<LibraryWindowUi>) {
+    glib::MainContext::default().spawn_local(async move {
+        let people = unwrap_or_report_permission(&ui, ui.ctx.api_client.fetch_people(false).await);
+        let click_ui = ui.clone();
+        explore_view::populate_people(&ui.explore, ui.ctx.clone(), people, move |id, _name| {
+            let filters = MetadataSearchFilters {
+                person_ids: Some(vec![id]),
+                ..Default::default()
+            };
+            show_source(
+                &click_ui,
+                LibrarySource::AdvancedSearch {
+                    filters: Box::new(filters),
+                },
+            );
+        });
+    });
+}
+
+fn load_explore_places(ui: Rc<LibraryWindowUi>) {
+    glib::MainContext::default().spawn_local(async move {
+        let places = unwrap_or_report_permission(&ui, ui.ctx.api_client.fetch_all_places().await);
+        let click_ui = ui.clone();
+        explore_view::populate_places(
+            &ui.explore,
+            ui.ctx.clone(),
+            places,
+            move |_kind, value, _asset_id| {
                 let filters = MetadataSearchFilters {
-                    person_ids: Some(vec![id]),
+                    city: Some(value.clone()),
                     ..Default::default()
                 };
-                let request = click_ui.ctx.library_state.lock().switch_source(
+                show_source(
+                    &click_ui,
                     LibrarySource::AdvancedSearch {
                         filters: Box::new(filters),
                     },
                 );
-                apply_timeline_ui_state(&click_ui, &request.1);
-                load_source_page(click_ui.clone(), request, false);
-            });
-        }
-    ));
-    // Fetch places (slow paginated scan) only if not cached.
-    if !explore_view::has_cached_places(&ui.explore) {
-        log::debug!("Explore: places cache empty, fetching from server");
-        mctx.spawn_local(clone!(
-            #[strong]
-            ui,
-            #[strong]
-            ctx,
-            async move {
-                let places_res = ctx.api_client.fetch_all_places().await;
-                if let Err(e) = &places_res
-                    && (e.contains("HTTP 401") || e.contains("HTTP 403"))
-                {
-                    show_library_permission_error(&ui.window);
+            },
+        );
+    });
+}
+
+fn load_explore_sections(ui: Rc<LibraryWindowUi>) {
+    glib::MainContext::default().spawn_local(async move {
+        let sections = unwrap_or_report_permission(&ui, ui.ctx.api_client.fetch_explore().await);
+        let click_ui = ui.clone();
+        explore_view::populate_explore(
+            &ui.explore,
+            ui.ctx.clone(),
+            sections,
+            move |kind, value, asset_id| {
+                if kind == "recent" {
+                    open_asset_in_lightbox(click_ui.clone(), asset_id);
+                    return;
                 }
-                let places = places_res.unwrap_or_default();
-                let click_ui = ui.clone();
-                explore_view::populate_places(
-                    &ui.explore,
-                    ctx.clone(),
-                    places,
-                    move |_kind, value, _asset_id| {
-                        let next = LibrarySource::AdvancedSearch {
-                            filters: Box::new(MetadataSearchFilters {
-                                city: Some(value.clone()),
-                                ..Default::default()
-                            }),
-                        };
-                        let request = click_ui.ctx.library_state.lock().switch_source(next);
-                        apply_timeline_ui_state(&click_ui, &request.1);
-                        load_source_page(click_ui.clone(), request, false);
+                show_source(
+                    &click_ui,
+                    LibrarySource::SmartSearch {
+                        query: value.clone(),
                     },
                 );
-            }
-        ));
-    } else {
-        log::debug!("Explore: rendering places from cache");
-        explore_view::render_cached_places(&ui.explore, ctx.clone());
-    }
-
-    mctx.spawn_local(clone!(
-        #[strong]
-        ui,
-        #[strong]
-        ctx,
-        async move {
-            let sections_res = ctx.api_client.fetch_explore().await;
-            if let Err(e) = &sections_res
-                && (e.contains("HTTP 401") || e.contains("HTTP 403"))
-            {
-                show_library_permission_error(&ui.window);
-            }
-            let sections = sections_res.unwrap_or_default();
-            let click_ui = ui.clone();
-            explore_view::populate_explore(
-                &ui.explore,
-                ctx.clone(),
-                sections,
-                move |kind, value, asset_id| {
-                    if kind == "recent" {
-                        open_asset_in_lightbox(click_ui.clone(), asset_id);
-                        return;
-                    }
-                    let next = LibrarySource::SmartSearch {
-                        query: value.clone(),
-                    };
-                    let request = click_ui.ctx.library_state.lock().switch_source(next);
-                    apply_timeline_ui_state(&click_ui, &request.1);
-                    load_source_page(click_ui.clone(), request, false);
-                },
-            );
-        }
-    ));
+            },
+        );
+    });
 }
 
 /// Fetch a single asset by ID and open it in lightbox without leaving explore.
@@ -1385,154 +1035,158 @@ fn load_source_page(ui: Rc<LibraryWindowUi>, request: (u64, LibrarySource, u32),
         async move {
             let (generation, source, page) = request;
             let order = ui.ctx.library_state.lock().sort_mode.server_order();
-            let result: Result<(Vec<LibraryAsset>, bool), String> = match source.clone() {
-                LibrarySource::AllAssets | LibrarySource::Timeline => {
-                    ui.ctx
-                        .api_client
-                        .search_metadata("", page, PAGE_SIZE, order)
-                        .await
-                }
-                LibrarySource::Explore => unreachable!("intercepted above"),
-                LibrarySource::Album { id, .. } => {
-                    ui.ctx
-                        .api_client
-                        .fetch_album_assets(&id, page, PAGE_SIZE, order)
-                        .await
-                }
-                LibrarySource::SmartSearch { query } => {
-                    ui.ctx
-                        .api_client
-                        .search_smart(&query, page, PAGE_SIZE)
-                        .await
-                }
-                LibrarySource::OcrSearch { query } => {
-                    ui.ctx
-                        .api_client
-                        .search_ocr(&query, page, PAGE_SIZE, order)
-                        .await
-                }
-                LibrarySource::MetadataSearch { query } => {
-                    ui.ctx
-                        .api_client
-                        .search_metadata(&query, page, PAGE_SIZE, order)
-                        .await
-                }
-                LibrarySource::AdvancedSearch { filters } => {
-                    let mut filters = (*filters).clone();
-                    filters.order = order;
-                    ui.ctx
-                        .api_client
-                        .search_metadata_with_filters(&filters, page, PAGE_SIZE)
-                        .await
-                }
-                LibrarySource::LocalAll => {
-                    // Local enumeration is bounded — single synthetic page.
-                    if page > 1 {
-                        Ok((Vec::new(), false))
-                    } else {
-                        let locals = enumerate_local(ui.ctx.clone()).await;
-                        Ok((
-                            locals.into_iter().map(local_to_library_asset).collect(),
-                            false,
-                        ))
-                    }
-                }
-                LibrarySource::LocalSearch { query } => {
-                    if page > 1 {
-                        Ok((Vec::new(), false))
-                    } else {
-                        let locals = enumerate_local(ui.ctx.clone()).await;
-                        let filtered = filter_by_filename(locals, &query);
-                        Ok((
-                            filtered.into_iter().map(local_to_library_asset).collect(),
-                            false,
-                        ))
-                    }
-                }
-                LibrarySource::Unified => {
-                    let remote = ui
-                        .ctx
-                        .api_client
-                        .search_metadata("", page, PAGE_SIZE, order)
-                        .await;
-                    merge_unified_page(remote, page, &ui, None).await
-                }
-                LibrarySource::UnifiedSearch { query } => {
-                    let remote = ui
-                        .ctx
-                        .api_client
-                        .search_metadata(&query, page, PAGE_SIZE, order)
-                        .await;
-                    merge_unified_page(remote, page, &ui, Some(&query)).await
-                }
-                LibrarySource::AlbumLocal { name, .. } => {
-                    if page > 1 {
-                        Ok((Vec::new(), false))
-                    } else {
-                        match linked_entry_path_for_album(&ui, &name) {
-                            Some(path) => {
-                                let locals = enumerate_local_for_entry(ui.ctx.clone(), path).await;
-                                Ok((
-                                    locals.into_iter().map(local_to_library_asset).collect(),
-                                    false,
-                                ))
-                            }
-                            None => Ok((Vec::new(), false)),
-                        }
-                    }
-                }
-                LibrarySource::AlbumUnified { id, name } => {
-                    let remote = ui
-                        .ctx
-                        .api_client
-                        .fetch_album_assets(&id, page, PAGE_SIZE, order)
-                        .await;
-                    merge_album_unified_page(remote, page, &ui, &name).await
-                }
-            };
-
-            match result {
-                Ok((items, has_more)) => {
-                    {
-                        let mut state = ui.ctx.library_state.lock();
-                        let applied = if append {
-                            state.append_assets_with_more(generation, items, has_more)
-                        } else {
-                            state.replace_assets_with_more(generation, items, has_more)
-                        };
-                        if !applied {
-                            return;
-                        }
-                        if append {
-                            ui.grid
-                                .model
-                                .extend(&ui.ctx, &state.assets, &state.sort_mode);
-                        } else {
-                            ui.grid
-                                .model
-                                .reset(&ui.ctx, &state.assets, &state.sort_mode);
-                        }
-                    }
-                    // Lock is released before touching GTK widgets so that
-                    // signal handlers triggered by the stack transition
-                    // can safely re-acquire library_state.
-                    sync_content_state(&ui);
-                    reload_sidebar(&ui);
-                    update_timeline_banner_if_active(&ui, &ui.grid.scrolled.vadjustment());
-                }
-                Err(err) => {
-                    {
-                        let mut state = ui.ctx.library_state.lock();
-                        state.mark_error(generation, err.clone());
-                    }
-                    // Lock dropped before GTK calls (same pattern as Ok path).
-                    ui.error_label
-                        .set_label(&format!("Could not load library assets: {}", err));
-                    ui.content_stack.set_visible_child_name("error");
-                }
-            }
+            let result = fetch_source_page(&ui, source, page, order).await;
+            apply_page_result(&ui, generation, append, result);
         }
     ));
+}
+
+/// One page of assets plus whether more pages follow.
+type PageResult = Result<(Vec<LibraryAsset>, bool), String>;
+
+async fn fetch_source_page(
+    ui: &Rc<LibraryWindowUi>,
+    source: LibrarySource,
+    page: u32,
+    order: Option<SortOrder>,
+) -> PageResult {
+    match source {
+        LibrarySource::LocalAll
+        | LibrarySource::LocalSearch { .. }
+        | LibrarySource::AlbumLocal { .. } => fetch_local_page(ui, source, page).await,
+        LibrarySource::Unified
+        | LibrarySource::UnifiedSearch { .. }
+        | LibrarySource::AlbumUnified { .. } => fetch_unified_page(ui, source, page, order).await,
+        remote => fetch_remote_page(&ui.ctx.api_client, remote, page, order).await,
+    }
+}
+
+async fn fetch_remote_page(
+    api: &crate::api_client::ImmichApiClient,
+    source: LibrarySource,
+    page: u32,
+    order: Option<SortOrder>,
+) -> PageResult {
+    match source {
+        LibrarySource::AllAssets | LibrarySource::Timeline => {
+            api.search_metadata("", page, PAGE_SIZE, order).await
+        }
+        LibrarySource::Album { id, .. } => {
+            api.fetch_album_assets(&id, page, PAGE_SIZE, order).await
+        }
+        LibrarySource::SmartSearch { query } => api.search_smart(&query, page, PAGE_SIZE).await,
+        LibrarySource::OcrSearch { query } => api.search_ocr(&query, page, PAGE_SIZE, order).await,
+        LibrarySource::MetadataSearch { query } => {
+            api.search_metadata(&query, page, PAGE_SIZE, order).await
+        }
+        LibrarySource::AdvancedSearch { filters } => {
+            let filters = MetadataSearchFilters { order, ..*filters };
+            api.search_metadata_with_filters(&filters, page, PAGE_SIZE)
+                .await
+        }
+        LibrarySource::Trash => {
+            let filters = MetadataSearchFilters {
+                order,
+                ..MetadataSearchFilters::trashed()
+            };
+            api.search_metadata_with_filters(&filters, page, PAGE_SIZE)
+                .await
+        }
+        other => unreachable!("{other:?} is not a remote page source"),
+    }
+}
+
+/// Local enumeration is bounded, so local sources return everything as one page.
+async fn fetch_local_page(
+    ui: &Rc<LibraryWindowUi>,
+    source: LibrarySource,
+    page: u32,
+) -> PageResult {
+    if page > 1 {
+        return Ok((Vec::new(), false));
+    }
+    let locals = match source {
+        LibrarySource::LocalAll => enumerate_local(ui.ctx.clone()).await,
+        LibrarySource::LocalSearch { query } => {
+            filter_by_filename(enumerate_local(ui.ctx.clone()).await, &query)
+        }
+        LibrarySource::AlbumLocal { name, .. } => match linked_entry_path_for_album(ui, &name) {
+            Some(path) => enumerate_local_for_entry(ui.ctx.clone(), path).await,
+            None => Vec::new(),
+        },
+        other => unreachable!("{other:?} is not a local page source"),
+    };
+    Ok((
+        locals.into_iter().map(local_to_library_asset).collect(),
+        false,
+    ))
+}
+
+/// Remote assets overlayed with local sync state.
+async fn fetch_unified_page(
+    ui: &Rc<LibraryWindowUi>,
+    source: LibrarySource,
+    page: u32,
+    order: Option<SortOrder>,
+) -> PageResult {
+    let api = &ui.ctx.api_client;
+    match source {
+        LibrarySource::Unified => {
+            let remote = api.search_metadata("", page, PAGE_SIZE, order).await;
+            merge_unified_page(remote, page, ui, None).await
+        }
+        LibrarySource::UnifiedSearch { query } => {
+            let remote = api.search_metadata(&query, page, PAGE_SIZE, order).await;
+            merge_unified_page(remote, page, ui, Some(&query)).await
+        }
+        LibrarySource::AlbumUnified { id, name } => {
+            let remote = api.fetch_album_assets(&id, page, PAGE_SIZE, order).await;
+            merge_album_unified_page(remote, page, ui, &name).await
+        }
+        other => unreachable!("{other:?} is not a unified page source"),
+    }
+}
+
+fn apply_page_result(ui: &Rc<LibraryWindowUi>, generation: u64, append: bool, result: PageResult) {
+    let (items, has_more) = match result {
+        Ok(page) => page,
+        Err(err) => {
+            ui.ctx
+                .library_state
+                .lock()
+                .mark_error(generation, err.clone());
+            // Lock dropped before GTK calls (same pattern as the Ok path).
+            ui.error_label
+                .set_label(&format!("Could not load library assets: {}", err));
+            ui.content_stack.set_visible_child_name("error");
+            return;
+        }
+    };
+    {
+        let mut state = ui.ctx.library_state.lock();
+        let applied = if append {
+            state.append_assets_with_more(generation, items, has_more)
+        } else {
+            state.replace_assets_with_more(generation, items, has_more)
+        };
+        if !applied {
+            return;
+        }
+        if append {
+            ui.grid
+                .model
+                .extend(&ui.ctx, &state.assets, &state.sort_mode);
+        } else {
+            ui.grid
+                .model
+                .reset(&ui.ctx, &state.assets, &state.sort_mode);
+        }
+    }
+    // Lock is released before touching GTK widgets so that signal handlers
+    // triggered by the stack transition can safely re-acquire library_state.
+    sync_content_state(ui);
+    reload_sidebar(ui);
+    update_timeline_banner_if_active(ui, &ui.grid.scrolled.vadjustment());
 }
 
 fn setup_album_drop_target(
@@ -1626,6 +1280,10 @@ fn reload_sidebar(ui: &Rc<LibraryWindowUi>) {
         }
         LibrarySource::Explore => {
             select_fixed_row(&ui.sidebar.fixed_list, "explore");
+            ui.sidebar.albums_list.unselect_all();
+        }
+        LibrarySource::Trash => {
+            select_fixed_row(&ui.sidebar.fixed_list, "trash");
             ui.sidebar.albums_list.unselect_all();
         }
         LibrarySource::Album { id, .. }

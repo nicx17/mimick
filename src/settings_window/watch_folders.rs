@@ -58,196 +58,250 @@ pub(super) fn add_folder_row(
 ) {
     let path = entry.path().to_string();
     let base_subtitle = watch_path_subtitle(&path).unwrap_or_default().to_string();
+    let row = FolderRowData {
+        action_row: folder_expander_row(&path, &base_subtitle),
+        album_name: Rc::new(RefCell::new(initial_target_label(entry))),
+        uploads_to_library: Rc::new(Cell::new(entry.uploads_to_library())),
+        rules: Rc::new(RefCell::new(initial_rules(entry))),
+        path,
+        base_subtitle,
+    };
+    add_target_row(&row, albums_ref, on_settings_changed.clone());
+    add_rules_row(
+        &row.action_row,
+        RulesTarget {
+            folder_path: row.path.clone(),
+            fallback_catchup_mode,
+            rules: row.rules.clone(),
+            uploads_to_library: row.uploads_to_library.clone(),
+            on_changed: on_settings_changed.clone(),
+        },
+    );
+    add_remove_row(
+        list,
+        &row.action_row,
+        tracked_rows,
+        &row.path,
+        on_settings_changed,
+    );
+    list.append(&row.action_row);
+    tracked_rows.borrow_mut().push(row);
+}
 
-    let mut initial_subtitle = base_subtitle.clone();
-    if !initial_subtitle.is_empty() {
-        initial_subtitle.push('\n');
-    }
-    initial_subtitle.push_str("Status: Idle");
-
-    let expander_row = adw::ExpanderRow::builder()
-        .title(display_watch_path(&path))
-        .subtitle(&initial_subtitle)
+fn folder_expander_row(path: &str, base_subtitle: &str) -> adw::ExpanderRow {
+    adw::ExpanderRow::builder()
+        .title(display_watch_path(path))
+        .subtitle(initial_subtitle(base_subtitle))
         .subtitle_lines(2)
         .title_lines(1)
-        .build();
+        .build()
+}
 
-    let album_name = Rc::new(RefCell::new(
-        if entry.uploads_to_library() {
-            LIBRARY_ALBUM_LABEL
-        } else {
-            entry.album_name().unwrap_or(DEFAULT_ALBUM_LABEL)
-        }
-        .to_string(),
-    ));
-    let uploads_to_library = Rc::new(Cell::new(entry.uploads_to_library()));
+/// "Upload Target" sub-row whose button opens the album picker.
+fn add_target_row(
+    row: &FolderRowData,
+    albums_ref: Rc<RefCell<Vec<(String, String)>>>,
+    on_changed: Rc<dyn Fn()>,
+) {
+    let picker = PickerTarget {
+        label: row.album_name.clone(),
+        button: picker_button(&row.album_name.borrow()),
+        upload_target: UploadTargetState {
+            rules: row.rules.clone(),
+            library: row.uploads_to_library.clone(),
+            rules_before_library: Rc::new(RefCell::new(None)),
+        },
+        on_changed,
+    };
+    row.action_row
+        .add_row(&suffix_row("Upload Target", &picker.button));
+    connect_picker_button(&row.action_row, albums_ref, picker);
+}
 
-    let mut initial_rules = entry.rules();
-    if entry.uploads_to_library() {
-        initial_rules.restrict_to_library_uploads();
+/// Folder subtitle plus a status line that the status poller updates later.
+fn initial_subtitle(base_subtitle: &str) -> String {
+    if base_subtitle.is_empty() {
+        "Status: Idle".to_string()
+    } else {
+        format!("{base_subtitle}\nStatus: Idle")
     }
-    let rules = Rc::new(RefCell::new(initial_rules));
+}
 
-    let picker_btn = Button::builder()
-        .label(album_name.borrow().clone())
+fn initial_target_label(entry: &WatchPathEntry) -> String {
+    if entry.uploads_to_library() {
+        LIBRARY_ALBUM_LABEL.to_string()
+    } else {
+        entry
+            .album_name()
+            .unwrap_or(DEFAULT_ALBUM_LABEL)
+            .to_string()
+    }
+}
+
+fn initial_rules(entry: &WatchPathEntry) -> FolderRules {
+    let mut rules = entry.rules();
+    if entry.uploads_to_library() {
+        rules.restrict_to_library_uploads();
+    }
+    rules
+}
+
+fn picker_button(label: &str) -> Button {
+    let button = Button::builder()
+        .label(label)
         .valign(gtk::Align::Center)
         .tooltip_text("Select a library or album upload target")
         .build();
-    if let Some(label) = picker_btn.child().and_downcast::<gtk::Label>() {
+    if let Some(label) = button.child().and_downcast::<gtk::Label>() {
         label.set_ellipsize(gtk::pango::EllipsizeMode::End);
         label.set_max_width_chars(16);
     }
+    button
+}
 
-    let picker_btn_clone = picker_btn.clone();
-    let album_name_clone = album_name.clone();
-    let albums_ref_clone = albums_ref.clone();
-    let target_for_picker = UploadTargetState {
-        rules: rules.clone(),
-        library: uploads_to_library.clone(),
-        rules_before_library: Rc::new(RefCell::new(None)),
-    };
-    let on_settings_changed_for_picker = on_settings_changed.clone();
+fn suffix_row(title: &str, suffix: &impl IsA<gtk::Widget>) -> adw::ActionRow {
+    let row = adw::ActionRow::builder()
+        .title(title)
+        .title_lines(1)
+        .build();
+    row.add_suffix(suffix);
+    row
+}
 
-    picker_btn.connect_clicked(clone!(
+fn parent_window(row: &adw::ExpanderRow) -> Option<gtk::Window> {
+    row.root()
+        .and_then(|root| root.downcast::<gtk::Window>().ok())
+}
+
+fn connect_picker_button(
+    expander_row: &adw::ExpanderRow,
+    albums_ref: Rc<RefCell<Vec<(String, String)>>>,
+    picker: PickerTarget,
+) {
+    let button = picker.button.clone();
+    button.connect_clicked(clone!(
         #[weak]
         expander_row,
         move |_| {
-            if let Some(window) = expander_row
-                .root()
-                .and_then(|root| root.downcast::<gtk::Window>().ok())
-            {
-                let window_clone = window.clone();
-                let albums_ref_clone = albums_ref_clone.clone();
-                let album_name_clone = album_name_clone.clone();
-                let picker_btn_clone = picker_btn_clone.clone();
-                let target_clone = target_for_picker.clone();
-                let on_settings_changed_for_picker = on_settings_changed_for_picker.clone();
-
-                glib::idle_add_local_once(move || {
-                    show_album_picker_dialog(
-                        &window_clone,
-                        albums_ref_clone,
-                        album_name_clone,
-                        picker_btn_clone,
-                        target_clone,
-                        on_settings_changed_for_picker,
-                    );
-                });
-            }
+            let Some(window) = parent_window(&expander_row) else {
+                return;
+            };
+            let albums_ref = albums_ref.clone();
+            let picker = picker.clone();
+            // Deferred to idle so the click finishes before the modal opens.
+            glib::idle_add_local_once(move || {
+                show_album_picker_dialog(&window, albums_ref, picker);
+            });
         }
     ));
+}
 
-    let album_subrow = adw::ActionRow::builder()
-        .title("Upload Target")
-        .title_lines(1)
-        .build();
-    album_subrow.add_suffix(&picker_btn);
-    expander_row.add_row(&album_subrow);
+/// What the rules dialog edits for one folder row.
+#[derive(Clone)]
+struct RulesTarget {
+    folder_path: String,
+    fallback_catchup_mode: StartupCatchupMode,
+    rules: Rc<RefCell<FolderRules>>,
+    uploads_to_library: Rc<Cell<bool>>,
+    on_changed: Rc<dyn Fn()>,
+}
 
-    let remove_btn = Button::builder()
-        .icon_name("user-trash-symbolic")
-        .valign(gtk::Align::Center)
-        .css_classes(vec!["destructive-action".to_string()])
-        .build();
+/// "Folder Rules" sub-row whose button opens the rules dialog.
+fn add_rules_row(expander_row: &adw::ExpanderRow, target: RulesTarget) {
     let rules_btn = Button::builder()
         .label("Rules")
         .tooltip_text("Edit folder rules")
         .valign(gtk::Align::Center)
         .build();
-
-    let list_clone = list.clone();
-    let tracked_clone = tracked_rows.clone();
-    let path_clone = path.clone();
-    let rules_clone = rules.clone();
-    let path_for_rules = path.clone();
-    let library_for_rules = uploads_to_library.clone();
-    let on_settings_changed_for_rules = on_settings_changed.clone();
-    let fallback_catchup_mode_for_rules = fallback_catchup_mode.clone();
-
+    expander_row.add_row(&suffix_row("Folder Rules", &rules_btn));
     rules_btn.connect_clicked(clone!(
         #[weak]
         expander_row,
         move |_| {
-            if let Some(window) = expander_row
-                .root()
-                .and_then(|root| root.downcast::<gtk::Window>().ok())
-            {
-                let window = window.clone();
-                let path_for_rules = path_for_rules.clone();
-                let rules_clone = rules_clone.clone();
-                let uploads_to_library = library_for_rules.get();
-                let on_settings_changed_for_rules = on_settings_changed_for_rules.clone();
-                let fallback_catchup_mode_for_rules = fallback_catchup_mode_for_rules.clone();
-                glib::idle_add_local_once(move || {
-                    show_folder_rules_dialog(
-                        &window,
-                        &path_for_rules,
-                        fallback_catchup_mode_for_rules.clone(),
-                        rules_clone,
-                        uploads_to_library,
-                        on_settings_changed_for_rules,
-                    );
-                });
-            }
+            let Some(window) = parent_window(&expander_row) else {
+                return;
+            };
+            let target = target.clone();
+            glib::idle_add_local_once(move || show_folder_rules_dialog(&window, target));
         }
     ));
+}
 
-    let on_settings_changed_for_remove = on_settings_changed.clone();
-
+/// "Remove Folder" sub-row that drops the row and its tracked settings.
+fn add_remove_row(
+    list: &ListBox,
+    expander_row: &adw::ExpanderRow,
+    tracked_rows: &Rc<RefCell<Vec<FolderRowData>>>,
+    path: &str,
+    on_changed: Rc<dyn Fn()>,
+) {
+    let remove_btn = Button::builder()
+        .icon_name("user-trash-symbolic")
+        .valign(gtk::Align::Center)
+        .css_classes(vec!["destructive-action".to_string()])
+        .build();
+    expander_row.add_row(&suffix_row("Remove Folder", &remove_btn));
+    let list = list.clone();
+    let tracked_rows = tracked_rows.clone();
+    let path = path.to_string();
     remove_btn.connect_clicked(clone!(
         #[weak]
         expander_row,
         move |_| {
-            let list_clone = list_clone.clone();
-            let tracked_clone = tracked_clone.clone();
-            let path_clone = path_clone.clone();
+            let (list, tracked_rows, path, on_changed) = (
+                list.clone(),
+                tracked_rows.clone(),
+                path.clone(),
+                on_changed.clone(),
+            );
             let expander_row = expander_row.clone();
-            let on_settings_changed_for_remove = on_settings_changed_for_remove.clone();
             glib::idle_add_local_once(move || {
-                if let Some(focus_target) = list_clone.first_child() {
+                // Move focus off the row before removing it so GTK doesn't warn.
+                if let Some(focus_target) = list.first_child() {
                     focus_target.grab_focus();
                 }
-                list_clone.remove(&expander_row);
-                tracked_clone.borrow_mut().retain(|r| r.path != path_clone);
-                (on_settings_changed_for_remove)();
+                list.remove(&expander_row);
+                tracked_rows.borrow_mut().retain(|r| r.path != path);
+                on_changed();
             });
         }
     ));
-
-    let rules_subrow = adw::ActionRow::builder()
-        .title("Folder Rules")
-        .title_lines(1)
-        .build();
-    rules_subrow.add_suffix(&rules_btn);
-    expander_row.add_row(&rules_subrow);
-
-    let remove_subrow = adw::ActionRow::builder()
-        .title("Remove Folder")
-        .title_lines(1)
-        .build();
-    remove_subrow.add_suffix(&remove_btn);
-    expander_row.add_row(&remove_subrow);
-
-    list.append(&expander_row);
-    tracked_rows.borrow_mut().push(FolderRowData {
-        path,
-        album_name,
-        uploads_to_library,
-        rules,
-        action_row: expander_row,
-        base_subtitle,
-    });
 }
 
 /// Present a modal dialog for editing a folder's sync and filter rules.
-fn show_folder_rules_dialog(
+fn show_folder_rules_dialog(parent: &impl gtk::prelude::IsA<gtk::Window>, target: RulesTarget) {
+    let (dialog, content) = rules_dialog_shell(parent, &target.folder_path);
+    let current = target.rules.borrow().clone();
+    let form = RulesForm::new(
+        &current,
+        target.fallback_catchup_mode.clone(),
+        target.uploads_to_library.get(),
+    );
+    form.append_to(&content);
+
+    let (cancel_btn, save_btn) = append_save_cancel(&content);
+    cancel_btn.connect_clicked(clone!(
+        #[weak]
+        dialog,
+        move |_| dialog.close()
+    ));
+    save_btn.connect_clicked(clone!(
+        #[weak]
+        dialog,
+        move |_| {
+            let updated = form.rules(&target.rules.borrow());
+            *target.rules.borrow_mut() = updated;
+            (target.on_changed)();
+            dialog.close();
+        }
+    ));
+    dialog.present();
+}
+
+fn rules_dialog_shell(
     parent: &impl gtk::prelude::IsA<gtk::Window>,
     folder_path: &str,
-    fallback_catchup_mode: StartupCatchupMode,
-    rules_state: Rc<RefCell<FolderRules>>,
-    uploads_to_library: bool,
-    on_settings_changed: Rc<dyn Fn()>,
-) {
+) -> (adw::Window, Box) {
     let dialog = adw::Window::builder()
         .transient_for(parent)
         .modal(true)
@@ -271,7 +325,6 @@ fn show_folder_rules_dialog(
         .child(&content)
         .build();
     dialog.set_content(Some(&scroll));
-
     let title = gtk::Label::builder()
         .label(format!("Rules for {}", display_watch_path(folder_path)))
         .halign(gtk::Align::Start)
@@ -279,121 +332,10 @@ fn show_folder_rules_dialog(
         .max_width_chars(28)
         .build();
     content.append(&title);
+    (dialog, content)
+}
 
-    let current = rules_state.borrow().clone();
-
-    let list_box = gtk::ListBox::builder()
-        .selection_mode(gtk::SelectionMode::None)
-        .css_classes(vec![String::from("boxed-list")])
-        .build();
-
-    let ignore_hidden = adw::SwitchRow::builder()
-        .title("Ignore Hidden Files / Folders")
-        .subtitle("Skip paths that contain hidden components such as .cache or .thumbnails.")
-        .title_lines(1)
-        .subtitle_lines(3)
-        .active(current.ignore_hidden)
-        .build();
-
-    let sync_model = gtk::StringList::new(&[
-        "Full Sync",
-        "Only Upload from Folder",
-        "Only Download to Folder",
-    ]);
-    let sync_method = adw::ComboRow::builder()
-        .title("Sync Method")
-        .subtitle("Controls which direction this folder syncs.")
-        .title_lines(1)
-        .subtitle_lines(2)
-        .model(&sync_model)
-        .build();
-    sync_method.set_selected(match current.sync_method {
-        FolderSyncMethod::Full => 0,
-        FolderSyncMethod::UploadOnly => 1,
-        FolderSyncMethod::DownloadOnly => 2,
-    });
-
-    let startup_model = gtk::StringList::new(&["Full Scan", "Recent Only (7d)", "New Files Only"]);
-    let startup_scan = adw::ComboRow::builder()
-        .title("Startup Scan")
-        .subtitle("Controls how this folder is scanned when Mimick starts.")
-        .title_lines(1)
-        .subtitle_lines(2)
-        .model(&startup_model)
-        .build();
-    startup_scan.set_selected(
-        match current
-            .startup_catchup_mode
-            .clone()
-            .unwrap_or(fallback_catchup_mode)
-        {
-            StartupCatchupMode::Full => 0,
-            StartupCatchupMode::RecentOnly => 1,
-            StartupCatchupMode::NewFilesOnly => 2,
-        },
-    );
-
-    let delete_folder_to_album = adw::SwitchRow::builder()
-        .title("Mirror Folder Deletions to Album")
-        .subtitle("When a synced folder file is gone, move the matching Immich asset to trash.")
-        .title_lines(2)
-        .subtitle_lines(3)
-        .active(current.delete_folder_to_album)
-        .build();
-    let delete_album_to_folder = adw::SwitchRow::builder()
-        .title("Mirror Album Deletions to Folder")
-        .subtitle("Currently unavailable — waiting on an upstream Flatpak Trash portal fix. The setting stays off until then.")
-        .title_lines(2)
-        .subtitle_lines(4)
-        .active(false)
-        .sensitive(false)
-        .build();
-
-    if uploads_to_library {
-        sync_method.set_subtitle("Library uploads can only upload from this folder.");
-        sync_method.set_sensitive(false);
-        delete_folder_to_album.set_subtitle("Not available for library uploads.");
-        delete_folder_to_album.set_active(false);
-        delete_folder_to_album.set_sensitive(false);
-    }
-
-    let include_xmp = adw::SwitchRow::builder()
-        .title("Include XMP Sidecars")
-        .subtitle("Attach companion .xmp files alongside media during upload.")
-        .title_lines(1)
-        .subtitle_lines(2)
-        .active(current.include_xmp_sidecar.unwrap_or(true))
-        .build();
-
-    list_box.append(&sync_method);
-    list_box.append(&startup_scan);
-    list_box.append(&delete_folder_to_album);
-    list_box.append(&delete_album_to_folder);
-    list_box.append(&ignore_hidden);
-    list_box.append(&include_xmp);
-    content.append(&list_box);
-
-    let max_size_entry = Entry::builder()
-        .placeholder_text("Max size in MB (blank = no limit)")
-        .width_request(0)
-        .max_width_chars(16)
-        .text(
-            current
-                .max_file_size_mb
-                .map(|value| value.to_string())
-                .unwrap_or_default(),
-        )
-        .build();
-    content.append(&max_size_entry);
-
-    let extensions_entry = Entry::builder()
-        .placeholder_text("Extensions: jpg,png,mp4")
-        .width_request(0)
-        .max_width_chars(16)
-        .text(current.allowed_extensions.join(", "))
-        .build();
-    content.append(&extensions_entry);
-
+fn append_save_cancel(content: &Box) -> (Button, Button) {
     let actions = Box::builder()
         .orientation(Orientation::Horizontal)
         .spacing(8)
@@ -407,64 +349,357 @@ fn show_folder_rules_dialog(
     actions.append(&cancel_btn);
     actions.append(&save_btn);
     content.append(&actions);
-
-    cancel_btn.connect_clicked(clone!(
-        #[weak]
-        dialog,
-        move |_| {
-            dialog.close();
-        }
-    ));
-
-    save_btn.connect_clicked(clone!(
-        #[weak]
-        dialog,
-        move |_| {
-            let max_file_size_mb = max_size_entry.text().trim().parse::<u64>().ok();
-            let allowed_extensions = extensions_entry
-                .text()
-                .split(',')
-                .map(|part| part.trim().trim_start_matches('.').to_ascii_lowercase())
-                .filter(|part| !part.is_empty())
-                .collect::<Vec<_>>();
-
-            // delete_album_to_folder UI is forced off / insensitive while
-            // album-to-folder mirroring is disabled.
-            let stored_delete_album_to_folder = rules_state.borrow().delete_album_to_folder;
-            *rules_state.borrow_mut() = FolderRules {
-                ignore_hidden: ignore_hidden.is_active(),
-                max_file_size_mb,
-                allowed_extensions,
-                sync_method: match sync_method.selected() {
-                    1 => FolderSyncMethod::UploadOnly,
-                    2 => FolderSyncMethod::DownloadOnly,
-                    _ => FolderSyncMethod::Full,
-                },
-                startup_catchup_mode: Some(match startup_scan.selected() {
-                    1 => StartupCatchupMode::RecentOnly,
-                    2 => StartupCatchupMode::NewFilesOnly,
-                    _ => StartupCatchupMode::Full,
-                }),
-                delete_folder_to_album: delete_folder_to_album.is_active(),
-                delete_album_to_folder: stored_delete_album_to_folder,
-                include_xmp_sidecar: Some(include_xmp.is_active()),
-            };
-            (on_settings_changed)();
-            dialog.close();
-        }
-    ));
-
-    dialog.present();
+    (cancel_btn, save_btn)
 }
-/// Construct and present a modal search and select window for linking a folder to an Immich album.
+
+/// Editable rows of the folder rules dialog.
+struct RulesForm {
+    sync_method: adw::ComboRow,
+    startup_scan: adw::ComboRow,
+    delete_folder_to_album: adw::SwitchRow,
+    delete_album_to_folder: adw::SwitchRow,
+    ignore_hidden: adw::SwitchRow,
+    include_xmp: adw::SwitchRow,
+    max_size_entry: Entry,
+    extensions_entry: Entry,
+}
+
+fn switch_row(title: &str, subtitle: &str, subtitle_lines: i32, active: bool) -> adw::SwitchRow {
+    adw::SwitchRow::builder()
+        .title(title)
+        .subtitle(subtitle)
+        .title_lines(2)
+        .subtitle_lines(subtitle_lines)
+        .active(active)
+        .build()
+}
+
+fn combo_row(title: &str, subtitle: &str, items: &[&str], selected: u32) -> adw::ComboRow {
+    let row = adw::ComboRow::builder()
+        .title(title)
+        .subtitle(subtitle)
+        .title_lines(1)
+        .subtitle_lines(2)
+        .model(&gtk::StringList::new(items))
+        .build();
+    row.set_selected(selected);
+    row
+}
+
+fn small_entry(placeholder: &str, text: &str) -> Entry {
+    Entry::builder()
+        .placeholder_text(placeholder)
+        .width_request(0)
+        .max_width_chars(16)
+        .text(text)
+        .build()
+}
+
+impl RulesForm {
+    fn new(current: &FolderRules, fallback: StartupCatchupMode, uploads_to_library: bool) -> Self {
+        let (delete_folder_to_album, delete_album_to_folder) = deletion_rows(current);
+        let (ignore_hidden, include_xmp) = filter_rows(current);
+        let (max_size_entry, extensions_entry) = limit_entries(current);
+        let form = Self {
+            sync_method: combo_row(
+                "Sync Method",
+                "Controls which direction this folder syncs.",
+                &[
+                    "Full Sync",
+                    "Only Upload from Folder",
+                    "Only Download to Folder",
+                ],
+                sync_method_index(&current.sync_method),
+            ),
+            startup_scan: combo_row(
+                "Startup Scan",
+                "Controls how this folder is scanned when Mimick starts.",
+                &["Full Scan", "Recent Only (7d)", "New Files Only"],
+                catchup_index(&current.startup_catchup_mode.clone().unwrap_or(fallback)),
+            ),
+            delete_folder_to_album,
+            delete_album_to_folder,
+            ignore_hidden,
+            include_xmp,
+            max_size_entry,
+            extensions_entry,
+        };
+        if uploads_to_library {
+            form.restrict_to_library();
+        }
+        form
+    }
+
+    fn restrict_to_library(&self) {
+        self.sync_method
+            .set_subtitle("Library uploads can only upload from this folder.");
+        self.sync_method.set_sensitive(false);
+        self.delete_folder_to_album
+            .set_subtitle("Not available for library uploads.");
+        self.delete_folder_to_album.set_active(false);
+        self.delete_folder_to_album.set_sensitive(false);
+    }
+
+    fn append_to(&self, content: &Box) {
+        let list_box = gtk::ListBox::builder()
+            .selection_mode(gtk::SelectionMode::None)
+            .css_classes(vec![String::from("boxed-list")])
+            .build();
+        list_box.append(&self.sync_method);
+        list_box.append(&self.startup_scan);
+        list_box.append(&self.delete_folder_to_album);
+        list_box.append(&self.delete_album_to_folder);
+        list_box.append(&self.ignore_hidden);
+        list_box.append(&self.include_xmp);
+        content.append(&list_box);
+        content.append(&self.max_size_entry);
+        content.append(&self.extensions_entry);
+    }
+
+    /// Rules from the form. Album-to-folder mirroring keeps its stored value while
+    /// its switch is forced off.
+    fn rules(&self, previous: &FolderRules) -> FolderRules {
+        FolderRules {
+            ignore_hidden: self.ignore_hidden.is_active(),
+            max_file_size_mb: parse_max_size(&self.max_size_entry.text()),
+            allowed_extensions: parse_extensions(&self.extensions_entry.text()),
+            sync_method: sync_method_from_index(self.sync_method.selected()),
+            startup_catchup_mode: Some(catchup_from_index(self.startup_scan.selected())),
+            delete_folder_to_album: self.delete_folder_to_album.is_active(),
+            delete_album_to_folder: previous.delete_album_to_folder,
+            include_xmp_sidecar: Some(self.include_xmp.is_active()),
+        }
+    }
+}
+
+fn deletion_rows(current: &FolderRules) -> (adw::SwitchRow, adw::SwitchRow) {
+    let folder_to_album = switch_row(
+        "Mirror Folder Deletions to Album",
+        "When a synced folder file is gone, move the matching Immich asset to trash.",
+        3,
+        current.delete_folder_to_album,
+    );
+    // Forced off and insensitive until the Flatpak Trash portal fix lands upstream.
+    let album_to_folder = switch_row(
+        "Mirror Album Deletions to Folder",
+        "Currently unavailable — waiting on an upstream Flatpak Trash portal fix. The setting stays off until then.",
+        4,
+        false,
+    );
+    album_to_folder.set_sensitive(false);
+    (folder_to_album, album_to_folder)
+}
+
+fn filter_rows(current: &FolderRules) -> (adw::SwitchRow, adw::SwitchRow) {
+    let ignore_hidden = switch_row(
+        "Ignore Hidden Files / Folders",
+        "Skip paths that contain hidden components such as .cache or .thumbnails.",
+        3,
+        current.ignore_hidden,
+    );
+    let include_xmp = switch_row(
+        "Include XMP Sidecars",
+        "Attach companion .xmp files alongside media during upload.",
+        2,
+        current.include_xmp_sidecar.unwrap_or(true),
+    );
+    ignore_hidden.set_title_lines(1);
+    include_xmp.set_title_lines(1);
+    (ignore_hidden, include_xmp)
+}
+
+fn limit_entries(current: &FolderRules) -> (Entry, Entry) {
+    let max_size = current
+        .max_file_size_mb
+        .map(|value| value.to_string())
+        .unwrap_or_default();
+    (
+        small_entry("Max size in MB (blank = no limit)", &max_size),
+        small_entry(
+            "Extensions: jpg,png,mp4",
+            &current.allowed_extensions.join(", "),
+        ),
+    )
+}
+
+fn sync_method_index(method: &FolderSyncMethod) -> u32 {
+    match method {
+        FolderSyncMethod::Full => 0,
+        FolderSyncMethod::UploadOnly => 1,
+        FolderSyncMethod::DownloadOnly => 2,
+    }
+}
+
+fn sync_method_from_index(index: u32) -> FolderSyncMethod {
+    match index {
+        1 => FolderSyncMethod::UploadOnly,
+        2 => FolderSyncMethod::DownloadOnly,
+        _ => FolderSyncMethod::Full,
+    }
+}
+
+pub(super) fn catchup_index(mode: &StartupCatchupMode) -> u32 {
+    match mode {
+        StartupCatchupMode::Full => 0,
+        StartupCatchupMode::RecentOnly => 1,
+        StartupCatchupMode::NewFilesOnly => 2,
+    }
+}
+
+pub(super) fn catchup_from_index(index: u32) -> StartupCatchupMode {
+    match index {
+        1 => StartupCatchupMode::RecentOnly,
+        2 => StartupCatchupMode::NewFilesOnly,
+        _ => StartupCatchupMode::Full,
+    }
+}
+
+/// Blank or non-numeric input means "no limit".
+fn parse_max_size(text: &str) -> Option<u64> {
+    text.trim().parse::<u64>().ok()
+}
+
+/// Comma-separated extensions, lowercased, with any leading dot removed.
+fn parse_extensions(text: &str) -> Vec<String> {
+    text.split(',')
+        .map(|part| part.trim().trim_start_matches('.').to_ascii_lowercase())
+        .filter(|part| !part.is_empty())
+        .collect()
+}
+
+/// The folder row's target button and the state the album picker updates.
+#[derive(Clone)]
+pub(super) struct PickerTarget {
+    label: Rc<RefCell<String>>,
+    button: Button,
+    upload_target: UploadTargetState,
+    on_changed: Rc<dyn Fn()>,
+}
+
+impl PickerTarget {
+    fn choose(&self, choice: &PickerChoice) {
+        let label = choice.stored_label();
+        *self.label.borrow_mut() = label.clone();
+        if matches!(choice, PickerChoice::Library) {
+            self.upload_target.select_library();
+        } else {
+            self.upload_target.select_album();
+        }
+        self.button.set_label(&label);
+        (self.on_changed)();
+    }
+}
+
+/// One row of the album picker.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum PickerChoice {
+    Library,
+    DefaultFolderName,
+    Create(String),
+    Album(String),
+}
+
+impl PickerChoice {
+    fn title(&self) -> String {
+        match self {
+            Self::Create(name) => format!("Create new: \"{name}\""),
+            other => other.stored_label(),
+        }
+    }
+
+    fn subtitle(&self) -> Option<&'static str> {
+        match self {
+            Self::Library => Some(
+                "Uploads directly to the library; album sync and deletion mirroring are disabled",
+            ),
+            Self::DefaultFolderName => Some("Creates album dynamically per-folder"),
+            _ => None,
+        }
+    }
+
+    /// What the folder row stores and shows on its button.
+    fn stored_label(&self) -> String {
+        match self {
+            Self::Library => LIBRARY_ALBUM_LABEL.to_string(),
+            Self::DefaultFolderName => DEFAULT_ALBUM_LABEL.to_string(),
+            Self::Create(name) | Self::Album(name) => name.clone(),
+        }
+    }
+}
+
+/// Picker rows for `query`: Library, the folder-name default, "Create new" for typed
+/// text, then matching albums (case-insensitive).
+fn picker_choices(query: &str, albums: &[(String, String)]) -> Vec<PickerChoice> {
+    let typed = query.trim();
+    let q = typed.to_lowercase();
+    let matches = |label: &str| q.is_empty() || label.to_lowercase().contains(&q);
+    let mut choices = Vec::new();
+    if matches(LIBRARY_ALBUM_LABEL) {
+        choices.push(PickerChoice::Library);
+    }
+    if matches(DEFAULT_ALBUM_LABEL) {
+        choices.push(PickerChoice::DefaultFolderName);
+    }
+    if !q.is_empty() {
+        choices.push(PickerChoice::Create(typed.to_string()));
+    }
+    choices.extend(
+        albums
+            .iter()
+            .map(|(name, _)| name)
+            // The default label is listed above; skip it if an album shares the name.
+            .filter(|name| name.as_str() != DEFAULT_ALBUM_LABEL && matches(name))
+            .map(|name| PickerChoice::Album(name.clone())),
+    );
+    choices
+}
+
+/// Construct and present a modal search and select window for a folder's upload target.
 pub(super) fn show_album_picker_dialog(
     parent: &impl gtk::prelude::IsA<gtk::Window>,
     albums_ref: Rc<RefCell<Vec<(String, String)>>>,
-    target_album_state: Rc<RefCell<String>>,
-    trigger_btn: Button,
-    upload_target: UploadTargetState,
-    on_settings_changed: Rc<dyn Fn()>,
+    target: PickerTarget,
 ) {
+    let (dialog, search_entry, list_box) = picker_dialog_shell(parent);
+    let dialog_for_rows = dialog.clone();
+    let fill = Rc::new(move |query: &str| {
+        let choices = picker_choices(query, &albums_ref.borrow());
+        fill_picker_rows(&list_box, &dialog_for_rows, &choices, &target);
+    });
+    fill("");
+    search_entry.connect_search_changed(move |entry| fill(&entry.text()));
+    dialog.present();
+}
+
+fn fill_picker_rows(
+    list_box: &gtk::ListBox,
+    dialog: &adw::Window,
+    choices: &[PickerChoice],
+    target: &PickerTarget,
+) {
+    while let Some(child) = list_box.first_child() {
+        list_box.remove(&child);
+    }
+    for choice in choices {
+        let row = adw::ActionRow::builder()
+            .title(choice.title())
+            .activatable(true)
+            .build();
+        if let Some(subtitle) = choice.subtitle() {
+            row.set_subtitle(subtitle);
+        }
+        let (choice, target, dialog) = (choice.clone(), target.clone(), dialog.clone());
+        row.connect_activated(move |_| {
+            target.choose(&choice);
+            dialog.close();
+        });
+        list_box.append(&row);
+    }
+}
+
+fn picker_dialog_shell(
+    parent: &impl gtk::prelude::IsA<gtk::Window>,
+) -> (adw::Window, gtk::SearchEntry, gtk::ListBox) {
     let dialog = adw::Window::builder()
         .transient_for(parent)
         .modal(true)
@@ -473,12 +708,9 @@ pub(super) fn show_album_picker_dialog(
         .default_height(500)
         .width_request(360)
         .build();
-
-    let header_bar = adw::HeaderBar::new();
     let vbox = Box::builder().orientation(Orientation::Vertical).build();
     dialog.set_content(Some(&vbox));
-    vbox.append(&header_bar);
-
+    vbox.append(&adw::HeaderBar::new());
     let search_entry = gtk::SearchEntry::builder()
         .halign(gtk::Align::Center)
         .width_request(300)
@@ -486,150 +718,127 @@ pub(super) fn show_album_picker_dialog(
         .margin_bottom(8)
         .build();
     vbox.append(&search_entry);
-
     let list_box = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .margin_start(12)
         .margin_end(12)
         .margin_bottom(12)
+        .css_classes(["boxed-list"])
         .build();
-    list_box.add_css_class("boxed-list");
-
     let scrolled_window = gtk::ScrolledWindow::builder()
         .hscrollbar_policy(gtk::PolicyType::Never)
         .vscrollbar_policy(gtk::PolicyType::Automatic)
         .vexpand(true)
+        .child(&list_box)
         .build();
-    scrolled_window.set_child(Some(&list_box));
     vbox.append(&scrolled_window);
-
-    // Dynamic filtering capability
-    let albums_ref_cloned = albums_ref.clone();
-    let apply_filter = {
-        let list_box = list_box.clone();
-        let dialog = dialog.clone();
-        let target_album_state = target_album_state.clone();
-        let trigger_btn = trigger_btn.clone();
-        let upload_target = upload_target.clone();
-
-        move |query: &str| {
-            // Clear existing
-            while let Some(child) = list_box.first_child() {
-                list_box.remove(&child);
-            }
-
-            let q = query.trim().to_lowercase();
-
-            // Row 1: Direct library upload (only if it matches search).
-            if q.is_empty() || LIBRARY_ALBUM_LABEL.to_lowercase().contains(&q) {
-                let library_row = adw::ActionRow::builder()
-                    .title(LIBRARY_ALBUM_LABEL)
-                    .subtitle("Uploads directly to the library; album sync and deletion mirroring are disabled")
-                    .activatable(true)
-                    .build();
-                let dialog_clone = dialog.clone();
-                let state_clone = target_album_state.clone();
-                let btn_clone = trigger_btn.clone();
-                let target_clone = upload_target.clone();
-                let on_settings_changed_clone = on_settings_changed.clone();
-                library_row.connect_activated(move |_| {
-                    *state_clone.borrow_mut() = LIBRARY_ALBUM_LABEL.to_string();
-                    target_clone.select_library();
-                    btn_clone.set_label(LIBRARY_ALBUM_LABEL);
-                    (on_settings_changed_clone)();
-                    dialog_clone.close();
-                });
-                list_box.append(&library_row);
-            }
-
-            // Row 2: Default Folder Name (only if it matches search)
-            if q.is_empty() || DEFAULT_ALBUM_LABEL.to_lowercase().contains(&q) {
-                let default_row = adw::ActionRow::builder()
-                    .title(DEFAULT_ALBUM_LABEL)
-                    .subtitle("Creates album dynamically per-folder")
-                    .activatable(true)
-                    .build();
-                let dialog_clone = dialog.clone();
-                let state_clone = target_album_state.clone();
-                let btn_clone = trigger_btn.clone();
-                let target_clone = upload_target.clone();
-                let on_settings_changed_clone = on_settings_changed.clone();
-                default_row.connect_activated(move |_| {
-                    *state_clone.borrow_mut() = DEFAULT_ALBUM_LABEL.to_string();
-                    target_clone.select_album();
-                    btn_clone.set_label(DEFAULT_ALBUM_LABEL);
-                    (on_settings_changed_clone)();
-                    dialog_clone.close();
-                });
-                list_box.append(&default_row);
-            }
-
-            // Row 3: Create Custom (if query is typed)
-            if !q.is_empty() {
-                let typed_raw = query.trim().to_string();
-                let create_row = adw::ActionRow::builder()
-                    .title(format!("Create new: \"{}\"", typed_raw))
-                    .activatable(true)
-                    .build();
-                let dialog_clone = dialog.clone();
-                let state_clone = target_album_state.clone();
-                let btn_clone = trigger_btn.clone();
-                let target_clone = upload_target.clone();
-                let on_settings_changed_clone = on_settings_changed.clone();
-                create_row.connect_activated(move |_| {
-                    *state_clone.borrow_mut() = typed_raw.clone();
-                    target_clone.select_album();
-                    btn_clone.set_label(&typed_raw);
-                    (on_settings_changed_clone)();
-                    dialog_clone.close();
-                });
-                list_box.append(&create_row);
-            }
-
-            // Row 4+: Remote Albums
-            for (name, _) in albums_ref_cloned.borrow().iter() {
-                if name == DEFAULT_ALBUM_LABEL {
-                    continue; // Skip the "Use default folder name" if we pushed it above
-                }
-                if q.is_empty() || name.to_lowercase().contains(&q) {
-                    let album_name = name.clone();
-                    let row = adw::ActionRow::builder()
-                        .title(&album_name)
-                        .activatable(true)
-                        .build();
-                    let dialog_clone = dialog.clone();
-                    let state_clone = target_album_state.clone();
-                    let btn_clone = trigger_btn.clone();
-                    let album_name_clone = album_name.clone();
-                    let target_clone = upload_target.clone();
-                    let on_settings_changed_clone = on_settings_changed.clone();
-                    row.connect_activated(move |_| {
-                        *state_clone.borrow_mut() = album_name_clone.clone();
-                        target_clone.select_album();
-                        btn_clone.set_label(&album_name_clone);
-                        (on_settings_changed_clone)();
-                        dialog_clone.close();
-                    });
-                    list_box.append(&row);
-                }
-            }
-        }
-    };
-
-    // Initial populate
-    apply_filter("");
-
-    let apply_filter_rc = Rc::new(apply_filter);
-    search_entry.connect_search_changed(move |entry| {
-        apply_filter_rc(&entry.text());
-    });
-
-    dialog.present();
+    (dialog, search_entry, list_box)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn albums(names: &[&str]) -> Vec<(String, String)> {
+        names
+            .iter()
+            .map(|name| (name.to_string(), format!("id-{name}")))
+            .collect()
+    }
+
+    #[test]
+    fn picker_lists_library_default_then_albums_without_query() {
+        let choices = picker_choices("", &albums(&["Trips", DEFAULT_ALBUM_LABEL]));
+        assert_eq!(
+            choices,
+            vec![
+                PickerChoice::Library,
+                PickerChoice::DefaultFolderName,
+                PickerChoice::Album("Trips".into()),
+            ]
+        );
+    }
+
+    #[test]
+    fn picker_query_offers_create_and_filters_albums() {
+        let choices = picker_choices("  tri ", &albums(&["Trips", "Family"]));
+        assert_eq!(
+            choices,
+            vec![
+                PickerChoice::Create("tri".into()),
+                PickerChoice::Album("Trips".into()),
+            ]
+        );
+    }
+
+    #[test]
+    fn picker_choice_labels() {
+        assert_eq!(PickerChoice::Library.stored_label(), LIBRARY_ALBUM_LABEL);
+        assert_eq!(
+            PickerChoice::Create("New".into()).title(),
+            "Create new: \"New\""
+        );
+        assert_eq!(PickerChoice::Create("New".into()).stored_label(), "New");
+        assert!(PickerChoice::Album("Trips".into()).subtitle().is_none());
+    }
+
+    #[test]
+    fn parse_extensions_normalises_input() {
+        assert_eq!(
+            parse_extensions(" .JPG, png ,, .Mp4"),
+            vec!["jpg".to_string(), "png".to_string(), "mp4".to_string()]
+        );
+        assert!(parse_extensions("").is_empty());
+    }
+
+    #[test]
+    fn parse_max_size_treats_blank_or_invalid_as_no_limit() {
+        assert_eq!(parse_max_size(" 25 "), Some(25));
+        assert_eq!(parse_max_size(""), None);
+        assert_eq!(parse_max_size("ten"), None);
+    }
+
+    #[test]
+    fn combo_indices_round_trip() {
+        for method in [
+            FolderSyncMethod::Full,
+            FolderSyncMethod::UploadOnly,
+            FolderSyncMethod::DownloadOnly,
+        ] {
+            assert_eq!(sync_method_from_index(sync_method_index(&method)), method);
+        }
+        for mode in [
+            StartupCatchupMode::Full,
+            StartupCatchupMode::RecentOnly,
+            StartupCatchupMode::NewFilesOnly,
+        ] {
+            assert_eq!(catchup_from_index(catchup_index(&mode)), mode);
+        }
+    }
+
+    #[test]
+    fn initial_row_values_follow_the_entry() {
+        assert_eq!(initial_subtitle(""), "Status: Idle");
+        assert_eq!(initial_subtitle("~/Pictures"), "~/Pictures\nStatus: Idle");
+
+        let library = WatchPathEntry::WithConfig {
+            path: "/home/user/Camera".into(),
+            album_id: None,
+            album_name: None,
+            rules: FolderRules {
+                sync_method: FolderSyncMethod::Full,
+                ..FolderRules::default()
+            },
+        };
+        assert_eq!(initial_target_label(&library), LIBRARY_ALBUM_LABEL);
+        assert_eq!(
+            initial_rules(&library).sync_method,
+            FolderSyncMethod::UploadOnly
+        );
+
+        let simple = WatchPathEntry::Simple("/home/user/Camera".into());
+        assert_eq!(initial_target_label(&simple), DEFAULT_ALBUM_LABEL);
+    }
 
     fn target_with(rules: FolderRules) -> UploadTargetState {
         UploadTargetState {

@@ -10,6 +10,7 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
+use crate::library::album_sync::AlbumDiff;
 use crate::library::state::LibrarySource;
 
 use super::LibraryWindowUi;
@@ -118,148 +119,162 @@ fn present_sync_dialog(
     album_id: String,
     album_name: String,
     watch_path: std::path::PathBuf,
-    diff: crate::library::album_sync::AlbumDiff,
+    diff: AlbumDiff,
 ) {
-    let upload_count = diff.to_upload.len();
-    let download_count = diff.to_download.len();
-    let remote_delete_count = diff.to_delete_remote.len();
-    let local_delete_count = diff.to_delete_local.len();
-
-    if upload_count == 0
-        && download_count == 0
-        && remote_delete_count == 0
-        && local_delete_count == 0
+    if diff.to_upload.is_empty()
+        && diff.to_download.is_empty()
+        && diff.to_delete_remote.is_empty()
+        && diff.to_delete_local.is_empty()
     {
-        let msg = if diff.remote_unhashed > 0 {
-            format!(
-                "Already in sync. ({} remote item(s) couldn't be matched — missing checksum.)",
-                diff.remote_unhashed
-            )
-        } else {
-            "Already in sync.".to_string()
-        };
-        let info = libadwaita::AlertDialog::builder()
-            .heading("Album sync")
-            .body(msg)
-            .build();
-        info.add_response("ok", "OK");
-        info.set_default_response(Some("ok"));
-        info.set_close_response("ok");
-        info.present(Some(&ui.window));
+        show_in_sync(&ui, diff.remote_unhashed);
         return;
     }
 
-    let dialog = libadwaita::AlertDialog::builder()
-        .heading("Sync album")
-        .body(format!(
-            "Pick which directions to apply.{}",
-            if diff.remote_unhashed > 0 {
-                format!(
-                    "\n\n{} remote item(s) couldn't be matched (missing checksum).",
-                    diff.remote_unhashed
-                )
-            } else {
-                String::new()
-            }
-        ))
-        .build();
-
-    let body_box = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(6)
-        .build();
-    let upload_check = gtk::CheckButton::builder()
-        .label(format!("Upload {} item(s) to album", upload_count))
-        .active(upload_count > 0)
-        .sensitive(upload_count > 0)
-        .build();
-    let download_check = gtk::CheckButton::builder()
-        .label(format!("Download {} item(s) to folder", download_count))
-        .active(download_count > 0)
-        .sensitive(download_count > 0)
-        .build();
-    let remote_delete_check = gtk::CheckButton::builder()
-        .label(format!(
-            "Move {} album item(s) to trash",
-            remote_delete_count
-        ))
-        .active(remote_delete_count > 0)
-        .sensitive(remote_delete_count > 0)
-        .build();
-    let local_delete_check = gtk::CheckButton::builder()
-        .label(format!(
-            "Move {} local item(s) to trash",
-            local_delete_count
-        ))
-        .active(local_delete_count > 0)
-        .sensitive(local_delete_count > 0)
-        .build();
-    if upload_count > 0 {
-        body_box.append(&upload_check);
-    }
-    if download_count > 0 {
-        body_box.append(&download_check);
-    }
-    if remote_delete_count > 0 {
-        body_box.append(&remote_delete_check);
-    }
-    if local_delete_count > 0 {
-        body_box.append(&local_delete_check);
-    }
-    dialog.set_extra_child(Some(&body_box));
-
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("apply", "Apply");
-    dialog.set_response_appearance("apply", libadwaita::ResponseAppearance::Suggested);
-    dialog.set_default_response(Some("apply"));
-    dialog.set_close_response("cancel");
+    let (dialog, checks) = build_sync_dialog(&diff);
 
     let ui_for_apply = ui.clone();
     dialog.connect_response(None, move |dlg, response| {
         if response != "apply" {
             return;
         }
-        let do_upload = upload_check.is_active();
-        let do_download = download_check.is_active();
-        let do_remote_delete = remote_delete_check.is_active();
-        let do_local_delete = local_delete_check.is_active();
-        if !do_upload && !do_download && !do_remote_delete && !do_local_delete {
-            dlg.close();
-            return;
-        }
-        let ui = ui_for_apply.clone();
-        let album_id = album_id.clone();
-        let album_name = album_name.clone();
-        let watch_path = watch_path.clone();
-        let filtered = crate::library::album_sync::AlbumDiff {
-            to_upload: if do_upload {
-                diff.to_upload.clone()
-            } else {
-                Vec::new()
-            },
-            to_download: if do_download {
-                diff.to_download.clone()
-            } else {
-                Vec::new()
-            },
-            to_delete_remote: if do_remote_delete {
-                diff.to_delete_remote.clone()
-            } else {
-                Vec::new()
-            },
-            to_delete_local: if do_local_delete {
-                diff.to_delete_local.clone()
-            } else {
-                Vec::new()
-            },
-            remote_unhashed: 0,
+        let choices = SyncChoices {
+            upload: checks[0].is_active(),
+            download: checks[1].is_active(),
+            delete_remote: checks[2].is_active(),
+            delete_local: checks[3].is_active(),
         };
-        glib::MainContext::default().spawn_local(execute_sync_selections(
-            ui, album_id, album_name, watch_path, filtered,
-        ));
+        if choices.any() {
+            glib::MainContext::default().spawn_local(execute_sync_selections(
+                ui_for_apply.clone(),
+                album_id.clone(),
+                album_name.clone(),
+                watch_path.clone(),
+                filtered_diff(&diff, choices),
+            ));
+        }
         dlg.close();
     });
     dialog.present(Some(&ui.window));
+}
+
+/// Alert with one checkbox per sync direction that has work: upload, download,
+/// album trash, local trash (in that order).
+fn build_sync_dialog(diff: &AlbumDiff) -> (libadwaita::AlertDialog, [gtk::CheckButton; 4]) {
+    let dialog = libadwaita::AlertDialog::builder()
+        .heading("Sync album")
+        .body(format!(
+            "Pick which directions to apply.{}",
+            unmatched_note(diff.remote_unhashed)
+        ))
+        .build();
+    let body_box = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(6)
+        .build();
+    let checks = [
+        direction_check(
+            &body_box,
+            "Upload {} item(s) to album",
+            diff.to_upload.len(),
+        ),
+        direction_check(
+            &body_box,
+            "Download {} item(s) to folder",
+            diff.to_download.len(),
+        ),
+        direction_check(
+            &body_box,
+            "Move {} album item(s) to trash",
+            diff.to_delete_remote.len(),
+        ),
+        direction_check(
+            &body_box,
+            "Move {} local item(s) to trash",
+            diff.to_delete_local.len(),
+        ),
+    ];
+    dialog.set_extra_child(Some(&body_box));
+    dialog.add_response("cancel", "Cancel");
+    dialog.add_response("apply", "Apply");
+    dialog.set_response_appearance("apply", libadwaita::ResponseAppearance::Suggested);
+    dialog.set_default_response(Some("apply"));
+    dialog.set_close_response("cancel");
+    (dialog, checks)
+}
+
+fn show_in_sync(ui: &LibraryWindowUi, remote_unhashed: usize) {
+    let info = libadwaita::AlertDialog::builder()
+        .heading("Album sync")
+        .body(in_sync_message(remote_unhashed))
+        .build();
+    info.add_response("ok", "OK");
+    info.set_default_response(Some("ok"));
+    info.set_close_response("ok");
+    info.present(Some(&ui.window));
+}
+
+/// Checkbox for one sync direction, pre-checked and shown only when it has work to do.
+fn direction_check(body_box: &gtk::Box, label: &str, count: usize) -> gtk::CheckButton {
+    let check = gtk::CheckButton::builder()
+        .label(label.replace("{}", &count.to_string()))
+        .active(count > 0)
+        .sensitive(count > 0)
+        .build();
+    if count > 0 {
+        body_box.append(&check);
+    }
+    check
+}
+
+/// Which directions the user chose to apply.
+#[derive(Debug, Clone, Copy)]
+struct SyncChoices {
+    upload: bool,
+    download: bool,
+    delete_remote: bool,
+    delete_local: bool,
+}
+
+impl SyncChoices {
+    fn any(self) -> bool {
+        self.upload || self.download || self.delete_remote || self.delete_local
+    }
+}
+
+/// The diff restricted to the chosen directions.
+fn filtered_diff(diff: &AlbumDiff, choices: SyncChoices) -> AlbumDiff {
+    fn keep<T: Clone>(items: &[T], chosen: bool) -> Vec<T> {
+        if chosen { items.to_vec() } else { Vec::new() }
+    }
+    AlbumDiff {
+        to_upload: keep(&diff.to_upload, choices.upload),
+        to_download: keep(&diff.to_download, choices.download),
+        to_delete_remote: keep(&diff.to_delete_remote, choices.delete_remote),
+        to_delete_local: keep(&diff.to_delete_local, choices.delete_local),
+        remote_unhashed: 0,
+    }
+}
+
+fn in_sync_message(remote_unhashed: usize) -> String {
+    if remote_unhashed > 0 {
+        format!(
+            "Already in sync. ({} remote item(s) couldn't be matched — missing checksum.)",
+            remote_unhashed
+        )
+    } else {
+        "Already in sync.".to_string()
+    }
+}
+
+fn unmatched_note(remote_unhashed: usize) -> String {
+    if remote_unhashed > 0 {
+        format!(
+            "\n\n{} remote item(s) couldn't be matched (missing checksum).",
+            remote_unhashed
+        )
+    } else {
+        String::new()
+    }
 }
 
 async fn execute_sync_selections(
@@ -436,4 +451,67 @@ fn link_album_to_path(
     }
     let source_after = ui.ctx.library_state.lock().source.clone();
     refresh_album_link_row(&ui, &source_after);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::api_client::LibraryAsset;
+
+    fn asset(id: &str) -> LibraryAsset {
+        serde_json::from_value(serde_json::json!({
+            "id": id,
+            "originalFileName": format!("{id}.jpg"),
+            "originalMimeType": "image/jpeg",
+            "fileCreatedAt": "2024-01-15T14:25:15.000Z",
+            "type": "IMAGE"
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn filtered_diff_keeps_only_chosen_directions() {
+        let diff = AlbumDiff {
+            to_download: vec![asset("d1"), asset("d2")],
+            to_delete_remote: vec![asset("r1")],
+            remote_unhashed: 3,
+            ..AlbumDiff::default()
+        };
+        let choices = SyncChoices {
+            upload: true,
+            download: true,
+            delete_remote: false,
+            delete_local: true,
+        };
+        let filtered = filtered_diff(&diff, choices);
+        assert_eq!(filtered.to_download.len(), 2);
+        assert!(filtered.to_delete_remote.is_empty());
+        assert_eq!(filtered.remote_unhashed, 0);
+    }
+
+    #[test]
+    fn sync_choices_any_needs_one_direction() {
+        let none = SyncChoices {
+            upload: false,
+            download: false,
+            delete_remote: false,
+            delete_local: false,
+        };
+        assert!(!none.any());
+        assert!(
+            SyncChoices {
+                delete_local: true,
+                ..none
+            }
+            .any()
+        );
+    }
+
+    #[test]
+    fn messages_mention_unmatched_items_only_when_present() {
+        assert_eq!(in_sync_message(0), "Already in sync.");
+        assert!(in_sync_message(2).contains("2 remote item(s)"));
+        assert_eq!(unmatched_note(0), "");
+        assert!(unmatched_note(1).contains("1 remote item(s)"));
+    }
 }

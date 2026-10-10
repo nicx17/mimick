@@ -350,40 +350,37 @@ impl ThumbnailCache {
         key: &str,
         is_cancelled: &dyn Fn() -> bool,
     ) -> Result<Texture, String> {
-        if is_cancelled() {
-            return Err("cancelled".to_string());
-        }
+        check_cancelled(is_cancelled)?;
         let _permit = self
             .semaphore_for(ThumbnailSize::Thumbnail)
             .acquire_owned()
             .await
             .map_err(|err| err.to_string())?;
-
-        if is_cancelled() {
-            return Err("cancelled".to_string());
-        }
+        // Checked again: the user may have scrolled away while waiting for a permit.
+        check_cancelled(is_cancelled)?;
         if let Some(texture) = self.memory.lock().get(key) {
             return Ok(texture);
         }
 
         let cache_file = self.cache_file_local(asset_id);
-        let cache_file_for_read = cache_file.clone();
-        let from_disk = tokio::task::spawn_blocking(move || -> Option<Texture> {
-            if !cache_file_for_read.exists() {
-                return None;
+        let texture = match read_cached_texture(cache_file.clone()).await? {
+            Some(texture) => texture,
+            None => {
+                self.decode_local_to_cache(path.to_path_buf(), cache_file)
+                    .await?
             }
-            Texture::from_filename(&cache_file_for_read).ok()
-        })
-        .await
-        .map_err(|err| err.to_string())?;
+        };
+        self.memory.lock().insert(key.to_string(), texture.clone());
+        Ok(texture)
+    }
 
-        if let Some(texture) = from_disk {
-            self.memory.lock().insert(key.to_string(), texture.clone());
-            return Ok(texture);
-        }
-
+    /// Decode a local file off the main thread and write the PNG thumbnail to `cache_file`.
+    async fn decode_local_to_cache(
+        &self,
+        path: std::path::PathBuf,
+        cache_file: std::path::PathBuf,
+    ) -> Result<Texture, String> {
         let decode_started = std::time::Instant::now();
-        let path = path.to_path_buf();
         let log_path = path.clone();
         let cache_dir = self.cache_dir.clone();
         let texture = tokio::task::spawn_blocking(move || -> Result<Texture, String> {
@@ -391,21 +388,7 @@ impl ThumbnailCache {
             std::fs::create_dir_all(&cache_dir).map_err(|err| err.to_string())?;
             let encoded = pixbuf_png_bytes(&pixbuf)?;
             std::fs::write(&cache_file, encoded).map_err(|err| err.to_string())?;
-            let format = if pixbuf.has_alpha() {
-                gdk4::MemoryFormat::R8g8b8a8
-            } else {
-                gdk4::MemoryFormat::R8g8b8
-            };
-            let bytes = pixbuf.read_pixel_bytes();
-            let mem_tex = gdk4::MemoryTexture::new(
-                pixbuf.width(),
-                pixbuf.height(),
-                format,
-                &bytes,
-                pixbuf.rowstride() as usize,
-            );
-            use gtk::prelude::Cast;
-            Ok(mem_tex.upcast::<Texture>())
+            Ok(pixbuf_to_texture(&pixbuf))
         })
         .await
         .map_err(|err| err.to_string())??;
@@ -416,7 +399,6 @@ impl ThumbnailCache {
             texture.width(),
             texture.height(),
         );
-        self.memory.lock().insert(key.to_string(), texture.clone());
         Ok(texture)
     }
 
@@ -723,11 +705,62 @@ async fn decode_to_scaled_texture(bytes: Vec<u8>, max_dim: i32) -> Result<Textur
     .map_err(|err| err.to_string())?
 }
 
+fn check_cancelled(is_cancelled: &dyn Fn() -> bool) -> Result<(), String> {
+    if is_cancelled() {
+        Err("cancelled".to_string())
+    } else {
+        Ok(())
+    }
+}
+
+/// A thumbnail previously written to the on-disk cache, if present and readable.
+async fn read_cached_texture(cache_file: std::path::PathBuf) -> Result<Option<Texture>, String> {
+    tokio::task::spawn_blocking(move || {
+        if !cache_file.exists() {
+            return None;
+        }
+        Texture::from_filename(&cache_file).ok()
+    })
+    .await
+    .map_err(|err| err.to_string())
+}
+
+fn pixbuf_to_texture(pixbuf: &gtk::gdk_pixbuf::Pixbuf) -> Texture {
+    let format = if pixbuf.has_alpha() {
+        gdk4::MemoryFormat::R8g8b8a8
+    } else {
+        gdk4::MemoryFormat::R8g8b8
+    };
+    let bytes = pixbuf.read_pixel_bytes();
+    let mem_tex = gdk4::MemoryTexture::new(
+        pixbuf.width(),
+        pixbuf.height(),
+        format,
+        &bytes,
+        pixbuf.rowstride() as usize,
+    );
+    use gtk::prelude::Cast;
+    mem_tex.upcast::<Texture>()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::api_client::ImmichApiClient;
     use tempfile::tempdir;
+
+    #[test]
+    fn check_cancelled_reports_cancellation() {
+        assert_eq!(check_cancelled(&|| false), Ok(()));
+        assert_eq!(check_cancelled(&|| true), Err("cancelled".to_string()));
+    }
+
+    #[tokio::test]
+    async fn read_cached_texture_is_none_for_missing_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let missing = dir.path().join("missing.png");
+        assert!(read_cached_texture(missing).await.unwrap().is_none());
+    }
 
     // 1x1 transparent PNG
     const PNG_BYTES: &[u8] = &[

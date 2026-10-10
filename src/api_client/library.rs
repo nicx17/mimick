@@ -9,9 +9,17 @@ use std::time::Duration;
 
 use super::errors::{RequestContext, classify_http_issue, classify_network_issue};
 use super::{
-    AssetDetails, ImmichApiClient, LibraryAlbum, LibraryAsset, SortOrder, ThumbnailSize,
-    TransferProgressCallback,
+    AssetDetails, AssetUpdate, ImmichApiClient, LibraryAlbum, LibraryAsset, SortOrder,
+    ThumbnailSize, TransferProgressCallback,
 };
+
+/// Body for `DELETE /api/assets`; `force` skips the trash.
+fn delete_request_body(asset_ids: &[String], force: bool) -> serde_json::Value {
+    serde_json::json!({
+        "ids": asset_ids,
+        "force": force,
+    })
+}
 
 impl ImmichApiClient {
     /// Retrieve the complete list of albums from the Immich server for library display.
@@ -269,8 +277,44 @@ impl ImmichApiClient {
         }
     }
 
+    /// Update an asset's description, capture date, or favorite flag.
+    pub async fn update_asset(&self, asset_id: &str, update: &AssetUpdate) -> Result<(), String> {
+        let base_url = self
+            .get_active_url()
+            .await
+            .ok_or_else(|| "No active connection".to_string())?;
+        let settings = self.settings_snapshot();
+        let url = format!("{}/api/assets/{}", base_url, asset_id);
+        match self
+            .client
+            .put(&url)
+            .header("x-api-key", &settings.api_key)
+            .header("Accept", "application/json")
+            .timeout(Duration::from_secs(15))
+            .json(update)
+            .send()
+            .await
+        {
+            Ok(resp) if resp.status().is_success() => {
+                self.clear_issue().await;
+                Ok(())
+            }
+            Ok(resp) => Err(format!("HTTP {}", resp.status())),
+            Err(err) => Err(err.to_string()),
+        }
+    }
+
     /// Soft-delete specified assets from the Immich server.
     pub async fn delete_assets(&self, asset_ids: &[String]) -> Result<(), String> {
+        self.delete_assets_with(asset_ids, false).await
+    }
+
+    /// Permanently delete assets, skipping the Immich trash. Cannot be undone.
+    pub async fn delete_assets_permanently(&self, asset_ids: &[String]) -> Result<(), String> {
+        self.delete_assets_with(asset_ids, true).await
+    }
+
+    async fn delete_assets_with(&self, asset_ids: &[String], force: bool) -> Result<(), String> {
         if asset_ids.is_empty() {
             return Ok(());
         }
@@ -280,10 +324,7 @@ impl ImmichApiClient {
             .ok_or_else(|| "No active connection".to_string())?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/assets", base_url);
-        let body = serde_json::json!({
-            "ids": asset_ids,
-            "force": false,
-        });
+        let body = delete_request_body(asset_ids, force);
         match self
             .client
             .delete(&url)
@@ -302,5 +343,20 @@ impl ImmichApiClient {
             Ok(resp) => Err(format!("HTTP {}", resp.status())),
             Err(err) => Err(err.to_string()),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::delete_request_body;
+
+    #[test]
+    fn delete_body_moves_to_trash_unless_forced() {
+        let ids = vec!["a".to_string(), "b".to_string()];
+        assert_eq!(
+            delete_request_body(&ids, false),
+            serde_json::json!({ "ids": ["a", "b"], "force": false })
+        );
+        assert_eq!(delete_request_body(&ids, true)["force"], true);
     }
 }

@@ -55,6 +55,8 @@ pub enum LibrarySource {
         id: String,
         name: String,
     },
+    /// Assets in the Immich trash, restorable until the server's retention period ends.
+    Trash,
 }
 
 impl LibrarySource {
@@ -425,6 +427,19 @@ mod tests {
         let (_, source, page) = state.clear_search_restore_previous_source().unwrap();
         assert!(matches!(source, LibrarySource::Album { .. }));
         assert_eq!(page, 1);
+    }
+
+    #[test]
+    fn test_trash_is_a_browsable_source_not_a_search() {
+        let mut state = LibraryState::new();
+        state.navigate_to(LibrarySource::AllAssets);
+        let (_, source, page) = state.navigate_to(LibrarySource::Trash);
+        assert_eq!(source, LibrarySource::Trash);
+        assert_eq!(page, 1);
+        assert!(!source.is_search());
+
+        let (_, source, _) = state.navigate_back().unwrap();
+        assert!(matches!(source, LibrarySource::AllAssets));
     }
 
     #[test]

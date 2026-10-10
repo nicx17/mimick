@@ -148,200 +148,49 @@ impl QueueManager {
         sync_index: Arc<ShardedSyncIndex>,
         policy: EnvironmentPolicy,
     ) -> Self {
-        const MAX_WORKERS: usize = 10;
         let (tx, rx) = mpsc::channel::<FileTask>(64);
-        let rx = Arc::new(Mutex::new(rx));
-
-        let retry_path = {
-            let mut p = crate::profile::cache_dir()
-                .unwrap_or_else(|| PathBuf::from("~/.cache").join(crate::profile::dir_segment()));
-            p.push("retries.json");
-            p
-        };
-
-        // Load persisted retries and clear the file so only current-session failures are kept.
-        let loaded_retries = load_retries(&retry_path);
-        if !loaded_retries.is_empty() {
-            log::info!(
-                "Loaded {} item(s) from retry queue. Clearing file.",
-                loaded_retries.len()
-            );
-            let _ = fs::write(&retry_path, "[]");
-            shared_state.lock().failed_count = loaded_retries.len();
-        }
+        let retry_path = retry_file_path();
+        let loaded_retries = load_and_clear_retries(&retry_path, &shared_state);
 
         // Retry state stays in memory during the session to avoid per-failure disk writes.
         let retry_list = Arc::new(parking_lot::Mutex::new(Vec::<FileTask>::new()));
-        let pending_paths = Arc::new(parking_lot::Mutex::new(
-            loaded_retries
-                .iter()
-                .map(|task| task.path.clone())
-                .collect(),
-        ));
-        let policy_ref = Arc::new(parking_lot::Mutex::new(policy));
-        let worker_limit = Arc::new(AtomicUsize::new(workers.clamp(1, MAX_WORKERS)));
+        let pending_paths = Arc::new(parking_lot::Mutex::new(pending_paths_of(&loaded_retries)));
         let batch_notify_state = Arc::new(parking_lot::Mutex::new(BatchNotifyState::default()));
-        let connectivity_lost_notified = Arc::new(parking_lot::Mutex::new(false));
-        let consecutive_failures = Arc::new(parking_lot::Mutex::new(0usize));
-        let accepting_new = Arc::new(AtomicBool::new(true));
-        let shutdown_token = CancellationToken::new();
+        let runtime = WorkerRuntime {
+            ctx: WorkerContext {
+                api: api_client,
+                state_ref: shared_state.clone(),
+                retry_ref: retry_list.clone(),
+                pending_ref: pending_paths.clone(),
+                sync_index,
+                batch_notify: batch_notify_state.clone(),
+                connectivity_notified: Arc::new(parking_lot::Mutex::new(false)),
+                consecutive_failures: Arc::new(parking_lot::Mutex::new(0usize)),
+                sender: tx.clone(),
+            },
+            rx: Arc::new(Mutex::new(rx)),
+            worker_limit: Arc::new(AtomicUsize::new(workers.clamp(1, MAX_WORKERS))),
+            policy: Arc::new(parking_lot::Mutex::new(policy)),
+            cancel: CancellationToken::new(),
+        };
 
         let qm = Self {
             sender: tx,
-            shared_state: shared_state.clone(),
-            retry_list: retry_list.clone(),
-            pending_paths: pending_paths.clone(),
-            retry_path: retry_path.clone(),
-            policy: policy_ref.clone(),
-            worker_limit: worker_limit.clone(),
-            batch_notify_state: batch_notify_state.clone(),
-            accepting_new: accepting_new.clone(),
-            shutdown_token: shutdown_token.clone(),
+            shared_state,
+            retry_list,
+            pending_paths,
+            retry_path,
+            policy: runtime.policy.clone(),
+            worker_limit: runtime.worker_limit.clone(),
+            batch_notify_state,
+            accepting_new: Arc::new(AtomicBool::new(true)),
+            shutdown_token: runtime.cancel.clone(),
         };
 
         for i in 0..MAX_WORKERS {
-            let rx_clone = rx.clone();
-            let tx_clone = qm.sender.clone();
-            let api = api_client.clone();
-            let state_ref = shared_state.clone();
-            let retry_ref = retry_list.clone();
-            let pending_ref = pending_paths.clone();
-            let sync_index_ref = sync_index.clone();
-            let batch_notify_ref = batch_notify_state.clone();
-            let connectivity_notified_ref = connectivity_lost_notified.clone();
-            let consec_fail_ref = consecutive_failures.clone();
-            let policy_ref = policy_ref.clone();
-            let worker_limit_ref = worker_limit.clone();
-            let cancel = shutdown_token.clone();
-
-            let worker_ctx = WorkerContext {
-                api: api.clone(),
-                state_ref: state_ref.clone(),
-                retry_ref: retry_ref.clone(),
-                pending_ref: pending_ref.clone(),
-                sync_index: sync_index_ref.clone(),
-                batch_notify: batch_notify_ref.clone(),
-                connectivity_notified: connectivity_notified_ref.clone(),
-                consecutive_failures: consec_fail_ref.clone(),
-                sender: tx_clone.clone(),
-            };
-
-            tokio::spawn(async move {
-                log::debug!("Worker {} started", i);
-                loop {
-                    while i >= worker_limit_ref.load(Ordering::Relaxed) {
-                        if cancel.is_cancelled() {
-                            log::debug!("Worker {} cancelled while throttled, exiting.", i);
-                            return;
-                        }
-                        tokio::time::sleep(tokio::time::Duration::from_millis(250)).await;
-                    }
-
-                    let task = tokio::select! {
-                        biased;
-                        _ = cancel.cancelled() => None,
-                        msg = async {
-                            let mut receiver = rx_clone.lock().await;
-                            receiver.recv().await
-                        } => msg,
-                    };
-
-                    match task {
-                        Some(file_task) => {
-                            wait_until_allowed(&state_ref, &policy_ref).await;
-                            let file_size = tokio::fs::metadata(&file_task.path)
-                                .await
-                                .ok()
-                                .map(|metadata| metadata.len());
-
-                            // Update the shared progress snapshot before handing off to the API.
-                            let (pc, tq) = {
-                                let mut s = state_ref.lock();
-                                s.active_workers += 1;
-                                s.status = "uploading".to_string();
-                                s.pause_reason = None;
-                                s.current_file = Some(file_task.path.clone());
-                                s.queue_size = s.total_queued.saturating_sub(s.processed_count);
-                                s.progress = if s.total_queued > 0 {
-                                    ((s.processed_count as f32 / s.total_queued as f32) * 100.0)
-                                        as u8
-                                } else {
-                                    0
-                                };
-                                let attempts = current_attempt_count(&s, &file_task.path);
-                                s.record_event(file_task.path.clone(), "uploading", None, attempts);
-                                let item_label = std::path::Path::new(&file_task.path)
-                                    .file_name()
-                                    .map(|name| name.to_string_lossy().to_string())
-                                    .or_else(|| Some(file_task.path.clone()));
-                                let route = s.active_server_route.clone();
-                                s.transfer.register_item(
-                                    TransferDirection::Upload,
-                                    file_task.path.clone(),
-                                    file_size,
-                                    item_label,
-                                    route,
-                                );
-                                (s.processed_count, s.total_queued)
-                            };
-
-                            log::info!(
-                                "Worker {} uploading [{}/{}]: {}",
-                                i,
-                                pc + 1,
-                                tq,
-                                file_task.path
-                            );
-
-                            let t_start = std::time::Instant::now();
-                            let sync_target = tokio::select! {
-                                biased;
-                                _ = cancel.cancelled() => {
-                                    log::warn!(
-                                        "Upload cancelled by shutdown: {}",
-                                        file_task.path
-                                    );
-                                    None
-                                }
-                                res = handle_upload(
-                                    &api,
-                                    &file_task,
-                                    upload_progress_callback(&state_ref, file_task.path.clone()),
-                                ) => res,
-                            };
-                            complete_worker_task(&worker_ctx, &file_task, sync_target, t_start)
-                                .await;
-                        }
-                        None => {
-                            log::debug!("Worker {} channel closed, exiting.", i);
-                            break;
-                        }
-                    }
-                }
-            });
+            tokio::spawn(run_worker(i, runtime.clone()));
         }
-
-        // Re-queue persisted retries after startup so the main daemon can settle first.
-        let sender_clone = qm.sender.clone();
-        let state_ref2 = shared_state.clone();
-        tokio::spawn(async move {
-            tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
-            if !loaded_retries.is_empty() {
-                {
-                    let mut s = state_ref2.lock();
-                    let mut batch_state = batch_notify_state.lock();
-                    activate_batch_if_needed(&mut batch_state, &s);
-                    // Retry items are now being actively queued — reset failed_count.
-                    s.failed_count = 0;
-                    s.total_queued += loaded_retries.len();
-                }
-                for task in loaded_retries {
-                    log::info!("Re-queuing from retry: {}", task.path);
-                    let _ = sender_clone.send(task).await;
-                }
-            }
-        });
-
+        spawn_retry_requeue(&qm, loaded_retries);
         qm
     }
 
@@ -663,6 +512,178 @@ async fn requeue_retries_after_success(
     for retry in retries {
         let _ = sender.send(retry).await;
     }
+}
+
+/// Upper bound on upload workers; workers above the configured limit idle until it rises.
+const MAX_WORKERS: usize = 10;
+
+/// Everything a worker task needs: shared upload state plus queue plumbing.
+#[derive(Clone)]
+struct WorkerRuntime {
+    ctx: WorkerContext,
+    rx: Arc<Mutex<mpsc::Receiver<FileTask>>>,
+    worker_limit: Arc<AtomicUsize>,
+    policy: Arc<parking_lot::Mutex<EnvironmentPolicy>>,
+    cancel: CancellationToken,
+}
+
+fn retry_file_path() -> PathBuf {
+    let mut path = crate::profile::cache_dir()
+        .unwrap_or_else(|| PathBuf::from("~/.cache").join(crate::profile::dir_segment()));
+    path.push("retries.json");
+    path
+}
+
+/// Load persisted retries and clear the file so only current-session failures are kept.
+fn load_and_clear_retries(
+    retry_path: &PathBuf,
+    shared_state: &Arc<parking_lot::Mutex<AppState>>,
+) -> Vec<FileTask> {
+    let loaded_retries = load_retries(retry_path);
+    if !loaded_retries.is_empty() {
+        log::info!(
+            "Loaded {} item(s) from retry queue. Clearing file.",
+            loaded_retries.len()
+        );
+        let _ = fs::write(retry_path, "[]");
+        shared_state.lock().failed_count = loaded_retries.len();
+    }
+    loaded_retries
+}
+
+/// Paths already waiting in the queue, so duplicates of retried files aren't queued twice.
+fn pending_paths_of(tasks: &[FileTask]) -> HashSet<String> {
+    tasks.iter().map(|task| task.path.clone()).collect()
+}
+
+/// Re-queue persisted retries after startup so the main daemon can settle first.
+fn spawn_retry_requeue(qm: &QueueManager, loaded_retries: Vec<FileTask>) {
+    if loaded_retries.is_empty() {
+        return;
+    }
+    let sender = qm.sender.clone();
+    let state_ref = qm.shared_state.clone();
+    let batch_notify_state = qm.batch_notify_state.clone();
+    tokio::spawn(async move {
+        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+        {
+            let mut s = state_ref.lock();
+            let mut batch_state = batch_notify_state.lock();
+            activate_batch_if_needed(&mut batch_state, &s);
+            // Retry items are now being actively queued — reset failed_count.
+            s.failed_count = 0;
+            s.total_queued += loaded_retries.len();
+        }
+        for task in loaded_retries {
+            log::info!("Re-queuing from retry: {}", task.path);
+            let _ = sender.send(task).await;
+        }
+    });
+}
+
+async fn run_worker(i: usize, rt: WorkerRuntime) {
+    log::debug!("Worker {} started", i);
+    loop {
+        if !wait_for_worker_slot(i, &rt).await {
+            log::debug!("Worker {} cancelled while throttled, exiting.", i);
+            return;
+        }
+        let Some(file_task) = next_task(&rt).await else {
+            log::debug!("Worker {} channel closed, exiting.", i);
+            break;
+        };
+        process_task(i, &rt, file_task).await;
+    }
+}
+
+/// Idle while this worker's index is above the configured limit; `false` once shutting down.
+async fn wait_for_worker_slot(i: usize, rt: &WorkerRuntime) -> bool {
+    while i >= rt.worker_limit.load(Ordering::Relaxed) {
+        if rt.cancel.is_cancelled() {
+            return false;
+        }
+        tokio::time::sleep(tokio::time::Duration::from_millis(250)).await;
+    }
+    true
+}
+
+/// Next queued task, or `None` on shutdown or when the channel closes.
+async fn next_task(rt: &WorkerRuntime) -> Option<FileTask> {
+    tokio::select! {
+        biased;
+        _ = rt.cancel.cancelled() => None,
+        msg = async {
+            let mut receiver = rt.rx.lock().await;
+            receiver.recv().await
+        } => msg,
+    }
+}
+
+async fn process_task(i: usize, rt: &WorkerRuntime, file_task: FileTask) {
+    let state_ref = &rt.ctx.state_ref;
+    wait_until_allowed(state_ref, &rt.policy).await;
+    let file_size = tokio::fs::metadata(&file_task.path)
+        .await
+        .ok()
+        .map(|metadata| metadata.len());
+    let (processed, total) = mark_upload_started(state_ref, &file_task, file_size);
+    log::info!(
+        "Worker {} uploading [{}/{}]: {}",
+        i,
+        processed + 1,
+        total,
+        file_task.path
+    );
+
+    let t_start = std::time::Instant::now();
+    let sync_target = tokio::select! {
+        biased;
+        _ = rt.cancel.cancelled() => {
+            log::warn!("Upload cancelled by shutdown: {}", file_task.path);
+            None
+        }
+        res = handle_upload(
+            &rt.ctx.api,
+            &file_task,
+            upload_progress_callback(state_ref, file_task.path.clone()),
+        ) => res,
+    };
+    complete_worker_task(&rt.ctx, &file_task, sync_target, t_start).await;
+}
+
+/// Update the shared progress snapshot before handing off to the API.
+/// Returns `(processed_count, total_queued)` for the progress log line.
+fn mark_upload_started(
+    state_ref: &Arc<parking_lot::Mutex<AppState>>,
+    file_task: &FileTask,
+    file_size: Option<u64>,
+) -> (usize, usize) {
+    let mut s = state_ref.lock();
+    s.active_workers += 1;
+    s.status = "uploading".to_string();
+    s.pause_reason = None;
+    s.current_file = Some(file_task.path.clone());
+    s.queue_size = s.total_queued.saturating_sub(s.processed_count);
+    s.progress = if s.total_queued > 0 {
+        ((s.processed_count as f32 / s.total_queued as f32) * 100.0) as u8
+    } else {
+        0
+    };
+    let attempts = current_attempt_count(&s, &file_task.path);
+    s.record_event(file_task.path.clone(), "uploading", None, attempts);
+    let item_label = std::path::Path::new(&file_task.path)
+        .file_name()
+        .map(|name| name.to_string_lossy().to_string())
+        .or_else(|| Some(file_task.path.clone()));
+    let route = s.active_server_route.clone();
+    s.transfer.register_item(
+        TransferDirection::Upload,
+        file_task.path.clone(),
+        file_size,
+        item_label,
+        route,
+    );
+    (s.processed_count, s.total_queued)
 }
 
 /// Get current sync attempt count for a path based on recent events history.

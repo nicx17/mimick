@@ -17,6 +17,8 @@ mod errors;
 mod library;
 mod search;
 mod suggestions;
+mod tags;
+mod trash;
 mod upload;
 mod upload_helpers;
 
@@ -496,6 +498,34 @@ pub struct AssetDetails {
     /// Extracted EXIF metadata block.
     #[serde(default)]
     pub exif_info: Option<ExifInfo>,
+    /// Whether the asset is marked as a favorite in Immich.
+    #[serde(default)]
+    pub is_favorite: bool,
+    /// Tags applied to the asset.
+    #[serde(default)]
+    pub tags: Vec<Tag>,
+}
+
+/// An Immich tag. `value` is the full path for nested tags (e.g. `Trips/2024`),
+/// while `name` is only the last segment.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
+pub struct Tag {
+    pub id: String,
+    pub name: String,
+    pub value: String,
+}
+
+/// Editable asset fields for `PUT /api/assets/{id}`; `None` fields are left unchanged.
+#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AssetUpdate {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    /// RFC3339 timestamp with offset, e.g. `2024-01-15T19:55:15+05:30`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date_time_original: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_favorite: Option<bool>,
 }
 
 /// Type of asset thumbnails requested.
@@ -892,6 +922,27 @@ mod tests {
     }
 
     #[test]
+    fn test_classify_http_issue_404_outside_albums_uses_context_summary() {
+        let issue = classify_http_issue(RequestContext::ThumbnailFetch, 404, None);
+        assert_eq!(issue.summary, "Immich could not load a library thumbnail");
+        assert!(issue.guidance.contains("HTTP 404"));
+    }
+
+    #[test]
+    fn test_classify_http_issue_for_gateway_errors() {
+        let issue = classify_http_issue(RequestContext::AssetList, 503, None);
+        assert_eq!(issue.summary, "Immich is temporarily unavailable");
+    }
+
+    #[test]
+    fn test_classify_http_issue_names_the_upload_subject() {
+        let named = classify_http_issue(RequestContext::Upload, 500, Some("photo.jpg"));
+        assert_eq!(named.summary, "Immich could not accept photo.jpg");
+        let unnamed = classify_http_issue(RequestContext::Upload, 500, None);
+        assert_eq!(unnamed.summary, "Immich could not accept the upload");
+    }
+
+    #[test]
     fn test_library_album_deserializes_from_immich_shape() {
         let album: LibraryAlbum = serde_json::from_value(serde_json::json!({
             "id": "album-1",
@@ -1095,5 +1146,33 @@ mod tests {
         }))
         .expect("server statistics json");
         assert_eq!(stats.usage_by_user[0].quota_size_in_bytes, None);
+    }
+
+    #[test]
+    fn asset_update_serializes_only_set_fields_in_camel_case() {
+        let update = AssetUpdate {
+            date_time_original: Some("2024-01-15T19:55:15+05:30".into()),
+            is_favorite: Some(true),
+            ..AssetUpdate::default()
+        };
+        assert_eq!(
+            serde_json::to_value(&update).unwrap(),
+            serde_json::json!({
+                "dateTimeOriginal": "2024-01-15T19:55:15+05:30",
+                "isFavorite": true,
+            })
+        );
+        assert_eq!(
+            serde_json::to_value(AssetUpdate::default()).unwrap(),
+            serde_json::json!({})
+        );
+    }
+
+    #[test]
+    fn asset_details_reads_favorite_flag() {
+        let details: AssetDetails =
+            serde_json::from_value(serde_json::json!({ "isFavorite": true })).unwrap();
+        assert!(details.is_favorite);
+        assert!(details.exif_info.is_none());
     }
 }
