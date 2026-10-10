@@ -538,7 +538,7 @@ fn sync_method_from_index(index: u32) -> FolderSyncMethod {
     }
 }
 
-fn catchup_index(mode: &StartupCatchupMode) -> u32 {
+pub(super) fn catchup_index(mode: &StartupCatchupMode) -> u32 {
     match mode {
         StartupCatchupMode::Full => 0,
         StartupCatchupMode::RecentOnly => 1,
@@ -546,7 +546,7 @@ fn catchup_index(mode: &StartupCatchupMode) -> u32 {
     }
 }
 
-fn catchup_from_index(index: u32) -> StartupCatchupMode {
+pub(super) fn catchup_from_index(index: u32) -> StartupCatchupMode {
     match index {
         1 => StartupCatchupMode::RecentOnly,
         2 => StartupCatchupMode::NewFilesOnly,
