@@ -15,16 +15,14 @@ use libadwaita::prelude::*;
 
 use crate::api_client::{LibraryAsset, MetadataSearchFilters, SortOrder, Tag};
 use crate::app_context::AppContext;
-use crate::library::albums_view::{
-    AlbumClick, AlbumsViewParts, build_albums_view, populate_albums,
-};
-use crate::library::explore_view::{ExploreViewParts, build_explore_view};
+use crate::library::albums_view::{AlbumClick, AlbumsViewParts, populate_albums};
+use crate::library::explore_view::ExploreViewParts;
 use crate::library::local_source::{
     LocalAsset, enumerate_local, enumerate_local_for_entry, filter_by_filename,
 };
-use crate::library::masonry::{GridViewParts, build_grid_view};
-use crate::library::search_view::{SearchViewParts, build_search_view};
-use crate::library::sidebar::{SidebarParts, build_sidebar};
+use crate::library::masonry::GridViewParts;
+use crate::library::search_view::SearchViewParts;
+use crate::library::sidebar::SidebarParts;
 use crate::library::state::{LibraryLoadState, LibrarySource};
 use crate::state_manager::TransferDirection;
 
@@ -67,6 +65,7 @@ mod server_stats_dialog;
 pub mod staging_view;
 mod trash_view;
 mod upload_picker;
+mod window_layout;
 
 const PAGE_SIZE: u32 = 50;
 
@@ -135,403 +134,17 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     style::ensure_registered();
     register_app_icons();
 
-    let window = libadwaita::ApplicationWindow::builder()
-        .application(app)
-        .title("Mimick Library")
-        .name("mimick-library-window")
-        .default_width(1480)
-        .default_height(780)
-        .width_request(360)
-        .height_request(480)
-        .build();
-
-    let header = libadwaita::HeaderBar::builder()
-        .show_start_title_buttons(true)
-        .show_end_title_buttons(true)
-        .build();
-    let sidebar_toggle = gtk::ToggleButton::builder()
-        .icon_name("sidebar-show-symbolic")
-        .tooltip_text("Toggle sidebar (F9)")
-        .active(true)
-        .css_classes(["mimick-pressable"])
-        .build();
-    let back_button = gtk::Button::builder()
-        .icon_name("go-previous-symbolic")
-        .tooltip_text("Back (Alt+Left)")
-        .sensitive(false)
-        .css_classes(["mimick-pressable"])
-        .build();
-    let menu = gtk::gio::Menu::new();
-    menu.append(Some("Refresh"), Some("win.refresh"));
-    menu.append(Some("Queue Inspector"), Some("win.queue"));
-    menu.append(Some("Settings"), Some("win.settings"));
-    let menu_button = gtk::MenuButton::builder()
-        .icon_name("open-menu-symbolic")
-        .menu_model(&menu)
-        .tooltip_text("Menu")
-        .css_classes(["mimick-pressable"])
-        .build();
-    header.pack_start(&sidebar_toggle);
-    header.pack_start(&back_button);
-    header.pack_end(&menu_button);
-    let select_toggle = gtk::ToggleButton::builder()
-        .icon_name("checkbox-symbolic")
-        .tooltip_text("Select assets (Esc to exit)")
-        .build();
-
-    let toolbar = libadwaita::ToolbarView::builder().build();
-    toolbar.add_top_bar(&header);
-
-    let narrow_flag = Rc::new(Cell::new(false));
-    let sidebar = build_sidebar();
-    let grid = build_grid_view(ctx.clone(), select_toggle.clone(), narrow_flag.clone());
-    let explore = build_explore_view();
-    let albums = build_albums_view();
-
-    let source_mode_model = gtk::StringList::new(&["Remote", "Local", "Unified"]);
-    let source_mode = gtk::DropDown::builder()
-        .model(&source_mode_model)
-        .selected(0)
-        .tooltip_text("Asset source")
-        .build();
-    let timeline_toggle = gtk::ToggleButton::builder()
-        .label("Timeline")
-        .tooltip_text("Timeline view (all assets only)")
-        .build();
-
-    let search_view = build_search_view();
-
-    let sort_model = gtk::StringList::new(&["Newest", "Filename", "File Type"]);
-    let sort_mode = gtk::DropDown::builder()
-        .model(&sort_model)
-        .selected(0)
-        .build();
-
-    let upload_button = gtk::Button::builder()
-        .icon_name("document-send-symbolic")
-        .tooltip_text("Upload to library")
-        .css_classes(["suggested-action", "mimick-pressable"])
-        .build();
-
-    // Source mode (Remote/Local/Unified) is meaningful only inside a linked
-    // album; the revealer is unhidden by `apply_view_chrome` per source kind.
-    let source_revealer = gtk::Revealer::builder()
-        .transition_type(gtk::RevealerTransitionType::SlideRight)
-        .transition_duration(180)
-        .reveal_child(false)
-        .build();
-    source_revealer.set_child(Some(&source_mode));
-
-    let source_group = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(8)
-        .build();
-    source_group.append(&source_revealer);
-    source_group.append(&timeline_toggle);
-
-    let sort_group = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(8)
-        .build();
-    sort_group.append(&sort_mode);
-    sort_group.append(&upload_button);
-
-    let controls = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(12)
-        .margin_top(12)
-        .margin_bottom(12)
-        .margin_start(8)
-        .margin_end(8)
-        .build();
-    controls.append(&source_group);
-    controls.append(&sort_group);
-
-    let timeline_banner = gtk::Label::builder()
-        .xalign(0.0)
-        .css_classes(vec!["mimick-timeline-banner".to_string()])
-        .visible(false)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .max_width_chars(20)
-        .margin_top(4)
-        .margin_bottom(4)
-        .margin_start(12)
-        .build();
-
-    let content_stack = gtk::Stack::builder()
-        .vexpand(true)
-        .hexpand(true)
-        .transition_type(gtk::StackTransitionType::Crossfade)
-        .transition_duration(180)
-        .build();
-    let loading_view = build_loading_view();
-    let empty_view = build_status_view(
-        "image-x-generic-symbolic",
-        "Nothing to show",
-        "No assets match the current view",
+    let parts = window_layout::WindowParts::build(app, &ctx);
+    let window = parts.window.clone();
+    let album_link_listbox = parts.content.album_link.listbox.clone();
+    let bulk = &parts.content.bulk;
+    let (bulk_delete, bulk_download, bulk_clear) = (
+        bulk.delete.clone(),
+        bulk.download.clone(),
+        bulk.clear.clone(),
     );
-    let error_view = build_status_view(
-        "dialog-warning-symbolic",
-        "Library data unavailable",
-        "Could not load library assets",
-    );
-    let error_label = error_view
-        .last_child()
-        .and_downcast::<gtk::Label>()
-        .expect("status-view subtitle label");
-    content_stack.add_named(&loading_view, Some("loading"));
-    content_stack.add_named(&empty_view, Some("empty"));
-    content_stack.add_named(&error_view, Some("error"));
-    content_stack.add_named(&grid.scrolled, Some("grid"));
-    content_stack.add_named(&explore.root, Some("explore"));
-    content_stack.add_named(&albums.root, Some("albums"));
+    let ui = Rc::new(LibraryWindowUi::from_parts(ctx, app, parts));
 
-    let transfer_progress = gtk::ProgressBar::builder()
-        .hexpand(true)
-        .valign(gtk::Align::Center)
-        .css_classes(vec!["mimick-transfer-progress".to_string()])
-        .build();
-    let transfer_icon = gtk::Image::builder()
-        .icon_size(gtk::IconSize::Normal)
-        .css_classes(vec!["dim-label".to_string()])
-        .visible(false)
-        .build();
-    let transfer_label = gtk::Label::builder()
-        .xalign(0.0)
-        .hexpand(true)
-        .wrap(true)
-        .max_width_chars(24)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .css_classes(vec!["caption".to_string(), "dim-label".to_string()])
-        .build();
-    let transfer_bar = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(12)
-        .margin_top(8)
-        .margin_bottom(16)
-        .margin_start(12)
-        .margin_end(12)
-        .css_classes(vec!["mimick-transfer-shell".to_string()])
-        .build();
-    transfer_bar.append(&transfer_progress);
-    transfer_bar.append(&transfer_icon);
-    transfer_bar.append(&transfer_label);
-
-    let album_link_row = libadwaita::ActionRow::builder()
-        .title("No local folder linked")
-        .subtitle("Drop files in the linked folder to sync this album")
-        .title_lines(1)
-        .subtitle_lines(2)
-        .build();
-    let album_sync_button = gtk::Button::builder()
-        .label("Sync")
-        .valign(gtk::Align::Center)
-        .css_classes(vec!["suggested-action".to_string()])
-        .visible(false)
-        .build();
-    let album_link_button = gtk::Button::builder()
-        .label("Link")
-        .valign(gtk::Align::Center)
-        .build();
-    album_link_row.add_suffix(&album_sync_button);
-    album_link_row.add_suffix(&album_link_button);
-    let album_link_listbox = gtk::ListBox::builder()
-        .selection_mode(gtk::SelectionMode::None)
-        .css_classes(vec!["boxed-list".to_string()])
-        .margin_start(12)
-        .margin_end(12)
-        .margin_top(4)
-        .margin_bottom(4)
-        .visible(false)
-        .build();
-    album_link_listbox.append(&album_link_row);
-
-    let bulk_count_label = gtk::Label::builder().xalign(0.0).hexpand(true).build();
-    let bulk_delete = gtk::Button::builder()
-        .icon_name("user-trash-symbolic")
-        .tooltip_text("Delete selected")
-        .css_classes(vec!["destructive-action".to_string()])
-        .build();
-    let bulk_download = gtk::Button::builder()
-        .icon_name("mimick-download-symbolic")
-        .tooltip_text("Download selected")
-        .build();
-    let bulk_clear = gtk::Button::builder()
-        .icon_name("edit-clear-symbolic")
-        .tooltip_text("Clear selection")
-        .css_classes(vec!["flat".to_string()])
-        .build();
-    let bulk_inner = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(8)
-        .margin_top(8)
-        .margin_bottom(16)
-        .margin_start(12)
-        .margin_end(12)
-        .css_classes(vec!["toolbar".to_string()])
-        .build();
-    bulk_inner.append(&bulk_count_label);
-    bulk_inner.append(&bulk_clear);
-    bulk_inner.append(&bulk_download);
-    bulk_inner.append(&bulk_delete);
-    let trash = trash_view::build_trash_controls(vec![bulk_delete.clone(), bulk_download.clone()]);
-    bulk_inner.append(&trash.restore_selected);
-    bulk_inner.append(&trash.delete_selected);
-    let bulk_bar = gtk::Revealer::builder()
-        .transition_type(gtk::RevealerTransitionType::SlideUp)
-        .reveal_child(false)
-        .child(&bulk_inner)
-        .build();
-
-    let content = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .build();
-    content.append(&controls);
-    content.append(&search_view.root);
-    content.append(&album_link_listbox);
-    content.append(&trash.bar);
-    content.append(&timeline_banner);
-    content.append(&content_stack);
-    content.append(&bulk_bar);
-    content.append(&transfer_bar);
-
-    // Drop overlay: shown when files are dragged over the window.
-    let (content_with_drop, drop_overlay) = build_drop_overlay(content);
-
-    let split = libadwaita::OverlaySplitView::builder()
-        .sidebar(&sidebar.root)
-        .content(&content_with_drop)
-        .show_sidebar(true)
-        .collapsed(true)
-        .enable_show_gesture(true)
-        .enable_hide_gesture(true)
-        .min_sidebar_width(180.0)
-        .max_sidebar_width(260.0)
-        .sidebar_width_fraction(0.3)
-        .build();
-    split
-        .bind_property("show-sidebar", &sidebar_toggle, "active")
-        .sync_create()
-        .bidirectional()
-        .build();
-    toolbar.set_content(Some(&split));
-
-    let nav = libadwaita::NavigationView::new();
-    let root_page = libadwaita::NavigationPage::builder()
-        .child(&toolbar)
-        .title("Library")
-        .can_pop(false)
-        .build();
-    nav.add(&root_page);
-    window.set_content(Some(&nav));
-
-    let breakpoint = libadwaita::Breakpoint::new(
-        libadwaita::BreakpointCondition::parse("max-width: 600px")
-            .expect("valid breakpoint condition"),
-    );
-    breakpoint.add_setter(&transfer_bar, "visible", Some(&false.to_value()));
-    breakpoint.add_setter(&back_button, "visible", Some(&false.to_value()));
-    let narrow_apply = narrow_flag.clone();
-    let canvas_for_apply = grid.canvas.clone();
-    breakpoint.connect_apply(move |_| {
-        log::info!("NARROW breakpoint APPLIED: setting narrow=true");
-        narrow_apply.set(true);
-        canvas_for_apply.set_narrow(true);
-    });
-    let narrow_unapply = narrow_flag.clone();
-    let canvas_for_unapply = grid.canvas.clone();
-    breakpoint.connect_unapply(move |_| {
-        log::info!("NARROW breakpoint UNAPPLIED: setting narrow=false");
-        narrow_unapply.set(false);
-        canvas_for_unapply.set_narrow(false);
-    });
-    window.add_breakpoint(breakpoint);
-
-    let desktop_bp = libadwaita::Breakpoint::new(
-        libadwaita::BreakpointCondition::parse("min-width: 600px")
-            .expect("valid breakpoint condition"),
-    );
-    let window_for_desktop_apply = window.clone();
-    desktop_bp.connect_apply(move |_| {
-        window_for_desktop_apply.add_css_class("mimick-wide");
-    });
-    let window_for_desktop_unapply = window.clone();
-    desktop_bp.connect_unapply(move |_| {
-        window_for_desktop_unapply.remove_css_class("mimick-wide");
-    });
-    desktop_bp.add_setter(
-        &controls,
-        "orientation",
-        Some(&gtk::Orientation::Horizontal.to_value()),
-    );
-    desktop_bp.add_setter(&split, "collapsed", Some(&false.to_value()));
-    desktop_bp.add_setter(&album_sync_button, "label", Some(&"Sync…".to_value()));
-    desktop_bp.add_setter(
-        &album_link_button,
-        "label",
-        Some(&"Link folder…".to_value()),
-    );
-    window.add_breakpoint(desktop_bp);
-
-    // Tablet-width breakpoint: hide transfer bar and tweak chrome when the
-    // window is narrower than a typical desktop width.
-    let tablet_bp = libadwaita::Breakpoint::new(
-        libadwaita::BreakpointCondition::parse("max-width: 1000px")
-            .expect("valid breakpoint condition"),
-    );
-    window.add_breakpoint(tablet_bp);
-
-    let f9 = gtk::Shortcut::builder()
-        .trigger(&gtk::ShortcutTrigger::parse_string("F9").unwrap())
-        .action(&gtk::CallbackAction::new(clone!(
-            #[strong]
-            split,
-            move |_, _| {
-                split.set_show_sidebar(!split.shows_sidebar());
-                glib::Propagation::Stop
-            }
-        )))
-        .build();
-    let shortcut_controller = gtk::ShortcutController::new();
-    shortcut_controller.add_shortcut(f9);
-    window.add_controller(shortcut_controller);
-
-    let ui = Rc::new(LibraryWindowUi {
-        ctx,
-        app: app.clone(),
-        window: window.clone(),
-        nav: nav.clone(),
-        sidebar,
-        grid,
-        explore,
-        albums,
-        content_stack,
-        error_label,
-        transfer_bar,
-        transfer_progress,
-        transfer_icon,
-        transfer_label,
-        search_view,
-        sort_mode,
-        source_mode,
-        source_revealer,
-        upload_button: upload_button.clone(),
-        timeline_toggle,
-        timeline_banner,
-        source_mode_suppressed: Cell::new(false),
-        sidebar_suppressed: Cell::new(false),
-        back_button: back_button.clone(),
-        select_toggle: select_toggle.clone(),
-        bulk_bar: bulk_bar.clone(),
-        trash,
-        bulk_count_label: bulk_count_label.clone(),
-        album_link_row: album_link_row.clone(),
-        album_link_button: album_link_button.clone(),
-        album_sync_button: album_sync_button.clone(),
-        last_seen_upload_batch: Cell::new(0),
-        split: split.clone(),
-        drop_overlay: drop_overlay.clone(),
-    });
     *ui.grid.context_menu_handler.borrow_mut() = Some(Box::new(clone!(
         #[strong]
         ui,
@@ -548,11 +161,9 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     )));
 
     connect_album_link_row(ui.clone(), album_link_listbox);
-
-    connect_select_mode(ui.clone(), select_toggle.clone());
+    connect_select_mode(ui.clone(), ui.select_toggle.clone());
     connect_bulk_actions(ui.clone(), bulk_delete, bulk_download, bulk_clear);
     trash_view::connect_trash_controls(ui.clone());
-
     connect_sidebar_handlers(ui.clone());
     connect_controls(ui.clone());
     connect_grid_handlers(ui.clone());
@@ -567,7 +178,6 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     });
 
     bootstrap_window(ui);
-
     window.present();
 }
 
