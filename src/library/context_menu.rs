@@ -7,7 +7,6 @@
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
@@ -47,6 +46,30 @@ impl AssetMenuHooks {
     }
 }
 
+/// The menu's asset, captured once so each button can clone what it needs.
+#[derive(Clone)]
+struct MenuAsset {
+    asset_id: String,
+    remote_id: String,
+    local_path: String,
+    filename: String,
+}
+
+impl MenuAsset {
+    fn from_item(item: &AssetObject) -> Self {
+        Self {
+            asset_id: item.property("id"),
+            remote_id: item.property("remote-id"),
+            local_path: item.property("local-path"),
+            filename: item.property("filename"),
+        }
+    }
+
+    fn on_server(&self) -> bool {
+        !self.remote_id.is_empty() && !self.asset_id.starts_with(LOCAL_ID_PREFIX)
+    }
+}
+
 pub(super) fn show_asset_context_menu(
     ui: Rc<LibraryWindowUi>,
     parent: &impl gtk::prelude::IsA<gtk::Widget>,
@@ -58,294 +81,155 @@ pub(super) fn show_asset_context_menu(
     let Some(item) = ui.grid.model.item(position).and_downcast::<AssetObject>() else {
         return;
     };
-    let asset_id = item.property::<String>("id");
-    let remote_id = item.property::<String>("remote-id");
-    let local_path = item.property::<String>("local-path");
-    let filename = item.property::<String>("filename");
-    let asset_type = item.property::<String>("asset-type");
-    let is_image = asset_type.eq_ignore_ascii_case("IMAGE");
-    let can_download = !remote_id.is_empty() && !asset_id.starts_with(LOCAL_ID_PREFIX);
-    let can_open = can_download || !local_path.is_empty();
+    let asset = MenuAsset::from_item(&item);
+    let is_image = item
+        .property::<String>("asset-type")
+        .eq_ignore_ascii_case("IMAGE");
 
-    let popover = gtk::Popover::builder()
-        .has_arrow(true)
-        .autohide(true)
-        .build();
-    popover.set_parent(parent);
-    popover.set_pointing_to(Some(&gtk::gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
-
-    let content = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(4)
-        .margin_top(6)
-        .margin_bottom(6)
-        .margin_start(6)
-        .margin_end(6)
-        .build();
+    let menu = Menu::new(parent, x, y);
 
     if is_image {
-        let copy_btn = gtk::Button::builder()
-            .label("Copy")
-            .halign(gtk::Align::Fill)
-            .build();
-        copy_btn.connect_clicked(clone!(
-            #[strong]
-            ui,
-            #[strong]
-            popover,
-            #[strong]
-            asset_id,
-            #[strong]
-            remote_id,
-            #[strong]
-            local_path,
-            #[strong]
-            filename,
-            move |_| {
-                popover.popdown();
-                copy_asset_to_clipboard(
-                    ui.clone(),
-                    asset_id.clone(),
-                    remote_id.clone(),
-                    local_path.clone(),
-                    filename.clone(),
-                );
-            }
-        ));
-        content.append(&copy_btn);
+        let (ui, asset) = (ui.clone(), asset.clone());
+        menu.add("Copy", false, move || {
+            copy_asset_to_clipboard(ui.clone(), asset.clone())
+        });
+    }
+    if asset.on_server() {
+        let (ui, asset) = (ui.clone(), asset.clone());
+        menu.add("Download", false, move || {
+            start_download(ui.clone(), asset.remote_id.clone(), asset.filename.clone())
+        });
+    }
+    if asset.on_server() || !asset.local_path.is_empty() {
+        let (ui, asset) = (ui.clone(), asset.clone());
+        menu.add("Open In", false, move || {
+            open_asset_in_default_app(ui.clone(), asset.clone())
+        });
+    }
+    if asset.on_server() {
+        append_manage_buttons(&menu, &ui, &item, hooks);
     }
 
-    if can_download {
-        let download_btn = gtk::Button::builder()
-            .label("Download")
-            .halign(gtk::Align::Fill)
-            .build();
-        download_btn.connect_clicked(clone!(
-            #[strong]
-            ui,
-            #[strong]
-            popover,
-            #[strong]
-            remote_id,
-            #[strong]
-            filename,
-            move |_| {
-                popover.popdown();
-                start_download(ui.clone(), remote_id.clone(), filename.clone());
-            }
-        ));
-        content.append(&download_btn);
-    }
-
-    if can_open {
-        let open_btn = gtk::Button::builder()
-            .label("Open In")
-            .halign(gtk::Align::Fill)
-            .build();
-        open_btn.connect_clicked(clone!(
-            #[strong]
-            ui,
-            #[strong]
-            popover,
-            #[strong]
-            asset_id,
-            #[strong]
-            remote_id,
-            #[strong]
-            local_path,
-            #[strong]
-            filename,
-            move |_| {
-                popover.popdown();
-                open_asset_in_default_app(
-                    ui.clone(),
-                    asset_id.clone(),
-                    remote_id.clone(),
-                    local_path.clone(),
-                    filename.clone(),
-                );
-            }
-        ));
-        content.append(&open_btn);
-    }
-
-    if can_download {
-        append_manage_buttons(&content, &ui, &popover, &item, hooks);
-    }
-
-    popover.set_child(Some(&content));
-    popover.popup();
+    menu.popover.set_child(Some(&menu.content));
+    menu.popover.popup();
 }
 
-/// "Edit Info…" and "Move to Trash" for assets that exist on the server.
+/// Popover content plus a helper for full-width buttons that close the menu first.
+struct Menu {
+    content: gtk::Box,
+    popover: gtk::Popover,
+}
+
+impl Menu {
+    fn new(parent: &impl gtk::prelude::IsA<gtk::Widget>, x: f64, y: f64) -> Self {
+        let popover = gtk::Popover::builder()
+            .has_arrow(true)
+            .autohide(true)
+            .build();
+        popover.set_parent(parent);
+        popover.set_pointing_to(Some(&gtk::gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
+        let content = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .spacing(4)
+            .margin_top(6)
+            .margin_bottom(6)
+            .margin_start(6)
+            .margin_end(6)
+            .build();
+        Self { content, popover }
+    }
+
+    fn add(&self, label: &str, destructive: bool, on_click: impl Fn() + 'static) {
+        let button = gtk::Button::builder()
+            .label(label)
+            .halign(gtk::Align::Fill)
+            .build();
+        if destructive {
+            button.add_css_class("destructive-action");
+        }
+        let popover = self.popover.clone();
+        button.connect_clicked(move |_| {
+            popover.popdown();
+            on_click();
+        });
+        self.content.append(&button);
+    }
+}
+
+/// "Edit Info…" and "Move to Trash" for assets that exist on the server;
+/// "Restore" and "Delete Permanently" instead while the Trash view is open.
 fn append_manage_buttons(
-    content: &gtk::Box,
+    menu: &Menu,
     ui: &Rc<LibraryWindowUi>,
-    popover: &gtk::Popover,
     item: &AssetObject,
     hooks: AssetMenuHooks,
 ) {
     let Some(target) = TrashTarget::from_item(item) else {
         return;
     };
+    let remote_id = target.remote_id().to_string();
     if trash_view::is_trash_active(ui) {
-        let remote_id = target.remote_id().to_string();
-        content.append(&restore_button(
-            ui,
-            popover,
-            remote_id.clone(),
-            hooks.on_trashed.clone(),
-        ));
-        content.append(&delete_forever_button(
-            ui,
-            popover,
-            remote_id,
-            hooks.on_trashed,
-        ));
+        append_trash_mode_buttons(menu, ui, remote_id, hooks.on_trashed);
         return;
     }
-    let filename = item.property::<String>("filename");
-    content.append(&edit_info_button(
-        ui,
-        popover,
-        target.remote_id().to_string(),
-        filename,
+
+    let (ui_edit, filename, on_edited) = (
+        ui.clone(),
+        item.property::<String>("filename"),
         hooks.on_edited,
-    ));
-    content.append(&trash_button(ui, popover, target, hooks.on_trashed));
-}
-
-fn edit_info_button(
-    ui: &Rc<LibraryWindowUi>,
-    popover: &gtk::Popover,
-    remote_id: String,
-    filename: String,
-    on_edited: Rc<dyn Fn(bool)>,
-) -> gtk::Button {
-    let button = gtk::Button::builder()
-        .label("Edit Info…")
-        .halign(gtk::Align::Fill)
-        .build();
-    button.connect_clicked(clone!(
-        #[strong]
-        ui,
-        #[strong]
-        popover,
-        move |_| {
-            popover.popdown();
-            show_edit_dialog(
-                ui.clone(),
-                remote_id.clone(),
-                filename.clone(),
-                on_edited.clone(),
-            );
-        }
-    ));
-    button
-}
-
-/// Trash view: put the asset back in the library.
-fn restore_button(
-    ui: &Rc<LibraryWindowUi>,
-    popover: &gtk::Popover,
-    remote_id: String,
-    on_removed: Rc<dyn Fn()>,
-) -> gtk::Button {
-    let button = gtk::Button::builder()
-        .label("Restore")
-        .halign(gtk::Align::Fill)
-        .build();
-    button.connect_clicked(clone!(
-        #[strong]
-        ui,
-        #[strong]
-        popover,
-        move |_| {
-            popover.popdown();
-            let on_removed = on_removed.clone();
-            trash_view::restore(ui.clone(), vec![remote_id.clone()], move || on_removed());
-        }
-    ));
-    button
-}
-
-/// Trash view: delete the asset for good, after confirmation.
-fn delete_forever_button(
-    ui: &Rc<LibraryWindowUi>,
-    popover: &gtk::Popover,
-    remote_id: String,
-    on_removed: Rc<dyn Fn()>,
-) -> gtk::Button {
-    let button = gtk::Button::builder()
-        .label("Delete Permanently")
-        .halign(gtk::Align::Fill)
-        .css_classes(["destructive-action"])
-        .build();
-    button.connect_clicked(clone!(
-        #[strong]
-        ui,
-        #[strong]
-        popover,
-        move |_| {
-            popover.popdown();
-            let on_removed = on_removed.clone();
-            trash_view::confirm_delete_permanently(
-                ui.clone(),
-                vec![remote_id.clone()],
-                move || on_removed(),
-            );
-        }
-    ));
-    button
-}
-
-fn trash_button(
-    ui: &Rc<LibraryWindowUi>,
-    popover: &gtk::Popover,
-    target: TrashTarget,
-    on_trashed: Rc<dyn Fn()>,
-) -> gtk::Button {
-    let button = gtk::Button::builder()
-        .label("Move to Trash")
-        .halign(gtk::Align::Fill)
-        .css_classes(["destructive-action"])
-        .build();
+    );
+    let edit_id = remote_id;
+    menu.add("Edit Info…", false, move || {
+        show_edit_dialog(
+            ui_edit.clone(),
+            edit_id.clone(),
+            filename.clone(),
+            on_edited.clone(),
+        )
+    });
     // The popover is single-use, so the target is handed to the dialog on the first click.
     let target = std::cell::RefCell::new(Some(target));
-    button.connect_clicked(clone!(
-        #[strong]
-        ui,
-        #[strong]
-        popover,
-        move |_| {
-            popover.popdown();
-            if let Some(target) = target.borrow_mut().take() {
-                let on_trashed = on_trashed.clone();
-                confirm_trash(ui.clone(), vec![target], 0, move || on_trashed());
-            }
+    let (ui_trash, on_trashed) = (ui.clone(), hooks.on_trashed);
+    menu.add("Move to Trash", true, move || {
+        if let Some(target) = target.borrow_mut().take() {
+            let on_trashed = on_trashed.clone();
+            confirm_trash(ui_trash.clone(), vec![target], 0, move || on_trashed());
         }
-    ));
-    button
+    });
 }
 
-fn copy_asset_to_clipboard(
-    ui: Rc<LibraryWindowUi>,
-    asset_id: String,
+/// Trash view: put the asset back, or delete it for good after confirmation.
+fn append_trash_mode_buttons(
+    menu: &Menu,
+    ui: &Rc<LibraryWindowUi>,
     remote_id: String,
-    local_path: String,
-    filename: String,
+    on_removed: Rc<dyn Fn()>,
 ) {
+    let (ui_restore, id, on_restored) = (ui.clone(), remote_id.clone(), on_removed.clone());
+    menu.add("Restore", false, move || {
+        let on_restored = on_restored.clone();
+        trash_view::restore(ui_restore.clone(), vec![id.clone()], move || on_restored());
+    });
+    let ui_delete = ui.clone();
+    menu.add("Delete Permanently", true, move || {
+        let on_removed = on_removed.clone();
+        trash_view::confirm_delete_permanently(
+            ui_delete.clone(),
+            vec![remote_id.clone()],
+            move || on_removed(),
+        );
+    });
+}
+
+fn copy_asset_to_clipboard(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {
     glib::MainContext::default().spawn_local(async move {
-        let path =
-            match ensure_original_asset_path(&ui, &asset_id, &remote_id, &local_path, &filename)
-                .await
-            {
-                Ok(path) => path,
-                Err(err) => {
-                    show_alert_dialog(&ui, "Copy Failed", &err);
-                    return;
-                }
-            };
+        let path = match original_path(&ui, &asset).await {
+            Ok(path) => path,
+            Err(err) => {
+                show_alert_dialog(&ui, "Copy Failed", &err);
+                return;
+            }
+        };
         let Some(texture) = load_texture_oriented(&path).await else {
             show_alert_dialog(&ui, "Copy Failed", "Could not decode the original image.");
             return;
@@ -356,26 +240,24 @@ fn copy_asset_to_clipboard(
     });
 }
 
-fn open_asset_in_default_app(
-    ui: Rc<LibraryWindowUi>,
-    asset_id: String,
-    remote_id: String,
-    local_path: String,
-    filename: String,
-) {
+fn open_asset_in_default_app(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {
     glib::MainContext::default().spawn_local(async move {
-        let path =
-            match ensure_original_asset_path(&ui, &asset_id, &remote_id, &local_path, &filename)
-                .await
-            {
-                Ok(path) => path,
-                Err(err) => {
-                    show_alert_dialog(&ui, "Open Failed", &err);
-                    return;
-                }
-            };
-        open_local_with_default_app(&path.display().to_string());
+        match original_path(&ui, &asset).await {
+            Ok(path) => open_local_with_default_app(&path.display().to_string()),
+            Err(err) => show_alert_dialog(&ui, "Open Failed", &err),
+        }
     });
+}
+
+async fn original_path(ui: &LibraryWindowUi, asset: &MenuAsset) -> Result<PathBuf, String> {
+    ensure_original_asset_path(
+        ui,
+        &asset.asset_id,
+        &asset.remote_id,
+        &asset.local_path,
+        &asset.filename,
+    )
+    .await
 }
 
 pub(super) async fn ensure_original_asset_path(
