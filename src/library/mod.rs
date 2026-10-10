@@ -800,7 +800,7 @@ fn handle_drop(ui: &LibraryWindowUi, value: &gtk::glib::Value) -> bool {
     let paths: Vec<std::path::PathBuf> = file_list
         .files()
         .iter()
-        .filter_map(|f| f.path())
+        .filter_map(gtk::gio::prelude::FileExt::path)
         .filter(|p| crate::media_kinds::is_supported_path(p))
         .collect();
 
@@ -1572,7 +1572,7 @@ fn setup_album_drop_target(
         let paths: Vec<std::path::PathBuf> = file_list
             .files()
             .iter()
-            .filter_map(|f| f.path())
+            .filter_map(gtk::gio::prelude::FileExt::path)
             .filter(|p| crate::media_kinds::is_supported_path(p))
             .collect();
         if paths.is_empty() {
@@ -1590,16 +1590,14 @@ fn build_album_sidebar_row(
     album: &crate::api_client::LibraryAlbum,
 ) -> gtk::ListBoxRow {
     let subtitle = format!("{} asset(s)", album.asset_count);
-    let action = libadwaita::ActionRow::builder()
+    let row: gtk::ListBoxRow = libadwaita::ActionRow::builder()
         .title(&album.album_name)
         .subtitle(&subtitle)
         .title_lines(1)
         .subtitle_lines(1)
-        .build();
-    let row = gtk::ListBoxRow::builder()
         .tooltip_text(format!("{}:{}", album.id, album.album_name))
-        .child(&action)
-        .build();
+        .build()
+        .upcast();
 
     // Per-row drop target: dragging files onto an album row uploads
     // them directly into that album.

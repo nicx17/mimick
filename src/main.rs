@@ -303,26 +303,34 @@ async fn main() {
                             continue;
                         }
 
-                        let (album_id, album_name, watch_path, folder_rules) = {
+                        let (album_id, album_name, watch_path, folder_rules, skip_album) = {
                             let path_configs = live_watch_paths_for_queue.lock();
                             best_matching_watch_entry(std::path::Path::new(&path), &path_configs)
-                                .map(|entry| match entry {
-                                    config::WatchPathEntry::WithConfig {
-                                        album_id,
-                                        album_name,
-                                        rules,
-                                        ..
-                                    } => (
-                                        album_id.clone(),
-                                        album_name.clone(),
-                                        entry.path().to_string(),
-                                        rules.clone(),
-                                    ),
-                                    config::WatchPathEntry::Simple(_) => {
-                                        (None, None, entry.path().to_string(), Default::default())
+                                .map(|entry| {
+                                    let skip_album = entry.uploads_to_library();
+                                    match entry {
+                                        config::WatchPathEntry::WithConfig {
+                                            album_id,
+                                            album_name,
+                                            rules,
+                                            ..
+                                        } => (
+                                            album_id.clone(),
+                                            album_name.clone(),
+                                            entry.path().to_string(),
+                                            rules.clone(),
+                                            skip_album,
+                                        ),
+                                        config::WatchPathEntry::Simple(_) => (
+                                            None,
+                                            None,
+                                            entry.path().to_string(),
+                                            Default::default(),
+                                            false,
+                                        ),
                                     }
                                 })
-                                .unwrap_or((None, None, String::new(), Default::default()))
+                                .unwrap_or((None, None, String::new(), Default::default(), false))
                         };
 
                         // Resolve XMP: per-folder override -> global default.
@@ -373,7 +381,7 @@ async fn main() {
                                 album_id,
                                 album_name,
                                 reassociate_only,
-                                skip_album: false,
+                                skip_album,
                                 sidecar_path,
                             })
                             .await;
@@ -599,7 +607,7 @@ async fn main() {
         let argv: Vec<String> = cmdline
             .arguments()
             .iter()
-            .filter_map(|a| a.to_str().map(|s| s.to_string()))
+            .filter_map(|a| a.to_str().map(ToString::to_string))
             .collect();
 
         let quit_requested = argv.contains(&"--quit".to_string());

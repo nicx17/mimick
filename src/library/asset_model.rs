@@ -9,9 +9,10 @@
 use std::cell::RefCell;
 
 use gtk::gio;
+use gtk::gio::prelude::ListModelExt;
 use gtk::glib;
-use gtk::prelude::*;
-use gtk::subclass::prelude::*;
+use gtk::glib::prelude::{Cast, ObjectExt, StaticType};
+use gtk::subclass::prelude::{ObjectImpl, ObjectSubclass, ObjectSubclassIsExt};
 
 use crate::api_client::LibraryAsset;
 use crate::app_context::AppContext;
@@ -29,7 +30,7 @@ mod imp {
 
     #[glib::object_subclass]
     impl ObjectSubclass for LibraryAssetModel {
-        const NAME: &'static str = "MimickLibraryAssetModel";
+        const NAME: &str = "MimickLibraryAssetModel";
         type Type = super::LibraryAssetModel;
         type Interfaces = (gio::ListModel,);
     }

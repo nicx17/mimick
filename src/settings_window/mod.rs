@@ -5,7 +5,7 @@
 //! Changes are validated and persisted to the JSON config file on save.
 
 use crate::autostart;
-use crate::config::{FolderRules, StartupCatchupMode, WatchPathEntry};
+use crate::config::{ApiKeyStorage, FolderRules, StartupCatchupMode, WatchPathEntry};
 use crate::diagnostics;
 use adw::prelude::*;
 use glib::clone;
@@ -40,6 +40,8 @@ struct FolderRowData {
     path: String,
     /// Target Immich album name.
     album_name: Rc<RefCell<String>>,
+    /// Whether this folder explicitly uploads directly to the library.
+    uploads_to_library: Rc<Cell<bool>>,
     /// Custom path filtering rules.
     rules: Rc<RefCell<FolderRules>>,
     /// Libadwaita row widget representing this watched folder.
@@ -49,6 +51,7 @@ struct FolderRowData {
 }
 
 const DEFAULT_ALBUM_LABEL: &str = "Default (Folder Name)";
+const LIBRARY_ALBUM_LABEL: &str = "Library (No Album)";
 
 /// Display a standard Libadwaita modal alert message dialog to the user.
 fn show_alert(parent: &impl gtk::prelude::IsA<gtk::Widget>, heading: &str, body: &str) {
@@ -58,6 +61,15 @@ fn show_alert(parent: &impl gtk::prelude::IsA<gtk::Widget>, heading: &str, body:
         .build();
     dialog.add_response("ok", "OK");
     dialog.present(Some(parent));
+}
+
+fn api_key_file_notice(path: &Path) -> String {
+    format!(
+        "Settings were saved, but the system keyring is unavailable, so the API key \
+         was stored in {}.\n\nThe file is readable only by your user account but is \
+         not encrypted.\n\nSee: https://github.com/nicx17/mimick/wiki/Keyring-Setup",
+        path.display()
+    )
 }
 
 /// Format a Unix timestamp representing the last sync time into a relative display string.
@@ -667,19 +679,26 @@ pub fn build_settings_window_with_parent(
             let albums_map: HashMap<String, String> = albums.borrow().iter().cloned().collect();
             for row_data in tracked_rows.borrow().iter() {
                 let folder = row_data.path.clone();
-                let rules = row_data.rules.borrow().clone();
+                let mut rules = row_data.rules.borrow().clone();
                 let has_rules = rules != FolderRules::default();
                 let album_name = row_data.album_name.borrow().clone();
 
+                let is_library_target = row_data.uploads_to_library.get();
                 let is_default = album_name.is_empty() || album_name == DEFAULT_ALBUM_LABEL;
-                let resolved_album_name = if is_default {
+                let resolved_album_name = if is_library_target {
+                    None
+                } else if is_default {
                     Path::new(&folder)
                         .file_name()
                         .and_then(|n| n.to_str())
-                        .map(|s| s.to_string())
+                        .map(ToString::to_string)
                 } else {
                     Some(album_name)
                 };
+
+                if is_library_target {
+                    rules.restrict_to_library_uploads();
+                }
 
                 if is_default && !has_rules && resolved_album_name.is_none() {
                     watch_paths.push(WatchPathEntry::Simple(folder));
@@ -687,10 +706,20 @@ pub fn build_settings_window_with_parent(
                     let album_id = resolved_album_name
                         .as_ref()
                         .and_then(|n| albums_map.get(n).cloned());
+                    let stored_album_name = if is_library_target {
+                        None
+                    } else {
+                        resolved_album_name.or_else(|| {
+                            Some(Path::new(&folder).file_name().map_or_else(
+                                || "Mimick".to_string(),
+                                |n| n.to_string_lossy().into_owned(),
+                            ))
+                        })
+                    };
                     watch_paths.push(WatchPathEntry::WithConfig {
                         path: folder,
                         album_id,
-                        album_name: resolved_album_name,
+                        album_name: stored_album_name,
                         rules,
                     });
                 }
@@ -762,6 +791,7 @@ pub fn build_settings_window_with_parent(
                         }
                     }
 
+                    let mut key_file_notice = None;
                     {
                         let mut new_config = shared_config.write();
                         new_config.data.internal_url_enabled = internal_url_enabled;
@@ -790,14 +820,19 @@ pub fn build_settings_window_with_parent(
                         new_config.data.grid_border_width = grid_border_width;
                         new_config.data.grid_border_color = grid_border_color.clone();
 
-                        if include_connectivity
-                            && !api_key.is_empty()
-                            && let Err(detail) = new_config.set_api_key(&api_key)
-                        {
-                            apply_in_flight.set(false);
+                        if include_connectivity && !api_key.is_empty() {
+                            match new_config.set_api_key(&api_key) {
+                                Ok(ApiKeyStorage::File(path)) => {
+                                    key_file_notice = Some(api_key_file_notice(&path));
+                                }
+                                Ok(ApiKeyStorage::Keyring) => {}
+                                Err(detail) => {
+                                    apply_in_flight.set(false);
 
-                            show_alert(&window, "Could Not Save API Key", &detail);
-                            return;
+                                    show_alert(&window, "Could Not Save API Key", &detail);
+                                    return;
+                                }
+                            }
                         }
 
                         if !new_config.save() {
@@ -883,7 +918,9 @@ pub fn build_settings_window_with_parent(
                     }
 
                     apply_in_flight.set(false);
-                    if show_success_ack {
+                    if let Some(notice) = key_file_notice {
+                        show_alert(&window, "API Key Stored in a File", &notice);
+                    } else if show_success_ack {
                         show_alert(
                             &window,
                             "Settings Saved",

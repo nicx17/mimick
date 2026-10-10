@@ -6,6 +6,7 @@
 //! loop polls to trigger the corresponding window or operation.
 
 use ksni::TrayMethods;
+use ksni::menu::{MenuItem, StandardItem};
 use tokio::sync::watch;
 
 /// Represents the tray state shared with ksni menu callbacks and GTK main loop.
@@ -40,7 +41,6 @@ impl ksni::Tray for MimickTray {
     }
 
     fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
-        use ksni::menu::*;
         let library_enabled = self.library_view_enabled;
         let mut items: Vec<ksni::MenuItem<Self>> = Vec::new();
         if library_enabled {

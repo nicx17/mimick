@@ -214,7 +214,7 @@ pub(super) async fn ensure_original_asset_path(
     let cache_dir = crate::profile::cache_dir()
         .ok_or_else(|| "Could not locate a cache directory.".to_string())?
         .join("open-in");
-    let _ = std::fs::create_dir_all(&cache_dir);
+    let _ = tokio::fs::create_dir_all(&cache_dir).await;
     let safe_name =
         crate::sanitize::safe_filename(filename).unwrap_or_else(|| asset_id.to_string());
     let path = cache_dir.join(&safe_name);

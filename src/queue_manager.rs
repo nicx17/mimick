@@ -20,6 +20,19 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use tokio::sync::{Mutex, mpsc};
 use tokio_util::sync::CancellationToken;
 
+#[derive(Clone)]
+struct WorkerContext {
+    api: Arc<ImmichApiClient>,
+    state_ref: Arc<parking_lot::Mutex<AppState>>,
+    retry_ref: Arc<parking_lot::Mutex<Vec<FileTask>>>,
+    pending_ref: Arc<parking_lot::Mutex<HashSet<String>>>,
+    sync_index: Arc<ShardedSyncIndex>,
+    batch_notify: Arc<parking_lot::Mutex<BatchNotifyState>>,
+    connectivity_notified: Arc<parking_lot::Mutex<bool>>,
+    consecutive_failures: Arc<parking_lot::Mutex<usize>>,
+    sender: mpsc::Sender<FileTask>,
+}
+
 /// Helper to generate progress callback callbacks that update global transfer metrics.
 fn upload_progress_callback(
     shared_state: &Arc<parking_lot::Mutex<AppState>>,
@@ -65,9 +78,8 @@ pub struct FileTask {
     /// True if the asset is already on the server and only needs album addition.
     #[serde(default)]
     pub reassociate_only: bool,
-    /// Manual / ad-hoc uploads that must land in the library without being
-    /// pinned to any album. Watch-folder syncs leave this false so the
-    /// existing parent-dir-as-album fallback still applies.
+    /// Uploads that must land in the library without being pinned to an album.
+    /// This is used by manual uploads and explicit library-only watch folders.
     #[serde(default)]
     pub skip_album: bool,
     /// Absolute path to an XMP sidecar file to attach during upload.
@@ -202,6 +214,18 @@ impl QueueManager {
             let worker_limit_ref = worker_limit.clone();
             let cancel = shutdown_token.clone();
 
+            let worker_ctx = WorkerContext {
+                api: api.clone(),
+                state_ref: state_ref.clone(),
+                retry_ref: retry_ref.clone(),
+                pending_ref: pending_ref.clone(),
+                sync_index: sync_index_ref.clone(),
+                batch_notify: batch_notify_ref.clone(),
+                connectivity_notified: connectivity_notified_ref.clone(),
+                consecutive_failures: consec_fail_ref.clone(),
+                sender: tx_clone.clone(),
+            };
+
             tokio::spawn(async move {
                 log::debug!("Worker {} started", i);
                 loop {
@@ -225,6 +249,10 @@ impl QueueManager {
                     match task {
                         Some(file_task) => {
                             wait_until_allowed(&state_ref, &policy_ref).await;
+                            let file_size = tokio::fs::metadata(&file_task.path)
+                                .await
+                                .ok()
+                                .map(|metadata| metadata.len());
 
                             // Update the shared progress snapshot before handing off to the API.
                             let (pc, tq) = {
@@ -250,9 +278,7 @@ impl QueueManager {
                                 s.transfer.register_item(
                                     TransferDirection::Upload,
                                     file_task.path.clone(),
-                                    std::fs::metadata(&file_task.path)
-                                        .ok()
-                                        .map(|meta| meta.len()),
+                                    file_size,
                                     item_label,
                                     route,
                                 );
@@ -283,94 +309,8 @@ impl QueueManager {
                                     upload_progress_callback(&state_ref, file_task.path.clone()),
                                 ) => res,
                             };
-                            let success = sync_target.is_some();
-                            let elapsed = t_start.elapsed().as_secs_f32();
-                            let active_route = api.active_route_label().await;
-                            let latest_issue = api.latest_issue().await;
-
-                            if success {
-                                log::info!("Upload SUCCESS: {} ({:.2}s)", file_task.path, elapsed);
-                                pending_ref.lock().remove(&file_task.path);
-
-                                if let Some(target) = sync_target.as_ref()
-                                    && let Err(err) = sync_index_ref.record_synced(
-                                        &file_task.path,
-                                        &file_task.checksum,
-                                        target,
-                                    )
-                                {
-                                    log::warn!(
-                                        "Failed to update sync index for '{}': {}",
-                                        file_task.path,
-                                        err
-                                    );
-                                }
-
-                                // Drain retries and requeue them once connectivity is working again.
-                                let retries: Vec<FileTask> = {
-                                    let mut rl = retry_ref.lock();
-                                    std::mem::take(&mut *rl)
-                                };
-                                if !retries.is_empty() {
-                                    log::info!(
-                                        "Network active. Re-queuing {} retry item(s).",
-                                        retries.len()
-                                    );
-                                    {
-                                        let mut s = state_ref.lock();
-                                        let mut batch_state = batch_notify_ref.lock();
-                                        activate_batch_if_needed(&mut batch_state, &s);
-                                        s.failed_count =
-                                            s.failed_count.saturating_sub(retries.len());
-                                        s.total_queued += retries.len();
-                                    }
-                                    // Release all locks before await
-                                    for t in retries {
-                                        let _ = tx_clone.send(t).await;
-                                    }
-                                }
-
-                                record_upload_success(
-                                    &state_ref,
-                                    &file_task,
-                                    sync_target.as_ref(),
-                                    active_route,
-                                    elapsed,
-                                );
-                            } else {
-                                record_upload_failure(
-                                    &state_ref,
-                                    &retry_ref,
-                                    &file_task,
-                                    active_route,
-                                    latest_issue.as_ref(),
-                                    elapsed,
-                                );
-                            }
-
-                            // Track consecutive failures for connectivity-lost detection.
-                            track_consecutive_failures(
-                                success,
-                                &consec_fail_ref,
-                                &connectivity_notified_ref,
-                            );
-
-                            // Update processed count and determine idle state.
-                            let summary_batch = finalize_upload_progress(
-                                &state_ref,
-                                &batch_notify_ref,
-                                &sync_index_ref,
-                                &file_task.path,
-                                success,
-                            );
-
-                            if let Some(batch_id) = summary_batch {
-                                schedule_batch_notification(
-                                    state_ref.clone(),
-                                    batch_notify_ref.clone(),
-                                    batch_id,
-                                );
-                            }
+                            complete_worker_task(&worker_ctx, &file_task, sync_target, t_start)
+                                .await;
                         }
                         None => {
                             log::debug!("Worker {} channel closed, exiting.", i);
@@ -641,6 +581,90 @@ impl QueueManager {
     }
 }
 
+async fn complete_worker_task(
+    ctx: &WorkerContext,
+    task: &FileTask,
+    sync_target: Option<SyncTarget>,
+    started: Instant,
+) {
+    let success = sync_target.is_some();
+    let elapsed = started.elapsed().as_secs_f32();
+    let active_route = ctx.api.active_route_label().await;
+    let latest_issue = ctx.api.latest_issue().await;
+
+    if let Some(target) = sync_target.as_ref() {
+        complete_successful_upload(ctx, task, target, active_route, elapsed).await;
+    } else {
+        record_upload_failure(ctx, task, active_route, latest_issue.as_ref(), elapsed);
+    }
+
+    track_consecutive_failures(
+        success,
+        &ctx.consecutive_failures,
+        &ctx.connectivity_notified,
+    );
+    if let Some(batch_id) = finalize_upload_progress(
+        &ctx.state_ref,
+        &ctx.batch_notify,
+        &ctx.sync_index,
+        &task.path,
+        success,
+    ) {
+        schedule_batch_notification(ctx.state_ref.clone(), ctx.batch_notify.clone(), batch_id);
+    }
+}
+
+async fn complete_successful_upload(
+    ctx: &WorkerContext,
+    task: &FileTask,
+    target: &SyncTarget,
+    active_route: Option<String>,
+    elapsed: f32,
+) {
+    log::info!("Upload SUCCESS: {} ({:.2}s)", task.path, elapsed);
+    ctx.pending_ref.lock().remove(&task.path);
+    if let Err(err) = ctx
+        .sync_index
+        .record_synced(&task.path, &task.checksum, target)
+    {
+        log::warn!("Failed to update sync index for '{}': {}", task.path, err);
+    }
+    requeue_retries_after_success(
+        &ctx.state_ref,
+        &ctx.retry_ref,
+        &ctx.batch_notify,
+        &ctx.sender,
+    )
+    .await;
+    record_upload_success(&ctx.state_ref, task, Some(target), active_route, elapsed);
+}
+
+async fn requeue_retries_after_success(
+    state_ref: &Arc<parking_lot::Mutex<AppState>>,
+    retry_ref: &Arc<parking_lot::Mutex<Vec<FileTask>>>,
+    batch_notify: &Arc<parking_lot::Mutex<BatchNotifyState>>,
+    sender: &mpsc::Sender<FileTask>,
+) {
+    let retries = std::mem::take(&mut *retry_ref.lock());
+    if retries.is_empty() {
+        return;
+    }
+    log::info!(
+        "Network active. Re-queuing {} retry item(s).",
+        retries.len()
+    );
+    {
+        let mut state = state_ref.lock();
+        let mut batch_state = batch_notify.lock();
+        activate_batch_if_needed(&mut batch_state, &state);
+        state.failed_count = state.failed_count.saturating_sub(retries.len());
+        state.total_queued += retries.len();
+    }
+    for retry in retries {
+        let _ = sender.send(retry).await;
+    }
+}
+
 /// Get current sync attempt count for a path based on recent events history.
 fn current_attempt_count(state: &AppState, path: &str) -> u32 {
     state
@@ -687,8 +711,7 @@ fn record_upload_success(
 
 /// Record state updates after a failed upload.
 fn record_upload_failure(
-    state_ref: &Arc<parking_lot::Mutex<AppState>>,
-    retry_ref: &Arc<parking_lot::Mutex<Vec<FileTask>>>,
+    ctx: &WorkerContext,
     task: &FileTask,
     active_route: Option<String>,
     latest_issue: Option<&crate::api_client::ApiIssue>,
@@ -699,8 +722,8 @@ fn record_upload_failure(
         task.path,
         elapsed
     );
-    retry_ref.lock().push(task.clone());
-    let mut s = state_ref.lock();
+    ctx.retry_ref.lock().push(task.clone());
+    let mut s = ctx.state_ref.lock();
     s.failed_count += 1;
     s.active_server_route = active_route;
     let error_text = latest_issue
@@ -1008,7 +1031,7 @@ async fn handle_upload(
         (Some(name), _) if !name.is_empty() && name != "Default (Folder Name)" => name.clone(),
         _ => std::path::Path::new(&task.path)
             .parent()
-            .and_then(|p| p.file_name())
+            .and_then(std::path::Path::file_name)
             .map(|n| n.to_string_lossy().to_string())
             .unwrap_or_else(|| "Mimick".to_string()),
     };
@@ -1061,7 +1084,7 @@ async fn resolve_album_id(
 fn infer_album_name(path: &str) -> Option<String> {
     std::path::Path::new(path)
         .parent()
-        .and_then(|p| p.file_name())
+        .and_then(std::path::Path::file_name)
         .map(|n| n.to_string_lossy().to_string())
 }
 

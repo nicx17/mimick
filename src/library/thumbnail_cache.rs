@@ -159,7 +159,7 @@ impl ThumbnailCache {
 
         let max_bytes = auto_memory_budget();
         let cpus = std::thread::available_parallelism()
-            .map(|n| n.get())
+            .map(std::num::NonZero::get)
             .unwrap_or(FALLBACK_CPUS);
         let small = SMALL_LOAD_MAX.min(cpus.saturating_mul(2)).max(2);
         let large = LARGE_LOAD_MAX.min(cpus).max(2);

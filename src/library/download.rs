@@ -90,7 +90,7 @@ pub(super) fn spawn_video_handoff(ui: Rc<LibraryWindowUi>, asset_id: String, fil
         let Some(cache_dir) = crate::profile::cache_dir().map(|p| p.join("video")) else {
             return;
         };
-        let _ = std::fs::create_dir_all(&cache_dir);
+        let _ = tokio::fs::create_dir_all(&cache_dir).await;
         let safe_name =
             crate::sanitize::safe_filename(&filename).unwrap_or_else(|| asset_id.clone());
         let path = cache_dir.join(&safe_name);
@@ -358,9 +358,9 @@ fn unique_path(dir: &Path, filename: &str) -> PathBuf {
     let name = Path::new(filename);
     let stem = name
         .file_stem()
-        .and_then(|s| s.to_str())
+        .and_then(std::ffi::OsStr::to_str)
         .unwrap_or(filename);
-    let ext = name.extension().and_then(|e| e.to_str());
+    let ext = name.extension().and_then(std::ffi::OsStr::to_str);
     for i in 1..1000 {
         let candidate = match ext {
             Some(e) => dir.join(format!("{} ({}).{}", stem, i, e)),
@@ -375,7 +375,7 @@ fn unique_path(dir: &Path, filename: &str) -> PathBuf {
 
 fn folder_display_name(path: &Path) -> String {
     path.file_name()
-        .and_then(|n| n.to_str())
+        .and_then(std::ffi::OsStr::to_str)
         .unwrap_or("selected folder")
         .to_string()
 }

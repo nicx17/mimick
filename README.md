@@ -97,7 +97,7 @@ Mimick is an unofficial Immich desktop client for Linux. It provides a GTK4/liba
 
 Each watched directory operates with isolated logical constraints:
 
-- **Target Albums:** Static or dynamically generated Immich album targets.
+- **Upload Targets:** Send files directly to the Immich library, a selected album, or dynamically generated folder-name albums.
 - **Hidden File Omission:** Pre-flight omission of hidden paths (dotfiles).
 - **Extension Allowances:** Predetermined allowance lists strictly for explicit file extensions (e.g. `.avif`, `.mp4`).
 - **File Size Ceilings:** Upper-bound maximum file size ceilings.
@@ -149,7 +149,7 @@ The UI is fully responsive and automatically adapts its layout for narrow widths
 1. **Internal URL** — LAN address (e.g., `http://192.168.1.50:2283`).
 2. **External URL** — WAN/Public address (e.g., `https://photos.example.com`). _At least one must be enabled._
 3. **API Key** — Generate in Immich Web UI under Account Settings > API Keys. See [Required API Key permissions](#required-api-key-permissions) below for the minimum scopes and which features unlock with each.
-4. **Watch Paths** — Add folders to monitor with the built-in folder picker. Each folder can be assigned a target Immich album.
+4. **Watch Paths** — Add folders to monitor with the built-in folder picker. Each folder can upload directly to your library, use a selected album, or use a folder-name album.
 5. **Run on Startup** — Enable this in the **Behavior** section to start Mimick automatically when you log in.
 6. **Folder Rules** — Each watched folder can open a rules dialog to ignore hidden paths, set a max size in MB, or restrict uploads to specific extensions.
 7. **Sync Controls** — Use **Pause**, **Resume**, or **Sync Now** from the settings window or tray menu when you want manual control.
@@ -171,14 +171,12 @@ When generating the API key in Immich (Account Settings → API Keys), grant onl
 | `user.read`      | Establish current user session and identity      |
 | `asset.upload`   | Send media to the server                         |
 | `asset.update`   | Apply correct timezone metadata after upload     |
-| `album.read`     | Look up the target album for a watch folder      |
-| `album.create`   | Auto-create the target album if it doesn't exist |
-| `albumAsset.create` | Link uploaded media to the target album          |
 
 **Optional — only required for the features you enable:**
 
 | Feature                                                             | Additional permissions                                                                                                                                         |
 | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Album-targeted watch folders                                        | `album.read`, `album.create`, `albumAsset.create`                                                                                                             |
 | Server Stats Dialog (click server name in Settings)                 | `server.about`, `server.versionCheck`, `server.statistics`, `asset.statistics`                                                                 |
 | Library Footer Statistics (photo/video counts)                      | `asset.statistics`                                                                                                                                             |
 | Library / Explore view (browse photos inside Mimick)                | `asset.read`, `asset.view`, `asset.download`, `person.read`                                                                                                    |

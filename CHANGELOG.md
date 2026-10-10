@@ -7,10 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a file-based fallback (base64-encoded, `0600` permissions) for API key storage on desktops where no keyring service is running (#215).
+- Added a library-only target for watch folders, allowing direct uploads without creating or associating an album (#210).
+
 ### Changed
 
 - Bumped Flatpak runtime and CI builder image to GNOME 51.
 - Updated GitHub Actions dependencies (`taiki-e/install-action`, `github/codeql-action`).
+
+### Refactored
+
+- Resolved static-analysis findings by simplifying Rust idioms, moving filesystem work off asynchronous UI paths, and splitting local/startup file traversal into focused helpers.
+
+### Fixed
+
+- Fixed an issue where the app could hang on startup or while saving credentials if the XDG Secret portal was misconfigured by enforcing a 5-second deadline for connecting to the keyring (#218).
+- Hardened API-key fallback storage with atomic writes and enforced owner-only (`0600`) permissions on Unix (#215).
+- The API-key fallback file now takes precedence over an older keyring entry, and Settings warns when the key is stored in a file instead of the keyring (#215).
 
 ## [9.10.0] - 2026-10-01
 

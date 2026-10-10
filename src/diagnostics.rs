@@ -71,11 +71,12 @@ fn export_bundle_with_paths(
 
 /// Format system environment and configuration state as plain text.
 fn build_summary(config: &Config, state: &AppState) -> String {
-    let mut lines = Vec::new();
-    lines.push("Mimick diagnostics export".to_string());
-    lines.push(format!("Version: {}", env!("CARGO_PKG_VERSION")));
-    lines.push(format!("App status: {}", state.status));
-    lines.push(format!("Paused: {}", state.paused));
+    let mut lines = vec![
+        "Mimick diagnostics export".to_string(),
+        format!("Version: {}", env!("CARGO_PKG_VERSION")),
+        format!("App status: {}", state.status),
+        format!("Paused: {}", state.paused),
+    ];
     lines.push(format!(
         "Pause reason: {}",
         state.pause_reason.as_deref().unwrap_or("none")
@@ -435,9 +436,9 @@ fn write_json_pretty<T: Serialize>(path: &Path, value: &T) -> io::Result<()> {
 fn redact_path_hint(path: &str) -> String {
     Path::new(path)
         .file_name()
-        .and_then(|name| name.to_str())
+        .and_then(std::ffi::OsStr::to_str)
         .filter(|name| !name.is_empty())
-        .map(|name| name.to_string())
+        .map(ToString::to_string)
         .unwrap_or_else(|| "[path hidden]".to_string())
 }
 

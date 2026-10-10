@@ -120,7 +120,7 @@ fn deletion_watch_entry(
         log::debug!("Deleted file is not under any watch folder: {}", path);
         return None;
     };
-    if !entry.rules().delete_folder_to_album {
+    if entry.uploads_to_library() || !entry.rules().delete_folder_to_album {
         log::debug!("Folder-to-album deletion disabled for: {}", path);
         return None;
     }
@@ -134,7 +134,7 @@ fn deletion_album_name(
 ) -> String {
     entry
         .album_name()
-        .map(|name| name.to_string())
+        .map(ToString::to_string)
         .or(record.album_name.clone())
         .or_else(|| parent_folder_name(path_obj))
         .unwrap_or_else(|| "Mimick".to_string())
@@ -143,7 +143,7 @@ fn deletion_album_name(
 fn parent_folder_name(path_obj: &std::path::Path) -> Option<String> {
     path_obj
         .parent()
-        .and_then(|parent| parent.file_name())
+        .and_then(std::path::Path::file_name)
         .map(|name| name.to_string_lossy().to_string())
 }
 

@@ -103,7 +103,7 @@ async fn build_file_task(
     let path_str = path.to_str().map(str::to_owned)?;
     let watch_path = path
         .parent()
-        .and_then(|p| p.to_str())
+        .and_then(std::path::Path::to_str)
         .map(str::to_owned)
         .unwrap_or_default();
     let hash_target = path_str.clone();

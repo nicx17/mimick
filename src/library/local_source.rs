@@ -75,40 +75,41 @@ fn enumerate_blocking(watch_paths: &[WatchPathEntry]) -> Vec<LocalAsset> {
     let mut out = Vec::new();
     let mut seen: HashSet<PathBuf> = HashSet::new();
     for entry in watch_paths {
-        let root = PathBuf::from(entry.path());
-        if !root.is_dir() {
+        enumerate_entry(entry, &mut seen, &mut out);
+    }
+    out
+}
+
+/// Traverse one configured root, adding each eligible file once across roots.
+fn enumerate_entry(entry: &WatchPathEntry, seen: &mut HashSet<PathBuf>, out: &mut Vec<LocalAsset>) {
+    let root = PathBuf::from(entry.path());
+    if !root.is_dir() {
+        return;
+    }
+    let rules = entry.rules();
+    let mut stack = vec![root];
+    while let Some(dir) = stack.pop() {
+        let Ok(read_dir) = std::fs::read_dir(&dir) else {
             continue;
-        }
-        let rules = entry.rules();
-        let mut stack = vec![root];
-        while let Some(dir) = stack.pop() {
-            let read_dir = match std::fs::read_dir(&dir) {
-                Ok(iter) => iter,
-                Err(_) => continue,
-            };
-            for child in read_dir.flatten() {
-                let path = child.path();
-                if path.is_dir() {
-                    stack.push(path);
-                    continue;
-                }
-                if !is_supported_media_path(&path) || is_temporary_file(&path) {
-                    continue;
-                }
-                if !rules.matches(&path) {
-                    continue;
-                }
+        };
+        for child in read_dir.flatten() {
+            let path = child.path();
+            if path.is_dir() {
+                stack.push(path);
+            } else if is_eligible_path(&path, &rules) {
                 let key = std::fs::canonicalize(&path).unwrap_or_else(|_| path.clone());
-                if !seen.insert(key) {
-                    continue;
-                }
-                if let Some(asset) = build_asset(&path) {
+                if seen.insert(key)
+                    && let Some(asset) = build_asset(&path)
+                {
                     out.push(asset);
                 }
             }
         }
     }
-    out
+}
+
+fn is_eligible_path(path: &Path, rules: &crate::config::FolderRules) -> bool {
+    is_supported_media_path(path) && !is_temporary_file(path) && rules.matches(path)
 }
 
 /// Parse metadata details and construct a typed `LocalAsset` for a file path.
@@ -172,6 +173,8 @@ pub fn local_sync_state(idx: &crate::sync_index::ShardedSyncIndex, path: &Path) 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs;
+    use tempfile::tempdir;
 
     fn make(name: &str) -> LocalAsset {
         LocalAsset {
@@ -207,5 +210,24 @@ mod tests {
     fn synthetic_id_is_stable_across_clones() {
         let a = make("/tmp/a.jpg");
         assert_eq!(synthetic_id(&a), synthetic_id(&a.clone()));
+    }
+
+    #[test]
+    fn enumeration_filters_non_media_and_temporary_files() {
+        let dir = tempdir().unwrap();
+        fs::write(dir.path().join("photo.jpg"), b"jpg").unwrap();
+        fs::write(dir.path().join("unfinished.jpg.part"), b"partial").unwrap();
+        fs::write(dir.path().join("notes.txt"), b"text").unwrap();
+        fs::create_dir(dir.path().join("nested")).unwrap();
+        fs::write(dir.path().join("nested/video.mp4"), b"video").unwrap();
+
+        let entries = vec![WatchPathEntry::Simple(
+            dir.path().to_string_lossy().into_owned(),
+        )];
+        let assets = enumerate_blocking(&entries);
+        let mut names: Vec<_> = assets.into_iter().map(|asset| asset.filename).collect();
+        names.sort();
+
+        assert_eq!(names, ["photo.jpg", "video.mp4"]);
     }
 }

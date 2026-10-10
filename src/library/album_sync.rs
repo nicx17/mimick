@@ -492,11 +492,15 @@ pub async fn execute_local_deletions(
 /// Portal-only trash. Single implementation, no fallbacks. Currently unused
 #[allow(dead_code)]
 async fn move_to_trash(path: PathBuf) -> Result<(), String> {
-    let file = std::fs::OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(&path)
-        .map_err(|err| format!("open for trash: {}", err))?;
+    let file = tokio::task::spawn_blocking(move || {
+        std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(path)
+    })
+    .await
+    .map_err(|err| format!("open for trash: {}", err))?
+    .map_err(|err| format!("open for trash: {}", err))?;
     let proxy = ashpd::desktop::trash::TrashProxy::new()
         .await
         .map_err(|err| format!("trash proxy: {}", err))?;
@@ -514,11 +518,11 @@ fn unique_destination(folder: &Path, filename: &str) -> PathBuf {
     }
     let stem = Path::new(filename)
         .file_stem()
-        .and_then(|s| s.to_str())
+        .and_then(std::ffi::OsStr::to_str)
         .unwrap_or("download");
     let ext = Path::new(filename)
         .extension()
-        .and_then(|s| s.to_str())
+        .and_then(std::ffi::OsStr::to_str)
         .unwrap_or("");
     for n in 1..1000 {
         let alt = if ext.is_empty() {
