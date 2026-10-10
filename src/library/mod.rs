@@ -13,7 +13,7 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::api_client::{LibraryAsset, MetadataSearchFilters, Tag};
+use crate::api_client::{LibraryAsset, MetadataSearchFilters, SortOrder, Tag};
 use crate::app_context::AppContext;
 use crate::library::albums_view::{
     AlbumClick, AlbumsViewParts, build_albums_view, populate_albums,
@@ -1439,164 +1439,158 @@ fn load_source_page(ui: Rc<LibraryWindowUi>, request: (u64, LibrarySource, u32),
         async move {
             let (generation, source, page) = request;
             let order = ui.ctx.library_state.lock().sort_mode.server_order();
-            let result: Result<(Vec<LibraryAsset>, bool), String> = match source.clone() {
-                LibrarySource::AllAssets | LibrarySource::Timeline => {
-                    ui.ctx
-                        .api_client
-                        .search_metadata("", page, PAGE_SIZE, order)
-                        .await
-                }
-                LibrarySource::Explore => unreachable!("intercepted above"),
-                LibrarySource::Album { id, .. } => {
-                    ui.ctx
-                        .api_client
-                        .fetch_album_assets(&id, page, PAGE_SIZE, order)
-                        .await
-                }
-                LibrarySource::SmartSearch { query } => {
-                    ui.ctx
-                        .api_client
-                        .search_smart(&query, page, PAGE_SIZE)
-                        .await
-                }
-                LibrarySource::OcrSearch { query } => {
-                    ui.ctx
-                        .api_client
-                        .search_ocr(&query, page, PAGE_SIZE, order)
-                        .await
-                }
-                LibrarySource::MetadataSearch { query } => {
-                    ui.ctx
-                        .api_client
-                        .search_metadata(&query, page, PAGE_SIZE, order)
-                        .await
-                }
-                LibrarySource::AdvancedSearch { filters } => {
-                    let mut filters = (*filters).clone();
-                    filters.order = order;
-                    ui.ctx
-                        .api_client
-                        .search_metadata_with_filters(&filters, page, PAGE_SIZE)
-                        .await
-                }
-                LibrarySource::Trash => {
-                    let filters = MetadataSearchFilters {
-                        order,
-                        ..MetadataSearchFilters::trashed()
-                    };
-                    ui.ctx
-                        .api_client
-                        .search_metadata_with_filters(&filters, page, PAGE_SIZE)
-                        .await
-                }
-                LibrarySource::LocalAll => {
-                    // Local enumeration is bounded — single synthetic page.
-                    if page > 1 {
-                        Ok((Vec::new(), false))
-                    } else {
-                        let locals = enumerate_local(ui.ctx.clone()).await;
-                        Ok((
-                            locals.into_iter().map(local_to_library_asset).collect(),
-                            false,
-                        ))
-                    }
-                }
-                LibrarySource::LocalSearch { query } => {
-                    if page > 1 {
-                        Ok((Vec::new(), false))
-                    } else {
-                        let locals = enumerate_local(ui.ctx.clone()).await;
-                        let filtered = filter_by_filename(locals, &query);
-                        Ok((
-                            filtered.into_iter().map(local_to_library_asset).collect(),
-                            false,
-                        ))
-                    }
-                }
-                LibrarySource::Unified => {
-                    let remote = ui
-                        .ctx
-                        .api_client
-                        .search_metadata("", page, PAGE_SIZE, order)
-                        .await;
-                    merge_unified_page(remote, page, &ui, None).await
-                }
-                LibrarySource::UnifiedSearch { query } => {
-                    let remote = ui
-                        .ctx
-                        .api_client
-                        .search_metadata(&query, page, PAGE_SIZE, order)
-                        .await;
-                    merge_unified_page(remote, page, &ui, Some(&query)).await
-                }
-                LibrarySource::AlbumLocal { name, .. } => {
-                    if page > 1 {
-                        Ok((Vec::new(), false))
-                    } else {
-                        match linked_entry_path_for_album(&ui, &name) {
-                            Some(path) => {
-                                let locals = enumerate_local_for_entry(ui.ctx.clone(), path).await;
-                                Ok((
-                                    locals.into_iter().map(local_to_library_asset).collect(),
-                                    false,
-                                ))
-                            }
-                            None => Ok((Vec::new(), false)),
-                        }
-                    }
-                }
-                LibrarySource::AlbumUnified { id, name } => {
-                    let remote = ui
-                        .ctx
-                        .api_client
-                        .fetch_album_assets(&id, page, PAGE_SIZE, order)
-                        .await;
-                    merge_album_unified_page(remote, page, &ui, &name).await
-                }
-            };
-
-            match result {
-                Ok((items, has_more)) => {
-                    {
-                        let mut state = ui.ctx.library_state.lock();
-                        let applied = if append {
-                            state.append_assets_with_more(generation, items, has_more)
-                        } else {
-                            state.replace_assets_with_more(generation, items, has_more)
-                        };
-                        if !applied {
-                            return;
-                        }
-                        if append {
-                            ui.grid
-                                .model
-                                .extend(&ui.ctx, &state.assets, &state.sort_mode);
-                        } else {
-                            ui.grid
-                                .model
-                                .reset(&ui.ctx, &state.assets, &state.sort_mode);
-                        }
-                    }
-                    // Lock is released before touching GTK widgets so that
-                    // signal handlers triggered by the stack transition
-                    // can safely re-acquire library_state.
-                    sync_content_state(&ui);
-                    reload_sidebar(&ui);
-                    update_timeline_banner_if_active(&ui, &ui.grid.scrolled.vadjustment());
-                }
-                Err(err) => {
-                    {
-                        let mut state = ui.ctx.library_state.lock();
-                        state.mark_error(generation, err.clone());
-                    }
-                    // Lock dropped before GTK calls (same pattern as Ok path).
-                    ui.error_label
-                        .set_label(&format!("Could not load library assets: {}", err));
-                    ui.content_stack.set_visible_child_name("error");
-                }
-            }
+            let result = fetch_source_page(&ui, source, page, order).await;
+            apply_page_result(&ui, generation, append, result);
         }
     ));
+}
+
+/// One page of assets plus whether more pages follow.
+type PageResult = Result<(Vec<LibraryAsset>, bool), String>;
+
+async fn fetch_source_page(
+    ui: &Rc<LibraryWindowUi>,
+    source: LibrarySource,
+    page: u32,
+    order: Option<SortOrder>,
+) -> PageResult {
+    match source {
+        LibrarySource::LocalAll
+        | LibrarySource::LocalSearch { .. }
+        | LibrarySource::AlbumLocal { .. } => fetch_local_page(ui, source, page).await,
+        LibrarySource::Unified
+        | LibrarySource::UnifiedSearch { .. }
+        | LibrarySource::AlbumUnified { .. } => fetch_unified_page(ui, source, page, order).await,
+        remote => fetch_remote_page(&ui.ctx.api_client, remote, page, order).await,
+    }
+}
+
+async fn fetch_remote_page(
+    api: &crate::api_client::ImmichApiClient,
+    source: LibrarySource,
+    page: u32,
+    order: Option<SortOrder>,
+) -> PageResult {
+    match source {
+        LibrarySource::AllAssets | LibrarySource::Timeline => {
+            api.search_metadata("", page, PAGE_SIZE, order).await
+        }
+        LibrarySource::Album { id, .. } => {
+            api.fetch_album_assets(&id, page, PAGE_SIZE, order).await
+        }
+        LibrarySource::SmartSearch { query } => api.search_smart(&query, page, PAGE_SIZE).await,
+        LibrarySource::OcrSearch { query } => api.search_ocr(&query, page, PAGE_SIZE, order).await,
+        LibrarySource::MetadataSearch { query } => {
+            api.search_metadata(&query, page, PAGE_SIZE, order).await
+        }
+        LibrarySource::AdvancedSearch { filters } => {
+            let filters = MetadataSearchFilters { order, ..*filters };
+            api.search_metadata_with_filters(&filters, page, PAGE_SIZE)
+                .await
+        }
+        LibrarySource::Trash => {
+            let filters = MetadataSearchFilters {
+                order,
+                ..MetadataSearchFilters::trashed()
+            };
+            api.search_metadata_with_filters(&filters, page, PAGE_SIZE)
+                .await
+        }
+        other => unreachable!("{other:?} is not a remote page source"),
+    }
+}
+
+/// Local enumeration is bounded, so local sources return everything as one page.
+async fn fetch_local_page(
+    ui: &Rc<LibraryWindowUi>,
+    source: LibrarySource,
+    page: u32,
+) -> PageResult {
+    if page > 1 {
+        return Ok((Vec::new(), false));
+    }
+    let locals = match source {
+        LibrarySource::LocalAll => enumerate_local(ui.ctx.clone()).await,
+        LibrarySource::LocalSearch { query } => {
+            filter_by_filename(enumerate_local(ui.ctx.clone()).await, &query)
+        }
+        LibrarySource::AlbumLocal { name, .. } => match linked_entry_path_for_album(ui, &name) {
+            Some(path) => enumerate_local_for_entry(ui.ctx.clone(), path).await,
+            None => Vec::new(),
+        },
+        other => unreachable!("{other:?} is not a local page source"),
+    };
+    Ok((
+        locals.into_iter().map(local_to_library_asset).collect(),
+        false,
+    ))
+}
+
+/// Remote assets overlayed with local sync state.
+async fn fetch_unified_page(
+    ui: &Rc<LibraryWindowUi>,
+    source: LibrarySource,
+    page: u32,
+    order: Option<SortOrder>,
+) -> PageResult {
+    let api = &ui.ctx.api_client;
+    match source {
+        LibrarySource::Unified => {
+            let remote = api.search_metadata("", page, PAGE_SIZE, order).await;
+            merge_unified_page(remote, page, ui, None).await
+        }
+        LibrarySource::UnifiedSearch { query } => {
+            let remote = api.search_metadata(&query, page, PAGE_SIZE, order).await;
+            merge_unified_page(remote, page, ui, Some(&query)).await
+        }
+        LibrarySource::AlbumUnified { id, name } => {
+            let remote = api.fetch_album_assets(&id, page, PAGE_SIZE, order).await;
+            merge_album_unified_page(remote, page, ui, &name).await
+        }
+        other => unreachable!("{other:?} is not a unified page source"),
+    }
+}
+
+fn apply_page_result(ui: &Rc<LibraryWindowUi>, generation: u64, append: bool, result: PageResult) {
+    let (items, has_more) = match result {
+        Ok(page) => page,
+        Err(err) => {
+            ui.ctx
+                .library_state
+                .lock()
+                .mark_error(generation, err.clone());
+            // Lock dropped before GTK calls (same pattern as the Ok path).
+            ui.error_label
+                .set_label(&format!("Could not load library assets: {}", err));
+            ui.content_stack.set_visible_child_name("error");
+            return;
+        }
+    };
+    {
+        let mut state = ui.ctx.library_state.lock();
+        let applied = if append {
+            state.append_assets_with_more(generation, items, has_more)
+        } else {
+            state.replace_assets_with_more(generation, items, has_more)
+        };
+        if !applied {
+            return;
+        }
+        if append {
+            ui.grid
+                .model
+                .extend(&ui.ctx, &state.assets, &state.sort_mode);
+        } else {
+            ui.grid
+                .model
+                .reset(&ui.ctx, &state.assets, &state.sort_mode);
+        }
+    }
+    // Lock is released before touching GTK widgets so that signal handlers
+    // triggered by the stack transition can safely re-acquire library_state.
+    sync_content_state(ui);
+    reload_sidebar(ui);
+    update_timeline_banner_if_active(ui, &ui.grid.scrolled.vadjustment());
 }
 
 fn setup_album_drop_target(
