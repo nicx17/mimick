@@ -37,7 +37,7 @@ pub static RAW_EXTENSIONS: phf::Set<&str> = phf_set! {
 };
 
 /// Compile-time mapping from lowercased file extensions to standard MIME types.
-static MIME_BY_EXT: phf::Map<&str, &'static str> = phf_map! {
+static MIME_BY_EXT: phf::Map<&str, &str> = phf_map! {
     "avif" => "image/avif",
     "bmp" => "image/bmp",
     "gif" => "image/gif",
