@@ -193,27 +193,10 @@ fn restored_app_state() -> AppState {
 /// Runs only in the primary instance, from `connect_startup`.
 fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppState>>) {
     log::info!("Mimick primary instance initializing");
-    // Always follow the desktop's light/dark preference.
-    adw::StyleManager::default().set_color_scheme(adw::ColorScheme::Default);
-
-    // Register global CSS for button animations and UI components
-    crate::library::style::ensure_registered();
-
-    thread_local! {
-        static APP_HOLD: std::cell::RefCell<Option<gtk::gio::ApplicationHoldGuard>> = const { std::cell::RefCell::new(None) };
-    }
-    // Keep the application alive with no windows open so background sync keeps running.
-    APP_HOLD.with(|hold| {
-        *hold.borrow_mut() = Some(app.hold());
-    });
+    prepare_gtk(app);
 
     let config = Config::new();
-    log::info!(
-        "Config: internal={} external={} paths={:?}",
-        config.data.internal_url,
-        config.data.external_url,
-        config.watch_path_strings(),
-    );
+    log_config(&config);
     shared_state.lock().watched_folder_count = config.data.watch_paths.len();
 
     let background_sync_enabled = config.data.background_sync_enabled;
@@ -221,25 +204,13 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
     let sync_index = Arc::new(ShardedSyncIndex::new());
     spawn_sync_index_flusher(sync_index.clone());
 
-    let qm = Arc::new(QueueManager::new(
+    let qm = Arc::new(build_queue_manager(
+        &config,
         api_client.clone(),
-        config.data.upload_concurrency.max(1) as usize,
         shared_state.clone(),
         sync_index.clone(),
-        EnvironmentPolicy {
-            pause_on_metered_network: config.data.pause_on_metered_network,
-            pause_on_battery_power: config.data.pause_on_battery_power,
-            quiet_hours_start: config.data.quiet_hours_start,
-            quiet_hours_end: config.data.quiet_hours_end,
-        },
     ));
-
-    // Apply the user's notification preference before any notification can fire.
-    crate::notifications::set_enabled(config.data.notifications_enabled);
-
-    // Sync the RAW decode cache flag with the user's persisted preference.
-    crate::library::set_raw_cache_enabled(config.data.raw_decode_cache_enabled);
-    crate::library::set_raw_full_decode(config.data.raw_full_decode);
+    apply_runtime_preferences(&config);
 
     let (tx, rx) = mpsc::channel(32);
     let monitor_handle = Arc::new(start_monitor(&config, tx));
@@ -267,6 +238,76 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
     });
     let _ = APP_CONTEXT.set(ctx.clone());
 
+    spawn_background_tasks(ctx, rx, manual_sync_rx, background_sync_enabled);
+
+    let flags = UiFlags::default();
+    poll_ui_flags(app.clone(), flags.clone());
+    tokio::spawn(run_tray(tray_library_enabled, flags));
+}
+
+fn log_config(config: &Config) {
+    log::info!(
+        "Config: internal={} external={} paths={:?}",
+        config.data.internal_url,
+        config.data.external_url,
+        config.watch_path_strings(),
+    );
+}
+
+/// Desktop styling, global CSS, and the hold that keeps the app running without windows.
+fn prepare_gtk(app: &adw::Application) {
+    // Always follow the desktop's light/dark preference.
+    adw::StyleManager::default().set_color_scheme(adw::ColorScheme::Default);
+
+    // Register global CSS for button animations and UI components
+    crate::library::style::ensure_registered();
+
+    thread_local! {
+        static APP_HOLD: std::cell::RefCell<Option<gtk::gio::ApplicationHoldGuard>> = const { std::cell::RefCell::new(None) };
+    }
+    // Keep the application alive with no windows open so background sync keeps running.
+    APP_HOLD.with(|hold| {
+        *hold.borrow_mut() = Some(app.hold());
+    });
+}
+
+/// Upload queue using the configured concurrency and pause policy (metered, battery, quiet hours).
+fn build_queue_manager(
+    config: &Config,
+    api_client: Arc<ImmichApiClient>,
+    shared_state: Arc<Mutex<AppState>>,
+    sync_index: Arc<ShardedSyncIndex>,
+) -> QueueManager {
+    QueueManager::new(
+        api_client,
+        config.data.upload_concurrency.max(1) as usize,
+        shared_state,
+        sync_index,
+        EnvironmentPolicy {
+            pause_on_metered_network: config.data.pause_on_metered_network,
+            pause_on_battery_power: config.data.pause_on_battery_power,
+            quiet_hours_start: config.data.quiet_hours_start,
+            quiet_hours_end: config.data.quiet_hours_end,
+        },
+    )
+}
+
+fn apply_runtime_preferences(config: &Config) {
+    // Apply the user's notification preference before any notification can fire.
+    crate::notifications::set_enabled(config.data.notifications_enabled);
+
+    // Sync the RAW decode cache flag with the user's persisted preference.
+    crate::library::set_raw_cache_enabled(config.data.raw_decode_cache_enabled);
+    crate::library::set_raw_full_decode(config.data.raw_full_decode);
+}
+
+/// Start the file-event loop, catch-up scan, album reconciler, status check, and manual sync listener.
+fn spawn_background_tasks(
+    ctx: Arc<AppContext>,
+    rx: mpsc::Receiver<MonitorEvent>,
+    manual_sync_rx: tokio::sync::mpsc::UnboundedReceiver<()>,
+    background_sync_enabled: bool,
+) {
     tokio::spawn(run_file_event_loop(rx, ctx.clone()));
 
     if background_sync_enabled {
@@ -279,10 +320,6 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
 
     tokio::spawn(refresh_connection_status(ctx.clone()));
     tokio::spawn(run_manual_sync_listener(manual_sync_rx, ctx));
-
-    let flags = UiFlags::default();
-    poll_ui_flags(app.clone(), flags.clone());
-    tokio::spawn(run_tray(tray_library_enabled, flags));
 }
 
 /// API client for the enabled server URLs; warns when a URL is set without an API key.
@@ -656,27 +693,10 @@ fn handle_command_line(
     let want_settings = argv.contains(&"--settings".to_string());
     let want_library = argv.contains(&"--library".to_string());
     let want_upload = argv.contains(&"--upload".to_string());
-    let setup_required = ctx_early
-        .as_ref()
-        .map(|c| c.config.read().get_api_key().unwrap_or_default().is_empty())
-        .unwrap_or(true);
+    let setup_required = api_key_missing(ctx_early.as_deref());
     let secondary_activation = cmdline.is_remote();
-
-    let ctx_lookup = || {
-        APP_CONTEXT
-            .get()
-            .cloned()
-            .expect("App context should be initialized before command-line activation")
-    };
-
-    // Collect file path arguments (positional args that are not flags).
-    let file_args: Vec<std::path::PathBuf> = argv
-        .iter()
-        .skip(1) // skip binary name
-        .filter(|a| !a.starts_with("--"))
-        .map(std::path::PathBuf::from)
-        .filter(|p| crate::media_kinds::is_supported_path(p))
-        .collect();
+    let ctx_lookup = command_line_context;
+    let file_args = media_file_arguments(&argv);
 
     if !file_args.is_empty() && !setup_required {
         // Files were passed -- open the staging view.
@@ -701,6 +721,29 @@ fn handle_command_line(
 
     app.activate();
     0.into()
+}
+
+/// True until an API key is configured (or before the app context exists).
+fn api_key_missing(ctx: Option<&AppContext>) -> bool {
+    ctx.map(|c| c.config.read().get_api_key().unwrap_or_default().is_empty())
+        .unwrap_or(true)
+}
+
+fn command_line_context() -> Arc<AppContext> {
+    APP_CONTEXT
+        .get()
+        .cloned()
+        .expect("App context should be initialized before command-line activation")
+}
+
+/// Collect file path arguments (positional args that are not flags) that Mimick can upload.
+fn media_file_arguments(argv: &[String]) -> Vec<std::path::PathBuf> {
+    argv.iter()
+        .skip(1) // skip binary name
+        .filter(|a| !a.starts_with("--"))
+        .map(std::path::PathBuf::from)
+        .filter(|p| crate::media_kinds::is_supported_path(p))
+        .collect()
 }
 
 /// Quit gracefully on SIGINT/SIGTERM, polling the signal flag from the GTK loop.

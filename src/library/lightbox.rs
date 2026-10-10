@@ -449,31 +449,12 @@ impl AssetInfo {
 /// Handlers hold strong `Rc`s, so it lives as long as the page's widgets.
 struct Lightbox {
     ui: Rc<LibraryWindowUi>,
-    page: libadwaita::NavigationPage,
-    prev_btn: gtk::Button,
-    next_btn: gtk::Button,
-    details_btn: gtk::ToggleButton,
-    pic_stack: gtk::Stack,
-    picture_a: gtk::Picture,
-    picture_b: gtk::Picture,
-    scrolled_picture: gtk::ScrolledWindow,
-    picture_overlay: gtk::Overlay,
-    loader_overlay: gtk::Revealer,
-    unavailable_overlay: gtk::Revealer,
-    unavailable_filename: gtk::Label,
-    unavailable_mime: gtk::Label,
-    unavailable_open: gtk::Button,
+    header: LightboxHeader,
+    picture: PictureArea,
+    unavailable: UnavailableCard,
     video_badge_button: gtk::Button,
-    resolution_toggle: gtk::ToggleButton,
-    download: gtk::Button,
-    zoom_group: gtk::Box,
-    zoom_in_btn: gtk::Button,
-    zoom_out_btn: gtk::Button,
-    zoom_reset_btn: gtk::Button,
-    details_filename: gtk::Label,
-    details_summary: gtk::Label,
-    details_loading: gtk::Label,
-    details_exif: gtk::Box,
+    actions: ActionBar,
+    details: DetailsPane,
     pos: Cell<u32>,
     // Increments on every navigation. Async load tasks capture the generation
     // they were started for and skip UI writes if the user has navigated away
@@ -508,7 +489,7 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
     lightbox.connect_keys();
     lightbox.connect_actions();
     lightbox.render();
-    lightbox.ui.nav.push(&lightbox.page);
+    lightbox.ui.nav.push(&lightbox.header.page);
 }
 
 fn lightbox_picture() -> gtk::Picture {
@@ -546,268 +527,355 @@ fn lightbox_title_cap(ui: &LibraryWindowUi) -> usize {
     if ui.split.is_collapsed() { 14 } else { 24 }
 }
 
+/// Navigation page with its header bar (back, prev/next, details toggle).
+struct LightboxHeader {
+    page: libadwaita::NavigationPage,
+    toolbar: libadwaita::ToolbarView,
+    prev_btn: gtk::Button,
+    next_btn: gtk::Button,
+    details_btn: gtk::ToggleButton,
+}
+
+/// Two pictures in a sliding stack, their scroller, and the overlay holding the spinner.
+struct PictureArea {
+    stack: gtk::Stack,
+    picture_a: gtk::Picture,
+    picture_b: gtk::Picture,
+    scrolled: gtk::ScrolledWindow,
+    overlay: gtk::Overlay,
+    loader: gtk::Revealer,
+}
+
+/// "Preview unavailable" card shown over the picture when nothing can be decoded.
+struct UnavailableCard {
+    overlay: gtk::Revealer,
+    filename: gtk::Label,
+    mime: gtk::Label,
+    open: gtk::Button,
+}
+
+/// Zoom controls, resolution toggle, and download button under the picture.
+struct ActionBar {
+    bar: gtk::Box,
+    resolution_toggle: gtk::ToggleButton,
+    download: gtk::Button,
+    zoom_group: gtk::Box,
+    zoom_in: gtk::Button,
+    zoom_out: gtk::Button,
+    zoom_reset: gtk::Button,
+}
+
+/// Sidebar with the filename, sync summary, and EXIF groups.
+struct DetailsPane {
+    pane: gtk::ScrolledWindow,
+    filename: gtk::Label,
+    summary: gtk::Label,
+    loading: gtk::Label,
+    exif: gtk::Box,
+}
+
+fn icon_button(icon: &str, tooltip: &str) -> gtk::Button {
+    gtk::Button::builder()
+        .icon_name(icon)
+        .tooltip_text(tooltip)
+        .build()
+}
+
+fn build_header(ui: &Rc<LibraryWindowUi>, initial_filename: &str) -> LightboxHeader {
+    let page = libadwaita::NavigationPage::builder()
+        .title(truncate_filename(initial_filename, lightbox_title_cap(ui)))
+        .can_pop(true)
+        .build();
+    let toolbar = libadwaita::ToolbarView::builder().build();
+    let header = libadwaita::HeaderBar::builder()
+        .show_back_button(false)
+        .build();
+    let back_btn = icon_button("mimick-library-symbolic", "Back to library");
+    back_btn.connect_clicked(clone!(
+        #[strong]
+        ui,
+        move |_| {
+            ui.nav.pop();
+        }
+    ));
+    let prev_btn = icon_button("go-previous-symbolic", "Previous (Left)");
+    let next_btn = icon_button("go-next-symbolic", "Next (Right)");
+    let details_btn = gtk::ToggleButton::builder()
+        .icon_name("dialog-information-symbolic")
+        .tooltip_text("Toggle details (I)")
+        .active(false)
+        .build();
+    header.pack_start(&back_btn);
+    header.pack_start(&prev_btn);
+    header.pack_start(&next_btn);
+    header.pack_end(&details_btn);
+    toolbar.add_top_bar(&header);
+    page.set_child(Some(&toolbar));
+    LightboxHeader {
+        page,
+        toolbar,
+        prev_btn,
+        next_btn,
+        details_btn,
+    }
+}
+
+fn build_picture_area() -> PictureArea {
+    // Two picture widgets in a stack so navigation can slide between them.
+    let picture_a = lightbox_picture();
+    let picture_b = lightbox_picture();
+    let stack = gtk::Stack::builder()
+        .transition_duration(180)
+        .vexpand(true)
+        .hexpand(true)
+        .build();
+    stack.add_named(&picture_a, Some("a"));
+    stack.add_named(&picture_b, Some("b"));
+    stack.set_visible_child_name("a");
+    let scrolled = gtk::ScrolledWindow::builder()
+        .hscrollbar_policy(gtk::PolicyType::Automatic)
+        .vscrollbar_policy(gtk::PolicyType::Automatic)
+        .child(&stack)
+        .vexpand(true)
+        .hexpand(true)
+        .kinetic_scrolling(false)
+        .min_content_width(120)
+        .build();
+
+    // Spinner overlay: a centered Mimick app icon that rotates while a
+    // full-resolution texture is being fetched / decoded. Hidden by default;
+    // `load_into_picture` reveals it after a short delay.
+    let loader_icon = gtk::Image::builder()
+        .icon_name("dev.nicx.mimick")
+        .pixel_size(72)
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .css_classes(["mimick-loader-icon"])
+        .build();
+    let loader = crossfade_overlay(&loader_icon, gtk::Align::Center);
+    let overlay = gtk::Overlay::builder().build();
+    overlay.set_child(Some(&scrolled));
+    overlay.add_overlay(&loader);
+    PictureArea {
+        stack,
+        picture_a,
+        picture_b,
+        scrolled,
+        overlay,
+        loader,
+    }
+}
+
+fn build_unavailable_card() -> UnavailableCard {
+    let title = gtk::Label::builder()
+        .label("Preview unavailable")
+        .css_classes(["title-3"])
+        .build();
+    let filename = gtk::Label::builder()
+        .wrap(true)
+        .wrap_mode(gtk::pango::WrapMode::WordChar)
+        .max_width_chars(42)
+        .build();
+    let mime = gtk::Label::builder().css_classes(["dim-label"]).build();
+    let open = gtk::Button::builder()
+        .label("Open in external app")
+        .css_classes(["suggested-action"])
+        .build();
+    let card = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(8)
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .css_classes(["mimick-preview-unavailable"])
+        .build();
+    card.append(&title);
+    card.append(&filename);
+    card.append(&mime);
+    card.append(&open);
+    UnavailableCard {
+        overlay: crossfade_overlay(&card, gtk::Align::Fill),
+        filename,
+        mime,
+        open,
+    }
+}
+
+// Video poster badge: clickable play icon shown over the still thumbnail
+// when the current asset is a video; clicking hands off to an external player.
+fn build_video_badge() -> gtk::Button {
+    let icon = gtk::Image::builder()
+        .icon_name("mimick-video-symbolic")
+        .pixel_size(72)
+        .css_classes(vec!["mimick-video-badge".to_string()])
+        .build();
+    gtk::Button::builder()
+        .child(&icon)
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .tooltip_text("Play video in external player")
+        .css_classes(vec!["circular".to_string(), "flat".to_string()])
+        .visible(false)
+        .build()
+}
+
+fn build_action_bar(initial_full: bool) -> ActionBar {
+    let resolution_toggle = gtk::ToggleButton::builder()
+        .label(if initial_full { "Raw" } else { "Prev" })
+        .tooltip_text("Toggle preview vs original full-resolution image")
+        .active(initial_full)
+        .build();
+    let download = icon_button("mimick-download-symbolic", "Download asset");
+    let zoom_out = icon_button("zoom-out-symbolic", "Zoom out (Ctrl+-)");
+    let zoom_in = icon_button("zoom-in-symbolic", "Zoom in (Ctrl++)");
+    let zoom_reset = gtk::Button::builder()
+        .label("100%")
+        .tooltip_text("Reset zoom (Ctrl+0)")
+        .build();
+    let zoom_group = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .css_classes(vec!["linked".to_string()])
+        .build();
+    zoom_group.append(&zoom_out);
+    zoom_group.append(&zoom_reset);
+    zoom_group.append(&zoom_in);
+    let bar = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .spacing(4)
+        .build();
+    let spacer = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .hexpand(true)
+        .build();
+    bar.append(&zoom_group);
+    bar.append(&spacer);
+    bar.append(&resolution_toggle);
+    bar.append(&download);
+    ActionBar {
+        bar,
+        resolution_toggle,
+        download,
+        zoom_group,
+        zoom_in,
+        zoom_out,
+        zoom_reset,
+    }
+}
+
+fn build_details_pane() -> DetailsPane {
+    let inner = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(14)
+        .margin_top(14)
+        .margin_bottom(14)
+        .margin_start(10)
+        .margin_end(10)
+        .build();
+    let pane = gtk::ScrolledWindow::builder()
+        .child(&inner)
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .vexpand(true)
+        .hexpand(false)
+        .min_content_width(180)
+        .max_content_width(320)
+        .css_classes(vec!["mimick-details-pane".to_string()])
+        .build();
+    let filename = details_text_label();
+    filename.add_css_class("title-3");
+    let summary = details_text_label();
+    let loading = gtk::Label::builder()
+        .xalign(0.0)
+        .label("Loading details…")
+        .css_classes(vec!["dim-label".to_string()])
+        .build();
+    let exif = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(4)
+        .visible(false)
+        .build();
+    inner.append(&filename);
+    inner.append(&summary);
+    inner.append(&loading);
+    inner.append(&exif);
+    DetailsPane {
+        pane,
+        filename,
+        summary,
+        loading,
+        exif,
+    }
+}
+
+fn build_viewer(picture: &PictureArea, actions: &ActionBar) -> gtk::Box {
+    let viewer = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(8)
+        .margin_top(4)
+        .margin_bottom(8)
+        .margin_start(4)
+        .margin_end(4)
+        .hexpand(true)
+        .build();
+    viewer.append(&picture.overlay);
+    viewer.append(&actions.bar);
+    viewer
+}
+
+/// Picture viewer with the details pane as a sidebar that follows the window's narrow layout.
+fn build_split_view(
+    ui: &LibraryWindowUi,
+    viewer: &gtk::Box,
+    details: &DetailsPane,
+    details_btn: &gtk::ToggleButton,
+) -> libadwaita::OverlaySplitView {
+    let body = libadwaita::OverlaySplitView::builder()
+        .sidebar_position(gtk::PackType::End)
+        .show_sidebar(false)
+        .collapsed(ui.split.is_collapsed())
+        .enable_show_gesture(true)
+        .enable_hide_gesture(true)
+        .min_sidebar_width(180.0)
+        .max_sidebar_width(320.0)
+        .sidebar_width_fraction(0.4)
+        .build();
+    body.set_content(Some(viewer));
+    body.set_sidebar(Some(&details.pane));
+    details_btn
+        .bind_property("active", &body, "show-sidebar")
+        .sync_create()
+        .bidirectional()
+        .build();
+    ui.split
+        .bind_property("collapsed", &body, "collapsed")
+        .sync_create()
+        .build();
+    body
+}
+
 impl Lightbox {
     /// Build the page's widget tree; signal handlers are connected by the `connect_*` methods.
     fn new(ui: Rc<LibraryWindowUi>, position: u32, initial_filename: &str) -> Rc<Self> {
-        let page = libadwaita::NavigationPage::builder()
-            .title(truncate_filename(initial_filename, lightbox_title_cap(&ui)))
-            .can_pop(true)
-            .build();
-        let toolbar = libadwaita::ToolbarView::builder().build();
-        let header = libadwaita::HeaderBar::builder()
-            .show_back_button(false)
-            .build();
-        let back_btn = gtk::Button::builder()
-            .icon_name("mimick-library-symbolic")
-            .tooltip_text("Back to library")
-            .build();
-        back_btn.connect_clicked(clone!(
-            #[strong]
-            ui,
-            move |_| {
-                ui.nav.pop();
-            }
-        ));
-        let prev_btn = gtk::Button::builder()
-            .icon_name("go-previous-symbolic")
-            .tooltip_text("Previous (Left)")
-            .build();
-        let next_btn = gtk::Button::builder()
-            .icon_name("go-next-symbolic")
-            .tooltip_text("Next (Right)")
-            .build();
-        let details_btn = gtk::ToggleButton::builder()
-            .icon_name("dialog-information-symbolic")
-            .tooltip_text("Toggle details (I)")
-            .active(false)
-            .build();
-        header.pack_start(&back_btn);
-        header.pack_start(&prev_btn);
-        header.pack_start(&next_btn);
-        header.pack_end(&details_btn);
-        toolbar.add_top_bar(&header);
-
-        let body = libadwaita::OverlaySplitView::builder()
-            .sidebar_position(gtk::PackType::End)
-            .show_sidebar(false)
-            .collapsed(ui.split.is_collapsed())
-            .enable_show_gesture(true)
-            .enable_hide_gesture(true)
-            .min_sidebar_width(180.0)
-            .max_sidebar_width(320.0)
-            .sidebar_width_fraction(0.4)
-            .build();
-        let viewer = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .spacing(8)
-            .margin_top(4)
-            .margin_bottom(8)
-            .margin_start(4)
-            .margin_end(4)
-            .hexpand(true)
-            .build();
-        // Two picture widgets in a stack so navigation can slide between them.
-        let picture_a = lightbox_picture();
-        let picture_b = lightbox_picture();
-        let pic_stack = gtk::Stack::builder()
-            .transition_duration(180)
-            .vexpand(true)
-            .hexpand(true)
-            .build();
-        pic_stack.add_named(&picture_a, Some("a"));
-        pic_stack.add_named(&picture_b, Some("b"));
-        pic_stack.set_visible_child_name("a");
-        let scrolled_picture = gtk::ScrolledWindow::builder()
-            .hscrollbar_policy(gtk::PolicyType::Automatic)
-            .vscrollbar_policy(gtk::PolicyType::Automatic)
-            .child(&pic_stack)
-            .vexpand(true)
-            .hexpand(true)
-            .kinetic_scrolling(false)
-            .min_content_width(120)
-            .build();
-
-        // Spinner overlay: a centered Mimick app icon that rotates while a
-        // full-resolution texture is being fetched / decoded. Hidden by default;
-        // `load_into_picture` reveals it after a short delay.
-        let loader_icon = gtk::Image::builder()
-            .icon_name("dev.nicx.mimick")
-            .pixel_size(72)
-            .halign(gtk::Align::Center)
-            .valign(gtk::Align::Center)
-            .css_classes(["mimick-loader-icon"])
-            .build();
-        let loader_overlay = crossfade_overlay(&loader_icon, gtk::Align::Center);
-        let picture_overlay = gtk::Overlay::builder().build();
-        picture_overlay.set_child(Some(&scrolled_picture));
-        picture_overlay.add_overlay(&loader_overlay);
-
-        let unavailable_title = gtk::Label::builder()
-            .label("Preview unavailable")
-            .css_classes(["title-3"])
-            .build();
-        let unavailable_filename = gtk::Label::builder()
-            .wrap(true)
-            .wrap_mode(gtk::pango::WrapMode::WordChar)
-            .max_width_chars(42)
-            .build();
-        let unavailable_mime = gtk::Label::builder().css_classes(["dim-label"]).build();
-        let unavailable_open = gtk::Button::builder()
-            .label("Open in external app")
-            .css_classes(["suggested-action"])
-            .build();
-        let unavailable_card = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .spacing(8)
-            .halign(gtk::Align::Center)
-            .valign(gtk::Align::Center)
-            .css_classes(["mimick-preview-unavailable"])
-            .build();
-        unavailable_card.append(&unavailable_title);
-        unavailable_card.append(&unavailable_filename);
-        unavailable_card.append(&unavailable_mime);
-        unavailable_card.append(&unavailable_open);
-        let unavailable_overlay = crossfade_overlay(&unavailable_card, gtk::Align::Fill);
-        picture_overlay.add_overlay(&unavailable_overlay);
-
-        // Video poster badge: clickable play icon shown over the still thumbnail
-        // when the current asset is a video; clicking hands off to an external player.
-        let video_badge_icon = gtk::Image::builder()
-            .icon_name("mimick-video-symbolic")
-            .pixel_size(72)
-            .css_classes(vec!["mimick-video-badge".to_string()])
-            .build();
-        let video_badge_button = gtk::Button::builder()
-            .child(&video_badge_icon)
-            .halign(gtk::Align::Center)
-            .valign(gtk::Align::Center)
-            .tooltip_text("Play video in external player")
-            .css_classes(vec!["circular".to_string(), "flat".to_string()])
-            .visible(false)
-            .build();
-        picture_overlay.add_overlay(&video_badge_button);
+        let header = build_header(&ui, initial_filename);
+        let picture = build_picture_area();
+        let unavailable = build_unavailable_card();
+        picture.overlay.add_overlay(&unavailable.overlay);
+        let video_badge_button = build_video_badge();
+        picture.overlay.add_overlay(&video_badge_button);
 
         let initial_full = ui.ctx.config.read().data.library_preview_full_resolution;
-        let resolution_toggle = gtk::ToggleButton::builder()
-            .label(if initial_full { "Raw" } else { "Prev" })
-            .tooltip_text("Toggle preview vs original full-resolution image")
-            .active(initial_full)
-            .build();
-        let download = gtk::Button::builder()
-            .icon_name("mimick-download-symbolic")
-            .tooltip_text("Download asset")
-            .build();
-        let zoom_out_btn = gtk::Button::builder()
-            .icon_name("zoom-out-symbolic")
-            .tooltip_text("Zoom out (Ctrl+-)")
-            .build();
-        let zoom_in_btn = gtk::Button::builder()
-            .icon_name("zoom-in-symbolic")
-            .tooltip_text("Zoom in (Ctrl++)")
-            .build();
-        let zoom_reset_btn = gtk::Button::builder()
-            .label("100%")
-            .tooltip_text("Reset zoom (Ctrl+0)")
-            .build();
-        let zoom_group = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .css_classes(vec!["linked".to_string()])
-            .build();
-        zoom_group.append(&zoom_out_btn);
-        zoom_group.append(&zoom_reset_btn);
-        zoom_group.append(&zoom_in_btn);
-        let actions = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .spacing(4)
-            .build();
-        let actions_spacer = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .hexpand(true)
-            .build();
-        actions.append(&zoom_group);
-        actions.append(&actions_spacer);
-        actions.append(&resolution_toggle);
-        actions.append(&download);
-        viewer.append(&picture_overlay);
-        viewer.append(&actions);
-
-        let details_inner = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .spacing(14)
-            .margin_top(14)
-            .margin_bottom(14)
-            .margin_start(10)
-            .margin_end(10)
-            .build();
-        let details_pane = gtk::ScrolledWindow::builder()
-            .child(&details_inner)
-            .hscrollbar_policy(gtk::PolicyType::Never)
-            .vexpand(true)
-            .hexpand(false)
-            .min_content_width(180)
-            .max_content_width(320)
-            .css_classes(vec!["mimick-details-pane".to_string()])
-            .build();
-        let details_filename = details_text_label();
-        details_filename.add_css_class("title-3");
-        let details_summary = details_text_label();
-        let details_loading = gtk::Label::builder()
-            .xalign(0.0)
-            .label("Loading details…")
-            .css_classes(vec!["dim-label".to_string()])
-            .build();
-        let details_exif = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .spacing(4)
-            .visible(false)
-            .build();
-        details_inner.append(&details_filename);
-        details_inner.append(&details_summary);
-        details_inner.append(&details_loading);
-        details_inner.append(&details_exif);
-
-        body.set_content(Some(&viewer));
-        body.set_sidebar(Some(&details_pane));
-        toolbar.set_content(Some(&body));
-        page.set_child(Some(&toolbar));
-
-        details_btn
-            .bind_property("active", &body, "show-sidebar")
-            .sync_create()
-            .bidirectional()
-            .build();
-        ui.split
-            .bind_property("collapsed", &body, "collapsed")
-            .sync_create()
-            .build();
+        let actions = build_action_bar(initial_full);
+        let details = build_details_pane();
+        let viewer = build_viewer(&picture, &actions);
+        let body = build_split_view(&ui, &viewer, &details, &header.details_btn);
+        header.toolbar.set_content(Some(&body));
 
         Rc::new(Self {
             ui,
-            page,
-            prev_btn,
-            next_btn,
-            details_btn,
-            pic_stack,
-            picture_a,
-            picture_b,
-            scrolled_picture,
-            picture_overlay,
-            loader_overlay,
-            unavailable_overlay,
-            unavailable_filename,
-            unavailable_mime,
-            unavailable_open,
+            header,
+            picture,
+            unavailable,
             video_badge_button,
-            resolution_toggle,
-            download,
-            zoom_group,
-            zoom_in_btn,
-            zoom_out_btn,
-            zoom_reset_btn,
-            details_filename,
-            details_summary,
-            details_loading,
-            details_exif,
+            actions,
+            details,
             pos: Cell::new(position),
             load_gen: Cell::new(0),
             active_a: Cell::new(true),
@@ -825,7 +893,7 @@ impl Lightbox {
     /// Wire the external-open button, the video play badge, and the drag-out source.
     fn connect_overlays(self: &Rc<Self>) {
         let lb = self.clone();
-        self.unavailable_open.connect_clicked(move |_| {
+        self.unavailable.open.connect_clicked(move |_| {
             if let Some(path) = lb.unavailable_path.borrow().as_deref() {
                 open_local_with_default_app(path);
             }
@@ -855,7 +923,7 @@ impl Lightbox {
             let file = gtk::gio::File::for_path(&path);
             Some(gtk::gdk::ContentProvider::for_value(&file.to_value()))
         });
-        self.picture_overlay.add_controller(drag_source);
+        self.picture.overlay.add_controller(drag_source);
     }
 
     /// Prev/next buttons, hidden on narrow layouts.
@@ -864,8 +932,8 @@ impl Lightbox {
         // keyboard shortcuts still work, and the saved space lets the title fit.
         // The details toggle stays visible so users can still reach the EXIF pane.
         let sync_nav_visibility = {
-            let prev_btn = self.prev_btn.clone();
-            let next_btn = self.next_btn.clone();
+            let prev_btn = self.header.prev_btn.clone();
+            let next_btn = self.header.next_btn.clone();
             let split = self.ui.split.clone();
             move || {
                 let show = !split.is_collapsed();
@@ -879,51 +947,31 @@ impl Lightbox {
             .connect_notify_local(Some("collapsed"), move |_, _| sync_nav_visibility());
 
         let lb = self.clone();
-        self.prev_btn.connect_clicked(move |_| lb.goto_prev());
+        self.header
+            .prev_btn
+            .connect_clicked(move |_| lb.goto_prev());
         let lb = self.clone();
-        self.next_btn.connect_clicked(move |_| lb.goto_next());
+        self.header
+            .next_btn
+            .connect_clicked(move |_| lb.goto_next());
     }
 
     /// Zoom buttons, pinch, drag-to-pan, double/middle click, and Ctrl+scroll.
     fn connect_zoom_controls(self: &Rc<Self>) {
         let lb = self.clone();
-        self.zoom_in_btn.connect_clicked(move |_| lb.zoom_by(1.2));
+        self.actions
+            .zoom_in
+            .connect_clicked(move |_| lb.zoom_by(1.2));
         let lb = self.clone();
-        self.zoom_out_btn
+        self.actions
+            .zoom_out
             .connect_clicked(move |_| lb.zoom_by(1.0 / 1.2));
         let lb = self.clone();
-        self.zoom_reset_btn
+        self.actions
+            .zoom_reset
             .connect_clicked(move |_| lb.zoom_reset());
 
-        // Trackpad pinch-to-zoom. On scrolled_picture so it shares a stable
-        // coordinate frame with drag (see drag comment below).
-        let pinch = gtk::GestureZoom::new();
-        let lb = self.clone();
-        pinch.connect_begin(move |_, _| lb.pinch_start.set(lb.zoom_level.get()));
-        let lb = self.clone();
-        pinch.connect_scale_changed(move |_, scale| lb.set_zoom(lb.pinch_start.get() * scale));
-        self.scrolled_picture.add_controller(pinch.clone());
-
-        // Click-and-drag panning when zoomed in. Attached to scrolled_picture,
-        // not pic_stack: pic_stack moves under the cursor when we update the
-        // scroll adjustments, which makes the gesture's pic_stack-local offset
-        // oscillate frame-to-frame and jitter the image.
-        let drag = gtk::GestureDrag::new();
-        drag.set_button(gtk::gdk::BUTTON_PRIMARY);
-        let lb = self.clone();
-        drag.connect_drag_begin(move |_, _, _| {
-            let hadj = lb.scrolled_picture.hadjustment();
-            let vadj = lb.scrolled_picture.vadjustment();
-            lb.drag_start.set((hadj.value(), vadj.value()));
-        });
-        let lb = self.clone();
-        drag.connect_drag_update(move |_, off_x, off_y| {
-            let (sx0, sy0) = lb.drag_start.get();
-            lb.scrolled_picture.hadjustment().set_value(sx0 - off_x);
-            lb.scrolled_picture.vadjustment().set_value(sy0 - off_y);
-        });
-        self.scrolled_picture.add_controller(drag.clone());
-        drag.group_with(&pinch);
+        self.connect_pan_and_pinch();
 
         // Double-click on the picture: zoom in 2x toward the click position.
         let double_click = gtk::GestureClick::new();
@@ -935,14 +983,14 @@ impl Lightbox {
                 lb.set_zoom(lb.zoom_level.get() * 2.0);
             }
         });
-        self.scrolled_picture.add_controller(double_click);
+        self.picture.scrolled.add_controller(double_click);
 
         // Middle-click: reset zoom to 100%.
         let middle_click = gtk::GestureClick::new();
         middle_click.set_button(gtk::gdk::BUTTON_MIDDLE);
         let lb = self.clone();
         middle_click.connect_pressed(move |_, _, _, _| lb.zoom_reset());
-        self.scrolled_picture.add_controller(middle_click);
+        self.picture.scrolled.add_controller(middle_click);
 
         // Ctrl+wheel zoom on the picture area, captured before the scrolled window
         // can use it for panning. Listening on both axes so trackpad two-finger
@@ -952,7 +1000,40 @@ impl Lightbox {
         zoom_scroll.set_propagation_phase(gtk::PropagationPhase::Capture);
         let lb = self.clone();
         zoom_scroll.connect_scroll(move |ctrl, dx, dy| lb.handle_zoom_scroll(ctrl, dx, dy));
-        self.scrolled_picture.add_controller(zoom_scroll);
+        self.picture.scrolled.add_controller(zoom_scroll);
+    }
+
+    /// Pinch-to-zoom and click-and-drag panning, grouped so they don't fight over touches.
+    fn connect_pan_and_pinch(self: &Rc<Self>) {
+        // Trackpad pinch-to-zoom. On the picture scroller so it shares a stable
+        // coordinate frame with drag (see drag comment below).
+        let pinch = gtk::GestureZoom::new();
+        let lb = self.clone();
+        pinch.connect_begin(move |_, _| lb.pinch_start.set(lb.zoom_level.get()));
+        let lb = self.clone();
+        pinch.connect_scale_changed(move |_, scale| lb.set_zoom(lb.pinch_start.get() * scale));
+        self.picture.scrolled.add_controller(pinch.clone());
+
+        // Click-and-drag panning when zoomed in. Attached to the scroller, not the
+        // picture stack: the stack moves under the cursor when we update the scroll
+        // adjustments, so an offset measured relative to it oscillates frame-to-frame
+        // and jitters the image.
+        let drag = gtk::GestureDrag::new();
+        drag.set_button(gtk::gdk::BUTTON_PRIMARY);
+        let lb = self.clone();
+        drag.connect_drag_begin(move |_, _, _| {
+            let hadj = lb.picture.scrolled.hadjustment();
+            let vadj = lb.picture.scrolled.vadjustment();
+            lb.drag_start.set((hadj.value(), vadj.value()));
+        });
+        let lb = self.clone();
+        drag.connect_drag_update(move |_, off_x, off_y| {
+            let (sx0, sy0) = lb.drag_start.get();
+            lb.picture.scrolled.hadjustment().set_value(sx0 - off_x);
+            lb.picture.scrolled.vadjustment().set_value(sy0 - off_y);
+        });
+        self.picture.scrolled.add_controller(drag.clone());
+        drag.group_with(&pinch);
     }
 
     /// Cursor tracking for focal zoom, the right-click menu, and swipe navigation.
@@ -962,23 +1043,23 @@ impl Lightbox {
         motion.connect_motion(move |_, x, y| lb.cursor_pos.set(Some((x, y))));
         let lb = self.clone();
         motion.connect_leave(move |_| lb.cursor_pos.set(None));
-        self.scrolled_picture.add_controller(motion);
+        self.picture.scrolled.add_controller(motion);
 
         // Right-click: open the standard asset context menu.
         let right_click = gtk::GestureClick::new();
         right_click.set_button(gtk::gdk::BUTTON_SECONDARY);
         let lb = self.clone();
         right_click.connect_pressed(move |_, _, x, y| {
-            show_asset_context_menu(lb.ui.clone(), &lb.scrolled_picture, lb.pos.get(), x, y);
+            show_asset_context_menu(lb.ui.clone(), &lb.picture.scrolled, lb.pos.get(), x, y);
         });
-        self.scrolled_picture.add_controller(right_click);
+        self.picture.scrolled.add_controller(right_click);
 
         // Horizontal swipe for prev/next navigation; ignored when zoomed in.
         let swipe = gtk::GestureSwipe::new();
         swipe.set_touch_only(false);
         let lb = self.clone();
         swipe.connect_swipe(move |_, vx, _vy| lb.handle_swipe(vx));
-        self.pic_stack.add_controller(swipe);
+        self.picture.stack.add_controller(swipe);
     }
 
     /// Ctrl +/-/0 zoom, Left/Right navigate, I toggles details, Escape closes.
@@ -986,13 +1067,13 @@ impl Lightbox {
         let key_controller = gtk::EventControllerKey::new();
         let lb = self.clone();
         key_controller.connect_key_pressed(move |_, key, _, mods| lb.handle_key(key, mods));
-        self.page.add_controller(key_controller);
+        self.header.page.add_controller(key_controller);
     }
 
     /// Download button and the preview/original resolution toggle.
     fn connect_actions(self: &Rc<Self>) {
         let lb = self.clone();
-        self.download.connect_clicked(move |_| {
+        self.actions.download.connect_clicked(move |_| {
             let Some(item) = lb
                 .ui
                 .grid
@@ -1009,7 +1090,7 @@ impl Lightbox {
         });
 
         let lb = self.clone();
-        self.resolution_toggle.connect_toggled(move |btn| {
+        self.actions.resolution_toggle.connect_toggled(move |btn| {
             btn.set_label(if btn.is_active() { "Raw" } else { "Prev" });
             lb.render();
         });
@@ -1046,9 +1127,10 @@ impl Lightbox {
             (true, gtk::gdk::Key::_0) | (true, gtk::gdk::Key::KP_0) => self.zoom_reset(),
             (false, gtk::gdk::Key::Left) => self.goto_prev(),
             (false, gtk::gdk::Key::Right) => self.goto_next(),
-            (false, gtk::gdk::Key::i) | (false, gtk::gdk::Key::I) => {
-                self.details_btn.set_active(!self.details_btn.is_active())
-            }
+            (false, gtk::gdk::Key::i) | (false, gtk::gdk::Key::I) => self
+                .header
+                .details_btn
+                .set_active(!self.header.details_btn.is_active()),
             (false, gtk::gdk::Key::Escape) => {
                 self.ui.nav.pop();
             }
@@ -1098,7 +1180,7 @@ impl Lightbox {
         let Some(req) = next_request else {
             return;
         };
-        self.next_btn.set_sensitive(false);
+        self.header.next_btn.set_sensitive(false);
         self.advance_when_page_loads();
         load_source_page(self.ui.clone(), req, true);
     }
@@ -1121,7 +1203,7 @@ impl Lightbox {
                 lb.nav_dir.set(1);
                 lb.render();
             }
-            lb.next_btn.set_sensitive(true);
+            lb.header.next_btn.set_sensitive(true);
             if let Some(hid) = handler_id_clone.borrow_mut().take() {
                 m.disconnect(hid);
             }
@@ -1131,9 +1213,9 @@ impl Lightbox {
 
     fn active_picture(&self) -> gtk::Picture {
         if self.active_a.get() {
-            self.picture_a.clone()
+            self.picture.picture_a.clone()
         } else {
-            self.picture_b.clone()
+            self.picture.picture_b.clone()
         }
     }
 
@@ -1151,12 +1233,12 @@ impl Lightbox {
         let z_old = self.zoom_level.get();
         let zoom_label = format!("{}%", (z_new * 100.0).round() as i32);
         if (z_new - z_old).abs() < 0.0001 {
-            self.zoom_reset_btn.set_label(&zoom_label);
+            self.actions.zoom_reset.set_label(&zoom_label);
             return;
         }
 
         // Pick the focal point: cursor if inside the viewer, else centre.
-        let scrolled = &self.scrolled_picture;
+        let scrolled = &self.picture.scrolled;
         let viewer_w = scrolled.width().max(1) as f64;
         let viewer_h = scrolled.height().max(1) as f64;
         let (fx, fy) = self
@@ -1173,7 +1255,7 @@ impl Lightbox {
 
         self.zoom_level.set(z_new);
         let content = apply_lightbox_zoom(&self.active_picture(), scrolled, z_new);
-        self.zoom_reset_btn.set_label(&zoom_label);
+        self.actions.zoom_reset.set_label(&zoom_label);
 
         // Pre-set adjustment ranges to match the new content size so the
         // scroll position can be applied in the same frame. Without this
@@ -1196,22 +1278,25 @@ impl Lightbox {
         };
         let info = AssetInfo::from_item(&item);
 
-        self.page.set_title(&truncate_filename(
+        self.header.page.set_title(&truncate_filename(
             &info.filename,
             lightbox_title_cap(&self.ui),
         ));
         self.show_summary(&info);
-        self.prev_btn.set_sensitive(pos > 0);
-        self.next_btn
+        self.header.prev_btn.set_sensitive(pos > 0);
+        self.header
+            .next_btn
             .set_sensitive(pos + 1 < self.ui.grid.model.n_items());
 
         let show_remote_actions = !info.is_local() && !info.is_video();
-        self.resolution_toggle.set_visible(show_remote_actions);
-        self.download.set_visible(show_remote_actions);
-        self.zoom_group.set_visible(!info.is_video());
+        self.actions
+            .resolution_toggle
+            .set_visible(show_remote_actions);
+        self.actions.download.set_visible(show_remote_actions);
+        self.actions.zoom_group.set_visible(!info.is_video());
 
         self.start_picture_load(&info);
-        self.details_loading.set_visible(true);
+        self.details.loading.set_visible(true);
         if info.is_local() && !info.is_video() {
             self.load_local_details(pos, info.local_path);
         } else {
@@ -1221,22 +1306,22 @@ impl Lightbox {
 
     /// Filename and sync summary; clears the previous asset's EXIF rows.
     fn show_summary(&self, info: &AssetInfo) {
-        self.details_filename.set_label(&info.filename);
+        self.details.filename.set_label(&info.filename);
         let sync_label = match info.sync_state {
             2 => "On Immich and locally",
             1 => "Local only",
             _ => "On Immich only",
         };
-        self.details_summary.set_label(&format!(
+        self.details.summary.set_label(&format!(
             "{} · {}\nCreated: {}",
             info.mime,
             sync_label,
             format_datetime_display(&info.created)
         ));
-        while let Some(c) = self.details_exif.first_child() {
-            self.details_exif.remove(&c);
+        while let Some(c) = self.details.exif.first_child() {
+            self.details.exif.remove(&c);
         }
-        self.details_exif.set_visible(false);
+        self.details.exif.set_visible(false);
     }
 
     /// Load into the *inactive* picture and commit the slide transition only after
@@ -1245,14 +1330,15 @@ impl Lightbox {
     fn start_picture_load(self: &Rc<Self>, info: &AssetInfo) {
         let target_is_a = !self.active_a.get();
         let target = if target_is_a {
-            self.picture_a.clone()
+            self.picture.picture_a.clone()
         } else {
-            self.picture_b.clone()
+            self.picture.picture_b.clone()
         };
         self.zoom_level.set(1.0);
-        apply_lightbox_zoom(&target, &self.scrolled_picture, 1.0);
-        self.zoom_reset_btn.set_label("100%");
-        self.pic_stack
+        apply_lightbox_zoom(&target, &self.picture.scrolled, 1.0);
+        self.actions.zoom_reset.set_label("100%");
+        self.picture
+            .stack
             .set_transition_type(match self.nav_dir.get() {
                 1 => gtk::StackTransitionType::SlideLeft,
                 -1 => gtk::StackTransitionType::SlideRight,
@@ -1265,7 +1351,7 @@ impl Lightbox {
             filename: info.filename.clone(),
             mime: info.mime.clone(),
             local_path: info.local_path.clone(),
-            full_res: self.resolution_toggle.is_active(),
+            full_res: self.actions.resolution_toggle.is_active(),
             is_video: info.is_video(),
         });
         // The slide direction applies to this navigation only.
@@ -1276,8 +1362,31 @@ impl Lightbox {
     fn load_into_picture(self: &Rc<Self>, load: PictureLoad) {
         let generation = self.load_gen.get().wrapping_add(1);
         self.load_gen.set(generation);
-        self.unavailable_overlay.set_reveal_child(false);
-        self.unavailable_overlay.set_can_target(false);
+        self.prepare_for_load(&load);
+        // Reveal the spinner after a short delay so fast cache hits and
+        // quick JPEG decodes don't flash it. Local paths get a longer
+        // delay since most JPEGs decode in well under 250ms, but RAW
+        // and large TIFF decodes can run for seconds and need feedback.
+        let delay_ms = if load.local_path.is_empty() { 120 } else { 250 };
+        let cancel_loader = self.arm_loader_spinner(delay_ms);
+
+        let lb = self.clone();
+        glib::MainContext::default().spawn_local(async move {
+            let result = lb.fetch_picture(&load).await;
+            if lb.load_gen.get() != generation {
+                return;
+            }
+            lb.show_load_result(&load, result);
+            cancel_loader.set(true);
+            lb.picture.loader.set_reveal_child(false);
+        });
+    }
+
+    /// Clear the previous asset's overlays and drag path, set up the video badge,
+    /// and show the cached grid thumbnail until the real picture arrives.
+    fn prepare_for_load(&self, load: &PictureLoad) {
+        self.unavailable.overlay.set_reveal_child(false);
+        self.unavailable.overlay.set_can_target(false);
         *self.unavailable_path.borrow_mut() = None;
         // Clear drag path while loading; updated once resolved.
         *self.drag_path.borrow_mut() = None;
@@ -1313,33 +1422,21 @@ impl Lightbox {
         {
             load.target.set_paintable(Some(&texture));
         }
+    }
 
-        // Reveal the spinner after a short delay so fast cache hits and
-        // quick JPEG decodes don't flash it. Local paths get a longer
-        // delay since most JPEGs decode in well under 250ms, but RAW
-        // and large TIFF decodes can run for seconds and need feedback.
-        let arm_delay_ms: u64 = if load.local_path.is_empty() { 120 } else { 250 };
-        let loader_for_arm = self.loader_overlay.clone();
+    /// Reveal the spinner after `delay_ms` unless the returned flag is set first.
+    fn arm_loader_spinner(&self, delay_ms: u64) -> Rc<Cell<bool>> {
+        let loader_for_arm = self.picture.loader.clone();
         // Set once the load finishes so the delayed spinner never appears.
         let cancel_loader = Rc::new(Cell::new(false));
         let cancel_for_arm = cancel_loader.clone();
-        glib::timeout_add_local(std::time::Duration::from_millis(arm_delay_ms), move || {
+        glib::timeout_add_local(std::time::Duration::from_millis(delay_ms), move || {
             if !cancel_for_arm.get() {
                 loader_for_arm.set_reveal_child(true);
             }
             glib::ControlFlow::Break
         });
-
-        let lb = self.clone();
-        glib::MainContext::default().spawn_local(async move {
-            let result = lb.fetch_picture(&load).await;
-            if lb.load_gen.get() != generation {
-                return;
-            }
-            lb.show_load_result(&load, result);
-            cancel_loader.set(true);
-            lb.loader_overlay.set_reveal_child(false);
-        });
+        cancel_loader
     }
 
     /// Pick the source: video poster, local file, original download, or preview thumbnail.
@@ -1446,18 +1543,18 @@ impl Lightbox {
                 *self.drag_path.borrow_mut() = drag_path;
             }
             LoadResult::Unavailable(path) => {
-                self.unavailable_filename.set_label(&load.filename);
-                self.unavailable_mime.set_label(&load.mime);
-                self.unavailable_open.set_visible(path.is_some());
+                self.unavailable.filename.set_label(&load.filename);
+                self.unavailable.mime.set_label(&load.mime);
+                self.unavailable.open.set_visible(path.is_some());
                 *self.unavailable_path.borrow_mut() = path;
-                self.unavailable_overlay.set_can_target(true);
-                self.unavailable_overlay.set_reveal_child(true);
+                self.unavailable.overlay.set_can_target(true);
+                self.unavailable.overlay.set_reveal_child(true);
             }
             LoadResult::KeepPoster => {}
         }
         // Defer the child switch by one idle so the target picture
         // re-measures with the new texture before the slide starts.
-        let pic_stack = self.pic_stack.clone();
+        let pic_stack = self.picture.stack.clone();
         let target_is_a = load.target_is_a;
         let lb = self.clone();
         glib::idle_add_local_once(move || {
@@ -1479,13 +1576,13 @@ impl Lightbox {
             if lb.pos.get() != pos {
                 return;
             }
-            lb.details_loading.set_visible(false);
+            lb.details.loading.set_visible(false);
             // Render whatever we have. Files without an EXIF block (Unsplash,
             // screenshots, edited copies) still get the Image group populated from
             // filesystem + Pixbuf data, so the user always sees *something*.
             if let Some((exif, taken_label)) = probed.as_ref().and_then(local_details_exif) {
-                fill_exif_box(&lb.details_exif, &exif, taken_label);
-                lb.details_exif.set_visible(true);
+                fill_exif_box(&lb.details.exif, &exif, taken_label);
+                lb.details.exif.set_visible(true);
             }
         });
     }
@@ -1498,12 +1595,12 @@ impl Lightbox {
             if lb.pos.get() != pos {
                 return;
             }
-            lb.details_loading.set_visible(false);
+            lb.details.loading.set_visible(false);
             if let Ok(details) = result
                 && let Some(exif) = details.exif_info
             {
-                fill_exif_box(&lb.details_exif, &exif, "Taken");
-                lb.details_exif.set_visible(true);
+                fill_exif_box(&lb.details.exif, &exif, "Taken");
+                lb.details.exif.set_visible(true);
             }
         });
     }
