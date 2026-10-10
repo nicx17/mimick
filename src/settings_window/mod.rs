@@ -79,7 +79,7 @@ fn watch_path_entry(
     } else if is_default {
         Path::new(&folder)
             .file_name()
-            .and_then(|n| n.to_str())
+            .and_then(std::ffi::OsStr::to_str)
             .map(ToString::to_string)
     } else {
         Some(album_name.to_string())
