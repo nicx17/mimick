@@ -922,6 +922,27 @@ mod tests {
     }
 
     #[test]
+    fn test_classify_http_issue_404_outside_albums_uses_context_summary() {
+        let issue = classify_http_issue(RequestContext::ThumbnailFetch, 404, None);
+        assert_eq!(issue.summary, "Immich could not load a library thumbnail");
+        assert!(issue.guidance.contains("HTTP 404"));
+    }
+
+    #[test]
+    fn test_classify_http_issue_for_gateway_errors() {
+        let issue = classify_http_issue(RequestContext::AssetList, 503, None);
+        assert_eq!(issue.summary, "Immich is temporarily unavailable");
+    }
+
+    #[test]
+    fn test_classify_http_issue_names_the_upload_subject() {
+        let named = classify_http_issue(RequestContext::Upload, 500, Some("photo.jpg"));
+        assert_eq!(named.summary, "Immich could not accept photo.jpg");
+        let unnamed = classify_http_issue(RequestContext::Upload, 500, None);
+        assert_eq!(unnamed.summary, "Immich could not accept the upload");
+    }
+
+    #[test]
     fn test_library_album_deserializes_from_immich_shape() {
         let album: LibraryAlbum = serde_json::from_value(serde_json::json!({
             "id": "album-1",

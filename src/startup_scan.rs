@@ -79,107 +79,13 @@ pub async fn queue_unsynced_files(
     // 2b. Per-candidate: sync_decision -> hash (if needed) -> collect FileTask.
     //     Tasks are NOT yet queued; we batch a server-side checksum check next
     //     so files already on Immich never enter the upload pipeline.
-    let prepared: Arc<Mutex<Vec<FileTask>>> = Arc::new(Mutex::new(Vec::new()));
-    let skipped = Arc::new(AtomicUsize::new(skipped_enum));
-    let errors = Arc::new(AtomicUsize::new(enum_errors));
-
-    stream::iter(candidates)
-        .for_each_concurrent(16, |candidate| {
-            let sync_index = sync_index.clone();
-            let api_client = api_client.clone();
-            let album_cache = album_id_cache.clone();
-            let prepared = prepared.clone();
-            let skipped = skipped.clone();
-            let errors = errors.clone();
-
-            async move {
-                let path = Path::new(&candidate.path);
-                let album_name = candidate.album_name.clone();
-
-                // Lookup existing album ID (no lock held across await).
-                let existing_album_id = album_name
-                    .as_ref()
-                    .and_then(|name| album_cache.lock().get(name).cloned().flatten());
-
-                let target = SyncTarget {
-                    album_name: album_name.clone(),
-                    album_id: existing_album_id,
-                };
-
-                // sync_decision -- brief shard lock, no await.
-                let decision = match sync_index.sync_decision(path, &target) {
-                    Ok(d) => d,
-                    Err(err) => {
-                        errors.fetch_add(1, Ordering::Relaxed);
-                        log::warn!(
-                            "Startup scan could not inspect '{}': {}",
-                            candidate.path,
-                            err
-                        );
-                        return;
-                    }
-                };
-
-                let (reassociate_only, cached_checksum) = match decision {
-                    SyncDecision::UpToDate => {
-                        skipped.fetch_add(1, Ordering::Relaxed);
-                        return;
-                    }
-                    SyncDecision::NeedsUpload => (false, None),
-                    SyncDecision::NeedsReassociate => {
-                        (true, sync_index.stored_checksum(&candidate.path))
-                    }
-                };
-
-                let album_id = match album_name.as_deref() {
-                    Some(name) => match resolve_album(&api_client, name, &album_cache).await {
-                        Ok(id) => id,
-                        Err(err) => {
-                            errors.fetch_add(1, Ordering::Relaxed);
-                            log::warn!(
-                                "Startup scan skipping '{}': album resolution failed: {}",
-                                candidate.path,
-                                err
-                            );
-                            return;
-                        }
-                    },
-                    None => None,
-                };
-
-                match hash_to_task(
-                    candidate.path,
-                    candidate.watch_path,
-                    album_id,
-                    album_name.clone(),
-                    reassociate_only,
-                    cached_checksum,
-                    candidate.sidecar_enabled,
-                )
-                .await
-                {
-                    Ok(task) => prepared.lock().push(task),
-                    Err(()) => {
-                        errors.fetch_add(1, Ordering::Relaxed);
-                    }
-                }
-            }
-        })
-        .await;
+    let (prepared_tasks, skipped, errors) =
+        prepare_candidates(candidates, &sync_index, &api_client, &album_id_cache).await;
 
     // 2c & 2d: Batch pre-flight existing check, split tasks, and inline reassociate hits.
-    let prepared_tasks: Vec<FileTask> = std::mem::take(&mut *prepared.lock());
-    let (to_upload, reassociated_count) =
+    let (to_upload, reassociated) =
         filter_and_reassociate_existing(prepared_tasks, &api_client, &sync_index).await;
-
-    let reassociated = Arc::new(AtomicUsize::new(reassociated_count));
-
-    let queued = Arc::new(AtomicUsize::new(0));
-    for task in to_upload {
-        if queue_manager.add_to_queue(task).await {
-            queued.fetch_add(1, Ordering::Relaxed);
-        }
-    }
+    let queued = queue_tasks(&queue_manager, to_upload).await;
 
     trash_remote_assets_for_missing_local_files(
         &watch_paths,
@@ -193,26 +99,147 @@ pub async fn queue_unsynced_files(
 
     prune_index_entries_for_missing_files(&watch_paths, &mut seen_paths, &sync_index);
 
-    let total_queued = queued.load(Ordering::Relaxed);
-    let total_skipped = skipped.load(Ordering::Relaxed);
-    let total_errors = errors.load(Ordering::Relaxed);
-    let total_reassociated = reassociated.load(Ordering::Relaxed);
+    log_scan_summary(
+        queued,
+        reassociated,
+        skipped_enum + skipped,
+        enum_errors + errors,
+    );
+}
 
-    if total_queued == 0 && total_reassociated == 0 {
+type AlbumIdCache = Arc<Mutex<HashMap<String, Option<String>>>>;
+
+/// What happened to one startup-scan candidate.
+enum CandidateOutcome {
+    Prepared(FileTask),
+    /// Already synced to the same target.
+    UpToDate,
+    Failed,
+}
+
+/// Run `prepare_candidate` with bounded concurrency; returns the tasks plus skip/error counts.
+async fn prepare_candidates(
+    candidates: Vec<ScanCandidate>,
+    sync_index: &Arc<ShardedSyncIndex>,
+    api_client: &Arc<ImmichApiClient>,
+    album_cache: &AlbumIdCache,
+) -> (Vec<FileTask>, usize, usize) {
+    let prepared = Mutex::new(Vec::new());
+    let skipped = AtomicUsize::new(0);
+    let errors = AtomicUsize::new(0);
+    stream::iter(candidates)
+        .for_each_concurrent(16, |candidate| async {
+            match prepare_candidate(candidate, sync_index, api_client, album_cache).await {
+                CandidateOutcome::Prepared(task) => prepared.lock().push(task),
+                CandidateOutcome::UpToDate => {
+                    skipped.fetch_add(1, Ordering::Relaxed);
+                }
+                CandidateOutcome::Failed => {
+                    errors.fetch_add(1, Ordering::Relaxed);
+                }
+            }
+        })
+        .await;
+    (
+        prepared.into_inner(),
+        skipped.into_inner(),
+        errors.into_inner(),
+    )
+}
+
+/// Decide whether a candidate needs work, resolve its album, and hash it into a `FileTask`.
+async fn prepare_candidate(
+    candidate: ScanCandidate,
+    sync_index: &ShardedSyncIndex,
+    api_client: &Arc<ImmichApiClient>,
+    album_cache: &AlbumIdCache,
+) -> CandidateOutcome {
+    let album_name = candidate.album_name.clone();
+
+    // Lookup existing album ID (no lock held across await).
+    let existing_album_id = album_name
+        .as_ref()
+        .and_then(|name| album_cache.lock().get(name).cloned().flatten());
+    let target = SyncTarget {
+        album_name: album_name.clone(),
+        album_id: existing_album_id,
+    };
+
+    // sync_decision -- brief shard lock, no await.
+    let decision = match sync_index.sync_decision(Path::new(&candidate.path), &target) {
+        Ok(decision) => decision,
+        Err(err) => {
+            log::warn!(
+                "Startup scan could not inspect '{}': {}",
+                candidate.path,
+                err
+            );
+            return CandidateOutcome::Failed;
+        }
+    };
+    let (reassociate_only, cached_checksum) = match decision {
+        SyncDecision::UpToDate => return CandidateOutcome::UpToDate,
+        SyncDecision::NeedsUpload => (false, None),
+        SyncDecision::NeedsReassociate => (true, sync_index.stored_checksum(&candidate.path)),
+    };
+
+    let album_id = match album_name.as_deref() {
+        Some(name) => match resolve_album(api_client, name, album_cache).await {
+            Ok(id) => id,
+            Err(err) => {
+                log::warn!(
+                    "Startup scan skipping '{}': album resolution failed: {}",
+                    candidate.path,
+                    err
+                );
+                return CandidateOutcome::Failed;
+            }
+        },
+        None => None,
+    };
+
+    match hash_to_task(
+        candidate.path,
+        candidate.watch_path,
+        album_id,
+        album_name,
+        reassociate_only,
+        cached_checksum,
+        candidate.sidecar_enabled,
+    )
+    .await
+    {
+        Ok(task) => CandidateOutcome::Prepared(task),
+        Err(()) => CandidateOutcome::Failed,
+    }
+}
+
+/// Queue each task; returns how many the queue accepted.
+async fn queue_tasks(queue_manager: &QueueManager, tasks: Vec<FileTask>) -> usize {
+    let mut queued = 0;
+    for task in tasks {
+        if queue_manager.add_to_queue(task).await {
+            queued += 1;
+        }
+    }
+    queued
+}
+
+fn log_scan_summary(queued: usize, reassociated: usize, skipped: usize, errors: usize) {
+    if queued == 0 && reassociated == 0 {
         log::info!(
             "Startup scan complete: no unsynced files found ({} already current, {} error(s)).",
-            total_skipped,
-            total_errors
+            skipped,
+            errors
         );
         return;
     }
-
     log::info!(
         "Startup scan: queued={} reassociated={} skipped={} errors={}",
-        total_queued,
-        total_reassociated,
-        total_skipped,
-        total_errors
+        queued,
+        reassociated,
+        skipped,
+        errors
     );
 }
 
