@@ -1079,15 +1079,12 @@ fn search_by_tag(ui: Rc<LibraryWindowUi>, tag: Tag) {
         tag_ids: Some(vec![tag.id]),
         ..Default::default()
     };
-    let request = ui
-        .ctx
-        .library_state
-        .lock()
-        .switch_source(LibrarySource::AdvancedSearch {
+    show_source(
+        &ui,
+        LibrarySource::AdvancedSearch {
             filters: Box::new(filters),
-        });
-    apply_timeline_ui_state(&ui, &request.1);
-    load_source_page(ui, request, false);
+        },
+    );
 }
 
 fn apply_timeline_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
@@ -1258,115 +1255,104 @@ fn load_explore_landing(ui: Rc<LibraryWindowUi>) {
         return;
     }
     ui.explore.populated.set(true);
-    let ctx = ui.ctx.clone();
-    explore_view::wire_people_filter(&ui.explore, ctx.clone(), || {});
+    explore_view::wire_people_filter(&ui.explore, ui.ctx.clone(), || {});
     explore_view::show_loading(&ui.explore);
     ui.content_stack.set_visible_child_name("explore");
 
-    let mctx = glib::MainContext::default();
+    load_explore_people(ui.clone());
+    // Fetch places (slow paginated scan) only if not cached.
+    if explore_view::has_cached_places(&ui.explore) {
+        log::debug!("Explore: rendering places from cache");
+        explore_view::render_cached_places(&ui.explore, ui.ctx.clone());
+    } else {
+        log::debug!("Explore: places cache empty, fetching from server");
+        load_explore_places(ui.clone());
+    }
+    load_explore_sections(ui);
+}
 
-    mctx.spawn_local(clone!(
-        #[strong]
-        ui,
-        #[strong]
-        ctx,
-        async move {
-            let people_res = ctx.api_client.fetch_people(false).await;
-            if let Err(e) = &people_res
-                && (e.contains("HTTP 401") || e.contains("HTTP 403"))
-            {
-                show_library_permission_error(&ui.window);
-            }
-            let people = people_res.unwrap_or_default();
-            let click_ui = ui.clone();
-            explore_view::populate_people(&ui.explore, ctx.clone(), people, move |id, _name| {
+/// Switch the grid to `source` and load its first page.
+fn show_source(ui: &Rc<LibraryWindowUi>, source: LibrarySource) {
+    let request = ui.ctx.library_state.lock().switch_source(source);
+    apply_timeline_ui_state(ui, &request.1);
+    load_source_page(ui.clone(), request, false);
+}
+
+/// The fetched value, or its default after telling the user if the API key lacks permission.
+fn unwrap_or_report_permission<T: Default>(ui: &LibraryWindowUi, result: Result<T, String>) -> T {
+    if let Err(e) = &result
+        && (e.contains("HTTP 401") || e.contains("HTTP 403"))
+    {
+        show_library_permission_error(&ui.window);
+    }
+    result.unwrap_or_default()
+}
+
+fn load_explore_people(ui: Rc<LibraryWindowUi>) {
+    glib::MainContext::default().spawn_local(async move {
+        let people = unwrap_or_report_permission(&ui, ui.ctx.api_client.fetch_people(false).await);
+        let click_ui = ui.clone();
+        explore_view::populate_people(&ui.explore, ui.ctx.clone(), people, move |id, _name| {
+            let filters = MetadataSearchFilters {
+                person_ids: Some(vec![id]),
+                ..Default::default()
+            };
+            show_source(
+                &click_ui,
+                LibrarySource::AdvancedSearch {
+                    filters: Box::new(filters),
+                },
+            );
+        });
+    });
+}
+
+fn load_explore_places(ui: Rc<LibraryWindowUi>) {
+    glib::MainContext::default().spawn_local(async move {
+        let places = unwrap_or_report_permission(&ui, ui.ctx.api_client.fetch_all_places().await);
+        let click_ui = ui.clone();
+        explore_view::populate_places(
+            &ui.explore,
+            ui.ctx.clone(),
+            places,
+            move |_kind, value, _asset_id| {
                 let filters = MetadataSearchFilters {
-                    person_ids: Some(vec![id]),
+                    city: Some(value.clone()),
                     ..Default::default()
                 };
-                let request = click_ui.ctx.library_state.lock().switch_source(
+                show_source(
+                    &click_ui,
                     LibrarySource::AdvancedSearch {
                         filters: Box::new(filters),
                     },
                 );
-                apply_timeline_ui_state(&click_ui, &request.1);
-                load_source_page(click_ui.clone(), request, false);
-            });
-        }
-    ));
-    // Fetch places (slow paginated scan) only if not cached.
-    if !explore_view::has_cached_places(&ui.explore) {
-        log::debug!("Explore: places cache empty, fetching from server");
-        mctx.spawn_local(clone!(
-            #[strong]
-            ui,
-            #[strong]
-            ctx,
-            async move {
-                let places_res = ctx.api_client.fetch_all_places().await;
-                if let Err(e) = &places_res
-                    && (e.contains("HTTP 401") || e.contains("HTTP 403"))
-                {
-                    show_library_permission_error(&ui.window);
+            },
+        );
+    });
+}
+
+fn load_explore_sections(ui: Rc<LibraryWindowUi>) {
+    glib::MainContext::default().spawn_local(async move {
+        let sections = unwrap_or_report_permission(&ui, ui.ctx.api_client.fetch_explore().await);
+        let click_ui = ui.clone();
+        explore_view::populate_explore(
+            &ui.explore,
+            ui.ctx.clone(),
+            sections,
+            move |kind, value, asset_id| {
+                if kind == "recent" {
+                    open_asset_in_lightbox(click_ui.clone(), asset_id);
+                    return;
                 }
-                let places = places_res.unwrap_or_default();
-                let click_ui = ui.clone();
-                explore_view::populate_places(
-                    &ui.explore,
-                    ctx.clone(),
-                    places,
-                    move |_kind, value, _asset_id| {
-                        let next = LibrarySource::AdvancedSearch {
-                            filters: Box::new(MetadataSearchFilters {
-                                city: Some(value.clone()),
-                                ..Default::default()
-                            }),
-                        };
-                        let request = click_ui.ctx.library_state.lock().switch_source(next);
-                        apply_timeline_ui_state(&click_ui, &request.1);
-                        load_source_page(click_ui.clone(), request, false);
+                show_source(
+                    &click_ui,
+                    LibrarySource::SmartSearch {
+                        query: value.clone(),
                     },
                 );
-            }
-        ));
-    } else {
-        log::debug!("Explore: rendering places from cache");
-        explore_view::render_cached_places(&ui.explore, ctx.clone());
-    }
-
-    mctx.spawn_local(clone!(
-        #[strong]
-        ui,
-        #[strong]
-        ctx,
-        async move {
-            let sections_res = ctx.api_client.fetch_explore().await;
-            if let Err(e) = &sections_res
-                && (e.contains("HTTP 401") || e.contains("HTTP 403"))
-            {
-                show_library_permission_error(&ui.window);
-            }
-            let sections = sections_res.unwrap_or_default();
-            let click_ui = ui.clone();
-            explore_view::populate_explore(
-                &ui.explore,
-                ctx.clone(),
-                sections,
-                move |kind, value, asset_id| {
-                    if kind == "recent" {
-                        open_asset_in_lightbox(click_ui.clone(), asset_id);
-                        return;
-                    }
-                    let next = LibrarySource::SmartSearch {
-                        query: value.clone(),
-                    };
-                    let request = click_ui.ctx.library_state.lock().switch_source(next);
-                    apply_timeline_ui_state(&click_ui, &request.1);
-                    load_source_page(click_ui.clone(), request, false);
-                },
-            );
-        }
-    ));
+            },
+        );
+    });
 }
 
 /// Fetch a single asset by ID and open it in lightbox without leaving explore.
