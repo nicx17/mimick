@@ -21,6 +21,14 @@ use super::{
 };
 
 pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
+    connect_window_actions(&ui);
+    connect_navigation_controls(&ui);
+    connect_sort_controls(&ui);
+    connect_source_controls(&ui);
+}
+
+/// `win.settings`, `win.queue`, `win.refresh`, and the server-stats rows.
+fn connect_window_actions(ui: &Rc<LibraryWindowUi>) {
     let action_settings = gtk::gio::SimpleAction::new("settings", None);
     action_settings.connect_activate(clone!(
         #[strong]
@@ -51,32 +59,24 @@ pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
     ));
     ui.window.add_action(&action_refresh);
 
-    ui.sidebar.connection_row.connect_activated(clone!(
-        #[strong]
-        ui,
-        move |_| {
-            super::server_stats_dialog::present(ui.ctx.clone(), &ui.window);
-        }
-    ));
-    ui.sidebar.server_row.connect_activated(clone!(
-        #[strong]
-        ui,
-        move |_| {
-            super::server_stats_dialog::present(ui.ctx.clone(), &ui.window);
-        }
-    ));
+    for row in [&ui.sidebar.connection_row, &ui.sidebar.server_row] {
+        row.connect_activated(clone!(
+            #[strong]
+            ui,
+            move |_| {
+                super::server_stats_dialog::present(ui.ctx.clone(), &ui.window);
+            }
+        ));
+    }
+}
 
+/// Upload and back buttons, plus the Alt+Left and F5 shortcuts.
+fn connect_navigation_controls(ui: &Rc<LibraryWindowUi>) {
     ui.upload_button.connect_clicked(clone!(
         #[strong]
         ui,
         move |_| {
-            let album = match ui.ctx.library_state.lock().source.clone() {
-                LibrarySource::Album { id, name }
-                | LibrarySource::AlbumLocal { id, name }
-                | LibrarySource::AlbumUnified { id, name } => Some((id, name)),
-                _ => None,
-            };
-            super::upload_picker::pick_and_upload(&ui.window, ui.ctx.clone(), album);
+            super::upload_picker::pick_and_upload(&ui.window, ui.ctx.clone(), current_album(&ui));
         }
     ));
 
@@ -112,19 +112,21 @@ pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
         #[strong]
         ui,
         move |_, keyval, _, _| {
-            if keyval == gtk::gdk::Key::F5 {
-                let _ = ui
-                    .window
-                    .upcast_ref::<gtk::Widget>()
-                    .activate_action("win.refresh", None);
-                glib::Propagation::Stop
-            } else {
-                glib::Propagation::Proceed
+            if keyval != gtk::gdk::Key::F5 {
+                return glib::Propagation::Proceed;
             }
+            let _ = ui
+                .window
+                .upcast_ref::<gtk::Widget>()
+                .activate_action("win.refresh", None);
+            glib::Propagation::Stop
         }
     ));
     ui.window.add_controller(f5_controller);
+}
 
+/// The sort dropdown changes options per view and sorts the visible content.
+fn connect_sort_controls(ui: &Rc<LibraryWindowUi>) {
     // Rebuild the sort dropdown model when the visible content view changes:
     // each view has its own sort taxonomy.
     ui.content_stack.connect_visible_child_notify(clone!(
@@ -132,30 +134,63 @@ pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
         ui,
         move |stack| {
             let view = stack.visible_child_name();
-            match view.as_deref() {
-                Some("albums") => {
-                    let model = gtk::StringList::new(&["Newest", "Name", "Most assets"]);
-                    ui.sort_mode.set_model(Some(&model));
-                    ui.sort_mode.set_selected(0);
-                    super::albums_view::set_search_filter(&ui.albums, "");
-                }
-                Some("explore") => {
-                    let model = gtk::StringList::new(&["Default"]);
-                    ui.sort_mode.set_model(Some(&model));
-                    ui.sort_mode.set_selected(0);
-                    super::explore_view::set_people_search(&ui.explore, "");
-                }
-                _ => {
-                    let model = gtk::StringList::new(&["Newest", "Filename", "File Type"]);
-                    ui.sort_mode.set_model(Some(&model));
-                    ui.sort_mode.set_selected(0);
-                    super::albums_view::set_search_filter(&ui.albums, "");
-                    super::explore_view::set_people_search(&ui.explore, "");
-                }
+            let model = gtk::StringList::new(sort_labels_for_view(view.as_deref()));
+            ui.sort_mode.set_model(Some(&model));
+            ui.sort_mode.set_selected(0);
+            // Switching views resets in-view filters: Albums resets its album filter,
+            // Explore its people search, and the grid views reset both.
+            if view.as_deref() != Some("explore") {
+                super::albums_view::set_search_filter(&ui.albums, "");
+            }
+            if view.as_deref() != Some("albums") {
+                super::explore_view::set_people_search(&ui.explore, "");
             }
         }
     ));
 
+    ui.sort_mode.connect_selected_notify(clone!(
+        #[strong]
+        ui,
+        move |dropdown| apply_sort_selection(&ui, dropdown.selected())
+    ));
+}
+
+/// Sort options for the visible content view.
+fn sort_labels_for_view(view: Option<&str>) -> &'static [&'static str] {
+    match view {
+        Some("albums") => &["Newest", "Name", "Most assets"],
+        Some("explore") => &["Default"],
+        _ => &["Newest", "Filename", "File Type"],
+    }
+}
+
+/// Route a sort choice by active view. Albums uses an album-specific sort
+/// taxonomy; Explore intentionally doesn't sort the people row (curated server order).
+fn apply_sort_selection(ui: &LibraryWindowUi, selected: u32) {
+    let view = ui.content_stack.visible_child_name();
+    if view.as_deref() == Some("albums") {
+        let mode = match selected {
+            1 => super::albums_view::AlbumsSort::Name,
+            2 => super::albums_view::AlbumsSort::MostAssets,
+            _ => super::albums_view::AlbumsSort::Newest,
+        };
+        super::albums_view::set_sort_mode(&ui.albums, mode);
+        return;
+    }
+    let sort_mode = match selected {
+        1 => LibrarySortMode::Filename,
+        2 => LibrarySortMode::FileType,
+        _ => LibrarySortMode::NewestFirst,
+    };
+    let mut state = ui.ctx.library_state.lock();
+    state.apply_sort(sort_mode);
+    ui.grid
+        .model
+        .reset(&ui.ctx, &state.assets, &state.sort_mode);
+}
+
+/// Remote/Local/Unified dropdown and the timeline toggle.
+fn connect_source_controls(ui: &Rc<LibraryWindowUi>) {
     ui.source_mode.connect_selected_notify(clone!(
         #[strong]
         ui,
@@ -163,31 +198,12 @@ pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
             if ui.source_mode_suppressed.get() {
                 return;
             }
-            let album_ctx = match ui.ctx.library_state.lock().source.clone() {
-                LibrarySource::Album { id, name }
-                | LibrarySource::AlbumLocal { id, name }
-                | LibrarySource::AlbumUnified { id, name } => Some((id, name)),
-                _ => None,
-            };
-            let source = match (dropdown.selected(), album_ctx) {
-                (1, Some((id, name))) => LibrarySource::AlbumLocal { id, name },
-                (1, None) => LibrarySource::LocalAll,
-                (2, Some((id, name))) => LibrarySource::AlbumUnified { id, name },
-                (2, None) => LibrarySource::Unified,
-                (_, Some((id, name))) => LibrarySource::Album { id, name },
-                (_, None) => {
-                    if ui.timeline_toggle.is_active() {
-                        LibrarySource::Timeline
-                    } else {
-                        LibrarySource::AllAssets
-                    }
-                }
-            };
-
-            let request = ui.ctx.library_state.lock().navigate_to(source);
-            apply_timeline_ui_state(&ui, &request.1);
-            load_source_page(ui.clone(), request, false);
-            update_back_button(&ui);
+            let source = source_for_selection(
+                dropdown.selected(),
+                current_album(&ui),
+                ui.timeline_toggle.is_active(),
+            );
+            navigate_and_load(&ui, source);
         }
     ));
 
@@ -211,43 +227,44 @@ pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
             } else {
                 LibrarySource::AllAssets
             };
-            let request = ui.ctx.library_state.lock().navigate_to(next_source);
-            apply_timeline_ui_state(&ui, &request.1);
-            load_source_page(ui.clone(), request, false);
-            update_back_button(&ui);
+            navigate_and_load(&ui, next_source);
         }
     ));
+}
 
-    ui.sort_mode.connect_selected_notify(clone!(
-        #[strong]
-        ui,
-        move |dropdown| {
-            // Route sort selection by active view. Albums uses an
-            // album-specific sort taxonomy; Explore intentionally doesn't
-            // sort the people row (curated server order).
-            let view = ui.content_stack.visible_child_name();
-            if view.as_deref() == Some("albums") {
-                let mode = match dropdown.selected() {
-                    1 => super::albums_view::AlbumsSort::Name,
-                    2 => super::albums_view::AlbumsSort::MostAssets,
-                    _ => super::albums_view::AlbumsSort::Newest,
-                };
-                super::albums_view::set_sort_mode(&ui.albums, mode);
-                return;
-            }
-            let sort_mode = match dropdown.selected() {
-                1 => LibrarySortMode::Filename,
-                2 => LibrarySortMode::FileType,
-                _ => LibrarySortMode::NewestFirst,
-            };
+/// The album being browsed, if any, as `(id, name)`.
+fn current_album(ui: &LibraryWindowUi) -> Option<(String, String)> {
+    match ui.ctx.library_state.lock().source.clone() {
+        LibrarySource::Album { id, name }
+        | LibrarySource::AlbumLocal { id, name }
+        | LibrarySource::AlbumUnified { id, name } => Some((id, name)),
+        _ => None,
+    }
+}
 
-            let mut state = ui.ctx.library_state.lock();
-            state.apply_sort(sort_mode);
-            ui.grid
-                .model
-                .reset(&ui.ctx, &state.assets, &state.sort_mode);
-        }
-    ));
+/// Source for a Remote (0) / Local (1) / Unified (2) choice, scoped to the open album if any.
+fn source_for_selection(
+    selected: u32,
+    album: Option<(String, String)>,
+    timeline_active: bool,
+) -> LibrarySource {
+    match (selected, album) {
+        (1, Some((id, name))) => LibrarySource::AlbumLocal { id, name },
+        (1, None) => LibrarySource::LocalAll,
+        (2, Some((id, name))) => LibrarySource::AlbumUnified { id, name },
+        (2, None) => LibrarySource::Unified,
+        (_, Some((id, name))) => LibrarySource::Album { id, name },
+        (_, None) if timeline_active => LibrarySource::Timeline,
+        (_, None) => LibrarySource::AllAssets,
+    }
+}
+
+/// Navigate to `source` (recording history), load it, and refresh the back button.
+fn navigate_and_load(ui: &Rc<LibraryWindowUi>, source: LibrarySource) {
+    let request = ui.ctx.library_state.lock().navigate_to(source);
+    apply_timeline_ui_state(ui, &request.1);
+    load_source_page(ui.clone(), request, false);
+    update_back_button(ui);
 }
 
 pub(super) fn refresh_library_surfaces(ui: Rc<LibraryWindowUi>, include_current_source: bool) {
@@ -445,4 +462,52 @@ pub(super) fn connect_grid_handlers(ui: Rc<LibraryWindowUi>) {
             });
         }
     ));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{sort_labels_for_view, source_for_selection};
+    use crate::library::state::LibrarySource;
+
+    fn album() -> Option<(String, String)> {
+        Some(("a1".to_string(), "Trips".to_string()))
+    }
+
+    #[test]
+    fn source_for_selection_scopes_to_the_open_album() {
+        assert!(matches!(
+            source_for_selection(1, album(), false),
+            LibrarySource::AlbumLocal { .. }
+        ));
+        assert!(matches!(
+            source_for_selection(2, album(), false),
+            LibrarySource::AlbumUnified { .. }
+        ));
+        assert!(matches!(
+            source_for_selection(0, album(), true),
+            LibrarySource::Album { .. }
+        ));
+    }
+
+    #[test]
+    fn source_for_selection_without_album_respects_timeline() {
+        assert_eq!(
+            source_for_selection(1, None, false),
+            LibrarySource::LocalAll
+        );
+        assert_eq!(source_for_selection(2, None, false), LibrarySource::Unified);
+        assert_eq!(source_for_selection(0, None, true), LibrarySource::Timeline);
+        assert_eq!(
+            source_for_selection(0, None, false),
+            LibrarySource::AllAssets
+        );
+    }
+
+    #[test]
+    fn sort_labels_follow_the_visible_view() {
+        assert_eq!(sort_labels_for_view(Some("albums"))[2], "Most assets");
+        assert_eq!(sort_labels_for_view(Some("explore")), &["Default"]);
+        assert_eq!(sort_labels_for_view(Some("grid"))[1], "Filename");
+        assert_eq!(sort_labels_for_view(None)[0], "Newest");
+    }
 }
