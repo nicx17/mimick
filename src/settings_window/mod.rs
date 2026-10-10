@@ -38,7 +38,7 @@ use watch_folders::add_folder_row;
 struct FolderRowData {
     /// Absolute local file path.
     path: String,
-    /// Target Immich album name.
+    /// Picker label: an album name, `DEFAULT_ALBUM_LABEL`, or `LIBRARY_ALBUM_LABEL`.
     album_name: Rc<RefCell<String>>,
     /// Whether this folder explicitly uploads directly to the library.
     uploads_to_library: Rc<Cell<bool>>,
@@ -63,6 +63,61 @@ fn show_alert(parent: &impl gtk::prelude::IsA<gtk::Widget>, heading: &str, body:
     dialog.present(Some(parent));
 }
 
+/// Saved watch-path entry for one Settings folder row.
+/// Library targets get no album; unnamed folders fall back to a folder-name album.
+fn watch_path_entry(
+    folder: String,
+    album_name: &str,
+    uploads_to_library: bool,
+    mut rules: FolderRules,
+    albums: &HashMap<String, String>,
+) -> WatchPathEntry {
+    let has_rules = rules != FolderRules::default();
+    let is_default = album_name.is_empty() || album_name == DEFAULT_ALBUM_LABEL;
+    let resolved_album_name = if uploads_to_library {
+        None
+    } else if is_default {
+        Path::new(&folder)
+            .file_name()
+            .and_then(|n| n.to_str())
+            .map(ToString::to_string)
+    } else {
+        Some(album_name.to_string())
+    };
+
+    if uploads_to_library {
+        rules.restrict_to_library_uploads();
+    }
+
+    // Nothing to store beyond the path, so keep the legacy plain-string form.
+    if is_default && !has_rules && resolved_album_name.is_none() {
+        return WatchPathEntry::Simple(folder);
+    }
+
+    let album_id = resolved_album_name
+        .as_ref()
+        .and_then(|n| albums.get(n).cloned());
+    // A non-UTF-8 or root folder still needs an album name: storing `None` here
+    // would make the entry read back as a library-only target.
+    let stored_album_name = if uploads_to_library {
+        None
+    } else {
+        resolved_album_name.or_else(|| {
+            Some(Path::new(&folder).file_name().map_or_else(
+                || "Mimick".to_string(),
+                |n| n.to_string_lossy().into_owned(),
+            ))
+        })
+    };
+    WatchPathEntry::WithConfig {
+        path: folder,
+        album_id,
+        album_name: stored_album_name,
+        rules,
+    }
+}
+
+/// Alert text shown when the API key had to be stored in the fallback file.
 fn api_key_file_notice(path: &Path) -> String {
     format!(
         "Settings were saved, but the system keyring is unavailable, so the API key \
@@ -272,9 +327,8 @@ pub fn build_settings_window_with_parent(
 
             let (tx, mut rx) = tokio::sync::oneshot::channel::<(bool, bool)>();
 
-            // Use the application-wide API client — do NOT create ImmichApiClient::new() here.
-            // Creating a fresh reqwest client per click allocates a new connection pool
-            // that lingers for 30s even after the test completes.
+            // Reuse the app-wide API client: a new one per click opens a connection
+            // pool that lingers ~30s after the test completes.
             let ping_client = api_client_for_test.clone();
             let internal2 = internal.clone();
             let external2 = external.clone();
@@ -474,7 +528,7 @@ pub fn build_settings_window_with_parent(
         pending_disk_cache_save.set(Some(id));
     });
 
-    // --- Download folder row wiring ---
+    // Download folder row.
     if let Some(path) = ctx.config.read().data.download_target_path.as_deref() {
         download_folder_row.set_subtitle(path);
         download_clear_btn.set_visible(true);
@@ -519,7 +573,7 @@ pub fn build_settings_window_with_parent(
         }
     ));
 
-    // --- WATCH FOLDERS GROUP ---
+    // Watch folders group.
     let folders_group = adw::PreferencesGroup::builder()
         .title("Watch Folders")
         .description("Pick folders to sync.")
@@ -675,55 +729,20 @@ pub fn build_settings_window_with_parent(
                 _ => StartupCatchupMode::Full,
             };
 
-            let mut watch_paths = Vec::new();
             let albums_map: HashMap<String, String> = albums.borrow().iter().cloned().collect();
-            for row_data in tracked_rows.borrow().iter() {
-                let folder = row_data.path.clone();
-                let mut rules = row_data.rules.borrow().clone();
-                let has_rules = rules != FolderRules::default();
-                let album_name = row_data.album_name.borrow().clone();
-
-                let is_library_target = row_data.uploads_to_library.get();
-                let is_default = album_name.is_empty() || album_name == DEFAULT_ALBUM_LABEL;
-                let resolved_album_name = if is_library_target {
-                    None
-                } else if is_default {
-                    Path::new(&folder)
-                        .file_name()
-                        .and_then(|n| n.to_str())
-                        .map(ToString::to_string)
-                } else {
-                    Some(album_name)
-                };
-
-                if is_library_target {
-                    rules.restrict_to_library_uploads();
-                }
-
-                if is_default && !has_rules && resolved_album_name.is_none() {
-                    watch_paths.push(WatchPathEntry::Simple(folder));
-                } else {
-                    let album_id = resolved_album_name
-                        .as_ref()
-                        .and_then(|n| albums_map.get(n).cloned());
-                    let stored_album_name = if is_library_target {
-                        None
-                    } else {
-                        resolved_album_name.or_else(|| {
-                            Some(Path::new(&folder).file_name().map_or_else(
-                                || "Mimick".to_string(),
-                                |n| n.to_string_lossy().into_owned(),
-                            ))
-                        })
-                    };
-                    watch_paths.push(WatchPathEntry::WithConfig {
-                        path: folder,
-                        album_id,
-                        album_name: stored_album_name,
-                        rules,
-                    });
-                }
-            }
+            let watch_paths: Vec<WatchPathEntry> = tracked_rows
+                .borrow()
+                .iter()
+                .map(|row| {
+                    watch_path_entry(
+                        row.path.clone(),
+                        &row.album_name.borrow(),
+                        row.uploads_to_library.get(),
+                        row.rules.borrow().clone(),
+                        &albums_map,
+                    )
+                })
+                .collect();
 
             let runtime_internal_url = if internal_url_enabled {
                 internal_url.clone()
@@ -940,36 +959,29 @@ pub fn build_settings_window_with_parent(
         }
     ));
 
-    // Reuse the application-wide API client — do NOT create a new one here.
-    // Creating a new reqwest Client per window open allocates a new connection pool
-    // that takes ~30s to self-clean, causing RAM to grow with each open/close cycle.
     let albums_ref = albums.clone();
 
-    // Downgrade the window to a weak ref BEFORE the spawn.
-    // After the async await, we upgrade it — if it's None the window was closed
-    // while the API call was in-flight. We bail immediately, releasing all strong
-    // refs to FolderRowData (and their contained GTK widgets) so they can be freed.
-    // Without this, rapid open/close cycles would accumulate orphaned widget sets.
+    // Hold the window weakly across the fetch so closing it mid-request frees the
+    // row widgets instead of accumulating them over open/close cycles.
     let weak_win = window.downgrade();
+    // Reuse the app-wide API client: a new reqwest client per window open keeps
+    // its connection pool alive ~30s, so RAM grows with each open/close.
     let client = api_client.clone();
 
     glib::MainContext::default().spawn_local(async move {
         let fetched = client.get_all_albums().await.unwrap_or_default();
 
-        // Window may have been closed while we awaited the network response.
-        // Bail out early — drops tracked_rows_async and albums_ref immediately.
+        // Window closed during the fetch; returning drops albums_ref right away.
         if weak_win.upgrade().is_none() {
             log::debug!("Settings window closed during album fetch — discarding result.");
             return;
         }
 
+        // The album picker reads albums_ref when opened, so rows need no update.
         *albums_ref.borrow_mut() = fetched.clone();
-
-        // Album picker dialog fetches directly from albums_ref when opened.
-        // We don't need to push updates to existing rows anymore.
     });
 
-    // List FIRST (matching Python layout), then Add button below
+    // Folder list first, then the Add button below it.
     let folders_list = ListBox::builder()
         .margin_top(12)
         .selection_mode(gtk::SelectionMode::None)
@@ -982,7 +994,7 @@ pub fn build_settings_window_with_parent(
 
     let folder_default_catchup = config.data.startup_catchup_mode.clone();
 
-    // Add existing paths to listbox with album dropdown
+    // One row per configured watch folder.
     for entry in &config.data.watch_paths {
         add_folder_row(
             &folders_list,
@@ -1364,22 +1376,19 @@ pub fn build_settings_window_with_parent(
 
     // If background sync is disabled AND this is the only open window, closing
     // settings should exit the app. When the library window is also open we
-    // must not quit — the user explicitly opened settings *from* the library
-    // and expects the library to stay around after dismissing settings.
+    // must not quit — the user opened settings *from* the library and expects
+    // the library to stay around after dismissing settings.
     window.connect_close_request(clone!(
         #[strong]
         app_clone,
         #[strong]
         ctx,
         move |_| {
-            // Read current background-sync state directly from config rather
-            // than from a shadow RefCell, so any code path that mutates the
-            // config (apply_settings, future autosave, etc.) is reflected
-            // here without a separate book-keeping step.
-            // The closing window is still in app.windows() at this point, so
-            // a count of 1 means we're the only window left — quit the app.
-            // > 1 means another window (typically the library) is open and
-            // should keep running.
+            // Read background sync directly from config rather than a shadow
+            // RefCell, so any code path that changes the config is reflected here.
+            // The closing window is still in app.windows() at this point: a count
+            // of 1 means it is the last window, so quit; more means another window
+            // (usually the library) is open and should keep running.
             let bg_sync = ctx.config.read().data.background_sync_enabled;
             if !bg_sync && app_clone.windows().len() <= 1 {
                 app_clone.quit();
@@ -1548,8 +1557,96 @@ pub fn build_settings_window_with_parent(
 
 #[cfg(test)]
 mod tests {
-    use super::format_sync_age;
+    use super::{DEFAULT_ALBUM_LABEL, LIBRARY_ALBUM_LABEL, format_sync_age, watch_path_entry};
+    use crate::config::{FolderRules, FolderSyncMethod, WatchPathEntry};
+    use std::collections::HashMap;
     use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn albums() -> HashMap<String, String> {
+        HashMap::from([
+            ("Camera".to_string(), "camera-id".to_string()),
+            ("Trips".to_string(), "trips-id".to_string()),
+        ])
+    }
+
+    #[test]
+    fn test_watch_path_entry_library_target_has_no_album_and_restricted_rules() {
+        let rules = FolderRules {
+            sync_method: FolderSyncMethod::Full,
+            delete_folder_to_album: true,
+            ..FolderRules::default()
+        };
+        let entry = watch_path_entry(
+            "/home/user/Camera".into(),
+            LIBRARY_ALBUM_LABEL,
+            true,
+            rules,
+            &albums(),
+        );
+
+        assert!(entry.uploads_to_library());
+        assert_eq!(entry.rules().sync_method, FolderSyncMethod::UploadOnly);
+        assert!(!entry.rules().delete_folder_to_album);
+    }
+
+    #[test]
+    fn test_watch_path_entry_default_uses_folder_name_album() {
+        let entry = watch_path_entry(
+            "/home/user/Camera".into(),
+            DEFAULT_ALBUM_LABEL,
+            false,
+            FolderRules::default(),
+            &albums(),
+        );
+
+        let WatchPathEntry::WithConfig { album_id, .. } = &entry else {
+            panic!("expected WithConfig, got {entry:?}");
+        };
+        assert_eq!(entry.album_name(), Some("Camera"));
+        assert_eq!(album_id.as_deref(), Some("camera-id"));
+    }
+
+    #[test]
+    fn test_watch_path_entry_explicit_album_resolves_id() {
+        let entry = watch_path_entry(
+            "/home/user/Camera".into(),
+            "Trips",
+            false,
+            FolderRules::default(),
+            &albums(),
+        );
+
+        let WatchPathEntry::WithConfig { album_id, .. } = &entry else {
+            panic!("expected WithConfig, got {entry:?}");
+        };
+        assert_eq!(entry.album_name(), Some("Trips"));
+        assert_eq!(album_id.as_deref(), Some("trips-id"));
+    }
+
+    #[test]
+    fn test_watch_path_entry_unnamed_folder_never_becomes_library_target() {
+        let simple = watch_path_entry(
+            "/".into(),
+            DEFAULT_ALBUM_LABEL,
+            false,
+            FolderRules::default(),
+            &albums(),
+        );
+        assert!(matches!(simple, WatchPathEntry::Simple(ref path) if path == "/"));
+
+        let with_rules = watch_path_entry(
+            "/".into(),
+            DEFAULT_ALBUM_LABEL,
+            false,
+            FolderRules {
+                ignore_hidden: true,
+                ..FolderRules::default()
+            },
+            &albums(),
+        );
+        assert!(!with_rules.uploads_to_library());
+        assert_eq!(with_rules.album_name(), Some("Mimick"));
+    }
 
     #[test]
     fn test_format_sync_age_for_missing_timestamp() {

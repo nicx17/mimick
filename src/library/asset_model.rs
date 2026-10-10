@@ -20,7 +20,7 @@ use crate::library::asset_object::{AssetInit, AssetObject};
 use crate::library::state::LibrarySortMode;
 
 mod imp {
-    use super::*;
+    use super::{AssetObject, Cast, ObjectImpl, ObjectSubclass, RefCell, StaticType, gio, glib};
     use gio::subclass::prelude::ListModelImpl;
 
     #[derive(Default)]
@@ -108,9 +108,8 @@ impl LibraryAssetModel {
     }
 
     /// Replace all items with pre-built `AssetObject`s and emit a full reset.
-    ///
-    /// Used by the staging view which constructs local-only `AssetObject`s
-    /// from file paths rather than going through the `LibraryAsset` pipeline.
+    /// Used by the staging view, which builds local-only objects from file paths
+    /// rather than going through the `LibraryAsset` pipeline.
     pub fn reset_with_objects(&self, objects: Vec<AssetObject>) {
         let prev_n = self.imp().items.borrow().len() as u32;
         let new_n = objects.len() as u32;
@@ -118,10 +117,8 @@ impl LibraryAssetModel {
         self.items_changed(0, prev_n, new_n);
     }
 
-    /// Append additional `AssetObject`s to the end of the model.
-    ///
-    /// Emits a tail-only `items_changed` so the existing viewport is unaffected.
-    /// Used by the staging view drop handler to add newly-dropped files.
+    /// Append `AssetObject`s with a tail-only `items_changed`, leaving the viewport alone.
+    /// Used by the staging view drop handler.
     pub fn append_objects(&self, objects: &[AssetObject]) {
         if objects.is_empty() {
             return;

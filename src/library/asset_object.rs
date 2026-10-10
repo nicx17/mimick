@@ -9,7 +9,7 @@ use glib::subclass::prelude::{DerivedObjectProperties, ObjectImpl, ObjectSubclas
 use std::cell::{Cell, RefCell};
 
 mod imp {
-    use super::*;
+    use super::{Cell, DerivedObjectProperties, ObjectExt, ObjectImpl, ObjectSubclass, RefCell};
     use glib::Properties;
 
     #[derive(Properties, Default)]
@@ -74,7 +74,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    /// A single library asset exposed as a full GObject for use in `gio::ListStore`.
+    /// A single library asset exposed as a GObject for the library grid model.
     pub struct AssetObject(ObjectSubclass<imp::AssetObject>);
 }
 
