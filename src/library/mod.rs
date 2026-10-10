@@ -13,7 +13,7 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::api_client::{LibraryAsset, MetadataSearchFilters};
+use crate::api_client::{LibraryAsset, MetadataSearchFilters, Tag};
 use crate::app_context::AppContext;
 use crate::library::albums_view::{
     AlbumClick, AlbumsViewParts, build_albums_view, populate_albums,
@@ -30,7 +30,7 @@ use crate::state_manager::TransferDirection;
 
 use self::actions::{connect_bulk_actions, connect_select_mode};
 use self::album_link::{connect_album_link_row, refresh_album_link_row};
-use self::context_menu::show_asset_context_menu;
+use self::context_menu::{AssetMenuHooks, show_asset_context_menu};
 use self::controls::{
     connect_controls, connect_grid_handlers, connect_sidebar_handlers,
     refresh_library_after_mutation, sidebar_dispatch,
@@ -55,6 +55,8 @@ pub mod thumbnail_cache;
 
 mod actions;
 mod album_link;
+mod asset_edit;
+mod asset_tags;
 mod context_menu;
 mod controls;
 mod download;
@@ -63,6 +65,7 @@ pub mod search_filters;
 pub mod search_view;
 mod server_stats_dialog;
 pub mod staging_view;
+mod trash_view;
 mod upload_picker;
 
 const PAGE_SIZE: u32 = 50;
@@ -117,6 +120,7 @@ struct LibraryWindowUi {
     back_button: gtk::Button,
     select_toggle: gtk::ToggleButton,
     bulk_bar: gtk::Revealer,
+    trash: trash_view::TrashControls,
     bulk_count_label: gtk::Label,
     album_link_row: libadwaita::ActionRow,
     album_link_button: gtk::Button,
@@ -370,6 +374,9 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     bulk_inner.append(&bulk_clear);
     bulk_inner.append(&bulk_download);
     bulk_inner.append(&bulk_delete);
+    let trash = trash_view::build_trash_controls(vec![bulk_delete.clone(), bulk_download.clone()]);
+    bulk_inner.append(&trash.restore_selected);
+    bulk_inner.append(&trash.delete_selected);
     let bulk_bar = gtk::Revealer::builder()
         .transition_type(gtk::RevealerTransitionType::SlideUp)
         .reveal_child(false)
@@ -382,6 +389,7 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     content.append(&controls);
     content.append(&search_view.root);
     content.append(&album_link_listbox);
+    content.append(&trash.bar);
     content.append(&timeline_banner);
     content.append(&content_stack);
     content.append(&bulk_bar);
@@ -515,6 +523,7 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
         back_button: back_button.clone(),
         select_toggle: select_toggle.clone(),
         bulk_bar: bulk_bar.clone(),
+        trash,
         bulk_count_label: bulk_count_label.clone(),
         album_link_row: album_link_row.clone(),
         album_link_button: album_link_button.clone(),
@@ -527,7 +536,14 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
         #[strong]
         ui,
         move |position, x, y| {
-            show_asset_context_menu(ui.clone(), &ui.grid.canvas, position, x, y);
+            show_asset_context_menu(
+                ui.clone(),
+                &ui.grid.canvas,
+                position,
+                x,
+                y,
+                AssetMenuHooks::for_grid(&ui),
+            );
         }
     )));
 
@@ -535,6 +551,7 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
 
     connect_select_mode(ui.clone(), select_toggle.clone());
     connect_bulk_actions(ui.clone(), bulk_delete, bulk_download, bulk_clear);
+    trash_view::connect_trash_controls(ui.clone());
 
     connect_sidebar_handlers(ui.clone());
     connect_controls(ui.clone());
@@ -1037,6 +1054,42 @@ fn album_click_handler(ui: Rc<LibraryWindowUi>) -> AlbumClick {
 }
 
 /// Apply header control layout adjustments when switching view modes.
+/// Refresh the search form's Tag dropdown from the server, then select `select` if given.
+fn refresh_search_tags(ui: Rc<LibraryWindowUi>, select: Option<String>) {
+    glib::MainContext::default().spawn_local(async move {
+        match ui.ctx.api_client.fetch_tags().await {
+            Ok(tags) => {
+                search_view::set_available_tags(&ui.search_view, &tags);
+                if let Some(tag_id) = select {
+                    search_view::select_tag(&ui.search_view, &tag_id);
+                }
+            }
+            // Tags are optional (`tag.read`); the dropdown just stays at "Any".
+            Err(err) => log::debug!("Could not load tags for search: {}", err),
+        }
+    });
+}
+
+/// Show every asset carrying `tag`, with the search form open and its Tag filter set.
+fn search_by_tag(ui: Rc<LibraryWindowUi>, tag: Tag) {
+    search_view::clear_all_filters(&ui.search_view);
+    ui.search_view.root.set_reveal_child(true);
+    refresh_search_tags(ui.clone(), Some(tag.id.clone()));
+    let filters = MetadataSearchFilters {
+        tag_ids: Some(vec![tag.id]),
+        ..Default::default()
+    };
+    let request = ui
+        .ctx
+        .library_state
+        .lock()
+        .switch_source(LibrarySource::AdvancedSearch {
+            filters: Box::new(filters),
+        });
+    apply_timeline_ui_state(&ui, &request.1);
+    load_source_page(ui, request, false);
+}
+
 fn apply_timeline_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
     let timeline_allowed = matches!(source, LibrarySource::AllAssets | LibrarySource::Timeline);
     let timeline_active = matches!(source, LibrarySource::Timeline);
@@ -1073,6 +1126,7 @@ fn apply_timeline_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
 
     // Source-mode (Remote/Local/Unified) only relevant inside an album.
     ui.source_revealer.set_reveal_child(in_album);
+    trash_view::set_trash_mode(ui, matches!(source, LibrarySource::Trash));
 
     if in_album {
         ui.upload_button.set_tooltip_text(Some("Upload to album"));
@@ -1425,6 +1479,16 @@ fn load_source_page(ui: Rc<LibraryWindowUi>, request: (u64, LibrarySource, u32),
                         .search_metadata_with_filters(&filters, page, PAGE_SIZE)
                         .await
                 }
+                LibrarySource::Trash => {
+                    let filters = MetadataSearchFilters {
+                        order,
+                        ..MetadataSearchFilters::trashed()
+                    };
+                    ui.ctx
+                        .api_client
+                        .search_metadata_with_filters(&filters, page, PAGE_SIZE)
+                        .await
+                }
                 LibrarySource::LocalAll => {
                     // Local enumeration is bounded — single synthetic page.
                     if page > 1 {
@@ -1626,6 +1690,10 @@ fn reload_sidebar(ui: &Rc<LibraryWindowUi>) {
         }
         LibrarySource::Explore => {
             select_fixed_row(&ui.sidebar.fixed_list, "explore");
+            ui.sidebar.albums_list.unselect_all();
+        }
+        LibrarySource::Trash => {
+            select_fixed_row(&ui.sidebar.fixed_list, "trash");
             ui.sidebar.albums_list.unselect_all();
         }
         LibrarySource::Album { id, .. }

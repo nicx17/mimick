@@ -23,6 +23,9 @@ pub struct FilterWidgets {
     pub country_row: libadwaita::EntryRow,
     pub state_row: libadwaita::EntryRow,
     pub city_row: libadwaita::EntryRow,
+    pub tag_row: libadwaita::ComboRow,
+    /// Tag ids matching `tag_row` entries after its leading "Any".
+    pub tag_ids: std::rc::Rc<std::cell::RefCell<Vec<String>>>,
 }
 
 pub(super) fn build_text_group() -> (
@@ -47,6 +50,16 @@ pub(super) fn build_text_group() -> (
     group.add(&desc);
     group.add(&ocr);
     (group, filename, desc, ocr)
+}
+
+/// "Tags" group; the tag list is filled from the server by `set_available_tags`.
+pub(super) fn build_tag_group() -> (libadwaita::PreferencesGroup, libadwaita::ComboRow) {
+    let group = libadwaita::PreferencesGroup::builder()
+        .title("Tags")
+        .build();
+    let tag_row = combo_row("Tag", &["Any"]);
+    group.add(&tag_row);
+    (group, tag_row)
 }
 
 fn combo_row(title: &str, items: &[&str]) -> libadwaita::ComboRow {

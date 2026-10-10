@@ -22,8 +22,10 @@ The window uses a sidebar + content split.
 **Sidebar** (toggle with **F9** or the sidebar button in the header):
 
 - **Photos** — opens the timeline grid
+- **Search** — opens the search form above the grid
 - **Explore** — People, Places, Things
 - **Albums** — album landing page
+- **Trash** — assets in the Immich trash, which you can restore or delete permanently (see [Trash](#trash))
 - album entries listed below for quick navigation
 - Bottom footer contains the server connection row (clicking it opens the **Server Statistics** dialog)
 
@@ -119,6 +121,12 @@ Use the mode dropdown next to the search entry:
 | :---: | :---: |
 | ![Filters](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/advanced_filters_menu_library_view.png) | ![Filters more](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/advanced_filters_menu_library_view_more_options.png) |
 
+### Tags
+
+- The **Tag** filter in the advanced filters (Tags group) limits results to assets carrying one tag. Its list is loaded from the server each time you open Search.
+- Clicking a tag in the lightbox details pane runs the same search directly (see [Tags](#tags)).
+- Requires the `tag.read` API key permission; without it the list stays at **Any**.
+
 **Local and Unified search** always uses filename matching regardless of the mode selector. The mode selector is hidden when Local or Unified is active.
 
 ---
@@ -194,8 +202,12 @@ In selection mode:
 **Bulk actions available:**
 
 - **Download** — saves selected remote assets to the configured download folder (local-only assets are skipped)
-- **Delete** — permanently deletes selected remote assets from the Immich server after a confirmation dialog
+- **Move to trash** — moves selected remote assets to the Immich trash after a confirmation dialog. They can be restored from the [Trash](#trash) view or the Immich web UI. Local copies in your watch folders are kept, and local-only assets are skipped (the dialog says how many).
 - **Clear** — deselects all items without taking action
+
+Pressing **Delete** while the grid has focus does the same as **Move to trash** for the current selection.
+
+In the [Trash](#trash) view the bar shows **Restore** and **Delete Permanently** instead of Download and Move to trash.
 
 Selection mode exits automatically when all items are deselected.
 
@@ -214,6 +226,17 @@ Click any asset in the grid to open it in the lightbox.
 - **Videos**: Navigating to a video asset in the lightbox shows the video's still thumbnail as a poster with a centered play badge. Clicking the badge launches the same external player flow used by the grid (system default app for local files; downloaded to cache then opened for remote files). Zoom, resolution toggle, and download controls are hidden for the video case.
 - EXIF metadata is fetched (including for local files) and displayed alongside the asset.
 - **Download** saves the original file to the configured download folder.
+- **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
+- **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, and the favorite flag. The date uses local time as `YYYY-MM-DD HH:MM:SS`; Save stays disabled while it doesn't parse. Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
+- Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, and **Move to Trash**.
+
+### Tags
+
+Server assets show a **Tags** section in the details pane:
+
+- Each tag is a chip. Click its name to see every asset with that tag (the lightbox closes and the search form opens with the Tag filter set). Click **×** to remove it from the asset.
+- **+** opens a picker of existing tags; typing narrows the list. If no tag matches what you typed, choose **Create “…”** (or press Enter) to create it. Nested tags such as `Trips/2024` work, and Immich creates any missing parents.
+- Requires `tag.read`; adding and removing also need `tag.asset`, and creating new tags needs `tag.create`.
 
 **Download folder:**
 
@@ -266,9 +289,23 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 
 ---
 
+## Trash
+
+The **Trash** sidebar entry lists everything in the Immich trash in the normal grid.
+
+- **Restore All** and **Empty Trash** sit in a bar above the grid. Emptying asks for confirmation and can't be undone.
+- Select assets to **Restore** them or **Delete Permanently** from the selection bar. **Delete** with a selection also deletes permanently, after confirmation.
+- Right-click an asset (in the grid or the lightbox) for **Restore** and **Delete Permanently**.
+- Immich deletes trashed assets for good after its retention period (30 days by default, configurable on the server).
+- Deleting only affects the server; local copies in your watch folders are kept.
+- Requires the `asset.delete` API key permission.
+
+---
+
 ## Keyboard Shortcuts
 
 | Key | Action |
 | :--- | :--- |
 | **F9** | Toggle sidebar |
 | **Esc** | Exit selection mode |
+| **Delete** | Move the selection (grid) or the current asset (lightbox) to the trash; in the Trash view, delete permanently |

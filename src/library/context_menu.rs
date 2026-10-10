@@ -1,8 +1,8 @@
 //! Right-click context menu popover and its action handlers.
 //!
-//! Builds a GTK popover menu with per-asset actions such as download,
-//! open in lightbox, delete to trash, and copy link. Actions delegate
-//! to the shared library helpers.
+//! Builds a GTK popover menu with per-asset actions: copy, download, open in
+//! an external app, edit info, and move to trash. Actions delegate to the
+//! shared library helpers.
 
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -15,11 +15,37 @@ use crate::library::asset_object::AssetObject;
 
 use super::LOCAL_ID_PREFIX;
 use super::LibraryWindowUi;
+use super::actions::{TrashTarget, confirm_trash};
+use super::asset_edit::show_edit_dialog;
 use super::download::{
     begin_download_session, finish_download_item, open_local_with_default_app, start_download,
     track_download_item,
 };
 use super::load_texture_oriented;
+use super::trash_view;
+
+/// What the view that opened the menu does after its asset is trashed or edited.
+pub(super) struct AssetMenuHooks {
+    pub on_trashed: Rc<dyn Fn()>,
+    /// Receives whether the capture date changed.
+    pub on_edited: Rc<dyn Fn(bool)>,
+}
+
+impl AssetMenuHooks {
+    /// Grid behaviour: trashed items are already gone from the model, and a changed
+    /// capture date reloads the source because the item's timeline position moves.
+    pub(super) fn for_grid(ui: &Rc<LibraryWindowUi>) -> Self {
+        let ui = ui.clone();
+        Self {
+            on_trashed: Rc::new(|| {}),
+            on_edited: Rc::new(move |date_changed| {
+                if date_changed {
+                    super::refresh_library_after_mutation(ui.clone(), true);
+                }
+            }),
+        }
+    }
+}
 
 pub(super) fn show_asset_context_menu(
     ui: Rc<LibraryWindowUi>,
@@ -27,6 +53,7 @@ pub(super) fn show_asset_context_menu(
     position: u32,
     x: f64,
     y: f64,
+    hooks: AssetMenuHooks,
 ) {
     let Some(item) = ui.grid.model.item(position).and_downcast::<AssetObject>() else {
         return;
@@ -142,8 +169,163 @@ pub(super) fn show_asset_context_menu(
         content.append(&open_btn);
     }
 
+    if can_download {
+        append_manage_buttons(&content, &ui, &popover, &item, hooks);
+    }
+
     popover.set_child(Some(&content));
     popover.popup();
+}
+
+/// "Edit Info…" and "Move to Trash" for assets that exist on the server.
+fn append_manage_buttons(
+    content: &gtk::Box,
+    ui: &Rc<LibraryWindowUi>,
+    popover: &gtk::Popover,
+    item: &AssetObject,
+    hooks: AssetMenuHooks,
+) {
+    let Some(target) = TrashTarget::from_item(item) else {
+        return;
+    };
+    if trash_view::is_trash_active(ui) {
+        let remote_id = target.remote_id().to_string();
+        content.append(&restore_button(
+            ui,
+            popover,
+            remote_id.clone(),
+            hooks.on_trashed.clone(),
+        ));
+        content.append(&delete_forever_button(
+            ui,
+            popover,
+            remote_id,
+            hooks.on_trashed,
+        ));
+        return;
+    }
+    let filename = item.property::<String>("filename");
+    content.append(&edit_info_button(
+        ui,
+        popover,
+        target.remote_id().to_string(),
+        filename,
+        hooks.on_edited,
+    ));
+    content.append(&trash_button(ui, popover, target, hooks.on_trashed));
+}
+
+fn edit_info_button(
+    ui: &Rc<LibraryWindowUi>,
+    popover: &gtk::Popover,
+    remote_id: String,
+    filename: String,
+    on_edited: Rc<dyn Fn(bool)>,
+) -> gtk::Button {
+    let button = gtk::Button::builder()
+        .label("Edit Info…")
+        .halign(gtk::Align::Fill)
+        .build();
+    button.connect_clicked(clone!(
+        #[strong]
+        ui,
+        #[strong]
+        popover,
+        move |_| {
+            popover.popdown();
+            show_edit_dialog(
+                ui.clone(),
+                remote_id.clone(),
+                filename.clone(),
+                on_edited.clone(),
+            );
+        }
+    ));
+    button
+}
+
+/// Trash view: put the asset back in the library.
+fn restore_button(
+    ui: &Rc<LibraryWindowUi>,
+    popover: &gtk::Popover,
+    remote_id: String,
+    on_removed: Rc<dyn Fn()>,
+) -> gtk::Button {
+    let button = gtk::Button::builder()
+        .label("Restore")
+        .halign(gtk::Align::Fill)
+        .build();
+    button.connect_clicked(clone!(
+        #[strong]
+        ui,
+        #[strong]
+        popover,
+        move |_| {
+            popover.popdown();
+            let on_removed = on_removed.clone();
+            trash_view::restore(ui.clone(), vec![remote_id.clone()], move || on_removed());
+        }
+    ));
+    button
+}
+
+/// Trash view: delete the asset for good, after confirmation.
+fn delete_forever_button(
+    ui: &Rc<LibraryWindowUi>,
+    popover: &gtk::Popover,
+    remote_id: String,
+    on_removed: Rc<dyn Fn()>,
+) -> gtk::Button {
+    let button = gtk::Button::builder()
+        .label("Delete Permanently")
+        .halign(gtk::Align::Fill)
+        .css_classes(["destructive-action"])
+        .build();
+    button.connect_clicked(clone!(
+        #[strong]
+        ui,
+        #[strong]
+        popover,
+        move |_| {
+            popover.popdown();
+            let on_removed = on_removed.clone();
+            trash_view::confirm_delete_permanently(
+                ui.clone(),
+                vec![remote_id.clone()],
+                move || on_removed(),
+            );
+        }
+    ));
+    button
+}
+
+fn trash_button(
+    ui: &Rc<LibraryWindowUi>,
+    popover: &gtk::Popover,
+    target: TrashTarget,
+    on_trashed: Rc<dyn Fn()>,
+) -> gtk::Button {
+    let button = gtk::Button::builder()
+        .label("Move to Trash")
+        .halign(gtk::Align::Fill)
+        .css_classes(["destructive-action"])
+        .build();
+    // The popover is single-use, so the target is handed to the dialog on the first click.
+    let target = std::cell::RefCell::new(Some(target));
+    button.connect_clicked(clone!(
+        #[strong]
+        ui,
+        #[strong]
+        popover,
+        move |_| {
+            popover.popdown();
+            if let Some(target) = target.borrow_mut().take() {
+                let on_trashed = on_trashed.clone();
+                confirm_trash(ui.clone(), vec![target], 0, move || on_trashed());
+            }
+        }
+    ));
+    button
 }
 
 fn copy_asset_to_clipboard(

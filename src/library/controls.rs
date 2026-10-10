@@ -301,8 +301,10 @@ pub(super) fn connect_sidebar_handlers(ui: Rc<LibraryWindowUi>) {
                     ui.content_stack.set_visible_child_name("empty");
                     // Focus the search entry for immediate typing.
                     ui.search_view.search_entry.grab_focus();
+                    super::refresh_search_tags(ui.clone(), None);
                 }
                 "explore" => sidebar_dispatch(ui.clone(), LibrarySource::Explore),
+                "trash" => sidebar_dispatch(ui.clone(), LibrarySource::Trash),
                 "albums" => {
                     ui.album_link_row.set_visible(false);
                     if let Some(parent) = ui.album_link_row.parent() {

@@ -13,10 +13,10 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::api_client::MetadataSearchFilters;
+use crate::api_client::{MetadataSearchFilters, Tag};
 use crate::library::search_filters::{
     FilterWidgets, build_camera_group, build_date_group, build_flags_group, build_location_group,
-    build_text_group,
+    build_tag_group, build_text_group,
 };
 
 /// UI widgets for the dedicated search form.
@@ -122,17 +122,16 @@ fn build_filter_panel() -> FilterWidgets {
     let (date_group, taken_after, taken_before, created_after, created_before) = build_date_group();
     let (camera_group, make_row, model_row, lens_row) = build_camera_group();
     let (loc_group, country, state, city) = build_location_group();
+    let (tag_group, tag_row) = build_tag_group();
 
-    let filter_box = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(6)
-        .margin_top(4)
-        .build();
-    filter_box.append(&text_group);
-    filter_box.append(&flags_group);
-    filter_box.append(&date_group);
-    filter_box.append(&camera_group);
-    filter_box.append(&loc_group);
+    let filter_box = stack_groups(&[
+        &text_group,
+        &flags_group,
+        &tag_group,
+        &date_group,
+        &camera_group,
+        &loc_group,
+    ]);
 
     let revealer = gtk::Revealer::builder()
         .transition_type(gtk::RevealerTransitionType::SlideDown)
@@ -164,7 +163,21 @@ fn build_filter_panel() -> FilterWidgets {
         country_row: country,
         state_row: state,
         city_row: city,
+        tag_row,
+        tag_ids: Rc::default(),
     }
+}
+
+fn stack_groups(groups: &[&libadwaita::PreferencesGroup]) -> gtk::Box {
+    let column = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(6)
+        .margin_top(4)
+        .build();
+    for group in groups {
+        column.append(*group);
+    }
+    column
 }
 
 /// Wire the toggle button to show/hide the filters revealer.
@@ -291,6 +304,7 @@ pub fn collect_filters(view: &SearchViewParts) -> MetadataSearchFilters {
             4 => Some("locked".into()),
             _ => None,
         },
+        tag_ids: selected_tag_id(view).map(|id| vec![id]),
         rating: match view.filters.rating_row.selected() {
             1 => Some(1),
             2 => Some(2),
@@ -327,6 +341,41 @@ pub fn clear_all_filters(view: &SearchViewParts) {
     view.filters.country_row.set_text("");
     view.filters.state_row.set_text("");
     view.filters.city_row.set_text("");
+    view.filters.tag_row.set_selected(0);
+}
+
+fn selected_tag_id(view: &SearchViewParts) -> Option<String> {
+    let index = view.filters.tag_row.selected().checked_sub(1)?;
+    view.filters.tag_ids.borrow().get(index as usize).cloned()
+}
+
+/// Fill the Tag dropdown from the server's tags, keeping the current choice if it still exists.
+pub fn set_available_tags(view: &SearchViewParts, tags: &[Tag]) {
+    let previous = selected_tag_id(view);
+    let labels: Vec<&str> = std::iter::once("Any")
+        .chain(tags.iter().map(|tag| tag.value.as_str()))
+        .collect();
+    *view.filters.tag_ids.borrow_mut() = tags.iter().map(|tag| tag.id.clone()).collect();
+    view.filters
+        .tag_row
+        .set_model(Some(&gtk::StringList::new(&labels)));
+    let restored = previous
+        .and_then(|id| tags.iter().position(|tag| tag.id == id))
+        .map_or(0, |index| index as u32 + 1);
+    view.filters.tag_row.set_selected(restored);
+}
+
+/// Select `tag_id` in the Tag dropdown, if it is listed.
+pub fn select_tag(view: &SearchViewParts, tag_id: &str) {
+    let position = view
+        .filters
+        .tag_ids
+        .borrow()
+        .iter()
+        .position(|id| id == tag_id);
+    if let Some(index) = position {
+        view.filters.tag_row.set_selected(index as u32 + 1);
+    }
 }
 
 /// Convert a non-empty trimmed string to `Some`, otherwise `None`.
