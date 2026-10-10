@@ -121,10 +121,10 @@ Use the mode dropdown next to the search entry:
 | :---: | :---: |
 | ![Filters](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/advanced_filters_menu_library_view.png) | ![Filters more](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/advanced_filters_menu_library_view_more_options.png) |
 
-### Tags
+### Search by Tag
 
 - The **Tag** filter in the advanced filters (Tags group) limits results to assets carrying one tag. Its list is loaded from the server each time you open Search.
-- Clicking a tag in the lightbox details pane runs the same search directly (see [Tags](#tags)).
+- Clicking a tag in the lightbox details pane runs the same search directly (see [Tags in the Details Pane](#tags-in-the-details-pane)).
 - Requires the `tag.read` API key permission; without it the list stays at **Any**.
 
 **Local and Unified search** always uses filename matching regardless of the mode selector. The mode selector is hidden when Local or Unified is active.
@@ -230,7 +230,7 @@ Click any asset in the grid to open it in the lightbox.
 - **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, and the favorite flag. The date uses local time as `YYYY-MM-DD HH:MM:SS`; Save stays disabled while it doesn't parse. Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
 - Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, and **Move to Trash**.
 
-### Tags
+### Tags in the Details Pane
 
 Server assets show a **Tags** section in the details pane:
 
