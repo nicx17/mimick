@@ -261,8 +261,14 @@ Click any asset in the grid to open it in the lightbox.
 
 - The lightbox shows a preview image. If **Full Resolution Preview** is enabled in Settings → Behavior, it loads the original file instead of a server-generated proxy.
 - **RAW Previews**: By default, RAW files display using their fast embedded previews. The extractor first scans the file for the largest embedded JPEG (catching the full-resolution preview on cameras that store both a tiny thumb and a full-res one — e.g. Sony ARW); if the file contains no JPEG at all (Samsung DNG, OnePlus DNG, and other phone DNGs that store their preview as uncompressed TIFF strips), it falls back to libraw's bitmap thumbnail with container orientation applied. You can toggle **Full RAW Decoding** in settings to perform a full sensor demosaic instead.
-- **Videos**: Navigating to a video asset in the lightbox shows the video's still thumbnail as a poster with a centered play badge. Clicking the badge launches the same external player flow used by the grid (system default app for local files; downloaded to cache then opened for remote files). Zoom, resolution toggle, and download controls are hidden for the video case.
+- **Videos**: Clicking a video opens it in the lightbox with its thumbnail as a poster and a centered play badge. Click the badge (or press **Space**) to play it in the app. Local and synced videos play from disk; server videos stream from Immich, which serves its transcoded copy when one exists. Decoding uses the GPU (VA-API) when the codec is supported.
+  - The control bar has play/pause, stop, back/forward 10 seconds, a seek bar with elapsed and total time, loop, playback speed (0.25×–2×), volume and mute, and fullscreen. An audio and subtitle menu appears when the file has more than one audio track or any subtitles; subtitles start off.
+  - The controls fade out after 3 seconds of playback without mouse movement; move the pointer or tap the video to bring them back. Double-click (or double-tap) the video or press **F11** for fullscreen.
+  - On narrow windows (phones) the ±10 s buttons are hidden to fit the bar (**J** / **L** still work), and swiping on a playing video moves to the previous or next asset.
+  - **Open with…** in the action bar opens the video in another app you pick (remote videos download to the cache first).
+  - Volume and mute are remembered between sessions. Zoom, resolution toggle, and download controls are hidden for videos.
 - EXIF metadata is fetched (including for local files) and displayed alongside the asset.
+- **Fullscreen** (header button or **F11**) shows the asset edge to edge on black. Move the pointer or tap to bring the header back (it hides again after 3 seconds); press **Esc**, **F11**, or the header button to leave. Left/Right and swipes still change assets.
 - **Download** saves the original file to the configured download folder.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
 - **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date** (local time). Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
@@ -427,10 +433,16 @@ The **Trash** sidebar entry lists everything in the Immich trash in the normal g
 
 | Key | Action |
 | :--- | :--- |
+| **Ctrl+?** | Show keyboard shortcuts (also **Keyboard Shortcuts** in the main menu) |
 | **F9** | Toggle sidebar |
 | **Esc** | Exit selection mode |
 | **Delete** | Move the selection (grid) or the current asset (lightbox) to the trash; in the Trash view, delete permanently |
 | **F** | Toggle favorite for the current asset (lightbox) |
 | **A** | Archive or unarchive the current asset (lightbox) |
+| **Space** | Play or pause the current video (lightbox) |
+| **J** / **L** | Skip back / forward 10 seconds (lightbox video) |
+| **,** / **.** | Step one frame back / forward (lightbox video) |
+| **M** | Mute or unmute (lightbox video) |
+| **F11** | Toggle fullscreen (lightbox); **Esc** also exits |
 | **Alt+Left** / mouse back | Go back to the previous view (mouse back also closes the lightbox) |
 | **Alt+Right** / mouse forward | Go forward again after going back |

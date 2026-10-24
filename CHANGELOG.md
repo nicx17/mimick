@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added in-app video playback in the lightbox: play/pause, stop, skip ±10 s, frame stepping, a seek bar, loop, playback speed (0.25×–2×), volume and mute, audio and subtitle track selection, and fullscreen with auto-hiding controls. Server videos stream from Immich; decoding uses VA-API hardware acceleration when available (#80).
+- Added an **Open with…** button for videos in the lightbox that lets you choose the app.
+- Added fullscreen viewing for photos and videos in the lightbox (header button or **F11**), with an auto-hiding header for leaving fullscreen on touch screens.
+- Added a **Keyboard Shortcuts** dialog to the main menu (also **Ctrl+?**) listing every library and lightbox shortcut.
+
+### Changed
+
+- Clicking a video in the grid now opens it in the lightbox instead of the system default player.
+- The Flatpak now requests the PulseAudio socket (also used by PipeWire) for video sound.
+- Native builds now require GTK 4.24, libadwaita 1.10, and libheif 1.21 or newer (matching the GNOME 51 runtime), plus GStreamer with GstPlay and the GTK 4 video sink plugin (`gst-plugin-gtk4`) for video playback.
+
 ## [9.11.0] - 2026-10-17
 
 ### Added

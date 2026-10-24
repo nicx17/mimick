@@ -3,25 +3,27 @@
 ## Prerequisites
 
 - Rust toolchain via `rustup`
-- GTK4 development packages
-- Libadwaita development packages (>= 1.6 required)
+- GTK4 development packages (>= 4.24 required)
+- Libadwaita development packages (>= 1.10 required)
+- libheif development packages (>= 1.21 required)
+- GStreamer and GstPlay development packages, plus the GTK 4 video sink plugin (`gtk4paintablesink`) for video playback
 
 ### Ubuntu / Debian
 
 ```bash
-sudo apt install libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential cmake libheif-dev
+sudo apt install libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential cmake libheif-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-gtk4
 ```
 
 ### Fedora
 
 ```bash
-sudo dnf install gtk4-devel libadwaita-devel pkg-config cmake libheif-devel
+sudo dnf install gtk4-devel libadwaita-devel pkg-config cmake libheif-devel gstreamer1-devel gstreamer1-plugins-bad-free-devel gstreamer1-plugin-gtk4
 ```
 
 ### Arch Linux
 
 ```bash
-sudo pacman -S gtk4 libadwaita pkgconf base-devel cmake libheif
+sudo pacman -S gtk4 libadwaita pkgconf base-devel cmake libheif gstreamer gst-plugins-bad-libs gst-plugin-gtk4
 ```
 
 ### Flatpak Packaging Prerequisites

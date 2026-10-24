@@ -316,6 +316,8 @@ The configuration is stored in a JSON file located at:
 | `library_view_enabled` | Whether the in-app library view opens instead of the settings window. | `false` |
 | `download_target_path` | Target folder for library downloads (chosen on first download). | `"/home/user/Pictures/Downloads"` |
 | `library_preview_full_resolution` | Load full-resolution originals in the lightbox instead of previews. | `false` |
+| `video_volume` | Lightbox video playback volume (0.0–1.0), saved when the lightbox closes. | `1.0` |
+| `video_muted` | Whether lightbox video playback starts muted. | `false` |
 | `raw_full_decode` | Decode high-resolution sensor data for RAW files instead of using fast embedded previews. | `false` |
 | `raw_decode_cache_enabled` | Cache decoded RAW images on disk (applicable when `raw_full_decode` is true). | `false` |
 | `show_unnamed_faces` | Show people with no assigned name in the Explore view. | `true` |

@@ -60,6 +60,31 @@ If you see multiple individual notifications instead of a single updating bar:
 - Some lightweight notification daemons do not support the `x-canonical-private-synchronous` hint, replacement, or progress hints well.
 - **Solution:** Install a full-featured notification daemon like `dunst` (configured appropriately) or use a desktop environment like GNOME or KDE Plasma.
 
+### `Gdk-WARNING: Duplicate call to gdk_frame_timings_presented()`
+This GTK warning can appear once per run on Wayland, typically when the library view first draws, and is harmless. GTK estimates when each frame reached the screen and later receives the compositor's measured time; on high-refresh displays the two can differ by exactly one refresh (e.g. ~11.1 ms at 90 Hz). Nothing in Mimick causes or needs to fix it.
+
+## Video Playback Issues
+
+### Videos Play Without Sound
+- **Flatpak:** Mimick needs the PulseAudio socket (also served by PipeWire through `pipewire-pulse`). Check with `flatpak info --show-permissions dev.nicx.mimick`; if `pulseaudio` is missing (for example after a manual override), restore it with `flatpak override --user --socket=pulseaudio dev.nicx.mimick`.
+- Make sure the video isn't muted in the control bar's volume menu (**M** toggles mute). The volume and mute state are remembered between sessions.
+
+### "Playback Unavailable"
+The GStreamer GTK 4 video sink is missing. The Flatpak always includes it; on native installs, install your distribution's `gst-plugin-gtk4` package (named `gstreamer1.0-gtk4` on Debian/Ubuntu and `gstreamer1-plugin-gtk4` on Fedora).
+
+### "Playback Failed"
+- **"Not connected to the Immich server":** the lightbox couldn't reach either configured server URL; check connectivity as for syncing.
+- **Codec errors:** Immich streams its transcoded copy when one exists, otherwise the original file. On native installs, install your distribution's GStreamer FFmpeg plugin (often `gst-libav` or `gstreamer1.0-libav`) for formats such as HEVC. The Flatpak gets FFmpeg codecs from the `org.freedesktop.Platform.codecs-extra` extension, which Flatpak installs automatically.
+
+### Check Hardware Decoding
+Run Mimick with GStreamer's VA-API logging and play a video:
+
+```bash
+GST_DEBUG=va*:4 flatpak run dev.nicx.mimick
+```
+
+Lines mentioning `vah264dec`, `vah265dec`, `vavp9dec`, or `vaav1dec` mean the GPU is decoding. If none appear, the GPU or its VA-API driver doesn't support that codec and GStreamer falls back to software decoding (playback still works, using more CPU).
+
 ## Startup & Autostart Issues
 
 ### App Opens a Window on Login Despite Background Sync (KDE)
