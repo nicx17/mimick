@@ -37,6 +37,10 @@ Mimick uses StatusNotifier support for its tray icon.
 
 The Flatpak manifest keeps this narrowed to the minimum needed integration and no longer requests broad `org.kde.*` bus-name ownership.
 
+## Audio
+
+The manifest requests `--socket=pulseaudio` so lightbox video playback has sound. On PipeWire desktops this socket is provided by `pipewire-pulse`, so the same permission works there.
+
 ## Background Launch
 
 The `Run on Startup` option uses:

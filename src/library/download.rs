@@ -2,7 +2,7 @@
 //!
 //! Streams the original-quality asset from the server into a local file,
 //! updating the progress bar and transfer rate display. Video files can
-//! optionally be handed off to the system default player after download.
+//! be handed off to an app the user picks after download.
 
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
@@ -75,7 +75,6 @@ pub(super) fn finish_download_item(ctx: &Arc<AppContext>, item_id: &str) {
 }
 
 /// Hand a local file off to the user's default app via `xdg-open`/equivalent.
-/// Used for local videos per the spec — no in-app playback in v1.
 pub(super) fn open_local_with_default_app(path: &str) {
     let uri = format!("file://{}", path);
     if let Err(err) =
@@ -111,8 +110,23 @@ pub(super) fn spawn_video_handoff(ui: Rc<LibraryWindowUi>, asset_id: String, fil
             log::warn!("Video handoff failed for {}: {}", asset_id, err);
             return;
         }
-        open_local_with_default_app(&path.display().to_string());
+        open_with_chooser(&ui.window, &path);
     });
+}
+
+pub(super) fn open_with_chooser(window: &impl IsA<gtk::Window>, path: &Path) {
+    let launcher = gtk::FileLauncher::new(Some(&gtk::gio::File::for_path(path)));
+    launcher.set_always_ask(true);
+    let shown = path.display().to_string();
+    launcher.launch(
+        Some(window),
+        None::<&gtk::gio::Cancellable>,
+        move |result| {
+            if let Err(err) = result {
+                log::debug!("Open with for {} ended: {}", shown, err);
+            }
+        },
+    );
 }
 
 pub(super) fn start_download(ui: Rc<LibraryWindowUi>, asset_id: String, filename: String) {

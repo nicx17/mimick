@@ -10,11 +10,9 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::library::asset_object::AssetObject;
 use crate::library::state::{LibrarySortMode, LibrarySource, Location};
 use crate::settings_window::{build_settings_window_with_parent, show_queue_inspector};
 
-use super::download::{open_local_with_default_app, spawn_video_handoff};
 use super::navigation;
 use super::{
     LibraryWindowUi, load_albums, load_source_page, load_status, open_lightbox,
@@ -23,6 +21,7 @@ use super::{
 
 pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
     connect_window_actions(&ui);
+    connect_shortcuts_action(&ui);
     connect_navigation_controls(&ui);
     connect_sort_controls(&ui);
     connect_source_controls(&ui);
@@ -75,6 +74,18 @@ fn connect_window_actions(ui: &Rc<LibraryWindowUi>) {
             super::about_dialog::present(ui.ctx.clone(), &ui.window);
         }
     ));
+}
+
+fn connect_shortcuts_action(ui: &Rc<LibraryWindowUi>) {
+    let action = gtk::gio::SimpleAction::new("shortcuts", None);
+    action.connect_activate(clone!(
+        #[strong]
+        ui,
+        move |_, _| super::shortcuts_dialog::present(&ui.window)
+    ));
+    ui.window.add_action(&action);
+    ui.app
+        .set_accels_for_action("win.shortcuts", &["<Control>question"]);
 }
 
 /// Upload button and the F5 shortcut; Back is wired in `connect_back_controls`.
@@ -419,29 +430,6 @@ fn auto_hide_sidebar(ui: &Rc<LibraryWindowUi>) {
 pub(super) fn connect_grid_handlers(ui: Rc<LibraryWindowUi>) {
     let ui_for_activate = ui.clone();
     ui.grid.canvas.set_activate_handler(move |position| {
-        let Some(item) = ui_for_activate
-            .grid
-            .model
-            .item(position)
-            .and_downcast::<AssetObject>()
-        else {
-            return;
-        };
-        let asset_id = item.property::<String>("id");
-        let filename = item.property::<String>("filename");
-        let local_path = item.property::<String>("local-path");
-        let asset_type = item.property::<String>("asset-type");
-
-        // Videos open in the system default player.
-        if asset_type.eq_ignore_ascii_case("VIDEO") {
-            if !local_path.is_empty() {
-                open_local_with_default_app(&local_path);
-            } else {
-                spawn_video_handoff(ui_for_activate.clone(), asset_id, filename);
-            }
-            return;
-        }
-
         open_lightbox(ui_for_activate.clone(), position);
     });
 

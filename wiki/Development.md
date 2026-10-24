@@ -3,34 +3,38 @@
 ## Prerequisites
 
 - Rust toolchain via `rustup`
-- GTK4 development packages
-- Libadwaita development packages (>= 1.6 required)
+- GTK4 development packages (>= 4.24 required)
+- Libadwaita development packages (>= 1.10 required)
+- libheif development packages (>= 1.21 required)
+- GStreamer and GstPlay development packages, plus the GTK 4 video sink plugin (`gtk4paintablesink`) for video playback
+- libclang (Clang development files), used at build time to generate the bundled LibRaw 0.21 bindings
 
 ### Ubuntu / Debian
 
 ```bash
-sudo apt install libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential cmake libheif-dev
+sudo apt install libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential cmake libheif-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-gtk4 libclang-dev
 ```
 
 ### Fedora
 
 ```bash
-sudo dnf install gtk4-devel libadwaita-devel pkg-config cmake libheif-devel
+sudo dnf install gtk4-devel libadwaita-devel pkg-config cmake libheif-devel gstreamer1-devel gstreamer1-plugins-bad-free-devel gstreamer1-plugin-gtk4 clang-devel
 ```
 
 ### Arch Linux
 
 ```bash
-sudo pacman -S gtk4 libadwaita pkgconf base-devel cmake libheif
+sudo pacman -S gtk4 libadwaita pkgconf base-devel cmake libheif gstreamer gst-plugins-bad-libs gst-plugin-gtk4 clang
 ```
 
 ### Flatpak Packaging Prerequisites
 
 If you plan to build or test the Flatpak bundle locally using `flatpak-builder`, you must install the following from [Flathub](https://flathub.org/setup):
 
-- **GNOME Platform 50 Runtime** (`org.gnome.Platform//50`)
-- **GNOME SDK 50** (`org.gnome.Sdk//50`)
-- **Freedesktop Rust Extension** (`org.freedesktop.Sdk.Extension.rust-stable//25.08`)
+- **GNOME Platform 51 Runtime** (`org.gnome.Platform//51`)
+- **GNOME SDK 51** (`org.gnome.Sdk//51`)
+- **Freedesktop Rust Extension** (`org.freedesktop.Sdk.Extension.rust-stable//26.08`)
+- **Freedesktop LLVM Extension** (`org.freedesktop.Sdk.Extension.llvm22//26.08`), which provides the libclang that `rsraw-sys` needs to generate its LibRaw bindings
 
 ## Build and Run
 

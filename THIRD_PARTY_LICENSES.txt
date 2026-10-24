@@ -2042,7 +2042,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - uuid 1.28.0
+  - uuid 1.29.0
 --------------------------------------------------------------------------------
 
 Copyright (c) 2014 The Rust Project Developers
@@ -2233,6 +2233,7 @@ THE SOFTWARE.
 MIT License (MIT)
 Used by:
   - either 1.19.0
+  - itertools 0.15.0
 --------------------------------------------------------------------------------
 
 Copyright (c) 2015
@@ -3235,6 +3236,41 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
+  - arc-swap 1.9.3
+--------------------------------------------------------------------------------
+
+Copyright (c) 2017 arc-swap developers
+
+Permission is hereby granted, free of charge, to any
+person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the
+Software without restriction, including without
+limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice
+shall be included in all copies or substantial portions
+of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+
+================================================================================
+
+--------------------------------------------------------------------------------
+MIT License (MIT)
+Used by:
   - h2 0.4.20
 --------------------------------------------------------------------------------
 
@@ -3622,7 +3658,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - smallvec 1.16.3
+  - smallvec 1.16.4
 --------------------------------------------------------------------------------
 
 Copyright (c) 2018 The Servo Project Developers
@@ -4752,6 +4788,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
+  - kstring 2.0.5
   - toml_datetime 1.1.2+spec-1.1.0
   - toml_edit 0.25.17+spec-1.1.0
   - toml_parser 1.1.5+spec-1.1.0
@@ -5175,6 +5212,37 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
+  - static_assertions 1.1.0
+--------------------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) 2017 Nikolai Vazquez
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+================================================================================
+
+--------------------------------------------------------------------------------
+MIT License (MIT)
+Used by:
   - tiff 0.11.3
 --------------------------------------------------------------------------------
 
@@ -5206,7 +5274,7 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - crc32fast 1.5.2
+  - crc32fast 1.5.3
 --------------------------------------------------------------------------------
 
 MIT License
@@ -5413,37 +5481,6 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - libraw-rs-sys 0.0.4+libraw-0.20.1
---------------------------------------------------------------------------------
-
-MIT License
-
-Copyright (c) 2020 Paolo Barbolini
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-
-================================================================================
-
---------------------------------------------------------------------------------
-MIT License (MIT)
-Used by:
   - jpeg2k 0.10.1
 --------------------------------------------------------------------------------
 
@@ -5481,6 +5518,37 @@ Used by:
 MIT License
 
 Copyright (c) 2022 Bilal Elmoussaoui, Sophie Herold, Maximiliano Sandoval, Dhanuka Warusadura
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+================================================================================
+
+--------------------------------------------------------------------------------
+MIT License (MIT)
+Used by:
+  - atomic_refcell 0.1.14
+--------------------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) 2022 Bobby Holley
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -5630,9 +5698,12 @@ MIT License (MIT)
 Used by:
   - brotli-decompressor 5.0.3
   - chrono 0.4.45
+  - gstreamer-play-sys 0.25.4
+  - gstreamer-play 0.25.0
   - libm 0.2.16
   - libwebp-sys 0.9.6
   - r-efi 6.0.0
+  - rsraw-sys 0.1.1
   - windows-core 0.62.2
   - windows-implement 0.60.2
   - windows-interface 0.59.3
@@ -5678,7 +5749,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 MIT License (MIT)
 Used by:
   - tokio-util 0.7.20
-  - tokio 1.53.3
+  - tokio 1.54.1
 --------------------------------------------------------------------------------
 
 MIT License
@@ -6012,6 +6083,12 @@ Used by:
   - event-listener 5.4.2
   - fastrand 2.5.0
   - futures-lite 2.6.1
+  - gstreamer-base-sys 0.25.4
+  - gstreamer-base 0.25.4
+  - gstreamer-sys 0.25.4
+  - gstreamer-video-sys 0.25.4
+  - gstreamer-video 0.25.4
+  - gstreamer 0.25.4
   - hermit-abi 0.5.3
   - itoa 1.0.18
   - jxl-bitstream 1.1.0
@@ -6030,6 +6107,7 @@ Used by:
   - linux-raw-sys 0.12.1
   - minimal-lexical 0.2.1
   - once_cell 1.21.4
+  - option-operations 0.6.1
   - ordered-stream 0.2.0
   - parking 2.2.1
   - pastey 0.2.3
@@ -6038,6 +6116,7 @@ Used by:
   - proc-macro2 1.0.107
   - quote 1.0.47
   - rustix 1.1.5
+  - rustversion 1.0.23
   - serde 1.0.229
   - serde_bytes 0.11.19
   - serde_core 1.0.229
@@ -6592,6 +6671,39 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
+  - muldiv 1.0.1
+--------------------------------------------------------------------------------
+
+The MIT License (MIT)
+
+Copyright (c) 2017 Sebastian Dröge <sebastian@centricular.com>.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+
+
+================================================================================
+
+--------------------------------------------------------------------------------
+MIT License (MIT)
+Used by:
   - simplecss 0.2.2
   - unicode-vo 0.1.0
 --------------------------------------------------------------------------------
@@ -6689,6 +6801,7 @@ MIT License (MIT)
 Used by:
   - crossbeam-deque 0.8.8
   - crossbeam-epoch 0.9.21
+  - crossbeam-queue 0.3.14
   - crossbeam-utils 0.8.23
 --------------------------------------------------------------------------------
 
@@ -7410,24 +7523,24 @@ authorization of the copyright holder.
 --------------------------------------------------------------------------------
 Unicode License v3 (Unicode-3.0)
 Used by:
-  - icu_collections 2.3.0
-  - icu_locale_core 2.3.0
-  - icu_normalizer 2.3.0
-  - icu_normalizer_data 2.3.0
-  - icu_properties 2.3.0
-  - icu_properties_data 2.3.0
-  - icu_provider 2.3.1
+  - icu_collections 2.4.0
+  - icu_locale_core 2.4.0
+  - icu_normalizer 2.4.0
+  - icu_normalizer_data 2.4.0
+  - icu_properties 2.4.0
+  - icu_properties_data 2.4.0
+  - icu_provider 2.4.0
   - litemap 0.8.3
   - potential_utf 0.1.6
-  - tinystr 0.8.4
+  - tinystr 0.8.5
   - writeable 0.6.4
   - yoke-derive 0.8.4
-  - yoke 0.8.3
+  - yoke 0.8.4
   - zerofrom-derive 0.1.8
   - zerofrom 0.1.8
   - zerotrie 0.2.5
-  - zerovec-derive 0.11.6
-  - zerovec 0.11.8
+  - zerovec-derive 0.11.7
+  - zerovec 0.11.9
 --------------------------------------------------------------------------------
 
 UNICODE LICENSE V3
@@ -7483,7 +7596,7 @@ ICU 1.8.1 to ICU 57.1 © 1995-2016 International Business Machines Corporation a
 --------------------------------------------------------------------------------
 The Unlicense (Unlicense)
 Used by:
-  - ksni 0.3.6
+  - ksni 0.3.7
 --------------------------------------------------------------------------------
 
 This is free and unencumbered software released into the public domain.

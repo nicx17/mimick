@@ -88,6 +88,10 @@ async fn main() {
     gtk::gio::resources_register_include!("mimick.gresource")
         .expect("Failed to register bundled GResource");
 
+    if let Err(err) = gstreamer::init() {
+        log::warn!("GStreamer init failed, video playback disabled: {}", err);
+    }
+
     let app = adw::Application::builder()
         .application_id(profile::application_id())
         .flags(gtk::gio::ApplicationFlags::HANDLES_COMMAND_LINE)

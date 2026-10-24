@@ -38,7 +38,8 @@ graph TD
         Window --> LocalExif[Local EXIF Parser]
         Window --> Lightbox[Lightbox + Multi-format Decoders]
         Lightbox -->|libraw, libheif-rs, jxl-oxide, resvg, psd, turbojpeg| ThumbCache
-        Lightbox -->|Video handoff: spawn_video_handoff| ExternalPlayer[System Default Player]
+        Lightbox -->|In-app playback: GstPlay + gtk4paintablesink| VideoPlayer[Video Player]
+        Lightbox -->|Open with: spawn_video_handoff| ExternalPlayer[Chosen External App]
         LocalSource -->|Synthetic asset rows| Window
         LocalExif -->|Cached EXIF| Window
     end
@@ -53,7 +54,7 @@ graph TD
         ThumbStore["thumbnails/ (~/.cache/mimick/thumbnails/)"]
         RawCache["raw_decode/ (~/.cache/mimick/raw_decode/)"]
         ExifCache["exif/ (~/.cache/mimick/exif/)"]
-        VideoCache["video/ (~/.cache/mimick/video/) - external player handoff"]
+        VideoCache["video/ (~/.cache/mimick/video/) - Open with handoff"]
         SyncIndex["synced_index.json (~/.local/share/mimick/)"]
     end
 
@@ -121,6 +122,7 @@ Thread-safe upload orchestrator using a single `Arc<Mutex<AppState>>` for all co
 - Built on demand from `AppContext`; close destroys the window (unless background sync is disabled, in which case the app quits)
 - Includes distinct library pages: **Photos**, **Explore**, **Albums**, and **Search**.
 - Supports manual uploads via the `upload_picker` module, directly enqueueing multi-file selections.
+- The main menu's **Keyboard Shortcuts** item (`win.shortcuts`, **Ctrl+?**) opens an `AdwShortcutsDialog` built from the static table in `shortcuts_dialog.rs`; a unit test checks every listed key name parses.
 - `Arc<Mutex<AppState>>` accessed from `AppContext`; the 500ms `glib::timeout_add_local` timer reads it without any disk I/O to drive the footer Sync Status indicator.
 - Test Connection button uses the shared client -- no new reqwest pool per click
 - Saving applies updated API settings, queue policy, worker limit, and watched folders to the running process without a restart
@@ -215,13 +217,18 @@ Periodic background task that re-runs the per-folder album↔folder diff on a fi
 - Delegates the actual diff to `startup_scan::reconcile_entry`, so the catch-up code path is shared between launch and steady-state reconciliation
 - Runs alongside the live file monitor; the monitor handles fresh local edits while this loop handles remote-side and missed events
 
-### 17. Lightbox + Decoders (`src/library/lightbox.rs`, `src/library/mod.rs`)
+### 17. Lightbox + Decoders (`src/library/lightbox.rs`, `src/library/lightbox/`, `src/library/video_player/`, `src/library/mod.rs`)
 
 Full-screen viewer with its own multi-format decoder pipeline, independent of the grid thumbnail cache.
 
 - Decoder routing by extension (see `texture_decoder_for_path`): RAW via libraw + imagepipe fallback, HEIF/AVIF via libheif-rs, JXL via jxl-oxide, SVG via resvg, PSD via the pure-Rust `psd` crate, JPEG via turbojpeg, then pixbuf, then the `image` crate as final fallback
-- RAW fast path extracts the embedded camera JPEG preview, picking the largest SOI-bounded payload in the file (resolves tiny previews on Samsung DNG and similar); the full demosaic path is gated behind the "Full RAW Decoding" setting and writes to `~/.cache/mimick/raw_decode/`
-- Videos take a poster path: the still thumbnail is shown with a clickable play badge; clicking hands off to the same external-player flow used by grid clicks (`open_local_with_default_app` for local files, `spawn_video_handoff` for remote files via `~/.cache/mimick/video/`)
+- RAW decoding uses LibRaw 0.21.3, compiled from source by the `rsraw-sys` crate (bindings generated with bindgen, so builds need libclang)
+- RAW fast path extracts the embedded camera JPEG preview, picking the largest SOI-bounded payload in the file (resolves tiny previews on Samsung DNG and similar). The scan still runs when LibRaw can't open the file (e.g. a camera newer than LibRaw), relying on the preview's own EXIF orientation. LibRaw's fallback bitmap thumbnails are accepted at 8 or 16 bits per sample
+- The full demosaic path is gated behind the "Full RAW Decoding" setting; grid thumbnails that have no embedded preview use a half-size demosaic instead
+- Full demosaics are cached in `~/.cache/mimick/raw_decode/` under a blake3 key of path, mtime and size; entries are written to a temporary file and renamed into place, so readers never see a partial PNG
+- Videos take a poster path: the still thumbnail is shown with a play badge that starts in-app playback. `lightbox/video.rs` creates the player lazily on the first video and drops it when the lightbox closes. `video_player.rs` holds playback state; its submodules build the control bar (`controls.rs`), the GStreamer pipeline (`pipeline.rs`), and the audio/subtitle menu (`tracks.rs`). Player events arrive as GstPlay bus messages on a main-thread watch, since GstPlay's signal adapter needs `Send` callbacks. The player wraps GstPlay with `gtk4paintablesink` (inside `glsinkbin` when GTK has a GL context), so VA-API decoders are picked automatically when available. Remote videos stream from `/api/assets/{id}/video/playback` with the API key sent as an `x-api-key` header from playbin's `source-setup` signal; local files play from disk
+- **Open with…** uses `gtk::FileLauncher` with always-ask (`open_with_chooser`); remote videos are first downloaded to `~/.cache/mimick/video/` by `spawn_video_handoff`
+- Fullscreen (`lightbox/fullscreen.rs`) follows the window's `fullscreened` state: it hides the action bar and details pane, removes the viewer margins, switches the picture background to black, and lets the header overlay the content (`extend-content-to-top-edge`) so it can slide in on pointer motion or tap and auto-hide after 3 seconds
 - EXIF details fetched via the API for remote assets or via `local_exif` for local files (skipped entirely for videos)
 
 ### 18. State & Persistence

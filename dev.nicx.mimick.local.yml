@@ -4,18 +4,21 @@ runtime-version: "51"
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
+  - org.freedesktop.Sdk.Extension.llvm22
 command: mimick
 
 build-options:
-  append-path: /usr/lib/sdk/rust-stable/bin
+  append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm22/bin
   env:
     CARGO_HOME: /run/build/mimick/cargo
+    LIBCLANG_PATH: /usr/lib/sdk/llvm22/lib
 
 finish-args:
   - --socket=wayland
   - --socket=fallback-x11
   - --device=dri
   - --share=ipc
+  - --socket=pulseaudio
   - --talk-name=org.kde.StatusNotifierWatcher
   - --share=network
 

@@ -323,6 +323,19 @@ picture.mimick-lightbox-picture {
     background-color: alpha(@view_fg_color, 0.05);
 }
 
+picture.mimick-video-surface {
+    background-color: black;
+}
+
+box.mimick-fullscreen picture.mimick-lightbox-picture {
+    background-color: black;
+}
+
+box.mimick-video-controls {
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
 box.mimick-preview-unavailable {
     min-width: 240px;
     padding: 20px;

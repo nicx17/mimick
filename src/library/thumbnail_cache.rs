@@ -580,7 +580,7 @@ fn scale_pixbuf_to_thumbnail(
 /// Decodes an image file through the application's custom texture pipeline and
 /// scale the result down to a 256x256 thumbnail pixbuf.
 ///
-/// RAW paths use the thumbnail-specific decoder (embedded JPEG first, full
+/// RAW paths use the thumbnail-specific decoder (embedded JPEG first, half-size
 /// demosaic only as last resort) so the global "Full RAW Decoding" toggle
 /// -- which is meant for lightbox quality -- never penalises grid loading.
 fn custom_decode_to_thumbnail(path: &std::path::Path) -> Result<gtk::gdk_pixbuf::Pixbuf, String> {

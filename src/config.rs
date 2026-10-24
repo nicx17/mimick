@@ -349,6 +349,12 @@ pub struct ConfigData {
     /// Border color as a CSS hex string (e.g. "#ffffff"). Defaults to white.
     #[serde(default = "default_grid_border_color")]
     pub grid_border_color: String,
+    /// Lightbox video playback volume (0.0–1.0).
+    #[serde(default = "default_video_volume")]
+    pub video_volume: f64,
+    /// Whether lightbox video playback starts muted.
+    #[serde(default)]
+    pub video_muted: bool,
 }
 
 impl Default for ConfigData {
@@ -380,6 +386,8 @@ impl Default for ConfigData {
             upload_xmp_sidecars: true,
             grid_border_width: 0.0,
             grid_border_color: default_grid_border_color(),
+            video_volume: default_video_volume(),
+            video_muted: false,
         }
     }
 }
@@ -405,6 +413,10 @@ fn default_cache_disk_cap_mb() -> u32 {
 
 fn default_grid_border_color() -> String {
     "#ffffff".to_string()
+}
+
+fn default_video_volume() -> f64 {
+    1.0
 }
 
 /// Persistent config container wrapping loaded schema and file source info.
@@ -1073,6 +1085,17 @@ mod tests {
         let restored: ConfigData = serde_json::from_str(&json).expect("deserialize");
         assert!(!restored.show_unnamed_faces);
         assert!(restored.show_hidden_faces);
+    }
+
+    #[test]
+    fn video_playback_settings_default_when_missing_from_json() {
+        let mut json = serde_json::to_value(ConfigData::default()).expect("serialize");
+        let object = json.as_object_mut().expect("object");
+        object.remove("video_volume");
+        object.remove("video_muted");
+        let restored: ConfigData = serde_json::from_value(json).expect("deserialize");
+        assert_eq!(restored.video_volume, 1.0);
+        assert!(!restored.video_muted);
     }
 
     #[test]

@@ -157,7 +157,7 @@ fn memory_texture(
     Some(texture.upcast::<gdk4::Texture>())
 }
 
-/// Thumbnail-targeted RAW decode: embedded JPEG first, full demosaic only as
+/// Thumbnail-targeted RAW decode: embedded JPEG first, half-size demosaic only as
 /// last resort. Ignores `RAW_FULL_DECODE` (which is for lightbox quality, not
 /// 256-px grid tiles -- full sensor data would just be scaled away).
 pub(super) fn decode_raw_thumbnail_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
@@ -165,10 +165,15 @@ pub(super) fn decode_raw_thumbnail_texture(path: &std::path::Path) -> Option<gdk
         return Some(tex);
     }
     log::debug!(
-        "No embedded preview in {}; thumbnail falling back to full decode",
+        "No embedded preview in {}; thumbnail falling back to half-size decode",
         path.display()
     );
-    decode_libraw_texture(path)
+    if RAW_CACHE_ENABLED.load(std::sync::atomic::Ordering::Relaxed)
+        && let Some(texture) = read_raw_decode_cache(path)
+    {
+        return Some(texture);
+    }
+    decode_libraw_uncached(path, true)
 }
 
 fn decode_raw_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
@@ -215,12 +220,12 @@ fn raw_decode_cache_key(path: &std::path::Path) -> Option<String> {
         .as_secs();
     let size = meta.len();
     let canonical = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
-    use std::hash::{Hash, Hasher};
-    let mut hasher = std::collections::hash_map::DefaultHasher::new();
-    canonical.hash(&mut hasher);
-    mtime.hash(&mut hasher);
-    size.hash(&mut hasher);
-    Some(format!("{:016x}.png", hasher.finish()))
+    use std::os::unix::ffi::OsStrExt;
+    let mut hasher = blake3::Hasher::new();
+    hasher.update(canonical.as_os_str().as_bytes());
+    hasher.update(&mtime.to_le_bytes());
+    hasher.update(&size.to_le_bytes());
+    Some(format!("{}.png", &hasher.finalize().to_hex()[..32]))
 }
 
 /// Attempt to load a previously cached demosaiced texture from disk.
@@ -262,7 +267,7 @@ fn write_raw_decode_cache(path: &std::path::Path, texture: &gdk4::Texture) {
     }
     let cache_file = cache_dir.join(&key);
     // Save as PNG via GDK so we roundtrip losslessly through the same loader.
-    if let Err(err) = texture.save_to_png(&cache_file) {
+    if let Err(err) = save_png_atomically(texture, &cache_file) {
         log::debug!(
             "RAW decode cache write failed for {}: {}",
             path.display(),
@@ -272,6 +277,14 @@ fn write_raw_decode_cache(path: &std::path::Path, texture: &gdk4::Texture) {
         log::debug!("RAW decode cache written for {}", path.display());
     }
 }
+fn save_png_atomically(texture: &gdk4::Texture, dest: &std::path::Path) -> Result<(), String> {
+    let dir = dest.parent().ok_or("cache path has no parent")?;
+    let tmp = tempfile::NamedTempFile::new_in(dir).map_err(|e| e.to_string())?;
+    texture.save_to_png(tmp.path()).map_err(|e| e.to_string())?;
+    tmp.persist(dest).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 /// Minimum size for an embedded preview to be considered -- tiny thumbnails
 /// (EXIF 160x120 stubs) are almost always useless and should be skipped in
 /// favour of the full-resolution preview or the libraw fallback.
@@ -688,13 +701,17 @@ fn extract_libraw_thumb(path: &std::path::Path) -> Option<gdk4::Texture> {
     // and wrap the raw pointers in custom RAII guards (LibrawHandle, MemImage)
     // to guarantee that resources are cleaned up correctly when they go out of scope.
     unsafe {
-        let lr = libraw_sys::libraw_init(0);
+        let lr = rsraw_sys::libraw_init(0);
         if lr.is_null() {
-            return None;
+            return extract_primary_embedded_jpeg(path, 0, (0, 0));
         }
         let _guard = LibrawHandle(lr);
-        if libraw_sys::libraw_open_file(lr, c_path.as_ptr()) != 0 {
-            return None;
+        if rsraw_sys::libraw_open_file(lr, c_path.as_ptr()) != 0 {
+            log::debug!(
+                "libraw cannot open {}; scanning for an embedded JPEG anyway",
+                path.display()
+            );
+            return extract_primary_embedded_jpeg(path, 0, (0, 0));
         }
 
         let flip = (*lr).sizes.flip;
@@ -710,18 +727,18 @@ fn extract_libraw_thumb(path: &std::path::Path) -> Option<gdk4::Texture> {
 
 /// Unpack and decode the libraw fallback thumbnail (JPEG or bitmap).
 unsafe fn unpack_libraw_fallback_thumb(
-    lr: *mut libraw_sys::libraw_data_t,
+    lr: *mut rsraw_sys::libraw_data_t,
     flip: i32,
     sensor_dims: (u32, u32),
     path: &std::path::Path,
 ) -> Option<gdk4::Texture> {
     unsafe {
-        if libraw_sys::libraw_unpack_thumb(lr) != 0 {
+        if rsraw_sys::libraw_unpack_thumb(lr) != 0 {
             log::debug!("No embedded thumbnail in {}", path.display());
             return None;
         }
         let mut errcode = 0i32;
-        let img = libraw_sys::libraw_dcraw_make_mem_thumb(lr, &mut errcode);
+        let img = rsraw_sys::libraw_dcraw_make_mem_thumb(lr, &mut errcode);
         if img.is_null() || errcode != 0 {
             log::debug!(
                 "libraw_dcraw_make_mem_thumb failed ({}) for {}",
@@ -737,7 +754,7 @@ unsafe fn unpack_libraw_fallback_thumb(
         // (as it is dropped prior to `_img_guard` and its contents are immediately copied).
         let bytes = std::slice::from_raw_parts((*img).data.as_ptr(), data_size);
 
-        if (*img).type_ == libraw_sys::LibRaw_image_formats_LIBRAW_IMAGE_JPEG {
+        if (*img).type_ == rsraw_sys::LibRaw_image_formats_LIBRAW_IMAGE_JPEG {
             decode_libraw_jpeg_thumb(bytes, flip, sensor_dims, data_size, path)
         } else {
             decode_libraw_bitmap_thumb(bytes, &*img, flip, sensor_dims, path)
@@ -773,32 +790,13 @@ fn decode_libraw_jpeg_thumb(
 /// Decode a bitmap (uncompressed RGB) thumbnail extracted by libraw.
 fn decode_libraw_bitmap_thumb(
     bytes: &[u8],
-    img: &libraw_sys::libraw_processed_image_t,
+    img: &rsraw_sys::libraw_processed_image_t,
     flip: i32,
     sensor_dims: (u32, u32),
     path: &std::path::Path,
 ) -> Option<gdk4::Texture> {
-    let width = img.width as i32;
-    let height = img.height as i32;
-    let colors = img.colors as i32;
-    if colors != 3 {
-        log::debug!(
-            "Embedded thumbnail has {} channels for {} -- skipping",
-            colors,
-            path.display()
-        );
-        return None;
-    }
-    let row_stride = width.checked_mul(colors)?;
-    let pixbuf = gtk::gdk_pixbuf::Pixbuf::from_mut_slice(
-        bytes.to_vec(),
-        gtk::gdk_pixbuf::Colorspace::Rgb,
-        false,
-        8,
-        width,
-        height,
-        row_stride,
-    );
+    let pixbuf = bitmap_thumb_pixbuf(bytes, img, path)?;
+    let (width, height) = (pixbuf.width(), pixbuf.height());
     let prerotated = is_thumbnail_prerotated(width, height, sensor_dims.0, sensor_dims.1, flip);
     let oriented = if prerotated {
         pixbuf
@@ -815,6 +813,60 @@ fn decode_libraw_bitmap_thumb(
         );
     }
     texture
+}
+
+fn bitmap_thumb_pixbuf(
+    bytes: &[u8],
+    img: &rsraw_sys::libraw_processed_image_t,
+    path: &std::path::Path,
+) -> Option<gtk::gdk_pixbuf::Pixbuf> {
+    let width = img.width as i32;
+    let height = img.height as i32;
+    let colors = img.colors as i32;
+    if colors != 3 {
+        log::debug!(
+            "Embedded thumbnail has {} channels for {} -- skipping",
+            colors,
+            path.display()
+        );
+        return None;
+    }
+    let row_stride = width.checked_mul(colors)?;
+    let samples = usize::try_from(row_stride.checked_mul(height)?).ok()?;
+    let Some(pixels) = bitmap_thumb_rgb8(bytes, img.bits, samples) else {
+        log::debug!(
+            "Embedded thumbnail has unsupported {}-bit layout for {} -- skipping",
+            img.bits,
+            path.display()
+        );
+        return None;
+    };
+    Some(gtk::gdk_pixbuf::Pixbuf::from_mut_slice(
+        pixels,
+        gtk::gdk_pixbuf::Colorspace::Rgb,
+        false,
+        8,
+        width,
+        height,
+        row_stride,
+    ))
+}
+
+fn bitmap_thumb_rgb8(bytes: &[u8], bits: u16, samples: usize) -> Option<Vec<u8>> {
+    match bits {
+        8 => bytes.get(..samples).map(<[u8]>::to_vec),
+        16 => {
+            let wide = bytes.get(..samples.checked_mul(2)?)?;
+            Some(
+                wide.as_chunks::<2>()
+                    .0
+                    .iter()
+                    .map(|p| (u16::from_ne_bytes(*p) >> 8) as u8)
+                    .collect(),
+            )
+        }
+        _ => None,
+    }
 }
 
 /// Convert a `Pixbuf` to a `gdk4::Texture` (same logic as `decode_pixbuf_texture`).
@@ -871,7 +923,7 @@ fn decode_libraw_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
     if cache_enabled && let Some(texture) = read_raw_decode_cache(path) {
         return Some(texture);
     }
-    let texture = decode_libraw_uncached(path);
+    let texture = decode_libraw_uncached(path, false);
     if let Some(ref tex) = texture
         && cache_enabled
     {
@@ -880,13 +932,13 @@ fn decode_libraw_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
     texture
 }
 
-fn decode_libraw_uncached(path: &std::path::Path) -> Option<gdk4::Texture> {
+fn decode_libraw_uncached(path: &std::path::Path, half_size: bool) -> Option<gdk4::Texture> {
     use std::os::unix::ffi::OsStrExt;
     let c_path = std::ffi::CString::new(path.as_os_str().as_bytes()).ok()?;
     unsafe {
         let lr = init_libraw(path)?;
         let _guard = LibrawHandle(lr);
-        configure_libraw_full_decode(lr);
+        configure_libraw_full_decode(lr, half_size);
         if !run_libraw_full_decode(lr, c_path.as_ptr(), path) {
             return None;
         }
@@ -896,24 +948,24 @@ fn decode_libraw_uncached(path: &std::path::Path) -> Option<gdk4::Texture> {
     }
 }
 
-struct LibrawHandle(*mut libraw_sys::libraw_data_t);
+struct LibrawHandle(*mut rsraw_sys::libraw_data_t);
 
 impl Drop for LibrawHandle {
     fn drop(&mut self) {
-        unsafe { libraw_sys::libraw_close(self.0) };
+        unsafe { rsraw_sys::libraw_close(self.0) };
     }
 }
 
-struct MemImage(*mut libraw_sys::libraw_processed_image_t);
+struct MemImage(*mut rsraw_sys::libraw_processed_image_t);
 
 impl Drop for MemImage {
     fn drop(&mut self) {
-        unsafe { libraw_sys::libraw_dcraw_clear_mem(self.0) };
+        unsafe { rsraw_sys::libraw_dcraw_clear_mem(self.0) };
     }
 }
 
-unsafe fn init_libraw(path: &std::path::Path) -> Option<*mut libraw_sys::libraw_data_t> {
-    let lr = unsafe { libraw_sys::libraw_init(0) };
+unsafe fn init_libraw(path: &std::path::Path) -> Option<*mut rsraw_sys::libraw_data_t> {
+    let lr = unsafe { rsraw_sys::libraw_init(0) };
     if lr.is_null() {
         log::debug!("libraw_init returned null for {}", path.display());
         None
@@ -922,8 +974,9 @@ unsafe fn init_libraw(path: &std::path::Path) -> Option<*mut libraw_sys::libraw_
     }
 }
 
-unsafe fn configure_libraw_full_decode(lr: *mut libraw_sys::libraw_data_t) {
+unsafe fn configure_libraw_full_decode(lr: *mut rsraw_sys::libraw_data_t, half_size: bool) {
     unsafe {
+        (*lr).params.half_size = i32::from(half_size);
         (*lr).params.use_camera_wb = 1;
         (*lr).params.output_bps = 8;
         (*lr).params.output_color = 1;
@@ -932,22 +985,22 @@ unsafe fn configure_libraw_full_decode(lr: *mut libraw_sys::libraw_data_t) {
 }
 
 unsafe fn run_libraw_full_decode(
-    lr: *mut libraw_sys::libraw_data_t,
+    lr: *mut rsraw_sys::libraw_data_t,
     c_path: *const std::ffi::c_char,
     path: &std::path::Path,
 ) -> bool {
     unsafe {
         libraw_step(lr, path, "libraw_open_file", || {
-            libraw_sys::libraw_open_file(lr, c_path)
-        }) && libraw_step(lr, path, "libraw_unpack", || libraw_sys::libraw_unpack(lr))
+            rsraw_sys::libraw_open_file(lr, c_path)
+        }) && libraw_step(lr, path, "libraw_unpack", || rsraw_sys::libraw_unpack(lr))
             && libraw_step(lr, path, "libraw_dcraw_process", || {
-                libraw_sys::libraw_dcraw_process(lr)
+                rsraw_sys::libraw_dcraw_process(lr)
             })
     }
 }
 
 unsafe fn libraw_step(
-    _lr: *mut libraw_sys::libraw_data_t,
+    _lr: *mut rsraw_sys::libraw_data_t,
     path: &std::path::Path,
     label: &str,
     f: impl FnOnce() -> i32,
@@ -962,11 +1015,11 @@ unsafe fn libraw_step(
 }
 
 unsafe fn make_libraw_image(
-    lr: *mut libraw_sys::libraw_data_t,
+    lr: *mut rsraw_sys::libraw_data_t,
     path: &std::path::Path,
-) -> Option<*mut libraw_sys::libraw_processed_image_t> {
+) -> Option<*mut rsraw_sys::libraw_processed_image_t> {
     let mut errcode = 0i32;
-    let img = unsafe { libraw_sys::libraw_dcraw_make_mem_image(lr, &mut errcode) };
+    let img = unsafe { rsraw_sys::libraw_dcraw_make_mem_image(lr, &mut errcode) };
     if img.is_null() || errcode != 0 {
         log::debug!(
             "libraw_dcraw_make_mem_image failed ({}) for {}",
@@ -980,7 +1033,7 @@ unsafe fn make_libraw_image(
 }
 
 unsafe fn libraw_image_to_texture(
-    img: *mut libraw_sys::libraw_processed_image_t,
+    img: *mut rsraw_sys::libraw_processed_image_t,
     path: &std::path::Path,
 ) -> Option<gdk4::Texture> {
     let width = unsafe { (*img).width as u32 };
@@ -1508,5 +1561,81 @@ mod texture_decoder_tests {
     fn thumbnail_prerotated_false_for_180_rotation() {
         // flip=3 (180-degree) -- aspect doesn't change, never pre-rotated.
         assert!(!is_thumbnail_prerotated(480, 640, 6000, 4000, 3));
+    }
+
+    fn noise_jpeg(width: u32, height: u32) -> Vec<u8> {
+        let pixels: Vec<u8> = (0..width * height * 3)
+            .map(|i| (i.wrapping_mul(2_654_435_761) >> 13) as u8)
+            .collect();
+        let mut jpeg = Vec::new();
+        image::codecs::jpeg::JpegEncoder::new_with_quality(&mut jpeg, 90)
+            .encode(&pixels, width, height, image::ExtendedColorType::Rgb8)
+            .expect("encode jpeg");
+        jpeg
+    }
+
+    #[test]
+    fn embedded_jpeg_is_found_when_libraw_cannot_open_the_file() {
+        let jpeg = noise_jpeg(96, 64);
+        assert!(jpeg.len() >= MIN_EMBEDDED_JPEG_SIZE);
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("unknown-camera.arw");
+        let mut bytes = b"NOT A RAW HEADER".repeat(64);
+        bytes.extend_from_slice(&jpeg);
+        bytes.extend_from_slice(&[0u8; 512]);
+        std::fs::write(&path, bytes).unwrap();
+        let texture = extract_libraw_thumb(&path).expect("embedded preview");
+        assert_eq!((texture.width(), texture.height()), (96, 64));
+    }
+
+    #[test]
+    fn bitmap_thumb_passes_8_bit_samples_through() {
+        let bytes = [1u8, 2, 3, 4, 5, 6, 7];
+        assert_eq!(
+            bitmap_thumb_rgb8(&bytes, 8, 6),
+            Some(vec![1, 2, 3, 4, 5, 6])
+        );
+    }
+
+    #[test]
+    fn bitmap_thumb_keeps_high_byte_of_16_bit_samples() {
+        let bytes: Vec<u8> = [0x1234u16, 0xff00, 0x00ff]
+            .iter()
+            .flat_map(|v| v.to_ne_bytes())
+            .collect();
+        assert_eq!(
+            bitmap_thumb_rgb8(&bytes, 16, 3),
+            Some(vec![0x12, 0xff, 0x00])
+        );
+    }
+
+    #[test]
+    fn bitmap_thumb_rejects_short_buffers_and_odd_depths() {
+        assert_eq!(bitmap_thumb_rgb8(&[0u8; 5], 8, 6), None);
+        assert_eq!(bitmap_thumb_rgb8(&[0u8; 11], 16, 6), None);
+        assert_eq!(bitmap_thumb_rgb8(&[0u8; 12], 12, 6), None);
+    }
+
+    #[test]
+    fn raw_cache_png_is_written_atomically() {
+        let dir = tempfile::tempdir().unwrap();
+        let dest = dir.path().join("entry.png");
+        let texture = memory_texture(2, 2, gdk4::MemoryFormat::R8g8b8, vec![200; 12], 6).unwrap();
+        save_png_atomically(&texture, &dest).unwrap();
+        let entries: Vec<_> = std::fs::read_dir(dir.path()).unwrap().collect();
+        assert_eq!(entries.len(), 1, "temp file left behind");
+        let reloaded = gdk4::Texture::from_filename(&dest).unwrap();
+        assert_eq!((reloaded.width(), reloaded.height()), (2, 2));
+    }
+
+    #[test]
+    fn raw_cache_key_tracks_file_contents_metadata() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("photo.nef");
+        std::fs::write(&path, b"first").unwrap();
+        let first = raw_decode_cache_key(&path).unwrap();
+        assert_eq!(raw_decode_cache_key(&path).unwrap(), first);
+        std::fs::write(&path, b"second, longer").unwrap();
+        assert_ne!(raw_decode_cache_key(&path).unwrap(), first);
     }
 }

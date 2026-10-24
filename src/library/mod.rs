@@ -78,12 +78,14 @@ mod server_stats_dialog;
 mod shared_link_dialog;
 mod shared_links_view;
 mod sharing_view;
+mod shortcuts_dialog;
 mod source_header;
 pub mod staging_view;
 mod tags_view;
 mod trash_view;
 mod tree_page;
 mod upload_picker;
+mod video_player;
 mod window_layout;
 
 const PAGE_SIZE: u32 = 50;

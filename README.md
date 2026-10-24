@@ -105,14 +105,15 @@ Each watched directory operates with isolated logical constraints:
 
 An optional desktop library interface for browsing and managing your Immich photos directly on Linux (toggle via **Settings → Behavior → Enable Library View**):
 
-- **Browsing & Lightbox:** Timeline and album grid, full-resolution previews, media metadata viewer, asset download, and an Explore landing page (people, places, things).
+- **Browsing & Lightbox:** Timeline and album grid, full-resolution previews, fullscreen viewing, media metadata viewer, asset download, and an Explore landing page (people, places, things).
+- **Video Playback:** In-app playback that streams from Immich with hardware (VA-API) decoding, seeking, speed control, loop, audio/subtitle tracks, and **Open with…** for an external player.
 - **Search & Discovery:** Metadata search, smart CLIP semantic search, OCR text lookup, and server-folder browsing.
 - **Asset Management:** Edit dates and descriptions, toggle favorites, archive assets to hide them from the main timeline, or manage the Immich trash.
 - **People & Tags:** Face recognition browser with favorite people, birthdays, and person merging; hierarchical tag tree with color tagging and creation.
 - **Sharing & Collaboration:** Partner library sharing, shared albums with role management (Viewer/Editor), and password-protected public shared links.
 - **Adaptive Layout:** Responsive design with a mobile bottom navigation bar on narrow screens (< 600 px), view headers with navigation history (Back/Forward, touch swipe), and automatic hiding of features disabled on the server.
 
-> See the [Library View User Guide](https://github.com/nicx17/mimick/wiki/Library-View-User-Guide) for complete documentation and keyboard shortcuts.
+> See the [Library View User Guide](https://github.com/nicx17/mimick/wiki/Library-View-User-Guide) for complete documentation and keyboard shortcuts, or press **Ctrl+?** in the app.
 
 ---
 
@@ -245,7 +246,9 @@ If you prefer to compile Mimick yourself, you can build it natively with Cargo o
 ### Prerequisites
 
 - Rust toolchain (`cargo`): <https://rustup.rs>
-- GTK4 (>= 4.12) and Libadwaita (>= 1.6) development libraries
+- GTK4 (>= 4.24), Libadwaita (>= 1.10), and libheif (>= 1.21) development libraries
+- GStreamer development libraries and the GTK 4 video sink plugin (for video playback)
+- libclang (for generating the bundled LibRaw bindings)
 
 Detailed package installation commands for Ubuntu/Debian, Fedora, Arch Linux, and local Flatpak SDK dependencies are documented in the [Development Wiki Guide](https://github.com/nicx17/mimick/wiki/Development).
 
