@@ -21,12 +21,16 @@ use super::asset_edit::show_edit_dialog;
 use super::asset_tags::TagSection;
 use super::context_menu::{AssetMenuHooks, show_asset_context_menu};
 use super::download::{
-    begin_download_session, finish_download_item, open_local_with_default_app, spawn_video_handoff,
-    start_download, track_download_item,
+    begin_download_session, finish_download_item, open_local_with_default_app, start_download,
+    track_download_item,
 };
 use super::favorites::{FavoriteHooks, heart_icon, heart_tooltip, toggle_favorite};
 use super::trash_view;
+use super::video_player::VideoPlayer;
 use super::{LOCAL_ID_PREFIX, LibraryWindowUi, load_source_page, load_texture_oriented};
+
+mod fullscreen;
+mod video;
 
 /// Everything we can learn about a local file off the main thread before
 /// handing the data back to GTK. `exif` is the cached EXIF parse; `dims`
@@ -465,6 +469,7 @@ struct Lightbox {
     video_badge_button: gtk::Button,
     actions: ActionBar,
     details: DetailsPane,
+    viewer: gtk::Box,
     pos: Cell<u32>,
     // Increments on every navigation. Async load tasks capture the generation
     // they were started for and skip UI writes if the user has navigated away
@@ -480,13 +485,15 @@ struct Lightbox {
     drag_start: Cell<(f64, f64)>,
     pinch_start: Cell<f64>,
     unavailable_path: RefCell<Option<String>>,
-    video_badge_target: RefCell<Option<(String, String, String)>>,
+    video: RefCell<Option<Rc<VideoPlayer>>>,
+    fullscreen_handler: RefCell<Option<glib::SignalHandlerId>>,
     // Original file exported by drag-out. Updated by the load logic whenever an
     // asset is displayed (from its local path or the preview cache).
     drag_path: RefCell<Option<std::path::PathBuf>>,
     // A capture date was edited: reload the grid when the lightbox closes, since the
     // asset's timeline position moved (reloading now would shift the open photo).
     reload_on_close: Cell<bool>,
+    chrome: fullscreen::Chrome,
 }
 
 /// Construct and present the fullscreen lightbox view for a selected asset.
@@ -501,6 +508,7 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
     lightbox.connect_pointer_gestures();
     lightbox.connect_keys();
     lightbox.connect_actions();
+    lightbox.connect_fullscreen();
     lightbox.render();
     lightbox.ui.nav.push(&lightbox.header.page);
 }
@@ -544,9 +552,11 @@ fn lightbox_title_cap(ui: &LibraryWindowUi) -> usize {
 struct LightboxHeader {
     page: libadwaita::NavigationPage,
     toolbar: libadwaita::ToolbarView,
+    bar: libadwaita::HeaderBar,
     prev_btn: gtk::Button,
     next_btn: gtk::Button,
     details_btn: gtk::ToggleButton,
+    fullscreen_btn: gtk::Button,
 }
 
 /// Two pictures in a sliding stack, their scroller, and the overlay holding the spinner.
@@ -572,6 +582,7 @@ struct ActionBar {
     bar: gtk::Box,
     resolution_toggle: gtk::ToggleButton,
     download: gtk::Button,
+    open_with: gtk::Button,
     favorite: gtk::Button,
     archive: gtk::Button,
     trash: gtk::Button,
@@ -627,14 +638,18 @@ fn build_header(ui: &Rc<LibraryWindowUi>, initial_filename: &str) -> LightboxHea
     header.pack_start(&prev_btn);
     header.pack_start(&next_btn);
     header.pack_end(&details_btn);
+    let fullscreen_btn = icon_button("view-fullscreen-symbolic", "Fullscreen (F11)");
+    header.pack_end(&fullscreen_btn);
     toolbar.add_top_bar(&header);
     page.set_child(Some(&toolbar));
     LightboxHeader {
         page,
         toolbar,
+        bar: header,
         prev_btn,
         next_btn,
         details_btn,
+        fullscreen_btn,
     }
 }
 
@@ -719,7 +734,7 @@ fn build_unavailable_card() -> UnavailableCard {
 }
 
 // Video poster badge: clickable play icon shown over the still thumbnail
-// when the current asset is a video; clicking hands off to an external player.
+// when the current asset is a video; clicking starts in-app playback.
 fn build_video_badge() -> gtk::Button {
     let icon = gtk::Image::builder()
         .icon_name("mimick-video-symbolic")
@@ -730,7 +745,7 @@ fn build_video_badge() -> gtk::Button {
         .child(&icon)
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
-        .tooltip_text("Play video in external player")
+        .tooltip_text("Play video (Space)")
         .css_classes(vec!["circular".to_string(), "flat".to_string()])
         .visible(false)
         .build()
@@ -743,6 +758,7 @@ fn build_action_bar(initial_full: bool) -> ActionBar {
         .active(initial_full)
         .build();
     let download = icon_button("mimick-download-symbolic", "Download asset");
+    let open_with = icon_button("document-open-symbolic", "Open with…");
     let trash = icon_button("user-trash-symbolic", "Move to trash (Delete)");
     let favorite = icon_button(heart_icon(false), heart_tooltip(false));
     let archive = icon_button(archive_icon(false), archive_tooltip(false));
@@ -761,11 +777,13 @@ fn build_action_bar(initial_full: bool) -> ActionBar {
     bar.append(&favorite);
     bar.append(&archive);
     bar.append(&download);
+    bar.append(&open_with);
     bar.append(&trash);
     ActionBar {
         bar,
         resolution_toggle,
         download,
+        open_with,
         favorite,
         archive,
         trash,
@@ -854,15 +872,20 @@ fn build_viewer(picture: &PictureArea, actions: &ActionBar) -> gtk::Box {
     let viewer = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(8)
-        .margin_top(4)
-        .margin_bottom(8)
-        .margin_start(4)
-        .margin_end(4)
         .hexpand(true)
         .build();
+    set_viewer_margins(&viewer, false);
     viewer.append(&picture.overlay);
     viewer.append(&actions.bar);
     viewer
+}
+
+fn set_viewer_margins(viewer: &gtk::Box, fullscreen: bool) {
+    let (edge, bottom) = if fullscreen { (0, 0) } else { (4, 8) };
+    viewer.set_margin_top(edge);
+    viewer.set_margin_start(edge);
+    viewer.set_margin_end(edge);
+    viewer.set_margin_bottom(bottom);
 }
 
 /// Picture viewer with the details pane as a sidebar that follows the window's narrow layout.
@@ -927,6 +950,7 @@ impl Lightbox {
             video_badge_button,
             actions,
             details,
+            viewer,
             pos: Cell::new(position),
             load_gen: Cell::new(0),
             active_a: Cell::new(true),
@@ -936,9 +960,11 @@ impl Lightbox {
             drag_start: Cell::new((0.0, 0.0)),
             pinch_start: Cell::new(1.0),
             unavailable_path: RefCell::new(None),
-            video_badge_target: RefCell::new(None),
+            video: RefCell::new(None),
+            fullscreen_handler: RefCell::new(None),
             drag_path: RefCell::new(None),
             reload_on_close: Cell::new(false),
+            chrome: fullscreen::Chrome::new(),
         })
     }
 
@@ -952,17 +978,8 @@ impl Lightbox {
         });
 
         let lb = self.clone();
-        self.video_badge_button.connect_clicked(move |_| {
-            let Some((local_path, asset_id, filename)) = lb.video_badge_target.borrow().clone()
-            else {
-                return;
-            };
-            if !local_path.is_empty() {
-                open_local_with_default_app(&local_path);
-            } else {
-                spawn_video_handoff(lb.ui.clone(), asset_id, filename);
-            }
-        });
+        self.video_badge_button
+            .connect_clicked(move |_| lb.toggle_video());
 
         let drag_source = gtk::DragSource::new();
         drag_source.set_actions(gtk::gdk::DragAction::COPY);
@@ -1009,6 +1026,8 @@ impl Lightbox {
 
         let lb = self.clone();
         self.header.page.connect_hidden(move |_| {
+            lb.close_fullscreen();
+            lb.close_video();
             if lb.reload_on_close.replace(false) {
                 super::refresh_library_after_mutation(lb.ui.clone(), true);
             }
@@ -1154,6 +1173,11 @@ impl Lightbox {
                 start_download(lb.ui.clone(), asset_id, item.property("filename"));
             }
         });
+
+        let lb = self.clone();
+        self.actions
+            .open_with
+            .connect_clicked(move |_| lb.open_current_with());
 
         let lb = self.clone();
         self.actions.resolution_toggle.connect_toggled(move |btn| {
@@ -1326,6 +1350,9 @@ impl Lightbox {
         mods: gtk::gdk::ModifierType,
     ) -> glib::Propagation {
         let ctrl = mods.contains(gtk::gdk::ModifierType::CONTROL_MASK);
+        if !ctrl && self.handle_video_key(key) {
+            return glib::Propagation::Stop;
+        }
         match (ctrl, key) {
             (true, gtk::gdk::Key::plus)
             | (true, gtk::gdk::Key::equal)
@@ -1341,8 +1368,12 @@ impl Lightbox {
                 .details_btn
                 .set_active(!self.header.details_btn.is_active()),
             (false, gtk::gdk::Key::Delete) => self.confirm_trash_current(),
+            (false, gtk::gdk::Key::F11) => self.toggle_fullscreen(),
             (false, gtk::gdk::Key::f) | (false, gtk::gdk::Key::F) => self.toggle_current_favorite(),
             (false, gtk::gdk::Key::a) | (false, gtk::gdk::Key::A) => self.toggle_current_archive(),
+            (false, gtk::gdk::Key::Escape) if self.ui.window.is_fullscreen() => {
+                self.ui.window.unfullscreen();
+            }
             (false, gtk::gdk::Key::Escape) => {
                 self.ui.nav.pop();
             }
@@ -1514,7 +1545,9 @@ impl Lightbox {
         self.show_archive(info.archived);
         self.details.edit_btn.set_visible(on_server && !in_trash);
         self.actions.zoom_group.set_visible(!info.is_video());
+        self.actions.open_with.set_visible(info.is_video());
 
+        self.prepare_video(info.is_video());
         self.start_picture_load(&info);
         self.details.loading.set_visible(true);
         if info.is_local() && !info.is_video() {
@@ -1626,13 +1659,6 @@ impl Lightbox {
         );
         // Videos use the still thumbnail as a poster + play badge; image
         // decoders would all fail and fall through to "unavailable".
-        *self.video_badge_target.borrow_mut() = load.is_video.then(|| {
-            (
-                load.local_path.clone(),
-                load.asset_id.clone(),
-                load.filename.clone(),
-            )
-        });
         self.video_badge_button.set_visible(load.is_video);
         // Show the cached grid thumbnail immediately while the real picture loads.
         if let Some(texture) = self

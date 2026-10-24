@@ -10,9 +10,9 @@ chrono = "0.4.44"
 dirs = "6.0.0"
 gdk4 = "0.11"
 glib = "0.22.7"
-gtk = { version = "0.11.2", package = "gtk4", features = ["v4_22"] }
+gtk = { version = "0.11.2", package = "gtk4", features = ["v4_24"] }
 ksni = "0.3.4"
-libadwaita = { version = "0.9.1", features = ["v1_6"] }
+libadwaita = { version = "0.9.1", features = ["v1_10"] }
 log = "0.4.29"
 lru = "0.18.0"
 parking_lot = "0.12.5"
@@ -61,7 +61,7 @@ image = { version = "0.25.10", default-features = false, features = [
     "webp",
 ] }
 libheif-rs = { version = "2.7.0", default-features = false, features = [
-    "v1_20",
+    "v1_21",
 ] }
 jxl-oxide = "0.12.5"
 
@@ -81,6 +81,8 @@ turbojpeg = { version = "1.4.0", default-features = false, features = [
 webp = { version = "0.3.1", default-features = false }
 psd = "0.3.5"
 tempfile = "3.27.0"
+gstreamer = "0.25.4"
+gstreamer-play = "0.25.0"
 
 [dev-dependencies]
 

@@ -279,6 +279,7 @@ fn build_header() -> HeaderParts {
     menu.append(Some("Refresh"), Some("win.refresh"));
     menu.append(Some("Queue Inspector"), Some("win.queue"));
     menu.append(Some("Settings"), Some("win.settings"));
+    menu.append(Some("Keyboard Shortcuts"), Some("win.shortcuts"));
     let menu_button = gtk::MenuButton::builder()
         .icon_name("open-menu-symbolic")
         .menu_model(&menu)

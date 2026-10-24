@@ -190,6 +190,12 @@ impl ImmichApiClient {
         self.fetch_asset_generic(asset_id).await
     }
 
+    pub async fn video_playback_source(&self, asset_id: &str) -> Option<(String, String)> {
+        let base_url = self.get_active_url().await?;
+        let url = format!("{}/api/assets/{}/video/playback", base_url, asset_id);
+        Some((url, self.settings_snapshot().api_key))
+    }
+
     /// Download original source file of a given asset ID and save it locally.
     pub async fn download_original_to_file(
         &self,
