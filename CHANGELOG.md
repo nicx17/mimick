@@ -16,9 +16,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- RAW decoding now uses LibRaw 0.21.3 (was 0.20.1), adding support for cameras such as the Sony A7 IV, Canon EOS R3/R7/R10, Fujifilm X-H2S, OM System OM-1, Leica M11, and Nikon Z9 (standard compression).
+- Grid thumbnails for RAW files without an embedded preview now use a faster half-size decode.
 - Clicking a video in the grid now opens it in the lightbox instead of the system default player.
 - The Flatpak now requests the PulseAudio socket (also used by PipeWire) for video sound.
-- Native builds now require GTK 4.24, libadwaita 1.10, and libheif 1.21 or newer (matching the GNOME 51 runtime), plus GStreamer with GstPlay and the GTK 4 video sink plugin (`gst-plugin-gtk4`) for video playback.
+- Native builds now require GTK 4.24, libadwaita 1.10, and libheif 1.21 or newer (matching the GNOME 51 runtime), plus GStreamer with GstPlay and the GTK 4 video sink plugin (`gst-plugin-gtk4`) for video playback, and libclang for generating the LibRaw bindings.
+
+### Fixed
+
+- RAW files that LibRaw can't open now still show their embedded JPEG preview instead of "Preview unavailable".
+- 16-bit embedded RAW thumbnails no longer display as garbled images.
+- The RAW decode cache no longer discards an entry that is being written when the same file is opened again.
 
 ## [9.11.0] - 2026-10-17
 

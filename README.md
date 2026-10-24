@@ -248,6 +248,7 @@ If you prefer to compile Mimick yourself, you can build it natively with Cargo o
 - Rust toolchain (`cargo`): <https://rustup.rs>
 - GTK4 (>= 4.24), Libadwaita (>= 1.10), and libheif (>= 1.21) development libraries
 - GStreamer development libraries and the GTK 4 video sink plugin (for video playback)
+- libclang (for generating the bundled LibRaw bindings)
 
 Detailed package installation commands for Ubuntu/Debian, Fedora, Arch Linux, and local Flatpak SDK dependencies are documented in the [Development Wiki Guide](https://github.com/nicx17/mimick/wiki/Development).
 
