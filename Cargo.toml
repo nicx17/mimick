@@ -65,7 +65,7 @@ libheif-rs = { version = "2.7.0", default-features = false, features = [
 ] }
 jxl-oxide = "0.12.5"
 
-libraw-rs-sys = "0.0.4"
+rsraw-sys = "0.1.1"
 resvg = { version = "0.47.0", default-features = false, features = [
     "text",
     "system-fonts",
