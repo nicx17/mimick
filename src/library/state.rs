@@ -355,6 +355,7 @@ mod tests {
             exif_info: None,
             is_favorite: false,
             visibility: String::new(),
+            is_edited: false,
         }
     }
 

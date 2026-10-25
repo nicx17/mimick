@@ -85,6 +85,16 @@ GST_DEBUG=va*:4 flatpak run dev.nicx.mimick
 
 Lines mentioning `vah264dec`, `vah265dec`, `vavp9dec`, or `vaav1dec` mean the GPU is decoding. If none appear, the GPU or its VA-API driver doesn't support that codec and GStreamer falls back to software decoding (playback still works, using more CPU).
 
+## Lightbox Issues
+
+### No Recognized-Text Button
+
+The text button in the lightbox action bar only appears when Immich has recognized text in that photo. Check that OCR is enabled in Immich's machine-learning settings and that the OCR job has run for the photo. Local-only files and videos never show it.
+
+### Edited Photo Shows an Older Version
+
+Mimick caches an edited photo the first time you open it. If you edit the photo again in Immich, use **Clear Cache** in the settings window to load the new edit. When the edited version can't be fetched (for example while offline), a photo that is also on disk shows the unedited local copy instead.
+
 ## Startup & Autostart Issues
 
 ### App Opens a Window on Login Despite Background Sync (KDE)

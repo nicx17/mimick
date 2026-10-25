@@ -1577,6 +1577,7 @@ fn local_to_library_asset(local: LocalAsset) -> LibraryAsset {
         exif_info: None,
         is_favorite: false,
         visibility: String::new(),
+        is_edited: false,
     }
 }
 

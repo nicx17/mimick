@@ -198,15 +198,21 @@ impl ThumbnailCache {
 
     /// Retrieve a thumbnail texture from memory if present, updating LRU recency.
     pub fn get_cached(&self, asset_id: &str, size: ThumbnailSize) -> Option<Texture> {
-        let key = cache_key(asset_id, size);
+        let key = cache_key(asset_id, size, false);
         self.memory.lock().get(&key)
     }
 
     /// Same as `get_cached` but does not touch LRU order. Use for read-only
     /// per-frame paint lookups.
     pub fn peek_cached(&self, asset_id: &str, size: ThumbnailSize) -> Option<Texture> {
-        let key = cache_key(asset_id, size);
+        let key = cache_key(asset_id, size, false);
         self.memory.lock().peek(&key)
+    }
+
+    /// Preview texture from memory; edited renders are cached apart from unedited ones.
+    pub fn get_cached_preview(&self, asset_id: &str, edited: bool) -> Option<Texture> {
+        let key = cache_key(asset_id, ThumbnailSize::Preview, edited);
+        self.memory.lock().get(&key)
     }
 
     /// (entries, current_bytes, max_bytes, evictions_since_last_call).
@@ -241,17 +247,37 @@ impl ThumbnailCache {
     where
         F: Fn() -> bool,
     {
-        if let Some(texture) = self.get_cached(asset_id, size) {
+        self.load_remote(asset_id, size, false, is_cancelled).await
+    }
+
+    /// Lightbox preview, or Immich's edited render of it when `edited` is set.
+    pub async fn load_preview(&self, asset_id: &str, edited: bool) -> Result<Texture, String> {
+        self.load_remote(asset_id, ThumbnailSize::Preview, edited, || false)
+            .await
+    }
+
+    /// Memory cache, then in-flight request, then disk cache, then the server.
+    async fn load_remote<F>(
+        &self,
+        asset_id: &str,
+        size: ThumbnailSize,
+        edited: bool,
+        is_cancelled: F,
+    ) -> Result<Texture, String>
+    where
+        F: Fn() -> bool,
+    {
+        let key = cache_key(asset_id, size, edited);
+        if let Some(texture) = self.memory.lock().get(&key) {
             return Ok(texture);
         }
 
-        let key = cache_key(asset_id, size);
         let guard = match self.enter_inflight(&key) {
             Ok(guard) => guard,
             Err(rx) => return await_inflight(rx).await,
         };
         let result = self
-            .fetch_remote_thumbnail(asset_id, size, &key, &is_cancelled)
+            .fetch_remote_thumbnail(asset_id, size, edited, &key, &is_cancelled)
             .await;
         guard.publish(result.clone());
         result
@@ -262,53 +288,47 @@ impl ThumbnailCache {
         &self,
         asset_id: &str,
         size: ThumbnailSize,
+        edited: bool,
         key: &str,
         is_cancelled: &dyn Fn() -> bool,
     ) -> Result<Texture, String> {
-        if is_cancelled() {
-            return Err("cancelled".to_string());
-        }
+        check_cancelled(is_cancelled)?;
         let _permit = self
             .semaphore_for(size)
             .acquire_owned()
             .await
             .map_err(|err| err.to_string())?;
-
-        if is_cancelled() {
-            return Err("cancelled".to_string());
-        }
-        if let Some(texture) = self.get_cached(asset_id, size) {
+        check_cancelled(is_cancelled)?;
+        if let Some(texture) = self.memory.lock().get(key) {
             return Ok(texture);
         }
 
-        let cache_file = self.cache_file(asset_id, size);
+        let cache_file = self.cache_file(asset_id, size, edited);
         let cache_file_for_read = cache_file.clone();
-        let from_disk = tokio::task::spawn_blocking(move || -> Option<Vec<u8>> {
-            std::fs::read(&cache_file_for_read).ok()
-        })
-        .await
-        .map_err(|err| err.to_string())?;
-
-        if let Some(bytes) = from_disk {
-            let texture = decode_to_scaled_texture(bytes, target_dim_for_bucket(size))
+        let from_disk =
+            tokio::task::spawn_blocking(move || std::fs::read(&cache_file_for_read).ok())
                 .await
                 .map_err(|err| err.to_string())?;
-            self.memory.lock().insert(key.to_string(), texture.clone());
-            return Ok(texture);
+        if let Some(bytes) = from_disk {
+            return self.decode_into_memory(bytes, size, key).await;
         }
 
-        if is_cancelled() {
-            return Err("cancelled".to_string());
-        }
-        let bytes = self.api_client.fetch_thumbnail(asset_id, size).await?;
-        let cache_dir = self.cache_dir.clone();
-        let cache_file_for_write = cache_file.clone();
-        let bytes_for_write = bytes.clone();
-        let _ = tokio::task::spawn_blocking(move || {
-            let _ = std::fs::create_dir_all(&cache_dir);
-            let _ = std::fs::write(&cache_file_for_write, &bytes_for_write);
-        })
-        .await;
+        check_cancelled(is_cancelled)?;
+        let bytes = self
+            .api_client
+            .fetch_thumbnail(asset_id, size, edited)
+            .await?;
+        write_cache_bytes(self.cache_dir.clone(), cache_file, bytes.clone()).await;
+        self.decode_into_memory(bytes, size, key).await
+    }
+
+    /// Decode thumbnail bytes for `size` and keep the texture in the memory cache under `key`.
+    async fn decode_into_memory(
+        &self,
+        bytes: Vec<u8>,
+        size: ThumbnailSize,
+        key: &str,
+    ) -> Result<Texture, String> {
         let texture = decode_to_scaled_texture(bytes, target_dim_for_bucket(size))
             .await
             .map_err(|err| err.to_string())?;
@@ -326,7 +346,7 @@ impl ThumbnailCache {
     where
         F: Fn() -> bool,
     {
-        let key = cache_key(asset_id, ThumbnailSize::Thumbnail);
+        let key = cache_key(asset_id, ThumbnailSize::Thumbnail, false);
         if let Some(texture) = self.memory.lock().get(&key) {
             return Ok(texture);
         }
@@ -419,8 +439,8 @@ impl ThumbnailCache {
     }
 
     /// Return the physical disk cache path for a remote asset thumbnail.
-    fn cache_file(&self, asset_id: &str, size: ThumbnailSize) -> PathBuf {
-        self.cache_dir.join(cache_key(asset_id, size))
+    fn cache_file(&self, asset_id: &str, size: ThumbnailSize, edited: bool) -> PathBuf {
+        self.cache_dir.join(cache_key(asset_id, size, edited))
     }
 
     /// Return the physical disk cache path for a local folder asset thumbnail.
@@ -444,12 +464,17 @@ impl ThumbnailCache {
     }
 }
 
-/// Construct a cache key string for remote assets.
-fn cache_key(asset_id: &str, size: ThumbnailSize) -> String {
-    match size {
-        ThumbnailSize::Thumbnail => format!("thumbnail:{}", asset_id),
-        ThumbnailSize::Preview => format!("preview:{}", asset_id),
-        ThumbnailSize::Fullsize => format!("fullsize:{}", asset_id),
+/// Construct a cache key string for remote assets; edited renders get their own `-edited` keys.
+fn cache_key(asset_id: &str, size: ThumbnailSize, edited: bool) -> String {
+    let prefix = match size {
+        ThumbnailSize::Thumbnail => "thumbnail",
+        ThumbnailSize::Preview => "preview",
+        ThumbnailSize::Fullsize => "fullsize",
+    };
+    if edited {
+        format!("{prefix}-edited:{asset_id}")
+    } else {
+        format!("{prefix}:{asset_id}")
     }
 }
 
@@ -458,6 +483,15 @@ fn local_cache_key(asset_id: &str) -> String {
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
     asset_id.hash(&mut hasher);
     format!("local-thumbnail-v2:{:x}", hasher.finish())
+}
+
+/// Best-effort write of downloaded thumbnail bytes to the disk cache.
+async fn write_cache_bytes(cache_dir: PathBuf, cache_file: PathBuf, bytes: Vec<u8>) {
+    let _ = tokio::task::spawn_blocking(move || {
+        let _ = std::fs::create_dir_all(&cache_dir);
+        let _ = std::fs::write(&cache_file, &bytes);
+    })
+    .await;
 }
 
 /// Estimate memory byte size occupied by a texture.
@@ -802,9 +836,42 @@ mod tests {
     fn test_get_cached_does_not_touch_disk() {
         let cache = cache(1024);
         std::fs::create_dir_all(&cache.cache_dir).unwrap();
-        std::fs::write(cache.cache_file("2", ThumbnailSize::Thumbnail), PNG_BYTES).unwrap();
+        std::fs::write(
+            cache.cache_file("2", ThumbnailSize::Thumbnail, false),
+            PNG_BYTES,
+        )
+        .unwrap();
 
         assert!(cache.get_cached("2", ThumbnailSize::Thumbnail).is_none());
+    }
+
+    #[test]
+    fn cache_keys_for_unedited_assets_are_unchanged() {
+        assert_eq!(
+            cache_key("1", ThumbnailSize::Thumbnail, false),
+            "thumbnail:1"
+        );
+        assert_eq!(cache_key("1", ThumbnailSize::Preview, false), "preview:1");
+        assert_eq!(cache_key("1", ThumbnailSize::Fullsize, false), "fullsize:1");
+    }
+
+    #[test]
+    fn edited_preview_has_its_own_key() {
+        assert_eq!(
+            cache_key("1", ThumbnailSize::Preview, true),
+            "preview-edited:1"
+        );
+    }
+
+    #[test]
+    fn edited_preview_is_cached_separately() {
+        let cache = cache(1024);
+        cache
+            .memory
+            .lock()
+            .insert("preview:1".into(), texture_from_png());
+        assert!(cache.get_cached_preview("1", false).is_some());
+        assert!(cache.get_cached_preview("1", true).is_none());
     }
 
     #[test]
@@ -826,7 +893,11 @@ mod tests {
     fn test_clear_removes_memory_and_disk() {
         let cache = cache(1024);
         std::fs::create_dir_all(&cache.cache_dir).unwrap();
-        std::fs::write(cache.cache_file("3", ThumbnailSize::Thumbnail), PNG_BYTES).unwrap();
+        std::fs::write(
+            cache.cache_file("3", ThumbnailSize::Thumbnail, false),
+            PNG_BYTES,
+        )
+        .unwrap();
         cache
             .memory
             .lock()

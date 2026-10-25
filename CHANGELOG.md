@@ -13,12 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an **Open with…** button for videos in the lightbox that lets you choose the app.
 - Added fullscreen viewing for photos and videos in the lightbox (header button or **F11**), with an auto-hiding header for leaving fullscreen on touch screens.
 - Added a **Keyboard Shortcuts** dialog to the main menu (also **Ctrl+?**) listing every library and lightbox shortcut.
+- Added recognized text (OCR) in the lightbox: when Immich has found text in a photo, a text button (or **T**) outlines each piece of text. Drag across text to select it (Shift-click extends, Ctrl-click adds or removes a box, tap on touch screens) and copy the selection or all text with the **Copy All Text** button or **Ctrl+C** (#85).
 
 ### Changed
 
 - RAW decoding now uses LibRaw 0.21.3 (was 0.20.1), adding support for cameras such as the Sony A7 IV, Canon EOS R3/R7/R10, Fujifilm X-H2S, OM System OM-1, Leica M11, and Nikon Z9 (standard compression).
 - Grid thumbnails for RAW files without an embedded preview now use a faster half-size decode.
 - Clicking a video in the grid now opens it in the lightbox instead of the system default player.
+- Photos edited in Immich (cropped or rotated) now show the edited version in the lightbox, in both preview and full resolution. Download and drag-out still give the original file, and an edited photo that is also on disk falls back to the local copy when the edited version can't be fetched.
+- Bumped Rust dependencies (`notify` 8.2.1, `roxmltree` 0.21.2).
 - The Flatpak now requests the PulseAudio socket (also used by PipeWire) for video sound.
 - Native builds now require GTK 4.24, libadwaita 1.10, and libheif 1.21 or newer (matching the GNOME 51 runtime), plus GStreamer with GstPlay and the GTK 4 video sink plugin (`gst-plugin-gtk4`) for video playback, and libclang for generating the LibRaw bindings.
 

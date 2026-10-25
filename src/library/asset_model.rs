@@ -159,55 +159,66 @@ fn build_sorted_asset_objects(
 }
 
 fn build_asset_objects(assets: &[LibraryAsset], ctx: &AppContext) -> Vec<AssetObject> {
-    use super::{LOCAL_ID_PREFIX, immich_checksum_to_hex};
-    use crate::library::local_source::local_sync_state;
+    use super::LOCAL_ID_PREFIX;
 
     assets
         .iter()
-        .map(|asset| {
-            if let Some(local_path) = asset.id.strip_prefix(LOCAL_ID_PREFIX) {
-                let sync_state =
-                    local_sync_state(&ctx.sync_index, std::path::Path::new(local_path));
-                let object = AssetObject::new_local(
-                    &asset.id,
-                    &asset.filename,
-                    &asset.mime_type,
-                    &asset.created_at,
-                    &asset.asset_type,
-                    local_path,
-                );
-                if sync_state != 1 {
-                    object.set_property("sync-state", sync_state);
-                }
-                return object;
-            }
-            let local_match = asset
-                .checksum
-                .as_deref()
-                .and_then(immich_checksum_to_hex)
-                .as_deref()
-                .and_then(|hex| ctx.sync_index.local_path_for_checksum(hex));
-            let sync_state = if local_match.is_some() { 2 } else { 0 };
-            let (width, height) = asset_dimensions(asset);
-            let object = AssetObject::new(AssetInit {
-                id: &asset.id,
-                filename: &asset.filename,
-                mime_type: &asset.mime_type,
-                created_at: &asset.created_at,
-                asset_type: &asset.asset_type,
-                sync_state,
-                thumbhash: asset.thumbhash.as_deref(),
-                width,
-                height,
-                is_favorite: asset.is_favorite,
-                is_archived: asset.is_archived(),
-            });
-            if let Some(path) = local_match {
-                object.set_property("local-path", path);
-            }
-            object
+        .map(|asset| match asset.id.strip_prefix(LOCAL_ID_PREFIX) {
+            Some(local_path) => local_asset_object(asset, local_path, ctx),
+            None => remote_asset_object(asset, ctx),
         })
         .collect()
+}
+
+/// Row for a file that exists only in a local watch folder.
+fn local_asset_object(asset: &LibraryAsset, local_path: &str, ctx: &AppContext) -> AssetObject {
+    use crate::library::local_source::local_sync_state;
+
+    let sync_state = local_sync_state(&ctx.sync_index, std::path::Path::new(local_path));
+    let object = AssetObject::new_local(
+        &asset.id,
+        &asset.filename,
+        &asset.mime_type,
+        &asset.created_at,
+        &asset.asset_type,
+        local_path,
+    );
+    if sync_state != 1 {
+        object.set_property("sync-state", sync_state);
+    }
+    object
+}
+
+/// Row for a server asset, linked to its local copy when a synced file has the same checksum.
+fn remote_asset_object(asset: &LibraryAsset, ctx: &AppContext) -> AssetObject {
+    use super::immich_checksum_to_hex;
+
+    let local_match = asset
+        .checksum
+        .as_deref()
+        .and_then(immich_checksum_to_hex)
+        .as_deref()
+        .and_then(|hex| ctx.sync_index.local_path_for_checksum(hex));
+    let sync_state = if local_match.is_some() { 2 } else { 0 };
+    let (width, height) = asset_dimensions(asset);
+    let object = AssetObject::new(AssetInit {
+        id: &asset.id,
+        filename: &asset.filename,
+        mime_type: &asset.mime_type,
+        created_at: &asset.created_at,
+        asset_type: &asset.asset_type,
+        sync_state,
+        thumbhash: asset.thumbhash.as_deref(),
+        width,
+        height,
+        is_favorite: asset.is_favorite,
+        is_archived: asset.is_archived(),
+        is_edited: asset.is_edited,
+    });
+    if let Some(path) = local_match {
+        object.set_property("local-path", path);
+    }
+    object
 }
 
 /// Pixel size from the asset, falling back to EXIF (where Immich often keeps it); 0 = unknown.

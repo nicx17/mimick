@@ -56,6 +56,21 @@ const LIGHTBOX: &[Shortcut] = &[
     key("Toggle details", "i"),
     key("Toggle favorite", "f"),
     key("Archive or unarchive", "a"),
+    hint(
+        "Show or hide recognized text",
+        "t",
+        "Only when Immich found text in the photo",
+    ),
+    hint(
+        "Select all recognized text",
+        "<Control>a",
+        "Drag across text to select it; Ctrl-click adds or removes a box",
+    ),
+    hint(
+        "Copy recognized text",
+        "<Control>c",
+        "Copies the selection, or all text when nothing is selected",
+    ),
     key("Move to trash", "Delete"),
     hint("Zoom in", "<Control>plus", "Or hold Ctrl and scroll"),
     key("Zoom out", "<Control>minus"),

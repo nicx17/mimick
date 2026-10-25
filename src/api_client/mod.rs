@@ -18,6 +18,8 @@ mod features;
 pub use features::LibraryFeatures;
 mod folders;
 mod library;
+mod ocr;
+pub use ocr::OcrBox;
 mod partners;
 pub use partners::PartnerDirection;
 mod people;
@@ -191,6 +193,9 @@ pub struct LibraryAsset {
     pub is_favorite: bool,
     #[serde(default)]
     pub visibility: String,
+    /// Whether the asset was cropped or rotated in Immich.
+    #[serde(rename = "isEdited", default)]
+    pub is_edited: bool,
 }
 
 impl LibraryAsset {
@@ -964,6 +969,33 @@ mod tests {
             asset.checksum.as_deref(),
             Some("823cb0e790d643a90f61f07e5c2bdd588cf8f230")
         );
+    }
+
+    #[test]
+    fn library_asset_reads_is_edited_flag() {
+        let json = serde_json::json!({
+            "id": "asset-1",
+            "originalFileName": "a.jpg",
+            "originalMimeType": "image/jpeg",
+            "fileCreatedAt": "2024-01-01T00:00:00.000Z",
+            "type": "IMAGE",
+            "isEdited": true
+        });
+        let asset: LibraryAsset = serde_json::from_value(json).unwrap();
+        assert!(asset.is_edited);
+    }
+
+    #[test]
+    fn library_asset_defaults_is_edited_to_false() {
+        let json = serde_json::json!({
+            "id": "asset-1",
+            "originalFileName": "a.jpg",
+            "originalMimeType": "image/jpeg",
+            "fileCreatedAt": "2024-01-01T00:00:00.000Z",
+            "type": "IMAGE"
+        });
+        let asset: LibraryAsset = serde_json::from_value(json).unwrap();
+        assert!(!asset.is_edited);
     }
 
     #[test]

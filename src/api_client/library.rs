@@ -21,6 +21,48 @@ fn delete_request_body(asset_ids: &[String], force: bool) -> serde_json::Value {
     })
 }
 
+/// Writes a response body to `output_path` chunk by chunk, reporting bytes written.
+async fn stream_to_file(
+    mut resp: reqwest::Response,
+    output_path: &std::path::Path,
+    progress: Option<&TransferProgressCallback>,
+) -> Result<(), String> {
+    use tokio::io::AsyncWriteExt;
+    let total_bytes = resp.content_length();
+    let mut written = 0_u64;
+    let mut file = tokio::fs::File::create(output_path)
+        .await
+        .map_err(|e| e.to_string())?;
+    while let Some(chunk) = resp.chunk().await.map_err(|e| e.to_string())? {
+        file.write_all(&chunk).await.map_err(|e| e.to_string())?;
+        written = written.saturating_add(chunk.len() as u64);
+        if let Some(callback) = progress {
+            callback(written, total_bytes);
+        }
+    }
+    Ok(())
+}
+
+/// API path for a thumbnail; `edited=true` is added only for edited assets so existing URLs don't change.
+fn thumbnail_path(asset_id: &str, size: ThumbnailSize, edited: bool) -> String {
+    let path = format!("/api/assets/{asset_id}/thumbnail?size={}", size.as_str());
+    if edited {
+        format!("{path}&edited=true")
+    } else {
+        path
+    }
+}
+
+/// API path for an original, or for Immich's edited render when `edited` is set.
+fn original_path(asset_id: &str, edited: bool) -> String {
+    let path = format!("/api/assets/{asset_id}/original");
+    if edited {
+        format!("{path}?edited=true")
+    } else {
+        path
+    }
+}
+
 impl ImmichApiClient {
     /// Retrieve the complete list of albums from the Immich server for library display.
     pub async fn fetch_library_albums(&self) -> Result<Vec<LibraryAlbum>, String> {
@@ -101,6 +143,7 @@ impl ImmichApiClient {
         &self,
         asset_id: &str,
         size: ThumbnailSize,
+        edited: bool,
     ) -> Result<Vec<u8>, String> {
         let _permit = self
             .thumbnail_semaphore
@@ -113,12 +156,7 @@ impl ImmichApiClient {
             .await
             .ok_or_else(|| "No active connection".to_string())?;
         let settings = self.settings_snapshot();
-        let url = format!(
-            "{}/api/assets/{}/thumbnail?size={}",
-            base_url,
-            asset_id,
-            size.as_str()
-        );
+        let url = format!("{base_url}{}", thumbnail_path(asset_id, size, edited));
 
         match self
             .client
@@ -203,12 +241,37 @@ impl ImmichApiClient {
         output_path: &std::path::Path,
         progress: Option<TransferProgressCallback>,
     ) -> Result<(), String> {
+        let path = original_path(asset_id, false);
+        self.download_to_file(&path, asset_id, output_path, progress)
+            .await
+    }
+
+    /// Download Immich's edited render of an asset at full resolution.
+    pub async fn download_edited_original_to_file(
+        &self,
+        asset_id: &str,
+        output_path: &std::path::Path,
+        progress: Option<TransferProgressCallback>,
+    ) -> Result<(), String> {
+        let path = original_path(asset_id, true);
+        self.download_to_file(&path, asset_id, output_path, progress)
+            .await
+    }
+
+    /// Download `path` from the active server into `output_path`.
+    async fn download_to_file(
+        &self,
+        path: &str,
+        asset_id: &str,
+        output_path: &std::path::Path,
+        progress: Option<TransferProgressCallback>,
+    ) -> Result<(), String> {
         let base_url = self
             .get_active_url()
             .await
             .ok_or_else(|| "No active connection".to_string())?;
         let settings = self.settings_snapshot();
-        let url = format!("{}/api/assets/{}/original", base_url, asset_id);
+        let url = format!("{base_url}{path}");
 
         match self
             .client
@@ -219,20 +282,8 @@ impl ImmichApiClient {
             .send()
             .await
         {
-            Ok(mut resp) if resp.status().is_success() => {
-                use tokio::io::AsyncWriteExt;
-                let total_bytes = resp.content_length();
-                let mut written = 0_u64;
-                let mut file = tokio::fs::File::create(output_path)
-                    .await
-                    .map_err(|e| e.to_string())?;
-                while let Some(chunk) = resp.chunk().await.map_err(|e| e.to_string())? {
-                    file.write_all(&chunk).await.map_err(|e| e.to_string())?;
-                    written = written.saturating_add(chunk.len() as u64);
-                    if let Some(callback) = &progress {
-                        callback(written, total_bytes);
-                    }
-                }
+            Ok(resp) if resp.status().is_success() => {
+                stream_to_file(resp, output_path, progress.as_ref()).await?;
                 self.clear_issue().await;
                 Ok(())
             }
@@ -365,7 +416,28 @@ impl ImmichApiClient {
 
 #[cfg(test)]
 mod tests {
-    use super::delete_request_body;
+    use super::{ThumbnailSize, delete_request_body, original_path, thumbnail_path};
+
+    #[test]
+    fn thumbnail_path_adds_edited_only_when_requested() {
+        assert_eq!(
+            thumbnail_path("a1", ThumbnailSize::Preview, false),
+            "/api/assets/a1/thumbnail?size=preview"
+        );
+        assert_eq!(
+            thumbnail_path("a1", ThumbnailSize::Preview, true),
+            "/api/assets/a1/thumbnail?size=preview&edited=true"
+        );
+    }
+
+    #[test]
+    fn original_path_adds_edited_only_when_requested() {
+        assert_eq!(original_path("a1", false), "/api/assets/a1/original");
+        assert_eq!(
+            original_path("a1", true),
+            "/api/assets/a1/original?edited=true"
+        );
+    }
 
     #[test]
     fn delete_body_moves_to_trash_unless_forced() {
