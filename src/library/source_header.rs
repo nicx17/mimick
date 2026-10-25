@@ -214,6 +214,7 @@ fn basics(ui: &LibraryWindowUi, source: &LibrarySource) -> (Leading, String) {
         LibrarySource::Tag { name, .. } => (Leading::TagColor(None), leaf_name(name).to_string()),
         LibrarySource::Folder { path } => icon("folder-symbolic", leaf_name(path)),
         LibrarySource::Place { city } => icon("mark-location-symbolic", city),
+        LibrarySource::MapArea { label, .. } => icon("mark-location-symbolic", label),
         LibrarySource::Thing { query } => icon("system-search-symbolic", &capitalize(query)),
         LibrarySource::SmartSearch { query }
         | LibrarySource::MetadataSearch { query }
@@ -267,6 +268,17 @@ fn enrich(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
         | LibrarySource::AlbumUnified { id, .. } => enrich_album(ui, id.clone()),
         LibrarySource::Person { id, .. } => enrich_person(ui, id.clone()),
         LibrarySource::Tag { id, name } => enrich_tag(ui, id.clone(), name.clone()),
+        LibrarySource::MapArea { ids, .. } => {
+            *ui.header.count.borrow_mut() = Some(count_label(ids.0.len() as u64));
+            render_facts(&ui.header);
+            let ui_close = ui.clone();
+            add_action(
+                &ui.header,
+                "window-close-symbolic",
+                "Back to the map",
+                move || super::navigation::close_map_area(&ui_close),
+            );
+        }
         _ => {}
     }
 }

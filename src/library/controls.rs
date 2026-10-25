@@ -343,6 +343,8 @@ pub(super) fn refresh_library_surfaces(ui: Rc<LibraryWindowUi>, include_current_
     // content (with spinners) instead of silently-stale tiles.
     let visible = ui.content_stack.visible_child_name();
     ui.explore.populated.set(false);
+    ui.map.populated.set(false);
+    ui.map.tiles.retry_failed();
     match visible.as_deref() {
         Some("explore") => super::load_explore_landing(ui.clone()),
         Some("albums") => super::refresh_albums_view(ui.clone()),

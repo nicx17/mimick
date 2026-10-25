@@ -1,0 +1,17 @@
+//! Map page, details-pane mini map, and the Set Location dialog, drawn with libshumate.
+
+mod camera;
+mod cluster;
+mod controls;
+mod coords;
+mod layout;
+mod locate;
+mod markers;
+mod minimap;
+mod style;
+mod styles;
+mod tiles;
+mod view;
+
+pub use layout::sync as sync_layout;
+pub use view::{MapView, build_map_view, connect_map_view};

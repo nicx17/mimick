@@ -1,6 +1,8 @@
 //! Library runtime state used by the built-in asset browser.
 
 use std::collections::VecDeque;
+use std::fmt;
+use std::sync::Arc;
 
 use crate::api_client::{
     LibraryAlbum, LibraryAsset, MetadataSearchFilters, ServerAbout, ServerStats,
@@ -77,6 +79,31 @@ pub enum LibrarySource {
     Thing {
         query: String,
     },
+    /// Assets under one cluster on the Map page, fetched by ID.
+    MapArea {
+        ids: AssetIds,
+        label: String,
+    },
+}
+
+/// Shared asset IDs; debug output shows only the count.
+#[derive(Clone, PartialEq, Eq)]
+pub struct AssetIds(pub Arc<[String]>);
+
+impl AssetIds {
+    /// IDs on 1-based `page`, and whether more pages follow.
+    pub fn page(&self, page: u32, size: u32) -> (&[String], bool) {
+        let start = (page.saturating_sub(1) as usize).saturating_mul(size as usize);
+        let end = start.saturating_add(size as usize).min(self.0.len());
+        let ids = self.0.get(start..end).unwrap_or_default();
+        (ids, end < self.0.len())
+    }
+}
+
+impl fmt::Debug for AssetIds {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} assets", self.0.len())
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -88,6 +115,7 @@ pub enum LibraryPage {
     Folders { path: Option<String> },
     Sharing,
     Search,
+    Map,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -450,5 +478,14 @@ mod tests {
         let (_, source, page) = state.clear_search_restore_previous_source().unwrap();
         assert!(matches!(source, LibrarySource::Album { .. }));
         assert_eq!(page, 1);
+    }
+
+    #[test]
+    fn asset_ids_page_through_in_order() {
+        let ids = AssetIds((0..5).map(|i| i.to_string()).collect());
+        assert_eq!(ids.page(1, 2), (&ids.0[0..2], true));
+        assert_eq!(ids.page(3, 2), (&ids.0[4..5], false));
+        assert_eq!(ids.page(4, 2).0, &[] as &[String]);
+        assert_eq!(format!("{ids:?}"), "5 assets");
     }
 }

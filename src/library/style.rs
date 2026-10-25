@@ -389,6 +389,92 @@ row.mimick-album-drop-hover {
     transition: background 150ms ease-in-out, transform 150ms ease-in-out;
     transform: scale(1.03);
 }
+
+/* ── Map ───────────────────────────────────────────────────────── */
+
+button.mimick-map-cluster {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0 8px;
+    border-radius: 999px;
+    border: 2px solid white;
+    background: @accent_bg_color;
+    color: @accent_fg_color;
+    font-weight: bold;
+    font-size: 0.9em;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+button.mimick-map-cluster-m {
+    min-width: 40px;
+    min-height: 40px;
+}
+
+button.mimick-map-cluster-l {
+    min-width: 46px;
+    min-height: 46px;
+    font-size: 1em;
+}
+
+button.mimick-map-cluster-xl {
+    min-width: 52px;
+    min-height: 52px;
+    font-size: 1.05em;
+}
+
+button.mimick-map-cluster:hover {
+    background: mix(@accent_bg_color, white, 0.2);
+}
+
+button.mimick-map-photo {
+    padding: 0;
+    border-radius: 999px;
+    border: 2px solid @accent_bg_color;
+    background: @accent_bg_color;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+button.mimick-map-photo:hover {
+    border-color: white;
+}
+
+button.mimick-map-cluster.selected,
+button.mimick-map-photo.selected {
+    border-color: white;
+    box-shadow: 0 0 0 4px alpha(@accent_bg_color, 0.5), 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+box.mimick-map-here {
+    min-width: 16px;
+    min-height: 16px;
+    border-radius: 999px;
+    border: 3px solid white;
+    background: #3584e4;
+    box-shadow: 0 0 0 6px alpha(#3584e4, 0.25), 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+box.mimick-map-pin {
+    min-width: 18px;
+    min-height: 18px;
+    border-radius: 999px;
+    border: 3px solid white;
+    background: @accent_bg_color;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+button.mimick-minimap {
+    padding: 0;
+    border-radius: 12px;
+}
+
+.mimick-location-map {
+    border-radius: 12px;
+}
+
+.mimick-map-status {
+    margin: 24px;
+    padding: 12px 24px;
+}
 "#;
 
 static REGISTERED: OnceLock<()> = OnceLock::new();
