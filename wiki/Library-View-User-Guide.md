@@ -24,6 +24,7 @@ The window uses a sidebar + content split.
 - **Library**
   - **Photos** — opens the timeline grid
   - **Explore** — People, Places, Things
+  - **Map** — every photo with a location (see [Map](#map))
   - **People** — everyone Immich has recognized (see [People](#people))
   - **Favorites** — assets you've marked as favorites (see [Favorites](#favorites))
   - **Archive** — archived assets, hidden from Photos (see [Archive](#archive))
@@ -46,7 +47,7 @@ The window uses a sidebar + content split.
 - **Albums**: item count, date range, who it's shared with or by, description, Share and Create share link buttons, a **⋯** menu with **Rename…** and **Edit Description…** (your own albums), and the linked-folder row with **Link folder** / **Sync**
 - **People**: face, name, photo count, age and birthday, a heart to favorite them, and the person's **⋯** menu (Rename, Set Birthday, Hide, Merge People)
 - **Tags**: color, photo count, parent tags, and the tag's **⋯** menu
-- **Places**, **Folders**, **Favorites**, **Archive**, and searches: the item count where Immich can count it; folders also show their full path
+- **Places**, map areas, **Folders**, **Favorites**, **Archive**, and searches: the item count where Immich can count it; folders also show their full path
 - **Trash**: the retention note with **Restore All** and **Empty Trash**
 
 **Back and Forward:** the header's back button, **Alt+Left**, the mouse back button, or a quick swipe right on a touch screen returns to the previous view, including pages such as Albums, People, Explore, and each level inside Tags and Folders. **Alt+Right** or the mouse forward button goes forward again. In the lightbox, the mouse back button closes it. A swipe from the very left edge still opens the sidebar.
@@ -64,6 +65,7 @@ The window uses a sidebar + content split.
 | Smart search (server) | the **Smart Search** mode and Explore's Things |
 | OCR (server) | the **OCR** search mode and the OCR filter |
 | Reverse geocoding (server) | Explore's Places |
+| Map (server) | **Map** and the lightbox's mini map |
 | Search (server) | **Search** |
 | Tags (account) | **Tags**, the lightbox's Tags section, and the Tag search filter |
 | Folders / Shared Links (account) | **Folders** / **Shared Links** |
@@ -191,6 +193,42 @@ Use the **Refresh** button in the header to reload the Explore data. Sections th
 
 ---
 
+## Map
+
+Select **Map** in the sidebar to see every photo and video with a location.
+
+- Photos close together are grouped into a bubble showing how many there are; zoom in and the bubbles split apart. A single photo shows as a round thumbnail. Hover a bubble to see where it is.
+- Click a bubble or thumbnail to list those photos beside the map, titled after the most common place among them (below the map on narrow windows). The sidebar hides to make room and comes back when you close the list; drag the divider to resize. The lightbox, selection, and bulk actions work in the list as in any grid. The **×** in the list's header or **Back** returns to the map alone, and the bubble you opened stays highlighted until then.
+- The first visit zooms to fit all your photos. The map remembers where you were until you refresh. You can't zoom out past the point where the world fills the map's height.
+- Archived photos are not shown, matching Immich's web map.
+
+**Buttons over the map** (top right):
+
+| Button | What it does |
+| :--- | :--- |
+| **+** / **−** | Zoom in and out (scrolling, pinching, and double-clicking work too) |
+| Rotate left / right | Turn the map 45°; two-finger rotation works on touchpads and touch screens |
+| Compass | Appears while the map is turned; click it to point north again |
+| Photos | **Show photos in this area** lists every photo currently on screen |
+| Location | **Show my location** asks the desktop's location service for your position (see below) |
+| Layers | The map style |
+
+**Map styles:** **Immich** uses the style set on your server (**Administration → Settings → Map**), the same as Immich's web app. **Colorful**, **Natural**, **Muted**, **Gray**, and **Toner** are the free VersaTiles styles (also used by Home Assistant), and **OpenStreetMap** is the standard OpenStreetMap map. Every style except OpenStreetMap switches between light and dark with the system style. The choice applies to every map in Mimick and is remembered. If a style can't be loaded, the map shows OpenStreetMap instead.
+
+**Your location:** the first time, your desktop asks whether Mimick may see your location. Location services must be turned on (in GNOME, **Settings → Privacy → Location**). Mimick asks for your position only when you press the button, and only to show it on the map.
+
+### Setting a Location
+
+**Set Location…** (in the lightbox details pane, the right-click menu, or the selection bar's location button for many photos at once) opens a dialog with three ways to choose a spot:
+
+- **Search places** — type a city or town; results come from your Immich server. Click one to move the pin there.
+- **Click the map** — drops the pin where you click. Drag to pan and scroll to zoom as usual.
+- **Latitude, Longitude** — type or paste coordinates such as `38.7223, -9.1393`. The paste button reads them from the clipboard. To copy the location of another photo, use the copy button next to its **Coordinates** in the details pane, then paste it here.
+
+**Save** sends the location to Immich for every chosen photo. Immich fills in the city and country shortly after, once it has looked the place up.
+
+---
+
 ## Albums
 
 Select **Albums** in the sidebar to open the album landing page.
@@ -240,6 +278,7 @@ In selection mode:
 **Bulk actions available:**
 
 - **Download** — saves selected remote assets to the configured download folder (local-only assets are skipped)
+- **Set location** — gives every selected remote asset the same location (see [Setting a Location](#setting-a-location))
 - **Move to trash** — moves selected remote assets to the Immich trash after a confirmation dialog. They can be restored from the [Trash](#trash) view or the Immich web UI. Local copies in your watch folders are kept, and local-only assets are skipped (the dialog says how many).
 - **Clear** — deselects all items without taking action
 
@@ -273,7 +312,8 @@ Click any asset in the grid to open it in the lightbox.
 - **Download** saves the original file to the configured download folder.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
 - **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date** (local time). Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
-- Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, and **Move to Trash**.
+- **Location**: photos with GPS coordinates show a small map with a pin under **Coordinates**; click it to open the [Map](#map) there. The copy button next to the coordinates copies them for pasting elsewhere. **Set Location…** next to **Edit Info…** sets or changes the location (see [Setting a Location](#setting-a-location)).
+- Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, **Set Location…**, and **Move to Trash**.
 - **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text and show a **Copy All Text** button over the photo.
   - With a mouse, the pointer becomes a text cursor over a box. Click a box to select it, drag across boxes to select everything between them in reading order, Shift-click to extend the selection, and Ctrl-click to add or remove one box. Hover a box to read it. **Ctrl+A** selects all.
   - On a touch screen, tap a box to add or remove it; dragging and pinching still move and zoom the photo.

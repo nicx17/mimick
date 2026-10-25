@@ -95,6 +95,24 @@ The text button in the lightbox action bar only appears when Immich has recogniz
 
 Mimick caches an edited photo the first time you open it. If you edit the photo again in Immich, use **Clear Cache** in the settings window to load the new edit. When the edited version can't be fetched (for example while offline), a photo that is also on disk shows the unedited local copy instead.
 
+## Map Issues
+
+### No Map in the Sidebar or Details Pane
+
+The **Map** page and the lightbox's mini map are hidden when the map is turned off on the Immich server (**Administration → Settings → Map**). The mini map also needs the photo to have GPS coordinates.
+
+### Map Shows OpenStreetMap Instead of the Chosen Style
+
+With the **Immich** style (the default; change it with the layers button on the map), Mimick uses the map style set on your Immich server. It shows OpenStreetMap instead when the server has no style set, when the style or its tiles can't be downloaded, or when the server was unreachable as the map opened (Mimick asks again the next time a map opens). Run Mimick from a terminal to see the reason in the log. Layers of a custom style that libshumate can't draw are skipped and logged, so some labels or icons may be missing.
+
+### Map Tiles Stay Blank
+
+Tiles download from the style's tile server (or OpenStreetMap) directly, not through Immich. Check that the computer can reach it, then use **Refresh** in the main menu to retry tiles that failed.
+
+### "Location Unavailable"
+
+**Show my location** asks the desktop's location service (the XDG Location portal, backed by GeoClue). Turn on location services (in GNOME, **Settings → Privacy → Location**) and allow Mimick when asked. If you declined before, re-enable Mimick in the same settings page. On desktops without the location portal or GeoClue, the button can't find you.
+
 ## Startup & Autostart Issues
 
 ### App Opens a Window on Login Despite Background Sync (KDE)

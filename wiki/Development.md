@@ -6,25 +6,26 @@
 - GTK4 development packages (>= 4.24 required)
 - Libadwaita development packages (>= 1.10 required)
 - libheif development packages (>= 1.21 required)
+- libshumate development packages (>= 1.7 required), for the maps
 - GStreamer and GstPlay development packages, plus the GTK 4 video sink plugin (`gtk4paintablesink`) for video playback
 - libclang (Clang development files), used at build time to generate the bundled LibRaw 0.21 bindings
 
 ### Ubuntu / Debian
 
 ```bash
-sudo apt install libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential cmake libheif-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-gtk4 libclang-dev
+sudo apt install libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential cmake libheif-dev libshumate-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-gtk4 libclang-dev
 ```
 
 ### Fedora
 
 ```bash
-sudo dnf install gtk4-devel libadwaita-devel pkg-config cmake libheif-devel gstreamer1-devel gstreamer1-plugins-bad-free-devel gstreamer1-plugin-gtk4 clang-devel
+sudo dnf install gtk4-devel libadwaita-devel pkg-config cmake libheif-devel libshumate-devel gstreamer1-devel gstreamer1-plugins-bad-free-devel gstreamer1-plugin-gtk4 clang-devel
 ```
 
 ### Arch Linux
 
 ```bash
-sudo pacman -S gtk4 libadwaita pkgconf base-devel cmake libheif gstreamer gst-plugins-bad-libs gst-plugin-gtk4 clang
+sudo pacman -S gtk4 libadwaita pkgconf base-devel cmake libheif libshumate gstreamer gst-plugins-bad-libs gst-plugin-gtk4 clang
 ```
 
 ### Flatpak Packaging Prerequisites

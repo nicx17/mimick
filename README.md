@@ -105,7 +105,7 @@ Each watched directory operates with isolated logical constraints:
 
 An optional desktop library interface for browsing and managing your Immich photos directly on Linux (toggle via **Settings → Behavior → Enable Library View**):
 
-- **Browsing & Lightbox:** Timeline and album grid, full-resolution previews that show edits made in Immich, fullscreen viewing, selectable and copyable recognized text (OCR), media metadata viewer, asset download, and an Explore landing page (people, places, things).
+- **Browsing & Lightbox:** Timeline and album grid, full-resolution previews that show edits made in Immich, fullscreen viewing, selectable and copyable recognized text (OCR), media metadata viewer, asset download, an Explore landing page (people, places, things), and a map of your photos with location editing for one or many photos.
 - **Video Playback:** In-app playback that streams from Immich with hardware (VA-API) decoding, seeking, speed control, loop, audio/subtitle tracks, and **Open with…** for an external player.
 - **Search & Discovery:** Metadata search, smart CLIP semantic search, OCR text lookup, and server-folder browsing.
 - **Asset Management:** Edit dates and descriptions, toggle favorites, archive assets to hide them from the main timeline, or manage the Immich trash.
@@ -246,7 +246,7 @@ If you prefer to compile Mimick yourself, you can build it natively with Cargo o
 ### Prerequisites
 
 - Rust toolchain (`cargo`): <https://rustup.rs>
-- GTK4 (>= 4.24), Libadwaita (>= 1.10), and libheif (>= 1.21) development libraries
+- GTK4 (>= 4.24), Libadwaita (>= 1.10), libheif (>= 1.21), and libshumate (>= 1.7) development libraries
 - GStreamer development libraries and the GTK 4 video sink plugin (for video playback)
 - libclang (for generating the bundled LibRaw bindings)
 
