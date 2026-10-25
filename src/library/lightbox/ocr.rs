@@ -71,6 +71,7 @@ pub(super) struct OcrState {
     boxes: Vec<OcrBox>,
     image: (f64, f64),
     selected: BTreeSet<usize>,
+    anchor: Option<usize>,
     hovered: Option<usize>,
 }
 
@@ -120,6 +121,12 @@ impl OcrState {
         } else {
             self.selected = BTreeSet::from([idx]);
         }
+        self.anchor = Some(idx);
+    }
+
+    pub(super) fn extend_to(&mut self, idx: usize) {
+        let anchor = *self.anchor.get_or_insert(idx);
+        self.selected = (anchor.min(idx)..=anchor.max(idx)).collect();
     }
 
     pub(super) fn select_all(&mut self) {
@@ -128,19 +135,27 @@ impl OcrState {
 
     pub(super) fn clear_selection(&mut self) {
         self.selected.clear();
+        self.anchor = None;
+    }
+
+    pub(super) fn has_selection(&self) -> bool {
+        !self.selected.is_empty()
     }
 
     pub(super) fn selected_text(&self) -> Option<String> {
-        if self.selected.is_empty() {
-            return None;
-        }
-        let lines: Vec<&str> = self
-            .selected
-            .iter()
-            .filter_map(|&idx| self.boxes.get(idx))
+        self.join_text(self.selected.iter().copied())
+    }
+
+    pub(super) fn all_text(&self) -> Option<String> {
+        self.join_text(0..self.boxes.len())
+    }
+
+    fn join_text(&self, indices: impl Iterator<Item = usize>) -> Option<String> {
+        let lines: Vec<&str> = indices
+            .filter_map(|idx| self.boxes.get(idx))
             .map(|ocr_box| ocr_box.text.as_str())
             .collect();
-        Some(lines.join("\n"))
+        (!lines.is_empty()).then(|| lines.join("\n"))
     }
 }
 
@@ -188,15 +203,30 @@ impl OcrLayer {
         self.state.borrow().box_at(area, p)
     }
 
-    pub(super) fn set_hovered(&self, idx: Option<usize>) {
-        if self.state.borrow_mut().set_hovered(idx) {
+    pub(super) fn set_hovered(&self, idx: Option<usize>) -> bool {
+        let changed = self.state.borrow_mut().set_hovered(idx);
+        if changed {
             self.area.queue_draw();
         }
+        changed
     }
 
     pub(super) fn click(&self, idx: usize, extend: bool) {
         self.state.borrow_mut().click(idx, extend);
         self.area.queue_draw();
+    }
+
+    pub(super) fn extend_to(&self, idx: usize) {
+        self.state.borrow_mut().extend_to(idx);
+        self.area.queue_draw();
+    }
+
+    pub(super) fn has_selection(&self) -> bool {
+        self.state.borrow().has_selection()
+    }
+
+    pub(super) fn all_text(&self) -> Option<String> {
+        self.state.borrow().all_text()
     }
 
     pub(super) fn select_all(&self) {
@@ -261,7 +291,7 @@ impl Lightbox {
             match result {
                 Ok(boxes) if !boxes.is_empty() => {
                     lb.picture.ocr.set_boxes(boxes, image);
-                    lb.sync_ocr_visibility();
+                    lb.sync_ocr_controls();
                 }
                 Ok(_) => {}
                 Err(err) => log::debug!("OCR fetch failed for {asset_id}: {err}"),
@@ -270,8 +300,59 @@ impl Lightbox {
     }
 
     pub(super) fn connect_ocr(self: &Rc<Self>) {
-        let scrolled = &self.picture.scrolled;
+        self.connect_ocr_mouse_selection();
+        self.connect_ocr_taps();
+        self.connect_ocr_hover();
+        let lb = self.clone();
+        self.picture
+            .ocr_copy
+            .connect_clicked(move |_| lb.copy_ocr_text());
+    }
 
+    fn connect_ocr_mouse_selection(self: &Rc<Self>) {
+        let drag = gtk::GestureDrag::new();
+        drag.set_button(gtk::gdk::BUTTON_PRIMARY);
+        drag.set_propagation_phase(gtk::PropagationPhase::Capture);
+        let start = Rc::new(Cell::new(None::<(f64, f64)>));
+        let begin = start.clone();
+        let lb = self.clone();
+        drag.connect_drag_begin(move |gesture, x, y| {
+            begin.set(None);
+            let Some(idx) = (!is_touch(gesture))
+                .then(|| lb.ocr_box_under(x, y))
+                .flatten()
+            else {
+                gesture.set_state(gtk::EventSequenceState::Denied);
+                return;
+            };
+            gesture.set_state(gtk::EventSequenceState::Claimed);
+            let mods = gesture.current_event_state();
+            if mods.contains(gtk::gdk::ModifierType::CONTROL_MASK) {
+                lb.picture.ocr.click(idx, true);
+            } else {
+                if mods.contains(gtk::gdk::ModifierType::SHIFT_MASK) {
+                    lb.picture.ocr.extend_to(idx);
+                } else {
+                    lb.picture.ocr.click(idx, false);
+                }
+                begin.set(Some((x, y)));
+            }
+            lb.sync_ocr_controls();
+        });
+        let lb = self.clone();
+        drag.connect_drag_update(move |_, dx, dy| {
+            let Some((x, y)) = start.get() else {
+                return;
+            };
+            if let Some(idx) = lb.ocr_box_under(x + dx, y + dy) {
+                lb.picture.ocr.extend_to(idx);
+                lb.sync_ocr_controls();
+            }
+        });
+        self.picture.scrolled.add_controller(drag);
+    }
+
+    fn connect_ocr_taps(self: &Rc<Self>) {
         let click = gtk::GestureClick::new();
         click.set_button(gtk::gdk::BUTTON_PRIMARY);
         click.set_propagation_phase(gtk::PropagationPhase::Capture);
@@ -285,28 +366,29 @@ impl Lightbox {
             if dragged.get() || !lb.picture.ocr.area.is_visible() {
                 return;
             }
-            let extend = gesture.current_event_state().intersects(
+            let modified = gesture.current_event_state().intersects(
                 gtk::gdk::ModifierType::SHIFT_MASK | gtk::gdk::ModifierType::CONTROL_MASK,
             );
             match lb.ocr_box_under(x, y) {
-                Some(idx) => {
+                Some(idx) if is_touch(gesture) => {
                     gesture.set_state(gtk::EventSequenceState::Claimed);
-                    lb.picture.ocr.click(idx, extend);
+                    lb.picture.ocr.click(idx, true);
                 }
-                None if !extend => lb.picture.ocr.clear_selection(),
-                None => {}
+                None if !modified => lb.picture.ocr.clear_selection(),
+                _ => return,
             }
+            lb.sync_ocr_controls();
         });
-        scrolled.add_controller(click);
+        self.picture.scrolled.add_controller(click);
+    }
 
+    fn connect_ocr_hover(self: &Rc<Self>) {
+        let scrolled = &self.picture.scrolled;
         let motion = gtk::EventControllerMotion::new();
         let lb = self.clone();
-        motion.connect_motion(move |_, x, y| {
-            let hovered = lb.ocr_box_under(x, y);
-            lb.picture.ocr.set_hovered(hovered);
-        });
+        motion.connect_motion(move |_, x, y| lb.set_ocr_hover(lb.ocr_box_under(x, y)));
         let lb = self.clone();
-        motion.connect_leave(move |_| lb.picture.ocr.set_hovered(None));
+        motion.connect_leave(move |_| lb.set_ocr_hover(None));
         scrolled.add_controller(motion);
 
         scrolled.set_has_tooltip(true);
@@ -325,10 +407,25 @@ impl Lightbox {
         });
     }
 
-    pub(super) fn copy_ocr_selection(&self) {
-        if let Some(text) = self.picture.ocr.selected_text() {
-            self.picture.scrolled.clipboard().set_text(&text);
+    fn set_ocr_hover(&self, idx: Option<usize>) {
+        if self.picture.ocr.set_hovered(idx) {
+            self.picture
+                .scrolled
+                .set_cursor_from_name(idx.map(|_| "text"));
         }
+    }
+
+    pub(super) fn copy_ocr_text(self: &Rc<Self>) {
+        let ocr = &self.picture.ocr;
+        let Some(text) = ocr.selected_text().or_else(|| ocr.all_text()) else {
+            return;
+        };
+        self.picture.scrolled.clipboard().set_text(&text);
+        self.picture.ocr_copy.set_label("Copied");
+        let lb = self.clone();
+        glib::timeout_add_local_once(std::time::Duration::from_millis(1500), move || {
+            lb.sync_ocr_controls()
+        });
     }
 
     pub(super) fn ocr_box_under(&self, x: f64, y: f64) -> Option<usize> {
@@ -345,14 +442,29 @@ impl Lightbox {
             .box_at((f64::from(point.x()), f64::from(point.y())))
     }
 
-    pub(super) fn sync_ocr_visibility(&self) {
-        let has_boxes = self.picture.ocr.has_boxes();
+    pub(super) fn sync_ocr_controls(&self) {
+        let ocr = &self.picture.ocr;
+        let has_boxes = ocr.has_boxes();
+        let shown = self.actions.ocr_toggle.is_active() && has_boxes;
         self.actions.ocr_toggle.set_visible(has_boxes);
-        self.picture
-            .ocr
-            .area
-            .set_visible(self.actions.ocr_toggle.is_active() && has_boxes);
+        ocr.area.set_visible(shown);
+        self.picture.ocr_copy.set_visible(shown);
+        self.picture.ocr_copy.set_label(if ocr.has_selection() {
+            "Copy Selected Text"
+        } else {
+            "Copy All Text"
+        });
+        if !shown {
+            ocr.set_hovered(None);
+            self.picture.scrolled.set_cursor(None::<&gtk::gdk::Cursor>);
+        }
     }
+}
+
+fn is_touch(controller: &impl IsA<gtk::EventController>) -> bool {
+    controller
+        .current_event_device()
+        .is_some_and(|device| device.source() == gtk::gdk::InputSource::Touchscreen)
 }
 
 #[cfg(test)]
@@ -492,5 +604,55 @@ mod tests {
         assert_eq!(state.box_at((1000.0, 1000.0), (200.0, 390.0)), Some(0));
         assert_eq!(state.box_at((1000.0, 1000.0), (200.0, 100.0)), None);
         assert_eq!(state.box_at((0.0, 0.0), (0.0, 0.0)), None);
+    }
+
+    fn four_rows() -> OcrState {
+        OcrState::new(
+            vec![
+                ob("a", 0.0, 0.0),
+                ob("b", 0.0, 0.25),
+                ob("c", 0.0, 0.5),
+                ob("d", 0.0, 0.75),
+            ],
+            (100.0, 100.0),
+        )
+    }
+
+    #[test]
+    fn extend_to_selects_the_range_from_the_last_click() {
+        let mut state = four_rows();
+        state.click(1, false);
+        state.extend_to(3);
+        assert_eq!(state.selected_text().as_deref(), Some("b\nc\nd"));
+        state.extend_to(0);
+        assert_eq!(state.selected_text().as_deref(), Some("a\nb"));
+    }
+
+    #[test]
+    fn extend_to_without_a_click_selects_one_box() {
+        let mut state = four_rows();
+        state.extend_to(2);
+        assert_eq!(state.selected_text().as_deref(), Some("c"));
+    }
+
+    #[test]
+    fn all_text_joins_every_box_in_reading_order() {
+        let mut state = OcrState::new(
+            vec![ob("right", 0.625, 0.5), ob("top", 0.5, 0.25)],
+            (100.0, 100.0),
+        );
+        state.click(0, false);
+        assert_eq!(state.all_text().as_deref(), Some("top\nright"));
+        assert_eq!(OcrState::default().all_text(), None);
+    }
+
+    #[test]
+    fn has_selection_follows_clicks_and_clearing() {
+        let mut state = four_rows();
+        assert!(!state.has_selection());
+        state.click(2, false);
+        assert!(state.has_selection());
+        state.clear_selection();
+        assert!(!state.has_selection());
     }
 }

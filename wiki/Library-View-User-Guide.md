@@ -274,7 +274,10 @@ Click any asset in the grid to open it in the lightbox.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
 - **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date** (local time). Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
 - Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, and **Move to Trash**.
-- **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text; hover a box to read it. Click a box to select it, Shift- or Ctrl-click to add or remove more, **Ctrl+A** to select all, and **Ctrl+C** to copy the selection, one box per line in reading order.
+- **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text and show a **Copy All Text** button over the photo.
+  - With a mouse, the pointer becomes a text cursor over a box. Click a box to select it, drag across boxes to select everything between them in reading order, Shift-click to extend the selection, and Ctrl-click to add or remove one box. Hover a box to read it. **Ctrl+A** selects all.
+  - On a touch screen, tap a box to add or remove it; dragging and pinching still move and zoom the photo.
+  - Once something is selected the button reads **Copy Selected Text**. The button (or **Ctrl+C**) copies the selection, or all text when nothing is selected, one box per line in reading order.
 
 ### Tags in the Details Pane
 
@@ -443,7 +446,7 @@ The **Trash** sidebar entry lists everything in the Immich trash in the normal g
 | **A** | Archive or unarchive the current asset (lightbox) |
 | **T** | Show or hide recognized text (lightbox, when Immich found text) |
 | **Ctrl+A** | Select all recognized text (lightbox, while shown) |
-| **Ctrl+C** | Copy the selected recognized text (lightbox) |
+| **Ctrl+C** | Copy the selected recognized text, or all of it when nothing is selected (lightbox) |
 | **Space** | Play or pause the current video (lightbox) |
 | **J** / **L** | Skip back / forward 10 seconds (lightbox video) |
 | **,** / **.** | Step one frame back / forward (lightbox video) |

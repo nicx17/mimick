@@ -64,9 +64,13 @@ const LIGHTBOX: &[Shortcut] = &[
     hint(
         "Select all recognized text",
         "<Control>a",
-        "Click a text box to select it; Shift or Ctrl-click to add more",
+        "Drag across text to select it; Ctrl-click adds or removes a box",
     ),
-    key("Copy selected text", "<Control>c"),
+    hint(
+        "Copy recognized text",
+        "<Control>c",
+        "Copies the selection, or all text when nothing is selected",
+    ),
     key("Move to trash", "Delete"),
     hint("Zoom in", "<Control>plus", "Or hold Ctrl and scroll"),
     key("Zoom out", "<Control>minus"),

@@ -584,6 +584,7 @@ struct PictureArea {
     overlay: gtk::Overlay,
     loader: gtk::Revealer,
     ocr: ocr::OcrLayer,
+    ocr_copy: gtk::Button,
 }
 
 /// "Preview unavailable" card shown over the picture when nothing can be decoded.
@@ -710,6 +711,15 @@ fn build_picture_area() -> PictureArea {
     let overlay = gtk::Overlay::builder().build();
     overlay.set_child(Some(&scrolled));
     overlay.add_overlay(&loader);
+    let ocr_copy = gtk::Button::builder()
+        .label("Copy All Text")
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::End)
+        .margin_bottom(12)
+        .css_classes(["osd", "pill"])
+        .visible(false)
+        .build();
+    overlay.add_overlay(&ocr_copy);
     PictureArea {
         stack,
         picture_a,
@@ -718,6 +728,7 @@ fn build_picture_area() -> PictureArea {
         overlay,
         loader,
         ocr,
+        ocr_copy,
     }
 }
 
@@ -1218,7 +1229,7 @@ impl Lightbox {
             if !btn.is_active() {
                 lb.picture.ocr.clear_selection();
             }
-            lb.sync_ocr_visibility();
+            lb.sync_ocr_controls();
         });
 
         let lb = self.clone();
@@ -1420,11 +1431,16 @@ impl Lightbox {
                     .ocr_toggle
                     .set_active(!self.actions.ocr_toggle.is_active())
             }
-            (true, gtk::gdk::Key::a) if self.picture.ocr.area.is_visible() => {
-                self.picture.ocr.select_all()
+            (true, gtk::gdk::Key::a) | (true, gtk::gdk::Key::A)
+                if self.picture.ocr.area.is_visible() =>
+            {
+                self.picture.ocr.select_all();
+                self.sync_ocr_controls();
             }
-            (true, gtk::gdk::Key::c) if self.picture.ocr.area.is_visible() => {
-                self.copy_ocr_selection()
+            (true, gtk::gdk::Key::c) | (true, gtk::gdk::Key::C)
+                if self.picture.ocr.area.is_visible() =>
+            {
+                self.copy_ocr_text()
             }
             (false, gtk::gdk::Key::Escape) if self.ui.window.is_fullscreen() => {
                 self.ui.window.unfullscreen();
@@ -1604,7 +1620,7 @@ impl Lightbox {
 
         self.prepare_video(info.is_video());
         self.picture.ocr.clear();
-        self.sync_ocr_visibility();
+        self.sync_ocr_controls();
         self.start_picture_load(&info);
         self.details.loading.set_visible(true);
         if info.is_local() && !info.is_video() {
