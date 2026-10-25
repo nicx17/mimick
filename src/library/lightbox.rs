@@ -30,6 +30,7 @@ use super::video_player::VideoPlayer;
 use super::{LOCAL_ID_PREFIX, LibraryWindowUi, load_source_page, load_texture_oriented};
 
 mod fullscreen;
+mod location;
 mod ocr;
 mod video;
 
@@ -123,15 +124,22 @@ fn drag_export_path(
 /// `taken_label` decides whether the date row reads "Taken" (EXIF
 /// DateTimeOriginal — the camera's capture moment) or "Modified" (filesystem
 /// mtime fallback when no capture timestamp exists).
-fn fill_exif_box(container: &gtk::Box, exif: &crate::api_client::ExifInfo, taken_label: &str) {
+///
+/// Returns the Location group, if any, so the caller can add the mini map to it.
+fn fill_exif_box(
+    container: &gtk::Box,
+    exif: &crate::api_client::ExifInfo,
+    taken_label: &str,
+) -> Option<libadwaita::PreferencesGroup> {
     if let Some(group) = build_camera_group(exif) {
         container.append(&group);
     }
     if let Some(group) = build_image_group(exif, taken_label) {
         container.append(&group);
     }
-    if let Some(group) = build_location_group(exif) {
-        container.append(&group);
+    let location = build_location_group(exif);
+    if let Some(group) = &location {
+        container.append(group);
     }
     if let Some(desc) = &exif.description
         && !desc.trim().is_empty()
@@ -147,6 +155,7 @@ fn fill_exif_box(container: &gtk::Box, exif: &crate::api_client::ExifInfo, taken
         note_group.add(&row);
         container.append(&note_group);
     }
+    location
 }
 
 fn build_camera_group(exif: &crate::api_client::ExifInfo) -> Option<libadwaita::PreferencesGroup> {
@@ -243,12 +252,14 @@ fn build_location_group(
         rows += 1;
     }
     if let (Some(lat), Some(lon)) = (exif.latitude, exif.longitude) {
-        group.add(&accent_row(
+        let row = accent_row(
             "find-location-symbolic",
             "mimick-accent-location",
             "Coordinates",
             &format!("{lat:.5}, {lon:.5}"),
-        ));
+        );
+        row.add_suffix(&location::copy_coordinates_button(lat, lon));
+        group.add(&row);
         rows += 1;
     }
     (rows > 0).then_some(group)
@@ -1906,7 +1917,8 @@ impl Lightbox {
             // screenshots, edited copies) still get the Image group populated from
             // filesystem + Pixbuf data, so the user always sees *something*.
             if let Some((exif, taken_label)) = probed.as_ref().and_then(local_details_exif) {
-                fill_exif_box(&lb.details.exif, &exif, taken_label);
+                let location = fill_exif_box(&lb.details.exif, &exif, taken_label);
+                lb.show_location_map(location, &exif);
                 lb.details.exif.set_visible(true);
             }
         });
@@ -1931,7 +1943,8 @@ impl Lightbox {
                 lb.details.tags.show(&asset_id, details.tags);
             }
             if let Some(exif) = details.exif_info {
-                fill_exif_box(&lb.details.exif, &exif, "Taken");
+                let location = fill_exif_box(&lb.details.exif, &exif, "Taken");
+                lb.show_location_map(location, &exif);
                 lb.details.exif.set_visible(true);
             }
         });
