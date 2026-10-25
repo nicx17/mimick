@@ -68,6 +68,9 @@ mod imp {
 
         #[property(get, set)]
         is_archived: Cell<bool>,
+
+        #[property(get, set)]
+        is_edited: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -99,6 +102,7 @@ pub struct AssetInit<'a> {
     pub height: u32,
     pub is_favorite: bool,
     pub is_archived: bool,
+    pub is_edited: bool,
 }
 
 impl AssetObject {
@@ -117,6 +121,7 @@ impl AssetObject {
             .property("height", init.height)
             .property("is-favorite", init.is_favorite)
             .property("is-archived", init.is_archived)
+            .property("is-edited", init.is_edited)
             .build()
     }
 
@@ -144,5 +149,29 @@ impl AssetObject {
             .property("width", 0u32)
             .property("height", 0u32)
             .build()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_carries_is_edited() {
+        let object = AssetObject::new(AssetInit {
+            id: "a",
+            filename: "a.jpg",
+            mime_type: "image/jpeg",
+            created_at: "",
+            asset_type: "IMAGE",
+            sync_state: 0,
+            thumbhash: None,
+            width: 0,
+            height: 0,
+            is_favorite: false,
+            is_archived: false,
+            is_edited: true,
+        });
+        assert!(object.is_edited());
     }
 }

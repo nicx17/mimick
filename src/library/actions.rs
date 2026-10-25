@@ -384,6 +384,7 @@ mod tests {
             height: 0,
             is_favorite: false,
             is_archived: false,
+            is_edited: false,
         })
     }
 
