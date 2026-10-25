@@ -582,6 +582,7 @@ struct PictureArea {
     scrolled: gtk::ScrolledWindow,
     overlay: gtk::Overlay,
     loader: gtk::Revealer,
+    ocr: ocr::OcrLayer,
 }
 
 /// "Preview unavailable" card shown over the picture when nothing can be decoded.
@@ -595,6 +596,7 @@ struct UnavailableCard {
 /// Zoom controls, resolution toggle, and download button under the picture.
 struct ActionBar {
     bar: gtk::Box,
+    ocr_toggle: gtk::ToggleButton,
     resolution_toggle: gtk::ToggleButton,
     download: gtk::Button,
     open_with: gtk::Button,
@@ -680,10 +682,13 @@ fn build_picture_area() -> PictureArea {
     stack.add_named(&picture_a, Some("a"));
     stack.add_named(&picture_b, Some("b"));
     stack.set_visible_child_name("a");
+    let ocr = ocr::OcrLayer::new();
+    let content = gtk::Overlay::builder().child(&stack).build();
+    content.add_overlay(&ocr.area);
     let scrolled = gtk::ScrolledWindow::builder()
         .hscrollbar_policy(gtk::PolicyType::Automatic)
         .vscrollbar_policy(gtk::PolicyType::Automatic)
-        .child(&stack)
+        .child(&content)
         .vexpand(true)
         .hexpand(true)
         .kinetic_scrolling(false)
@@ -711,6 +716,7 @@ fn build_picture_area() -> PictureArea {
         scrolled,
         overlay,
         loader,
+        ocr,
     }
 }
 
@@ -772,6 +778,11 @@ fn build_action_bar(initial_full: bool) -> ActionBar {
         .tooltip_text("Toggle preview vs original full-resolution image")
         .active(initial_full)
         .build();
+    let ocr_toggle = gtk::ToggleButton::builder()
+        .icon_name("insert-text-symbolic")
+        .tooltip_text("Show recognized text (T)")
+        .visible(false)
+        .build();
     let download = icon_button("mimick-download-symbolic", "Download asset");
     let open_with = icon_button("document-open-symbolic", "Open with…");
     let trash = icon_button("user-trash-symbolic", "Move to trash (Delete)");
@@ -788,6 +799,7 @@ fn build_action_bar(initial_full: bool) -> ActionBar {
         .build();
     bar.append(&zoom_group);
     bar.append(&spacer);
+    bar.append(&ocr_toggle);
     bar.append(&resolution_toggle);
     bar.append(&favorite);
     bar.append(&archive);
@@ -796,6 +808,7 @@ fn build_action_bar(initial_full: bool) -> ActionBar {
     bar.append(&trash);
     ActionBar {
         bar,
+        ocr_toggle,
         resolution_toggle,
         download,
         open_with,
@@ -1195,6 +1208,19 @@ impl Lightbox {
             .connect_clicked(move |_| lb.open_current_with());
 
         let lb = self.clone();
+        self.actions.ocr_toggle.connect_toggled(move |btn| {
+            btn.set_tooltip_text(Some(if btn.is_active() {
+                "Hide recognized text (T)"
+            } else {
+                "Show recognized text (T)"
+            }));
+            if !btn.is_active() {
+                lb.picture.ocr.clear_selection();
+            }
+            lb.sync_ocr_visibility();
+        });
+
+        let lb = self.clone();
         self.actions.resolution_toggle.connect_toggled(move |btn| {
             btn.set_label(if btn.is_active() { "Raw" } else { "Prev" });
             lb.render();
@@ -1563,6 +1589,8 @@ impl Lightbox {
         self.actions.open_with.set_visible(info.is_video());
 
         self.prepare_video(info.is_video());
+        self.picture.ocr.clear();
+        self.sync_ocr_visibility();
         self.start_picture_load(&info);
         self.details.loading.set_visible(true);
         if info.is_local() && !info.is_video() {
@@ -1826,6 +1854,15 @@ impl Lightbox {
             LoadResult::Texture(texture, drag_path) => {
                 load.target.set_paintable(Some(&texture));
                 *self.drag_path.borrow_mut() = drag_path;
+                if !load.is_video
+                    && !load.asset_id.starts_with(LOCAL_ID_PREFIX)
+                    && self.ui.features.get().ocr
+                {
+                    self.load_ocr(
+                        load.asset_id.clone(),
+                        (f64::from(texture.width()), f64::from(texture.height())),
+                    );
+                }
             }
             LoadResult::Unavailable(path) => {
                 self.unavailable.filename.set_label(&load.filename);

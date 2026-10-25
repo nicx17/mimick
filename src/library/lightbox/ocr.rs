@@ -1,5 +1,10 @@
+use std::cell::RefCell;
 use std::collections::BTreeSet;
+use std::rc::Rc;
 
+use gtk::prelude::*;
+
+use super::Lightbox;
 use crate::api_client::OcrBox;
 
 const ROW_THRESHOLD: f64 = 0.02;
@@ -136,6 +141,141 @@ impl OcrState {
             .map(|ocr_box| ocr_box.text.as_str())
             .collect();
         Some(lines.join("\n"))
+    }
+}
+
+pub(super) struct OcrLayer {
+    pub(super) area: gtk::DrawingArea,
+    state: Rc<RefCell<OcrState>>,
+}
+
+impl OcrLayer {
+    pub(super) fn new() -> Self {
+        let area = gtk::DrawingArea::builder()
+            .hexpand(true)
+            .vexpand(true)
+            .can_target(false)
+            .visible(false)
+            .build();
+        let state = Rc::new(RefCell::new(OcrState::default()));
+        let draw_state = state.clone();
+        area.set_draw_func(move |_, cr, width, height| {
+            draw_boxes(
+                cr,
+                &draw_state.borrow(),
+                (f64::from(width), f64::from(height)),
+            );
+        });
+        Self { area, state }
+    }
+
+    pub(super) fn set_boxes(&self, boxes: Vec<OcrBox>, image: (f64, f64)) {
+        *self.state.borrow_mut() = OcrState::new(boxes, image);
+        self.area.queue_draw();
+    }
+
+    pub(super) fn clear(&self) {
+        *self.state.borrow_mut() = OcrState::default();
+        self.area.queue_draw();
+    }
+
+    pub(super) fn has_boxes(&self) -> bool {
+        !self.state.borrow().boxes().is_empty()
+    }
+
+    pub(super) fn box_at(&self, p: (f64, f64)) -> Option<usize> {
+        let area = (f64::from(self.area.width()), f64::from(self.area.height()));
+        self.state.borrow().box_at(area, p)
+    }
+
+    pub(super) fn set_hovered(&self, idx: Option<usize>) {
+        if self.state.borrow_mut().set_hovered(idx) {
+            self.area.queue_draw();
+        }
+    }
+
+    pub(super) fn click(&self, idx: usize, extend: bool) {
+        self.state.borrow_mut().click(idx, extend);
+        self.area.queue_draw();
+    }
+
+    pub(super) fn select_all(&self) {
+        self.state.borrow_mut().select_all();
+        self.area.queue_draw();
+    }
+
+    pub(super) fn clear_selection(&self) {
+        self.state.borrow_mut().clear_selection();
+        self.area.queue_draw();
+    }
+
+    pub(super) fn selected_text(&self) -> Option<String> {
+        self.state.borrow().selected_text()
+    }
+
+    pub(super) fn text_at(&self, idx: usize) -> Option<String> {
+        self.state
+            .borrow()
+            .boxes()
+            .get(idx)
+            .map(|ocr_box| ocr_box.text.clone())
+    }
+}
+
+fn draw_boxes(cr: &gtk::cairo::Context, state: &OcrState, area: (f64, f64)) {
+    let Some(rect) = contain_rect(area, state.image()) else {
+        return;
+    };
+    let accent = libadwaita::StyleManager::default().accent_color().to_rgba();
+    let (r, g, b) = (
+        f64::from(accent.red()),
+        f64::from(accent.green()),
+        f64::from(accent.blue()),
+    );
+    for (idx, ocr_box) in state.boxes().iter().enumerate() {
+        let quad = quad_in_area(rect, ocr_box.corners());
+        cr.move_to(quad[0].0, quad[0].1);
+        for &(x, y) in &quad[1..] {
+            cr.line_to(x, y);
+        }
+        cr.close_path();
+        let active = state.is_selected(idx) || state.hovered() == Some(idx);
+        let (fill_alpha, line_width) = if active { (0.35, 2.5) } else { (0.12, 1.5) };
+        cr.set_source_rgba(r, g, b, fill_alpha);
+        let _ = cr.fill_preserve();
+        cr.set_source_rgba(r, g, b, 1.0);
+        cr.set_line_width(line_width);
+        let _ = cr.stroke();
+    }
+}
+
+impl Lightbox {
+    pub(super) fn load_ocr(self: &Rc<Self>, asset_id: String, image: (f64, f64)) {
+        let generation = self.load_gen.get();
+        let lb = self.clone();
+        glib::MainContext::default().spawn_local(async move {
+            let result = lb.ui.ctx.api_client.fetch_asset_ocr(&asset_id).await;
+            if lb.load_gen.get() != generation {
+                return;
+            }
+            match result {
+                Ok(boxes) if !boxes.is_empty() => {
+                    lb.picture.ocr.set_boxes(boxes, image);
+                    lb.sync_ocr_visibility();
+                }
+                Ok(_) => {}
+                Err(err) => log::debug!("OCR fetch failed for {asset_id}: {err}"),
+            }
+        });
+    }
+
+    pub(super) fn sync_ocr_visibility(&self) {
+        let has_boxes = self.picture.ocr.has_boxes();
+        self.actions.ocr_toggle.set_visible(has_boxes);
+        self.picture
+            .ocr
+            .area
+            .set_visible(self.actions.ocr_toggle.is_active() && has_boxes);
     }
 }
 
