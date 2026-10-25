@@ -30,7 +30,7 @@ jobs:
         # Full upgrade first, then install — Arch disallows partial upgrades.
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm --needed gtk4 libadwaita glib2 pkgconf base-devel libsecret git gexiv2 libheif cmake nasm clang
+          pacman -S --noconfirm --needed gtk4 libadwaita glib2 pkgconf base-devel libsecret git gexiv2 libheif libshumate cmake nasm clang
 
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

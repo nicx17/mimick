@@ -2706,6 +2706,32 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/libshumate/libshumate-0.8.1.crate",
+        "sha256": "0e12e125102e45d029d3433a341608d81a2cf5e4aba8fe11f150310550b4072b",
+        "dest": "cargo/vendor/libshumate-0.8.1"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"0e12e125102e45d029d3433a341608d81a2cf5e4aba8fe11f150310550b4072b\", \"files\": {}}",
+        "dest": "cargo/vendor/libshumate-0.8.1",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/libshumate-sys/libshumate-sys-0.8.1.crate",
+        "sha256": "139011b1db5dce6f52ae88a30a5bc46157d6a7b048a0c39e7e7d1550737701a6",
+        "dest": "cargo/vendor/libshumate-sys-0.8.1"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"139011b1db5dce6f52ae88a30a5bc46157d6a7b048a0c39e7e7d1550737701a6\", \"files\": {}}",
+        "dest": "cargo/vendor/libshumate-sys-0.8.1",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/libwebp-sys/libwebp-sys-0.9.6.crate",
         "sha256": "54cd30df7c7165ce74a456e4ca9732c603e8dc5e60784558c1c6dc047f876733",
         "dest": "cargo/vendor/libwebp-sys-0.9.6"

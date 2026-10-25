@@ -22,7 +22,44 @@ finish-args:
   - --talk-name=org.kde.StatusNotifierWatcher
   - --share=network
 
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/pkgconfig
+  - '*.la'
+  - '*.a'
+
 modules:
+  - name: protobuf-c
+    buildsystem: autotools
+    config-opts:
+      - --disable-protoc
+    sources:
+      - type: archive
+        url: https://github.com/protobuf-c/protobuf-c/releases/download/v1.5.2/protobuf-c-1.5.2.tar.gz
+        sha256: e2c86271873a79c92b58fef7ebf8de1aa0df4738347a8bd5d4e65a80a16d0d24
+        x-checker-data:
+          type: json
+          url: https://api.github.com/repos/protobuf-c/protobuf-c/releases/latest
+          version-query: .tag_name | sub("^v"; "")
+          url-query: .assets[] | select(.name=="protobuf-c-" + $version + ".tar.gz") | .browser_download_url
+
+  - name: libshumate
+    buildsystem: meson
+    config-opts:
+      - -Dgir=false
+      - -Dvapi=false
+      - -Dgtk_doc=false
+      - -Ddemos=false
+      - -Dsysprof=disabled
+    sources:
+      - type: archive
+        url: https://download.gnome.org/sources/libshumate/1.7/libshumate-1.7.0.tar.xz
+        sha256: 3896cc4b6a7bf83141c27df23ce48cdd68467603bc6b764960307cdcbbef80e5
+        x-checker-data:
+          type: gnome
+          name: libshumate
+
   - name: mimick
     buildsystem: simple
     build-commands:
