@@ -193,6 +193,7 @@ pub struct LibraryAsset {
     pub is_favorite: bool,
     #[serde(default)]
     pub visibility: String,
+    /// Whether the asset was cropped or rotated in Immich.
     #[serde(rename = "isEdited", default)]
     pub is_edited: bool,
 }

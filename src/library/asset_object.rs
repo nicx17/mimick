@@ -69,6 +69,7 @@ mod imp {
         #[property(get, set)]
         is_archived: Cell<bool>,
 
+        /// Edited in Immich; the lightbox then shows Immich's edited render.
         #[property(get, set)]
         is_edited: Cell<bool>,
     }

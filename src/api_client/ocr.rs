@@ -1,5 +1,9 @@
+//! Text Immich recognized in photos (OCR).
+
 use super::ImmichApiClient;
 
+/// One recognized piece of text; corners run top-left, top-right, bottom-right, bottom-left,
+/// normalized 0–1 to the edited, orientation-corrected image.
 #[derive(Debug, Clone, PartialEq, serde::Deserialize)]
 pub struct OcrBox {
     pub text: String,
@@ -25,6 +29,7 @@ impl OcrBox {
 }
 
 impl ImmichApiClient {
+    /// OCR boxes for an asset (`GET /api/assets/{id}/ocr`).
     pub async fn fetch_asset_ocr(&self, asset_id: &str) -> Result<Vec<OcrBox>, String> {
         let path = format!("/api/assets/{asset_id}/ocr");
         let resp = self.send_json(reqwest::Method::GET, &path, None).await?;

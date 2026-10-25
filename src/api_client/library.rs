@@ -21,6 +21,29 @@ fn delete_request_body(asset_ids: &[String], force: bool) -> serde_json::Value {
     })
 }
 
+/// Writes a response body to `output_path` chunk by chunk, reporting bytes written.
+async fn stream_to_file(
+    mut resp: reqwest::Response,
+    output_path: &std::path::Path,
+    progress: Option<&TransferProgressCallback>,
+) -> Result<(), String> {
+    use tokio::io::AsyncWriteExt;
+    let total_bytes = resp.content_length();
+    let mut written = 0_u64;
+    let mut file = tokio::fs::File::create(output_path)
+        .await
+        .map_err(|e| e.to_string())?;
+    while let Some(chunk) = resp.chunk().await.map_err(|e| e.to_string())? {
+        file.write_all(&chunk).await.map_err(|e| e.to_string())?;
+        written = written.saturating_add(chunk.len() as u64);
+        if let Some(callback) = progress {
+            callback(written, total_bytes);
+        }
+    }
+    Ok(())
+}
+
+/// API path for a thumbnail; `edited=true` is added only for edited assets so existing URLs don't change.
 fn thumbnail_path(asset_id: &str, size: ThumbnailSize, edited: bool) -> String {
     let path = format!("/api/assets/{asset_id}/thumbnail?size={}", size.as_str());
     if edited {
@@ -30,6 +53,7 @@ fn thumbnail_path(asset_id: &str, size: ThumbnailSize, edited: bool) -> String {
     }
 }
 
+/// API path for an original, or for Immich's edited render when `edited` is set.
 fn original_path(asset_id: &str, edited: bool) -> String {
     let path = format!("/api/assets/{asset_id}/original");
     if edited {
@@ -222,6 +246,7 @@ impl ImmichApiClient {
             .await
     }
 
+    /// Download Immich's edited render of an asset at full resolution.
     pub async fn download_edited_original_to_file(
         &self,
         asset_id: &str,
@@ -233,6 +258,7 @@ impl ImmichApiClient {
             .await
     }
 
+    /// Download `path` from the active server into `output_path`.
     async fn download_to_file(
         &self,
         path: &str,
@@ -256,20 +282,8 @@ impl ImmichApiClient {
             .send()
             .await
         {
-            Ok(mut resp) if resp.status().is_success() => {
-                use tokio::io::AsyncWriteExt;
-                let total_bytes = resp.content_length();
-                let mut written = 0_u64;
-                let mut file = tokio::fs::File::create(output_path)
-                    .await
-                    .map_err(|e| e.to_string())?;
-                while let Some(chunk) = resp.chunk().await.map_err(|e| e.to_string())? {
-                    file.write_all(&chunk).await.map_err(|e| e.to_string())?;
-                    written = written.saturating_add(chunk.len() as u64);
-                    if let Some(callback) = &progress {
-                        callback(written, total_bytes);
-                    }
-                }
+            Ok(resp) if resp.status().is_success() => {
+                stream_to_file(resp, output_path, progress.as_ref()).await?;
                 self.clear_issue().await;
                 Ok(())
             }

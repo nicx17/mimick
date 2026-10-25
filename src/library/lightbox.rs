@@ -88,6 +88,7 @@ fn original_preview_cache_path(
     cache_dir.join(format!("{asset_id}.{ext}"))
 }
 
+/// Cache path for Immich's edited render; `.bin` makes the decoder sniff the format, which can differ from the original's.
 fn edited_original_cache_path(cache_dir: &std::path::Path, asset_id: &str) -> std::path::PathBuf {
     cache_dir.join(format!("{asset_id}-edited.bin"))
 }
@@ -421,6 +422,7 @@ struct PictureLoad {
 }
 
 impl PictureLoad {
+    /// Local copy of an edited asset: the fallback picture and the drag-out file.
     fn edited_local_path(&self) -> Option<std::path::PathBuf> {
         (self.edited && !self.local_path.is_empty())
             .then(|| std::path::PathBuf::from(&self.local_path))
@@ -711,14 +713,7 @@ fn build_picture_area() -> PictureArea {
     let overlay = gtk::Overlay::builder().build();
     overlay.set_child(Some(&scrolled));
     overlay.add_overlay(&loader);
-    let ocr_copy = gtk::Button::builder()
-        .label("Copy All Text")
-        .halign(gtk::Align::Center)
-        .valign(gtk::Align::End)
-        .margin_bottom(12)
-        .css_classes(["osd", "pill"])
-        .visible(false)
-        .build();
+    let ocr_copy = ocr::copy_button();
     overlay.add_overlay(&ocr_copy);
     PictureArea {
         stack,
@@ -1220,19 +1215,6 @@ impl Lightbox {
             .connect_clicked(move |_| lb.open_current_with());
 
         let lb = self.clone();
-        self.actions.ocr_toggle.connect_toggled(move |btn| {
-            btn.set_tooltip_text(Some(if btn.is_active() {
-                "Hide recognized text (T)"
-            } else {
-                "Show recognized text (T)"
-            }));
-            if !btn.is_active() {
-                lb.picture.ocr.clear_selection();
-            }
-            lb.sync_ocr_controls();
-        });
-
-        let lb = self.clone();
         self.actions.resolution_toggle.connect_toggled(move |btn| {
             btn.set_label(if btn.is_active() { "Raw" } else { "Prev" });
             lb.render();
@@ -1403,7 +1385,7 @@ impl Lightbox {
         mods: gtk::gdk::ModifierType,
     ) -> glib::Propagation {
         let ctrl = mods.contains(gtk::gdk::ModifierType::CONTROL_MASK);
-        if !ctrl && self.handle_video_key(key) {
+        if (!ctrl && self.handle_video_key(key)) || self.handle_ocr_key(key, ctrl) {
             return glib::Propagation::Stop;
         }
         match (ctrl, key) {
@@ -1424,24 +1406,6 @@ impl Lightbox {
             (false, gtk::gdk::Key::F11) => self.toggle_fullscreen(),
             (false, gtk::gdk::Key::f) | (false, gtk::gdk::Key::F) => self.toggle_current_favorite(),
             (false, gtk::gdk::Key::a) | (false, gtk::gdk::Key::A) => self.toggle_current_archive(),
-            (false, gtk::gdk::Key::t) | (false, gtk::gdk::Key::T)
-                if self.actions.ocr_toggle.is_visible() =>
-            {
-                self.actions
-                    .ocr_toggle
-                    .set_active(!self.actions.ocr_toggle.is_active())
-            }
-            (true, gtk::gdk::Key::a) | (true, gtk::gdk::Key::A)
-                if self.picture.ocr.area.is_visible() =>
-            {
-                self.picture.ocr.select_all();
-                self.sync_ocr_controls();
-            }
-            (true, gtk::gdk::Key::c) | (true, gtk::gdk::Key::C)
-                if self.picture.ocr.area.is_visible() =>
-            {
-                self.copy_ocr_text()
-            }
             (false, gtk::gdk::Key::Escape) if self.ui.window.is_fullscreen() => {
                 self.ui.window.unfullscreen();
             }
@@ -1761,6 +1725,7 @@ impl Lightbox {
     }
 
     /// Pick the source: video poster, local file, original download, or preview thumbnail.
+    /// Edited assets use Immich's edited render and fall back to the local file.
     async fn fetch_picture(&self, load: &PictureLoad) -> LoadResult {
         if load.is_video {
             // Use the grid's preview thumbnail as the poster.
