@@ -105,7 +105,7 @@ Each watched directory operates with isolated logical constraints:
 
 An optional desktop library interface for browsing and managing your Immich photos directly on Linux (toggle via **Settings → Behavior → Enable Library View**):
 
-- **Browsing & Lightbox:** Timeline and album grid, full-resolution previews, fullscreen viewing, media metadata viewer, asset download, and an Explore landing page (people, places, things).
+- **Browsing & Lightbox:** Timeline and album grid, full-resolution previews that show edits made in Immich, fullscreen viewing, selectable and copyable recognized text (OCR), media metadata viewer, asset download, and an Explore landing page (people, places, things).
 - **Video Playback:** In-app playback that streams from Immich with hardware (VA-API) decoding, seeking, speed control, loop, audio/subtitle tracks, and **Open with…** for an external player.
 - **Search & Discovery:** Metadata search, smart CLIP semantic search, OCR text lookup, and server-folder browsing.
 - **Asset Management:** Edit dates and descriptions, toggle favorites, archive assets to hide them from the main timeline, or manage the Immich trash.

@@ -54,6 +54,7 @@ Mimick is a Linux background app that watches selected folders and syncs photos 
 - Two-page `Settings` / `Status` settings window
 - Optional in-app library viewer with albums, Explore, search, tags, and a trash view
 - In-app video playback (streamed from Immich, hardware-decoded) and fullscreen viewing in the lightbox
+- Select and copy text Immich recognized in photos (OCR), and see edits made in Immich, in the lightbox
 - Keyboard Shortcuts dialog (**Ctrl+?** or the main menu)
 - Edit asset info (description, date taken, favorite) and move assets to the Immich trash from the library
 - Queue inspector with retry actions
