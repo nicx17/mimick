@@ -61,6 +61,7 @@ pub(super) struct BulkParts {
     pub download: gtk::Button,
     pub clear: gtk::Button,
     pub share_link: gtk::Button,
+    pub location: gtk::Button,
     archive: gtk::Button,
     trash: TrashControls,
 }
@@ -502,6 +503,10 @@ fn build_bulk_bar() -> BulkParts {
         .icon_name("mimick-archive-symbolic")
         .tooltip_text("Archive selected")
         .build();
+    let location = gtk::Button::builder()
+        .icon_name("mark-location-symbolic")
+        .tooltip_text("Set location for selected")
+        .build();
     let inner = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
         .spacing(8)
@@ -518,11 +523,13 @@ fn build_bulk_bar() -> BulkParts {
         download.clone(),
         share_link.clone(),
         archive.clone(),
+        location.clone(),
     ]);
     inner.append(&count_label);
     inner.append(&clear);
     inner.append(&share_link);
     inner.append(&archive);
+    inner.append(&location);
     inner.append(&download);
     inner.append(&delete);
     inner.append(&trash.restore_selected);
@@ -539,6 +546,7 @@ fn build_bulk_bar() -> BulkParts {
         download,
         clear,
         share_link,
+        location,
         archive,
         trash,
     }

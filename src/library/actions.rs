@@ -180,6 +180,34 @@ pub(super) fn connect_bulk_share_link(ui: Rc<LibraryWindowUi>, button: &gtk::But
     });
 }
 
+/// Selection-bar button: give every selected server asset one location.
+pub(super) fn connect_bulk_location(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
+    button.connect_clicked(move |_| {
+        let ids: Vec<String> = selected_items(&ui)
+            .iter()
+            .filter_map(TrashTarget::from_item)
+            .map(|target| target.remote_id)
+            .collect();
+        if ids.is_empty() {
+            return;
+        }
+        let target = super::map::LocationTarget {
+            title: format!("{} selected", ids.len()),
+            ids,
+            initial: None,
+        };
+        let ui_after = ui.clone();
+        super::map::set_location(
+            ui.clone(),
+            target,
+            Rc::new(move || {
+                ui_after.grid.selection.unselect_all();
+                ui_after.select_toggle.set_active(false);
+            }),
+        );
+    });
+}
+
 pub(super) fn connect_bulk_archive(ui: Rc<LibraryWindowUi>) {
     ui.bulk_archive.clone().connect_clicked(move |_| {
         let archived = !matches!(

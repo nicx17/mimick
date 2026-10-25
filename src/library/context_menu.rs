@@ -192,7 +192,7 @@ fn append_manage_buttons(
         item.property::<String>("filename"),
         hooks.on_edited,
     );
-    let edit_id = remote_id;
+    let edit_id = remote_id.clone();
     menu.add("Edit Info…", false, move || {
         show_edit_dialog(
             ui_edit.clone(),
@@ -201,7 +201,15 @@ fn append_manage_buttons(
             on_edited.clone(),
         )
     });
+    append_location_button(menu, ui, item, remote_id);
     append_trash_button(menu, ui, target, hooks.on_trashed);
+}
+
+fn append_location_button(menu: &Menu, ui: &Rc<LibraryWindowUi>, item: &AssetObject, id: String) {
+    let (ui, filename) = (ui.clone(), item.property::<String>("filename"));
+    menu.add("Set Location…", false, move || {
+        super::map::set_location_for_asset(ui.clone(), id.clone(), filename.clone(), Rc::new(|| {}))
+    });
 }
 
 fn append_trash_button(

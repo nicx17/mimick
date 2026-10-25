@@ -169,6 +169,7 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     let album_link_listbox = parts.content.album_link.listbox.clone();
     let bulk = &parts.content.bulk;
     let bulk_share_link = bulk.share_link.clone();
+    let bulk_location = bulk.location.clone();
     let (bulk_delete, bulk_download, bulk_clear) = (
         bulk.delete.clone(),
         bulk.download.clone(),
@@ -182,6 +183,7 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     connect_bulk_actions(ui.clone(), bulk_delete, bulk_download, bulk_clear);
     actions::connect_bulk_share_link(ui.clone(), &bulk_share_link);
     actions::connect_bulk_archive(ui.clone());
+    actions::connect_bulk_location(ui.clone(), &bulk_location);
     trash_view::connect_trash_controls(ui.clone());
     people_view::connect_people_view(ui.clone());
     tags_view::connect_tags_view(ui.clone());

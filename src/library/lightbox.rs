@@ -630,6 +630,7 @@ struct DetailsPane {
     filename: gtk::Label,
     summary: gtk::Label,
     edit_btn: gtk::Button,
+    location_btn: gtk::Button,
     tags: TagSection,
     loading: gtk::Label,
     exif: gtk::Box,
@@ -870,10 +871,15 @@ fn build_details_pane() -> DetailsPane {
     let filename = details_text_label();
     filename.add_css_class("title-3");
     let summary = details_text_label();
-    let edit_btn = gtk::Button::builder()
-        .label("Edit Info…")
+    let edit_btn = gtk::Button::builder().label("Edit Info…").build();
+    let location_btn = gtk::Button::builder().label("Set Location…").build();
+    let edit_row = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .spacing(6)
         .halign(gtk::Align::Start)
         .build();
+    edit_row.append(&edit_btn);
+    edit_row.append(&location_btn);
     let loading = gtk::Label::builder()
         .xalign(0.0)
         .label("Loading details…")
@@ -886,7 +892,7 @@ fn build_details_pane() -> DetailsPane {
         .build();
     inner.append(&filename);
     inner.append(&summary);
-    inner.append(&edit_btn);
+    inner.append(&edit_row);
     let tags = TagSection::new();
     inner.append(&tags.root);
     inner.append(&loading);
@@ -896,6 +902,7 @@ fn build_details_pane() -> DetailsPane {
         filename,
         summary,
         edit_btn,
+        location_btn,
         tags,
         loading,
         exif,
@@ -1249,6 +1256,10 @@ impl Lightbox {
             .connect_clicked(move |_| lb.edit_current());
         let lb = self.clone();
         self.details
+            .location_btn
+            .connect_clicked(move |_| lb.set_location_current());
+        let lb = self.clone();
+        self.details
             .tags
             .bind(self.ui.clone(), Rc::new(move |tag| lb.search_tag(tag)));
     }
@@ -1590,6 +1601,9 @@ impl Lightbox {
         self.actions.archive.set_visible(on_server && !in_trash);
         self.show_archive(info.archived);
         self.details.edit_btn.set_visible(on_server && !in_trash);
+        self.details
+            .location_btn
+            .set_visible(on_server && !in_trash);
         self.actions.zoom_group.set_visible(!info.is_video());
         self.actions.open_with.set_visible(info.is_video());
 

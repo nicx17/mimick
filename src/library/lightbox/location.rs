@@ -1,10 +1,29 @@
+use std::rc::Rc;
+
 use gtk::prelude::*;
 
 use super::Lightbox;
 use crate::api_client::ExifInfo;
+use crate::library::actions::TrashTarget;
 use crate::library::map::{self, GeoPoint};
 
 impl Lightbox {
+    pub(super) fn set_location_current(self: &Rc<Self>) {
+        let Some(item) = self.current_item() else {
+            return;
+        };
+        let Some(target) = TrashTarget::from_item(&item) else {
+            return;
+        };
+        let lb = self.clone();
+        map::set_location_for_asset(
+            self.ui.clone(),
+            target.remote_id().to_string(),
+            item.property("filename"),
+            Rc::new(move || lb.render()),
+        );
+    }
+
     /// Mini map under the location rows when the asset has GPS coordinates.
     pub(super) fn show_location_map(
         &self,
