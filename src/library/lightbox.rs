@@ -421,7 +421,7 @@ struct PictureLoad {
 }
 
 impl PictureLoad {
-    fn edited_drag_path(&self) -> Option<std::path::PathBuf> {
+    fn edited_local_path(&self) -> Option<std::path::PathBuf> {
         (self.edited && !self.local_path.is_empty())
             .then(|| std::path::PathBuf::from(&self.local_path))
     }
@@ -1085,7 +1085,7 @@ impl Lightbox {
         double_click.set_button(gtk::gdk::BUTTON_PRIMARY);
         let lb = self.clone();
         double_click.connect_pressed(move |_, n_press, x, y| {
-            if n_press == 2 {
+            if n_press == 2 && lb.ocr_box_under(x, y).is_none() {
                 lb.cursor_pos.set(Some((x, y)));
                 lb.set_zoom(lb.zoom_level.get() * 2.0);
             }
@@ -1762,16 +1762,24 @@ impl Lightbox {
                 return LoadResult::Unavailable(Some(load.local_path.clone()));
             }
         }
-        if load.full_res {
-            return self.fetch_original(load).await;
-        }
-        match self
-            .load_preview_thumbnail(&load.asset_id, load.edited)
-            .await
+        let result = if load.full_res {
+            self.fetch_original(load).await
+        } else {
+            match self
+                .load_preview_thumbnail(&load.asset_id, load.edited)
+                .await
+            {
+                Ok(texture) => LoadResult::Texture(texture, load.edited_local_path()),
+                Err(_) => LoadResult::Unavailable(None),
+            }
+        };
+        if let LoadResult::Unavailable(_) = result
+            && let Some(local) = load.edited_local_path()
+            && let Some(texture) = load_texture_oriented(&local).await
         {
-            Ok(texture) => LoadResult::Texture(texture, load.edited_drag_path()),
-            Err(_) => LoadResult::Unavailable(None),
+            return LoadResult::Texture(texture, Some(local));
         }
+        result
     }
 
     async fn load_preview_thumbnail(
@@ -1811,7 +1819,7 @@ impl Lightbox {
             return LoadResult::Unavailable(None);
         }
         match load_texture_oriented(&temp).await {
-            Some(texture) if load.edited => LoadResult::Texture(texture, load.edited_drag_path()),
+            Some(texture) if load.edited => LoadResult::Texture(texture, load.edited_local_path()),
             Some(texture) => LoadResult::Texture(
                 texture,
                 drag_export_path(&load.asset_id, &load.filename, &temp),

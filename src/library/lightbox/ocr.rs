@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::BTreeSet;
 use std::rc::Rc;
 
@@ -275,26 +275,26 @@ impl Lightbox {
         let click = gtk::GestureClick::new();
         click.set_button(gtk::gdk::BUTTON_PRIMARY);
         click.set_propagation_phase(gtk::PropagationPhase::Capture);
+        let dragged = Rc::new(Cell::new(false));
+        let pressed = dragged.clone();
+        click.connect_pressed(move |_, _, _, _| pressed.set(false));
+        let stopped = dragged.clone();
+        click.connect_stopped(move |_| stopped.set(true));
         let lb = self.clone();
-        click.connect_pressed(move |gesture, _, x, y| {
-            let Some(p) = lb.ocr_point(x, y) else {
-                gesture.set_state(gtk::EventSequenceState::Denied);
+        click.connect_released(move |gesture, _, x, y| {
+            if dragged.get() || !lb.picture.ocr.area.is_visible() {
                 return;
-            };
+            }
             let extend = gesture.current_event_state().intersects(
                 gtk::gdk::ModifierType::SHIFT_MASK | gtk::gdk::ModifierType::CONTROL_MASK,
             );
-            match lb.picture.ocr.box_at(p) {
+            match lb.ocr_box_under(x, y) {
                 Some(idx) => {
                     gesture.set_state(gtk::EventSequenceState::Claimed);
                     lb.picture.ocr.click(idx, extend);
                 }
-                None => {
-                    gesture.set_state(gtk::EventSequenceState::Denied);
-                    if !extend {
-                        lb.picture.ocr.clear_selection();
-                    }
-                }
+                None if !extend => lb.picture.ocr.clear_selection(),
+                None => {}
             }
         });
         scrolled.add_controller(click);
@@ -302,7 +302,7 @@ impl Lightbox {
         let motion = gtk::EventControllerMotion::new();
         let lb = self.clone();
         motion.connect_motion(move |_, x, y| {
-            let hovered = lb.ocr_point(x, y).and_then(|p| lb.picture.ocr.box_at(p));
+            let hovered = lb.ocr_box_under(x, y);
             lb.picture.ocr.set_hovered(hovered);
         });
         let lb = self.clone();
@@ -313,8 +313,7 @@ impl Lightbox {
         let lb = self.clone();
         scrolled.connect_query_tooltip(move |_, x, y, _, tooltip| {
             let text = lb
-                .ocr_point(f64::from(x), f64::from(y))
-                .and_then(|p| lb.picture.ocr.box_at(p))
+                .ocr_box_under(f64::from(x), f64::from(y))
                 .and_then(|idx| lb.picture.ocr.text_at(idx));
             match text {
                 Some(text) => {
@@ -332,7 +331,7 @@ impl Lightbox {
         }
     }
 
-    fn ocr_point(&self, x: f64, y: f64) -> Option<(f64, f64)> {
+    pub(super) fn ocr_box_under(&self, x: f64, y: f64) -> Option<usize> {
         let layer = &self.picture.ocr.area;
         if !layer.is_visible() {
             return None;
@@ -341,7 +340,9 @@ impl Lightbox {
             .picture
             .scrolled
             .compute_point(layer, &gtk::graphene::Point::new(x as f32, y as f32))?;
-        Some((f64::from(point.x()), f64::from(point.y())))
+        self.picture
+            .ocr
+            .box_at((f64::from(point.x()), f64::from(point.y())))
     }
 
     pub(super) fn sync_ocr_visibility(&self) {
