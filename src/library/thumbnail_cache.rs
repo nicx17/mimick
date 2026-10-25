@@ -300,7 +300,10 @@ impl ThumbnailCache {
         if is_cancelled() {
             return Err("cancelled".to_string());
         }
-        let bytes = self.api_client.fetch_thumbnail(asset_id, size).await?;
+        let bytes = self
+            .api_client
+            .fetch_thumbnail(asset_id, size, false)
+            .await?;
         let cache_dir = self.cache_dir.clone();
         let cache_file_for_write = cache_file.clone();
         let bytes_for_write = bytes.clone();

@@ -21,6 +21,24 @@ fn delete_request_body(asset_ids: &[String], force: bool) -> serde_json::Value {
     })
 }
 
+fn thumbnail_path(asset_id: &str, size: ThumbnailSize, edited: bool) -> String {
+    let path = format!("/api/assets/{asset_id}/thumbnail?size={}", size.as_str());
+    if edited {
+        format!("{path}&edited=true")
+    } else {
+        path
+    }
+}
+
+fn original_path(asset_id: &str, edited: bool) -> String {
+    let path = format!("/api/assets/{asset_id}/original");
+    if edited {
+        format!("{path}?edited=true")
+    } else {
+        path
+    }
+}
+
 impl ImmichApiClient {
     /// Retrieve the complete list of albums from the Immich server for library display.
     pub async fn fetch_library_albums(&self) -> Result<Vec<LibraryAlbum>, String> {
@@ -101,6 +119,7 @@ impl ImmichApiClient {
         &self,
         asset_id: &str,
         size: ThumbnailSize,
+        edited: bool,
     ) -> Result<Vec<u8>, String> {
         let _permit = self
             .thumbnail_semaphore
@@ -113,12 +132,7 @@ impl ImmichApiClient {
             .await
             .ok_or_else(|| "No active connection".to_string())?;
         let settings = self.settings_snapshot();
-        let url = format!(
-            "{}/api/assets/{}/thumbnail?size={}",
-            base_url,
-            asset_id,
-            size.as_str()
-        );
+        let url = format!("{base_url}{}", thumbnail_path(asset_id, size, edited));
 
         match self
             .client
@@ -203,12 +217,35 @@ impl ImmichApiClient {
         output_path: &std::path::Path,
         progress: Option<TransferProgressCallback>,
     ) -> Result<(), String> {
+        let path = original_path(asset_id, false);
+        self.download_to_file(&path, asset_id, output_path, progress)
+            .await
+    }
+
+    pub async fn download_edited_original_to_file(
+        &self,
+        asset_id: &str,
+        output_path: &std::path::Path,
+        progress: Option<TransferProgressCallback>,
+    ) -> Result<(), String> {
+        let path = original_path(asset_id, true);
+        self.download_to_file(&path, asset_id, output_path, progress)
+            .await
+    }
+
+    async fn download_to_file(
+        &self,
+        path: &str,
+        asset_id: &str,
+        output_path: &std::path::Path,
+        progress: Option<TransferProgressCallback>,
+    ) -> Result<(), String> {
         let base_url = self
             .get_active_url()
             .await
             .ok_or_else(|| "No active connection".to_string())?;
         let settings = self.settings_snapshot();
-        let url = format!("{}/api/assets/{}/original", base_url, asset_id);
+        let url = format!("{base_url}{path}");
 
         match self
             .client
@@ -365,7 +402,28 @@ impl ImmichApiClient {
 
 #[cfg(test)]
 mod tests {
-    use super::delete_request_body;
+    use super::{ThumbnailSize, delete_request_body, original_path, thumbnail_path};
+
+    #[test]
+    fn thumbnail_path_adds_edited_only_when_requested() {
+        assert_eq!(
+            thumbnail_path("a1", ThumbnailSize::Preview, false),
+            "/api/assets/a1/thumbnail?size=preview"
+        );
+        assert_eq!(
+            thumbnail_path("a1", ThumbnailSize::Preview, true),
+            "/api/assets/a1/thumbnail?size=preview&edited=true"
+        );
+    }
+
+    #[test]
+    fn original_path_adds_edited_only_when_requested() {
+        assert_eq!(original_path("a1", false), "/api/assets/a1/original");
+        assert_eq!(
+            original_path("a1", true),
+            "/api/assets/a1/original?edited=true"
+        );
+    }
 
     #[test]
     fn delete_body_moves_to_trash_unless_forced() {
