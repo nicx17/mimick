@@ -521,6 +521,7 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
     lightbox.connect_navigation();
     lightbox.connect_zoom_controls();
     lightbox.connect_pointer_gestures();
+    lightbox.connect_ocr();
     lightbox.connect_keys();
     lightbox.connect_actions();
     lightbox.connect_fullscreen();
@@ -1412,6 +1413,19 @@ impl Lightbox {
             (false, gtk::gdk::Key::F11) => self.toggle_fullscreen(),
             (false, gtk::gdk::Key::f) | (false, gtk::gdk::Key::F) => self.toggle_current_favorite(),
             (false, gtk::gdk::Key::a) | (false, gtk::gdk::Key::A) => self.toggle_current_archive(),
+            (false, gtk::gdk::Key::t) | (false, gtk::gdk::Key::T)
+                if self.actions.ocr_toggle.is_visible() =>
+            {
+                self.actions
+                    .ocr_toggle
+                    .set_active(!self.actions.ocr_toggle.is_active())
+            }
+            (true, gtk::gdk::Key::a) if self.picture.ocr.area.is_visible() => {
+                self.picture.ocr.select_all()
+            }
+            (true, gtk::gdk::Key::c) if self.picture.ocr.area.is_visible() => {
+                self.copy_ocr_selection()
+            }
             (false, gtk::gdk::Key::Escape) if self.ui.window.is_fullscreen() => {
                 self.ui.window.unfullscreen();
             }

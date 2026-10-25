@@ -269,6 +269,81 @@ impl Lightbox {
         });
     }
 
+    pub(super) fn connect_ocr(self: &Rc<Self>) {
+        let scrolled = &self.picture.scrolled;
+
+        let click = gtk::GestureClick::new();
+        click.set_button(gtk::gdk::BUTTON_PRIMARY);
+        click.set_propagation_phase(gtk::PropagationPhase::Capture);
+        let lb = self.clone();
+        click.connect_pressed(move |gesture, _, x, y| {
+            let Some(p) = lb.ocr_point(x, y) else {
+                gesture.set_state(gtk::EventSequenceState::Denied);
+                return;
+            };
+            let extend = gesture.current_event_state().intersects(
+                gtk::gdk::ModifierType::SHIFT_MASK | gtk::gdk::ModifierType::CONTROL_MASK,
+            );
+            match lb.picture.ocr.box_at(p) {
+                Some(idx) => {
+                    gesture.set_state(gtk::EventSequenceState::Claimed);
+                    lb.picture.ocr.click(idx, extend);
+                }
+                None => {
+                    gesture.set_state(gtk::EventSequenceState::Denied);
+                    if !extend {
+                        lb.picture.ocr.clear_selection();
+                    }
+                }
+            }
+        });
+        scrolled.add_controller(click);
+
+        let motion = gtk::EventControllerMotion::new();
+        let lb = self.clone();
+        motion.connect_motion(move |_, x, y| {
+            let hovered = lb.ocr_point(x, y).and_then(|p| lb.picture.ocr.box_at(p));
+            lb.picture.ocr.set_hovered(hovered);
+        });
+        let lb = self.clone();
+        motion.connect_leave(move |_| lb.picture.ocr.set_hovered(None));
+        scrolled.add_controller(motion);
+
+        scrolled.set_has_tooltip(true);
+        let lb = self.clone();
+        scrolled.connect_query_tooltip(move |_, x, y, _, tooltip| {
+            let text = lb
+                .ocr_point(f64::from(x), f64::from(y))
+                .and_then(|p| lb.picture.ocr.box_at(p))
+                .and_then(|idx| lb.picture.ocr.text_at(idx));
+            match text {
+                Some(text) => {
+                    tooltip.set_text(Some(&text));
+                    true
+                }
+                None => false,
+            }
+        });
+    }
+
+    pub(super) fn copy_ocr_selection(&self) {
+        if let Some(text) = self.picture.ocr.selected_text() {
+            self.picture.scrolled.clipboard().set_text(&text);
+        }
+    }
+
+    fn ocr_point(&self, x: f64, y: f64) -> Option<(f64, f64)> {
+        let layer = &self.picture.ocr.area;
+        if !layer.is_visible() {
+            return None;
+        }
+        let point = self
+            .picture
+            .scrolled
+            .compute_point(layer, &gtk::graphene::Point::new(x as f32, y as f32))?;
+        Some((f64::from(point.x()), f64::from(point.y())))
+    }
+
     pub(super) fn sync_ocr_visibility(&self) {
         let has_boxes = self.picture.ocr.has_boxes();
         self.actions.ocr_toggle.set_visible(has_boxes);

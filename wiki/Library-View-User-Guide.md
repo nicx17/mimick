@@ -274,6 +274,7 @@ Click any asset in the grid to open it in the lightbox.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
 - **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date** (local time). Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
 - Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, and **Move to Trash**.
+- **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text; hover a box to read it. Click a box to select it, Shift- or Ctrl-click to add or remove more, **Ctrl+A** to select all, and **Ctrl+C** to copy the selection, one box per line in reading order.
 
 ### Tags in the Details Pane
 
@@ -440,6 +441,9 @@ The **Trash** sidebar entry lists everything in the Immich trash in the normal g
 | **Delete** | Move the selection (grid) or the current asset (lightbox) to the trash; in the Trash view, delete permanently |
 | **F** | Toggle favorite for the current asset (lightbox) |
 | **A** | Archive or unarchive the current asset (lightbox) |
+| **T** | Show or hide recognized text (lightbox, when Immich found text) |
+| **Ctrl+A** | Select all recognized text (lightbox, while shown) |
+| **Ctrl+C** | Copy the selected recognized text (lightbox) |
 | **Space** | Play or pause the current video (lightbox) |
 | **J** / **L** | Skip back / forward 10 seconds (lightbox video) |
 | **,** / **.** | Step one frame back / forward (lightbox video) |
