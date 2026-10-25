@@ -18,6 +18,8 @@ mod features;
 pub use features::LibraryFeatures;
 mod folders;
 mod library;
+mod ocr;
+pub use ocr::OcrBox;
 mod partners;
 pub use partners::PartnerDirection;
 mod people;
