@@ -85,8 +85,20 @@ fn show(ui: &Rc<LibraryWindowUi>, location: &Location) {
         }
     }
     sync_controls(ui, location);
+    super::map::sync_layout(ui, location);
     sync_sidebar(ui);
     update_back_button(ui);
+}
+
+/// Back to the map alone: a step back when the map is the previous view.
+pub(super) fn close_map_area(ui: &Rc<LibraryWindowUi>) {
+    let map = Location::Page(LibraryPage::Map);
+    let back_is_map = ui.ctx.library_state.lock().previous_location() == Some(&map);
+    if back_is_map {
+        go_back(ui);
+    } else {
+        navigate(ui, map);
+    }
 }
 
 fn show_page(ui: &Rc<LibraryWindowUi>, page: &LibraryPage) {
@@ -110,6 +122,7 @@ fn show_page(ui: &Rc<LibraryWindowUi>, page: &LibraryPage) {
             ui.search_view.search_entry.grab_focus();
             super::refresh_search_tags(ui.clone(), None);
         }
+        LibraryPage::Map => {}
     }
 }
 
@@ -140,12 +153,13 @@ fn page_title(page: &LibraryPage) -> String {
         LibraryPage::Folders { path } => leaf(path, "Folders"),
         LibraryPage::Sharing => "Sharing".to_string(),
         LibraryPage::Search => "Search".to_string(),
+        LibraryPage::Map => "Map".to_string(),
     }
 }
 
 pub(super) fn sync_controls(ui: &LibraryWindowUi, location: &Location) {
     let (timeline, sort) = match location {
-        Location::Source(LibrarySource::Explore) => (false, false),
+        Location::Source(LibrarySource::Explore | LibrarySource::MapArea { .. }) => (false, false),
         Location::Source(source) => (
             matches!(source, LibrarySource::AllAssets | LibrarySource::Timeline),
             true,
@@ -226,6 +240,7 @@ fn sidebar_target(location: &Location) -> SidebarTarget {
             LibraryPage::Folders { .. } => "folders",
             LibraryPage::Sharing => "sharing",
             LibraryPage::Search => "search",
+            LibraryPage::Map => "map",
         },
         Location::Source(source) => match source {
             LibrarySource::Album { id, .. }
@@ -241,6 +256,7 @@ fn sidebar_target(location: &Location) -> SidebarTarget {
             LibrarySource::Person { .. } => "people",
             LibrarySource::Tag { .. } => "tags",
             LibrarySource::Folder { .. } => "folders",
+            LibrarySource::MapArea { .. } => "map",
             LibrarySource::Favorites => "favorites",
             LibrarySource::Archive => "archive",
             LibrarySource::Trash => "trash",
@@ -261,6 +277,7 @@ pub(super) fn location_for_key(key: &str) -> Option<Location> {
     match key {
         "photos" => source(LibrarySource::Timeline),
         "explore" => source(LibrarySource::Explore),
+        "map" => page(LibraryPage::Map),
         "favorites" => source(LibrarySource::Favorites),
         "archive" => source(LibrarySource::Archive),
         "trash" => source(LibrarySource::Trash),
@@ -280,9 +297,10 @@ pub(super) fn location_for_key(key: &str) -> Option<Location> {
 mod tests {
     use super::*;
 
-    const KEYS: [&str; 13] = [
+    const KEYS: [&str; 14] = [
         "photos",
         "explore",
+        "map",
         "favorites",
         "archive",
         "trash",

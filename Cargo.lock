@@ -2195,6 +2195,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "libshumate"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e12e125102e45d029d3433a341608d81a2cf5e4aba8fe11f150310550b4072b"
+dependencies = [
+ "gdk-pixbuf",
+ "gdk4",
+ "gio",
+ "glib",
+ "gtk4",
+ "libshumate-sys",
+]
+
+[[package]]
+name = "libshumate-sys"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "139011b1db5dce6f52ae88a30a5bc46157d6a7b048a0c39e7e7d1550737701a6"
+dependencies = [
+ "gdk-pixbuf-sys",
+ "gdk4-sys",
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
+ "gtk4-sys",
+ "libc",
+ "system-deps 7.0.8",
+]
+
+[[package]]
 name = "libwebp-sys"
 version = "0.9.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2304,6 +2334,7 @@ dependencies = [
  "ksni",
  "libadwaita",
  "libheif-rs",
+ "libshumate",
  "log",
  "lru",
  "nom-exif",

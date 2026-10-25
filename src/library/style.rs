@@ -389,6 +389,97 @@ row.mimick-album-drop-hover {
     transition: background 150ms ease-in-out, transform 150ms ease-in-out;
     transform: scale(1.03);
 }
+
+/* ── Map ───────────────────────────────────────────────────────── */
+
+button.mimick-map-cluster {
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
+    border-radius: 999px;
+    border: 2px solid white;
+    background: @accent_bg_color;
+    color: @accent_fg_color;
+    font-weight: 800;
+    font-size: 0.8em;
+    font-feature-settings: "tnum";
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+button.mimick-map-cluster:hover {
+    background: mix(@accent_bg_color, white, 0.2);
+}
+
+button.mimick-map-photo {
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border-radius: 999px;
+    border: 2px solid @accent_bg_color;
+    background: @accent_bg_color;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+button.mimick-map-photo:hover {
+    border-color: white;
+}
+
+button.mimick-map-cluster.selected,
+button.mimick-map-photo.selected {
+    border-color: white;
+    box-shadow: 0 0 0 4px alpha(@accent_bg_color, 0.5), 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+box.mimick-map-card {
+    background-color: @view_bg_color;
+    color: @view_fg_color;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px alpha(black, 0.3), 0 0 0 1px alpha(black, 0.06);
+}
+
+box.mimick-map-card .mimick-map-control,
+box.mimick-map-card menubutton.mimick-map-control > button {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: 0;
+}
+
+box.mimick-map-card > :not(:first-child) {
+    border-top: 1px solid alpha(@view_fg_color, 0.1);
+}
+
+box.mimick-map-here {
+    min-width: 16px;
+    min-height: 16px;
+    border-radius: 999px;
+    border: 3px solid white;
+    background: #3584e4;
+    box-shadow: 0 0 0 6px alpha(#3584e4, 0.25), 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+box.mimick-map-pin {
+    min-width: 18px;
+    min-height: 18px;
+    border-radius: 999px;
+    border: 3px solid white;
+    background: @accent_bg_color;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+button.mimick-minimap {
+    padding: 0;
+    border-radius: 12px;
+}
+
+.mimick-location-map {
+    border-radius: 12px;
+}
+
+.mimick-map-status {
+    margin: 24px;
+    padding: 12px 24px;
+}
 "#;
 
 static REGISTERED: OnceLock<()> = OnceLock::new();

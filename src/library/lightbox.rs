@@ -15,7 +15,7 @@ use crate::api_client::{ExifInfo, Tag};
 use crate::library::asset_object::AssetObject;
 use crate::library::local_exif::{self, LocalExif};
 
-use super::actions::{TrashTarget, confirm_trash};
+use super::actions::{TrashTarget, confirm_trash, is_mine};
 use super::archive::{archive_icon, archive_tooltip, set_archived};
 use super::asset_edit::show_edit_dialog;
 use super::asset_tags::TagSection;
@@ -30,6 +30,7 @@ use super::video_player::VideoPlayer;
 use super::{LOCAL_ID_PREFIX, LibraryWindowUi, load_source_page, load_texture_oriented};
 
 mod fullscreen;
+mod location;
 mod ocr;
 mod video;
 
@@ -123,15 +124,22 @@ fn drag_export_path(
 /// `taken_label` decides whether the date row reads "Taken" (EXIF
 /// DateTimeOriginal — the camera's capture moment) or "Modified" (filesystem
 /// mtime fallback when no capture timestamp exists).
-fn fill_exif_box(container: &gtk::Box, exif: &crate::api_client::ExifInfo, taken_label: &str) {
+///
+/// Returns the Location group, if any, so the caller can add the mini map to it.
+fn fill_exif_box(
+    container: &gtk::Box,
+    exif: &crate::api_client::ExifInfo,
+    taken_label: &str,
+) -> Option<libadwaita::PreferencesGroup> {
     if let Some(group) = build_camera_group(exif) {
         container.append(&group);
     }
     if let Some(group) = build_image_group(exif, taken_label) {
         container.append(&group);
     }
-    if let Some(group) = build_location_group(exif) {
-        container.append(&group);
+    let location = build_location_group(exif);
+    if let Some(group) = &location {
+        container.append(group);
     }
     if let Some(desc) = &exif.description
         && !desc.trim().is_empty()
@@ -147,6 +155,7 @@ fn fill_exif_box(container: &gtk::Box, exif: &crate::api_client::ExifInfo, taken
         note_group.add(&row);
         container.append(&note_group);
     }
+    location
 }
 
 fn build_camera_group(exif: &crate::api_client::ExifInfo) -> Option<libadwaita::PreferencesGroup> {
@@ -243,12 +252,14 @@ fn build_location_group(
         rows += 1;
     }
     if let (Some(lat), Some(lon)) = (exif.latitude, exif.longitude) {
-        group.add(&accent_row(
+        let row = accent_row(
             "find-location-symbolic",
             "mimick-accent-location",
             "Coordinates",
             &format!("{lat:.5}, {lon:.5}"),
-        ));
+        );
+        row.add_suffix(&location::copy_coordinates_button(lat, lon));
+        group.add(&row);
         rows += 1;
     }
     (rows > 0).then_some(group)
@@ -619,6 +630,7 @@ struct DetailsPane {
     filename: gtk::Label,
     summary: gtk::Label,
     edit_btn: gtk::Button,
+    location_btn: gtk::Button,
     tags: TagSection,
     loading: gtk::Label,
     exif: gtk::Box,
@@ -859,10 +871,15 @@ fn build_details_pane() -> DetailsPane {
     let filename = details_text_label();
     filename.add_css_class("title-3");
     let summary = details_text_label();
-    let edit_btn = gtk::Button::builder()
-        .label("Edit Info…")
+    let edit_btn = gtk::Button::builder().label("Edit Info…").build();
+    let location_btn = gtk::Button::builder().label("Set Location…").build();
+    let edit_row = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .spacing(6)
         .halign(gtk::Align::Start)
         .build();
+    edit_row.append(&edit_btn);
+    edit_row.append(&location_btn);
     let loading = gtk::Label::builder()
         .xalign(0.0)
         .label("Loading details…")
@@ -875,7 +892,7 @@ fn build_details_pane() -> DetailsPane {
         .build();
     inner.append(&filename);
     inner.append(&summary);
-    inner.append(&edit_btn);
+    inner.append(&edit_row);
     let tags = TagSection::new();
     inner.append(&tags.root);
     inner.append(&loading);
@@ -885,6 +902,7 @@ fn build_details_pane() -> DetailsPane {
         filename,
         summary,
         edit_btn,
+        location_btn,
         tags,
         loading,
         exif,
@@ -1238,6 +1256,10 @@ impl Lightbox {
             .connect_clicked(move |_| lb.edit_current());
         let lb = self.clone();
         self.details
+            .location_btn
+            .connect_clicked(move |_| lb.set_location_current());
+        let lb = self.clone();
+        self.details
             .tags
             .bind(self.ui.clone(), Rc::new(move |tag| lb.search_tag(tag)));
     }
@@ -1578,7 +1600,9 @@ impl Lightbox {
         self.show_heart(info.favorite);
         self.actions.archive.set_visible(on_server && !in_trash);
         self.show_archive(info.archived);
-        self.details.edit_btn.set_visible(on_server && !in_trash);
+        let editable = on_server && !in_trash && is_mine(&self.ui, &item);
+        self.details.edit_btn.set_visible(editable);
+        self.details.location_btn.set_visible(editable);
         self.actions.zoom_group.set_visible(!info.is_video());
         self.actions.open_with.set_visible(info.is_video());
 
@@ -1906,7 +1930,8 @@ impl Lightbox {
             // screenshots, edited copies) still get the Image group populated from
             // filesystem + Pixbuf data, so the user always sees *something*.
             if let Some((exif, taken_label)) = probed.as_ref().and_then(local_details_exif) {
-                fill_exif_box(&lb.details.exif, &exif, taken_label);
+                let location = fill_exif_box(&lb.details.exif, &exif, taken_label);
+                lb.show_location_map(location, &exif);
                 lb.details.exif.set_visible(true);
             }
         });
@@ -1931,7 +1956,8 @@ impl Lightbox {
                 lb.details.tags.show(&asset_id, details.tags);
             }
             if let Some(exif) = details.exif_info {
-                fill_exif_box(&lb.details.exif, &exif, "Taken");
+                let location = fill_exif_box(&lb.details.exif, &exif, "Taken");
+                lb.show_location_map(location, &exif);
                 lb.details.exif.set_visible(true);
             }
         });

@@ -14,6 +14,7 @@ pub struct LibraryFeatures {
     pub folders: bool,
     pub shared_links: bool,
     pub ratings: bool,
+    pub map: bool,
 }
 
 impl Default for LibraryFeatures {
@@ -43,6 +44,7 @@ impl LibraryFeatures {
             folders: preference("/folders/enabled"),
             shared_links: preference("/sharedLinks/enabled"),
             ratings: preference("/ratings/enabled"),
+            map: server_flag("/map"),
         }
     }
 }
@@ -83,7 +85,8 @@ mod tests {
             "smartSearch": false,
             "ocr": false,
             "reverseGeocoding": true,
-            "search": true
+            "search": true,
+            "map": false
         });
         let preferences = serde_json::json!({
             "people": { "enabled": false, "sidebarWeb": true },
@@ -99,5 +102,6 @@ mod tests {
         assert!(features.tags);
         assert!(features.folders);
         assert!(!features.ratings);
+        assert!(!features.map);
     }
 }

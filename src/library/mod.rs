@@ -68,6 +68,7 @@ mod features;
 mod folders_view;
 mod header_format;
 mod lightbox;
+mod map;
 mod nav_history;
 mod navigation;
 mod people_view;
@@ -89,6 +90,8 @@ mod video_player;
 mod window_layout;
 
 const PAGE_SIZE: u32 = 50;
+/// Map areas load each photo by ID, so smaller pages show the first ones sooner.
+const MAP_AREA_PAGE_SIZE: u32 = 32;
 
 mod texture_decode;
 use texture_decode::{decode_raw_thumbnail_texture, load_texture_blocking};
@@ -127,6 +130,7 @@ struct LibraryWindowUi {
     tags: tags_view::TagsView,
     folders: folders_view::FoldersView,
     sharing: sharing_view::SharingView,
+    map: map::MapView,
     header: source_header::SourceHeader,
     bottom_nav: bottom_nav::BottomNav,
     features: Cell<crate::api_client::LibraryFeatures>,
@@ -138,6 +142,7 @@ struct LibraryWindowUi {
     source_mode: gtk::DropDown,
     source_revealer: gtk::Revealer,
     upload_button: gtk::Button,
+    controls_row: gtk::Box,
     timeline_toggle: gtk::ToggleButton,
     timeline_banner: gtk::Label,
     source_mode_suppressed: Cell<bool>,
@@ -166,6 +171,7 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     let album_link_listbox = parts.content.album_link.listbox.clone();
     let bulk = &parts.content.bulk;
     let bulk_share_link = bulk.share_link.clone();
+    let bulk_location = bulk.location.clone();
     let (bulk_delete, bulk_download, bulk_clear) = (
         bulk.delete.clone(),
         bulk.download.clone(),
@@ -179,10 +185,12 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     connect_bulk_actions(ui.clone(), bulk_delete, bulk_download, bulk_clear);
     actions::connect_bulk_share_link(ui.clone(), &bulk_share_link);
     actions::connect_bulk_archive(ui.clone());
+    actions::connect_bulk_location(ui.clone(), &bulk_location);
     trash_view::connect_trash_controls(ui.clone());
     people_view::connect_people_view(ui.clone());
     tags_view::connect_tags_view(ui.clone());
     sharing_view::connect_sharing_view(ui.clone());
+    map::connect_map_view(&ui);
     bottom_nav::connect_bottom_nav(&ui);
     connect_sidebar_handlers(ui.clone());
     connect_controls(ui.clone());
@@ -1139,6 +1147,11 @@ async fn fetch_remote_page(
         LibrarySource::MetadataSearch { query } => {
             api.search_metadata(&query, page, PAGE_SIZE, order).await
         }
+        LibrarySource::MapArea { ids, .. } => {
+            let (page_ids, more) = ids.page(page, MAP_AREA_PAGE_SIZE);
+            let assets = api.fetch_assets_by_ids(page_ids).await?;
+            Ok((assets, more))
+        }
         other => unreachable!("{other:?} is not a remote page source"),
     }
 }
@@ -1578,6 +1591,7 @@ fn local_to_library_asset(local: LocalAsset) -> LibraryAsset {
         is_favorite: false,
         visibility: String::new(),
         is_edited: false,
+        owner_id: String::new(),
     }
 }
 

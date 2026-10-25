@@ -72,6 +72,10 @@ mod imp {
         /// Edited in Immich; the lightbox then shows Immich's edited render.
         #[property(get, set)]
         is_edited: Cell<bool>,
+
+        /// Immich user id of the owner; empty for local files.
+        #[property(get, set)]
+        owner_id: RefCell<String>,
     }
 
     #[glib::object_subclass]
@@ -104,6 +108,7 @@ pub struct AssetInit<'a> {
     pub is_favorite: bool,
     pub is_archived: bool,
     pub is_edited: bool,
+    pub owner_id: &'a str,
 }
 
 impl AssetObject {
@@ -123,6 +128,7 @@ impl AssetObject {
             .property("is-favorite", init.is_favorite)
             .property("is-archived", init.is_archived)
             .property("is-edited", init.is_edited)
+            .property("owner-id", init.owner_id)
             .build()
     }
 
@@ -172,7 +178,9 @@ mod tests {
             is_favorite: false,
             is_archived: false,
             is_edited: true,
+            owner_id: "me",
         });
         assert!(object.is_edited());
+        assert_eq!(object.owner_id(), "me");
     }
 }

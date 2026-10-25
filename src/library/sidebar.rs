@@ -32,6 +32,7 @@ const GROUPS: [(&str, &[&str]); 3] = [
         &[
             "photos",
             "explore",
+            "map",
             "people",
             "favorites",
             "archive",
@@ -46,7 +47,7 @@ const GROUPS: [(&str, &[&str]); 3] = [
 ];
 
 /// Fixed sidebar destinations: title, subtitle, icon, and the key the sidebar handler matches.
-const FIXED_ROWS: [(&str, &str, &str, &str); 13] = [
+const FIXED_ROWS: [(&str, &str, &str, &str); 14] = [
     (
         "Photos",
         "Timeline of every photo and video",
@@ -64,6 +65,12 @@ const FIXED_ROWS: [(&str, &str, &str, &str); 13] = [
         "People, places, and things",
         "view-grid-symbolic",
         "explore",
+    ),
+    (
+        "Map",
+        "Photos by where they were taken",
+        "mark-location-symbolic",
+        "map",
     ),
     (
         "People",

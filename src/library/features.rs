@@ -29,11 +29,13 @@ fn apply(ui: &LibraryWindowUi, features: LibraryFeatures) -> bool {
         ("tags", features.tags),
         ("folders", features.folders),
         ("shared-links", features.shared_links),
+        ("map", features.map),
     ];
     for (key, visible) in rows {
         super::sidebar::set_row_visible(&ui.sidebar, key, visible);
     }
     super::bottom_nav::set_button_visible(&ui.bottom_nav, "people", features.people);
+    super::bottom_nav::set_button_visible(&ui.bottom_nav, "map", features.map);
     super::search_view::set_available_modes(&ui.search_view, features.smart_search, features.ocr);
     super::search_view::set_filter_features(
         &ui.search_view,
@@ -71,6 +73,9 @@ pub(super) fn is_available(features: &LibraryFeatures, location: &Location) -> b
             features.smart_search
         }
         Location::Source(LibrarySource::OcrSearch { .. }) => features.ocr,
+        Location::Source(LibrarySource::MapArea { .. }) | Location::Page(LibraryPage::Map) => {
+            features.map
+        }
         _ => true,
     }
 }

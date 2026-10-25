@@ -355,6 +355,9 @@ pub struct ConfigData {
     /// Whether lightbox video playback starts muted.
     #[serde(default)]
     pub video_muted: bool,
+    /// Map style id (`immich`, a VersaTiles palette, or `osm`); empty means Immich's own.
+    #[serde(default)]
+    pub library_map_style: String,
 }
 
 impl Default for ConfigData {
@@ -388,6 +391,7 @@ impl Default for ConfigData {
             grid_border_color: default_grid_border_color(),
             video_volume: default_video_volume(),
             video_muted: false,
+            library_map_style: String::new(),
         }
     }
 }

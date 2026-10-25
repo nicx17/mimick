@@ -50,8 +50,6 @@ fn build_trash_bar(restore_all: &gtk::Button, empty: &gtk::Button) -> gtk::Revea
         .spacing(6)
         .margin_top(6)
         .margin_bottom(6)
-        .margin_start(12)
-        .margin_end(12)
         .build();
     inner.append(&note);
     inner.append(&buttons);

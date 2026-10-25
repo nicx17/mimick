@@ -16,6 +16,7 @@ use crate::library::asset_object::AssetObject;
 
 use super::LOCAL_ID_PREFIX;
 use super::LibraryWindowUi;
+use super::context_menu::show_alert_dialog;
 use super::download::start_download_group;
 
 pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::ToggleButton) {
@@ -172,6 +173,67 @@ pub(super) fn connect_bulk_share_link(ui: Rc<LibraryWindowUi>, button: &gtk::But
         super::shared_link_dialog::present(
             ui.clone(),
             super::shared_link_dialog::LinkDialogMode::Create(SharedLinkTarget::Assets(ids)),
+            Rc::new(move || {
+                ui_after.grid.selection.unselect_all();
+                ui_after.select_toggle.set_active(false);
+            }),
+        );
+    });
+}
+
+/// Selection-bar button: give every selected server asset one location.
+/// Whether the current user owns `item`, as Immich only lets owners edit an asset.
+/// Local files, and assets checked before the user id is known, count as yours.
+pub(super) fn is_mine(ui: &LibraryWindowUi, item: &AssetObject) -> bool {
+    owned_by(&item.owner_id(), ui.ctx.current_user_id.lock().as_deref())
+}
+
+fn owned_by(owner: &str, me: Option<&str>) -> bool {
+    owner.is_empty() || me.is_none_or(|me| me == owner)
+}
+
+/// Dialog subtitle for a batch; photos other people own are left out of the change.
+fn batch_title(owned: usize, selected: usize) -> String {
+    if owned == selected {
+        format!("{selected} selected")
+    } else {
+        format!("{owned} of {selected} selected, only yours change")
+    }
+}
+
+/// Selection-bar button: give every selected server asset the user owns one location.
+pub(super) fn connect_bulk_location(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
+    button.connect_clicked(move |_| {
+        let on_server: Vec<AssetObject> = selected_items(&ui)
+            .into_iter()
+            .filter(|item| TrashTarget::from_item(item).is_some())
+            .collect();
+        let ids: Vec<String> = on_server
+            .iter()
+            .filter(|item| is_mine(&ui, item))
+            .filter_map(TrashTarget::from_item)
+            .map(|target| target.remote_id)
+            .collect();
+        if on_server.is_empty() {
+            return;
+        }
+        if ids.is_empty() {
+            show_alert_dialog(
+                &ui,
+                "Not Your Photos",
+                "Only the owner can change where a photo was taken, and the selected photos belong to other people.",
+            );
+            return;
+        }
+        let target = super::map::LocationTarget {
+            title: batch_title(ids.len(), on_server.len()),
+            ids,
+            initial: None,
+        };
+        let ui_after = ui.clone();
+        super::map::set_location(
+            ui.clone(),
+            target,
             Rc::new(move || {
                 ui_after.grid.selection.unselect_all();
                 ui_after.select_toggle.set_active(false);
@@ -366,7 +428,7 @@ fn confirm_and_bulk_delete(ui: Rc<LibraryWindowUi>) {
 
 #[cfg(test)]
 mod tests {
-    use super::{TrashTarget, trash_dialog_text};
+    use super::{TrashTarget, batch_title, owned_by, trash_dialog_text};
     use crate::library::LOCAL_ID_PREFIX;
     use crate::library::asset_object::{AssetInit, AssetObject};
     use glib::prelude::ObjectExt;
@@ -385,6 +447,7 @@ mod tests {
             is_favorite: false,
             is_archived: false,
             is_edited: false,
+            owner_id: "",
         })
     }
 
@@ -447,5 +510,19 @@ mod tests {
         let (heading, body) = trash_dialog_text(&[target("IMG_1.jpg", false)], 0, false);
         assert_eq!(heading, "Delete “IMG_1.jpg” permanently?");
         assert!(body.contains("can't be undone"));
+    }
+
+    #[test]
+    fn only_the_owner_counts_as_mine() {
+        assert!(owned_by("me", Some("me")));
+        assert!(!owned_by("partner", Some("me")));
+        assert!(owned_by("", Some("me")));
+        assert!(owned_by("partner", None));
+    }
+
+    #[test]
+    fn batch_titles_say_when_others_photos_are_left_out() {
+        assert_eq!(batch_title(3, 3), "3 selected");
+        assert_eq!(batch_title(2, 5), "2 of 5 selected, only yours change");
     }
 }

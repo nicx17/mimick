@@ -61,6 +61,7 @@ pub(super) struct BulkParts {
     pub download: gtk::Button,
     pub clear: gtk::Button,
     pub share_link: gtk::Button,
+    pub location: gtk::Button,
     archive: gtk::Button,
     trash: TrashControls,
 }
@@ -76,6 +77,7 @@ pub(super) struct ContentParts {
     tags: super::tags_view::TagsView,
     folders: super::folders_view::FoldersView,
     sharing: super::sharing_view::SharingView,
+    map: super::map::MapView,
     header: super::source_header::SourceHeader,
     bottom_nav: super::bottom_nav::BottomNav,
     search_view: SearchViewParts,
@@ -156,6 +158,8 @@ impl ContentParts {
         stack.add_named(&folders.page.root, Some("folders"));
         let sharing = super::sharing_view::build_sharing_view();
         stack.add_named(&sharing.root, Some("sharing"));
+        let map = super::map::build_map_view();
+        map.split.set_end_child(Some(&stack));
         let header = super::source_header::build_source_header();
         let album_link = build_album_link();
         let bulk = build_bulk_bar();
@@ -173,6 +177,7 @@ impl ContentParts {
             tags,
             folders,
             sharing,
+            map,
             header,
             bottom_nav: super::bottom_nav::build_bottom_nav(),
             search_view: build_search_view(),
@@ -194,7 +199,7 @@ impl ContentParts {
         column.append(&self.controls.root);
         column.append(&self.search_view.root);
         column.append(&self.banner);
-        column.append(&self.stack);
+        column.append(&self.map.split);
         column.append(&self.bottom_nav.root);
         column.append(&self.bulk.bar);
         column
@@ -223,6 +228,7 @@ impl LibraryWindowUi {
             tags: content.tags,
             folders: content.folders,
             sharing: content.sharing,
+            map: content.map,
             header: content.header,
             bottom_nav: content.bottom_nav,
             features: Cell::default(),
@@ -234,6 +240,7 @@ impl LibraryWindowUi {
             source_mode: controls.source_mode,
             source_revealer: controls.source_revealer,
             upload_button: controls.upload_button,
+            controls_row: controls.root,
             timeline_toggle: controls.timeline_toggle,
             timeline_banner: content.banner,
             source_mode_suppressed: Cell::new(false),
@@ -496,6 +503,10 @@ fn build_bulk_bar() -> BulkParts {
         .icon_name("mimick-archive-symbolic")
         .tooltip_text("Archive selected")
         .build();
+    let location = gtk::Button::builder()
+        .icon_name("mark-location-symbolic")
+        .tooltip_text("Set location for selected")
+        .build();
     let inner = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
         .spacing(8)
@@ -512,11 +523,13 @@ fn build_bulk_bar() -> BulkParts {
         download.clone(),
         share_link.clone(),
         archive.clone(),
+        location.clone(),
     ]);
     inner.append(&count_label);
     inner.append(&clear);
     inner.append(&share_link);
     inner.append(&archive);
+    inner.append(&location);
     inner.append(&download);
     inner.append(&delete);
     inner.append(&trash.restore_selected);
@@ -533,6 +546,7 @@ fn build_bulk_bar() -> BulkParts {
         download,
         clear,
         share_link,
+        location,
         archive,
         trash,
     }
@@ -596,6 +610,11 @@ fn add_narrow_breakpoint(
 ) {
     let narrow_bp = breakpoint("max-width: 600px");
     narrow_bp.add_setter(&content.bottom_nav.root, "visible", Some(&true.to_value()));
+    narrow_bp.add_setter(
+        &content.map.split,
+        "orientation",
+        Some(&gtk::Orientation::Vertical.to_value()),
+    );
     let (narrow_apply, canvas_apply) = (narrow.clone(), content.grid.canvas.clone());
     narrow_bp.connect_apply(move |_| {
         log::info!("NARROW breakpoint APPLIED: setting narrow=true");

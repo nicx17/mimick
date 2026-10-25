@@ -6,7 +6,8 @@ impl LibraryState {
             return false;
         }
         self.forward_history.clear();
-        let replace = self.location.is_search() && location.is_search();
+        let replace = (self.location.is_search() && location.is_search())
+            || (is_map_area(&self.location) && is_map_area(&location));
         if !replace && self.nav_history.back() != Some(&self.location) {
             self.nav_history.push_back(self.location.clone());
             if self.nav_history.len() > 50 {
@@ -15,6 +16,10 @@ impl LibraryState {
         }
         self.location = location;
         true
+    }
+
+    pub fn previous_location(&self) -> Option<&Location> {
+        self.nav_history.back()
     }
 
     pub fn navigate_back(&mut self) -> Option<Location> {
@@ -60,6 +65,10 @@ impl LibraryState {
     pub fn can_go_back(&self) -> bool {
         !self.nav_history.is_empty()
     }
+}
+
+fn is_map_area(location: &Location) -> bool {
+    matches!(location, Location::Source(LibrarySource::MapArea { .. }))
 }
 
 #[cfg(test)]
@@ -182,6 +191,28 @@ mod tests {
                 id: "a1".into(),
                 name: "Holidays".into()
             }
+        );
+    }
+
+    #[test]
+    fn switching_map_areas_replaces_the_area_and_keeps_the_map() {
+        let area = |label: &str| {
+            source(LibrarySource::MapArea {
+                ids: super::super::state::AssetIds(["a".to_string()].into()),
+                label: label.into(),
+            })
+        };
+        let mut state = LibraryState::new();
+        state.navigate_to(Location::Page(LibraryPage::Map));
+        state.navigate_to(area("Lisbon"));
+        state.navigate_to(area("Porto"));
+        assert_eq!(
+            state.previous_location(),
+            Some(&Location::Page(LibraryPage::Map))
+        );
+        assert_eq!(
+            state.navigate_back(),
+            Some(Location::Page(LibraryPage::Map))
         );
     }
 }

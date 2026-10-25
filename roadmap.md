@@ -101,4 +101,4 @@
 - [ ] **Progress notifications** — Desktop notifications with counts and outcomes, not just logs.
 - [ ] **Tray icon dynamic states** — Distinct icons for idle, syncing, paused, and error conditions.
 - [x] **Background Sync Toggle** — Make background sync optional via a toggle in Settings > Behavior; enabled by default.
-- [ ] **Library view feature** - library view of photos for app ... remote and local... toggle between remote and local photos view in-app video playback supported (#80). Recognized text (OCR) selection and copy in the lightbox (#85).
+- [ ] **Library view feature** - library view of photos for app ... remote and local... toggle between remote and local photos view in-app video playback supported (#80). Recognized text (OCR) selection and copy in the lightbox (#85). Map page with clustered photos, a location mini map in the details pane (#86), and setting locations on one or many photos (#87).
