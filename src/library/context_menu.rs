@@ -187,12 +187,22 @@ fn append_manage_buttons(
             Rc::new(|| {}),
         )
     });
-    let (ui_edit, filename, on_edited) = (
-        ui.clone(),
-        item.property::<String>("filename"),
-        hooks.on_edited,
-    );
-    let edit_id = remote_id.clone();
+    if super::actions::is_mine(ui, item) {
+        append_edit_buttons(menu, ui, item, remote_id, hooks.on_edited);
+    }
+    append_trash_button(menu, ui, target, hooks.on_trashed);
+}
+
+/// "Edit Info…" and "Set Location…", offered only on the user's own assets as in Immich.
+fn append_edit_buttons(
+    menu: &Menu,
+    ui: &Rc<LibraryWindowUi>,
+    item: &AssetObject,
+    id: String,
+    on_edited: Rc<dyn Fn(bool)>,
+) {
+    let (ui_edit, filename, edit_id) =
+        (ui.clone(), item.property::<String>("filename"), id.clone());
     menu.add("Edit Info…", false, move || {
         show_edit_dialog(
             ui_edit.clone(),
@@ -201,8 +211,7 @@ fn append_manage_buttons(
             on_edited.clone(),
         )
     });
-    append_location_button(menu, ui, item, remote_id);
-    append_trash_button(menu, ui, target, hooks.on_trashed);
+    append_location_button(menu, ui, item, id);
 }
 
 fn append_location_button(menu: &Menu, ui: &Rc<LibraryWindowUi>, item: &AssetObject, id: String) {

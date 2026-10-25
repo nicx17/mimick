@@ -35,7 +35,10 @@ pub fn keep_in_world(map: &shumate::SimpleMap) {
     };
     let (_, tall) = view.extent();
     let min_zoom = cluster::min_zoom_for(tall);
-    viewport.set_min_zoom_level(min_zoom.floor() as u32);
+    let floor = min_zoom.floor() as u32;
+    if viewport.min_zoom_level() != floor {
+        viewport.set_min_zoom_level(floor);
+    }
     if view.zoom < min_zoom {
         viewport.set_zoom_level(min_zoom);
     }

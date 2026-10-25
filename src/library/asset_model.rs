@@ -214,6 +214,7 @@ fn remote_asset_object(asset: &LibraryAsset, ctx: &AppContext) -> AssetObject {
         is_favorite: asset.is_favorite,
         is_archived: asset.is_archived(),
         is_edited: asset.is_edited,
+        owner_id: &asset.owner_id,
     });
     if let Some(path) = local_match {
         object.set_property("local-path", path);

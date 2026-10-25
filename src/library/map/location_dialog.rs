@@ -16,7 +16,9 @@ use super::coords::GeoPoint;
 const PLACE_ZOOM: f64 = 12.0;
 const WORLD_ZOOM: f64 = 2.0;
 const WORLD_CENTRE: (f64, f64) = (20.0, 0.0);
-const MAP_HEIGHT: i32 = 320;
+const MIN_MAP_HEIGHT: i32 = 200;
+const DIALOG_HEIGHT: i32 = 640;
+const MAX_RESULTS_HEIGHT: i32 = 220;
 const MAX_RESULTS: usize = 8;
 const MIN_QUERY_CHARS: usize = 2;
 
@@ -102,6 +104,7 @@ fn dialog_shell(subtitle: &str, content: &gtk::Box, save: &gtk::Button) -> libad
     let dialog = libadwaita::Dialog::builder()
         .title("Set Location")
         .content_width(560)
+        .content_height(DIALOG_HEIGHT)
         .child(&toolbar)
         .build();
     let dialog_ref = dialog.clone();
@@ -151,6 +154,7 @@ struct Picker {
     content: gtk::Box,
     search: gtk::SearchEntry,
     results: gtk::ListBox,
+    results_scroller: gtk::ScrolledWindow,
     places: RefCell<Vec<Place>>,
     search_generation: Cell<u32>,
     map: shumate::SimpleMap,
@@ -169,11 +173,7 @@ impl Picker {
             .placeholder_text("Search places")
             .search_delay(400)
             .build();
-        let results = gtk::ListBox::builder()
-            .selection_mode(gtk::SelectionMode::None)
-            .css_classes(["boxed-list"])
-            .visible(false)
-            .build();
+        let (results, results_scroller) = results_list();
         let (map, layer) = picker_map();
         let (coords, paste) = coords_row();
         let content = gtk::Box::builder()
@@ -185,13 +185,14 @@ impl Picker {
             .margin_end(12)
             .build();
         content.append(&search);
-        content.append(&results);
+        content.append(&results_scroller);
         content.append(&map);
         content.append(&coords_list(&coords));
         Rc::new(Self {
             content,
             search,
             results,
+            results_scroller,
             places: RefCell::default(),
             search_generation: Cell::new(0),
             map,
@@ -356,7 +357,7 @@ impl Picker {
                 .build();
             self.results.append(&row);
         }
-        self.results.set_visible(!places.is_empty());
+        self.results_scroller.set_visible(!places.is_empty());
         self.places.replace(places);
     }
 
@@ -372,9 +373,27 @@ impl Picker {
     }
 }
 
+/// Search results, scrolling once there are more than fit above the map.
+fn results_list() -> (gtk::ListBox, gtk::ScrolledWindow) {
+    let list = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .css_classes(["boxed-list"])
+        .build();
+    let scroller = gtk::ScrolledWindow::builder()
+        .child(&list)
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .propagate_natural_height(true)
+        .max_content_height(MAX_RESULTS_HEIGHT)
+        .visible(false)
+        .build();
+    (list, scroller)
+}
+
+/// The map fills the dialog's spare height, down to a minimum on small screens.
 fn picker_map() -> (shumate::SimpleMap, shumate::MarkerLayer) {
     let map = shumate::SimpleMap::builder()
-        .height_request(MAP_HEIGHT)
+        .height_request(MIN_MAP_HEIGHT)
+        .vexpand(true)
         .overflow(gtk::Overflow::Hidden)
         .css_classes(["mimick-location-map"])
         .build();

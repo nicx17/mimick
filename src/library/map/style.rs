@@ -4,6 +4,7 @@
 //! rejects a whole style over one unknown operator, so each is handled here.
 
 use serde_json::Value;
+use shumate::prelude::*;
 
 use crate::api_client::ImmichApiClient;
 
@@ -22,13 +23,21 @@ pub async fn load_renderer(
     url: &str,
 ) -> Result<shumate::VectorRenderer, String> {
     let mut style = fetch_json(api, url).await?;
-    inline_tilejson(api, &mut style).await?;
+    let base = sprite_base(&style);
+    let (inlined, sprite) = futures_util::join!(inline_tilejson(api, &mut style), async {
+        match &base {
+            Some(base) => fetch_sprite(api, base).await,
+            None => None,
+        }
+    });
+    inlined?;
     rewrite_unsupported(&mut style);
-    let sprite = match sprite_base(&style) {
-        Some(base) => fetch_sprite(api, &base).await,
-        None => None,
-    };
+    flatten_text_fonts(&mut style);
+    let credit = attribution(&style);
     let renderer = build_renderer(&cache_id(url), style)?;
+    if let Some(credit) = credit {
+        renderer.set_license(&credit);
+    }
     if let Some(sprite) = sprite {
         attach_sprite(&renderer, &sprite);
     }
@@ -69,6 +78,46 @@ fn merge_tilejson(source: &mut Value, tilejson: &Value) {
     }
 }
 
+/// The style's source attributions as plain text, since libshumate's licence label is not HTML.
+fn attribution(style: &Value) -> Option<String> {
+    let parts: Vec<String> = style
+        .get("sources")?
+        .as_object()?
+        .values()
+        .filter_map(|source| source.get("attribution")?.as_str())
+        .map(plain_text)
+        .filter(|text| !text.is_empty())
+        .collect();
+    (!parts.is_empty()).then(|| parts.join(" · "))
+}
+
+/// HTML with its tags dropped, common entities decoded, and whitespace collapsed.
+fn plain_text(html: &str) -> String {
+    let mut text = String::with_capacity(html.len());
+    let mut in_tag = false;
+    for c in html.chars() {
+        match c {
+            '<' => in_tag = true,
+            '>' => in_tag = false,
+            _ if !in_tag => text.push(c),
+            _ => {}
+        }
+    }
+    let entities = [
+        ("&copy;", "©"),
+        ("&nbsp;", " "),
+        ("&quot;", "\""),
+        ("&#39;", "'"),
+        ("&lt;", "<"),
+        ("&gt;", ">"),
+        ("&amp;", "&"),
+    ];
+    let decoded = entities
+        .iter()
+        .fold(text, |text, (entity, plain)| text.replace(entity, plain));
+    decoded.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
 fn rewrite_unsupported(value: &mut Value) {
     match value {
         Value::Array(items) if is_always_true(items) => *value = Value::Bool(true),
@@ -83,6 +132,41 @@ fn is_always_true(items: &[Value]) -> bool {
         .first()
         .and_then(Value::as_str)
         .is_some_and(|op| ALWAYS_TRUE_OPERATORS.contains(&op))
+}
+
+/// libshumate reads `text-font` only as a list of names, so an expression there
+/// becomes the font list of its last (fallback) branch.
+fn flatten_text_fonts(style: &mut Value) {
+    let Some(layers) = style.get_mut("layers").and_then(Value::as_array_mut) else {
+        return;
+    };
+    let layouts = layers
+        .iter_mut()
+        .filter_map(|layer| layer.get_mut("layout"))
+        .filter_map(Value::as_object_mut);
+    for layout in layouts {
+        let Some(fonts) = layout.get("text-font").filter(|fonts| !is_font_list(fonts)) else {
+            continue;
+        };
+        match fallback_fonts(fonts) {
+            Some(list) => layout.insert("text-font".to_string(), list),
+            None => layout.remove("text-font"),
+        };
+    }
+}
+
+fn is_font_list(value: &Value) -> bool {
+    value
+        .as_array()
+        .is_some_and(|items| items.iter().all(Value::is_string))
+}
+
+fn fallback_fonts(value: &Value) -> Option<Value> {
+    let items = value.as_array()?;
+    if items.first().and_then(Value::as_str) == Some("literal") {
+        return items.get(1).filter(|list| is_font_list(list)).cloned();
+    }
+    items.iter().rev().find_map(fallback_fonts)
 }
 
 /// Build the renderer, dropping any layer libshumate still rejects instead of the whole map.
@@ -139,12 +223,14 @@ fn sprite_url(base: &str, suffix: &str, extension: &str) -> String {
 
 async fn fetch_sprite(api: &ImmichApiClient, base: &str) -> Option<Sprite> {
     for (suffix, scale) in [("@2x", 2.0), ("", 1.0)] {
-        let json = api
-            .fetch_public_bytes(&sprite_url(base, suffix, "json"))
-            .await;
-        let png = api
-            .fetch_public_bytes(&sprite_url(base, suffix, "png"))
-            .await;
+        let (json_url, png_url) = (
+            sprite_url(base, suffix, "json"),
+            sprite_url(base, suffix, "png"),
+        );
+        let (json, png) = futures_util::join!(
+            api.fetch_public_bytes(&json_url),
+            api.fetch_public_bytes(&png_url)
+        );
         if let (Ok(json), Ok(png)) = (json, png) {
             return Some(Sprite {
                 json: String::from_utf8(json).ok()?,
@@ -199,6 +285,43 @@ mod tests {
             layer,
             json!({ "layout": { "text-field": ["case", true, ["get", "name"], ""] } })
         );
+    }
+
+    #[test]
+    fn attributions_become_plain_text() {
+        let style = json!({ "sources": {
+            "immich": { "attribution": "<a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">&copy; OpenStreetMap</a>" },
+            "plain": { "tiles": [] }
+        } });
+        assert_eq!(attribution(&style).as_deref(), Some("© OpenStreetMap"));
+        assert_eq!(
+            plain_text(
+                "<a href=\"x\">&copy; OpenStreetMap contributors</a> · <a>CC BY 4.0</a>\n Tom &amp; Jerry"
+            ),
+            "© OpenStreetMap contributors · CC BY 4.0 Tom & Jerry"
+        );
+        assert_eq!(attribution(&json!({ "sources": {} })), None);
+    }
+
+    #[test]
+    fn font_expressions_become_their_fallback_list() {
+        let mut style = json!({ "layers": [
+            { "id": "city", "layout": { "text-font": ["case", ["<=", ["get", "min_zoom"], 5],
+                ["literal", ["Noto Sans Medium"]], ["literal", ["Noto Sans Regular"]]] } },
+            { "id": "road", "layout": { "text-font": ["Noto Sans Bold"] } },
+            { "id": "odd", "layout": { "text-font": ["case", ["has", "font"], ["get", "font"], ["get", "other"]] } },
+            { "id": "fill", "paint": {} }
+        ] });
+        flatten_text_fonts(&mut style);
+        assert_eq!(
+            style["layers"][0]["layout"]["text-font"],
+            json!(["Noto Sans Regular"])
+        );
+        assert_eq!(
+            style["layers"][1]["layout"]["text-font"],
+            json!(["Noto Sans Bold"])
+        );
+        assert_eq!(style["layers"][2]["layout"], json!({}));
     }
 
     #[test]

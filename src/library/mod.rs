@@ -90,6 +90,8 @@ mod video_player;
 mod window_layout;
 
 const PAGE_SIZE: u32 = 50;
+/// Map areas load each photo by ID, so smaller pages show the first ones sooner.
+const MAP_AREA_PAGE_SIZE: u32 = 32;
 
 mod texture_decode;
 use texture_decode::{decode_raw_thumbnail_texture, load_texture_blocking};
@@ -1146,7 +1148,7 @@ async fn fetch_remote_page(
             api.search_metadata(&query, page, PAGE_SIZE, order).await
         }
         LibrarySource::MapArea { ids, .. } => {
-            let (page_ids, more) = ids.page(page, PAGE_SIZE);
+            let (page_ids, more) = ids.page(page, MAP_AREA_PAGE_SIZE);
             let assets = api.fetch_assets_by_ids(page_ids).await?;
             Ok((assets, more))
         }
@@ -1589,6 +1591,7 @@ fn local_to_library_asset(local: LocalAsset) -> LibraryAsset {
         is_favorite: false,
         visibility: String::new(),
         is_edited: false,
+        owner_id: String::new(),
     }
 }
 

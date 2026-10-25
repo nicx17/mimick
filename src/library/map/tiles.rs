@@ -1,6 +1,6 @@
 //! Map tiles shared by every map in the window, for the chosen style and the system theme.
 
-use std::cell::{Cell, RefCell};
+use std::cell::{Cell, OnceCell, RefCell};
 use std::rc::Rc;
 
 use glib::prelude::*;
@@ -11,6 +11,8 @@ use crate::library::LibraryWindowUi;
 use super::styles::MapStyle;
 
 const OSM_TILE_URL: &str = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+/// Recently used styles stay loaded, so switching back to one is instant.
+const KEPT_STYLES: usize = 3;
 
 #[derive(Clone)]
 struct Sources {
@@ -31,11 +33,14 @@ impl Sources {
 /// Loads the chosen style once and keeps attached maps on its light or dark variant.
 pub struct Tiles {
     style: Cell<MapStyle>,
-    sources: RefCell<Option<(MapStyle, Sources)>>,
+    /// Loaded styles, most recently loaded first.
+    sources: RefCell<Vec<(MapStyle, Sources)>>,
     loading: Cell<Option<MapStyle>>,
     /// The server was unreachable, so the next attach asks it for its styles again.
     retry: Cell<bool>,
     maps: RefCell<Vec<glib::WeakRef<shumate::SimpleMap>>>,
+    /// Projection for maps still waiting for their style, so markers can be placed.
+    placeholder: OnceCell<shumate::MapSource>,
 }
 
 impl Tiles {
@@ -47,6 +52,7 @@ impl Tiles {
             loading: Cell::new(None),
             retry: Cell::new(false),
             maps: RefCell::default(),
+            placeholder: OnceCell::new(),
         })
     }
 
@@ -66,10 +72,20 @@ impl Tiles {
             maps.push(map.downgrade());
         }
         drop(maps);
-        if let Some(source) = self.current() {
-            map.set_map_source(Some(&source));
+        match self.current() {
+            Some(source) => map.set_map_source(Some(&source)),
+            None => self.reference_placeholder(map),
         }
         self.ensure_loaded(ui);
+    }
+
+    /// libshumate can't position markers without a reference source; this one is never drawn.
+    fn reference_placeholder(&self, map: &shumate::SimpleMap) {
+        if let Some(viewport) = map.viewport()
+            && viewport.reference_map_source().is_none()
+        {
+            viewport.set_reference_map_source(Some(self.placeholder.get_or_init(raster)));
+        }
     }
 
     pub fn set_style(self: &Rc<Self>, ui: &Rc<LibraryWindowUi>, style: MapStyle) {
@@ -111,21 +127,18 @@ impl Tiles {
 
     fn current(&self) -> Option<shumate::MapSource> {
         let dark = libadwaita::StyleManager::default().is_dark();
-        match &*self.sources.borrow() {
-            Some((style, sources)) if *style == self.style.get() => {
-                Some(if dark { &sources.dark } else { &sources.light }.clone())
-            }
-            _ => None,
-        }
+        let style = self.style.get();
+        self.sources
+            .borrow()
+            .iter()
+            .find(|(loaded, _)| *loaded == style)
+            .map(|(_, sources)| if dark { &sources.dark } else { &sources.light }.clone())
     }
 
     fn needs_load(&self) -> bool {
-        match &*self.sources.borrow() {
-            Some((style, _)) => {
-                *style != self.style.get() || (*style == MapStyle::Immich && self.retry.get())
-            }
-            None => true,
-        }
+        let style = self.style.get();
+        let loaded = self.sources.borrow().iter().any(|(s, _)| *s == style);
+        !loaded || (style == MapStyle::Immich && self.retry.get())
     }
 
     fn ensure_loaded(self: &Rc<Self>, ui: &Rc<LibraryWindowUi>) {
@@ -140,13 +153,22 @@ impl Tiles {
             if tiles.loading.get() == Some(style) {
                 tiles.loading.set(None);
             }
-            if tiles.style.get() == style {
-                tiles.sources.replace(Some((style, sources)));
+            if style == MapStyle::Immich {
                 tiles.retry.set(!reached);
+            }
+            remember(&mut tiles.sources.borrow_mut(), style, sources);
+            if tiles.style.get() == style {
                 tiles.apply();
             }
         });
     }
+}
+
+/// Put `style` first, replacing an older load of it, and forget the least recent beyond the limit.
+fn remember<T>(loaded: &mut Vec<(MapStyle, T)>, style: MapStyle, value: T) {
+    loaded.retain(|(existing, _)| *existing != style);
+    loaded.insert(0, (style, value));
+    loaded.truncate(KEPT_STYLES);
 }
 
 /// The style's light and dark sources, and whether the server answered when asked.
@@ -156,8 +178,10 @@ async fn load_sources(api: &ImmichApiClient, style: MapStyle) -> (Sources, bool)
     }
     match style.palette_urls() {
         Some((light, dark)) => {
-            let light = style_source(api, Some(&light)).await;
-            let dark = style_source(api, Some(&dark)).await;
+            let (light, dark) = futures_util::join!(
+                style_source(api, Some(&light)),
+                style_source(api, Some(&dark))
+            );
             (Sources { light, dark }, true)
         }
         None => (Sources::raster(), true),
@@ -172,11 +196,14 @@ async fn server_sources(api: &ImmichApiClient) -> (Sources, bool) {
             return (Sources::raster(), false);
         }
     };
-    let light = style_source(api, urls.light.as_deref()).await;
-    let dark = if urls.dark == urls.light {
-        light.clone()
+    let (light, dark) = if urls.dark == urls.light {
+        let light = style_source(api, urls.light.as_deref()).await;
+        (light.clone(), light)
     } else {
-        style_source(api, urls.dark.as_deref()).await
+        futures_util::join!(
+            style_source(api, urls.light.as_deref()),
+            style_source(api, urls.dark.as_deref())
+        )
     };
     (Sources { light, dark }, true)
 }
@@ -198,4 +225,27 @@ fn raster() -> shumate::MapSource {
     shumate::MapSourceRegistry::with_defaults()
         .by_id(shumate::MAP_SOURCE_OSM_MAPNIK)
         .unwrap_or_else(|| shumate::RasterRenderer::from_url(OSM_TILE_URL).upcast())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn recent_styles_are_kept_most_recent_first() {
+        let mut loaded = Vec::new();
+        for style in [
+            MapStyle::Immich,
+            MapStyle::Gray,
+            MapStyle::Toner,
+            MapStyle::Gray,
+        ] {
+            remember(&mut loaded, style, style.id());
+        }
+        let order: Vec<MapStyle> = loaded.iter().map(|(style, _)| *style).collect();
+        assert_eq!(order, [MapStyle::Gray, MapStyle::Toner, MapStyle::Immich]);
+        remember(&mut loaded, MapStyle::Muted, "muted");
+        assert_eq!(loaded.len(), KEPT_STYLES);
+        assert!(!loaded.iter().any(|(style, _)| *style == MapStyle::Immich));
+    }
 }

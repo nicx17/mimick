@@ -1,8 +1,9 @@
 //! Map page: every geotagged asset, clustered by screen distance; a click lists the photos.
 
 use std::cell::{Cell, RefCell};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
+use std::sync::Arc;
 use std::time::Duration;
 
 use gtk::prelude::*;
@@ -18,7 +19,7 @@ use super::cluster::{self, Cluster, PixelWindow};
 use super::controls::{self, MapControls};
 use super::coords::GeoPoint;
 use super::layout::Mode;
-use super::markers;
+use super::markers::{self, Members};
 use super::minimap::Minimap;
 use super::styles::MapStyle;
 use super::tiles::Tiles;
@@ -26,9 +27,21 @@ use super::tiles::Tiles;
 const REFRESH_DELAY: Duration = Duration::from_millis(120);
 const FOCUS_ZOOM: f64 = 15.0;
 const FALLBACK_SIZE: (f64, f64) = (800.0, 600.0);
-const CACHED_LEVELS: usize = 4;
+const CACHED_LEVELS: usize = 5;
 
-type ClusterKey = (i64, i64);
+/// Photos keep their marker across zoom levels; groups are rebuilt for each level.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+enum MarkerKey {
+    Photo(usize),
+    Group(u32, (i64, i64)),
+}
+
+fn marker_key(level: u32, cluster: &Cluster) -> MarkerKey {
+    match cluster.members.as_slice() {
+        [single] => MarkerKey::Photo(*single),
+        _ => MarkerKey::Group(level, cluster.key),
+    }
+}
 
 pub struct MapView {
     /// The map beside or above the content stack; the map half hides outside map views.
@@ -54,10 +67,12 @@ pub struct MapView {
 
 #[derive(Default)]
 struct ViewState {
-    markers: Rc<Vec<MapMarker>>,
-    clusters: HashMap<u32, Rc<Vec<Cluster>>>,
-    level: Option<u32>,
-    shown: HashMap<ClusterKey, shumate::Marker>,
+    markers: Arc<Vec<MapMarker>>,
+    /// Bumped whenever the markers reload, so clusters computed for older ones are dropped.
+    generation: u64,
+    clusters: HashMap<u32, Arc<Vec<Cluster>>>,
+    computing: HashSet<(u64, u32)>,
+    shown: HashMap<MarkerKey, shumate::Marker>,
     camera_placed: bool,
     focus: Option<GeoPoint>,
     /// A marker in the cluster whose photos are listed, so that cluster stays highlighted.
@@ -158,8 +173,9 @@ pub fn connect_map_view(ui: &Rc<LibraryWindowUi>) {
         });
     }
     let weak = Rc::downgrade(ui);
-    ui.map.resize_watch.connect_resize(move |_, _, _| {
+    ui.map.resize_watch.connect_resize(move |_, _, height| {
         if let Some(ui) = weak.upgrade() {
+            controls::fit_height(&ui, height);
             camera::keep_in_world(&ui.map.map);
             schedule_refresh(&ui);
         }
@@ -255,9 +271,10 @@ fn apply_markers(ui: &Rc<LibraryWindowUi>, markers: Vec<MapMarker>) {
     let empty = markers.is_empty();
     {
         let mut state = view.state.borrow_mut();
-        state.markers = Rc::new(markers);
+        state.markers = Arc::new(markers);
+        state.generation += 1;
         state.clusters.clear();
-        state.level = None;
+        state.computing.clear();
         state.selected = None;
     }
     view.populated.set(true);
@@ -323,6 +340,7 @@ fn schedule_refresh(ui: &Rc<LibraryWindowUi>) {
 }
 
 /// Show the clusters inside the viewport, adding and removing only what changed.
+/// The previous markers stay up until the clusters for a new zoom level are ready.
 fn refresh_markers(ui: &Rc<LibraryWindowUi>) {
     let view = &ui.map;
     let Some(current) = camera::view_of(&view.map) else {
@@ -332,36 +350,66 @@ fn refresh_markers(ui: &Rc<LibraryWindowUi>) {
         return;
     }
     let (level, window) = PixelWindow::around(&current);
-    if view.state.borrow().level != Some(level) {
-        clear_shown(view);
-        view.state.borrow_mut().level = Some(level);
+    let cached = view.state.borrow().clusters.get(&level).cloned();
+    if cached.is_none() {
+        request_clusters(ui, level);
     }
-    let clusters = view.clusters_at(level);
-    let visible: HashMap<ClusterKey, usize> = clusters
+    request_clusters(ui, level.saturating_sub(1));
+    request_clusters(ui, cluster::cluster_level(f64::from(level) + 1.0));
+    let Some(clusters) = cached else {
+        return;
+    };
+    let visible: HashMap<MarkerKey, usize> = clusters
         .iter()
         .enumerate()
         .filter(|(_, cluster)| window.contains(cluster.x, cluster.y))
-        .map(|(index, cluster)| (cluster.key, index))
+        .map(|(index, cluster)| (marker_key(level, cluster), index))
         .collect();
     remove_hidden(view, &visible);
     add_missing(ui, &clusters, &visible);
 }
 
-impl MapView {
-    fn clusters_at(&self, level: u32) -> Rc<Vec<Cluster>> {
-        let mut state = self.state.borrow_mut();
-        if let Some(clusters) = state.clusters.get(&level) {
-            return clusters.clone();
+/// Cluster `level` on a worker thread unless it is cached or already being computed.
+fn request_clusters(ui: &Rc<LibraryWindowUi>, level: u32) {
+    let (markers, generation) = {
+        let mut state = ui.map.state.borrow_mut();
+        let generation = state.generation;
+        if state.clusters.contains_key(&level) || !state.computing.insert((generation, level)) {
+            return;
         }
-        let clusters = Rc::new(cluster::cluster(&state.markers, level));
+        (state.markers.clone(), generation)
+    };
+    let weak = Rc::downgrade(ui);
+    glib::MainContext::default().spawn_local(async move {
+        let computed = tokio::task::spawn_blocking(move || cluster::cluster(&markers, level))
+            .await
+            .ok();
+        if let Some(ui) = weak.upgrade() {
+            store_clusters(&ui, generation, level, computed);
+        }
+    });
+}
+
+fn store_clusters(
+    ui: &Rc<LibraryWindowUi>,
+    generation: u64,
+    level: u32,
+    computed: Option<Vec<Cluster>>,
+) {
+    {
+        let mut state = ui.map.state.borrow_mut();
+        state.computing.remove(&(generation, level));
+        let Some(clusters) = computed.filter(|_| state.generation == generation) else {
+            return;
+        };
         evict_far_levels(&mut state.clusters, level);
-        state.clusters.insert(level, clusters.clone());
-        clusters
+        state.clusters.insert(level, Arc::new(clusters));
     }
+    refresh_markers(ui);
 }
 
 /// Keep the cache to a few zoom levels, dropping those farthest from `level` first.
-fn evict_far_levels(cache: &mut HashMap<u32, Rc<Vec<Cluster>>>, level: u32) {
+fn evict_far_levels(cache: &mut HashMap<u32, Arc<Vec<Cluster>>>, level: u32) {
     while cache.len() >= CACHED_LEVELS {
         let Some(farthest) = cache.keys().copied().max_by_key(|l| l.abs_diff(level)) else {
             break;
@@ -375,7 +423,7 @@ fn clear_shown(view: &MapView) {
     view.state.borrow_mut().shown.clear();
 }
 
-fn remove_hidden(view: &MapView, visible: &HashMap<ClusterKey, usize>) {
+fn remove_hidden(view: &MapView, visible: &HashMap<MarkerKey, usize>) {
     view.state.borrow_mut().shown.retain(|key, marker| {
         let keep = visible.contains_key(key);
         if !keep {
@@ -387,13 +435,13 @@ fn remove_hidden(view: &MapView, visible: &HashMap<ClusterKey, usize>) {
 
 fn add_missing(
     ui: &Rc<LibraryWindowUi>,
-    clusters: &Rc<Vec<Cluster>>,
-    visible: &HashMap<ClusterKey, usize>,
+    clusters: &Arc<Vec<Cluster>>,
+    visible: &HashMap<MarkerKey, usize>,
 ) {
     let view = &ui.map;
     let (markers, selected, missing) = {
         let state = view.state.borrow();
-        let missing: Vec<(ClusterKey, usize)> = visible
+        let missing: Vec<(MarkerKey, usize)> = visible
             .iter()
             .filter(|(key, _)| !state.shown.contains_key(*key))
             .map(|(key, index)| (*key, *index))
@@ -409,24 +457,30 @@ fn add_missing(
 
 fn cluster_marker(
     ui: &Rc<LibraryWindowUi>,
-    markers: &Rc<Vec<MapMarker>>,
-    clusters: &Rc<Vec<Cluster>>,
+    markers: &Arc<Vec<MapMarker>>,
+    clusters: &Arc<Vec<Cluster>>,
     index: usize,
     selected: Option<usize>,
 ) -> shumate::Marker {
     let cluster = &clusters[index];
-    let button = match cluster.members.as_slice() {
-        [single] => markers::photo(ui, &markers[*single].id),
-        members => markers::bubble(members.len()),
+    let (button, members) = match cluster.members.as_slice() {
+        [single] => (
+            markers::photo(ui, &markers[*single].id),
+            Members::Photo([*single]),
+        ),
+        group => (
+            markers::bubble(group.len()),
+            Members::Cluster(clusters.clone(), index),
+        ),
     };
     if selected.is_some_and(|anchor| cluster.members.contains(&anchor)) {
         button.add_css_class("selected");
     }
-    markers::place_tooltip(&button, markers.clone(), clusters.clone(), index);
-    let (weak, markers, clusters) = (Rc::downgrade(ui), markers.clone(), clusters.clone());
+    markers::place_tooltip(&button, markers.clone(), members.clone());
+    let (weak, markers) = (Rc::downgrade(ui), markers.clone());
     button.connect_clicked(move |_| {
         if let Some(ui) = weak.upgrade() {
-            open_members(&ui, &markers, &clusters[index].members, None);
+            open_members(&ui, &markers, members.as_slice(), None);
         }
     });
     let marker = shumate::Marker::new();
@@ -462,13 +516,31 @@ mod tests {
 
     #[test]
     fn the_cluster_cache_drops_the_farthest_levels() {
-        let mut cache: HashMap<u32, Rc<Vec<Cluster>>> = [2, 5, 6, 7]
+        let mut cache: HashMap<u32, Arc<Vec<Cluster>>> = [2, 4, 5, 6, 7]
             .into_iter()
-            .map(|l| (l, Rc::default()))
+            .map(|l| (l, Arc::default()))
             .collect();
         evict_far_levels(&mut cache, 8);
         let mut kept: Vec<u32> = cache.keys().copied().collect();
         kept.sort_unstable();
-        assert_eq!(kept, [5, 6, 7]);
+        assert_eq!(kept, [4, 5, 6, 7]);
+    }
+
+    #[test]
+    fn photos_keep_their_marker_across_zoom_levels() {
+        let photo = Cluster {
+            key: (1, 1),
+            x: 0.0,
+            y: 0.0,
+            lat: 0.0,
+            lon: 0.0,
+            members: vec![7],
+        };
+        let group = Cluster {
+            members: vec![7, 8],
+            ..photo.clone()
+        };
+        assert_eq!(marker_key(3, &photo), marker_key(9, &photo));
+        assert_ne!(marker_key(3, &group), marker_key(4, &group));
     }
 }

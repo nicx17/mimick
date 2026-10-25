@@ -6,7 +6,7 @@ use futures_util::stream::{self, StreamExt};
 
 use super::{ImmichApiClient, LibraryAsset};
 
-const ASSET_FETCH_CONCURRENCY: usize = 8;
+const ASSET_FETCH_CONCURRENCY: usize = 16;
 
 /// Identifies Mimick to tile, style, and sprite hosts.
 pub const MAP_USER_AGENT: &str = concat!(

@@ -384,6 +384,7 @@ mod tests {
             is_favorite: false,
             visibility: String::new(),
             is_edited: false,
+            owner_id: String::new(),
         }
     }
 

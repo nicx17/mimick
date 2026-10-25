@@ -198,6 +198,9 @@ pub struct LibraryAsset {
     /// Whether the asset was cropped or rotated in Immich.
     #[serde(rename = "isEdited", default)]
     pub is_edited: bool,
+    /// The owner's user id; only the owner can edit an asset's info or location.
+    #[serde(rename = "ownerId", default)]
+    pub owner_id: String,
 }
 
 impl LibraryAsset {

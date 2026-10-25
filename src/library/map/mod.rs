@@ -9,6 +9,7 @@ mod locate;
 mod location_dialog;
 mod markers;
 mod minimap;
+mod square;
 mod style;
 mod styles;
 mod tiles;

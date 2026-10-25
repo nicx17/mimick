@@ -12,9 +12,9 @@ use crate::library::navigation;
 use crate::library::state::{LibraryPage, Location};
 
 use super::coords::GeoPoint;
+use super::square::Square;
 
 const MINIMAP_ZOOM: f64 = 13.0;
-const MINIMAP_HEIGHT: i32 = 180;
 
 /// One mini map per window; moving it keeps its tiles instead of drawing a new map.
 pub struct Minimap {
@@ -41,7 +41,6 @@ pub fn attach(ui: &Rc<LibraryWindowUi>, group: &libadwaita::PreferencesGroup, po
 fn build(ui: &Rc<LibraryWindowUi>, point: GeoPoint) -> Minimap {
     let map = shumate::SimpleMap::builder()
         .show_zoom_buttons(false)
-        .height_request(MINIMAP_HEIGHT)
         .can_target(false)
         .build();
     if let Some(scale) = map.scale() {
@@ -56,7 +55,7 @@ fn build(ui: &Rc<LibraryWindowUi>, point: GeoPoint) -> Minimap {
     ui.map.tiles.attach(ui, &map);
     let point = Rc::new(Cell::new(point));
     let button = gtk::Button::builder()
-        .child(&map)
+        .child(&Square::new(&map))
         .tooltip_text("Show on map")
         .margin_top(8)
         .overflow(gtk::Overflow::Hidden)

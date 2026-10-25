@@ -14,6 +14,8 @@ use super::styles::MapStyle;
 use super::{locate, view};
 
 const NORTH_TOLERANCE: f64 = 1e-3;
+/// Map heights below this show only the essential buttons.
+const COMPACT_BELOW_PX: i32 = 380;
 
 pub struct MapControls {
     pub root: gtk::Box,
@@ -22,76 +24,106 @@ pub struct MapControls {
     rotate_left: gtk::Button,
     rotate_right: gtk::Button,
     north: gtk::Button,
+    /// The compass card, shown only while the map is turned.
+    north_card: gtk::Box,
     area: gtk::Button,
     locate: gtk::Button,
+    /// The zoom and rotate cards; hidden on short maps, where pinch and rotate gestures remain.
+    optional: [gtk::Box; 2],
 }
 
 pub fn build(viewport: &shumate::Viewport) -> MapControls {
-    let controls = MapControls {
-        root: gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .spacing(8)
-            .halign(gtk::Align::End)
-            .valign(gtk::Align::Start)
-            .margin_top(12)
-            .margin_end(12)
-            .build(),
-        zoom_in: control("zoom-in-symbolic", "Zoom in"),
-        zoom_out: control("zoom-out-symbolic", "Zoom out"),
-        rotate_left: control("object-rotate-left-symbolic", "Rotate left"),
-        rotate_right: control("object-rotate-right-symbolic", "Rotate right"),
-        north: north_button(viewport),
-        area: control("image-x-generic-symbolic", "Show photos in this area"),
-        locate: control("find-location-symbolic", "Show my location"),
-    };
-    let style = gtk::MenuButton::builder()
+    let (zoom_in, zoom_out) = (
+        control("zoom-in-symbolic", "Zoom in"),
+        control("zoom-out-symbolic", "Zoom out"),
+    );
+    let (rotate_left, rotate_right) = (
+        control("object-rotate-left-symbolic", "Rotate left"),
+        control("object-rotate-right-symbolic", "Rotate right"),
+    );
+    let (area, locate) = (
+        control("image-x-generic-symbolic", "Show photos in this area"),
+        control("find-location-symbolic", "Show my location"),
+    );
+    let north = north_button(viewport);
+    let north_card = card(&[north.upcast_ref()]);
+    north_card.set_visible(false);
+    let optional = [
+        card(&[zoom_in.upcast_ref(), zoom_out.upcast_ref()]),
+        card(&[rotate_left.upcast_ref(), rotate_right.upcast_ref()]),
+    ];
+    let root = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(10)
+        .halign(gtk::Align::End)
+        .valign(gtk::Align::Start)
+        .margin_top(12)
+        .margin_end(12)
+        .build();
+    root.append(&optional[0]);
+    root.append(&optional[1]);
+    root.append(&north_card);
+    root.append(&card(&[area.upcast_ref(), locate.upcast_ref()]));
+    root.append(&card(&[style_button().upcast_ref()]));
+    MapControls {
+        root,
+        zoom_in,
+        zoom_out,
+        rotate_left,
+        rotate_right,
+        north,
+        north_card,
+        area,
+        locate,
+        optional,
+    }
+}
+
+fn style_button() -> gtk::MenuButton {
+    gtk::MenuButton::builder()
         .icon_name("mimick-layers-symbolic")
         .tooltip_text("Map style")
         .menu_model(&style_menu())
-        .css_classes(["osd"])
-        .build();
-    controls
-        .root
-        .append(&group(&[&controls.zoom_in, &controls.zoom_out]));
-    controls
-        .root
-        .append(&group(&[&controls.rotate_left, &controls.rotate_right]));
-    controls.root.append(&controls.north);
-    controls
-        .root
-        .append(&group(&[&controls.area, &controls.locate]));
-    controls.root.append(&style);
-    controls
+        .css_classes(["flat", "mimick-map-control"])
+        .build()
+}
+
+/// Drop the zoom and rotate buttons when the whole column would not fit beside a short map.
+pub fn fit_height(ui: &LibraryWindowUi, height: i32) {
+    let roomy = height >= COMPACT_BELOW_PX;
+    for group in &ui.map.controls.optional {
+        group.set_visible(roomy);
+    }
 }
 
 fn control(icon: &str, tooltip: &str) -> gtk::Button {
     gtk::Button::builder()
         .icon_name(icon)
         .tooltip_text(tooltip)
-        .css_classes(["osd"])
+        .css_classes(["flat", "mimick-map-control"])
         .build()
 }
 
-/// A compass showing which way north is; only shown while the map is turned.
+/// A compass showing which way north is; clicking it turns the map back.
 fn north_button(viewport: &shumate::Viewport) -> gtk::Button {
     gtk::Button::builder()
         .child(&shumate::Compass::new(Some(viewport)))
         .tooltip_text("Point north")
-        .css_classes(["osd", "circular"])
-        .halign(gtk::Align::Center)
-        .visible(false)
+        .css_classes(["flat", "mimick-map-control"])
         .build()
 }
 
-fn group(buttons: &[&gtk::Button]) -> gtk::Box {
-    let group = gtk::Box::builder()
+/// A rounded card of stacked square buttons, clipped so the corners stay clean.
+fn card(buttons: &[&gtk::Widget]) -> gtk::Box {
+    let card = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
-        .css_classes(["linked"])
+        .overflow(gtk::Overflow::Hidden)
+        .css_classes(["mimick-map-card"])
         .build();
     for button in buttons {
-        group.append(*button);
+        card.append(*button);
     }
-    group
+    card
 }
 
 fn style_menu() -> gio::Menu {
@@ -158,7 +190,7 @@ pub fn sync_north(ui: &LibraryWindowUi) {
     };
     let rotation = viewport.rotation().rem_euclid(TAU);
     let turned = rotation > NORTH_TOLERANCE && rotation < TAU - NORTH_TOLERANCE;
-    ui.map.controls.north.set_visible(turned);
+    ui.map.controls.north_card.set_visible(turned);
 }
 
 fn show_area(ui: &Rc<LibraryWindowUi>) {

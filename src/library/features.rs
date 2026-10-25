@@ -35,6 +35,7 @@ fn apply(ui: &LibraryWindowUi, features: LibraryFeatures) -> bool {
         super::sidebar::set_row_visible(&ui.sidebar, key, visible);
     }
     super::bottom_nav::set_button_visible(&ui.bottom_nav, "people", features.people);
+    super::bottom_nav::set_button_visible(&ui.bottom_nav, "map", features.map);
     super::search_view::set_available_modes(&ui.search_view, features.smart_search, features.ocr);
     super::search_view::set_filter_features(
         &ui.search_view,

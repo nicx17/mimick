@@ -54,7 +54,7 @@ The window uses a sidebar + content split.
 
 **Top bar title:** shows the current view's name (an album, a person, a tag, Favorites, and so on).
 
-**Mobile:** on narrow windows (under 600 px) a bar at the bottom switches between **Photos**, **Explore**, **Albums**, and **People**. It hides while you're selecting photos.
+**Mobile:** on narrow windows (under 600 px) a bar at the bottom switches between **Photos**, **Explore**, **Map**, **Albums**, and **People**. It hides while you're selecting photos.
 
 **Turned-off features:** when the library opens (and on refresh) it reads Immich's server features and your account's **Features** settings, and hides what's turned off:
 
@@ -213,6 +213,8 @@ Select **Map** in the sidebar to see every photo and video with a location.
 | Location | **Show my location** asks the desktop's location service for your position (see below) |
 | Layers | The map style |
 
+When the map is short (for example on a phone, with photos listed below it), the zoom and rotate buttons are hidden; pinch, scroll, and two-finger rotation still work, and the compass still appears while the map is turned.
+
 **Map styles:** **Immich** uses the style set on your server (**Administration → Settings → Map**), the same as Immich's web app. **Colorful**, **Natural**, **Muted**, **Gray**, and **Toner** are the free VersaTiles styles (also used by Home Assistant), and **OpenStreetMap** is the standard OpenStreetMap map. Every style except OpenStreetMap switches between light and dark with the system style. The choice applies to every map in Mimick and is remembered. If a style can't be loaded, the map shows OpenStreetMap instead.
 
 **Your location:** the first time, your desktop asks whether Mimick may see your location. Location services must be turned on (in GNOME, **Settings → Privacy → Location**). Mimick asks for your position only when you press the button, and only to show it on the map.
@@ -278,7 +280,7 @@ In selection mode:
 **Bulk actions available:**
 
 - **Download** — saves selected remote assets to the configured download folder (local-only assets are skipped)
-- **Set location** — gives every selected remote asset the same location (see [Setting a Location](#setting-a-location))
+- **Set location** — gives every selected photo you own the same location; photos other people own (from partners or shared albums) are left unchanged (see [Setting a Location](#setting-a-location))
 - **Move to trash** — moves selected remote assets to the Immich trash after a confirmation dialog. They can be restored from the [Trash](#trash) view or the Immich web UI. Local copies in your watch folders are kept, and local-only assets are skipped (the dialog says how many).
 - **Clear** — deselects all items without taking action
 
@@ -312,7 +314,7 @@ Click any asset in the grid to open it in the lightbox.
 - **Download** saves the original file to the configured download folder.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
 - **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date** (local time). Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
-- **Location**: photos with GPS coordinates show a small map with a pin under **Coordinates**; click it to open the [Map](#map) there. The copy button next to the coordinates copies them for pasting elsewhere. **Set Location…** next to **Edit Info…** sets or changes the location (see [Setting a Location](#setting-a-location)).
+- **Location**: photos with GPS coordinates show a small map with a pin under **Coordinates**; click it to open the [Map](#map) there. The copy button next to the coordinates copies them for pasting elsewhere. **Set Location…** next to **Edit Info…** sets or changes the location (see [Setting a Location](#setting-a-location)). As in Immich, **Edit Info…** and **Set Location…** only appear on photos you own.
 - Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, **Set Location…**, and **Move to Trash**.
 - **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text and show a **Copy All Text** button over the photo.
   - With a mouse, the pointer becomes a text cursor over a box. Click a box to select it, drag across boxes to select everything between them in reading order, Shift-click to extend the selection, and Ctrl-click to add or remove one box. Hover a box to read it. **Ctrl+A** selects all.

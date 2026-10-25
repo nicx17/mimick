@@ -393,33 +393,17 @@ row.mimick-album-drop-hover {
 /* ── Map ───────────────────────────────────────────────────────── */
 
 button.mimick-map-cluster {
-    min-width: 34px;
-    min-height: 34px;
-    padding: 0 8px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
     border-radius: 999px;
     border: 2px solid white;
     background: @accent_bg_color;
     color: @accent_fg_color;
-    font-weight: bold;
-    font-size: 0.9em;
+    font-weight: 800;
+    font-size: 0.8em;
+    font-feature-settings: "tnum";
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-}
-
-button.mimick-map-cluster-m {
-    min-width: 40px;
-    min-height: 40px;
-}
-
-button.mimick-map-cluster-l {
-    min-width: 46px;
-    min-height: 46px;
-    font-size: 1em;
-}
-
-button.mimick-map-cluster-xl {
-    min-width: 52px;
-    min-height: 52px;
-    font-size: 1.05em;
 }
 
 button.mimick-map-cluster:hover {
@@ -427,6 +411,8 @@ button.mimick-map-cluster:hover {
 }
 
 button.mimick-map-photo {
+    min-width: 0;
+    min-height: 0;
     padding: 0;
     border-radius: 999px;
     border: 2px solid @accent_bg_color;
@@ -442,6 +428,25 @@ button.mimick-map-cluster.selected,
 button.mimick-map-photo.selected {
     border-color: white;
     box-shadow: 0 0 0 4px alpha(@accent_bg_color, 0.5), 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+box.mimick-map-card {
+    background-color: @view_bg_color;
+    color: @view_fg_color;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px alpha(black, 0.3), 0 0 0 1px alpha(black, 0.06);
+}
+
+box.mimick-map-card .mimick-map-control,
+box.mimick-map-card menubutton.mimick-map-control > button {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: 0;
+}
+
+box.mimick-map-card > :not(:first-child) {
+    border-top: 1px solid alpha(@view_fg_color, 0.1);
 }
 
 box.mimick-map-here {

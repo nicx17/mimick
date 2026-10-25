@@ -15,7 +15,7 @@ use crate::api_client::{ExifInfo, Tag};
 use crate::library::asset_object::AssetObject;
 use crate::library::local_exif::{self, LocalExif};
 
-use super::actions::{TrashTarget, confirm_trash};
+use super::actions::{TrashTarget, confirm_trash, is_mine};
 use super::archive::{archive_icon, archive_tooltip, set_archived};
 use super::asset_edit::show_edit_dialog;
 use super::asset_tags::TagSection;
@@ -1600,10 +1600,9 @@ impl Lightbox {
         self.show_heart(info.favorite);
         self.actions.archive.set_visible(on_server && !in_trash);
         self.show_archive(info.archived);
-        self.details.edit_btn.set_visible(on_server && !in_trash);
-        self.details
-            .location_btn
-            .set_visible(on_server && !in_trash);
+        let editable = on_server && !in_trash && is_mine(&self.ui, &item);
+        self.details.edit_btn.set_visible(editable);
+        self.details.location_btn.set_visible(editable);
         self.actions.zoom_group.set_visible(!info.is_video());
         self.actions.open_with.set_visible(info.is_video());
 

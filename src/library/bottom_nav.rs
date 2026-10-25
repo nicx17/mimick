@@ -4,9 +4,10 @@ use gtk::prelude::*;
 
 use super::LibraryWindowUi;
 
-const ITEMS: [(&str, &str, &str); 4] = [
+const ITEMS: [(&str, &str, &str); 5] = [
     ("photos", "Photos", "image-x-generic-symbolic"),
     ("explore", "Explore", "view-grid-symbolic"),
+    ("map", "Map", "mark-location-symbolic"),
     ("albums", "Albums", "folder-pictures-symbolic"),
     ("people", "People", "avatar-default-symbolic"),
 ];
