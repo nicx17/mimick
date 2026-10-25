@@ -1,17 +1,17 @@
 //! A single-child container that is always as tall as it is wide.
 
 use gtk::prelude::*;
-use gtk::subclass::prelude::*;
 
 mod imp {
-    use super::*;
+    use gtk::prelude::*;
+    use gtk::subclass::prelude::*;
 
     #[derive(Default)]
     pub struct Square;
 
     #[glib::object_subclass]
     impl ObjectSubclass for Square {
-        const NAME: &'static str = "MimickSquare";
+        const NAME: &str = "MimickSquare";
         type Type = super::Square;
         type ParentType = gtk::Widget;
     }
