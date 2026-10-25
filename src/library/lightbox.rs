@@ -11,7 +11,7 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::api_client::{ExifInfo, Tag, ThumbnailSize};
+use crate::api_client::{ExifInfo, Tag};
 use crate::library::asset_object::AssetObject;
 use crate::library::local_exif::{self, LocalExif};
 
@@ -85,6 +85,10 @@ fn original_preview_cache_path(
         .filter(|ext| !ext.is_empty())
         .unwrap_or("bin");
     cache_dir.join(format!("{asset_id}.{ext}"))
+}
+
+fn edited_original_cache_path(cache_dir: &std::path::Path, asset_id: &str) -> std::path::PathBuf {
+    cache_dir.join(format!("{asset_id}-edited.bin"))
 }
 
 /// Hard-link or copy a cached file under its original name so drag-out targets see that name.
@@ -412,6 +416,14 @@ struct PictureLoad {
     local_path: String,
     full_res: bool,
     is_video: bool,
+    edited: bool,
+}
+
+impl PictureLoad {
+    fn edited_drag_path(&self) -> Option<std::path::PathBuf> {
+        (self.edited && !self.local_path.is_empty())
+            .then(|| std::path::PathBuf::from(&self.local_path))
+    }
 }
 
 /// What a finished load shows; applied only if the user is still on that asset.
@@ -434,6 +446,7 @@ struct AssetInfo {
     sync_state: u32,
     favorite: bool,
     archived: bool,
+    edited: bool,
 }
 
 impl AssetInfo {
@@ -447,6 +460,7 @@ impl AssetInfo {
             sync_state: item.property("sync-state"),
             favorite: item.is_favorite(),
             archived: item.is_archived(),
+            edited: item.is_edited(),
         }
     }
 
@@ -1607,6 +1621,7 @@ impl Lightbox {
             local_path: info.local_path.clone(),
             full_res: self.actions.resolution_toggle.is_active(),
             is_video: info.is_video(),
+            edited: info.edited,
         });
         // The slide direction applies to this navigation only.
         self.nav_dir.set(0);
@@ -1665,7 +1680,7 @@ impl Lightbox {
             .ui
             .ctx
             .thumbnail_cache
-            .get_cached(&load.asset_id, ThumbnailSize::Preview)
+            .get_cached_preview(&load.asset_id, load.edited)
         {
             load.target.set_paintable(Some(&texture));
         }
@@ -1690,12 +1705,12 @@ impl Lightbox {
     async fn fetch_picture(&self, load: &PictureLoad) -> LoadResult {
         if load.is_video {
             // Use the grid's preview thumbnail as the poster.
-            return match self.load_preview_thumbnail(&load.asset_id).await {
+            return match self.load_preview_thumbnail(&load.asset_id, false).await {
                 Ok(texture) => LoadResult::Texture(texture, None),
                 Err(_) => LoadResult::KeepPoster,
             };
         }
-        if !load.local_path.is_empty() {
+        if !load.local_path.is_empty() && !load.edited {
             let local = std::path::PathBuf::from(&load.local_path);
             if let Some(texture) = load_texture_oriented(&local).await {
                 return LoadResult::Texture(texture, Some(local));
@@ -1707,17 +1722,24 @@ impl Lightbox {
         if load.full_res {
             return self.fetch_original(load).await;
         }
-        match self.load_preview_thumbnail(&load.asset_id).await {
-            Ok(texture) => LoadResult::Texture(texture, None),
+        match self
+            .load_preview_thumbnail(&load.asset_id, load.edited)
+            .await
+        {
+            Ok(texture) => LoadResult::Texture(texture, load.edited_drag_path()),
             Err(_) => LoadResult::Unavailable(None),
         }
     }
 
-    async fn load_preview_thumbnail(&self, asset_id: &str) -> Result<gdk4::Texture, String> {
+    async fn load_preview_thumbnail(
+        &self,
+        asset_id: &str,
+        edited: bool,
+    ) -> Result<gdk4::Texture, String> {
         self.ui
             .ctx
             .thumbnail_cache
-            .load_thumbnail(asset_id, ThumbnailSize::Preview)
+            .load_preview(asset_id, edited)
             .await
     }
 
@@ -1727,22 +1749,31 @@ impl Lightbox {
             return LoadResult::Unavailable(None);
         };
         let _ = tokio::fs::create_dir_all(&cache_dir).await;
-        let temp = original_preview_cache_path(&cache_dir, &load.asset_id, &load.filename);
+        let temp = if load.edited {
+            edited_original_cache_path(&cache_dir, &load.asset_id)
+        } else {
+            original_preview_cache_path(&cache_dir, &load.asset_id, &load.filename)
+        };
         if temp.exists() {
             log::debug!(
                 "Lightbox original cache hit for {} at {}",
                 load.asset_id,
                 temp.display(),
             );
-        } else if let Err(err) = self.download_original(&load.asset_id, &temp).await {
+        } else if let Err(err) = self
+            .download_original(&load.asset_id, &temp, load.edited)
+            .await
+        {
             log::warn!("Lightbox original fetch failed: {}", err);
             return LoadResult::Unavailable(None);
         }
         match load_texture_oriented(&temp).await {
+            Some(texture) if load.edited => LoadResult::Texture(texture, load.edited_drag_path()),
             Some(texture) => LoadResult::Texture(
                 texture,
                 drag_export_path(&load.asset_id, &load.filename, &temp),
             ),
+            None if load.edited => LoadResult::Unavailable(None),
             None => LoadResult::Unavailable(Some(temp.display().to_string())),
         }
     }
@@ -1752,6 +1783,7 @@ impl Lightbox {
         &self,
         asset_id: &str,
         temp: &std::path::Path,
+        edited: bool,
     ) -> Result<(), String> {
         let ctx = &self.ui.ctx;
         let download_started = std::time::Instant::now();
@@ -1762,10 +1794,15 @@ impl Lightbox {
             Some(format!("preview {asset_id}")),
             None,
         );
-        let result = ctx
-            .api_client
-            .download_original_to_file(asset_id, temp, Some(progress))
-            .await;
+        let result = if edited {
+            ctx.api_client
+                .download_edited_original_to_file(asset_id, temp, Some(progress))
+                .await
+        } else {
+            ctx.api_client
+                .download_original_to_file(asset_id, temp, Some(progress))
+                .await
+        };
         finish_download_item(ctx, asset_id);
         result?;
         let downloaded_bytes = tokio::fs::metadata(temp)
@@ -1907,7 +1944,20 @@ fn local_details_exif(probe: &LocalProbe) -> Option<(ExifInfo, &'static str)> {
 
 #[cfg(test)]
 mod tests {
-    use super::original_preview_cache_path;
+    use super::{edited_original_cache_path, original_preview_cache_path};
+
+    #[test]
+    fn edited_original_cache_path_never_reuses_the_original() {
+        let cache = std::path::Path::new("/tmp/previews");
+        assert_eq!(
+            edited_original_cache_path(cache, "remote-id"),
+            cache.join("remote-id-edited.bin")
+        );
+        assert_ne!(
+            edited_original_cache_path(cache, "remote-id"),
+            original_preview_cache_path(cache, "remote-id", "x.bin")
+        );
+    }
 
     #[test]
     fn original_preview_cache_path_keeps_decoder_extension() {
