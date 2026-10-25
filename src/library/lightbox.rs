@@ -30,6 +30,7 @@ use super::video_player::VideoPlayer;
 use super::{LOCAL_ID_PREFIX, LibraryWindowUi, load_source_page, load_texture_oriented};
 
 mod fullscreen;
+mod ocr;
 mod video;
 
 /// Everything we can learn about a local file off the main thread before
