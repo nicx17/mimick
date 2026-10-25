@@ -18,6 +18,8 @@ mod features;
 pub use features::LibraryFeatures;
 mod folders;
 mod library;
+mod map;
+pub use map::{MAP_USER_AGENT, MapMarker, Place};
 mod ocr;
 pub use ocr::OcrBox;
 mod partners;
