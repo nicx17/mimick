@@ -116,35 +116,13 @@ impl ImmichApiClient {
 
         let mut seen: std::collections::HashMap<String, String> = std::collections::HashMap::new();
         let mut page: u32 = 1;
-        const PAGE_SIZE: u32 = 250;
         const MAX_PAGES: u32 = 500;
         let start = std::time::Instant::now();
 
         loop {
-            let body = serde_json::json!({
-                "withExif": true,
-                "page": page,
-                "size": PAGE_SIZE,
-            });
-            let resp = match self
-                .client
-                .post(&url)
-                .header("x-api-key", &settings.api_key)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .json(&body)
-                .timeout(Duration::from_secs(30))
-                .send()
-                .await
-            {
-                Ok(r) if r.status().is_success() => r,
-                Ok(r) => return Err(format!("HTTP {}", r.status())),
-                Err(e) => return Err(e.to_string()),
-            };
-            let parsed: ExifSearchResponse = match resp.json().await {
-                Ok(p) => p,
-                Err(e) => return Err(e.to_string()),
-            };
+            let parsed = self
+                .fetch_places_page(&url, &settings.api_key, page)
+                .await?;
             let has_more = parsed.assets.next_page.is_some();
             for asset in parsed.assets.items {
                 if let Some(city) = asset.exif_info.as_ref().and_then(|e| e.city.clone()) {
@@ -169,6 +147,36 @@ impl ImmichApiClient {
             start.elapsed().as_secs_f64()
         );
         Ok(places)
+    }
+
+    async fn fetch_places_page(
+        &self,
+        url: &str,
+        api_key: &str,
+        page: u32,
+    ) -> Result<ExifSearchResponse, String> {
+        const PAGE_SIZE: u32 = 250;
+        let body = serde_json::json!({
+            "withExif": true,
+            "page": page,
+            "size": PAGE_SIZE,
+        });
+        let resp = match self
+            .client
+            .post(url)
+            .header("x-api-key", api_key)
+            .header("Content-Type", "application/json")
+            .header("Accept", "application/json")
+            .json(&body)
+            .timeout(Duration::from_secs(30))
+            .send()
+            .await
+        {
+            Ok(r) if r.status().is_success() => r,
+            Ok(r) => return Err(format!("HTTP {}", r.status())),
+            Err(e) => return Err(e.to_string()),
+        };
+        resp.json().await.map_err(|e| e.to_string())
     }
 
     /// Per-person face thumbnail. Distinct from `fetch_thumbnail` (asset).
