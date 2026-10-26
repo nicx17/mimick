@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a **Map** page that shows every photo with a location. Nearby photos merge into bubbles with photo counts that split apart as you zoom in, and single photos show as round thumbnails. Click a bubble, or **Show photos in this area**, to list the photos beside the map (below it on narrow windows) while the sidebar steps aside; the lightbox, selection, and bulk actions work there as in any grid. Buttons over the map zoom, rotate (with a compass to point north again), and show your location through the desktop's location service, which asks for permission first. A style menu offers your Immich server's style, the Colorful, Natural, Muted, Gray, and Toner styles from VersaTiles, or OpenStreetMap; the choice is remembered, and every style except OpenStreetMap switches between light and dark with the system.
 - Added a small map with a pin under a photo's coordinates in the lightbox details pane; click it to open the Map page at that spot. A copy button next to the coordinates copies them (#86).
 - Added setting the location of one or many photos with **Set Location…** in the details pane, the right-click menu, and the selection bar. Search Immich's places, click the map to drop a pin, or type or paste coordinates (#87). Like Immich, editing info and location is offered only on photos you own.
+- Added browsing a partner's photos: click someone under **Sharing With You** on the **Sharing** page to see their photos as a timeline (#236).
+- Added a **Show in Photos** switch for each partner who shares with you, which adds their photos to your Photos timeline.
 
 ### Changed
 
@@ -37,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Flatpak now requests the PulseAudio socket (also used by PipeWire) for video sound.
 - The Flatpak now bundles libshumate 1.7.0 and protobuf-c 1.5.2 for the maps; native builds also need libshumate 1.7 or newer.
 - Native builds now require GTK 4.24, libadwaita 1.10, and libheif 1.21 or newer (matching the GNOME 51 runtime), plus GStreamer with GstPlay and the GTK 4 video sink plugin (`gst-plugin-gtk4`) for video playback, and libclang for generating the LibRaw bindings.
+- Removed the **Archived only** search filter, which Immich v3 ignores; use **Visibility → Archive** instead.
 
 ### Fixed
 
@@ -46,6 +49,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Closing the library window now gives its memory back to the system; before, Mimick could stay at over 1 GB after the window was closed. Its background server checks also stop.
 - Long albums, Favorites, and search results no longer get slower as more photos load, and deleting or archiving a photo in them no longer rebuilds the whole grid.
 - The library no longer freezes briefly when a batch of uploads finishes, and the sync index is no longer copied every 10 seconds when nothing has changed.
+- The Photos timeline now includes months that only have photos from partners shown in Photos.
+- Editing a shared link no longer removes the custom URL set for it in Immich.
+- Setting an edited shared link to expire **Never** now removes its expiry; before, the old expiry stayed.
+- Searching by file name no longer shows the whole library's photo count in the header, since Immich can't count those searches.
 
 ## [9.11.0] - 2026-10-17
 

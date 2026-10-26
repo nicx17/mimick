@@ -247,6 +247,7 @@ fn sidebar_target(location: &Location) -> SidebarTarget {
                 "explore"
             }
             LibrarySource::Person { .. } => "people",
+            LibrarySource::Partner { .. } => "sharing",
             LibrarySource::Tag { .. } => "tags",
             LibrarySource::Folder { .. } => "folders",
             LibrarySource::MapArea { .. } => "map",
@@ -342,6 +343,11 @@ mod tests {
             name: "Ana".into(),
         });
         assert_eq!(sidebar_target(&person), SidebarTarget::Fixed("people"));
+        let partner = Location::Source(LibrarySource::Partner {
+            id: "u2".into(),
+            name: "Ana".into(),
+        });
+        assert_eq!(sidebar_target(&partner), SidebarTarget::Fixed("sharing"));
         let place = Location::Source(LibrarySource::Place {
             city: "Kyoto".into(),
         });

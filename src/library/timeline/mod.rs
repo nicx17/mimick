@@ -24,11 +24,22 @@ type Waiter = Box<dyn FnOnce(Option<(u32, u32)>)>;
 pub(super) struct Timeline {
     index: Rc<RefCell<TimelineIndex>>,
     generation: u64,
+    user_id: Option<String>,
     waiters: RefCell<Vec<(usize, Waiter)>>,
 }
 
 pub(super) fn eligible(source: &LibrarySource, sort: &LibrarySortMode) -> bool {
-    matches!(source, LibrarySource::AllAssets) && matches!(sort, LibrarySortMode::NewestFirst)
+    matches!(
+        source,
+        LibrarySource::AllAssets | LibrarySource::Partner { .. }
+    ) && matches!(sort, LibrarySortMode::NewestFirst)
+}
+
+fn partner_id(source: &LibrarySource) -> Option<String> {
+    match source {
+        LibrarySource::Partner { id, .. } => Some(id.clone()),
+        _ => None,
+    }
 }
 
 pub(super) fn is_active(ui: &LibraryWindowUi) -> bool {
@@ -65,8 +76,14 @@ pub(super) fn open(
     keep: Option<(String, f32)>,
 ) {
     let ui = ui.clone();
+    let user_id = partner_id(&request.1);
     glib::MainContext::default().spawn_local(async move {
-        match ui.ctx.api_client.fetch_time_buckets().await {
+        match ui
+            .ctx
+            .api_client
+            .fetch_time_buckets(user_id.as_deref())
+            .await
+        {
             Ok(buckets) => {
                 let months = buckets
                     .into_iter()
@@ -75,7 +92,7 @@ pub(super) fn open(
                         count: bucket.count,
                     })
                     .collect();
-                show(&ui, request.0, months, keep);
+                show(&ui, request.0, user_id, months, keep);
             }
             Err(err) => {
                 log::warn!("Timeline unavailable, loading Photos page by page: {err}");
@@ -88,6 +105,7 @@ pub(super) fn open(
 fn show(
     ui: &Rc<LibraryWindowUi>,
     generation: u64,
+    user_id: Option<String>,
     months: Vec<Month>,
     keep: Option<(String, f32)>,
 ) {
@@ -107,6 +125,7 @@ fn show(
     ui.timeline.replace(Some(Rc::new(Timeline {
         index: index.clone(),
         generation,
+        user_id,
         waiters: RefCell::default(),
     })));
     ui.grid.model.reset_with_objects(Vec::new());
@@ -186,7 +205,11 @@ fn load_month(ui: &Rc<LibraryWindowUi>, timeline: &Rc<Timeline>, month: usize) {
     };
     let (ui, timeline) = (ui.clone(), timeline.clone());
     glib::MainContext::default().spawn_local(async move {
-        let result = ui.ctx.api_client.fetch_month_assets(&key).await;
+        let api = &ui.ctx.api_client;
+        let result = match &timeline.user_id {
+            Some(user_id) => api.fetch_user_month_assets(user_id, &key).await,
+            None => api.fetch_month_assets(&key).await,
+        };
         if !is_current(&ui, &timeline) {
             return;
         }
@@ -308,5 +331,16 @@ mod tests {
             &LibrarySource::Favorites,
             &LibrarySortMode::NewestFirst
         ));
+    }
+
+    #[test]
+    fn a_partners_photos_use_the_timeline_scoped_to_them() {
+        let partner = LibrarySource::Partner {
+            id: "u2".into(),
+            name: "Ana".into(),
+        };
+        assert!(eligible(&partner, &LibrarySortMode::NewestFirst));
+        assert_eq!(partner_id(&partner).as_deref(), Some("u2"));
+        assert_eq!(partner_id(&LibrarySource::AllAssets), None);
     }
 }

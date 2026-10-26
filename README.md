@@ -73,7 +73,7 @@ Mimick is an unofficial Immich desktop client for Linux. It provides a GTK4/liba
 - **Asynchronous Concurrent Uploads**: Configurable parallel worker tasks (1–10 streams) stream files from disk, maintaining flat memory usage footprints.
 - **SHA-1 Deduplication**: Verifies files locally via checksum prior to upload, utilizing payload logic identical to official Immich mobile apps.
 - **Atomic File Monitoring**: Delays queuing until file sizes stabilize and physical write locks are released, preventing partial data uploads.
-- **One-Way Mirroring**: Maintains strictly read-only access to local system files.
+- **Per-Folder Sync Methods**: Upload Only by default, which never changes local files, or Download Only and Full sync with a linked album, with optional deletion mirroring in either direction.
 
 ### Reliability & State Management
 
@@ -110,7 +110,7 @@ An optional desktop library interface for browsing and managing your Immich phot
 - **Search & Discovery:** Metadata search, smart CLIP semantic search, OCR text lookup, and server-folder browsing.
 - **Asset Management:** Edit dates and descriptions, toggle favorites, archive assets to hide them from the main timeline, or manage the Immich trash.
 - **People & Tags:** Face recognition browser with favorite people, birthdays, and person merging; hierarchical tag tree with color tagging and creation.
-- **Sharing & Collaboration:** Partner library sharing, shared albums with role management (Viewer/Editor), and password-protected public shared links.
+- **Sharing & Collaboration:** Partner library sharing (browse a partner's photos, or show them in your own timeline), shared albums with role management (Viewer/Editor), and password-protected public shared links.
 - **Adaptive Layout:** Responsive design with a mobile bottom navigation bar on narrow screens (< 600 px), view headers with navigation history (Back/Forward, touch swipe), and automatic hiding of features disabled on the server.
 
 > See the [Library View User Guide](https://github.com/nicx17/mimick/wiki/Library-View-User-Guide) for complete documentation and keyboard shortcuts, or press **Ctrl+?** in the app.
@@ -178,7 +178,7 @@ When generating the API key in Immich (**Account Settings → API Keys**), grant
 | `asset.upload`   | Send media to the server                         |
 | `asset.update`   | Apply correct timezone metadata after upload     |
 
-Granting `all` enables every feature automatically. For least-privilege configurations, optional features (albums, library browsing, trash, tags, people, folders, sharing) require specific scopes.
+Granting `all` enables every feature automatically. For least-privilege configurations, optional features (albums, library browsing, trash, tags, people, folders, map, sharing) require specific scopes.
 
 > See the full [API Key Security & Required Permissions Guide](https://github.com/nicx17/mimick/wiki/Configuration-and-First-Run#api-key-security--required-permissions) in the wiki for the complete per-feature permissions mapping.
 

@@ -23,7 +23,7 @@ pub use map::{MAP_USER_AGENT, MapMarker, Place};
 mod ocr;
 pub use ocr::OcrBox;
 mod partners;
-pub use partners::PartnerDirection;
+pub use partners::{Partner, PartnerDirection};
 mod people;
 pub use people::PersonUpdate;
 mod search;
@@ -291,9 +291,6 @@ pub struct MetadataSearchFilters {
     /// True to only return favorited assets.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_favorite: Option<bool>,
-    /// True to only return archived assets.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub is_archived: Option<bool>,
     /// True to only return motion photos.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_motion: Option<bool>,

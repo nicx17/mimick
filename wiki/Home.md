@@ -45,20 +45,26 @@ Mimick is a Linux background app that watches selected folders and syncs photos 
 
 ## Project Notes
 
-- Mimick is a one-way sync tool. It uploads local media to Immich and does not modify local files.
+- By default Mimick only uploads local media to Immich and never changes local files. A folder's **Sync Method** can also be **Download Only** or **Full**, which download its album's photos into the folder; only **Mirror Album Deletions to Folder** removes local files, by moving them to the trash.
 - The app stores API keys in the desktop keyring and keeps operational state in `~/.cache/mimick/`.
 - Startup rescans use a local sync index so already-synced unchanged files are skipped quickly.
 
 ## Current App Highlights
 
 - Two-page `Settings` / `Status` settings window
-- Optional in-app library viewer with albums, Explore, search, tags, and a trash view
+- Upload each watched folder to the Immich library, an album you pick, or an album named after the folder
+- Per-folder sync methods (Upload Only, Download Only, Full) with optional deletion mirroring in either direction
+- Optional in-app library viewer: a Photos timeline with date headings and a scrubber, albums, Explore, search, People, Tags, Folders, Favorites, Archive, and Trash
 - In-app video playback (streamed from Immich, hardware-decoded) and fullscreen viewing in the lightbox
 - Select and copy text Immich recognized in photos (OCR), and see edits made in Immich, in the lightbox
 - Map of your photos, a location mini map in the lightbox, and setting the location of one or many photos
+- Shared albums with Viewer and Editor roles, public shared links, and partner sharing, including browsing a partner's photos
+- Edit asset info (description, date taken, favorite), archive, and move assets to the Immich trash from the library
+- RAW previews and decoding, and every media format Immich supports
+- Drag files in to upload, drag photos out to export, and **Open With Mimick** from your file manager
+- Works on Linux phones, down to 360 px wide, with a bottom navigation bar
 - Keyboard Shortcuts dialog (**Ctrl+?** or the main menu)
-- Edit asset info (description, date taken, favorite) and move assets to the Immich trash from the library
 - Queue inspector with retry actions
 - Per-folder rules for hidden paths, size limits, and extension filters
 - Diagnostics bundle export for support and bug reports
-- Metered-network and battery-aware upload deferral
+- Quiet hours, and metered-network and battery-aware upload deferral

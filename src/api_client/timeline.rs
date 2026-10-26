@@ -16,17 +16,55 @@ pub struct TimeBucket {
     pub count: u32,
 }
 
+#[derive(serde::Deserialize)]
+struct BucketIds {
+    id: Vec<String>,
+}
+
 impl ImmichApiClient {
-    pub async fn fetch_time_buckets(&self) -> Result<Vec<TimeBucket>, String> {
-        self.send_json(
-            reqwest::Method::GET,
-            "/api/timeline/buckets?visibility=timeline&order=desc",
-            None,
-        )
-        .await?
-        .json()
-        .await
-        .map_err(|err| err.to_string())
+    pub async fn fetch_time_buckets(
+        &self,
+        user_id: Option<&str>,
+    ) -> Result<Vec<TimeBucket>, String> {
+        let path = format!("/api/timeline/buckets?{}", timeline_query(user_id, None));
+        self.send_json(reqwest::Method::GET, &path, None)
+            .await?
+            .json()
+            .await
+            .map_err(|err| err.to_string())
+    }
+
+    pub async fn fetch_user_month_assets(
+        &self,
+        user_id: &str,
+        month: &str,
+    ) -> Result<Vec<LibraryAsset>, String> {
+        let path = format!(
+            "/api/timeline/bucket?{}",
+            timeline_query(Some(user_id), Some(month))
+        );
+        let bucket: BucketIds = self
+            .send_json(reqwest::Method::GET, &path, None)
+            .await?
+            .json()
+            .await
+            .map_err(|err| err.to_string())?;
+        let assets = self.fetch_assets_by_ids(&bucket.id).await?;
+        Ok(keep_local_month(assets, month))
+    }
+
+    pub async fn fetch_user_month_page(
+        &self,
+        user_id: &str,
+        page: u32,
+    ) -> Result<(Vec<LibraryAsset>, bool), String> {
+        let buckets = self.fetch_time_buckets(Some(user_id)).await?;
+        let index = page.saturating_sub(1) as usize;
+        let Some(bucket) = buckets.get(index) else {
+            return Ok((Vec::new(), false));
+        };
+        let assets = self.fetch_user_month_assets(user_id, &bucket.month).await?;
+        Ok((assets, index + 1 < buckets.len()))
     }
 
     /// Photos taken in `month` (local time), newest first.
@@ -52,6 +90,21 @@ impl ImmichApiClient {
         }
         Ok(keep_local_month(assets, month))
     }
+}
+
+fn timeline_query(user_id: Option<&str>, month: Option<&str>) -> String {
+    let mut query = url::form_urlencoded::Serializer::new(String::new());
+    query
+        .append_pair("visibility", "timeline")
+        .append_pair("order", "desc");
+    match user_id {
+        Some(user_id) => query.append_pair("userId", user_id),
+        None => query.append_pair("withPartners", "true"),
+    };
+    if let Some(month) = month {
+        query.append_pair("timeBucket", month);
+    }
+    query.finish()
 }
 
 /// UTC search range covering every timezone's version of `month`.
@@ -119,6 +172,25 @@ mod tests {
                 count: 42
             }]
         );
+    }
+
+    #[test]
+    fn photos_count_partners_and_a_partner_counts_only_their_own() {
+        assert_eq!(
+            timeline_query(None, None),
+            "visibility=timeline&order=desc&withPartners=true"
+        );
+        assert_eq!(
+            timeline_query(Some("u2"), Some("2024-01-01")),
+            "visibility=timeline&order=desc&userId=u2&timeBucket=2024-01-01"
+        );
+    }
+
+    #[test]
+    fn bucket_reads_only_the_ids() {
+        let bucket: BucketIds =
+            serde_json::from_str(r#"{"id":["a","b"],"isImage":[true,false]}"#).unwrap();
+        assert_eq!(bucket.id, ["a", "b"]);
     }
 
     #[test]

@@ -87,14 +87,12 @@ fn create_body(target: &SharedLinkTarget, options: &SharedLinkOptions) -> serde_
     body
 }
 
-/// Body for `PATCH /api/shared-links/{id}`. Clients can't send `null` to clear the expiry, so
-/// "never expires" is sent as `changeExpiryTime: true` with no `expiresAt`.
-fn edit_body(options: &SharedLinkOptions) -> serde_json::Value {
+/// Body for `PATCH /api/shared-links/{id}`; `null` clears the expiry.
+/// Immich clears the slug when it's left out, so the current one is always sent.
+fn edit_body(options: &SharedLinkOptions, slug: Option<&str>) -> serde_json::Value {
     let mut body = options_body(options);
-    body["changeExpiryTime"] = true.into();
-    if let Some(expires_at) = &options.expires_at {
-        body["expiresAt"] = expires_at.clone().into();
-    }
+    body["expiresAt"] = options.expires_at.clone().into();
+    body["slug"] = slug.into();
     body
 }
 
@@ -145,12 +143,13 @@ impl ImmichApiClient {
 
     pub async fn edit_shared_link(
         &self,
-        link_id: &str,
+        link: &SharedLink,
         options: &SharedLinkOptions,
     ) -> Result<SharedLink, String> {
-        let path = format!("/api/shared-links/{link_id}");
+        let path = format!("/api/shared-links/{}", link.id);
+        let body = edit_body(options, link.slug.as_deref());
         let resp = self
-            .send_json(reqwest::Method::PATCH, &path, Some(edit_body(options)))
+            .send_json(reqwest::Method::PATCH, &path, Some(body))
             .await?;
         resp.json().await.map_err(|err| err.to_string())
     }
@@ -243,11 +242,20 @@ mod tests {
     }
 
     #[test]
-    fn edit_body_clears_expiry_with_change_flag() {
-        let body = edit_body(&options());
-        assert_eq!(body["changeExpiryTime"], true);
-        assert!(body.get("expiresAt").is_none());
+    fn edit_body_clears_expiry_with_null() {
+        let body = edit_body(&options(), None);
+        assert_eq!(body.get("expiresAt"), Some(&serde_json::Value::Null));
+        assert!(body.get("changeExpiryTime").is_none());
         assert_eq!(body["allowDownload"], true);
+    }
+
+    #[test]
+    fn edit_body_keeps_the_slug() {
+        assert_eq!(edit_body(&options(), Some("trips"))["slug"], "trips");
+        assert_eq!(
+            edit_body(&options(), None).get("slug"),
+            Some(&serde_json::Value::Null)
+        );
     }
 
     #[test]
