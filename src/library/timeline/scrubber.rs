@@ -114,7 +114,8 @@ impl TimelineScrubber {
                 scrubber.queue_draw();
             }
         });
-        scrubber.connect_pointer();
+        scrubber.connect_hover();
+        scrubber.connect_drag();
         scrubber
     }
 
@@ -196,7 +197,7 @@ impl TimelineScrubber {
         imp.fade.replace(Some(fade));
     }
 
-    fn connect_pointer(&self) {
+    fn connect_hover(&self) {
         let motion = gtk::EventControllerMotion::new();
         let weak = self.downgrade();
         motion.connect_motion(move |_, _, y| {
@@ -215,7 +216,9 @@ impl TimelineScrubber {
             }
         });
         self.add_controller(motion);
+    }
 
+    fn connect_drag(&self) {
         let drag = gtk::GestureDrag::new();
         let weak = self.downgrade();
         drag.connect_drag_begin(move |_, _, y| {
@@ -339,19 +342,31 @@ impl TimelineScrubber {
             self.draw_handle(snapshot, &index.borrow(), &sections);
             return;
         }
+        self.draw_marks(snapshot, &index.borrow(), &sections, canvas_h);
+
+        let (top, track_h) = self.track();
+        let width = self.width() as f32;
+        let accent = libadwaita::StyleManager::default().accent_color().to_rgba();
+        let marker_y = top + canvas_to_track(canvas.scroll_top().max(0.0), track_h, canvas_h);
+        snapshot.append_color(
+            &accent,
+            &Rect::new(width - MARKER_W, marker_y - 1.0, MARKER_W, 2.0),
+        );
+        self.draw_hover(snapshot, &index.borrow(), &sections, canvas_h, &accent);
+    }
+
+    fn draw_marks(
+        &self,
+        snapshot: &gtk::Snapshot,
+        index: &TimelineIndex,
+        sections: &[LaidSection],
+        canvas_h: f32,
+    ) {
         let (top, track_h) = self.track();
         let width = self.width() as f32;
         let fg = self.color();
         let tint = |alpha: f32| gdk::RGBA::new(fg.red(), fg.green(), fg.blue(), alpha);
-        let accent = libadwaita::StyleManager::default().accent_color().to_rgba();
-
-        for mark in marks(
-            index.borrow().months(),
-            &sections,
-            canvas_h,
-            track_h,
-            MIN_GAP,
-        ) {
+        for mark in marks(index.months(), sections, canvas_h, track_h, MIN_GAP) {
             let y = top + mark.y();
             match mark {
                 Mark::Year { year, .. } => {
@@ -374,23 +389,26 @@ impl TimelineScrubber {
                 }
             }
         }
+    }
 
-        let marker_y = top + canvas_to_track(canvas.scroll_top().max(0.0), track_h, canvas_h);
-        snapshot.append_color(
-            &accent,
-            &Rect::new(width - MARKER_W, marker_y - 1.0, MARKER_W, 2.0),
-        );
-
-        if let Some(pointer_y) = imp.pointer_y.get() {
-            let y = pointer_y.clamp(top, top + track_h);
-            snapshot.append_color(&accent, &Rect::new(0.0, y - 1.0, width, 2.0));
-            let canvas_y = track_to_canvas(y - top, track_h, canvas_h);
-            let month = section_at(&sections, canvas_y).or(sections.len().checked_sub(1));
-            if let Some(label) =
-                month.and_then(|month| month_short(&index.borrow().months().get(month)?.key))
-            {
-                self.draw_pill(snapshot, &label, y);
-            }
+    fn draw_hover(
+        &self,
+        snapshot: &gtk::Snapshot,
+        index: &TimelineIndex,
+        sections: &[LaidSection],
+        canvas_h: f32,
+        accent: &gdk::RGBA,
+    ) {
+        let Some(pointer_y) = self.imp().pointer_y.get() else {
+            return;
+        };
+        let (top, track_h) = self.track();
+        let y = pointer_y.clamp(top, top + track_h);
+        snapshot.append_color(accent, &Rect::new(0.0, y - 1.0, self.width() as f32, 2.0));
+        let canvas_y = track_to_canvas(y - top, track_h, canvas_h);
+        let month = section_at(sections, canvas_y).or(sections.len().checked_sub(1));
+        if let Some(label) = month.and_then(|month| month_short(&index.months().get(month)?.key)) {
+            self.draw_pill(snapshot, &label, y);
         }
     }
 

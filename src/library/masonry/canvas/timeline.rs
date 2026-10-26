@@ -97,23 +97,7 @@ impl imp::MasonryCanvas {
             gap: cfg.gap,
             headings: mode,
         };
-        let today = chrono::Local::now().date_naive();
-        let mut offsets = Vec::with_capacity(index.months().len());
-        let mut offset = 0;
-        {
-            let mut cache = self.section_cache.borrow_mut();
-            for (month, entry) in index.months().iter().enumerate() {
-                offsets.push(offset);
-                let MonthState::Loaded(len) = index.state(month) else {
-                    continue;
-                };
-                if cache.get(&month).is_none_or(|cached| cached.key != key) {
-                    let packed = pack_month(model, offset, len, &entry.key, key, cfg, today);
-                    cache.insert(month, CachedSection { key, packed });
-                }
-                offset += len;
-            }
-        }
+        let offsets = self.pack_loaded_months(model, index, key, cfg);
         let cache = self.section_cache.borrow();
         let placed: Vec<Placed<'_>> = index
             .months()
@@ -132,6 +116,31 @@ impl imp::MasonryCanvas {
             })
             .collect();
         compose(&placed)
+    }
+
+    fn pack_loaded_months(
+        &self,
+        model: &LibraryAssetModel,
+        index: &TimelineIndex,
+        key: SectionKey,
+        cfg: LayoutConfig,
+    ) -> Vec<u32> {
+        let today = chrono::Local::now().date_naive();
+        let mut offsets = Vec::with_capacity(index.months().len());
+        let mut offset = 0;
+        let mut cache = self.section_cache.borrow_mut();
+        for (month, entry) in index.months().iter().enumerate() {
+            offsets.push(offset);
+            let MonthState::Loaded(len) = index.state(month) else {
+                continue;
+            };
+            if cache.get(&month).is_none_or(|cached| cached.key != key) {
+                let packed = pack_month(model, offset, len, &entry.key, key, cfg, today);
+                cache.insert(month, CachedSection { key, packed });
+            }
+            offset += len;
+        }
+        offsets
     }
 
     pub(super) fn paint_timeline_extras(
