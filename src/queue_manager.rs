@@ -17,7 +17,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
-use tokio::sync::{Mutex, mpsc};
+use tokio::sync::{Mutex, Notify, mpsc};
 use tokio_util::sync::CancellationToken;
 
 #[derive(Clone)]
@@ -103,6 +103,7 @@ pub struct QueueManager {
     policy: Arc<parking_lot::Mutex<EnvironmentPolicy>>,
     /// Active worker concurrency limit wrapper.
     worker_limit: Arc<AtomicUsize>,
+    limit_changed: Arc<Notify>,
     /// Sync summary notification batch states tracker.
     batch_notify_state: Arc<parking_lot::Mutex<BatchNotifyState>>,
     /// Flag indicating whether new tasks are accepted.
@@ -170,6 +171,7 @@ impl QueueManager {
             },
             rx: Arc::new(Mutex::new(rx)),
             worker_limit: Arc::new(AtomicUsize::new(workers.clamp(1, MAX_WORKERS))),
+            limit_changed: Arc::new(Notify::new()),
             policy: Arc::new(parking_lot::Mutex::new(policy)),
             cancel: CancellationToken::new(),
         };
@@ -182,6 +184,7 @@ impl QueueManager {
             retry_path,
             policy: runtime.policy.clone(),
             worker_limit: runtime.worker_limit.clone(),
+            limit_changed: runtime.limit_changed.clone(),
             batch_notify_state,
             accepting_new: Arc::new(AtomicBool::new(true)),
             shutdown_token: runtime.cancel.clone(),
@@ -276,6 +279,7 @@ impl QueueManager {
     pub fn set_worker_limit(&self, workers: u8) {
         self.worker_limit
             .store((workers as usize).clamp(1, 10), Ordering::Relaxed);
+        self.limit_changed.notify_waiters();
     }
 
     pub fn update_environment_policy(&self, policy: EnvironmentPolicy) {
@@ -523,6 +527,7 @@ struct WorkerRuntime {
     ctx: WorkerContext,
     rx: Arc<Mutex<mpsc::Receiver<FileTask>>>,
     worker_limit: Arc<AtomicUsize>,
+    limit_changed: Arc<Notify>,
     policy: Arc<parking_lot::Mutex<EnvironmentPolicy>>,
     cancel: CancellationToken,
 }
@@ -598,13 +603,18 @@ async fn run_worker(i: usize, rt: WorkerRuntime) {
 
 /// Idle while this worker's index is above the configured limit; `false` once shutting down.
 async fn wait_for_worker_slot(i: usize, rt: &WorkerRuntime) -> bool {
-    while i >= rt.worker_limit.load(Ordering::Relaxed) {
-        if rt.cancel.is_cancelled() {
-            return false;
+    loop {
+        let limit_changed = rt.limit_changed.notified();
+        tokio::pin!(limit_changed);
+        limit_changed.as_mut().enable();
+        if i < rt.worker_limit.load(Ordering::Relaxed) {
+            return true;
         }
-        tokio::time::sleep(tokio::time::Duration::from_millis(250)).await;
+        tokio::select! {
+            _ = rt.cancel.cancelled() => return false,
+            _ = limit_changed => {}
+        }
     }
-    true
 }
 
 /// Next queued task, or `None` on shutdown or when the channel closes.
@@ -819,15 +829,20 @@ fn finalize_upload_progress(
     }
     let total_handled = s.processed_count + s.failed_count;
     if total_handled >= s.total_queued && s.active_workers == 0 {
-        apply_idle_state(&mut s, sync_index_ref);
-        check_batch_notification(&mut batch_notify_ref.lock())
+        apply_idle_state(&mut s);
+        let completed = check_batch_notification(&mut batch_notify_ref.lock());
+        drop(s);
+        if let Err(err) = sync_index_ref.flush() {
+            log::warn!("Failed to flush sync index on idle: {}", err);
+        }
+        completed
     } else {
         apply_active_state(&mut s, total_handled);
         None
     }
 }
 
-fn apply_idle_state(s: &mut AppState, sync_index_ref: &Arc<ShardedSyncIndex>) {
+fn apply_idle_state(s: &mut AppState) {
     s.queue_size = 0;
     s.status = if s.paused {
         "paused".to_string()
@@ -836,9 +851,6 @@ fn apply_idle_state(s: &mut AppState, sync_index_ref: &Arc<ShardedSyncIndex>) {
     };
     s.progress = 100;
     log::info!("All {} file(s) processed. Idle.", s.total_queued);
-    if let Err(err) = sync_index_ref.flush() {
-        log::warn!("Failed to flush sync index on idle: {}", err);
-    }
 }
 
 fn apply_active_state(s: &mut AppState, total_handled: usize) {
@@ -1244,6 +1256,7 @@ mod tests {
                     quiet_hours_end: None,
                 })),
                 worker_limit: Arc::new(AtomicUsize::new(1)),
+                limit_changed: Arc::new(Notify::new()),
                 batch_notify_state: Arc::new(Mutex::new(BatchNotifyState::default())),
                 accepting_new: Arc::new(AtomicBool::new(true)),
                 shutdown_token: CancellationToken::new(),

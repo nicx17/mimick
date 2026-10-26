@@ -83,27 +83,29 @@ impl LibraryAssetModel {
 
     /// Append-style update for paginated loads. For server-side date sort
     /// (`NewestFirst`/`OldestFirst`) the existing positions are stable so we
-    /// emit a precise tail-only `items_changed(prev_n, 0, added)`. For
-    /// client-side sort modes the entire vec may have re-ordered, so we fall
+    /// build objects for the new tail only and emit `items_changed(prev_n, 0, added)`.
+    /// For client-side sort modes the entire vec may have re-ordered, so we fall
     /// back to a full reset.
     pub fn extend(&self, ctx: &AppContext, assets: &[LibraryAsset], sort_mode: &LibrarySortMode) {
-        let prev_n = self.imp().items.borrow().len() as u32;
-        let new_items = build_sorted_asset_objects(assets, ctx, sort_mode);
-        let new_n = new_items.len() as u32;
         let server_sorted = matches!(
             sort_mode,
             LibrarySortMode::NewestFirst | LibrarySortMode::OldestFirst
         );
-
-        *self.imp().items.borrow_mut() = new_items;
-
-        if server_sorted && new_n >= prev_n {
-            let added = new_n - prev_n;
-            if added > 0 {
-                self.items_changed(prev_n, 0, added);
+        let (prev_n, last_shown) = {
+            let items = self.imp().items.borrow();
+            (items.len(), items.last().map(AssetObject::id))
+        };
+        match new_tail(assets, prev_n, last_shown.as_deref()) {
+            Some(tail) if server_sorted => {
+                if tail.is_empty() {
+                    return;
+                }
+                let added = build_asset_objects(tail, ctx);
+                let added_n = added.len() as u32;
+                self.imp().items.borrow_mut().extend(added);
+                self.items_changed(prev_n as u32, 0, added_n);
             }
-        } else {
-            self.items_changed(0, prev_n, new_n);
+            _ => self.reset(ctx, assets, sort_mode),
         }
     }
 
@@ -191,6 +193,18 @@ fn build_sorted_asset_objects(
         }),
     }
     items
+}
+
+fn new_tail<'a>(
+    assets: &'a [LibraryAsset],
+    shown: usize,
+    last_shown_id: Option<&str>,
+) -> Option<&'a [LibraryAsset]> {
+    let head_matches = match shown.checked_sub(1) {
+        None => true,
+        Some(last) => assets.get(last).map(|asset| asset.id.as_str()) == last_shown_id,
+    };
+    head_matches.then(|| &assets[shown..])
 }
 
 fn build_asset_objects(assets: &[LibraryAsset], ctx: &AppContext) -> Vec<AssetObject> {
@@ -289,5 +303,39 @@ mod tests {
         );
         assert_eq!(model.remove_ids(&["b".into(), "d".into()]), [1, 3]);
         assert_eq!(model.n_items(), 2);
+    }
+
+    fn assets(ids: &[&str]) -> Vec<LibraryAsset> {
+        ids.iter()
+            .map(|id| {
+                serde_json::from_value(serde_json::json!({
+                    "id": id,
+                    "originalFileName": "a.jpg",
+                    "originalMimeType": "image/jpeg",
+                    "fileCreatedAt": "2026-03-15T12:00:00.000Z",
+                    "type": "IMAGE"
+                }))
+                .unwrap()
+            })
+            .collect()
+    }
+
+    fn tail_ids(tail: Option<&[LibraryAsset]>) -> Option<Vec<&str>> {
+        tail.map(|tail| tail.iter().map(|asset| asset.id.as_str()).collect())
+    }
+
+    #[test]
+    fn new_tail_is_what_follows_the_shown_items() {
+        let all = assets(&["a", "b", "c"]);
+        assert_eq!(tail_ids(new_tail(&all, 0, None)), Some(vec!["a", "b", "c"]));
+        assert_eq!(tail_ids(new_tail(&all, 2, Some("b"))), Some(vec!["c"]));
+        assert_eq!(tail_ids(new_tail(&all, 3, Some("c"))), Some(vec![]));
+    }
+
+    #[test]
+    fn new_tail_is_none_when_the_shown_items_differ() {
+        let all = assets(&["a", "b", "c"]);
+        assert!(new_tail(&all, 2, Some("x")).is_none());
+        assert!(new_tail(&all, 4, Some("c")).is_none());
     }
 }

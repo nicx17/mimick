@@ -328,7 +328,6 @@ The configuration is stored in a JSON file located at:
 | `upload_concurrency` | Number of parallel upload workers (1–10). | `3` |
 | `quiet_hours_start` | Quiet-hours window start (local clock hour, 0-23). | `22` |
 | `quiet_hours_end` | Quiet-hours window end (local clock hour, 0-23, exclusive). | `6` |
-| `library_thumbnail_cache_mb` | RAM cap for decoded thumbnails (0 = default 80 MB). | `80` |
 
 ### `watch_paths` Object Form
 

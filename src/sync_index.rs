@@ -302,20 +302,16 @@ impl ShardedSyncIndex {
     /// Dirty markers are only cleared after a successful write, so a failed
     /// write leaves the data marked dirty for the next flush attempt.
     pub fn flush(&self) -> io::Result<()> {
-        let mut merged = HashMap::new();
-        let mut any_dirty = false;
-        for lock in &self.shards {
-            let shard = lock.read().unwrap();
-            if shard.dirty {
-                any_dirty = true;
-            }
-            merged.extend(shard.entries.iter().map(|(k, v)| (k.clone(), v.clone())));
-        }
-        if !any_dirty {
+        if !self.shards.iter().any(|lock| lock.read().unwrap().dirty) {
             return Ok(());
         }
-        let content = serde_json::to_string_pretty(&SyncIndexDataRef { files: &merged })?;
-        crate::util::atomic_write(&self.index_file, content.as_bytes())?;
+        let mut merged = HashMap::new();
+        for lock in &self.shards {
+            let shard = lock.read().unwrap();
+            merged.extend(shard.entries.iter().map(|(k, v)| (k.clone(), v.clone())));
+        }
+        let content = serde_json::to_vec(&SyncIndexDataRef { files: &merged })?;
+        crate::util::atomic_write(&self.index_file, &content)?;
         for lock in &self.shards {
             let mut shard = lock.write().unwrap();
             shard.dirty = false;
@@ -558,6 +554,14 @@ mod tests {
             "Expected at least 2 distinct shards, got {}",
             shard_ids.len()
         );
+    }
+
+    #[test]
+    fn test_flush_without_changes_writes_nothing() {
+        let dir = tempdir().unwrap();
+        let index = make_index(dir.path());
+        index.flush().unwrap();
+        assert!(!dir.path().join("synced_index.json").exists());
     }
 
     #[test]

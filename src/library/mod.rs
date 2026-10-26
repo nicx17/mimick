@@ -204,12 +204,24 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     let close_ctx = ui.ctx.clone();
     window.connect_close_request(move |_| {
         close_ctx.thumbnail_cache.clear_memory();
+        glib::timeout_add_seconds_local_once(3, release_freed_memory);
         glib::Propagation::Proceed
     });
 
     bootstrap_window(ui);
     window.present();
 }
+
+#[cfg(target_env = "gnu")]
+fn release_freed_memory() {
+    unsafe extern "C" {
+        safe fn malloc_trim(pad: usize) -> i32;
+    }
+    malloc_trim(0);
+}
+
+#[cfg(not(target_env = "gnu"))]
+fn release_freed_memory() {}
 
 /// Wire the grid right-click menu and the album tile sharing actions.
 fn connect_menus(ui: Rc<LibraryWindowUi>) {
@@ -263,8 +275,11 @@ fn bootstrap_window(ui: Rc<LibraryWindowUi>) {
     features::load(&ui);
     fetch_current_user(ui.clone());
     connect_albums_create(ui.clone());
-    spawn_server_ping_loop(ui.clone());
-    spawn_transfer_poll_loop(ui.clone());
+    let timers = vec![
+        spawn_server_ping_loop(ui.clone()),
+        spawn_transfer_poll_loop(ui.clone()),
+    ];
+    stop_timers_on_close(&ui.window, timers);
     load_source_page(ui, initial_request, false);
 }
 
@@ -575,7 +590,17 @@ fn handle_library_drop_upload(ui: &LibraryWindowUi, paths: Vec<std::path::PathBu
     );
 }
 
-fn spawn_server_ping_loop(ui: Rc<LibraryWindowUi>) {
+fn stop_timers_on_close(window: &libadwaita::ApplicationWindow, timers: Vec<glib::SourceId>) {
+    let timers = RefCell::new(timers);
+    window.connect_close_request(move |_| {
+        for timer in timers.borrow_mut().drain(..) {
+            timer.remove();
+        }
+        glib::Propagation::Proceed
+    });
+}
+
+fn spawn_server_ping_loop(ui: Rc<LibraryWindowUi>) -> glib::SourceId {
     glib::timeout_add_seconds_local(5, move || {
         let ui_for_tick = ui.clone();
         glib::MainContext::default().spawn_local(async move {
@@ -601,11 +626,11 @@ fn spawn_server_ping_loop(ui: Rc<LibraryWindowUi>) {
             update_footer(&ui_for_tick, route);
         });
         glib::ControlFlow::Continue
-    });
+    })
 }
 
 /// Start a quick periodic polling loop updating the transfer progress bar UI.
-fn spawn_transfer_poll_loop(ui: Rc<LibraryWindowUi>) {
+fn spawn_transfer_poll_loop(ui: Rc<LibraryWindowUi>) -> glib::SourceId {
     glib::timeout_add_local(std::time::Duration::from_millis(250), move || {
         let completed_batches = ui.ctx.state.lock().completed_upload_batches;
         if completed_batches != ui.last_seen_upload_batch.get() {
@@ -614,7 +639,7 @@ fn spawn_transfer_poll_loop(ui: Rc<LibraryWindowUi>) {
         }
         update_transfer_ui(&ui);
         glib::ControlFlow::Continue
-    });
+    })
 }
 
 /// Fetch current logged-in API user ID and store it in app context.
