@@ -41,6 +41,8 @@ pub struct SharedLink {
 pub struct SharedLinkAlbum {
     pub id: String,
     pub album_name: String,
+    #[serde(default)]
+    pub album_thumbnail_asset_id: Option<String>,
 }
 
 #[derive(Debug, Clone, serde::Deserialize, PartialEq)]

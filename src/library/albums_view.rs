@@ -463,7 +463,7 @@ fn album_tile(ctx: Arc<AppContext>, album: &LibraryAlbum, on_click: AlbumClick) 
 }
 
 /// Asynchronously load and set the thumbnail for an album cover art picture widget.
-fn spawn_thumbnail(ctx: Arc<AppContext>, asset_id: String, picture: gtk::Picture) {
+pub(super) fn spawn_thumbnail(ctx: Arc<AppContext>, asset_id: String, picture: gtk::Picture) {
     if let Some(texture) = ctx
         .thumbnail_cache
         .get_cached(&asset_id, ThumbnailSize::Thumbnail)

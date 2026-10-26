@@ -369,7 +369,7 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Shared Albums (share your albums, change roles, remove people) | `album.read`, `albumUser.create`, `albumUser.update`, `albumUser.delete`, `user.read` |
 | Shared Links (create, copy, edit, delete public links) | `sharedLink.read`, `sharedLink.create`, `sharedLink.update`, `sharedLink.delete` |
 | Library / Explore view (browse photos inside Mimick) | `asset.read`, `asset.view`, `asset.download`, `person.read` |
-| Edit info, set location, or move to trash from the library | `asset.update`, `asset.delete` |
+| Edit info, set location, rate, or move to trash from the library | `asset.update`, `asset.delete` |
 | Map page | `map.read` |
 | Trash view (restore, delete permanently, empty trash) | `asset.read`, `asset.delete` |
 | Tags in the details pane and tag search | `tag.read`; adding/removing tags also needs `tag.asset`, and creating new tags `tag.create` |

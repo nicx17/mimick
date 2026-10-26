@@ -206,6 +206,26 @@ picture.mimick-person-avatar:active {
     opacity: 0.88;
 }
 
+overlay.mimick-link-cover {
+    border-radius: 8px;
+    background-color: alpha(@view_fg_color, 0.08);
+}
+
+@keyframes mimick-pop {
+    0%   { transform: scale(0.6); }
+    60%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+button.mimick-copied {
+    color: @accent_color;
+    animation: mimick-pop 300ms ease-out;
+}
+
+button.mimick-pop {
+    animation: mimick-pop 300ms ease-out;
+}
+
 /* Details-pane group accents. The icon classes paint just the prefix icon,
    keeping the row text in the standard foreground for legibility. */
 .mimick-detail-icon {
@@ -250,7 +270,10 @@ image.mimick-person-favorite {
 
 flowboxchild.mimick-tag-slot,
 flowboxchild.mimick-tag-slot:hover,
-flowboxchild.mimick-tag-slot:focus {
+flowboxchild.mimick-tag-slot:focus,
+flowboxchild.mimick-person-slot,
+flowboxchild.mimick-person-slot:hover,
+flowboxchild.mimick-person-slot:focus {
     padding: 0;
     background: none;
     outline: none;

@@ -61,7 +61,7 @@ The window uses a sidebar + content split.
 | Turned off                                    | Hidden in Mimick                                                   |
 | :-------------------------------------------- | :----------------------------------------------------------------- |
 | Trash (server)                                | **Trash**; deleting then warns that it's permanent                 |
-| Face recognition (server) or People (account) | **People**, the bottom-bar People button, and Explore's people row |
+| Face recognition (server) or People (account) | **People**, the bottom-bar People button, Explore's people row, and the lightbox's People section |
 | Smart search (server)                         | the **Smart Search** mode and Explore's Things                     |
 | OCR (server)                                  | the **OCR** search mode and the OCR filter                         |
 | Reverse geocoding (server)                    | Explore's Places                                                   |
@@ -69,7 +69,7 @@ The window uses a sidebar + content split.
 | Search (server)                               | **Search**                                                         |
 | Tags (account)                                | **Tags**, the lightbox's Tags section, and the Tag search filter   |
 | Folders / Shared Links (account)              | **Folders** / **Shared Links**                                     |
-| Ratings (account)                             | the Rating search filter                                           |
+| Ratings (account)                             | the lightbox's Rating section and the Rating search filter         |
 
 If Mimick can't read these settings (for example, an API key without `userPreference.read`), everything stays visible.
 
@@ -336,6 +336,19 @@ Server assets show a **Tags** section in the details pane:
 - **+** opens a picker of existing tags; typing narrows the list. If no tag matches what you typed, choose **Create “…”** (or press Enter) to create it. Nested tags such as `Trips/2024` work, and Immich creates any missing parents.
 - Requires `tag.read`; adding and removing also need `tag.asset`, and creating new tags needs `tag.create`.
 
+### Rating in the Details Pane
+
+When **Ratings** is turned on in your Immich account settings (Account Settings → Features; Immich turns it off by default), server assets show a **Rating** section above the tags:
+
+- Click a star to rate the photo or video from 1 to 5; hovering previews the rating. **Clear** removes it.
+- The rating is saved right away. If Immich can't save it, the stars go back to the previous rating and an error explains why.
+- As in Immich, only your own photos can be rated. Photos shared with you show their rating without letting you change it, and no section when they have none.
+- Requires `asset.update`.
+
+### People in the Details Pane
+
+Your own photos show a **People** section below the rating with everyone Immich recognized in them: their face and name ("Unnamed" when they have none), and, when a birth date is set in Immich, their age when the photo was taken ("Age 3 months", "Age 1 year, 2 months", "Age 34"). Click someone to close the lightbox and see all their photos. People you've hidden in Immich are left out, and the section only appears when face recognition is on (see the table above). Requires `person.read`.
+
 **Download folder:**
 
 - On the first download, a folder picker opens and the chosen path is saved to `download_target_path` in `config.json`.
@@ -404,7 +417,7 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
   - **A selection:** select assets, then click the share button in the selection bar.
   - **One asset:** right-click it and choose **Create Share Link…**.
 - The dialog sets a **Description**, when the link **Expires** (Never, 1 hour, 1 day, 7 days, 30 days), an optional **Password**, and whether visitors can download originals, upload into the album (album links only), and see metadata. **Create** copies the URL to the clipboard.
-- The **Shared Links** sidebar entry lists every link with its album name or item count, description, expiry, and restrictions. Each row has **Copy link**, **Edit** (the same dialog; leave the password empty to keep it), and **Delete** (asks first).
+- The **Shared Links** sidebar entry lists every link with its cover photo, its expiry (red once expired), the album name (or "Individual share" for selected photos), its description, and what visitors may do (Upload, Download, Exif, Password). Click a link to edit it in the same dialog (leave the password empty to keep it). Each row also has **Copy link**, which shows a checkmark once the URL is on the clipboard, and **Delete** (asks first).
 - The URL uses the server's **External domain** (Immich Administration → Settings → Server) when set, and otherwise the address Mimick is connected through. Requires `sharedLink.read`, `sharedLink.create`, `sharedLink.update`, and `sharedLink.delete`.
 
 ---

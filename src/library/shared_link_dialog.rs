@@ -242,16 +242,21 @@ fn save(
 
 /// Copy a link's public URL to the clipboard and confirm with `heading`.
 pub(super) async fn copy_link_url(ui: &LibraryWindowUi, link: &SharedLink, heading: &str) {
-    match ui.ctx.api_client.shared_link_base().await {
-        Ok(base) => {
-            let url = share_url(&base, link);
-            if let Some(display) = gdk4::Display::default() {
-                display.clipboard().set_text(&url);
-            }
-            show_alert_dialog(ui, heading, &format!("Copied to the clipboard:\n{url}"));
-        }
+    match copy_to_clipboard(ui, link).await {
+        Ok(url) => show_alert_dialog(ui, heading, &format!("Copied to the clipboard:\n{url}")),
         Err(err) => show_alert_dialog(ui, "Could Not Build Link", &err),
     }
+}
+
+pub(super) async fn copy_to_clipboard(
+    ui: &LibraryWindowUi,
+    link: &SharedLink,
+) -> Result<String, String> {
+    let url = share_url(&ui.ctx.api_client.shared_link_base().await?, link);
+    if let Some(display) = gdk4::Display::default() {
+        display.clipboard().set_text(&url);
+    }
+    Ok(url)
 }
 
 #[cfg(test)]

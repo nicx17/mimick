@@ -2,29 +2,40 @@
 
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::time::Duration;
 
+use chrono::{DateTime, Utc};
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
 use crate::api_client::SharedLink;
 
 use super::LibraryWindowUi;
+use super::albums_view::spawn_thumbnail;
 use super::context_menu::show_alert_dialog;
-use super::shared_link_dialog::{self, LinkDialogMode, copy_link_url, format_expiry};
+use super::shared_link_dialog::{self, LinkDialogMode, copy_to_clipboard, format_expiry};
+
+const COPY_ICON: &str = "edit-copy-symbolic";
 
 /// Widgets for the Shared Links content page.
 pub(super) struct SharedLinksView {
     pub root: gtk::ScrolledWindow,
-    list: libadwaita::PreferencesGroup,
+    group: libadwaita::PreferencesGroup,
+    list: gtk::ListBox,
     empty: libadwaita::StatusPage,
-    rows: Rc<RefCell<Vec<gtk::Widget>>>,
+    links: RefCell<Vec<SharedLink>>,
 }
 
 pub(super) fn build_shared_links_view() -> SharedLinksView {
-    let list = libadwaita::PreferencesGroup::builder()
+    let group = libadwaita::PreferencesGroup::builder()
         .title("Shared Links")
         .description("Anyone with a link can view what it shares.")
         .build();
+    let list = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .css_classes(["boxed-list"])
+        .build();
+    group.add(&list);
     let empty = libadwaita::StatusPage::builder()
         .icon_name("emblem-shared-symbolic")
         .title("No Shared Links")
@@ -40,7 +51,7 @@ pub(super) fn build_shared_links_view() -> SharedLinksView {
         .margin_start(16)
         .margin_end(16)
         .build();
-    content.append(&list);
+    content.append(&group);
     content.append(&empty);
     let clamp = libadwaita::Clamp::builder()
         .maximum_size(820)
@@ -53,10 +64,23 @@ pub(super) fn build_shared_links_view() -> SharedLinksView {
         .build();
     SharedLinksView {
         root,
+        group,
         list,
         empty,
-        rows: Rc::default(),
+        links: RefCell::default(),
     }
+}
+
+pub(super) fn connect_shared_links_view(ui: Rc<LibraryWindowUi>) {
+    let ui_edit = ui.clone();
+    ui.shared_links.list.connect_row_activated(move |_, row| {
+        let link = usize::try_from(row.index())
+            .ok()
+            .and_then(|index| ui_edit.shared_links.links.borrow().get(index).cloned());
+        if let Some(link) = link {
+            edit(&ui_edit, link);
+        }
+    });
 }
 
 /// Show the Shared Links page and (re)load its links.
@@ -68,7 +92,7 @@ pub(super) fn show(ui: &Rc<LibraryWindowUi>) {
 fn reload(ui: Rc<LibraryWindowUi>) {
     glib::MainContext::default().spawn_local(async move {
         match ui.ctx.api_client.fetch_shared_links().await {
-            Ok(links) => render(&ui, &links),
+            Ok(links) => render(&ui, links),
             Err(err) => show_alert_dialog(
                 &ui,
                 "Could Not Load Shared Links",
@@ -78,51 +102,146 @@ fn reload(ui: Rc<LibraryWindowUi>) {
     });
 }
 
-fn render(ui: &Rc<LibraryWindowUi>, links: &[SharedLink]) {
+fn render(ui: &Rc<LibraryWindowUi>, links: Vec<SharedLink>) {
     let view = &ui.shared_links;
-    for row in view.rows.borrow_mut().drain(..) {
-        view.list.remove(&row);
+    view.list.remove_all();
+    for link in &links {
+        view.list.append(&link_row(ui, link));
     }
-    for link in links {
-        let row = link_row(ui, link);
-        view.list.add(&row);
-        view.rows.borrow_mut().push(row.upcast());
-    }
-    view.list.set_visible(!links.is_empty());
+    view.group.set_visible(!links.is_empty());
     view.empty.set_visible(links.is_empty());
+    view.links.replace(links);
 }
 
-fn link_row(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> libadwaita::ActionRow {
-    let row = libadwaita::ActionRow::builder()
-        .title(glib::markup_escape_text(&link_title(link)))
-        .subtitle(glib::markup_escape_text(&link_subtitle(link)))
-        .subtitle_lines(2)
+fn edit(ui: &Rc<LibraryWindowUi>, link: SharedLink) {
+    let ui_after = ui.clone();
+    shared_link_dialog::present(
+        ui.clone(),
+        LinkDialogMode::Edit(Box::new(link)),
+        Rc::new(move || reload(ui_after.clone())),
+    );
+}
+
+fn link_row(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::ListBoxRow {
+    let content = gtk::Box::builder()
+        .spacing(12)
+        .margin_top(8)
+        .margin_bottom(8)
+        .margin_start(8)
+        .margin_end(8)
         .build();
-    let copy = icon_button("edit-copy-symbolic", "Copy link");
-    let edit = icon_button("document-edit-symbolic", "Edit link");
-    let delete = icon_button("user-trash-symbolic", "Delete link");
-    let (ui_copy, link_copy) = (ui.clone(), link.clone());
-    copy.connect_clicked(move |_| {
-        let (ui, link) = (ui_copy.clone(), link_copy.clone());
+    content.append(&link_cover(ui, link));
+    content.append(&link_text(link));
+    content.append(&copy_button(ui, link));
+    content.append(&delete_button(ui, link));
+    gtk::ListBoxRow::builder().child(&content).build()
+}
+
+fn link_cover(ui: &LibraryWindowUi, link: &SharedLink) -> gtk::Overlay {
+    let spacer = gtk::Box::builder()
+        .width_request(64)
+        .height_request(64)
+        .build();
+    let cover = gtk::Overlay::builder()
+        .child(&spacer)
+        .overflow(gtk::Overflow::Hidden)
+        .valign(gtk::Align::Center)
+        .css_classes(["mimick-link-cover"])
+        .build();
+    match cover_asset_id(link) {
+        Some(asset_id) => {
+            let picture = gtk::Picture::builder()
+                .can_shrink(true)
+                .content_fit(gtk::ContentFit::Cover)
+                .build();
+            cover.add_overlay(&picture);
+            spawn_thumbnail(ui.ctx.clone(), asset_id.to_string(), picture);
+        }
+        None => cover.add_overlay(
+            &gtk::Image::builder()
+                .icon_name("image-x-generic-symbolic")
+                .pixel_size(24)
+                .css_classes(["dim-label"])
+                .build(),
+        ),
+    }
+    cover
+}
+
+fn link_text(link: &SharedLink) -> gtk::Box {
+    let text = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(2)
+        .hexpand(true)
+        .valign(gtk::Align::Center)
+        .build();
+    let now = Utc::now();
+    let expiry_class = if is_expired(link, now) {
+        "error"
+    } else {
+        "dim-label"
+    };
+    text.append(&text_label(
+        &expiry_text(link, now),
+        &["caption", expiry_class],
+    ));
+    text.append(&text_label(&link_title(link), &["heading", "accent"]));
+    if let Some(description) = link.description.as_deref().filter(|d| !d.is_empty()) {
+        let label = text_label(description, &[]);
+        label.set_wrap(false);
+        label.set_ellipsize(gtk::pango::EllipsizeMode::End);
+        text.append(&label);
+    }
+    let capabilities = link_capabilities(link);
+    if !capabilities.is_empty() {
+        text.append(&text_label(&capabilities, &["caption", "accent"]));
+    }
+    text
+}
+
+fn text_label(text: &str, classes: &[&str]) -> gtk::Label {
+    gtk::Label::builder()
+        .label(text)
+        .xalign(0.0)
+        .wrap(true)
+        .wrap_mode(gtk::pango::WrapMode::WordChar)
+        .css_classes(classes)
+        .build()
+}
+
+fn copy_button(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::Button {
+    let button = icon_button(COPY_ICON, "Copy link");
+    let (ui, link) = (ui.clone(), link.clone());
+    button.connect_clicked(move |button| {
+        let (ui, link, button) = (ui.clone(), link.clone(), button.clone());
         glib::MainContext::default().spawn_local(async move {
-            copy_link_url(&ui, &link, "Link Copied").await;
+            match copy_to_clipboard(&ui, &link).await {
+                Ok(_) => show_copied(&button),
+                Err(err) => show_alert_dialog(&ui, "Could Not Build Link", &err),
+            }
         });
     });
-    let (ui_edit, link_edit) = (ui.clone(), link.clone());
-    edit.connect_clicked(move |_| {
-        let ui_after = ui_edit.clone();
-        shared_link_dialog::present(
-            ui_edit.clone(),
-            LinkDialogMode::Edit(Box::new(link_edit.clone())),
-            Rc::new(move || reload(ui_after.clone())),
-        );
+    button
+}
+
+fn show_copied(button: &gtk::Button) {
+    button.set_icon_name("object-select-symbolic");
+    button.add_css_class("mimick-copied");
+    let button = button.downgrade();
+    glib::timeout_add_local_once(Duration::from_millis(1500), move || {
+        if let Some(button) = button.upgrade() {
+            button.remove_css_class("mimick-copied");
+            button.set_icon_name(COPY_ICON);
+        }
     });
-    let (ui_delete, link_id) = (ui.clone(), link.id.clone());
-    delete.connect_clicked(move |_| confirm_delete(ui_delete.clone(), link_id.clone()));
-    row.add_suffix(&copy);
-    row.add_suffix(&edit);
-    row.add_suffix(&delete);
-    row
+}
+
+fn delete_button(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::Button {
+    let button = icon_button("user-trash-symbolic", "Delete link");
+    button.add_css_class("error");
+    let (ui, link_id) = (ui.clone(), link.id.clone());
+    button.connect_clicked(move |_| confirm_delete(ui.clone(), link_id.clone()));
+    button
 }
 
 fn icon_button(icon: &str, tooltip: &str) -> gtk::Button {
@@ -159,37 +278,49 @@ fn confirm_delete(ui: Rc<LibraryWindowUi>, link_id: String) {
     dialog.present(Some(&ui.window));
 }
 
-/// Album name for album links, otherwise the number of shared items.
+/// Album name, or "Individual share": Immich lists at most one asset per link.
 fn link_title(link: &SharedLink) -> String {
     match &link.album {
         Some(album) => album.album_name.clone(),
-        None => match link.assets.len() {
-            1 => "1 item".to_string(),
-            n => format!("{n} items"),
-        },
+        None => "Individual share".to_string(),
     }
 }
 
-/// Description, expiry, and any restrictions, joined with " · ".
-fn link_subtitle(link: &SharedLink) -> String {
-    let mut parts = Vec::new();
-    if let Some(description) = link.description.as_deref().filter(|d| !d.is_empty()) {
-        parts.push(description.to_string());
+fn cover_asset_id(link: &SharedLink) -> Option<&str> {
+    match &link.album {
+        Some(album) => album.album_thumbnail_asset_id.as_deref(),
+        None => link.assets.first().map(|asset| asset.id.as_str()),
     }
-    parts.push(match link.expires_at.as_deref() {
+}
+
+fn is_expired(link: &SharedLink, now: DateTime<Utc>) -> bool {
+    link.expires_at
+        .as_deref()
+        .and_then(|at| DateTime::parse_from_rfc3339(at).ok())
+        .is_some_and(|at| at <= now)
+}
+
+fn expiry_text(link: &SharedLink, now: DateTime<Utc>) -> String {
+    if is_expired(link, now) {
+        return "Expired".to_string();
+    }
+    match link.expires_at.as_deref() {
         Some(at) => format!("Expires {}", format_expiry(at)),
         None => "Never expires".to_string(),
-    });
-    if link.password.is_some() {
-        parts.push("Password".to_string());
     }
-    if !link.allow_download {
-        parts.push("No downloads".to_string());
-    }
-    if link.allow_upload {
-        parts.push("Uploads allowed".to_string());
-    }
-    parts.join(" · ")
+}
+
+fn link_capabilities(link: &SharedLink) -> String {
+    [
+        (link.allow_upload, "Upload"),
+        (link.allow_download, "Download"),
+        (link.show_metadata, "Exif"),
+        (link.password.is_some(), "Password"),
+    ]
+    .into_iter()
+    .filter_map(|(enabled, name)| enabled.then_some(name))
+    .collect::<Vec<_>>()
+    .join(" • ")
 }
 
 #[cfg(test)]
@@ -205,7 +336,7 @@ mod tests {
             "allowDownload": true,
             "allowUpload": false,
             "showMetadata": true,
-            "assets": [{ "id": "a" }, { "id": "b" }]
+            "assets": [{ "id": "a" }]
         });
         for (key, value) in json.as_object().unwrap() {
             base[key] = value.clone();
@@ -213,33 +344,70 @@ mod tests {
         serde_json::from_value(base).unwrap()
     }
 
+    fn now() -> DateTime<Utc> {
+        DateTime::parse_from_rfc3339("2026-10-10T00:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc)
+    }
+
     #[test]
-    fn title_uses_album_name_or_item_count() {
-        assert_eq!(link_title(&link(serde_json::json!({}))), "2 items");
+    fn title_uses_album_name_or_individual_share() {
+        assert_eq!(link_title(&link(serde_json::json!({}))), "Individual share");
         let album = link(serde_json::json!({
             "type": "ALBUM",
             "album": { "id": "a1", "albumName": "Trips" },
             "assets": []
         }));
         assert_eq!(link_title(&album), "Trips");
-        let single = link(serde_json::json!({ "assets": [{ "id": "a" }] }));
-        assert_eq!(link_title(&single), "1 item");
     }
 
     #[test]
-    fn subtitle_lists_description_expiry_and_restrictions() {
-        assert_eq!(link_subtitle(&link(serde_json::json!({}))), "Never expires");
-        let restricted = link(serde_json::json!({
-            "description": "Beach",
-            "password": "x",
-            "allowDownload": false,
-            "allowUpload": true
+    fn cover_is_album_thumbnail_or_first_asset() {
+        assert_eq!(cover_asset_id(&link(serde_json::json!({}))), Some("a"));
+        let album = link(serde_json::json!({
+            "type": "ALBUM",
+            "album": { "id": "a1", "albumName": "Trips", "albumThumbnailAssetId": "cover" },
+            "assets": []
         }));
+        assert_eq!(cover_asset_id(&album), Some("cover"));
+        let empty_album = link(serde_json::json!({
+            "type": "ALBUM",
+            "album": { "id": "a1", "albumName": "Trips", "albumThumbnailAssetId": null },
+            "assets": []
+        }));
+        assert_eq!(cover_asset_id(&empty_album), None);
         assert_eq!(
-            link_subtitle(&restricted),
-            "Beach · Never expires · Password · No downloads · Uploads allowed"
+            cover_asset_id(&link(serde_json::json!({ "assets": [] }))),
+            None
         );
-        let expiring = link(serde_json::json!({ "expiresAt": "2026-10-09T12:00:00Z" }));
-        assert!(link_subtitle(&expiring).starts_with("Expires "));
+    }
+
+    #[test]
+    fn expiry_text_marks_past_links_expired() {
+        assert_eq!(
+            expiry_text(&link(serde_json::json!({})), now()),
+            "Never expires"
+        );
+        let past = link(serde_json::json!({ "expiresAt": "2026-10-09T12:00:00Z" }));
+        assert!(is_expired(&past, now()));
+        assert_eq!(expiry_text(&past, now()), "Expired");
+        let future = link(serde_json::json!({ "expiresAt": "2026-10-11T12:00:00Z" }));
+        assert!(!is_expired(&future, now()));
+        assert!(expiry_text(&future, now()).starts_with("Expires "));
+    }
+
+    #[test]
+    fn capabilities_list_what_visitors_may_do() {
+        assert_eq!(
+            link_capabilities(&link(serde_json::json!({}))),
+            "Download • Exif"
+        );
+        let open = link(serde_json::json!({ "allowUpload": true, "password": "x" }));
+        assert_eq!(
+            link_capabilities(&open),
+            "Upload • Download • Exif • Password"
+        );
+        let locked = link(serde_json::json!({ "allowDownload": false, "showMetadata": false }));
+        assert_eq!(link_capabilities(&locked), "");
     }
 }
