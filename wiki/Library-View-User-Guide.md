@@ -404,7 +404,7 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
   - **A selection:** select assets, then click the share button in the selection bar.
   - **One asset:** right-click it and choose **Create Share Link…**.
 - The dialog sets a **Description**, when the link **Expires** (Never, 1 hour, 1 day, 7 days, 30 days), an optional **Password**, and whether visitors can download originals, upload into the album (album links only), and see metadata. **Create** copies the URL to the clipboard.
-- The **Shared Links** sidebar entry lists every link with its album name or item count, description, expiry, and restrictions. Each row has **Copy link**, **Edit** (the same dialog; leave the password empty to keep it), and **Delete** (asks first).
+- The **Shared Links** sidebar entry lists every link with its cover photo, its expiry (red once expired), the album name (or "Individual share" for selected photos), its description, and what visitors may do (Upload, Download, Exif, Password). Click a link to edit it in the same dialog (leave the password empty to keep it). Each row also has **Copy link**, which shows a checkmark once the URL is on the clipboard, and **Delete** (asks first).
 - The URL uses the server's **External domain** (Immich Administration → Settings → Server) when set, and otherwise the address Mimick is connected through. Requires `sharedLink.read`, `sharedLink.create`, `sharedLink.update`, and `sharedLink.delete`.
 
 ---

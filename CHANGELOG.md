@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Flatpak now bundles libshumate 1.7.0 and protobuf-c 1.5.2 for the maps; native builds also need libshumate 1.7 or newer.
 - Native builds now require GTK 4.24, libadwaita 1.10, and libheif 1.21 or newer (matching the GNOME 51 runtime), plus GStreamer with GstPlay and the GTK 4 video sink plugin (`gst-plugin-gtk4`) for video playback, and libclang for generating the LibRaw bindings.
 - Removed the **Archived only** search filter, which Immich v3 ignores; use **Visibility → Archive** instead.
+- The **Shared Links** page now shows each link's cover photo, what visitors may do (Upload, Download, Exif, Password), and expired links in red. Click a link to edit it. **Copy link** now confirms with a checkmark on the button instead of a dialog.
 
 ### Fixed
 
@@ -52,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Photos timeline now includes months that only have photos from partners shown in Photos.
 - Editing a shared link no longer removes the custom URL set for it in Immich.
 - Setting an edited shared link to expire **Never** now removes its expiry; before, the old expiry stayed.
+- Shared links to individual photos are now titled "Individual share" instead of always "1 item", since Immich lists only one photo per link.
 - Searching by file name no longer shows the whole library's photo count in the header, since Immich can't count those searches.
 
 ## [9.11.0] - 2026-10-17

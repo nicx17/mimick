@@ -191,6 +191,7 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     people_view::connect_people_view(ui.clone());
     tags_view::connect_tags_view(ui.clone());
     sharing_view::connect_sharing_view(ui.clone());
+    shared_links_view::connect_shared_links_view(ui.clone());
     map::connect_map_view(&ui);
     timeline::connect(&ui);
     bottom_nav::connect_bottom_nav(&ui);
