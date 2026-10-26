@@ -311,6 +311,9 @@ impl ImmichApiClient {
     }
 
     pub async fn search_statistics(&self, filters: &MetadataSearchFilters) -> Result<u64, String> {
+        if !statistics_can_count(filters) {
+            return Err("Immich can't count by file name or deleted photos".to_string());
+        }
         let body = serde_json::to_value(filters).map_err(|err| err.to_string())?;
         let resp = self
             .send_json(reqwest::Method::POST, "/api/search/statistics", Some(body))
@@ -536,6 +539,10 @@ struct CityExif {
     city: Option<String>,
 }
 
+fn statistics_can_count(filters: &MetadataSearchFilters) -> bool {
+    filters.original_file_name.is_none() && filters.with_deleted != Some(true)
+}
+
 fn places_from_cities(assets: Vec<CityAsset>) -> Vec<PlaceItem> {
     let mut places: Vec<PlaceItem> = assets
         .into_iter()
@@ -554,6 +561,22 @@ fn places_from_cities(assets: Vec<CityAsset>) -> Vec<PlaceItem> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn statistics_skip_filters_immich_cannot_count() {
+        assert!(statistics_can_count(&MetadataSearchFilters {
+            city: Some("Kyoto".into()),
+            ..MetadataSearchFilters::default()
+        }));
+        assert!(!statistics_can_count(&MetadataSearchFilters {
+            original_file_name: Some("IMG".into()),
+            ..MetadataSearchFilters::default()
+        }));
+        assert!(!statistics_can_count(&MetadataSearchFilters {
+            with_deleted: Some(true),
+            ..MetadataSearchFilters::default()
+        }));
+    }
 
     #[test]
     fn city_assets_become_one_place_per_city_sorted() {

@@ -222,7 +222,7 @@ fn save(
         let api = &ui.ctx.api_client;
         let result = match mode.as_ref() {
             LinkDialogMode::Create(target) => api.create_shared_link(target, &options).await,
-            LinkDialogMode::Edit(link) => api.edit_shared_link(&link.id, &options).await,
+            LinkDialogMode::Edit(link) => api.edit_shared_link(link, &options).await,
         };
         match result {
             Ok(link) => {

@@ -178,8 +178,7 @@ fn build_action_row() -> (gtk::Box, gtk::Image, gtk::Button, gtk::Button, gtk::B
 #[allow(clippy::type_complexity)]
 fn build_filter_panel() -> FilterWidgets {
     let (text_group, filename_row, description_row, ocr_row) = build_text_group();
-    let (flags_group, type_row, fav, archived, motion, not_album, deleted, vis, rating) =
-        build_flags_group();
+    let (flags_group, type_row, fav, motion, not_album, deleted, vis, rating) = build_flags_group();
     let (date_group, taken_after, taken_before, created_after, created_before) = build_date_group();
     let (camera_group, make_row, model_row, lens_row) = build_camera_group();
     let (loc_group, country, state, city) = build_location_group();
@@ -208,7 +207,6 @@ fn build_filter_panel() -> FilterWidgets {
         ocr_row,
         type_row,
         favorite_row: fav,
-        archived_row: archived,
         motion_row: motion,
         not_in_album_row: not_album,
         with_deleted_row: deleted,
@@ -357,7 +355,6 @@ pub fn collect_filters(view: &SearchViewParts) -> MetadataSearchFilters {
         state: opt_string(&view.filters.state_row.text()),
         city: opt_string(&view.filters.city_row.text()),
         is_favorite: opt_true(view.filters.favorite_row.is_active()),
-        is_archived: opt_true(view.filters.archived_row.is_active()),
         is_motion: opt_true(view.filters.motion_row.is_active()),
         is_not_in_album: opt_true(view.filters.not_in_album_row.is_active()),
         with_deleted: opt_true(view.filters.with_deleted_row.is_active()),
@@ -389,7 +386,6 @@ pub fn clear_all_filters(view: &SearchViewParts) {
     view.filters.ocr_row.set_text("");
     view.filters.type_row.set_selected(0);
     view.filters.favorite_row.set_active(false);
-    view.filters.archived_row.set_active(false);
     view.filters.motion_row.set_active(false);
     view.filters.not_in_album_row.set_active(false);
     view.filters.with_deleted_row.set_active(false);

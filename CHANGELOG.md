@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Flatpak now requests the PulseAudio socket (also used by PipeWire) for video sound.
 - The Flatpak now bundles libshumate 1.7.0 and protobuf-c 1.5.2 for the maps; native builds also need libshumate 1.7 or newer.
 - Native builds now require GTK 4.24, libadwaita 1.10, and libheif 1.21 or newer (matching the GNOME 51 runtime), plus GStreamer with GstPlay and the GTK 4 video sink plugin (`gst-plugin-gtk4`) for video playback, and libclang for generating the LibRaw bindings.
+- Removed the **Archived only** search filter, which Immich v3 ignores; use **Visibility → Archive** instead.
 
 ### Fixed
 
@@ -49,6 +50,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Long albums, Favorites, and search results no longer get slower as more photos load, and deleting or archiving a photo in them no longer rebuilds the whole grid.
 - The library no longer freezes briefly when a batch of uploads finishes, and the sync index is no longer copied every 10 seconds when nothing has changed.
 - The Photos timeline now includes months that only have photos from partners shown in Photos.
+- Editing a shared link no longer removes the custom URL set for it in Immich.
+- Setting an edited shared link to expire **Never** now removes its expiry; before, the old expiry stayed.
+- Searching by file name no longer shows the whole library's photo count in the header, since Immich can't count those searches.
 
 ## [9.11.0] - 2026-10-17
 

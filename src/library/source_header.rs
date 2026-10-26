@@ -249,13 +249,6 @@ fn enrich(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
                 ..MetadataSearchFilters::default()
             },
         ),
-        LibrarySource::MetadataSearch { query } => count_matching(
-            ui,
-            MetadataSearchFilters {
-                original_file_name: Some(query.clone()),
-                ..MetadataSearchFilters::default()
-            },
-        ),
         LibrarySource::AdvancedSearch { filters } => count_matching(ui, (**filters).clone()),
         LibrarySource::Thing { .. } => set_details(&ui.header, vec!["Things".to_string()]),
         LibrarySource::SmartSearch { .. } => {

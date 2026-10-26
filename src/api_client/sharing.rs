@@ -39,7 +39,7 @@ fn add_users_body(members: &[(String, AlbumRole)]) -> serde_json::Value {
 impl ImmichApiClient {
     /// One album with its members (names and emails), without its assets.
     pub async fn fetch_album_detail(&self, album_id: &str) -> Result<LibraryAlbum, String> {
-        let path = format!("/api/albums/{album_id}?withoutAssets=true");
+        let path = format!("/api/albums/{album_id}");
         let resp = self.send_json(reqwest::Method::GET, &path, None).await?;
         resp.json().await.map_err(|err| err.to_string())
     }

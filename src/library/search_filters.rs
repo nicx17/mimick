@@ -7,7 +7,6 @@ pub struct FilterWidgets {
     pub ocr_row: libadwaita::EntryRow,
     pub type_row: libadwaita::ComboRow,
     pub favorite_row: libadwaita::SwitchRow,
-    pub archived_row: libadwaita::SwitchRow,
     pub motion_row: libadwaita::SwitchRow,
     pub not_in_album_row: libadwaita::SwitchRow,
     pub with_deleted_row: libadwaita::SwitchRow,
@@ -77,7 +76,6 @@ pub(super) fn build_flags_group() -> (
     libadwaita::SwitchRow,
     libadwaita::SwitchRow,
     libadwaita::SwitchRow,
-    libadwaita::SwitchRow,
     libadwaita::ComboRow,
     libadwaita::ComboRow,
 ) {
@@ -90,7 +88,6 @@ pub(super) fn build_flags_group() -> (
         .build();
     let type_row = combo_row("Asset type", &["Any", "Image only", "Video only"]);
     let fav = switch("Favourites only");
-    let archived = switch("Archived only");
     let motion = switch("Motion photos only");
     let not_album = switch("Not in any album");
     let deleted = switch("Include deleted");
@@ -101,14 +98,13 @@ pub(super) fn build_flags_group() -> (
     let rating = combo_row("Minimum rating", &["Any", "1+", "2+", "3+", "4+", "5"]);
     group.add(&type_row);
     group.add(&fav);
-    group.add(&archived);
     group.add(&motion);
     group.add(&not_album);
     group.add(&deleted);
     group.add(&vis);
     group.add(&rating);
     (
-        group, type_row, fav, archived, motion, not_album, deleted, vis, rating,
+        group, type_row, fav, motion, not_album, deleted, vis, rating,
     )
 }
 
