@@ -204,12 +204,24 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     let close_ctx = ui.ctx.clone();
     window.connect_close_request(move |_| {
         close_ctx.thumbnail_cache.clear_memory();
+        glib::timeout_add_seconds_local_once(3, release_freed_memory);
         glib::Propagation::Proceed
     });
 
     bootstrap_window(ui);
     window.present();
 }
+
+#[cfg(target_env = "gnu")]
+fn release_freed_memory() {
+    unsafe extern "C" {
+        fn malloc_trim(pad: usize) -> i32;
+    }
+    unsafe { malloc_trim(0) };
+}
+
+#[cfg(not(target_env = "gnu"))]
+fn release_freed_memory() {}
 
 /// Wire the grid right-click menu and the album tile sharing actions.
 fn connect_menus(ui: Rc<LibraryWindowUi>) {
