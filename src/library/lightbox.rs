@@ -873,9 +873,9 @@ fn build_details_pane() -> DetailsPane {
     let summary = details_text_label();
     let edit_btn = gtk::Button::builder().label("Edit Info…").build();
     let location_btn = gtk::Button::builder().label("Set Location…").build();
-    let edit_row = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(6)
+    let edit_row = libadwaita::WrapBox::builder()
+        .child_spacing(6)
+        .line_spacing(6)
         .halign(gtk::Align::Start)
         .build();
     edit_row.append(&edit_btn);
