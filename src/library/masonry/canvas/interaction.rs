@@ -288,7 +288,11 @@ fn handle_model_changed(
     if added == 0 && removed > 0 && model.n_items() == 0 {
         return;
     }
-    imp.invalidate_layout();
+    if imp.timeline.borrow().is_some() {
+        imp.schedule_relayout();
+    } else {
+        imp.invalidate_layout();
+    }
     canvas.queue_draw();
 }
 

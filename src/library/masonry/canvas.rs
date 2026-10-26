@@ -15,6 +15,7 @@ use crate::library::thumbnail_cache::ThumbnailCache;
 
 type ActivateHandler = Rc<dyn Fn(u32)>;
 type SelectModeChanger = Rc<dyn Fn(bool)>;
+type MonthRequestHandler = Rc<dyn Fn(Vec<usize>)>;
 
 pub(super) const CORNER_RADIUS: f32 = 0.0;
 
@@ -29,10 +30,12 @@ use super::quality::{bucket_for_row_height, fallback_bucket};
 use super::schedule::{CancelFlag, LoadRequest, LoadScheduler, SETTLE_DELAY, is_fling};
 
 mod interaction;
+mod timeline;
 
 mod imp {
     use std::cell::{Cell, OnceCell, RefCell};
-    use std::collections::HashSet;
+    use std::collections::{HashMap, HashSet};
+    use std::rc::Rc;
     use std::sync::Arc;
 
     use gtk::glib;
@@ -41,11 +44,16 @@ mod imp {
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
 
+    use super::timeline::CachedSection;
+    use crate::config::DateHeadings;
+    use crate::library::timeline::index::TimelineIndex;
+    use crate::library::timeline::layout::{LaidHeading, LaidSection};
+
     use super::{
         ActivateHandler, AssetContextMenuHandler, AssetObject, CORNER_RADIUS, CancelFlag,
         GridQuality, LaidItem, LaidRow, LayoutConfig, LibraryAssetModel, LoadRequest,
-        LoadScheduler, SETTLE_DELAY, SelectModeChanger, ThumbnailCache, ThumbnailSize,
-        VIEWPORTS_AHEAD, VIEWPORTS_BEHIND, accent_bg_color, bucket_for_asset,
+        LoadScheduler, MonthRequestHandler, SETTLE_DELAY, SelectModeChanger, ThumbnailCache,
+        ThumbnailSize, VIEWPORTS_AHEAD, VIEWPORTS_BEHIND, accent_bg_color, bucket_for_asset,
         bucket_for_row_height, cached_texture, collect_dims, finish_masonry_load, is_fling,
         load_masonry_asset, load_target_for, pack_rows, placeholder_color, resolve_symbolic_icon,
         resolve_video_icon, rows_between,
@@ -95,6 +103,14 @@ mod imp {
         pub last_scroll: Cell<(f64, i64)>,
         pub flinging: Cell<bool>,
         pub settle: RefCell<Option<glib::SourceId>>,
+        pub timeline: RefCell<Option<Rc<RefCell<TimelineIndex>>>>,
+        pub date_headings: Cell<DateHeadings>,
+        pub(super) section_cache: RefCell<HashMap<usize, CachedSection>>,
+        pub headings: RefCell<Vec<LaidHeading>>,
+        pub sections: RefCell<Vec<LaidSection>>,
+        pub month_request_handler: RefCell<Option<MonthRequestHandler>>,
+        pub month_request_pending: Cell<bool>,
+        pub relayout_pending: Cell<bool>,
         /// Permanently failed ids; skipped to avoid re-queueing every frame.
         pub failed: RefCell<HashSet<String>>,
         pub vadjustment: RefCell<Option<gtk::Adjustment>>,
@@ -190,18 +206,29 @@ mod imp {
                     .border_color
                     .get()
                     .unwrap_or_else(|| gdk4::RGBA::new(1.0, 1.0, 1.0, 1.0));
-                let canvas_h = self.layout_h.get();
-                let vis_rect = Rect::new(
-                    0.0,
-                    viewport.scroll_y.max(0.0),
-                    canvas_w,
-                    (viewport.bottom - viewport.scroll_y.max(0.0)).min(canvas_h),
-                );
-                snapshot.append_color(&bc, &vis_rect);
+                if self.timeline.borrow().is_some() {
+                    for row in rows_between(&rows, viewport.top, viewport.bottom) {
+                        let band = Rect::new(0.0, row.y - gap, canvas_w, row.h + 2.0 * gap);
+                        snapshot.append_color(&bc, &band);
+                    }
+                } else {
+                    let canvas_h = self.layout_h.get();
+                    let vis_rect = Rect::new(
+                        0.0,
+                        viewport.scroll_y.max(0.0),
+                        canvas_w,
+                        (viewport.bottom - viewport.scroll_y.max(0.0)).min(canvas_h),
+                    );
+                    snapshot.append_color(&bc, &vis_rect);
+                }
             }
 
             let sctx = self.snapshot_ctx(model, cache);
             let stats = self.paint_snapshot_rows(snapshot, &sctx, &rows, &viewport);
+            if self.timeline.borrow().is_some() {
+                self.paint_timeline_extras(snapshot, viewport.top, viewport.bottom, canvas_w);
+                self.request_visible_months(viewport.band_top, viewport.band_bottom);
+            }
             let wanted = self.wanted_loads(model, &rows, &viewport);
             drop(rows);
             self.finish_snapshot(cache, &viewport, &stats, wanted);
@@ -213,7 +240,7 @@ mod imp {
     const COMPACT_WIDTH_THRESHOLD: f32 = 400.0;
 
     impl MasonryCanvas {
-        fn cfg(&self) -> LayoutConfig {
+        pub(super) fn cfg(&self) -> LayoutConfig {
             let gap = self.border_gap.get();
             if self.narrow.get() {
                 let w = self.cached_width.get();
@@ -227,7 +254,7 @@ mod imp {
             }
         }
 
-        fn layout_for_width(&self, width: f32) -> f32 {
+        pub(super) fn layout_for_width(&self, width: f32) -> f32 {
             let cached = self.cached_width.get();
             if (width - cached).abs() < 0.5 && cached >= 0.0 {
                 return self.layout_h.get();
@@ -237,8 +264,16 @@ mod imp {
                 self.layout_h.set(0.0);
                 return 0.0;
             };
-            let dims = collect_dims(model);
-            let (rows, h) = pack_rows(&dims, width, self.cfg());
+            let timeline = self.timeline.borrow().clone();
+            let (rows, h) = match timeline {
+                Some(index) => {
+                    let layout = self.timeline_layout(model, &index.borrow(), width);
+                    *self.headings.borrow_mut() = layout.headings;
+                    *self.sections.borrow_mut() = layout.sections;
+                    (layout.rows, layout.height)
+                }
+                None => pack_rows(&collect_dims(model), width, self.cfg()),
+            };
             *self.rows.borrow_mut() = rows;
             self.cached_width.set(width);
             self.layout_h.set(h);
@@ -619,7 +654,7 @@ mod imp {
             );
         }
 
-        fn viewport(&self) -> (f32, f32) {
+        pub(super) fn viewport(&self) -> (f32, f32) {
             let Some(adj) = self.find_vadjustment() else {
                 return (0.0, self.obj().height() as f32);
             };
@@ -636,7 +671,7 @@ mod imp {
             (scroll_y, adj.page_size() as f32)
         }
 
-        fn find_vadjustment(&self) -> Option<gtk::Adjustment> {
+        pub(super) fn find_vadjustment(&self) -> Option<gtk::Adjustment> {
             if let Some(adj) = self.vadjustment.borrow().clone() {
                 return Some(adj);
             }
@@ -867,7 +902,7 @@ fn finish_masonry_load(
     };
     imp.scheduler.borrow_mut().finish(asset_id);
     if dims_changed {
-        imp.invalidate_layout();
+        imp.relayout_for_position(request.asset_index);
     }
     widget.queue_draw();
 }
