@@ -70,6 +70,7 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - [x] **Set Location** — Give one or many photos a location (#87).
 - [x] **Partner Photos** — Browse a partner's photos, and show them in your Photos timeline (#236).
 - [x] **Keyboard Shortcuts Dialog** — Every shortcut in one place (Ctrl+?).
+- [x] **Star Ratings** — Rate photos and videos from 1 to 5 in the lightbox details pane.
 - [x] **Immich Edits** — Photos cropped or rotated in Immich show their edited version.
 - [x] **Faster Scrolling** — Thumbnails load where scrolling stops, and the library gives its memory back when closed.
 - [x] **LibRaw 0.21.3** — Support for newer cameras such as the Sony A7 IV and Canon EOS R7.

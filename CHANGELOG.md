@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added setting the location of one or many photos with **Set Location…** in the details pane, the right-click menu, and the selection bar. Search Immich's places, click the map to drop a pin, or type or paste coordinates (#87). Like Immich, editing info and location is offered only on photos you own.
 - Added browsing a partner's photos: click someone under **Sharing With You** on the **Sharing** page to see their photos as a timeline (#236).
 - Added a **Show in Photos** switch for each partner who shares with you, which adds their photos to your Photos timeline.
+- Added star ratings in the lightbox details pane: click a star to rate a photo or video from 1 to 5, or **Clear** to remove the rating. It appears when **Ratings** is turned on in your Immich account settings, and like Immich, only your own photos can be rated.
 
 ### Changed
 

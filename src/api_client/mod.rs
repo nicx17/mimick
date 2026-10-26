@@ -573,6 +573,8 @@ pub struct ExifInfo {
     /// Image height in pixels.
     #[serde(default)]
     pub exif_image_height: Option<u32>,
+    #[serde(default)]
+    pub rating: Option<i8>,
 }
 
 /// Asset details metadata payload.

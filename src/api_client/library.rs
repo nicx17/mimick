@@ -364,6 +364,14 @@ impl ImmichApiClient {
         }
     }
 
+    pub async fn set_asset_rating(&self, asset_id: &str, rating: Option<u8>) -> Result<(), String> {
+        let path = format!("/api/assets/{asset_id}");
+        let body = serde_json::json!({ "rating": rating });
+        self.send_json(reqwest::Method::PUT, &path, Some(body))
+            .await
+            .map(|_| ())
+    }
+
     pub async fn set_assets_visibility(
         &self,
         asset_ids: &[String],

@@ -32,6 +32,7 @@ use super::{LOCAL_ID_PREFIX, LibraryWindowUi, load_source_page, load_texture_ori
 mod fullscreen;
 mod location;
 mod ocr;
+mod rating;
 mod video;
 
 /// Everything we can learn about a local file off the main thread before
@@ -72,6 +73,7 @@ fn exif_from_local(local: &LocalExif, file_size: Option<u64>) -> ExifInfo {
         description: local.description.clone(),
         exif_image_width: local.image_width,
         exif_image_height: local.image_height,
+        rating: None,
     }
 }
 
@@ -631,6 +633,7 @@ struct DetailsPane {
     summary: gtk::Label,
     edit_btn: gtk::Button,
     location_btn: gtk::Button,
+    rating: rating::RatingSection,
     tags: TagSection,
     loading: gtk::Label,
     exif: gtk::Box,
@@ -893,6 +896,8 @@ fn build_details_pane() -> DetailsPane {
     inner.append(&filename);
     inner.append(&summary);
     inner.append(&edit_row);
+    let rating = rating::RatingSection::new();
+    inner.append(&rating.root);
     let tags = TagSection::new();
     inner.append(&tags.root);
     inner.append(&loading);
@@ -903,6 +908,7 @@ fn build_details_pane() -> DetailsPane {
         summary,
         edit_btn,
         location_btn,
+        rating,
         tags,
         loading,
         exif,
@@ -1262,6 +1268,7 @@ impl Lightbox {
         self.details
             .tags
             .bind(self.ui.clone(), Rc::new(move |tag| lb.search_tag(tag)));
+        self.details.rating.bind(self.ui.clone());
     }
 
     /// Close the lightbox and show every photo carrying `tag`.
@@ -1652,7 +1659,7 @@ impl Lightbox {
         if info.is_local() && !info.is_video() {
             self.load_local_details(pos, info.local_path);
         } else {
-            self.load_remote_details(pos, info.asset_id);
+            self.load_remote_details(pos, info.asset_id, editable);
         }
     }
 
@@ -1674,6 +1681,7 @@ impl Lightbox {
             self.details.exif.remove(&c);
         }
         self.details.exif.set_visible(false);
+        self.details.rating.clear();
         self.details.tags.clear();
     }
 
@@ -2007,7 +2015,7 @@ impl Lightbox {
     }
 
     /// Fetch EXIF from the server; dropped if the user has moved to another asset.
-    fn load_remote_details(self: &Rc<Self>, pos: u32, asset_id: String) {
+    fn load_remote_details(self: &Rc<Self>, pos: u32, asset_id: String, mine: bool) {
         let lb = self.clone();
         glib::MainContext::default().spawn_local(async move {
             let result = lb.ui.ctx.api_client.fetch_asset_details(&asset_id).await;
@@ -2018,10 +2026,15 @@ impl Lightbox {
             let Ok(details) = result else {
                 return;
             };
-            if !asset_id.starts_with(LOCAL_ID_PREFIX)
-                && !trash_view::is_trash_active(&lb.ui)
-                && lb.ui.features.get().tags
-            {
+            let on_server =
+                !asset_id.starts_with(LOCAL_ID_PREFIX) && !trash_view::is_trash_active(&lb.ui);
+            let features = lb.ui.features.get();
+            if on_server && features.ratings {
+                let rating = details.exif_info.as_ref().and_then(|exif| exif.rating);
+                let rating = rating::stars_from_exif(rating);
+                lb.details.rating.show(&asset_id, rating, mine);
+            }
+            if on_server && features.tags {
                 lb.details.tags.show(&asset_id, details.tags);
             }
             if let Some(exif) = details.exif_info {

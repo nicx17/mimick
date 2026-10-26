@@ -222,6 +222,10 @@ button.mimick-copied {
     animation: mimick-pop 300ms ease-out;
 }
 
+button.mimick-pop {
+    animation: mimick-pop 300ms ease-out;
+}
+
 /* Details-pane group accents. The icon classes paint just the prefix icon,
    keeping the row text in the standard foreground for legibility. */
 .mimick-detail-icon {
