@@ -406,13 +406,13 @@ async fn trash_assets(ui: &Rc<LibraryWindowUi>, ids: &[String]) -> Result<(), St
 /// position instead of reloading from the first page; then refresh album/stat counts.
 pub(super) fn remove_assets_from_grid(ui: &Rc<LibraryWindowUi>, ids: &[String]) {
     if !super::timeline::remove(ui, ids) {
-        let (assets, sort_mode) = {
-            let mut state = ui.ctx.library_state.lock();
-            state.assets.retain(|asset| !ids.contains(&asset.id));
-            (state.assets.clone(), state.sort_mode.clone())
-        };
-        // Reset outside the lock: items_changed handlers may read the library state.
-        ui.grid.model.reset(&ui.ctx, &assets, &sort_mode);
+        ui.ctx
+            .library_state
+            .lock()
+            .assets
+            .retain(|asset| !ids.contains(&asset.id));
+        // Outside the lock: items_changed handlers may read the library state.
+        ui.grid.model.remove_ids(ids);
     }
     super::refresh_library_after_mutation(ui.clone(), false);
 }

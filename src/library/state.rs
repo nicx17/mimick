@@ -308,8 +308,7 @@ impl LibraryState {
 
         let page_len = items.len();
         self.page_in_flight = false;
-        self.assets.extend(items);
-        self.assets = dedup_assets(std::mem::take(&mut self.assets));
+        self.append_unique(items);
 
         if page_len > 0 {
             self.next_page = self.next_page.saturating_add(1);
@@ -322,6 +321,23 @@ impl LibraryState {
         };
         self.apply_sort(self.sort_mode.clone());
         true
+    }
+
+    fn append_unique(&mut self, items: Vec<LibraryAsset>) {
+        let keep: Vec<bool> = {
+            let mut seen: std::collections::HashSet<&str> =
+                self.assets.iter().map(|asset| asset.id.as_str()).collect();
+            items
+                .iter()
+                .map(|item| seen.insert(item.id.as_str()))
+                .collect()
+        };
+        self.assets.extend(
+            items
+                .into_iter()
+                .zip(keep)
+                .filter_map(|(item, keep)| keep.then_some(item)),
+        );
     }
 
     /// Records the user's preferred sort mode. `LibraryState.assets` is always
