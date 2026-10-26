@@ -288,11 +288,18 @@ fn handle_model_changed(
     if added == 0 && removed > 0 && model.n_items() == 0 {
         return;
     }
-    imp.invalidate_layout();
+    if imp.timeline.borrow().is_some() {
+        imp.schedule_relayout();
+    } else {
+        imp.invalidate_layout();
+    }
     canvas.queue_draw();
 }
 
 fn retain_failed_ids_for_model(imp: &imp::MasonryCanvas, model: &LibraryAssetModel) {
+    if imp.failed.borrow().is_empty() {
+        return;
+    }
     let mut current_ids: HashSet<String> = HashSet::with_capacity(model.n_items() as usize);
     for i in 0..model.n_items() {
         if let Some(obj) = model.item(i).and_downcast::<AssetObject>() {

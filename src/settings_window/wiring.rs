@@ -12,7 +12,7 @@ use gtk::{Button, FileDialog, ListBox, ScrolledWindow};
 use libadwaita as adw;
 
 use crate::app_context::AppContext;
-use crate::config::{Config, WatchPathEntry};
+use crate::config::{Config, DateHeadings, WatchPathEntry};
 use crate::diagnostics;
 
 use super::actions_ui::ActionsWidgets;
@@ -290,8 +290,26 @@ pub(super) fn connect_library_rows(
                 changed
             });
         });
+    connect_date_headings_row(ctx, &library.date_headings_row);
     connect_raw_rows(ctx, library);
     connect_disk_cache_row(ctx, &library.disk_cache_row);
+}
+
+fn connect_date_headings_row(ctx: &Arc<AppContext>, row: &adw::ComboRow) {
+    let current = ctx.config.read().data.library_date_headings;
+    let index = DateHeadings::ALL.iter().position(|mode| *mode == current);
+    row.set_selected(index.unwrap_or_default() as u32);
+    let ctx = ctx.clone();
+    row.connect_selected_notify(move |row| {
+        let mode = DateHeadings::ALL
+            .get(row.selected() as usize)
+            .copied()
+            .unwrap_or_default();
+        save_flag(&ctx, |d| {
+            std::mem::replace(&mut d.library_date_headings, mode) != mode
+        });
+        ctx.date_headings.send_replace(mode);
+    });
 }
 
 fn connect_raw_rows(ctx: &Arc<AppContext>, library: &LibraryWidgets) {

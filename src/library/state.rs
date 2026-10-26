@@ -13,7 +13,6 @@ const PAGE_SIZE: usize = 50;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum LibrarySource {
     AllAssets,
-    Timeline,
     /// Random sample via `POST /api/search/random`. Used as the "Explore"
     /// sidebar destination — refresh re-rolls; pagination is meaningless.
     Explore,
@@ -341,6 +340,35 @@ impl LibraryState {
         }
     }
 
+    /// Photos as a month timeline: months arrive through `insert_assets_at`, never by paging.
+    pub fn enter_timeline(&mut self, generation: u64, empty: bool) -> bool {
+        if generation != self.generation {
+            return false;
+        }
+        self.page_in_flight = false;
+        self.has_more = false;
+        self.load_state = if empty {
+            LibraryLoadState::Empty
+        } else {
+            LibraryLoadState::Loaded
+        };
+        true
+    }
+
+    pub fn insert_assets_at(
+        &mut self,
+        generation: u64,
+        position: usize,
+        items: Vec<LibraryAsset>,
+    ) -> bool {
+        if generation != self.generation {
+            return false;
+        }
+        let position = position.min(self.assets.len());
+        self.assets.splice(position..position, items);
+        true
+    }
+
     pub fn mark_error(&mut self, generation: u64, message: impl Into<String>) {
         if generation == self.generation {
             self.page_in_flight = false;
@@ -385,6 +413,7 @@ mod tests {
             visibility: String::new(),
             is_edited: false,
             owner_id: String::new(),
+            local_date_time: None,
         }
     }
 
@@ -488,5 +517,22 @@ mod tests {
         assert_eq!(ids.page(3, 2), (&ids.0[4..5], false));
         assert_eq!(ids.page(4, 2).0, &[] as &[String]);
         assert_eq!(format!("{ids:?}"), "5 assets");
+    }
+
+    #[test]
+    fn timeline_months_insert_in_place_and_stop_paging() {
+        let mut state = LibraryState::new();
+        let (generation, _, _) = state.load_initial_source();
+        assert!(state.enter_timeline(generation, false));
+        assert!(state.load_next_page_if_needed().is_none());
+        assert!(state.insert_assets_at(
+            generation,
+            0,
+            vec![asset("1", "a.jpg"), asset("3", "c.jpg")]
+        ));
+        assert!(state.insert_assets_at(generation, 1, vec![asset("2", "b.jpg")]));
+        let ids: Vec<&str> = state.assets.iter().map(|a| a.id.as_str()).collect();
+        assert_eq!(ids, ["1", "2", "3"]);
+        assert!(!state.insert_assets_at(generation + 1, 0, vec![asset("4", "d.jpg")]));
     }
 }

@@ -64,23 +64,26 @@ pub(crate) async fn load_with_fallback<F: Fn() -> bool>(
 /// Returns true if the AssetObject dimensions were filled in (relayout needed).
 pub(crate) fn propagate_dimensions(
     model: &LibraryAssetModel,
+    index_hint: u32,
     asset_id: &str,
     tex: &Texture,
 ) -> bool {
-    let n = model.n_items();
-    for i in 0..n {
-        if let Some(obj) = model.item(i).and_downcast::<AssetObject>()
-            && obj.property::<String>("id") == asset_id
-        {
-            let w = obj.property::<u32>("width");
-            let h = obj.property::<u32>("height");
-            if w == 0 || h == 0 {
-                obj.set_property("width", tex.width() as u32);
-                obj.set_property("height", tex.height() as u32);
-                return true;
-            }
-            return false;
-        }
+    let is_asset = |obj: &AssetObject| obj.property::<String>("id") == asset_id;
+    let hinted = model
+        .item(index_hint)
+        .and_downcast::<AssetObject>()
+        .filter(is_asset);
+    let Some(obj) = hinted.or_else(|| {
+        (0..model.n_items())
+            .filter_map(|i| model.item(i).and_downcast::<AssetObject>())
+            .find(is_asset)
+    }) else {
+        return false;
+    };
+    if obj.property::<u32>("width") != 0 && obj.property::<u32>("height") != 0 {
+        return false;
     }
-    false
+    obj.set_property("width", tex.width() as u32);
+    obj.set_property("height", tex.height() as u32);
+    true
 }

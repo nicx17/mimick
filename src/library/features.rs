@@ -14,7 +14,7 @@ pub(super) fn load(ui: &Rc<LibraryWindowUi>) {
         let explore_changed = apply(&ui, features);
         let current = super::navigation::current(&ui);
         if !is_available(&features, &current) {
-            super::navigation::navigate_source(&ui, LibrarySource::Timeline);
+            super::navigation::navigate_source(&ui, LibrarySource::AllAssets);
         } else if explore_changed && current == Location::Source(LibrarySource::Explore) {
             super::load_explore_landing(ui.clone());
         }

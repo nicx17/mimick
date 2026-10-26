@@ -33,6 +33,7 @@ mod shared_links;
 pub use shared_links::{SharedLink, SharedLinkOptions, SharedLinkTarget, share_url};
 mod suggestions;
 mod tags;
+mod timeline;
 mod trash;
 mod upload;
 mod upload_helpers;
@@ -201,6 +202,8 @@ pub struct LibraryAsset {
     /// The owner's user id; only the owner can edit an asset's info or location.
     #[serde(rename = "ownerId", default)]
     pub owner_id: String,
+    #[serde(rename = "localDateTime", default)]
+    pub local_date_time: Option<String>,
 }
 
 impl LibraryAsset {
@@ -1137,6 +1140,24 @@ mod tests {
         assert_eq!(asset.width, Some(4032));
         assert_eq!(asset.height, Some(3024));
         assert!(asset.checksum.is_none());
+        assert!(asset.local_date_time.is_none());
+    }
+
+    #[test]
+    fn library_asset_reads_local_date_time() {
+        let asset: LibraryAsset = serde_json::from_value(serde_json::json!({
+            "id": "asset-1",
+            "originalFileName": "IMG_0001.JPG",
+            "originalMimeType": "image/jpeg",
+            "fileCreatedAt": "2026-03-31T18:00:00.000Z",
+            "localDateTime": "2026-03-31T23:30:00.000Z",
+            "type": "IMAGE"
+        }))
+        .unwrap();
+        assert_eq!(
+            asset.local_date_time.as_deref(),
+            Some("2026-03-31T23:30:00.000Z")
+        );
     }
 
     #[test]

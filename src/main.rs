@@ -222,6 +222,7 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
     spawn_cache_prune(config.data.cache_disk_cap_mb);
 
     let tray_library_enabled = config.data.library_view_enabled;
+    let date_headings = config.data.library_date_headings;
     let ctx = Arc::new(AppContext {
         live_watch_paths: Arc::new(Mutex::new(config.data.watch_paths.clone())),
         config: Arc::new(parking_lot::RwLock::new(config)),
@@ -233,7 +234,7 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
         sync_now_tx: manual_sync_tx,
         thumbnail_cache: Arc::new(ThumbnailCache::new(api_client)),
         library_state: Arc::new(parking_lot::Mutex::new(LibraryState::new())),
-        library_timeline_active: std::sync::atomic::AtomicBool::new(false),
+        date_headings: tokio::sync::watch::Sender::new(date_headings),
         current_user_id: Arc::new(parking_lot::Mutex::new(None)),
         expected_self_deletions: Arc::new(app_context::RecentSelfPaths::default()),
         expected_self_downloads: Arc::new(app_context::RecentSelfPaths::default()),

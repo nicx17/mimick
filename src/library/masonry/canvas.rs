@@ -15,23 +15,27 @@ use crate::library::thumbnail_cache::ThumbnailCache;
 
 type ActivateHandler = Rc<dyn Fn(u32)>;
 type SelectModeChanger = Rc<dyn Fn(bool)>;
+type MonthRequestHandler = Rc<dyn Fn(Vec<usize>)>;
 
 pub(super) const CORNER_RADIUS: f32 = 0.0;
 
-const VIEWPORTS_BEHIND: f32 = 2.0;
-const VIEWPORTS_AHEAD: f32 = 4.0;
+const VIEWPORTS_BEHIND: f32 = 0.5;
+const VIEWPORTS_AHEAD: f32 = 1.0;
 
 use super::layout::{
     LaidItem, LaidRow, LayoutConfig, first_row_at_or_after, item_at_x, pack_rows, row_at_y,
 };
 pub use super::quality::GridQuality;
 use super::quality::{bucket_for_row_height, fallback_bucket};
+use super::schedule::{CancelFlag, LoadRequest, LoadScheduler, SETTLE_DELAY, is_fling};
 
 mod interaction;
+mod timeline;
 
 mod imp {
     use std::cell::{Cell, OnceCell, RefCell};
-    use std::collections::HashSet;
+    use std::collections::{HashMap, HashSet};
+    use std::rc::Rc;
     use std::sync::Arc;
 
     use gtk::glib;
@@ -40,13 +44,19 @@ mod imp {
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
 
+    use super::timeline::CachedSection;
+    use crate::config::DateHeadings;
+    use crate::library::timeline::index::TimelineIndex;
+    use crate::library::timeline::layout::{LaidHeading, LaidSection};
+
     use super::{
-        ActivateHandler, AssetContextMenuHandler, AssetObject, CORNER_RADIUS, GridQuality,
-        LaidItem, LaidRow, LayoutConfig, LibraryAssetModel, SelectModeChanger, ThumbnailCache,
+        ActivateHandler, AssetContextMenuHandler, AssetObject, CORNER_RADIUS, CancelFlag,
+        GridQuality, LaidItem, LaidRow, LayoutConfig, LibraryAssetModel, LoadRequest,
+        LoadScheduler, MonthRequestHandler, SETTLE_DELAY, SelectModeChanger, ThumbnailCache,
         ThumbnailSize, VIEWPORTS_AHEAD, VIEWPORTS_BEHIND, accent_bg_color, bucket_for_asset,
-        bucket_for_row_height, cached_texture, collect_dims, finish_masonry_load,
-        first_row_at_or_after, load_masonry_asset, load_target_for, pack_rows, placeholder_color,
-        resolve_symbolic_icon, resolve_video_icon,
+        bucket_for_row_height, cached_texture, collect_dims, finish_masonry_load, is_fling,
+        load_masonry_asset, load_target_for, pack_rows, placeholder_color, resolve_symbolic_icon,
+        resolve_video_icon, rows_between,
     };
 
     pub(super) enum PaintResult {
@@ -78,14 +88,6 @@ mod imp {
         band_bottom: f32,
     }
 
-    pub(super) struct LoadRequest {
-        pub(super) priority: f32,
-        pub(super) asset_id: String,
-        pub(super) bucket: ThumbnailSize,
-        pub(super) local_path: String,
-        pub(super) is_local: bool,
-    }
-
     #[derive(Default)]
     pub struct MasonryCanvas {
         pub model: OnceCell<LibraryAssetModel>,
@@ -97,7 +99,18 @@ mod imp {
         pub rows: RefCell<Vec<LaidRow>>,
         pub cached_width: Cell<f32>,
         pub layout_h: Cell<f32>,
-        pub pending: RefCell<HashSet<String>>,
+        pub(super) scheduler: RefCell<LoadScheduler>,
+        pub last_scroll: Cell<(f64, i64)>,
+        pub flinging: Cell<bool>,
+        pub settle: RefCell<Option<glib::SourceId>>,
+        pub timeline: RefCell<Option<Rc<RefCell<TimelineIndex>>>>,
+        pub date_headings: Cell<DateHeadings>,
+        pub(super) section_cache: RefCell<HashMap<usize, CachedSection>>,
+        pub headings: RefCell<Vec<LaidHeading>>,
+        pub sections: RefCell<Vec<LaidSection>>,
+        pub month_request_handler: RefCell<Option<MonthRequestHandler>>,
+        pub month_request_pending: Cell<bool>,
+        pub relayout_pending: Cell<bool>,
         /// Permanently failed ids; skipped to avoid re-queueing every frame.
         pub failed: RefCell<HashSet<String>>,
         pub vadjustment: RefCell<Option<gtk::Adjustment>>,
@@ -193,20 +206,32 @@ mod imp {
                     .border_color
                     .get()
                     .unwrap_or_else(|| gdk4::RGBA::new(1.0, 1.0, 1.0, 1.0));
-                let canvas_h = self.layout_h.get();
-                let vis_rect = Rect::new(
-                    0.0,
-                    viewport.scroll_y.max(0.0),
-                    canvas_w,
-                    (viewport.bottom - viewport.scroll_y.max(0.0)).min(canvas_h),
-                );
-                snapshot.append_color(&bc, &vis_rect);
+                if self.timeline.borrow().is_some() {
+                    for row in rows_between(&rows, viewport.top, viewport.bottom) {
+                        let band = Rect::new(0.0, row.y - gap, canvas_w, row.h + 2.0 * gap);
+                        snapshot.append_color(&bc, &band);
+                    }
+                } else {
+                    let canvas_h = self.layout_h.get();
+                    let vis_rect = Rect::new(
+                        0.0,
+                        viewport.scroll_y.max(0.0),
+                        canvas_w,
+                        (viewport.bottom - viewport.scroll_y.max(0.0)).min(canvas_h),
+                    );
+                    snapshot.append_color(&bc, &vis_rect);
+                }
             }
 
             let sctx = self.snapshot_ctx(model, cache);
-            let (stats, mut to_load) = self.paint_snapshot_rows(snapshot, &sctx, &rows, &viewport);
+            let stats = self.paint_snapshot_rows(snapshot, &sctx, &rows, &viewport);
+            if self.timeline.borrow().is_some() {
+                self.paint_timeline_extras(snapshot, viewport.top, viewport.bottom, canvas_w);
+                self.request_visible_months(viewport.band_top, viewport.band_bottom);
+            }
+            let wanted = self.wanted_loads(model, &rows, &viewport);
             drop(rows);
-            self.finish_snapshot(cache, &viewport, &stats, &mut to_load);
+            self.finish_snapshot(cache, &viewport, &stats, wanted);
         }
     }
 
@@ -215,7 +240,7 @@ mod imp {
     const COMPACT_WIDTH_THRESHOLD: f32 = 400.0;
 
     impl MasonryCanvas {
-        fn cfg(&self) -> LayoutConfig {
+        pub(super) fn cfg(&self) -> LayoutConfig {
             let gap = self.border_gap.get();
             if self.narrow.get() {
                 let w = self.cached_width.get();
@@ -229,7 +254,7 @@ mod imp {
             }
         }
 
-        fn layout_for_width(&self, width: f32) -> f32 {
+        pub(super) fn layout_for_width(&self, width: f32) -> f32 {
             let cached = self.cached_width.get();
             if (width - cached).abs() < 0.5 && cached >= 0.0 {
                 return self.layout_h.get();
@@ -239,8 +264,16 @@ mod imp {
                 self.layout_h.set(0.0);
                 return 0.0;
             };
-            let dims = collect_dims(model);
-            let (rows, h) = pack_rows(&dims, width, self.cfg());
+            let timeline = self.timeline.borrow().clone();
+            let (rows, h) = match timeline {
+                Some(index) => {
+                    let layout = self.timeline_layout(model, &index.borrow(), width);
+                    *self.headings.borrow_mut() = layout.headings;
+                    *self.sections.borrow_mut() = layout.sections;
+                    (layout.rows, layout.height)
+                }
+                None => pack_rows(&collect_dims(model), width, self.cfg()),
+            };
             *self.rows.borrow_mut() = rows;
             self.cached_width.set(width);
             self.layout_h.set(h);
@@ -288,36 +321,35 @@ mod imp {
             sctx: &SnapshotCtx<'_>,
             rows: &[LaidRow],
             viewport: &SnapshotViewport,
-        ) -> (SnapshotStats, Vec<LoadRequest>) {
+        ) -> SnapshotStats {
             let mut stats = SnapshotStats::default();
-            let mut to_load = Vec::new();
-            let start_idx = first_row_at_or_after(rows, viewport.band_top);
-
-            for row in rows[start_idx..]
-                .iter()
-                .take_while(|row| row.y <= viewport.band_bottom)
-            {
-                self.paint_row(snapshot, sctx, row, viewport, &mut stats, &mut to_load);
+            for row in rows_between(rows, viewport.top, viewport.bottom) {
+                for it in &row.items {
+                    stats.record(self.paint_item(snapshot, sctx, row, it));
+                }
             }
-            (stats, to_load)
+            stats
         }
 
-        fn paint_row(
+        fn wanted_loads(
             &self,
-            snapshot: &gtk::Snapshot,
-            sctx: &SnapshotCtx<'_>,
-            row: &LaidRow,
+            model: &LibraryAssetModel,
+            rows: &[LaidRow],
             viewport: &SnapshotViewport,
-            stats: &mut SnapshotStats,
-            to_load: &mut Vec<LoadRequest>,
-        ) {
-            let row_in_viewport = row.y + row.h > viewport.top && row.y < viewport.bottom;
-            let bucket = bucket_for_row_height(row.h, self.quality.get());
-
-            for it in &row.items {
-                stats.record(self.paint_item(snapshot, sctx, row, it, row_in_viewport));
-                self.queue_load_if_needed(sctx.model, it, row, viewport.center, bucket, to_load);
+        ) -> Vec<LoadRequest> {
+            if self.flinging.get() {
+                return Vec::new();
             }
+            let mut wanted = Vec::new();
+            for row in rows_between(rows, viewport.band_top, viewport.band_bottom) {
+                let bucket = bucket_for_row_height(row.h, self.quality.get());
+                wanted.extend(
+                    row.items.iter().filter_map(|it| {
+                        self.load_request(model, it, row, viewport.center, bucket)
+                    }),
+                );
+            }
+            wanted
         }
 
         fn paint_item(
@@ -326,7 +358,6 @@ mod imp {
             sctx: &SnapshotCtx<'_>,
             row: &LaidRow,
             it: &LaidItem,
-            row_in_viewport: bool,
         ) -> PaintResult {
             let asset = sctx
                 .model
@@ -342,7 +373,7 @@ mod imp {
             let asset_id = asset.property::<String>("id");
             let local_path = asset.property::<String>("local-path");
             let bucket = bucket_for_asset(&asset_id, &local_path, row.h, self.quality.get());
-            let cached = cached_texture(sctx.cache, &asset_id, bucket, row_in_viewport);
+            let cached = cached_texture(sctx.cache, &asset_id, bucket);
 
             let clipped = CORNER_RADIUS > 0.0;
             if clipped {
@@ -550,40 +581,32 @@ mod imp {
             snapshot.pop();
         }
 
-        fn queue_load_if_needed(
+        fn load_request(
             &self,
             model: &LibraryAssetModel,
             it: &LaidItem,
             row: &LaidRow,
             viewport_center: f32,
             bucket: ThumbnailSize,
-            to_load: &mut Vec<LoadRequest>,
-        ) {
-            let Some((asset_id, local_path, is_local_only)) = load_target_for(model, it) else {
-                return;
-            };
+        ) -> Option<LoadRequest> {
+            let (asset_id, local_path, is_local_only) = load_target_for(model, it)?;
             let lookup_bucket = if is_local_only {
                 ThumbnailSize::Thumbnail
             } else {
                 bucket
             };
             if self.load_is_blocked(&asset_id, lookup_bucket) {
-                return;
+                return None;
             }
-            let mut pending = self.pending.borrow_mut();
-            if pending.contains(&asset_id) {
-                return;
-            }
-            pending.insert(asset_id.to_string());
             let cell_center = row.y + row.h * 0.5;
-            let priority = (cell_center - viewport_center).abs();
-            to_load.push(LoadRequest {
-                priority,
-                asset_id: asset_id.to_string(),
+            Some(LoadRequest {
+                priority: (cell_center - viewport_center).abs(),
+                asset_id,
+                asset_index: it.asset_index,
                 bucket,
                 local_path,
                 is_local: is_local_only,
-            });
+            })
         }
 
         fn load_is_blocked(&self, asset_id: &str, bucket: ThumbnailSize) -> bool {
@@ -599,16 +622,12 @@ mod imp {
             cache: &ThumbnailCache,
             viewport: &SnapshotViewport,
             stats: &SnapshotStats,
-            to_load: &mut Vec<LoadRequest>,
+            wanted: Vec<LoadRequest>,
         ) {
-            to_load.sort_by(|a, b| {
-                a.priority
-                    .partial_cmp(&b.priority)
-                    .unwrap_or(std::cmp::Ordering::Equal)
-            });
-            self.log_snapshot(cache, viewport, stats, to_load.len());
-            for request in to_load.drain(..) {
-                self.spawn_load(request);
+            let started = self.scheduler.borrow_mut().plan(wanted);
+            self.log_snapshot(cache, viewport, stats, started.len());
+            for (request, cancel) in started {
+                self.spawn_load(request, cancel);
             }
         }
 
@@ -626,7 +645,7 @@ mod imp {
                 stats.painted,
                 stats.hits,
                 stats.misses,
-                self.pending.borrow().len(),
+                self.scheduler.borrow().in_flight(),
                 queued,
                 cache_n,
                 cache_bytes / (1024 * 1024),
@@ -635,7 +654,7 @@ mod imp {
             );
         }
 
-        fn viewport(&self) -> (f32, f32) {
+        pub(super) fn viewport(&self) -> (f32, f32) {
             let Some(adj) = self.find_vadjustment() else {
                 return (0.0, self.obj().height() as f32);
             };
@@ -652,7 +671,7 @@ mod imp {
             (scroll_y, adj.page_size() as f32)
         }
 
-        fn find_vadjustment(&self) -> Option<gtk::Adjustment> {
+        pub(super) fn find_vadjustment(&self) -> Option<gtk::Adjustment> {
             if let Some(adj) = self.vadjustment.borrow().clone() {
                 return Some(adj);
             }
@@ -661,8 +680,9 @@ mod imp {
                 if let Some(sw) = w.downcast_ref::<gtk::ScrolledWindow>() {
                     let adj = sw.vadjustment();
                     let weak = self.obj().downgrade();
-                    adj.connect_value_changed(move |_| {
+                    adj.connect_value_changed(move |adj| {
                         if let Some(canvas) = weak.upgrade() {
+                            canvas.imp().note_scroll(adj);
                             canvas.queue_draw();
                         }
                     });
@@ -674,7 +694,30 @@ mod imp {
             None
         }
 
-        fn spawn_load(&self, request: LoadRequest) {
+        fn note_scroll(&self, adj: &gtk::Adjustment) {
+            let now = glib::monotonic_time();
+            let (last_value, last_time) = self.last_scroll.replace((adj.value(), now));
+            let fling = is_fling(adj.value() - last_value, now - last_time, adj.page_size());
+            self.flinging.set(fling);
+            if !fling {
+                return;
+            }
+            if let Some(id) = self.settle.take() {
+                id.remove();
+            }
+            let weak = self.obj().downgrade();
+            let id = glib::timeout_add_local_once(SETTLE_DELAY, move || {
+                if let Some(canvas) = weak.upgrade() {
+                    let imp = canvas.imp();
+                    imp.settle.take();
+                    imp.flinging.set(false);
+                    canvas.queue_draw();
+                }
+            });
+            self.settle.replace(Some(id));
+        }
+
+        fn spawn_load(&self, request: LoadRequest, cancel: CancelFlag) {
             let Some(cache) = self.cache.get().cloned() else {
                 return;
             };
@@ -689,9 +732,8 @@ mod imp {
                 request.is_local
             );
             glib::MainContext::default().spawn_local(async move {
-                let asset_id = request.asset_id.clone();
-                let result = load_masonry_asset(&cache, &request).await;
-                finish_masonry_load(&widget, &model, &asset_id, result);
+                let result = load_masonry_asset(&cache, &request, &cancel).await;
+                finish_masonry_load(&widget, &model, &request, result);
             });
         }
     }
@@ -780,16 +822,15 @@ fn cached_texture(
     cache: &ThumbnailCache,
     asset_id: &str,
     bucket: ThumbnailSize,
-    touch_lru: bool,
 ) -> Option<gdk4::Texture> {
-    let get = |size| {
-        if touch_lru {
-            cache.get_cached(asset_id, size)
-        } else {
-            cache.peek_cached(asset_id, size)
-        }
-    };
+    let get = |size| cache.get_cached(asset_id, size);
     get(bucket).or_else(|| fallback_bucket(bucket).and_then(get))
+}
+
+fn rows_between(rows: &[LaidRow], top: f32, bottom: f32) -> impl Iterator<Item = &LaidRow> {
+    rows[first_row_at_or_after(rows, top)..]
+        .iter()
+        .take_while(move |row| row.y <= bottom)
 }
 
 fn load_target_for(model: &LibraryAssetModel, it: &LaidItem) -> Option<(String, String, bool)> {
@@ -802,9 +843,10 @@ fn load_target_for(model: &LibraryAssetModel, it: &LaidItem) -> Option<(String, 
 
 async fn load_masonry_asset(
     cache: &ThumbnailCache,
-    request: &imp::LoadRequest,
+    request: &LoadRequest,
+    cancel: &CancelFlag,
 ) -> Result<gdk4::Texture, String> {
-    let is_cancelled = || false;
+    let is_cancelled = || cancel.get();
     if request.is_local {
         let path = std::path::PathBuf::from(&request.local_path);
         cache
@@ -818,10 +860,11 @@ async fn load_masonry_asset(
 fn finish_masonry_load(
     widget: &MasonryCanvas,
     model: &LibraryAssetModel,
-    asset_id: &str,
+    request: &LoadRequest,
     result: Result<gdk4::Texture, String>,
 ) {
     let imp = widget.imp();
+    let asset_id = request.asset_id.as_str();
     let dims_changed = match &result {
         Ok(tex) => {
             log::trace!(
@@ -830,36 +873,36 @@ fn finish_masonry_load(
                 tex.width(),
                 tex.height(),
             );
-            propagate_dimensions(model, asset_id, tex)
+            propagate_dimensions(model, request.asset_index, asset_id, tex)
+        }
+        Err(e) if e == "cancelled" => {
+            log::trace!("masonry load cancelled id={}", asset_id);
+            false
         }
         Err(e) => {
-            if e != "cancelled" {
-                imp.failed.borrow_mut().insert(asset_id.to_string());
+            imp.failed.borrow_mut().insert(asset_id.to_string());
 
-                if (e.contains("HTTP 401") || e.contains("HTTP 403"))
-                    && !imp.permission_warned.get()
+            if (e.contains("HTTP 401") || e.contains("HTTP 403")) && !imp.permission_warned.get() {
+                imp.permission_warned.set(true);
+                if let Some(window) = widget
+                    .root()
+                    .and_downcast::<libadwaita::ApplicationWindow>()
                 {
-                    imp.permission_warned.set(true);
-                    if let Some(window) = widget
-                        .root()
-                        .and_downcast::<libadwaita::ApplicationWindow>()
-                    {
-                        let dialog = libadwaita::AlertDialog::builder()
-                            .heading("Missing API Permissions")
-                            .body("Your API key is missing permissions required to view thumbnails. Please ensure the key has 'asset.view' enabled.")
-                            .build();
-                        dialog.add_response("ok", "OK");
-                        dialog.present(Some(&window));
-                    }
+                    let dialog = libadwaita::AlertDialog::builder()
+                        .heading("Missing API Permissions")
+                        .body("Your API key is missing permissions required to view thumbnails. Please ensure the key has 'asset.view' enabled.")
+                        .build();
+                    dialog.add_response("ok", "OK");
+                    dialog.present(Some(&window));
                 }
             }
             log::warn!("masonry load ERR id={} err={}", asset_id, e);
             false
         }
     };
-    imp.pending.borrow_mut().remove(asset_id);
+    imp.scheduler.borrow_mut().finish(asset_id);
     if dims_changed {
-        imp.invalidate_layout();
+        imp.relayout_for_position(request.asset_index);
     }
     widget.queue_draw();
 }

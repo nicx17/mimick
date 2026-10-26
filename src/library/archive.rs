@@ -88,7 +88,7 @@ pub(super) fn sync_bulk_button(button: &gtk::Button, source: &LibrarySource) {
 
 fn leaves_view(source: &LibrarySource, archived: bool) -> bool {
     match source {
-        LibrarySource::AllAssets | LibrarySource::Timeline | LibrarySource::Unified => archived,
+        LibrarySource::AllAssets | LibrarySource::Unified => archived,
         LibrarySource::Archive => !archived,
         _ => false,
     }
@@ -132,8 +132,8 @@ mod tests {
 
     #[test]
     fn archiving_leaves_photos_and_unarchiving_leaves_archive() {
-        assert!(leaves_view(&LibrarySource::Timeline, true));
-        assert!(!leaves_view(&LibrarySource::Timeline, false));
+        assert!(leaves_view(&LibrarySource::AllAssets, true));
+        assert!(!leaves_view(&LibrarySource::AllAssets, false));
         assert!(leaves_view(&LibrarySource::Archive, false));
         assert!(!leaves_view(&LibrarySource::Archive, true));
         assert!(!leaves_view(&LibrarySource::Favorites, true));

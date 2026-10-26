@@ -5,5 +5,6 @@ pub mod grid_view;
 pub mod layout;
 pub mod load;
 pub mod quality;
+pub mod schedule;
 
 pub use grid_view::{GridViewParts, build_grid_view};

@@ -75,7 +75,6 @@ If Mimick can't read these settings (for example, an API key without `userPrefer
 
 **Controls row** (one row above the content, at every window width):
 
-- **Timeline** toggle, on Photos only
 - source selector (**Remote / Local / Unified**), inside albums only
 - sort selector (**Newest / Filename / File Type**, or the album sorts on the Albums page), where there's something to sort
 - **Upload** button (invokes the manual multi-file picker)
@@ -105,9 +104,17 @@ Use the sort dropdown to order the current view by:
 
 Sort applies to the current source and page.
 
-### Timeline View
+### Photos Timeline
 
-The **Timeline** button in the header switches the Remote source between a standard paged grid and a timeline layout that groups assets by date. Timeline is only available for the Remote source; it is hidden when Local or Unified is active.
+When **Photos** (Remote) is sorted by **Newest**, it shows your whole library as a timeline, the same way Immich's web app does:
+
+- Photos are grouped under date headings, by day (`Mon, Oct 26`; the year is added for other years) or by month, or with no headings — see **Date Headings** under [Library Settings](#library-settings).
+- The full height of the library is known straight away, so the scrollbar never grows or jumps. Months that haven't loaded yet show as grey blocks.
+- Only what you scroll to is loaded: while you fling or scrub, tiles stay as placeholders, and the photos where you stop load first.
+- **Scrubber** (right edge): years and a dot per month, spaced by how many photos each month has. Hover to see the month under the pointer; click or drag to jump there.
+- **Phone-width windows**: instead of the scrubber, a small handle appears on the right edge while you scroll. Drag it to move through the library quickly; the month shows beside it.
+
+Sorting by **Filename** or **File Type**, and the Local and Unified sources, use the regular grid without headings or scrubber.
 
 ---
 
@@ -373,6 +380,7 @@ These options are in **Settings → Behavior** and apply to the library view.
 | **Cache Decoded RAW Files** | Off | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled. |
 | **Show unnamed faces** | On | Show people with no assigned name in the Explore view. |
 | **Show hidden faces** | Off | Include hidden people in the Explore view. |
+| **Date Headings** | By Day | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
 | **Thumbnail Memory Cache (MB)** | 80 | RAM cap for decoded thumbnails. Increase to reduce re-fetches when scrolling through large grids. |
 | **Download Folder** | Not set | First download opens a folder picker; the chosen path is saved and reused for subsequent downloads. |
 
