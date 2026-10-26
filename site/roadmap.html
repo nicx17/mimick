@@ -6,7 +6,7 @@
     <title>Mimick Roadmap - What's Shipped and What's Next</title>
     <meta
       name="description"
-      content="The Mimick roadmap: features already shipped in each release, and what is planned next for the Immich desktop client for Linux.">
+      content="The Mimick roadmap: features already shipped in each release, what is coming in the next release, and what is planned next for the Immich desktop client for Linux.">
     <link rel="canonical" href="https://mimick.nicx.dev/roadmap.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mimick">
@@ -45,7 +45,8 @@
           <h1>What's next</h1>
           <p class="subtitle">
             What's planned for Mimick, taken live from open GitHub issues,
-            and everything that has shipped so far.
+            what's finished and waiting for the next release, and everything
+            that has shipped so far.
           </p>
         </header>
 
@@ -66,6 +67,7 @@
 
         <nav class="section-tabs" aria-label="Roadmap sections">
           <a href="#up-next">Up next</a>
+          <a href="#in-pipeline">In pipeline</a>
           <a href="#shipped">Shipped</a>
         </nav>
 
@@ -90,6 +92,36 @@
             <div class="issue-card issue-skeleton" aria-hidden="true"></div>
             <div class="issue-card issue-skeleton" aria-hidden="true"></div>
           </div>
+        </section>
+
+        <section id="in-pipeline" class="roadmap-section" aria-labelledby="in-pipeline-title">
+          <h2 id="in-pipeline-title">In pipeline</h2>
+          <p class="section-note">
+            Finished and merged, coming in the next release. The full list is in the
+            <a href="https://github.com/nicx17/mimick/blob/main/CHANGELOG.md#unreleased" target="_blank" rel="noopener">changelog</a>.
+          </p>
+
+          <ol class="timeline">
+            <li class="release release-next reveal">
+              <div class="release-head">
+                <span class="release-version">Next release</span>
+                <span class="release-date">In development</span>
+              </div>
+              <ul class="release-items">
+                <li>Photos as a timeline with date headings and a year and month scrubber, loading only the months you scroll to</li>
+                <li>In-app video playback with hardware decoding, audio and subtitle tracks, and fullscreen <a href="https://github.com/nicx17/mimick/issues/80">#80</a></li>
+                <li>Fullscreen photos and videos in the lightbox (<kbd>F11</kbd>)</li>
+                <li>Select and copy text Immich recognized in photos (OCR) <a href="https://github.com/nicx17/mimick/issues/85">#85</a></li>
+                <li>Map page with clustered photos, and a location mini map in the lightbox <a href="https://github.com/nicx17/mimick/issues/86">#86</a></li>
+                <li>Set the location of one or many photos <a href="https://github.com/nicx17/mimick/issues/87">#87</a></li>
+                <li>Browse a partner's photos, and show them in your Photos timeline <a href="https://github.com/nicx17/mimick/issues/236">#236</a></li>
+                <li>Keyboard Shortcuts dialog (<kbd>Ctrl+?</kbd>)</li>
+                <li>Photos edited in Immich show their edited version</li>
+                <li>Thumbnails load where scrolling stops, and the library gives its memory back when closed</li>
+                <li>LibRaw 0.21.3, with support for newer cameras such as the Sony A7 IV and Canon EOS R7</li>
+              </ul>
+            </li>
+          </ol>
         </section>
 
         <section id="shipped" class="roadmap-section" aria-labelledby="shipped-title">
@@ -409,7 +441,7 @@
       observeReveals(document);
 
       document.getElementById("stat-shipped").textContent =
-        document.querySelectorAll(".release-items li").length;
+        document.querySelectorAll("#shipped .release-items li").length;
 
       const dateFormat = new Intl.DateTimeFormat(undefined, {
         day: "numeric",

@@ -369,7 +369,8 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Shared Albums (share your albums, change roles, remove people) | `album.read`, `albumUser.create`, `albumUser.update`, `albumUser.delete`, `user.read` |
 | Shared Links (create, copy, edit, delete public links) | `sharedLink.read`, `sharedLink.create`, `sharedLink.update`, `sharedLink.delete` |
 | Library / Explore view (browse photos inside Mimick) | `asset.read`, `asset.view`, `asset.download`, `person.read` |
-| Edit info / move to trash from the library | `asset.update`, `asset.delete` |
+| Edit info, set location, or move to trash from the library | `asset.update`, `asset.delete` |
+| Map page | `map.read` |
 | Trash view (restore, delete permanently, empty trash) | `asset.read`, `asset.delete` |
 | Tags in the details pane and tag search | `tag.read`; adding/removing tags also needs `tag.asset`, and creating new tags `tag.create` |
 | Archive (archive / unarchive from the library) | `asset.update` |
@@ -377,6 +378,8 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Tags page (create, rename, recolor, delete tags) | `tag.read`, `tag.create`, `tag.update`, `tag.delete` |
 | Folders view | `folder.read` |
 | Partner sharing (add or remove partners) | `partner.read`, `partner.create`, `partner.delete`, `user.read` |
+| Browse a partner's photos | `partner.read`, plus the Library / Explore view permissions |
+| Show a partner's photos in Photos | `partner.update` |
 | Rename albums and edit descriptions | `album.update` |
 | Counts and details in view headers | `asset.statistics`, `album.read`, `person.statistics` |
 | Hide pages for features turned off in your account | `userPreference.read` (without it, every page stays visible) |

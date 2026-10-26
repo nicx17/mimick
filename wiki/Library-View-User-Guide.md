@@ -11,8 +11,8 @@ The library view is an optional in-app browser for your Immich server's assets, 
 
 The library window opens instead of the settings window on the next launch. Settings remain accessible from the header bar gear button.
 
-| Photos (Light) | Photos (Dark) |
-| :---: | :---: |
+|                                                     Photos (Light)                                                     |                                                       Photos (Dark)                                                        |
+| :--------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: |
 | ![Photos light](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos_page_view_sidebar_on.png) | ![Photos dark](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos_page_view_dark_sidebar_on.png) |
 
 ## Layout
@@ -58,18 +58,18 @@ The window uses a sidebar + content split.
 
 **Turned-off features:** when the library opens (and on refresh) it reads Immich's server features and your account's **Features** settings, and hides what's turned off:
 
-| Turned off | Hidden in Mimick |
-| :--- | :--- |
-| Trash (server) | **Trash**; deleting then warns that it's permanent |
+| Turned off                                    | Hidden in Mimick                                                   |
+| :-------------------------------------------- | :----------------------------------------------------------------- |
+| Trash (server)                                | **Trash**; deleting then warns that it's permanent                 |
 | Face recognition (server) or People (account) | **People**, the bottom-bar People button, and Explore's people row |
-| Smart search (server) | the **Smart Search** mode and Explore's Things |
-| OCR (server) | the **OCR** search mode and the OCR filter |
-| Reverse geocoding (server) | Explore's Places |
-| Map (server) | **Map** and the lightbox's mini map |
-| Search (server) | **Search** |
-| Tags (account) | **Tags**, the lightbox's Tags section, and the Tag search filter |
-| Folders / Shared Links (account) | **Folders** / **Shared Links** |
-| Ratings (account) | the Rating search filter |
+| Smart search (server)                         | the **Smart Search** mode and Explore's Things                     |
+| OCR (server)                                  | the **OCR** search mode and the OCR filter                         |
+| Reverse geocoding (server)                    | Explore's Places                                                   |
+| Map (server)                                  | **Map** and the lightbox's mini map                                |
+| Search (server)                               | **Search**                                                         |
+| Tags (account)                                | **Tags**, the lightbox's Tags section, and the Tag search filter   |
+| Folders / Shared Links (account)              | **Folders** / **Shared Links**                                     |
+| Ratings (account)                             | the Rating search filter                                           |
 
 If Mimick can't read these settings (for example, an API key without `userPreference.read`), everything stays visible.
 
@@ -79,8 +79,8 @@ If Mimick can't read these settings (for example, an API key without `userPrefer
 - sort selector (**Newest / Filename / File Type**, or the album sorts on the Albums page), where there's something to sort
 - **Upload** button (invokes the manual multi-file picker)
 
-| Search Options | View Options |
-| :---: | :---: |
+|                                                        Search Options                                                         |                                                                         View Options                                                                         |
+| :---------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | ![Search options](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search_options_menu_library_view.png) | ![View options](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/library_view_showing_view_options_for_albums_remote_local_unified.png) |
 
 ---
@@ -122,11 +122,11 @@ Sorting by **Filename** or **File Type**, and the Local and Unified sources, use
 
 The source dropdown controls which assets the grid shows.
 
-| Source | What it shows |
-| :--- | :--- |
-| **Remote** | Assets fetched from the Immich server |
-| **Local** | Files in your configured watch folders, enumerated directly |
-| **Unified** | Remote assets merged with local sync state |
+| Source      | What it shows                                               |
+| :---------- | :---------------------------------------------------------- |
+| **Remote**  | Assets fetched from the Immich server                       |
+| **Local**   | Files in your configured watch folders, enumerated directly |
+| **Unified** | Remote assets merged with local sync state                  |
 
 Switching sources clears any active search and reloads from page 1.
 
@@ -150,11 +150,11 @@ The search entry appears in the header bar. Enter a query and press Enter or wai
 
 Use the mode dropdown next to the search entry:
 
-| Mode | What it searches | Server requirement |
-| :--- | :--- | :--- |
-| **Filename** | Filename and EXIF metadata fields | None |
+| Mode             | What it searches                                | Server requirement        |
+| :--------------- | :---------------------------------------------- | :------------------------ |
+| **Filename**     | Filename and EXIF metadata fields               | None                      |
 | **Smart Search** | CLIP-based semantic/natural-language similarity | Immich ML service running |
-| **OCR** | Text extracted from images | Immich ML service running |
+| **OCR**          | Text extracted from images                      | Immich ML service running |
 
 - Smart Search and OCR both require the Immich machine-learning service to be enabled and healthy on your server. Queries against a server without ML will return empty results or an error.
 - Filename mode works without ML and is the fastest option.
@@ -164,8 +164,8 @@ Use the mode dropdown next to the search entry:
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search_view_with_thequickbrownfox_searched_ocr_mode.png" width="80%" alt="OCR search example" />
 </div>
 
-| Advanced Filters | Advanced Filters (More Options) |
-| :---: | :---: |
+|                                                     Advanced Filters                                                     |                                                      Advanced Filters (More Options)                                                       |
+| :----------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------: |
 | ![Filters](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/advanced_filters_menu_library_view.png) | ![Filters more](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/advanced_filters_menu_library_view_more_options.png) |
 
 ### Search by Tag
@@ -211,14 +211,14 @@ Select **Map** in the sidebar to see every photo and video with a location.
 
 **Buttons over the map** (top right):
 
-| Button | What it does |
-| :--- | :--- |
-| **+** / **−** | Zoom in and out (scrolling, pinching, and double-clicking work too) |
-| Rotate left / right | Turn the map 45°; two-finger rotation works on touchpads and touch screens |
-| Compass | Appears while the map is turned; click it to point north again |
-| Photos | **Show photos in this area** lists every photo currently on screen |
-| Location | **Show my location** asks the desktop's location service for your position (see below) |
-| Layers | The map style |
+| Button              | What it does                                                                           |
+| :------------------ | :------------------------------------------------------------------------------------- |
+| **+** / **−**       | Zoom in and out (scrolling, pinching, and double-clicking work too)                    |
+| Rotate left / right | Turn the map 45°; two-finger rotation works on touchpads and touch screens             |
+| Compass             | Appears while the map is turned; click it to point north again                         |
+| Photos              | **Show photos in this area** lists every photo currently on screen                     |
+| Location            | **Show my location** asks the desktop's location service for your position (see below) |
+| Layers              | The map style                                                                          |
 
 When the map is short (for example on a phone, with photos listed below it), the zoom and rotate buttons are hidden; pinch, scroll, and two-finger rotation still work, and the compass still appears while the map is turned.
 
@@ -254,8 +254,8 @@ Three sections are shown:
 
 Click an album tile to open it in the grid view. The album is also added to the sidebar list for quick re-access.
 
-| Selected Album (Dark) | Album View (Sidebar Off) |
-| :---: | :---: |
+|                                               Selected Album (Dark)                                               |                                                         Album View (Sidebar Off)                                                          |
+| :---------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------: |
 | ![Album dark](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/selected_album_view_dark.png) | ![Album sidebar off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/name_dark_album_selected_view_sidebar_off.png) |
 
 ### Creating an Album
@@ -303,8 +303,8 @@ Selection mode exits automatically when all items are deselected.
 
 Click any asset in the grid to open it in the lightbox.
 
-| Lightbox (Details On) | Lightbox (Details Off) |
-| :---: | :---: |
+|                                                      Lightbox (Details On)                                                      |                                                      Lightbox (Details Off)                                                       |
+| :-----------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------: |
 | ![Lightbox details on](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_on.png) | ![Lightbox details off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_off.png) |
 
 - The lightbox shows a preview image. If **Full Resolution Preview** is enabled in Settings → Behavior, it loads the original file instead of a server-generated proxy.
@@ -349,10 +349,10 @@ Server assets show a **Tags** section in the details pane:
 
 When viewing an album, its header shows the linked local watch folder (if any) and two action buttons.
 
-| Button | Action |
-| :--- | :--- |
-| **Link folder** | Opens a picker to associate a local watch folder with this album |
-| **Sync** | Runs a bidirectional sync between the linked folder and the album |
+| Button          | Action                                                            |
+| :-------------- | :---------------------------------------------------------------- |
+| **Link folder** | Opens a picker to associate a local watch folder with this album  |
+| **Sync**        | Runs a bidirectional sync between the linked folder and the album |
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/library_view_showing_sync_album_dialog_upload_download_apply_cancel.png" width="80%" alt="Album sync dialog" />
@@ -373,15 +373,15 @@ Album sync is on-demand — it runs only when you press **Sync** and does not ru
 
 These options are in **Settings → Behavior** and apply to the library view.
 
-| Setting | Default | Effect |
-| :--- | :--- | :--- |
-| **Full-Resolution Preview** | Off | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth. |
-| **Full RAW Decoding** | Off | Decode high-resolution sensor data instead of using fast embedded camera previews (slower). |
-| **Cache Decoded RAW Files** | Off | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled. |
-| **Show unnamed faces** | On | Show people with no assigned name in the Explore view. |
-| **Show hidden faces** | Off | Include hidden people in the Explore view. |
-| **Date Headings** | By Day | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
-| **Download Folder** | Not set | First download opens a folder picker; the chosen path is saved and reused for subsequent downloads. |
+| Setting                     | Default | Effect                                                                                                                                 |
+| :-------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------- |
+| **Full-Resolution Preview** | Off     | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth.                    |
+| **Full RAW Decoding**       | Off     | Decode high-resolution sensor data instead of using fast embedded camera previews (slower).                                            |
+| **Cache Decoded RAW Files** | Off     | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled.                        |
+| **Show unnamed faces**      | On      | Show people with no assigned name in the Explore view.                                                                                 |
+| **Show hidden faces**       | Off     | Include hidden people in the Explore view.                                                                                             |
+| **Date Headings**           | By Day  | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
+| **Download Folder**         | Not set | First download opens a folder picker; the chosen path is saved and reused for subsequent downloads.                                    |
 
 See [Performance Tuning](Performance-Tuning) for guidance on choosing values for these settings.
 
@@ -459,6 +459,8 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 - The **Sharing** sidebar entry lists the partners you share your library with, and the people who share theirs with you.
 - **+** opens **Add Partner**: search for someone and press **Add**. Partners can see all your photos and videos. Listing people needs the `user.read` permission.
 - The trash button next to a partner stops sharing with them.
+- Click someone under **Sharing With You** to browse their photos as a timeline.
+- The switch next to someone under **Sharing With You** also shows their photos in your **Photos** timeline.
 
 ---
 
@@ -485,21 +487,21 @@ The **Trash** sidebar entry lists everything in the Immich trash in the normal g
 
 ## Keyboard Shortcuts
 
-| Key | Action |
-| :--- | :--- |
-| **Ctrl+?** | Show keyboard shortcuts (also **Keyboard Shortcuts** in the main menu) |
-| **F9** | Toggle sidebar |
-| **Esc** | Exit selection mode |
-| **Delete** | Move the selection (grid) or the current asset (lightbox) to the trash; in the Trash view, delete permanently |
-| **F** | Toggle favorite for the current asset (lightbox) |
-| **A** | Archive or unarchive the current asset (lightbox) |
-| **T** | Show or hide recognized text (lightbox, when Immich found text) |
-| **Ctrl+A** | Select all recognized text (lightbox, while shown) |
-| **Ctrl+C** | Copy the selected recognized text, or all of it when nothing is selected (lightbox) |
-| **Space** | Play or pause the current video (lightbox) |
-| **J** / **L** | Skip back / forward 10 seconds (lightbox video) |
-| **,** / **.** | Step one frame back / forward (lightbox video) |
-| **M** | Mute or unmute (lightbox video) |
-| **F11** | Toggle fullscreen (lightbox); **Esc** also exits |
-| **Alt+Left** / mouse back | Go back to the previous view (mouse back also closes the lightbox) |
-| **Alt+Right** / mouse forward | Go forward again after going back |
+| Key                           | Action                                                                                                        |
+| :---------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| **Ctrl+?**                    | Show keyboard shortcuts (also **Keyboard Shortcuts** in the main menu)                                        |
+| **F9**                        | Toggle sidebar                                                                                                |
+| **Esc**                       | Exit selection mode                                                                                           |
+| **Delete**                    | Move the selection (grid) or the current asset (lightbox) to the trash; in the Trash view, delete permanently |
+| **F**                         | Toggle favorite for the current asset (lightbox)                                                              |
+| **A**                         | Archive or unarchive the current asset (lightbox)                                                             |
+| **T**                         | Show or hide recognized text (lightbox, when Immich found text)                                               |
+| **Ctrl+A**                    | Select all recognized text (lightbox, while shown)                                                            |
+| **Ctrl+C**                    | Copy the selected recognized text, or all of it when nothing is selected (lightbox)                           |
+| **Space**                     | Play or pause the current video (lightbox)                                                                    |
+| **J** / **L**                 | Skip back / forward 10 seconds (lightbox video)                                                               |
+| **,** / **.**                 | Step one frame back / forward (lightbox video)                                                                |
+| **M**                         | Mute or unmute (lightbox video)                                                                               |
+| **F11**                       | Toggle fullscreen (lightbox); **Esc** also exits                                                              |
+| **Alt+Left** / mouse back     | Go back to the previous view (mouse back also closes the lightbox)                                            |
+| **Alt+Right** / mouse forward | Go forward again after going back                                                                             |
