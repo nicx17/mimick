@@ -30,12 +30,11 @@ pub(super) struct HeaderParts {
     select_toggle: gtk::ToggleButton,
 }
 
-/// Source/timeline and sort/upload controls above the grid.
+/// Source and sort/upload controls above the grid.
 pub(super) struct ControlsParts {
     root: gtk::Box,
     source_mode: gtk::DropDown,
     source_revealer: gtk::Revealer,
-    timeline_toggle: gtk::ToggleButton,
     sort_mode: gtk::DropDown,
     upload_button: gtk::Button,
 }
@@ -82,7 +81,6 @@ pub(super) struct ContentParts {
     bottom_nav: super::bottom_nav::BottomNav,
     search_view: SearchViewParts,
     controls: ControlsParts,
-    banner: gtk::Label,
     stack: gtk::Stack,
     error_label: gtk::Label,
     transfer: TransferParts,
@@ -182,7 +180,6 @@ impl ContentParts {
             bottom_nav: super::bottom_nav::build_bottom_nav(),
             search_view: build_search_view(),
             controls: build_controls(),
-            banner: build_timeline_banner(),
             stack,
             error_label,
             transfer: build_transfer_indicator(),
@@ -198,7 +195,6 @@ impl ContentParts {
             .build();
         column.append(&self.controls.root);
         column.append(&self.search_view.root);
-        column.append(&self.banner);
         column.append(&self.map.split);
         column.append(&self.bottom_nav.root);
         column.append(&self.bulk.bar);
@@ -241,8 +237,6 @@ impl LibraryWindowUi {
             source_revealer: controls.source_revealer,
             upload_button: controls.upload_button,
             controls_row: controls.root,
-            timeline_toggle: controls.timeline_toggle,
-            timeline_banner: content.banner,
             source_mode_suppressed: Cell::new(false),
             sidebar_suppressed: Cell::new(false),
             back_button: header.back_button,
@@ -257,6 +251,7 @@ impl LibraryWindowUi {
             last_seen_upload_batch: Cell::new(0),
             split: parts.split,
             drop_overlay: parts.drop_overlay,
+            timeline: Default::default(),
         }
     }
 }
@@ -325,12 +320,8 @@ fn build_controls() -> ControlsParts {
         .selected(0)
         .tooltip_text("Asset source")
         .build();
-    let timeline_toggle = gtk::ToggleButton::builder()
-        .label("Timeline")
-        .tooltip_text("Timeline view (all assets only)")
-        .build();
     // Source mode (Remote/Local/Unified) is meaningful only inside a linked
-    // album; `apply_timeline_ui_state` reveals it per source kind.
+    // album; `apply_source_ui_state` reveals it per source kind.
     let source_revealer = gtk::Revealer::builder()
         .transition_type(gtk::RevealerTransitionType::SlideRight)
         .transition_duration(180)
@@ -346,7 +337,6 @@ fn build_controls() -> ControlsParts {
 
     let spacer = gtk::Box::builder().hexpand(true).build();
     let root = hbox(&[
-        timeline_toggle.upcast_ref(),
         source_revealer.upcast_ref(),
         sort_mode.upcast_ref(),
         spacer.upcast_ref(),
@@ -360,23 +350,9 @@ fn build_controls() -> ControlsParts {
         root,
         source_mode,
         source_revealer,
-        timeline_toggle,
         sort_mode,
         upload_button,
     }
-}
-
-fn build_timeline_banner() -> gtk::Label {
-    gtk::Label::builder()
-        .xalign(0.0)
-        .css_classes(vec!["mimick-timeline-banner".to_string()])
-        .visible(false)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .max_width_chars(20)
-        .margin_top(4)
-        .margin_bottom(4)
-        .margin_start(12)
-        .build()
 }
 
 /// Stack of loading/empty/error states and the grid, Explore, and Albums views.

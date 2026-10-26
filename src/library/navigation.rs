@@ -74,7 +74,7 @@ fn show(ui: &Rc<LibraryWindowUi>, location: &Location) {
     match location {
         Location::Source(source) => {
             let request = ui.ctx.library_state.lock().switch_source(source.clone());
-            super::apply_timeline_ui_state(ui, &request.1);
+            super::apply_source_ui_state(ui, &request.1);
             ui.grid.scrolled.vadjustment().set_value(0.0);
             super::source_header::show(ui, &request.1);
             super::load_source_page(ui.clone(), request, false);
@@ -158,16 +158,12 @@ fn page_title(page: &LibraryPage) -> String {
 }
 
 pub(super) fn sync_controls(ui: &LibraryWindowUi, location: &Location) {
-    let (timeline, sort) = match location {
-        Location::Source(LibrarySource::Explore | LibrarySource::MapArea { .. }) => (false, false),
-        Location::Source(source) => (
-            matches!(source, LibrarySource::AllAssets | LibrarySource::Timeline),
-            true,
-        ),
-        Location::Page(LibraryPage::Albums { .. }) => (false, true),
-        Location::Page(_) => (false, false),
+    let sort = match location {
+        Location::Source(LibrarySource::Explore | LibrarySource::MapArea { .. }) => false,
+        Location::Source(_) => true,
+        Location::Page(LibraryPage::Albums { .. }) => true,
+        Location::Page(_) => false,
     };
-    ui.timeline_toggle.set_visible(timeline);
     ui.sort_mode.set_visible(sort);
     if matches!(location, Location::Page(_)) {
         ui.source_revealer.set_reveal_child(false);
@@ -246,10 +242,7 @@ fn sidebar_target(location: &Location) -> SidebarTarget {
             LibrarySource::Album { id, .. }
             | LibrarySource::AlbumLocal { id, .. }
             | LibrarySource::AlbumUnified { id, .. } => return SidebarTarget::Album(id.clone()),
-            LibrarySource::AllAssets
-            | LibrarySource::Timeline
-            | LibrarySource::Unified
-            | LibrarySource::LocalAll => "photos",
+            LibrarySource::AllAssets | LibrarySource::Unified | LibrarySource::LocalAll => "photos",
             LibrarySource::Explore | LibrarySource::Place { .. } | LibrarySource::Thing { .. } => {
                 "explore"
             }
@@ -275,7 +268,7 @@ pub(super) fn location_for_key(key: &str) -> Option<Location> {
     let source = |source| Some(Location::Source(source));
     let page = |page| Some(Location::Page(page));
     match key {
-        "photos" => source(LibrarySource::Timeline),
+        "photos" => source(LibrarySource::AllAssets),
         "explore" => source(LibrarySource::Explore),
         "map" => page(LibraryPage::Map),
         "favorites" => source(LibrarySource::Favorites),

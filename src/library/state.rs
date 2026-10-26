@@ -13,7 +13,6 @@ const PAGE_SIZE: usize = 50;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum LibrarySource {
     AllAssets,
-    Timeline,
     /// Random sample via `POST /api/search/random`. Used as the "Explore"
     /// sidebar destination — refresh re-rolls; pagination is meaningless.
     Explore,

@@ -14,10 +14,7 @@ use crate::library::state::{LibrarySortMode, LibrarySource, Location};
 use crate::settings_window::{build_settings_window_with_parent, show_queue_inspector};
 
 use super::navigation;
-use super::{
-    LibraryWindowUi, load_albums, load_source_page, load_status, open_lightbox,
-    update_timeline_banner_if_active,
-};
+use super::{LibraryWindowUi, load_albums, load_source_page, load_status, open_lightbox};
 
 pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
     connect_window_actions(&ui);
@@ -237,7 +234,7 @@ fn sort_labels_for_view(view: Option<&str>) -> &'static [&'static str] {
 
 /// Route a sort choice by active view. Albums uses an album-specific sort
 /// taxonomy; Explore intentionally doesn't sort the people row (curated server order).
-fn apply_sort_selection(ui: &LibraryWindowUi, selected: u32) {
+fn apply_sort_selection(ui: &Rc<LibraryWindowUi>, selected: u32) {
     let view = ui.content_stack.visible_child_name();
     if view.as_deref() == Some("albums") {
         let mode = match selected {
@@ -255,12 +252,18 @@ fn apply_sort_selection(ui: &LibraryWindowUi, selected: u32) {
     };
     let mut state = ui.ctx.library_state.lock();
     state.apply_sort(sort_mode);
+    if super::timeline::eligible(&state.source, &state.sort_mode) != super::timeline::is_active(ui)
+    {
+        drop(state);
+        navigation::reload_current(ui);
+        return;
+    }
     ui.grid
         .model
         .reset(&ui.ctx, &state.assets, &state.sort_mode);
 }
 
-/// Remote/Local/Unified dropdown and the timeline toggle.
+/// Remote/Local/Unified dropdown.
 fn connect_source_controls(ui: &Rc<LibraryWindowUi>) {
     ui.source_mode.connect_selected_notify(clone!(
         #[strong]
@@ -269,36 +272,8 @@ fn connect_source_controls(ui: &Rc<LibraryWindowUi>) {
             if ui.source_mode_suppressed.get() {
                 return;
             }
-            let source = source_for_selection(
-                dropdown.selected(),
-                current_album(&ui),
-                ui.timeline_toggle.is_active(),
-            );
+            let source = source_for_selection(dropdown.selected(), current_album(&ui));
             navigation::navigate_source(&ui, source);
-        }
-    ));
-
-    ui.timeline_toggle.connect_toggled(clone!(
-        #[strong]
-        ui,
-        move |toggle| {
-            if !toggle.is_sensitive() {
-                return;
-            }
-            let current = ui.ctx.library_state.lock().source.clone();
-            if !matches!(current, LibrarySource::AllAssets | LibrarySource::Timeline) {
-                toggle.set_active(false);
-                return;
-            }
-            if matches!(current, LibrarySource::Timeline) == toggle.is_active() {
-                return;
-            }
-            let next_source = if toggle.is_active() {
-                LibrarySource::Timeline
-            } else {
-                LibrarySource::AllAssets
-            };
-            navigation::navigate_source(&ui, next_source);
         }
     ));
 }
@@ -314,18 +289,13 @@ fn current_album(ui: &LibraryWindowUi) -> Option<(String, String)> {
 }
 
 /// Source for a Remote (0) / Local (1) / Unified (2) choice, scoped to the open album if any.
-fn source_for_selection(
-    selected: u32,
-    album: Option<(String, String)>,
-    timeline_active: bool,
-) -> LibrarySource {
+fn source_for_selection(selected: u32, album: Option<(String, String)>) -> LibrarySource {
     match (selected, album) {
         (1, Some((id, name))) => LibrarySource::AlbumLocal { id, name },
         (1, None) => LibrarySource::LocalAll,
         (2, Some((id, name))) => LibrarySource::AlbumUnified { id, name },
         (2, None) => LibrarySource::Unified,
         (_, Some((id, name))) => LibrarySource::Album { id, name },
-        (_, None) if timeline_active => LibrarySource::Timeline,
         (_, None) => LibrarySource::AllAssets,
     }
 }
@@ -356,6 +326,10 @@ pub(super) fn refresh_library_surfaces(ui: Rc<LibraryWindowUi>, include_current_
     }
     if navigation::on_page(&ui) {
         navigation::reload_current(&ui);
+        return;
+    }
+    if super::timeline::is_active(&ui) {
+        super::timeline::reload(&ui);
         return;
     }
     let request = {
@@ -450,7 +424,6 @@ pub(super) fn connect_grid_handlers(ui: Rc<LibraryWindowUi>) {
             glib::idle_add_local_once(move || {
                 scroll_pending.set(false);
                 let adj = ui.grid.scrolled.vadjustment();
-                update_timeline_banner_if_active(&ui, &adj);
 
                 let threshold = (adj.upper() - adj.page_size()) * 0.50;
                 if adj.value() < threshold {
@@ -487,31 +460,24 @@ mod tests {
     #[test]
     fn source_for_selection_scopes_to_the_open_album() {
         assert!(matches!(
-            source_for_selection(1, album(), false),
+            source_for_selection(1, album()),
             LibrarySource::AlbumLocal { .. }
         ));
         assert!(matches!(
-            source_for_selection(2, album(), false),
+            source_for_selection(2, album()),
             LibrarySource::AlbumUnified { .. }
         ));
         assert!(matches!(
-            source_for_selection(0, album(), true),
+            source_for_selection(0, album()),
             LibrarySource::Album { .. }
         ));
     }
 
     #[test]
-    fn source_for_selection_without_album_respects_timeline() {
-        assert_eq!(
-            source_for_selection(1, None, false),
-            LibrarySource::LocalAll
-        );
-        assert_eq!(source_for_selection(2, None, false), LibrarySource::Unified);
-        assert_eq!(source_for_selection(0, None, true), LibrarySource::Timeline);
-        assert_eq!(
-            source_for_selection(0, None, false),
-            LibrarySource::AllAssets
-        );
+    fn source_for_selection_without_album() {
+        assert_eq!(source_for_selection(1, None), LibrarySource::LocalAll);
+        assert_eq!(source_for_selection(2, None), LibrarySource::Unified);
+        assert_eq!(source_for_selection(0, None), LibrarySource::AllAssets);
     }
 
     #[test]

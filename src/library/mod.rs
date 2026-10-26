@@ -144,8 +144,6 @@ struct LibraryWindowUi {
     source_revealer: gtk::Revealer,
     upload_button: gtk::Button,
     controls_row: gtk::Box,
-    timeline_toggle: gtk::ToggleButton,
-    timeline_banner: gtk::Label,
     source_mode_suppressed: Cell<bool>,
     sidebar_suppressed: Cell<bool>,
     back_button: gtk::Button,
@@ -160,6 +158,7 @@ struct LibraryWindowUi {
     last_seen_upload_batch: Cell<u64>,
     split: libadwaita::OverlaySplitView,
     drop_overlay: gtk::Revealer,
+    timeline: RefCell<Option<Rc<timeline::Timeline>>>,
 }
 
 /// Build and display the main library window application layout.
@@ -192,6 +191,7 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     tags_view::connect_tags_view(ui.clone());
     sharing_view::connect_sharing_view(ui.clone());
     map::connect_map_view(&ui);
+    timeline::connect(&ui);
     bottom_nav::connect_bottom_nav(&ui);
     connect_sidebar_handlers(ui.clone());
     connect_controls(ui.clone());
@@ -254,7 +254,7 @@ fn bootstrap_window(ui: Rc<LibraryWindowUi>) {
         state.load_initial_source()
     };
 
-    apply_timeline_ui_state(&ui, &initial_request.1);
+    apply_source_ui_state(&ui, &initial_request.1);
     source_header::show(&ui, &initial_request.1);
     navigation::sync_controls(&ui, &Location::Source(initial_request.1.clone()));
     load_albums(ui.clone());
@@ -766,18 +766,7 @@ fn search_by_tag(ui: Rc<LibraryWindowUi>, tag: Tag) {
     );
 }
 
-fn apply_timeline_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
-    let timeline_allowed = matches!(source, LibrarySource::AllAssets | LibrarySource::Timeline);
-    let timeline_active = matches!(source, LibrarySource::Timeline);
-    ui.timeline_toggle.set_sensitive(timeline_allowed);
-    if ui.timeline_toggle.is_active() != timeline_active {
-        ui.timeline_toggle.set_active(timeline_active);
-    }
-    ui.timeline_banner.set_visible(timeline_active);
-    if timeline_active {
-        ui.sort_mode.set_selected(0);
-    }
-
+fn apply_source_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
     let is_local = matches!(
         source,
         LibrarySource::LocalAll
@@ -826,51 +815,6 @@ fn apply_timeline_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
     refresh_album_link_row(ui, source);
 }
 
-/// Compute and refresh the month-year overlay text dynamically while scrubbing the timeline list.
-fn update_timeline_banner_if_active(ui: &Rc<LibraryWindowUi>, adj: &gtk::Adjustment) {
-    let state = ui.ctx.library_state.lock();
-    if !matches!(state.source, LibrarySource::Timeline) {
-        return;
-    }
-    if state.assets.is_empty() {
-        ui.timeline_banner.set_label("");
-        return;
-    }
-
-    let max = (adj.upper() - adj.page_size()).max(1.0);
-    let frac = (adj.value() / max).clamp(0.0, 1.0);
-    let idx = ((state.assets.len() as f64) * frac) as usize;
-    let idx = idx.min(state.assets.len() - 1);
-    let label = month_year_label(&state.assets[idx].created_at);
-    ui.timeline_banner.set_label(&label);
-}
-
-/// Convert an ISO 8601 string to a human-readable "Month Year" label.
-fn month_year_label(iso: &str) -> String {
-    use chrono::{DateTime, Datelike};
-    if let Ok(dt) = DateTime::parse_from_rfc3339(iso) {
-        const MONTHS: [&str; 12] = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-        ];
-        let m = dt.month0() as usize;
-        if let Some(name) = MONTHS.get(m) {
-            return format!("{} {}", name, dt.year());
-        }
-    }
-    iso.chars().take(7).collect()
-}
-
 /// Retrieve albums from the API and update the side navigation sidebar entries.
 fn load_albums(ui: Rc<LibraryWindowUi>) {
     glib::MainContext::default().spawn_local(clone!(
@@ -916,9 +860,7 @@ fn load_status(ui: Rc<LibraryWindowUi>) {
             update_footer(&ui, route);
             if matches!(
                 navigation::current(&ui),
-                Location::Source(
-                    LibrarySource::AllAssets | LibrarySource::Timeline | LibrarySource::Unified
-                )
+                Location::Source(LibrarySource::AllAssets | LibrarySource::Unified)
             ) {
                 source_header::refresh(&ui);
             }
@@ -1082,6 +1024,18 @@ fn load_source_page(ui: Rc<LibraryWindowUi>, request: (u64, LibrarySource, u32),
         source_header::set_status(&ui, "loading", None);
         ui.content_stack.set_visible_child_name("grid");
     }
+    if !append {
+        let sort = ui.ctx.library_state.lock().sort_mode.clone();
+        if timeline::eligible(&request.1, &sort) {
+            timeline::open(&ui, request, None);
+            return;
+        }
+        timeline::close(&ui);
+    }
+    load_pages(ui, request, append);
+}
+
+fn load_pages(ui: Rc<LibraryWindowUi>, request: (u64, LibrarySource, u32), append: bool) {
     log::debug!("Loading library source {:?} page={}", request.1, request.2);
     glib::MainContext::default().spawn_local(clone!(
         #[strong]
@@ -1159,7 +1113,7 @@ fn remote_filters(
     order: Option<SortOrder>,
 ) -> Option<MetadataSearchFilters> {
     let base = match source {
-        LibrarySource::AllAssets | LibrarySource::Timeline => MetadataSearchFilters {
+        LibrarySource::AllAssets => MetadataSearchFilters {
             visibility: Some("timeline".to_string()),
             ..MetadataSearchFilters::default()
         },
@@ -1228,7 +1182,7 @@ async fn fetch_unified_page(
         LibrarySource::Unified => {
             let remote = api
                 .search_metadata_with_filters(
-                    &remote_filters(&LibrarySource::Timeline, order).unwrap_or_default(),
+                    &remote_filters(&LibrarySource::AllAssets, order).unwrap_or_default(),
                     page,
                     PAGE_SIZE,
                 )
@@ -1288,7 +1242,6 @@ fn apply_page_result(ui: &Rc<LibraryWindowUi>, generation: u64, append: bool, re
     // triggered by the stack transition can safely re-acquire library_state.
     sync_content_state(ui);
     reload_sidebar(ui);
-    update_timeline_banner_if_active(ui, &ui.grid.scrolled.vadjustment());
 }
 
 fn setup_album_drop_target(

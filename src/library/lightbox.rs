@@ -1460,6 +1460,9 @@ impl Lightbox {
 
     fn goto_prev(self: &Rc<Self>) {
         let pos = self.pos.get();
+        if self.step_into_unloaded_month(pos, false) {
+            return;
+        }
         if pos > 0 {
             self.pos.set(pos - 1);
             self.nav_dir.set(-1);
@@ -1470,6 +1473,9 @@ impl Lightbox {
     /// Step forward, fetching the next grid page first when at the end.
     fn goto_next(self: &Rc<Self>) {
         let pos = self.pos.get();
+        if self.step_into_unloaded_month(pos, true) {
+            return;
+        }
         if pos + 1 < self.ui.grid.model.n_items() {
             self.pos.set(pos + 1);
             self.nav_dir.set(1);
@@ -1483,6 +1489,36 @@ impl Lightbox {
         self.header.next_btn.set_sensitive(false);
         self.advance_when_page_loads();
         load_source_page(self.ui.clone(), req, true);
+    }
+
+    /// Photos timeline: load the month past `pos` first, then step into it.
+    fn step_into_unloaded_month(self: &Rc<Self>, pos: u32, forward: bool) -> bool {
+        let lb = self.clone();
+        let started =
+            super::timeline::load_neighbor_then(&self.ui, pos, forward, move |inserted| {
+                lb.header.prev_btn.set_sensitive(true);
+                lb.header.next_btn.set_sensitive(true);
+                let Some((at, added)) = inserted else {
+                    return;
+                };
+                if at <= lb.pos.get() {
+                    lb.pos.set(lb.pos.get() + added);
+                }
+                if forward {
+                    lb.goto_next();
+                } else {
+                    lb.goto_prev();
+                }
+            });
+        if started {
+            let button = if forward {
+                &self.header.next_btn
+            } else {
+                &self.header.prev_btn
+            };
+            button.set_sensitive(false);
+        }
+        started
     }
 
     /// Advance once the next page lands in the grid model, then drop the handler.
@@ -1583,10 +1619,12 @@ impl Lightbox {
             lightbox_title_cap(&self.ui),
         ));
         self.show_summary(&info);
-        self.header.prev_btn.set_sensitive(pos > 0);
+        let more_before = super::timeline::has_unloaded_neighbor(&self.ui, pos, false);
+        let more_after = super::timeline::has_unloaded_neighbor(&self.ui, pos, true);
+        self.header.prev_btn.set_sensitive(pos > 0 || more_before);
         self.header
             .next_btn
-            .set_sensitive(pos + 1 < self.ui.grid.model.n_items());
+            .set_sensitive(pos + 1 < self.ui.grid.model.n_items() || more_after);
 
         let show_remote_actions = !info.is_local() && !info.is_video();
         self.actions

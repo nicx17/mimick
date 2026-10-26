@@ -405,13 +405,15 @@ async fn trash_assets(ui: &Rc<LibraryWindowUi>, ids: &[String]) -> Result<(), St
 /// Drop assets from the grid in place, so open views (like the lightbox) keep their
 /// position instead of reloading from the first page; then refresh album/stat counts.
 pub(super) fn remove_assets_from_grid(ui: &Rc<LibraryWindowUi>, ids: &[String]) {
-    let (assets, sort_mode) = {
-        let mut state = ui.ctx.library_state.lock();
-        state.assets.retain(|asset| !ids.contains(&asset.id));
-        (state.assets.clone(), state.sort_mode.clone())
-    };
-    // Reset outside the lock: items_changed handlers may read the library state.
-    ui.grid.model.reset(&ui.ctx, &assets, &sort_mode);
+    if !super::timeline::remove(ui, ids) {
+        let (assets, sort_mode) = {
+            let mut state = ui.ctx.library_state.lock();
+            state.assets.retain(|asset| !ids.contains(&asset.id));
+            (state.assets.clone(), state.sort_mode.clone())
+        };
+        // Reset outside the lock: items_changed handlers may read the library state.
+        ui.grid.model.reset(&ui.ctx, &assets, &sort_mode);
+    }
     super::refresh_library_after_mutation(ui.clone(), false);
 }
 

@@ -187,7 +187,7 @@ pub(super) fn show(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
 fn basics(ui: &LibraryWindowUi, source: &LibrarySource) -> (Leading, String) {
     let icon = |name: &'static str, title: &str| (Leading::Icon(name), title.to_string());
     match source {
-        LibrarySource::AllAssets | LibrarySource::Timeline | LibrarySource::Unified => {
+        LibrarySource::AllAssets | LibrarySource::Unified => {
             if let Some(stats) = ui.ctx.library_state.lock().status.stats.clone() {
                 *ui.header.details.borrow_mut() = vec![
                     count_noun(stats.images, "photo", "photos"),
