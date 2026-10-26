@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Photos is now a timeline like Immich's web app: date headings between photos, a scrubber on the right edge with years and months (a drag handle on phone-width windows), and the whole library's height known up front. Only the months you scroll or jump to are loaded.
+- Added a **Date Headings** setting (By Day, By Month, Off) for the Photos timeline.
 - Added in-app video playback in the lightbox: play/pause, stop, skip ±10 s, frame stepping, a seek bar, loop, playback speed (0.25×–2×), volume and mute, audio and subtitle track selection, and fullscreen with auto-hiding controls. Server videos stream from Immich; decoding uses VA-API hardware acceleration when available (#80).
 - Added an **Open with…** button for videos in the lightbox that lets you choose the app.
 - Added fullscreen viewing for photos and videos in the lightbox (header button or **F11**), with an auto-hiding header for leaving fullscreen on touch screens.
@@ -20,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The photo grids now load thumbnails only where scrolling stops: placeholders show while you fling, loads for tiles you scrolled past are cancelled, and the nearest tiles load first. Scrolling far no longer loads every photo on the way.
+- Removed the **Timeline** button; Photos sorted by Newest is the timeline.
 - RAW decoding now uses LibRaw 0.21.3 (was 0.20.1), adding support for cameras such as the Sony A7 IV, Canon EOS R3/R7/R10, Fujifilm X-H2S, OM System OM-1, Leica M11, and Nikon Z9 (standard compression).
 - Grid thumbnails for RAW files without an embedded preview now use a faster half-size decode.
 - Clicking a video in the grid now opens it in the lightbox instead of the system default player.
