@@ -355,7 +355,8 @@ fn spawn_sync_index_flusher(sync_index: Arc<ShardedSyncIndex>) {
     tokio::spawn(async move {
         loop {
             tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
-            let _ = sync_index.flush();
+            let index = sync_index.clone();
+            let _ = tokio::task::spawn_blocking(move || index.flush()).await;
         }
     });
 }

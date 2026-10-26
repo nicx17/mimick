@@ -819,15 +819,20 @@ fn finalize_upload_progress(
     }
     let total_handled = s.processed_count + s.failed_count;
     if total_handled >= s.total_queued && s.active_workers == 0 {
-        apply_idle_state(&mut s, sync_index_ref);
-        check_batch_notification(&mut batch_notify_ref.lock())
+        apply_idle_state(&mut s);
+        let completed = check_batch_notification(&mut batch_notify_ref.lock());
+        drop(s);
+        if let Err(err) = sync_index_ref.flush() {
+            log::warn!("Failed to flush sync index on idle: {}", err);
+        }
+        completed
     } else {
         apply_active_state(&mut s, total_handled);
         None
     }
 }
 
-fn apply_idle_state(s: &mut AppState, sync_index_ref: &Arc<ShardedSyncIndex>) {
+fn apply_idle_state(s: &mut AppState) {
     s.queue_size = 0;
     s.status = if s.paused {
         "paused".to_string()
@@ -836,9 +841,6 @@ fn apply_idle_state(s: &mut AppState, sync_index_ref: &Arc<ShardedSyncIndex>) {
     };
     s.progress = 100;
     log::info!("All {} file(s) processed. Idle.", s.total_queued);
-    if let Err(err) = sync_index_ref.flush() {
-        log::warn!("Failed to flush sync index on idle: {}", err);
-    }
 }
 
 fn apply_active_state(s: &mut AppState, total_handled: usize) {
