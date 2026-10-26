@@ -270,7 +270,10 @@ image.mimick-person-favorite {
 
 flowboxchild.mimick-tag-slot,
 flowboxchild.mimick-tag-slot:hover,
-flowboxchild.mimick-tag-slot:focus {
+flowboxchild.mimick-tag-slot:focus,
+flowboxchild.mimick-person-slot,
+flowboxchild.mimick-person-slot:hover,
+flowboxchild.mimick-person-slot:focus {
     padding: 0;
     background: none;
     outline: none;

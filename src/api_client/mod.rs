@@ -590,6 +590,10 @@ pub struct AssetDetails {
     /// Tags applied to the asset.
     #[serde(default)]
     pub tags: Vec<Tag>,
+    #[serde(default)]
+    pub people: Vec<Person>,
+    #[serde(default)]
+    pub local_date_time: Option<String>,
 }
 
 /// An Immich tag. `value` is the full path for nested tags (e.g. `Trips/2024`),

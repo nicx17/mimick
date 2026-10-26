@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added browsing a partner's photos: click someone under **Sharing With You** on the **Sharing** page to see their photos as a timeline (#236).
 - Added a **Show in Photos** switch for each partner who shares with you, which adds their photos to your Photos timeline.
 - Added star ratings in the lightbox details pane: click a star to rate a photo or video from 1 to 5, or **Clear** to remove the rating. It appears when **Ratings** is turned on in your Immich account settings, and like Immich, only your own photos can be rated.
+- Added a **People** section to the lightbox details pane showing the people recognized in your photos, with their age when the photo was taken if a birth date is set. Click someone to see all their photos.
 
 ### Changed
 

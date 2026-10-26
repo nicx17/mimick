@@ -61,7 +61,7 @@ The window uses a sidebar + content split.
 | Turned off                                    | Hidden in Mimick                                                   |
 | :-------------------------------------------- | :----------------------------------------------------------------- |
 | Trash (server)                                | **Trash**; deleting then warns that it's permanent                 |
-| Face recognition (server) or People (account) | **People**, the bottom-bar People button, and Explore's people row |
+| Face recognition (server) or People (account) | **People**, the bottom-bar People button, Explore's people row, and the lightbox's People section |
 | Smart search (server)                         | the **Smart Search** mode and Explore's Things                     |
 | OCR (server)                                  | the **OCR** search mode and the OCR filter                         |
 | Reverse geocoding (server)                    | Explore's Places                                                   |
@@ -344,6 +344,10 @@ When **Ratings** is turned on in your Immich account settings (Account Settings 
 - The rating is saved right away. If Immich can't save it, the stars go back to the previous rating and an error explains why.
 - As in Immich, only your own photos can be rated. Photos shared with you show their rating without letting you change it, and no section when they have none.
 - Requires `asset.update`.
+
+### People in the Details Pane
+
+Your own photos show a **People** section below the rating with everyone Immich recognized in them: their face and name ("Unnamed" when they have none), and, when a birth date is set in Immich, their age when the photo was taken ("Age 3 months", "Age 1 year, 2 months", "Age 34"). Click someone to close the lightbox and see all their photos. People you've hidden in Immich are left out, and the section only appears when face recognition is on (see the table above). Requires `person.read`.
 
 **Download folder:**
 

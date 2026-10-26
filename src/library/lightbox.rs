@@ -32,6 +32,7 @@ use super::{LOCAL_ID_PREFIX, LibraryWindowUi, load_source_page, load_texture_ori
 mod fullscreen;
 mod location;
 mod ocr;
+mod people;
 mod rating;
 mod video;
 
@@ -634,6 +635,7 @@ struct DetailsPane {
     edit_btn: gtk::Button,
     location_btn: gtk::Button,
     rating: rating::RatingSection,
+    people: people::PeopleSection,
     tags: TagSection,
     loading: gtk::Label,
     exif: gtk::Box,
@@ -898,6 +900,8 @@ fn build_details_pane() -> DetailsPane {
     inner.append(&edit_row);
     let rating = rating::RatingSection::new();
     inner.append(&rating.root);
+    let people = people::PeopleSection::new();
+    inner.append(&people.root);
     let tags = TagSection::new();
     inner.append(&tags.root);
     inner.append(&loading);
@@ -909,6 +913,7 @@ fn build_details_pane() -> DetailsPane {
         edit_btn,
         location_btn,
         rating,
+        people,
         tags,
         loading,
         exif,
@@ -1682,6 +1687,7 @@ impl Lightbox {
         }
         self.details.exif.set_visible(false);
         self.details.rating.clear();
+        self.details.people.clear();
         self.details.tags.clear();
     }
 
@@ -2033,6 +2039,10 @@ impl Lightbox {
                 let rating = details.exif_info.as_ref().and_then(|exif| exif.rating);
                 let rating = rating::stars_from_exif(rating);
                 lb.details.rating.show(&asset_id, rating, mine);
+            }
+            if mine && features.people {
+                let taken = details.local_date_time.as_deref();
+                lb.details.people.show(&lb.ui, &details.people, taken);
             }
             if on_server && features.tags {
                 lb.details.tags.show(&asset_id, details.tags);
