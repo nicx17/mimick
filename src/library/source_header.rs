@@ -211,6 +211,7 @@ fn basics(ui: &LibraryWindowUi, source: &LibrarySource) -> (Leading, String) {
             },
             name.clone(),
         ),
+        LibrarySource::Partner { name, .. } => icon("system-users-symbolic", name),
         LibrarySource::Tag { name, .. } => (Leading::TagColor(None), leaf_name(name).to_string()),
         LibrarySource::Folder { path } => icon("folder-symbolic", leaf_name(path)),
         LibrarySource::Place { city } => icon("mark-location-symbolic", city),

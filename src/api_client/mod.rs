@@ -23,7 +23,7 @@ pub use map::{MAP_USER_AGENT, MapMarker, Place};
 mod ocr;
 pub use ocr::OcrBox;
 mod partners;
-pub use partners::PartnerDirection;
+pub use partners::{Partner, PartnerDirection};
 mod people;
 pub use people::PersonUpdate;
 mod search;

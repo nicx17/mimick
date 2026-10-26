@@ -4,12 +4,13 @@ use std::rc::Rc;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::api_client::{PartnerDirection, UserSummary};
+use crate::api_client::{Partner, PartnerDirection, UserSummary};
 
 use super::LibraryWindowUi;
 use super::album_share_dialog::{addable_users, display_name};
 use super::context_menu::show_alert_dialog;
 use super::dialogs::confirm;
+use super::state::LibrarySource;
 
 pub(super) struct SharingView {
     pub root: gtk::ScrolledWindow,
@@ -17,7 +18,7 @@ pub(super) struct SharingView {
     shared_with: libadwaita::PreferencesGroup,
     add: gtk::Button,
     rows: RefCell<Vec<(libadwaita::PreferencesGroup, gtk::Widget)>>,
-    partners: RefCell<Vec<UserSummary>>,
+    partners: RefCell<Vec<Partner>>,
 }
 
 pub(super) fn build_sharing_view() -> SharingView {
@@ -34,7 +35,9 @@ pub(super) fn build_sharing_view() -> SharingView {
         .build();
     let shared_with = libadwaita::PreferencesGroup::builder()
         .title("Sharing With You")
-        .description("People who added you as a partner.")
+        .description(
+            "People who added you as a partner. Switch one on to see their photos in Photos.",
+        )
         .build();
     let content = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
@@ -93,15 +96,15 @@ fn reload(ui: Rc<LibraryWindowUi>) {
     });
 }
 
-fn render(ui: &Rc<LibraryWindowUi>, shared_by: Vec<UserSummary>, shared_with: &[UserSummary]) {
+fn render(ui: &Rc<LibraryWindowUi>, shared_by: Vec<Partner>, shared_with: &[Partner]) {
     let view = &ui.sharing;
     for (group, row) in view.rows.borrow_mut().drain(..) {
         group.remove(&row);
     }
     let mut rows = view.rows.borrow_mut();
     for partner in &shared_by {
-        let row = partner_row(partner);
-        row.add_suffix(&remove_button(ui, partner));
+        let row = partner_row(&partner.user);
+        row.add_suffix(&remove_button(ui, &partner.user));
         view.shared_by.add(&row);
         rows.push((view.shared_by.clone(), row.upcast()));
     }
@@ -111,7 +114,7 @@ fn render(ui: &Rc<LibraryWindowUi>, shared_by: Vec<UserSummary>, shared_with: &[
         rows.push((view.shared_by.clone(), row.upcast()));
     }
     for partner in shared_with {
-        let row = partner_row(partner);
+        let row = shared_with_row(ui, partner);
         view.shared_with.add(&row);
         rows.push((view.shared_with.clone(), row.upcast()));
     }
@@ -134,6 +137,48 @@ fn partner_row(user: &UserSummary) -> libadwaita::ActionRow {
         .build();
     row.add_prefix(&libadwaita::Avatar::new(32, Some(&name), true));
     row
+}
+
+fn shared_with_row(ui: &Rc<LibraryWindowUi>, partner: &Partner) -> libadwaita::ActionRow {
+    let row = partner_row(&partner.user);
+    row.add_suffix(&timeline_switch(ui, partner));
+    row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
+    row.set_activatable(true);
+    let (ui, id) = (ui.clone(), partner.user.id.clone());
+    let name = display_name(&partner.user.name, &partner.user.email);
+    row.connect_activated(move |_| {
+        super::navigation::navigate_source(
+            &ui,
+            LibrarySource::Partner {
+                id: id.clone(),
+                name: name.clone(),
+            },
+        );
+    });
+    row
+}
+
+fn timeline_switch(ui: &Rc<LibraryWindowUi>, partner: &Partner) -> gtk::Switch {
+    let switch = gtk::Switch::builder()
+        .active(partner.in_timeline)
+        .tooltip_text("Show in Photos")
+        .valign(gtk::Align::Center)
+        .build();
+    let (ui, id) = (ui.clone(), partner.user.id.clone());
+    switch.connect_active_notify(move |switch| {
+        let (ui, id, show) = (ui.clone(), id.clone(), switch.is_active());
+        glib::MainContext::default().spawn_local(async move {
+            if let Err(err) = ui.ctx.api_client.set_partner_in_timeline(&id, show).await {
+                show_alert_dialog(
+                    &ui,
+                    "Could Not Change Partner",
+                    &format!("{err}\n\nYour API key needs the 'partner.update' permission."),
+                );
+                reload(ui);
+            }
+        });
+    });
+    switch
 }
 
 fn placeholder_row(text: &str) -> libadwaita::ActionRow {
@@ -233,7 +278,7 @@ impl AddPartnerDialog {
             .partners
             .borrow()
             .iter()
-            .map(|p| p.id.clone())
+            .map(|p| p.user.id.clone())
             .collect();
         Self {
             ui: ui.clone(),

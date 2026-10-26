@@ -1122,6 +1122,7 @@ async fn fetch_remote_page(
             api.search_smart(&query, page, PAGE_SIZE).await
         }
         LibrarySource::OcrSearch { query } => api.search_ocr(&query, page, PAGE_SIZE, order).await,
+        LibrarySource::Partner { id, .. } => api.fetch_user_month_page(&id, page).await,
         LibrarySource::MetadataSearch { query } => {
             api.search_metadata(&query, page, PAGE_SIZE, order).await
         }
