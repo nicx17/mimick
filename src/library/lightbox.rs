@@ -1733,7 +1733,38 @@ impl Lightbox {
             lb.show_load_result(&load, result);
             cancel_loader.set(true);
             lb.picture.loader.set_reveal_child(false);
+            lb.prefetch_neighbors();
         });
+    }
+
+    fn prefetch_neighbors(&self) {
+        if self.actions.resolution_toggle.is_active() {
+            return;
+        }
+        let pos = self.pos.get();
+        for neighbor in [pos.checked_sub(1), pos.checked_add(1)]
+            .into_iter()
+            .flatten()
+        {
+            let Some(item) = self
+                .ui
+                .grid
+                .model
+                .item(neighbor)
+                .and_downcast::<AssetObject>()
+            else {
+                continue;
+            };
+            let info = AssetInfo::from_item(&item);
+            let decoded_from_disk = !info.local_path.is_empty() && !info.edited;
+            if info.is_video() || decoded_from_disk || info.asset_id.starts_with(LOCAL_ID_PREFIX) {
+                continue;
+            }
+            let cache = self.ui.ctx.thumbnail_cache.clone();
+            glib::MainContext::default().spawn_local(async move {
+                let _ = cache.load_preview(&info.asset_id, info.edited).await;
+            });
+        }
     }
 
     /// Clear the previous asset's overlays and drag path, set up the video badge,
