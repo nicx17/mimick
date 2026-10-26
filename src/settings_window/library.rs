@@ -5,6 +5,7 @@ pub struct LibraryWidgets {
     pub library_group: adw::PreferencesGroup,
     pub preview_full_row: adw::SwitchRow,
     pub grid_quality_row: adw::ComboRow,
+    pub date_headings_row: adw::ComboRow,
     pub raw_full_decode_row: adw::SwitchRow,
     pub raw_cache_row: adw::SwitchRow,
     pub disk_cache_row: adw::SpinRow,
@@ -36,6 +37,13 @@ pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidge
         .model(&quality_options)
         .build();
     library_group.add(&grid_quality_row);
+
+    let date_headings_row = adw::ComboRow::builder()
+        .title("Date Headings")
+        .subtitle("Dates between photos in Photos.")
+        .model(&gtk::StringList::new(&["By Day", "By Month", "Off"]))
+        .build();
+    library_group.add(&date_headings_row);
 
     let raw_full_decode_row = adw::SwitchRow::builder()
         .title("Full RAW Decoding")
@@ -100,6 +108,7 @@ pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidge
         library_group,
         preview_full_row,
         grid_quality_row,
+        date_headings_row,
         raw_full_decode_row,
         raw_cache_row,
         disk_cache_row,

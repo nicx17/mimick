@@ -768,9 +768,6 @@ fn search_by_tag(ui: Rc<LibraryWindowUi>, tag: Tag) {
 fn apply_timeline_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
     let timeline_allowed = matches!(source, LibrarySource::AllAssets | LibrarySource::Timeline);
     let timeline_active = matches!(source, LibrarySource::Timeline);
-    ui.ctx
-        .library_timeline_active
-        .store(timeline_active, std::sync::atomic::Ordering::Relaxed);
     ui.timeline_toggle.set_sensitive(timeline_allowed);
     if ui.timeline_toggle.is_active() != timeline_active {
         ui.timeline_toggle.set_active(timeline_active);

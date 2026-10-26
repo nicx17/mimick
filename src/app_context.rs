@@ -6,12 +6,11 @@
 use parking_lot::{Mutex, RwLock};
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
 use std::time::{Duration, Instant};
 use tokio::sync::mpsc::UnboundedSender;
 
 use crate::api_client::ImmichApiClient;
-use crate::config::{Config, WatchPathEntry};
+use crate::config::{Config, DateHeadings, WatchPathEntry};
 use crate::library::state::LibraryState;
 use crate::library::thumbnail_cache::ThumbnailCache;
 use crate::monitor::MonitorHandle;
@@ -132,8 +131,8 @@ pub struct AppContext {
     pub thumbnail_cache: Arc<ThumbnailCache>,
     /// GTK library view loading state container.
     pub library_state: Arc<Mutex<LibraryState>>,
-    /// True if timeline page views are currently active.
-    pub library_timeline_active: AtomicBool,
+    /// Date headings mode; the open library window follows changes.
+    pub date_headings: tokio::sync::watch::Sender<DateHeadings>,
     /// Authenticated user unique identifier, fetched at bootstrap.
     pub current_user_id: Arc<Mutex<Option<String>>>,
     /// Tracking lists of deletions requested by Mimick itself.

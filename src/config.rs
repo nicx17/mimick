@@ -262,6 +262,20 @@ pub enum StartupCatchupMode {
     NewFilesOnly,
 }
 
+/// Date headings between photos in the Photos timeline.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum DateHeadings {
+    #[default]
+    Day,
+    Month,
+    Off,
+}
+
+impl DateHeadings {
+    pub const ALL: [DateHeadings; 3] = [DateHeadings::Day, DateHeadings::Month, DateHeadings::Off];
+}
+
 /// Configuration schema driving application behavior and connection settings.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ConfigData {
@@ -358,6 +372,8 @@ pub struct ConfigData {
     /// Map style id (`immich`, a VersaTiles palette, or `osm`); empty means Immich's own.
     #[serde(default)]
     pub library_map_style: String,
+    #[serde(default)]
+    pub library_date_headings: DateHeadings,
 }
 
 impl Default for ConfigData {
@@ -392,6 +408,7 @@ impl Default for ConfigData {
             video_volume: default_video_volume(),
             video_muted: false,
             library_map_style: String::new(),
+            library_date_headings: DateHeadings::default(),
         }
     }
 }
@@ -857,6 +874,23 @@ fn remove_api_key_file_fallback(config_file: &Path) {
 mod tests {
     use super::*;
     use std::path::Path;
+
+    #[test]
+    fn date_headings_default_to_day_and_read_lowercase() {
+        let mut saved = serde_json::to_value(ConfigData::default()).unwrap();
+        saved
+            .as_object_mut()
+            .unwrap()
+            .remove("library_date_headings");
+        let data: ConfigData = serde_json::from_value(saved).unwrap();
+        assert_eq!(data.library_date_headings, DateHeadings::Day);
+        let month: DateHeadings = serde_json::from_str("\"month\"").unwrap();
+        assert_eq!(month, DateHeadings::Month);
+        assert_eq!(
+            serde_json::to_string(&DateHeadings::Off).unwrap(),
+            "\"off\""
+        );
+    }
 
     #[test]
     fn test_watch_path_entry_parsing_simple() {
