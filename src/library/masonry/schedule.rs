@@ -5,7 +5,7 @@ use std::time::Duration;
 
 use crate::api_client::ThumbnailSize;
 
-const MAX_LOADS: usize = 8;
+const MAX_LOADS: usize = 16;
 const FLING_VIEWPORTS_PER_SEC: f64 = 3.0;
 pub(super) const SETTLE_DELAY: Duration = Duration::from_millis(150);
 

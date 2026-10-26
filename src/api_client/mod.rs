@@ -694,15 +694,19 @@ pub struct ImmichApiClient {
     albums_fetched: Mutex<bool>,
     /// Semaphore guarding maximum concurrent thumbnail downloads.
     thumbnail_semaphore: Arc<Semaphore>,
+    preview_semaphore: Arc<Semaphore>,
 }
+
+const THUMBNAIL_DOWNLOADS: usize = 16;
+const PREVIEW_DOWNLOADS: usize = 8;
 
 impl ImmichApiClient {
     /// Initialize a new ImmichApiClient.
     pub fn new(internal_url: String, external_url: String, api_key: String) -> Self {
         let client = Client::builder()
             .timeout(Duration::from_secs(300))
-            .pool_max_idle_per_host(1) // keep at most 1 idle connection per host
-            .pool_idle_timeout(Duration::from_secs(30)) // drop idle connections after 30s
+            .pool_max_idle_per_host(THUMBNAIL_DOWNLOADS + PREVIEW_DOWNLOADS) // reuse connections across thumbnail bursts
+            .pool_idle_timeout(Duration::from_secs(90)) // drop idle connections after 90s
             .build()
             .unwrap_or_default();
 
@@ -730,7 +734,8 @@ impl ImmichApiClient {
             connection_check_lock: Mutex::new(()),
             last_successful_check: Mutex::new(None),
             albums_fetched: Mutex::new(false),
-            thumbnail_semaphore: Arc::new(Semaphore::new(8)),
+            thumbnail_semaphore: Arc::new(Semaphore::new(THUMBNAIL_DOWNLOADS)),
+            preview_semaphore: Arc::new(Semaphore::new(PREVIEW_DOWNLOADS)),
         }
     }
 

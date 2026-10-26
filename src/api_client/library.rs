@@ -145,8 +145,11 @@ impl ImmichApiClient {
         size: ThumbnailSize,
         edited: bool,
     ) -> Result<Vec<u8>, String> {
-        let _permit = self
-            .thumbnail_semaphore
+        let lane = match size {
+            ThumbnailSize::Thumbnail => &self.thumbnail_semaphore,
+            ThumbnailSize::Preview | ThumbnailSize::Fullsize => &self.preview_semaphore,
+        };
+        let _permit = lane
             .clone()
             .acquire_owned()
             .await
