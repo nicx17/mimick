@@ -293,6 +293,9 @@ fn handle_model_changed(
 }
 
 fn retain_failed_ids_for_model(imp: &imp::MasonryCanvas, model: &LibraryAssetModel) {
+    if imp.failed.borrow().is_empty() {
+        return;
+    }
     let mut current_ids: HashSet<String> = HashSet::with_capacity(model.n_items() as usize);
     for i in 0..model.n_items() {
         if let Some(obj) = model.item(i).and_downcast::<AssetObject>() {
