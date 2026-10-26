@@ -54,6 +54,15 @@ pub fn track_to_canvas(track_y: f32, track_h: f32, canvas_h: f32) -> f32 {
     track_y / track_h * canvas_h
 }
 
+/// Top of a `handle_h` handle travelling the track as the view scrolls end to end.
+pub fn handle_top(value: f64, upper: f64, page: f64, track_h: f32, handle_h: f32) -> f32 {
+    let range = upper - page;
+    if range <= 0.0 {
+        return 0.0;
+    }
+    (value / range).clamp(0.0, 1.0) as f32 * (track_h - handle_h).max(0.0)
+}
+
 pub fn canvas_to_track(canvas_y: f32, track_h: f32, canvas_h: f32) -> f32 {
     if canvas_h <= 0.0 {
         return 0.0;
@@ -148,6 +157,14 @@ mod tests {
                 }
             ]
         );
+    }
+
+    #[test]
+    fn handle_travels_the_whole_track() {
+        assert_eq!(handle_top(0.0, 1100.0, 100.0, 544.0, 44.0), 0.0);
+        assert_eq!(handle_top(1000.0, 1100.0, 100.0, 544.0, 44.0), 500.0);
+        assert_eq!(handle_top(500.0, 1100.0, 100.0, 544.0, 44.0), 250.0);
+        assert_eq!(handle_top(0.0, 100.0, 100.0, 544.0, 44.0), 0.0);
     }
 
     #[test]

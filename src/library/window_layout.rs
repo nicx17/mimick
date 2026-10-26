@@ -599,16 +599,20 @@ fn add_narrow_breakpoint(
         Some(&gtk::Orientation::Vertical.to_value()),
     );
     let (narrow_apply, canvas_apply) = (narrow.clone(), content.grid.canvas.clone());
+    let scrubber_apply = content.scrubber.clone();
     narrow_bp.connect_apply(move |_| {
         log::info!("NARROW breakpoint APPLIED: setting narrow=true");
         narrow_apply.set(true);
         canvas_apply.set_narrow(true);
+        scrubber_apply.set_compact(true);
     });
-    let canvas_unapply = content.grid.canvas.clone();
+    let (canvas_unapply, scrubber_unapply) =
+        (content.grid.canvas.clone(), content.scrubber.clone());
     narrow_bp.connect_unapply(move |_| {
         log::info!("NARROW breakpoint UNAPPLIED: setting narrow=false");
         narrow.set(false);
         canvas_unapply.set_narrow(false);
+        scrubber_unapply.set_compact(false);
     });
     window.add_breakpoint(narrow_bp);
 }

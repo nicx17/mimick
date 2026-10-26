@@ -8,11 +8,12 @@ use gtk::gsk::RoundedRect;
 use gtk::pango;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
+use libadwaita::prelude::AnimationExt;
 
 use super::dates::month_short;
 use super::index::TimelineIndex;
 use super::layout::{LaidSection, section_at};
-use super::marks::{Mark, canvas_to_track, marks, track_to_canvas};
+use super::marks::{Mark, canvas_to_track, handle_top, marks, track_to_canvas};
 use crate::library::masonry::canvas::MasonryCanvas;
 
 const WIDTH: i32 = 64;
@@ -24,6 +25,10 @@ const MARKER_W: f32 = 24.0;
 const PILL_PAD_X: f32 = 10.0;
 const PILL_PAD_Y: f32 = 5.0;
 const PILL_GAP: f32 = 8.0;
+const HANDLE_W: f32 = 28.0;
+const HANDLE_H: f32 = 44.0;
+const HANDLE_HOLD: std::time::Duration = std::time::Duration::from_millis(1500);
+const HANDLE_FADE_MS: u32 = 300;
 
 mod imp {
     use std::cell::{Cell, OnceCell, RefCell};
@@ -39,6 +44,9 @@ mod imp {
     pub struct TimelineScrubber {
         pub canvas: OnceCell<MasonryCanvas>,
         pub adjustment: OnceCell<gtk::Adjustment>,
+        pub compact: Cell<bool>,
+        pub hide_timer: RefCell<Option<glib::SourceId>>,
+        pub fade: RefCell<Option<libadwaita::TimedAnimation>>,
         pub index: RefCell<Option<Rc<RefCell<TimelineIndex>>>>,
         pub pointer_y: Cell<Option<f32>>,
         pub dragging: Cell<bool>,
@@ -57,9 +65,17 @@ mod imp {
     impl WidgetImpl for TimelineScrubber {
         fn measure(&self, orientation: gtk::Orientation, _for_size: i32) -> (i32, i32, i32, i32) {
             match orientation {
+                gtk::Orientation::Horizontal if self.compact.get() => {
+                    let width = super::HANDLE_W as i32;
+                    (width, width, -1, -1)
+                }
                 gtk::Orientation::Horizontal => (super::WIDTH, super::WIDTH, -1, -1),
                 _ => (0, 0, -1, -1),
             }
+        }
+
+        fn contains(&self, x: f64, y: f64) -> bool {
+            self.obj().accepts_pointer(x as f32, y as f32)
         }
 
         fn snapshot(&self, snapshot: &gtk::Snapshot) {
@@ -86,6 +102,9 @@ impl TimelineScrubber {
         let weak = scrubber.downgrade();
         adj.connect_value_changed(move |_| {
             if let Some(scrubber) = weak.upgrade() {
+                if scrubber.imp().compact.get() {
+                    scrubber.reveal_handle();
+                }
                 scrubber.queue_draw();
             }
         });
@@ -107,12 +126,74 @@ impl TimelineScrubber {
         self.queue_draw();
     }
 
+    /// Phone width: a drag handle that appears while scrolling instead of the full strip.
+    pub fn set_compact(&self, compact: bool) {
+        let imp = self.imp();
+        if imp.compact.replace(compact) == compact {
+            return;
+        }
+        if let Some(fade) = imp.fade.take() {
+            fade.pause();
+        }
+        self.set_opacity(if compact { 0.0 } else { 1.0 });
+        self.sync_gutter();
+        self.queue_resize();
+    }
+
     /// Keep photos out from under the year labels.
     fn sync_gutter(&self) {
         if let Some(canvas) = self.imp().canvas.get() {
-            let gutter = self.is_visible();
+            let gutter = self.is_visible() && !self.imp().compact.get();
             canvas.set_margin_end(if gutter { WIDTH } else { 0 });
         }
+    }
+
+    fn accepts_pointer(&self, x: f32, y: f32) -> bool {
+        if !self.imp().compact.get() {
+            return x >= 0.0 && x <= self.width() as f32 && y >= 0.0 && y <= self.height() as f32;
+        }
+        let top = self.handle_rect().y();
+        self.opacity() > 0.01 && y >= top && y <= top + HANDLE_H
+    }
+
+    fn handle_rect(&self) -> Rect {
+        let (top, track_h) = self.track();
+        let y = self.imp().adjustment.get().map_or(0.0, |adj| {
+            handle_top(adj.value(), adj.upper(), adj.page_size(), track_h, HANDLE_H)
+        });
+        Rect::new(self.width() as f32 - HANDLE_W, top + y, HANDLE_W, HANDLE_H)
+    }
+
+    fn reveal_handle(&self) {
+        let imp = self.imp();
+        if let Some(fade) = imp.fade.take() {
+            fade.pause();
+        }
+        self.set_opacity(1.0);
+        if let Some(timer) = imp.hide_timer.take() {
+            timer.remove();
+        }
+        let weak = self.downgrade();
+        let timer = glib::timeout_add_local_once(HANDLE_HOLD, move || {
+            if let Some(scrubber) = weak.upgrade() {
+                scrubber.imp().hide_timer.take();
+                scrubber.fade_handle();
+            }
+        });
+        imp.hide_timer.replace(Some(timer));
+    }
+
+    fn fade_handle(&self) {
+        let imp = self.imp();
+        if imp.dragging.get() {
+            self.reveal_handle();
+            return;
+        }
+        let target = libadwaita::PropertyAnimationTarget::new(self, "opacity");
+        let fade =
+            libadwaita::TimedAnimation::new(self, self.opacity(), 0.0, HANDLE_FADE_MS, target);
+        fade.play();
+        imp.fade.replace(Some(fade));
     }
 
     fn connect_pointer(&self) {
@@ -141,15 +222,24 @@ impl TimelineScrubber {
             if let Some(scrubber) = weak.upgrade() {
                 let imp = scrubber.imp();
                 imp.dragging.set(true);
-                imp.drag_start.set(y as f32);
-                scrubber.scrub_to(y as f32);
+                if imp.compact.get() {
+                    imp.drag_start.set(scrubber.handle_rect().y());
+                    scrubber.reveal_handle();
+                } else {
+                    imp.drag_start.set(y as f32);
+                    scrubber.scrub_to(y as f32);
+                }
             }
         });
         let weak = self.downgrade();
         drag.connect_drag_update(move |_, _, dy| {
             if let Some(scrubber) = weak.upgrade() {
                 let y = scrubber.imp().drag_start.get() + dy as f32;
-                scrubber.scrub_to(y);
+                if scrubber.imp().compact.get() {
+                    scrubber.drag_handle_to(y);
+                } else {
+                    scrubber.scrub_to(y);
+                }
             }
         });
         let weak = self.downgrade();
@@ -189,6 +279,50 @@ impl TimelineScrubber {
         self.queue_draw();
     }
 
+    fn drag_handle_to(&self, handle_y: f32) {
+        let (top, track_h) = self.track();
+        let travel = (track_h - HANDLE_H).max(1.0);
+        if let Some(adj) = self.imp().adjustment.get() {
+            let fraction = f64::from(((handle_y - top) / travel).clamp(0.0, 1.0));
+            adj.set_value(fraction * (adj.upper() - adj.page_size()));
+        }
+    }
+
+    fn draw_handle(
+        &self,
+        snapshot: &gtk::Snapshot,
+        index: &TimelineIndex,
+        sections: &[LaidSection],
+    ) {
+        let handle = self.handle_rect();
+        rounded(
+            snapshot,
+            &handle,
+            HANDLE_W / 2.0,
+            &gdk::RGBA::new(0.0, 0.0, 0.0, 0.6),
+        );
+        let grip_w = HANDLE_W * 0.4;
+        for offset in [-3.0, 3.0] {
+            let grip = Rect::new(
+                handle.x() + (HANDLE_W - grip_w) / 2.0,
+                handle.y() + HANDLE_H / 2.0 + offset - 1.0,
+                grip_w,
+                2.0,
+            );
+            snapshot.append_color(&gdk::RGBA::new(1.0, 1.0, 1.0, 0.85), &grip);
+        }
+        if !self.imp().dragging.get() {
+            return;
+        }
+        let Some(canvas) = self.imp().canvas.get() else {
+            return;
+        };
+        let month = section_at(sections, canvas.scroll_top().max(0.0));
+        if let Some(label) = month.and_then(|month| month_short(&index.months().get(month)?.key)) {
+            self.draw_pill(snapshot, &label, handle.y() + HANDLE_H / 2.0);
+        }
+    }
+
     fn draw(&self, snapshot: &gtk::Snapshot) {
         let imp = self.imp();
         let Some(index) = imp.index.borrow().clone() else {
@@ -199,6 +333,10 @@ impl TimelineScrubber {
         };
         let (sections, canvas_h) = self.sections();
         if canvas_h <= 0.0 {
+            return;
+        }
+        if imp.compact.get() {
+            self.draw_handle(snapshot, &index.borrow(), &sections);
             return;
         }
         let (top, track_h) = self.track();
