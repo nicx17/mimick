@@ -76,6 +76,8 @@ mod imp {
         /// Immich user id of the owner; empty for local files.
         #[property(get, set)]
         owner_id: RefCell<String>,
+        #[property(get, set)]
+        local_date_time: RefCell<String>,
     }
 
     #[glib::object_subclass]
@@ -109,6 +111,7 @@ pub struct AssetInit<'a> {
     pub is_archived: bool,
     pub is_edited: bool,
     pub owner_id: &'a str,
+    pub local_date_time: &'a str,
 }
 
 impl AssetObject {
@@ -129,6 +132,7 @@ impl AssetObject {
             .property("is-archived", init.is_archived)
             .property("is-edited", init.is_edited)
             .property("owner-id", init.owner_id)
+            .property("local-date-time", init.local_date_time)
             .build()
     }
 
@@ -179,6 +183,7 @@ mod tests {
             is_archived: false,
             is_edited: true,
             owner_id: "me",
+            local_date_time: "",
         });
         assert!(object.is_edited());
         assert_eq!(object.owner_id(), "me");

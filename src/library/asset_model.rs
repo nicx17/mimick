@@ -117,6 +117,41 @@ impl LibraryAssetModel {
         self.items_changed(0, prev_n, new_n);
     }
 
+    /// Insert one timeline month at `position` with a single `items_changed`.
+    pub fn insert(&self, ctx: &AppContext, position: u32, assets: &[LibraryAsset]) {
+        if assets.is_empty() {
+            return;
+        }
+        let objects = build_asset_objects(assets, ctx);
+        let added = objects.len() as u32;
+        let at = {
+            let mut items = self.imp().items.borrow_mut();
+            let at = (position as usize).min(items.len());
+            items.splice(at..at, objects);
+            at as u32
+        };
+        self.items_changed(at, 0, added);
+    }
+
+    /// Remove matching items in place; returns their former positions, ascending.
+    pub fn remove_ids(&self, ids: &[String]) -> Vec<u32> {
+        let ids: std::collections::HashSet<&str> = ids.iter().map(String::as_str).collect();
+        let positions: Vec<u32> = self
+            .imp()
+            .items
+            .borrow()
+            .iter()
+            .enumerate()
+            .filter(|(_, item)| ids.contains(item.id().as_str()))
+            .map(|(position, _)| position as u32)
+            .collect();
+        for &position in positions.iter().rev() {
+            self.imp().items.borrow_mut().remove(position as usize);
+            self.items_changed(position, 1, 0);
+        }
+        positions
+    }
+
     /// Append `AssetObject`s with a tail-only `items_changed`, leaving the viewport alone.
     /// Used by the staging view drop handler.
     pub fn append_objects(&self, objects: &[AssetObject]) {
@@ -215,6 +250,10 @@ fn remote_asset_object(asset: &LibraryAsset, ctx: &AppContext) -> AssetObject {
         is_archived: asset.is_archived(),
         is_edited: asset.is_edited,
         owner_id: &asset.owner_id,
+        local_date_time: asset
+            .local_date_time
+            .as_deref()
+            .unwrap_or(&asset.created_at),
     });
     if let Some(path) = local_match {
         object.set_property("local-path", path);
@@ -233,4 +272,22 @@ fn asset_dimensions(asset: &LibraryAsset) -> (u32, u32) {
         asset.width.filter(|v| *v > 0).or(exif_w).unwrap_or(0),
         asset.height.filter(|v| *v > 0).or(exif_h).unwrap_or(0),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn remove_ids_reports_positions() {
+        let model = LibraryAssetModel::new();
+        model.reset_with_objects(
+            ["a", "b", "c", "d"]
+                .iter()
+                .map(|id| AssetObject::new_local(id, id, "image/jpeg", "", "IMAGE", ""))
+                .collect(),
+        );
+        assert_eq!(model.remove_ids(&["b".into(), "d".into()]), [1, 3]);
+        assert_eq!(model.n_items(), 2);
+    }
 }

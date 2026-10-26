@@ -448,6 +448,7 @@ mod tests {
             is_archived: false,
             is_edited: false,
             owner_id: "",
+            local_date_time: "",
         })
     }
 
