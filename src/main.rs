@@ -69,7 +69,7 @@ fn consume_flag(flag: &parking_lot::Mutex<bool>) -> bool {
     }
 }
 
-/// Cross-thread UI requests: the tray task sets them and a GTK timer consumes them.
+/// Cross-thread UI requests: the tray task sets them and wakes the GTK thread to consume them.
 /// `Arc<Mutex<bool>>` is Send + Sync, so the flags can cross into the tray's Tokio
 /// task while the application handle itself stays on the GTK thread.
 #[derive(Clone, Default)]
@@ -79,6 +79,7 @@ struct UiFlags {
     quit: Arc<Mutex<bool>>,
     pause: Arc<Mutex<bool>>,
     sync_now: Arc<Mutex<bool>>,
+    wake: Arc<tokio::sync::Notify>,
 }
 
 #[tokio::main]
@@ -246,7 +247,7 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
     spawn_background_tasks(ctx, rx, manual_sync_rx, background_sync_enabled);
 
     let flags = UiFlags::default();
-    poll_ui_flags(app.clone(), flags.clone());
+    listen_for_ui_flags(app.clone(), flags.clone());
     tokio::spawn(run_tray(tray_library_enabled, flags));
 }
 
@@ -580,15 +581,20 @@ async fn refresh_connection_status(ctx: Arc<AppContext>) {
     }
 }
 
-/// GTK-side: poll the flags every 250ms on the main thread.
+/// GTK-side: handle the flags on the main thread each time the tray raises one.
 /// The application handle stays on the GTK thread and never enters Tokio tasks.
-fn poll_ui_flags(app: adw::Application, flags: UiFlags) {
-    glib::timeout_add_local(std::time::Duration::from_millis(250), move || {
-        handle_ui_flags(&app, &flags)
+fn listen_for_ui_flags(app: adw::Application, flags: UiFlags) {
+    glib::MainContext::default().spawn_local(async move {
+        loop {
+            flags.wake.notified().await;
+            if matches!(handle_ui_flags(&app, &flags), glib::ControlFlow::Break) {
+                break;
+            }
+        }
     });
 }
 
-/// Act on pending tray requests; returns `Break` after quitting to stop the timer.
+/// Act on pending tray requests; returns `Break` after quitting to stop listening.
 fn handle_ui_flags(app: &adw::Application, flags: &UiFlags) -> glib::ControlFlow {
     if consume_flag(&flags.settings) {
         let ctx = APP_CONTEXT
@@ -660,6 +666,7 @@ async fn run_tray(library_enabled: bool, flags: UiFlags) {
         if !forwarded {
             break;
         }
+        flags.wake.notify_one();
     }
 }
 
