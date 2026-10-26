@@ -159,6 +159,7 @@ struct LibraryWindowUi {
     split: libadwaita::OverlaySplitView,
     drop_overlay: gtk::Revealer,
     timeline: RefCell<Option<Rc<timeline::Timeline>>>,
+    scrubber: timeline::scrubber::TimelineScrubber,
 }
 
 /// Build and display the main library window application layout.

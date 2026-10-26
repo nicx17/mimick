@@ -20,6 +20,7 @@ use crate::library::search_view::{SearchViewParts, build_search_view};
 use crate::library::sidebar::{SidebarParts, build_sidebar};
 
 use super::shared_links_view::{SharedLinksView, build_shared_links_view};
+use super::timeline::scrubber::TimelineScrubber;
 use super::trash_view::{self, TrashControls};
 use super::{LibraryWindowUi, build_drop_overlay, build_loading_view, build_status_view};
 
@@ -82,6 +83,7 @@ pub(super) struct ContentParts {
     search_view: SearchViewParts,
     controls: ControlsParts,
     stack: gtk::Stack,
+    scrubber: TimelineScrubber,
     error_label: gtk::Label,
     transfer: TransferParts,
     pub album_link: AlbumLinkParts,
@@ -145,7 +147,7 @@ impl ContentParts {
         let grid = build_grid_view(ctx.clone(), select_toggle, narrow);
         let explore = build_explore_view();
         let albums = build_albums_view();
-        let (stack, error_label) = build_content_stack(&grid, &explore, &albums);
+        let (stack, error_label, scrubber) = build_content_stack(&grid, &explore, &albums);
         let shared_links = build_shared_links_view();
         stack.add_named(&shared_links.root, Some("shared-links"));
         let people = super::people_view::build_people_view();
@@ -181,6 +183,7 @@ impl ContentParts {
             search_view: build_search_view(),
             controls: build_controls(),
             stack,
+            scrubber,
             error_label,
             transfer: build_transfer_indicator(),
             album_link,
@@ -229,6 +232,7 @@ impl LibraryWindowUi {
             bottom_nav: content.bottom_nav,
             features: Cell::default(),
             content_stack: content.stack,
+            scrubber: content.scrubber,
             error_label: content.error_label,
             transfer: content.transfer,
             search_view: content.search_view,
@@ -361,7 +365,7 @@ fn build_content_stack(
     grid: &GridViewParts,
     explore: &ExploreViewParts,
     albums: &AlbumsViewParts,
-) -> (gtk::Stack, gtk::Label) {
+) -> (gtk::Stack, gtk::Label, TimelineScrubber) {
     let stack = gtk::Stack::builder()
         .vexpand(true)
         .hexpand(true)
@@ -385,10 +389,13 @@ fn build_content_stack(
     stack.add_named(&build_loading_view(), Some("loading"));
     stack.add_named(&empty_view, Some("empty"));
     stack.add_named(&error_view, Some("error"));
-    stack.add_named(&grid.scrolled, Some("grid"));
+    let scrubber = TimelineScrubber::new(&grid.canvas, &grid.scrolled);
+    let grid_overlay = gtk::Overlay::builder().child(&grid.scrolled).build();
+    grid_overlay.add_overlay(&scrubber);
+    stack.add_named(&grid_overlay, Some("grid"));
     stack.add_named(&explore.root, Some("explore"));
     stack.add_named(&albums.root, Some("albums"));
-    (stack, error_label)
+    (stack, error_label, scrubber)
 }
 
 fn build_transfer_indicator() -> TransferParts {

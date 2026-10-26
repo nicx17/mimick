@@ -3,6 +3,8 @@
 pub mod dates;
 pub mod index;
 pub mod layout;
+pub mod marks;
+pub mod scrubber;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -108,7 +110,11 @@ fn show(
         waiters: RefCell::default(),
     })));
     ui.grid.model.reset_with_objects(Vec::new());
-    ui.grid.canvas.set_timeline(Some(index));
+    ui.grid.canvas.set_timeline(Some(index.clone()));
+    ui.scrubber.set_index(Some(index));
+    ui.grid
+        .scrolled
+        .set_vscrollbar_policy(gtk::PolicyType::External);
     super::sync_content_state(ui);
     if let Some((month, offset)) = anchor {
         scroll_when_laid_out(ui, month, offset);
@@ -118,6 +124,10 @@ fn show(
 pub(super) fn close(ui: &LibraryWindowUi) {
     if ui.timeline.take().is_some() {
         ui.grid.canvas.set_timeline(None);
+        ui.scrubber.set_index(None);
+        ui.grid
+            .scrolled
+            .set_vscrollbar_policy(gtk::PolicyType::Automatic);
     }
 }
 
