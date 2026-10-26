@@ -215,9 +215,9 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
 #[cfg(target_env = "gnu")]
 fn release_freed_memory() {
     unsafe extern "C" {
-        fn malloc_trim(pad: usize) -> i32;
+        safe fn malloc_trim(pad: usize) -> i32;
     }
-    unsafe { malloc_trim(0) };
+    malloc_trim(0);
 }
 
 #[cfg(not(target_env = "gnu"))]
