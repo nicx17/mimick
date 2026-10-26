@@ -111,7 +111,9 @@ Thread-safe upload orchestrator using a single `Arc<Mutex<AppState>>` for all co
 - Active URL cached in `Mutex<Option<String>>`; cleared on network error to force re-check
 - Files streamed with `reqwest::multipart::Part::stream_with_length` -- zero RAM buffering
 - Full 40-char SHA-1 hex used as `device_asset_id` for reliable Immich server-side deduplication
-- Connection pool: max 1 idle connection per host, 30s idle timeout
+- Connection pool: up to 24 idle connections per host (one per download slot below), 90s idle timeout, so thumbnail bursts reuse connections
+- Image downloads use two permit pools: 16 for grid thumbnails and 8 for previews and originals, so the lightbox never waits behind the grid
+- Explore places come from `GET /api/search/cities` (one asset per city), falling back to paging `/api/search/metadata` when that fails
 - Single shared instance via `AppContext` -- no new reqwest pool per window open
 - Structured error diagnostics with actionable guidance for common failure modes
 - Extended endpoints for library integration (Explore, Albums, Search, Smart Search, OCR)
@@ -135,6 +137,7 @@ Provides fast, responsive image previews for the Library View.
 - Two-tier caching mechanism:
   - **Memory Cache**: `lru::LruCache` for instantaneous rendering while browsing.
   - **Disk Cache**: Persisted to `~/.cache/mimick/thumbnails/` to survive application restarts.
+- The memory cache is cleared when the library window closes; 3s later `malloc_trim(0)` hands the freed memory back to the system, since glibc otherwise keeps it in per-thread arenas.
 
 ### 7. Local Source & Album Sync (`src/library/local_source.rs`, `src/library/album_sync.rs`)
 
@@ -176,6 +179,7 @@ Maintains a persistent map of previously synced files at `~/.local/share/mimick/
 - Used during startup scans to skip unchanged files and avoid redundant uploads
 - Detects when a file's content has changed (checksum mismatch) and re-queues it
 - Detects album-target changes and triggers reassociation without re-uploading the file data
+- Written as compact JSON only when something changed: every 10s on the blocking pool, and when the upload queue goes idle (after the shared state lock is released)
 
 ### 12. Notifications (`src/notifications.rs`)
 

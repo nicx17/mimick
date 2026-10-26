@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - The photo grids now load thumbnails only where scrolling stops: placeholders show while you fling, loads for tiles you scrolled past are cancelled, and the nearest tiles load first. Scrolling far no longer loads every photo on the way.
+- Grid thumbnails now load 16 at a time (was 8) over connections that stay open between scrolls, and photos opened in the lightbox no longer wait behind grid thumbnails.
+- **Explore → Places** now loads with one request instead of scanning the whole library.
 - Removed the **Timeline** button; Photos sorted by Newest is the timeline.
 - RAW decoding now uses LibRaw 0.21.3 (was 0.20.1), adding support for cameras such as the Sony A7 IV, Canon EOS R3/R7/R10, Fujifilm X-H2S, OM System OM-1, Leica M11, and Nikon Z9 (standard compression).
 - Grid thumbnails for RAW files without an embedded preview now use a faster half-size decode.
@@ -38,6 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - RAW files that LibRaw can't open now still show their embedded JPEG preview instead of "Preview unavailable".
 - 16-bit embedded RAW thumbnails no longer display as garbled images.
 - The RAW decode cache no longer discards an entry that is being written when the same file is opened again.
+- Closing the library window now gives its memory back to the system; before, Mimick could stay at over 1 GB after the window was closed. Its background server checks also stop.
+- Long albums, Favorites, and search results no longer get slower as more photos load, and deleting or archiving a photo in them no longer rebuilds the whole grid.
+- The library no longer freezes briefly when a batch of uploads finishes, and the sync index is no longer copied every 10 seconds when nothing has changed.
 
 ## [9.11.0] - 2026-10-17
 
