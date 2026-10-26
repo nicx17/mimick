@@ -84,9 +84,29 @@ impl ImmichApiClient {
     }
 
     /// Fetch all unique cities that have at least one asset with EXIF city data.
+    pub async fn fetch_all_places(&self) -> Result<Vec<PlaceItem>, String> {
+        match self.fetch_places_by_city().await {
+            Ok(places) => Ok(places),
+            Err(err) => {
+                log::debug!("search/cities failed ({err}); walking the library for places");
+                self.walk_places().await
+            }
+        }
+    }
+
+    async fn fetch_places_by_city(&self) -> Result<Vec<PlaceItem>, String> {
+        let assets: Vec<CityAsset> = self
+            .send_json(reqwest::Method::GET, "/api/search/cities", None)
+            .await?
+            .json()
+            .await
+            .map_err(|err| err.to_string())?;
+        Ok(places_from_cities(assets))
+    }
+
     /// Pages through `/api/search/metadata` collecting one representative asset
     /// per city. Caps at 500 pages to bound runtime on very large libraries.
-    pub async fn fetch_all_places(&self) -> Result<Vec<PlaceItem>, String> {
+    async fn walk_places(&self) -> Result<Vec<PlaceItem>, String> {
         let base_url = self
             .get_active_url()
             .await
@@ -496,5 +516,56 @@ impl ImmichApiClient {
                 Err(err.to_string())
             }
         }
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct CityAsset {
+    id: String,
+    #[serde(rename = "exifInfo", default)]
+    exif_info: Option<CityExif>,
+}
+
+#[derive(serde::Deserialize)]
+struct CityExif {
+    #[serde(default)]
+    city: Option<String>,
+}
+
+fn places_from_cities(assets: Vec<CityAsset>) -> Vec<PlaceItem> {
+    let mut places: Vec<PlaceItem> = assets
+        .into_iter()
+        .filter_map(|asset| {
+            Some(PlaceItem {
+                city: asset.exif_info?.city?,
+                asset_id: asset.id,
+            })
+        })
+        .collect();
+    places.sort_by(|a, b| a.city.cmp(&b.city));
+    places.dedup_by(|a, b| a.city == b.city);
+    places
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn city_assets_become_one_place_per_city_sorted() {
+        let assets: Vec<CityAsset> = serde_json::from_value(serde_json::json!([
+            {"id": "b1", "exifInfo": {"city": "Panaji", "make": "Google", "fNumber": 1.7}},
+            {"id": "a1", "exifInfo": {"city": "Mumbai"}},
+            {"id": "n1", "exifInfo": {}},
+            {"id": "x1"},
+            {"id": "b2", "exifInfo": {"city": "Panaji"}}
+        ]))
+        .unwrap();
+        let places = places_from_cities(assets);
+        let got: Vec<(&str, &str)> = places
+            .iter()
+            .map(|place| (place.city.as_str(), place.asset_id.as_str()))
+            .collect();
+        assert_eq!(got, [("Mumbai", "a1"), ("Panaji", "b1")]);
     }
 }
