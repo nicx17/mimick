@@ -94,6 +94,7 @@ const PAGE_SIZE: u32 = 50;
 const MAP_AREA_PAGE_SIZE: u32 = 32;
 
 mod texture_decode;
+mod timeline;
 use texture_decode::{decode_raw_thumbnail_texture, load_texture_blocking};
 pub use texture_decode::{set_raw_cache_enabled, set_raw_full_decode};
 
