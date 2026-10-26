@@ -151,7 +151,7 @@ Supports bidirectional synchronization directly from the Albums page.
 
 - Uses `ksni` (D-Bus StatusNotifierItem)
 - Clicking tray actions sends signals back to the GTK main loop -- **no child process spawned**
-- A `glib::timeout_add_local(250ms)` in the GTK main loop polls an `Arc<Mutex<bool>>` flag set by the Tokio watch-forward task; on trigger, calls `open_settings_if_needed` in-process
+- The Tokio watch-forward task sets an `Arc<Mutex<bool>>` flag and wakes a `tokio::sync::Notify`; a `spawn_local` future on the GTK main loop awaits it and handles the request in-process (no polling timer)
 
 ### 9. Runtime Environment (`src/runtime_env.rs`)
 

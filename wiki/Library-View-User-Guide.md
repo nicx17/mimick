@@ -91,7 +91,7 @@ If Mimick can't read these settings (for example, an API key without `userPrefer
 
 Assets load in pages of 50. Scroll to the bottom of the grid to load the next page. The footer label shows the current count.
 
-Thumbnails are loaded asynchronously. A placeholder is shown while the thumbnail downloads. Decoded thumbnails are cached in RAM up to the configured limit (`library_thumbnail_cache_mb`, default 80 MB).
+Thumbnails are loaded asynchronously. A placeholder is shown while the thumbnail downloads. Decoded thumbnails are cached in RAM (up to 20% of your RAM, between 500 MB and 3 GB) and freed when you close the library window.
 
 ### Sorting
 
@@ -381,7 +381,6 @@ These options are in **Settings → Behavior** and apply to the library view.
 | **Show unnamed faces** | On | Show people with no assigned name in the Explore view. |
 | **Show hidden faces** | Off | Include hidden people in the Explore view. |
 | **Date Headings** | By Day | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
-| **Thumbnail Memory Cache (MB)** | 80 | RAM cap for decoded thumbnails. Increase to reduce re-fetches when scrolling through large grids. |
 | **Download Folder** | Not set | First download opens a folder picker; the chosen path is saved and reused for subsequent downloads. |
 
 See [Performance Tuning](Performance-Tuning) for guidance on choosing values for these settings.

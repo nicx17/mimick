@@ -41,16 +41,11 @@ Switch from Full to New Files Only once your initial sync is complete. Startup t
 
 ## Thumbnail Memory Cache
 
-**Setting:** Settings → Behavior → Thumbnail Memory Cache (MB, default 80, range 16–1024)
+There is no setting for this: Mimick sizes the cache from your RAM.
 
-The library view decodes thumbnails into RAM for fast rendering. This cap controls how much memory decoded thumbnails can occupy before older entries are evicted.
+The library view keeps decoded thumbnails and lightbox previews in memory so scrolling back is instant. The cache can grow to 20% of your RAM, but never below 500 MB or above 3 GB. When it's full, the images you looked at longest ago are dropped first. Images also stay in the on-disk cache (**Disk Cache Size** in Settings), so a dropped image reloads from disk instead of the server.
 
-- Increasing the cap speeds up scrolling back through previously visited pages.
-- Decreasing it frees RAM at the cost of re-fetching thumbnails when scrolling back.
-- On systems with limited RAM, leave at default or reduce to 32–48 MB.
-- On systems with ≥16 GB RAM and a large library, 256–512 MB can noticeably reduce re-fetches.
-
-Changing the cache size takes effect after restarting Mimick.
+When you close the library window, the cache is emptied and the memory is given back to the system, so Mimick running in the tray uses little RAM.
 
 ---
 
@@ -71,5 +66,5 @@ For libraries with more than ~50,000 files:
 
 1. Set **Startup Catch-Up Mode** to **New Files Only** after the initial sync.
 2. Keep **Upload Workers** at 3–5 unless uploads are a bottleneck.
-3. Set **Thumbnail Memory Cache** to 256 MB or higher if RAM allows.
+3. Close the library window when you're done browsing; that frees the memory its thumbnail cache used.
 4. Leave **Full-Resolution Preview** off unless needed.

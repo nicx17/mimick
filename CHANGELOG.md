@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The photo grids now load thumbnails only where scrolling stops: placeholders show while you fling, loads for tiles you scrolled past are cancelled, and the nearest tiles load first. Scrolling far no longer loads every photo on the way.
 - Grid thumbnails now load 16 at a time (was 8) over connections that stay open between scrolls, and photos opened in the lightbox no longer wait behind grid thumbnails.
 - **Explore → Places** now loads with one request instead of scanning the whole library.
+- Grid pages, timeline months, and search results no longer ask Immich for every photo's full camera details, so they download and load faster and use less memory.
+- The lightbox now loads the previous and next photos in the background, so stepping through photos is faster.
+- Mimick wakes up less often while idle in the tray: tray actions and the upload queue no longer check for work several times a second.
 - Removed the **Timeline** button; Photos sorted by Newest is the timeline.
 - RAW decoding now uses LibRaw 0.21.3 (was 0.20.1), adding support for cameras such as the Sony A7 IV, Canon EOS R3/R7/R10, Fujifilm X-H2S, OM System OM-1, Leica M11, and Nikon Z9 (standard compression).
 - Grid thumbnails for RAW files without an embedded preview now use a faster half-size decode.
