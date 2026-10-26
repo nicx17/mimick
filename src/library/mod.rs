@@ -1589,6 +1589,7 @@ fn local_to_library_asset(local: LocalAsset) -> LibraryAsset {
         visibility: String::new(),
         is_edited: false,
         owner_id: String::new(),
+        local_date_time: None,
     }
 }
 

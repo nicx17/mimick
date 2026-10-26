@@ -385,6 +385,7 @@ mod tests {
             visibility: String::new(),
             is_edited: false,
             owner_id: String::new(),
+            local_date_time: None,
         }
     }
 
