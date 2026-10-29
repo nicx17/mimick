@@ -12,7 +12,7 @@ use crate::library::asset_object::AssetObject;
 
 use super::LibraryWindowUi;
 use super::actions::{TrashTarget, remove_assets_from_grid};
-use super::context_menu::show_alert_dialog;
+use super::context_menu::show_error_toast;
 use super::state::LibrarySource;
 
 /// Icon for a heart button showing `favorite`.
@@ -59,7 +59,7 @@ pub(super) fn toggle_favorite(ui: &Rc<LibraryWindowUi>, item: &AssetObject, hook
         if let Err(err) = ui.ctx.api_client.update_asset(&asset_id, &update).await {
             show_favorite(&ui, &item, &asset_id, !favorite);
             (hooks.on_change)(!favorite);
-            show_alert_dialog(&ui, "Could Not Update Favorite", &err);
+            show_error_toast(&ui, "Couldn't update the favorite", &err);
             return;
         }
         if !favorite && drop_from_favorites_view(&ui, &asset_id) {

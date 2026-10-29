@@ -611,6 +611,12 @@ fn build_filters_split(
         .sync_create()
         .bidirectional()
         .build();
+    let form = search_view.root.clone();
+    split.connect_show_sidebar_notify(move |split| {
+        if split.shows_sidebar() && !form.reveals_child() {
+            split.set_show_sidebar(false);
+        }
+    });
     split
 }
 

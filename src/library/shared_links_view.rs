@@ -12,7 +12,7 @@ use crate::api_client::SharedLink;
 
 use super::LibraryWindowUi;
 use super::albums_view::spawn_thumbnail;
-use super::context_menu::show_alert_dialog;
+use super::context_menu::{show_alert_dialog, show_error_toast};
 use super::shared_link_dialog::{self, LinkDialogMode, copy_to_clipboard, format_expiry};
 
 const COPY_ICON: &str = "edit-copy-symbolic";
@@ -217,7 +217,7 @@ fn copy_button(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::Button {
         glib::MainContext::default().spawn_local(async move {
             match copy_to_clipboard(&ui, &link).await {
                 Ok(_) => show_copied(&button),
-                Err(err) => show_alert_dialog(&ui, "Could Not Build Link", &err),
+                Err(err) => show_error_toast(&ui, "Couldn't copy the link", &err),
             }
         });
     });

@@ -11,7 +11,7 @@ use crate::api_client::{BulkOutcome, LibraryAlbum};
 use super::LibraryWindowUi;
 use super::album_assets::{open_album, refresh_albums, showing_album};
 use super::albums_view::spawn_thumbnail;
-use super::context_menu::show_alert_dialog;
+use super::context_menu::{show_alert_dialog, show_error_toast};
 use super::dialogs::{TextPrompt, prompt_text, toast_with_action};
 use super::header_format::count_label;
 
@@ -106,9 +106,9 @@ pub(super) fn add_and_report(
                     super::navigation::reload_current(&ui);
                 }
             }
-            Err(err) => show_alert_dialog(
+            Err(err) => show_error_toast(
                 &ui,
-                "Could Not Add to Album",
+                "Couldn't add to the album",
                 &format!("Immich rejected the request: {err}"),
             ),
         }

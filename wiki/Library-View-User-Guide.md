@@ -6,7 +6,7 @@ The library view is an optional in-app browser for your Immich server's assets, 
 
 ## Enabling the Library View
 
-1. Open **Settings → Behavior → Enable Library View**.
+1. Open **Settings → App → Library View**.
 2. Save and restart Mimick.
 
 The library window opens instead of the settings window on the next launch. Settings remain accessible from the header bar gear button.
@@ -163,7 +163,7 @@ Use the mode dropdown next to the search entry:
 
 ### Filters
 
-Press **Filters** under the search entry to open the filters panel: it docks on the right of the results on wide windows and slides in over them on phones (swipe it away or press the close button). The panel has the text, type and flags, tag, date, camera, and location groups, with **Clear Filters** and **Search** at the bottom; on phones **Search** also closes the panel so you see the results. The **Filters** button shows how many filters are set, for example **Filters · 3**. The **Clear** button next to **Search** clears the query and the filters.
+Press **Filters** under the search entry to open the filters panel: it docks on the right of the results on wide windows and slides in over them on phones (swipe it away or press the close button). The panel has the text, type and flags, tag, date, camera, and location groups, with **Reset** (clears the filters, keeping your search text) and **Search** at the bottom; on phones **Search** also closes the panel so you see the results. The **Filters** button shows how many filters are set, for example **Filters · 3**. The **Clear** button next to **Filters** clears the search text and the filters.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search_view_with_thequickbrownfox_searched_ocr_mode.png" width="80%" alt="OCR search example" />
@@ -317,7 +317,7 @@ Click any asset in the grid to open it in the lightbox.
 | :-----------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------: |
 | ![Lightbox details on](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_on.png) | ![Lightbox details off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_off.png) |
 
-- The lightbox shows a preview image. If **Full Resolution Preview** is enabled in Settings → Behavior, it loads the original file instead of a server-generated proxy.
+- The lightbox shows a preview image. If **Open Originals in Lightbox** is on in Settings → Library, it loads the original file instead of a server-generated proxy.
 - **Edited photos**: Photos edited in Immich (cropped or rotated) show the edited version. Download and drag-out still give the original file.
 - **RAW Previews**: By default, RAW files display using their fast embedded previews. The extractor first scans the file for the largest embedded JPEG (catching the full-resolution preview on cameras that store both a tiny thumb and a full-res one — e.g. Sony ARW); if the file contains no JPEG at all (Samsung DNG, OnePlus DNG, and other phone DNGs that store their preview as uncompressed TIFF strips), it falls back to libraw's bitmap thumbnail with container orientation applied. You can toggle **Full RAW Decoding** in settings to perform a full sensor demosaic instead.
 - **Videos**: Clicking a video opens it in the lightbox with its thumbnail as a poster and a centered play badge. Click the badge (or press **Space**) to play it in the app. Local and synced videos play from disk; server videos stream from Immich, which serves its transcoded copy when one exists. Decoding uses the GPU (VA-API) when the codec is supported.
@@ -330,7 +330,7 @@ Click any asset in the grid to open it in the lightbox.
 - **Fullscreen** (header button or **F11**) shows the asset edge to edge on black. Move the pointer or tap to bring the header back (it hides again after 3 seconds); press **Esc**, **F11**, or the header button to leave. Left/Right and swipes still change assets.
 - **Download** saves the original file to the configured download folder.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
-- **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date** (local time). Opened from the right-click menu, **Edit Info…** also has a searchable **Time zone** row and shows the date in the photo's own time zone; the date is saved as shown, in the zone you pick. Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
+- **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, the time zone, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date**. The date shows in the photo's own time zone, and the searchable **Time zone** row changes it; the date is saved as shown, in the zone you pick. Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
 - **Location**: photos with GPS coordinates show a small map with a pin under **Coordinates**; click it to open the [Map](#map) there. The copy button next to the coordinates copies them for pasting elsewhere. **Set Location…** next to **Edit Info…** sets or changes the location (see [Setting a Location](#setting-a-location)). As in Immich, **Edit Info…** and **Set Location…** only appear on photos you own.
 - Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, **Set Location…**, and **Move to Trash**.
 - **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text and show a **Copy All Text** button over the photo.
@@ -398,7 +398,7 @@ Album sync is on-demand — it runs only when you press **Sync** and does not ru
 
 ## Library Settings
 
-These options are in **Settings → Behavior** and apply to the library view.
+These options are in the **Library**, **Grid Appearance**, **RAW Files**, and **Storage** sections of Settings, which appear when the library view is on.
 
 | Setting                     | Default | Effect                                                                                                                                 |
 | :-------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------- |

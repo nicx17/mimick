@@ -59,7 +59,7 @@ impl MasonryCanvas {
         let imp = self.imp();
         if (imp.border_gap.get() - gap).abs() > f32::EPSILON {
             imp.border_gap.set(gap);
-            imp.invalidate_layout();
+            imp.relayout_keeping_place();
             self.queue_draw();
         }
     }

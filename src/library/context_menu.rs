@@ -231,7 +231,6 @@ fn append_edit_buttons(
             edit_id.clone(),
             filename.clone(),
             on_edited.clone(),
-            true,
         )
     });
     append_location_button(menu, ui, item, id);
@@ -340,12 +339,16 @@ fn copy_asset_to_clipboard(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {
         let path = match original_path(&ui, &asset).await {
             Ok(path) => path,
             Err(err) => {
-                show_alert_dialog(&ui, "Copy Failed", &err);
+                show_error_toast(&ui, "Couldn't copy the photo", &err);
                 return;
             }
         };
         let Some(texture) = load_texture_oriented(&path).await else {
-            show_alert_dialog(&ui, "Copy Failed", "Could not decode the original image.");
+            show_error_toast(
+                &ui,
+                "Couldn't copy the photo",
+                "Could not decode the original image.",
+            );
             return;
         };
         if let Some(display) = gdk4::Display::default() {
@@ -358,7 +361,7 @@ fn open_asset_in_default_app(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {
     glib::MainContext::default().spawn_local(async move {
         match original_path(&ui, &asset).await {
             Ok(path) => open_local_with_default_app(&path.display().to_string()),
-            Err(err) => show_alert_dialog(&ui, "Open Failed", &err),
+            Err(err) => show_error_toast(&ui, "Couldn't open the file", &err),
         }
     });
 }
@@ -413,6 +416,20 @@ pub(super) async fn ensure_original_asset_path(
         .await;
     finish_download_item(&ui.ctx, remote_asset_id);
     result.map(|_| path).map_err(|err| err.to_string())
+}
+
+/// A failed quick action as a toast; "Details" opens the full message.
+pub(super) fn show_error_toast(ui: &LibraryWindowUi, title: &str, details: &str) {
+    let (window, title_text, details) = (ui.window.clone(), title.to_string(), details.to_string());
+    let toast = super::dialogs::toast_with_action(title, "Details", move || {
+        let alert = libadwaita::AlertDialog::builder()
+            .heading(&title_text)
+            .body(&details)
+            .build();
+        alert.add_response("ok", "OK");
+        alert.present(Some(&window));
+    });
+    ui.toasts.add_toast(toast);
 }
 
 pub(super) fn show_alert_dialog(ui: &LibraryWindowUi, heading: &str, body: &str) {

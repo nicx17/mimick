@@ -10,7 +10,7 @@ use std::rc::Rc;
 use adw::prelude::*;
 use glib::clone;
 use gtk::prelude::*;
-use gtk::{Box, Button, Entry, ListBox, Orientation, ScrolledWindow};
+use gtk::{Box, Button, ListBox, Orientation, ScrolledWindow};
 use libadwaita as adw;
 
 use crate::config::{FolderRules, FolderSyncMethod, StartupCatchupMode};
@@ -64,7 +64,6 @@ pub(super) fn add_folder_row(
         uploads_to_library: Rc::new(Cell::new(entry.uploads_to_library())),
         rules: Rc::new(RefCell::new(initial_rules(entry))),
         path,
-        base_subtitle,
     };
     add_target_row(&row, albums_ref, on_settings_changed.clone());
     add_rules_row(
@@ -118,13 +117,9 @@ fn add_target_row(
     connect_picker_button(&row.action_row, albums_ref, picker);
 }
 
-/// Folder subtitle plus a status line that the status poller updates later.
+/// Folder subtitle; each folder's sync state is shown on the Status page.
 fn initial_subtitle(base_subtitle: &str) -> String {
-    if base_subtitle.is_empty() {
-        "Status: Idle".to_string()
-    } else {
-        format!("{base_subtitle}\nStatus: Idle")
-    }
+    base_subtitle.to_string()
 }
 
 fn initial_target_label(entry: &WatchPathEntry) -> String {
@@ -306,8 +301,8 @@ fn rules_dialog_shell(
         .transient_for(parent)
         .modal(true)
         .title("Folder Rules")
-        .default_width(380)
-        .default_height(640)
+        .default_width(420)
+        .default_height(680)
         .width_request(360)
         .build();
     let content = Box::builder()
@@ -326,10 +321,11 @@ fn rules_dialog_shell(
         .build();
     dialog.set_content(Some(&scroll));
     let title = gtk::Label::builder()
-        .label(format!("Rules for {}", display_watch_path(folder_path)))
+        .label(display_watch_path(folder_path))
         .halign(gtk::Align::Start)
         .ellipsize(gtk::pango::EllipsizeMode::Middle)
         .max_width_chars(28)
+        .css_classes(["title-4"])
         .build();
     content.append(&title);
     (dialog, content)
@@ -360,8 +356,8 @@ struct RulesForm {
     delete_album_to_folder: adw::SwitchRow,
     ignore_hidden: adw::SwitchRow,
     include_xmp: adw::SwitchRow,
-    max_size_entry: Entry,
-    extensions_entry: Entry,
+    max_size_entry: adw::EntryRow,
+    extensions_entry: adw::EntryRow,
 }
 
 fn switch_row(title: &str, subtitle: &str, subtitle_lines: i32, active: bool) -> adw::SwitchRow {
@@ -386,13 +382,17 @@ fn combo_row(title: &str, subtitle: &str, items: &[&str], selected: u32) -> adw:
     row
 }
 
-fn small_entry(placeholder: &str, text: &str) -> Entry {
-    Entry::builder()
-        .placeholder_text(placeholder)
-        .width_request(0)
-        .max_width_chars(16)
-        .text(text)
-        .build()
+fn entry_row(title: &str, text: &str) -> adw::EntryRow {
+    adw::EntryRow::builder().title(title).text(text).build()
+}
+
+/// What each sync method does, shown under the Sync Method row.
+pub(super) fn sync_method_description(index: u32) -> &'static str {
+    match index {
+        0 => "Uploads new photos from this folder and downloads new album photos into it.",
+        2 => "Downloads new album photos into this folder. Nothing is uploaded.",
+        _ => "Uploads new photos from this folder. Nothing is downloaded.",
+    }
 }
 
 impl RulesForm {
@@ -403,18 +403,14 @@ impl RulesForm {
         let form = Self {
             sync_method: combo_row(
                 "Sync Method",
-                "Controls which direction this folder syncs.",
-                &[
-                    "Full Sync",
-                    "Only Upload from Folder",
-                    "Only Download to Folder",
-                ],
+                sync_method_description(sync_method_index(&current.sync_method)),
+                &["Full Sync", "Upload Only", "Download Only"],
                 sync_method_index(&current.sync_method),
             ),
             startup_scan: combo_row(
-                "Startup Scan",
-                "Controls how this folder is scanned when Mimick starts.",
-                &["Full Scan", "Recent Only (7d)", "New Files Only"],
+                "When Mimick Starts, Check",
+                "Which files in this folder are checked at startup.",
+                &super::behavior::CATCHUP_LABELS,
                 catchup_index(&current.startup_catchup_mode.clone().unwrap_or(fallback)),
             ),
             delete_folder_to_album,
@@ -426,6 +422,10 @@ impl RulesForm {
         };
         if uploads_to_library {
             form.restrict_to_library();
+        } else {
+            form.sync_method.connect_selected_notify(|row| {
+                row.set_subtitle(sync_method_description(row.selected()));
+            });
         }
         form
     }
@@ -441,19 +441,36 @@ impl RulesForm {
     }
 
     fn append_to(&self, content: &Box) {
-        let list_box = gtk::ListBox::builder()
-            .selection_mode(gtk::SelectionMode::None)
-            .css_classes(vec![String::from("boxed-list")])
-            .build();
-        list_box.append(&self.sync_method);
-        list_box.append(&self.startup_scan);
-        list_box.append(&self.delete_folder_to_album);
-        list_box.append(&self.delete_album_to_folder);
-        list_box.append(&self.ignore_hidden);
-        list_box.append(&self.include_xmp);
-        content.append(&list_box);
-        content.append(&self.max_size_entry);
-        content.append(&self.extensions_entry);
+        let section = |title: &str, rows: &[&gtk::Widget]| {
+            let group = adw::PreferencesGroup::builder().title(title).build();
+            for row in rows {
+                group.add(*row);
+            }
+            content.append(&group);
+        };
+        section(
+            "Sync",
+            &[
+                self.sync_method.upcast_ref(),
+                self.startup_scan.upcast_ref(),
+            ],
+        );
+        section(
+            "Deletions",
+            &[
+                self.delete_folder_to_album.upcast_ref(),
+                self.delete_album_to_folder.upcast_ref(),
+            ],
+        );
+        section(
+            "Files",
+            &[
+                self.ignore_hidden.upcast_ref(),
+                self.include_xmp.upcast_ref(),
+                self.max_size_entry.upcast_ref(),
+                self.extensions_entry.upcast_ref(),
+            ],
+        );
     }
 
     /// Rules from the form. Album-to-folder mirroring keeps its stored value while
@@ -474,15 +491,15 @@ impl RulesForm {
 
 fn deletion_rows(current: &FolderRules) -> (adw::SwitchRow, adw::SwitchRow) {
     let folder_to_album = switch_row(
-        "Mirror Folder Deletions to Album",
-        "When a synced folder file is gone, move the matching Immich asset to trash.",
+        "Delete from Immich Too",
+        "When you delete a photo from this folder, move its copy in Immich to the trash. It can be restored from the Immich trash.",
         3,
         current.delete_folder_to_album,
     );
     // Forced off and insensitive until the Flatpak Trash portal fix lands upstream.
     let album_to_folder = switch_row(
-        "Mirror Album Deletions to Folder",
-        "Currently unavailable — waiting on an upstream Flatpak Trash portal fix. The setting stays off until then.",
+        "Delete from This Folder Too",
+        "Not available yet: waiting on a fix to the Flatpak trash portal.",
         4,
         false,
     );
@@ -492,14 +509,14 @@ fn deletion_rows(current: &FolderRules) -> (adw::SwitchRow, adw::SwitchRow) {
 
 fn filter_rows(current: &FolderRules) -> (adw::SwitchRow, adw::SwitchRow) {
     let ignore_hidden = switch_row(
-        "Ignore Hidden Files / Folders",
-        "Skip paths that contain hidden components such as .cache or .thumbnails.",
+        "Skip Hidden Files",
+        "Ignore files and folders starting with a dot, such as .thumbnails.",
         3,
         current.ignore_hidden,
     );
     let include_xmp = switch_row(
-        "Include XMP Sidecars",
-        "Attach companion .xmp files alongside media during upload.",
+        "Upload XMP Sidecars",
+        "Send .xmp edit files along with their photos.",
         2,
         current.include_xmp_sidecar.unwrap_or(true),
     );
@@ -508,15 +525,15 @@ fn filter_rows(current: &FolderRules) -> (adw::SwitchRow, adw::SwitchRow) {
     (ignore_hidden, include_xmp)
 }
 
-fn limit_entries(current: &FolderRules) -> (Entry, Entry) {
+fn limit_entries(current: &FolderRules) -> (adw::EntryRow, adw::EntryRow) {
     let max_size = current
         .max_file_size_mb
         .map(|value| value.to_string())
         .unwrap_or_default();
     (
-        small_entry("Max size in MB (blank = no limit)", &max_size),
-        small_entry(
-            "Extensions: jpg,png,mp4",
+        entry_row("Largest File in MB (empty for no limit)", &max_size),
+        entry_row(
+            "Only These Types, e.g. jpg, png, mp4 (empty for all)",
             &current.allowed_extensions.join(", "),
         ),
     )
@@ -739,6 +756,13 @@ fn picker_dialog_shell(
 mod tests {
     use super::*;
 
+    #[test]
+    fn every_sync_method_explains_itself() {
+        assert!(sync_method_description(0).contains("downloads"));
+        assert!(sync_method_description(1).starts_with("Uploads new photos"));
+        assert!(sync_method_description(2).starts_with("Downloads"));
+    }
+
     fn albums(names: &[&str]) -> Vec<(String, String)> {
         names
             .iter()
@@ -818,8 +842,8 @@ mod tests {
 
     #[test]
     fn initial_row_values_follow_the_entry() {
-        assert_eq!(initial_subtitle(""), "Status: Idle");
-        assert_eq!(initial_subtitle("~/Pictures"), "~/Pictures\nStatus: Idle");
+        assert_eq!(initial_subtitle(""), "");
+        assert_eq!(initial_subtitle("~/Pictures"), "~/Pictures");
 
         let library = WatchPathEntry::WithConfig {
             path: "/home/user/Camera".into(),

@@ -19,6 +19,7 @@ mod app_context;
 mod autostart;
 mod cache_manager;
 mod config;
+mod debug_width;
 mod diagnostics;
 mod library;
 mod logging;
@@ -107,6 +108,7 @@ async fn main() {
     let shared_state_startup = shared_state.clone();
     app.connect_startup(move |app| {
         is_primary_instance_clone.store(true, Ordering::SeqCst);
+        crate::runtime_env::watch_metered_network();
         start_primary_instance(app, &shared_state_startup);
     });
 
@@ -224,6 +226,7 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
 
     let tray_library_enabled = config.data.library_view_enabled;
     let date_headings = config.data.library_date_headings;
+    let grid_style = app_context::GridStyle::from_config(&config.data);
     let ctx = Arc::new(AppContext {
         live_watch_paths: Arc::new(Mutex::new(config.data.watch_paths.clone())),
         config: Arc::new(parking_lot::RwLock::new(config)),
@@ -236,6 +239,7 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
         thumbnail_cache: Arc::new(ThumbnailCache::new(api_client)),
         library_state: Arc::new(parking_lot::Mutex::new(LibraryState::new())),
         date_headings: tokio::sync::watch::Sender::new(date_headings),
+        grid_style: tokio::sync::watch::Sender::new(grid_style),
         current_user_id: Arc::new(parking_lot::Mutex::new(None)),
         expected_self_deletions: Arc::new(app_context::RecentSelfPaths::default()),
         expected_self_downloads: Arc::new(app_context::RecentSelfPaths::default()),

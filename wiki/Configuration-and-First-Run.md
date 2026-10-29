@@ -214,7 +214,7 @@ Mimick includes an opt-in library browser for albums, Explore, and search.
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_showing_library_settings_and_watch_folders.png" width="60%" alt="Library settings" />
 </div>
 
-Enable it in **Settings → Behavior → Enable Library View**, then restart. See the [Library View user guide](Library-View-User-Guide) for full usage documentation.
+Turn on **Settings → App → Library View** (the tray menu entry appears after a restart). See the [Library View user guide](Library-View-User-Guide) for full usage documentation.
 
 | Photos Page | Explore Page |
 | :---: | :---: |
@@ -428,13 +428,13 @@ It reruns the watched-folder scan immediately so you do not need to restart Mimi
 GNOME requires the "AppIndicator and KStatusNotifierItem Support" extension. Install it from the GNOME Extensions website. Without it, the warning `Watcher(ServiceUnknown)` is expected and harmless — the app still runs fully in the background.
 
 **Q: Mimick quits when I close the window.**
-Background Sync is disabled. Enable it in **Settings → Behavior → Background Sync** and save. After that, closing the window hides it instead of exiting.
+Background Sync is disabled. Turn on **Settings → App → Background Sync**. After that, closing the window hides it instead of exiting.
 
 **Q: Uploads are paused but I did not set quiet hours or enable any pause policy.**
 Open the Status page and check the status text — it shows the pause reason. Common causes: the quiet-hours window is active, a metered-network or battery-power policy triggered, or the app was paused manually from the tray.
 
 **Q: The startup scan is slow.**
-Switch **Startup Catch-Up Mode** to **New Files Only** in Settings → Behavior once your initial sync is complete. This skips files already in the sync index and only processes genuinely new additions.
+Set **When Mimick Starts, Check** to **New Files Only** in Settings → Uploads once your initial sync is complete. This skips files already in the sync index and only processes genuinely new additions.
 
 **Q: I have two watch folders pointing at the same parent and subfolder. Which album does a file use?**
 The most specific (longest) matching path wins. A file at `~/Pictures/iPhone/img.jpg` uses the album configured for `~/Pictures/iPhone`, not the one for `~/Pictures`.

@@ -3,7 +3,7 @@ use std::rc::Rc;
 use gtk::prelude::*;
 
 use super::{AssetInfo, Lightbox};
-use crate::library::context_menu::show_alert_dialog;
+use crate::library::context_menu::show_error_toast;
 use crate::library::download::{open_with_chooser, spawn_video_handoff};
 use crate::library::video_player::{VideoHooks, VideoPlayer, VideoSource};
 
@@ -51,7 +51,7 @@ impl Lightbox {
             }),
             error: Box::new(move |message| {
                 if let Some(lb) = error.upgrade() {
-                    show_alert_dialog(&lb.ui, "Playback Failed", &message);
+                    show_error_toast(&lb.ui, "Playback failed", &message);
                 }
             }),
         }
@@ -73,7 +73,7 @@ impl Lightbox {
     pub(super) fn toggle_video(self: &Rc<Self>) {
         match self.video_player() {
             Ok(player) => player.toggle_play(),
-            Err(err) => show_alert_dialog(&self.ui, "Playback Unavailable", &err),
+            Err(err) => show_error_toast(&self.ui, "Playback isn't available", &err),
         }
     }
 
@@ -94,7 +94,7 @@ impl Lightbox {
             };
             match source {
                 Ok(source) => player.load(source),
-                Err(err) => show_alert_dialog(&lb.ui, "Playback Failed", &err),
+                Err(err) => show_error_toast(&lb.ui, "Playback failed", &err),
             }
         });
     }

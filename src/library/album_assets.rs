@@ -7,7 +7,7 @@ use gtk::prelude::*;
 use crate::api_client::{AlbumUpdate, BulkOutcome, LibraryAlbum};
 
 use super::LibraryWindowUi;
-use super::context_menu::show_alert_dialog;
+use super::context_menu::show_error_toast;
 use super::dialogs::toast_with_action;
 use super::header_format::{count_label, owns_album};
 use super::navigation;
@@ -102,9 +102,9 @@ pub(super) fn remove(ui: &Rc<LibraryWindowUi>, asset_ids: Vec<String>, on_remove
             .await
         {
             Ok(results) => after_remove(&ui, &album, &results, &on_removed),
-            Err(err) => show_alert_dialog(
+            Err(err) => show_error_toast(
                 &ui,
-                "Could Not Remove from Album",
+                "Couldn't remove from the album",
                 &format!("Immich rejected the request: {err}"),
             ),
         }
@@ -164,7 +164,7 @@ pub(super) fn set_cover(ui: &Rc<LibraryWindowUi>, album_id: String, asset_id: St
                     .add_toast(libadwaita::Toast::new("Album cover updated"));
                 refresh_albums(&ui);
             }
-            Err(err) => show_alert_dialog(&ui, "Could Not Update Album", &err),
+            Err(err) => show_error_toast(&ui, "Couldn't update the album", &err),
         }
     });
 }
@@ -194,9 +194,9 @@ fn leave(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum) {
                     navigation::navigate(&ui, shared);
                 }
             }
-            Err(err) => show_alert_dialog(
+            Err(err) => show_error_toast(
                 &ui,
-                "Could Not Leave Album",
+                "Couldn't leave the album",
                 &format!("Immich rejected the request: {err}"),
             ),
         }

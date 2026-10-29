@@ -203,14 +203,8 @@ fn build_sync_dialog(diff: &AlbumDiff) -> (libadwaita::AlertDialog, [gtk::CheckB
 }
 
 fn show_in_sync(ui: &LibraryWindowUi, remote_unhashed: usize) {
-    let info = libadwaita::AlertDialog::builder()
-        .heading("Album sync")
-        .body(in_sync_message(remote_unhashed))
-        .build();
-    info.add_response("ok", "OK");
-    info.set_default_response(Some("ok"));
-    info.set_close_response("ok");
-    info.present(Some(&ui.window));
+    ui.toasts
+        .add_toast(libadwaita::Toast::new(&in_sync_message(remote_unhashed)));
 }
 
 /// Checkbox for one sync direction, pre-checked and shown only when it has work to do.

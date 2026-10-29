@@ -1371,7 +1371,6 @@ impl Lightbox {
             target.remote_id().to_string(),
             item.property("filename"),
             Rc::new(move |date_changed| lb.after_edit(date_changed)),
-            false,
         );
     }
 

@@ -9,7 +9,7 @@ use libadwaita::prelude::*;
 use crate::api_client::{SharedLink, SharedLinkOptions, SharedLinkTarget, share_url};
 
 use super::LibraryWindowUi;
-use super::context_menu::show_alert_dialog;
+use super::context_menu::{show_alert_dialog, show_error_toast};
 
 /// Expiry presets after the optional "Keep current" entry.
 const EXPIRY_PRESETS: [(&str, Option<i64>); 5] = [
@@ -228,7 +228,7 @@ fn save(
             Ok(link) => {
                 dialog.close();
                 if matches!(mode.as_ref(), LinkDialogMode::Create(_)) {
-                    copy_link_url(&ui, &link, "Share Link Created").await;
+                    copy_link_url(&ui, &link, "Share link created and copied").await;
                 }
                 on_saved();
             }
@@ -240,11 +240,11 @@ fn save(
     });
 }
 
-/// Copy a link's public URL to the clipboard and confirm with `heading`.
-pub(super) async fn copy_link_url(ui: &LibraryWindowUi, link: &SharedLink, heading: &str) {
+/// Copy a link's public URL to the clipboard and confirm with a `message` toast.
+pub(super) async fn copy_link_url(ui: &LibraryWindowUi, link: &SharedLink, message: &str) {
     match copy_to_clipboard(ui, link).await {
-        Ok(url) => show_alert_dialog(ui, heading, &format!("Copied to the clipboard:\n{url}")),
-        Err(err) => show_alert_dialog(ui, "Could Not Build Link", &err),
+        Ok(_) => ui.toasts.add_toast(libadwaita::Toast::new(message)),
+        Err(err) => show_error_toast(ui, "Couldn't copy the link", &err),
     }
 }
 

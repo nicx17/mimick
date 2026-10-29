@@ -282,6 +282,35 @@ impl imp::MasonryCanvas {
         }
     }
 
+    /// Lay out again after a gap change without losing the reader's place: the timeline
+    /// stays on the same month, other grids keep their relative scroll position.
+    pub(in crate::library::masonry) fn relayout_keeping_place(&self) {
+        if self.timeline.borrow().is_some() {
+            self.section_cache.borrow_mut().clear();
+            self.schedule_relayout();
+            return;
+        }
+        let fraction = self.find_vadjustment().and_then(|adj| {
+            let range = adj.upper() - adj.page_size();
+            (range > 0.0).then(|| adj.value() / range)
+        });
+        self.invalidate_layout();
+        let Some(fraction) = fraction else {
+            return;
+        };
+        let frames = std::cell::Cell::new(0);
+        self.obj().add_tick_callback(move |canvas, _| {
+            frames.set(frames.get() + 1);
+            if frames.get() < 2 {
+                return glib::ControlFlow::Continue;
+            }
+            if let Some(adj) = canvas.imp().find_vadjustment() {
+                adj.set_value(fraction * (adj.upper() - adj.page_size()));
+            }
+            glib::ControlFlow::Break
+        });
+    }
+
     fn relayout_anchored(&self) {
         let width = self.cached_width.get();
         let old_sections = self.sections.borrow().clone();

@@ -145,22 +145,8 @@ pub(super) fn start_download(ui: Rc<LibraryWindowUi>, asset_id: String, filename
                 return;
             }
             match do_download(&ui, &asset_id, &output_path).await {
-                Ok(()) => {
-                    let alert = libadwaita::AlertDialog::builder()
-                        .heading("Download Complete")
-                        .body(format!("Saved {}", safe_name))
-                        .build();
-                    alert.add_response("ok", "OK");
-                    alert.present(Some(&ui.window));
-                }
-                Err(err) => {
-                    let alert = libadwaita::AlertDialog::builder()
-                        .heading("Download Failed")
-                        .body(&err)
-                        .build();
-                    alert.add_response("ok", "OK");
-                    alert.present(Some(&ui.window));
-                }
+                Ok(()) => toast_saved(&ui, &format!("Saved {safe_name}"), &target_dir),
+                Err(err) => super::context_menu::show_error_toast(&ui, "Download failed", &err),
             }
         }
     ));
@@ -241,43 +227,40 @@ fn show_batch_summary(
     skipped: u32,
     target_dir: &Path,
 ) {
-    let folder_name = folder_display_name(target_dir);
-    let (heading, body) = if succeeded == 0 && failed == 0 {
-        (
-            "No Assets Downloaded",
-            format!("All {} asset(s) were skipped", skipped),
-        )
-    } else if failed == 0 && skipped == 0 {
-        (
-            "Download Complete",
-            format!("Downloaded {} asset(s) to {}", succeeded, folder_name),
-        )
+    let message = batch_summary(succeeded, failed, skipped);
+    if succeeded == 0 {
+        ui.toasts.add_toast(libadwaita::Toast::new(&message));
     } else {
-        let mut parts = vec![format!(
-            "Downloaded {} asset(s) to {}",
-            succeeded, folder_name
-        )];
-        if skipped > 0 {
-            parts.push(format!("{} skipped", skipped));
-        }
-        if failed > 0 {
-            parts.push(format!("{} failed", failed));
-        }
-        (
-            if succeeded > 0 {
-                "Download Complete"
-            } else {
-                "Download Failed"
-            },
-            parts.join("\n"),
+        toast_saved(ui, &message, target_dir);
+    }
+}
+
+/// One line for a finished batch, e.g. "Downloaded 12 items · 2 skipped".
+fn batch_summary(succeeded: u32, failed: u32, skipped: u32) -> String {
+    let mut parts = vec![if succeeded == 0 {
+        "Nothing downloaded".to_string()
+    } else {
+        format!(
+            "Downloaded {}",
+            super::header_format::count_label(succeeded.into())
         )
-    };
-    let alert = libadwaita::AlertDialog::builder()
-        .heading(heading)
-        .body(body)
-        .build();
-    alert.add_response("ok", "OK");
-    alert.present(Some(&ui.window));
+    }];
+    if skipped > 0 {
+        parts.push(format!("{skipped} skipped"));
+    }
+    if failed > 0 {
+        parts.push(format!("{failed} failed"));
+    }
+    parts.join(" · ")
+}
+
+fn toast_saved(ui: &LibraryWindowUi, message: &str, dir: &Path) {
+    let dir = dir.display().to_string();
+    ui.toasts.add_toast(super::dialogs::toast_with_action(
+        message,
+        "Open Folder",
+        move || open_local_with_default_app(&dir),
+    ));
 }
 
 async fn do_download(
@@ -387,13 +370,6 @@ pub(super) fn unique_path(dir: &Path, filename: &str) -> PathBuf {
     dir.join(format!("{}_copy", filename))
 }
 
-fn folder_display_name(path: &Path) -> String {
-    path.file_name()
-        .and_then(std::ffi::OsStr::to_str)
-        .unwrap_or("selected folder")
-        .to_string()
-}
-
 pub(super) async fn ensure_download_target(ui: &LibraryWindowUi) -> Option<PathBuf> {
     if let Some(path) = ui.ctx.config.read().data.download_target_path.clone() {
         return Some(PathBuf::from(path));
@@ -447,4 +423,19 @@ pub(super) fn should_refresh_after_download(ui: &LibraryWindowUi) -> bool {
             | LibrarySource::AlbumLocal { .. }
             | LibrarySource::AlbumUnified { .. }
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::batch_summary;
+
+    #[test]
+    fn batch_summary_reads_as_one_line() {
+        assert_eq!(batch_summary(12, 0, 0), "Downloaded 12 items");
+        assert_eq!(
+            batch_summary(1, 1, 2),
+            "Downloaded 1 item · 2 skipped · 1 failed"
+        );
+        assert_eq!(batch_summary(0, 0, 3), "Nothing downloaded · 3 skipped");
+    }
 }

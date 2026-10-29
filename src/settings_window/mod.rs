@@ -43,8 +43,6 @@ struct FolderRowData {
     rules: Rc<RefCell<FolderRules>>,
     /// Libadwaita row widget representing this watched folder.
     action_row: adw::ExpanderRow,
-    /// Base status subtitle for the row.
-    base_subtitle: String,
 }
 
 const DEFAULT_ALBUM_LABEL: &str = "Default (Folder Name)";
@@ -136,14 +134,18 @@ fn format_sync_age(timestamp: Option<f64>) -> String {
         .as_secs_f64();
     let elapsed = (now - timestamp).max(0.0);
 
+    let ago = |n: f64, unit: &str| {
+        let n = n.floor() as u64;
+        format!("{n} {unit}{} ago", if n == 1 { "" } else { "s" })
+    };
     if elapsed < 60.0 {
         "Less than a minute ago".to_string()
     } else if elapsed < 3600.0 {
-        format!("{} minute(s) ago", (elapsed / 60.0).floor() as u64)
+        ago(elapsed / 60.0, "minute")
     } else if elapsed < 86_400.0 {
-        format!("{} hour(s) ago", (elapsed / 3600.0).floor() as u64)
+        ago(elapsed / 3600.0, "hour")
     } else {
-        format!("{} day(s) ago", (elapsed / 86_400.0).floor() as u64)
+        ago(elapsed / 86_400.0, "day")
     }
 }
 
@@ -159,6 +161,7 @@ pub fn build_settings_window_with_parent(
     parent: Option<&adw::ApplicationWindow>,
 ) {
     let (window, status_page, settings_page) = wiring::build_window_shell(app, parent);
+    crate::debug_width::install(&window);
     let config = ctx.config.read().clone();
     if config.get_api_key().unwrap_or_default().is_empty() {
         wiring::add_welcome_group(&settings_page);
@@ -166,10 +169,12 @@ pub fn build_settings_window_with_parent(
 
     let status_widgets = status::build_status_group(&status_page);
     let conn = connectivity::build_connectivity_group(&settings_page, &window);
-    wiring::connect_test_button(&window, &conn, ctx.api_client.clone());
+    wiring::connect_test_button(&conn, ctx.api_client.clone());
+    let folders_group = wiring::folders_group(&settings_page);
     let behavior = behavior::build_behavior_group(&settings_page);
     wiring::connect_quiet_hours_sensitivity(&behavior);
     let library = library::build_library_group(&settings_page);
+    let export_btn = actions_ui::build_troubleshooting_group(&settings_page);
     wiring::connect_library_rows(&ctx, &library, &behavior.library_view_row);
     wiring::connect_download_folder(&ctx, &library, &window);
 
@@ -185,10 +190,8 @@ pub fn build_settings_window_with_parent(
         Rc::new(move || apply_settings(false, false))
     };
     wiring::fetch_albums_for_picker(&window, &state);
-    wiring::add_folders_group(&settings_page, &window, &config, &state, auto_apply.clone());
-
-    let actions = actions_ui::build_actions_group(&status_page, &settings_page);
-    wiring::connect_action_buttons(app, &window, &ctx, &actions);
+    wiring::add_folders_group(&folders_group, &window, &config, &state, auto_apply.clone());
+    wiring::connect_action_buttons(&window, &ctx, &status_widgets, &export_btn);
     conn.save_btn
         .connect_clicked(move |_| apply_settings(true, true));
 
@@ -198,8 +201,7 @@ pub fn build_settings_window_with_parent(
     wiring::connect_auto_apply(&form, auto_apply);
     wiring::connect_close_request(&window, app, &ctx);
     status_poll::start_status_poller(
-        &status_widgets,
-        &actions.pause_btn,
+        status_widgets,
         state.tracked_rows.clone(),
         ctx.state.clone(),
     );
@@ -311,5 +313,7 @@ mod tests {
             .unwrap_or_default()
             .as_secs_f64();
         assert_eq!(format_sync_age(Some(now - 30.0)), "Less than a minute ago");
+        assert_eq!(format_sync_age(Some(now - 61.0)), "1 minute ago");
+        assert_eq!(format_sync_age(Some(now - 660.0)), "11 minutes ago");
     }
 }

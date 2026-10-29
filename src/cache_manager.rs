@@ -44,6 +44,18 @@ pub fn clear_all_blocking() -> Result<(), String> {
     }
 }
 
+/// Bytes used by every managed cache subdir. Call from `spawn_blocking`.
+pub fn total_size_blocking() -> u64 {
+    let Some(root) = cache_root() else {
+        return 0;
+    };
+    let (mut entries, mut total) = (Vec::new(), 0);
+    for sub in CACHE_SUBDIRS {
+        collect_files(&root.join(sub), &mut entries, &mut total);
+    }
+    total
+}
+
 /// LRU-evict files across all subdirs until total size ≤ `cap_bytes`.
 pub fn prune_all_blocking(cap_bytes: u64) {
     let Some(root) = cache_root() else {

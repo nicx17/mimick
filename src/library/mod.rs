@@ -183,6 +183,8 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
 
     let parts = window_layout::WindowParts::build(app, &ctx);
     let window = parts.window.clone();
+    crate::debug_width::install(&window);
+    crate::debug_width::trace_overflow_warnings(&window);
     let album_link_listbox = parts.content.album_link.listbox.clone();
     let bulk = &parts.content.bulk;
     let bulk_share_link = bulk.share_link.clone();

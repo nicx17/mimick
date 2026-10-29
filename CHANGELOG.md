@@ -32,12 +32,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added downloading a whole album as a zip from its header or its tile; large albums download as numbered parts, as Immich splits them (#265).
 - Added an **Appears In** section to the lightbox details pane listing the albums a photo is in; click one to open it (#267).
 - Added **Change Date** for selected photos: give them all one date, time, and time zone, or shift each one earlier or later, optionally moving them to another time zone.
-- **Edit Info…** opened from the right-click menu now has a **Time zone** row and shows the date in the photo's own time zone.
+- **Edit Info…** now has a **Time zone** row and shows the date in the photo's own time zone.
 
 ### Changed
 
 - Thumbnails now fade in as they load, in the grid and on album covers, unless animations are turned off in your system settings.
 - **Search** now sits at the top of the library sidebar.
+- Reorganized the settings window:
+  - **Settings** now reads Server, Watch Folders, Uploads, App, then the library sections (Library, Grid Appearance, RAW Files, Storage, shown only when the library view is on) and Troubleshooting. Labels and descriptions are plainer throughout, and quiet hours show as times ("From 22:00 Until 07:00").
+  - **Save and Connect** replaces Save Credentials, and **Test Connection** shows its result in place instead of a dialog.
+  - **Status** opens with a headline (Up to Date, Uploading 3 of 40, Paused, Waiting for Immich) with Sync Now, Pause, and Queue, lists each watched folder's state, and only shows failed uploads (with **Retry**) and errors when there are any.
+  - The cache limit shows how much is in use, with **Clear Cache** beside it; **Export Diagnostics** moved to Troubleshooting, and **Quit** to the main menu.
+  - Folder Rules are grouped into Sync, Deletions, and Files, and each sync method says what it does.
+  - New users see three numbered steps; on narrow windows the Status/Settings switcher moves to the bottom.
+- Finished downloads, copied share links, "already in sync", and errors from quick actions (rating, favorite, tags, copy, open, playback, album changes) now show as short messages at the bottom of the window instead of dialogs. Downloads offer **Open Folder**, and errors offer **Details** with the full message.
 - Search filters now open in a side panel that docks beside the results, or slides in from the right on phones, instead of a short list above them. The **Filters** button shows how many filters are set.
 - With grid borders turned on, the border colour now fills the whole grid, including the space below the last photos and behind the date headings, and headings switch to dark or light text so they stay readable.
 - The share buttons (album header, selection bar, Shared Links) use a proper share icon instead of a grey square on themes without one.
@@ -62,6 +70,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Pause on Metered Network** now works in the Flatpak: it follows the system's network portal instead of `nmcli`, which isn't available in the sandbox.
+- Turning **Upload XMP Sidecars** on or off now saves straight away, and settings changed while a save was still running are no longer lost.
+- **Thumbnail Quality**, **Border Width**, and **Border Color** now apply to an open library window right away, keeping your place in the grid, instead of after reopening it.
 - RAW files that LibRaw can't open now still show their embedded JPEG preview instead of "Preview unavailable".
 - 16-bit embedded RAW thumbnails no longer display as garbled images.
 - The RAW decode cache no longer discards an entry that is being written when the same file is opened again.

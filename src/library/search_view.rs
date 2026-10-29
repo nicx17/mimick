@@ -120,18 +120,15 @@ fn build_search_bar() -> (gtk::Box, gtk::DropDown, gtk::SearchEntry) {
         .hexpand(true)
         .build();
 
-    let search_bar = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(4)
-        .build();
-    search_bar.append(&search_mode);
+    let search_bar = gtk::Box::builder().spacing(6).build();
     search_bar.append(&search_entry);
 
     (search_bar, search_mode, search_entry)
 }
 
 struct ActionRow {
-    root: gtk::Box,
+    /// Wraps onto a second line when the window is too narrow for one.
+    root: libadwaita::WrapBox,
     filters_toggle: gtk::ToggleButton,
     filters_label: gtk::Label,
     clear: gtk::Button,
@@ -139,9 +136,9 @@ struct ActionRow {
 }
 
 fn build_action_row() -> ActionRow {
-    let action_row = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(6)
+    let action_row = libadwaita::WrapBox::builder()
+        .child_spacing(6)
+        .line_spacing(6)
         .margin_top(2)
         .build();
 
@@ -168,10 +165,7 @@ fn build_action_row() -> ActionRow {
         .build();
 
     action_row.append(&toggle_button);
-    // Spacer pushes buttons to the right.
-    action_row.append(&gtk::Box::builder().hexpand(true).build());
     action_row.append(&clear_button);
-    action_row.append(&search_button);
 
     ActionRow {
         root: action_row,
@@ -261,18 +255,22 @@ fn build_side_panel(filter_box: &gtk::Box) -> SidePanel {
     filter_box.set_margin_end(12);
     filter_box.set_margin_bottom(12);
     let scroller = gtk::ScrolledWindow::builder()
-        .hscrollbar_policy(gtk::PolicyType::Never)
+        .hscrollbar_policy(gtk::PolicyType::External)
         .vexpand(true)
         .child(filter_box)
         .build();
-    let clear = gtk::Button::builder().label("Clear Filters").build();
+    let clear = gtk::Button::builder()
+        .label("Reset")
+        .tooltip_text("Clear every filter, keeping the search text")
+        .hexpand(true)
+        .build();
     let search = gtk::Button::builder()
         .label("Search")
+        .hexpand(true)
         .css_classes(["suggested-action"])
         .build();
     let footer = gtk::Box::builder()
         .spacing(8)
-        .homogeneous(true)
         .margin_top(8)
         .margin_bottom(12)
         .margin_start(12)
@@ -326,9 +324,10 @@ pub fn build_search_view() -> SearchViewParts {
         .build();
 
     let (search_bar, search_mode, search_entry) = build_search_bar();
-    inner.append(&search_bar);
-
     let actions = build_action_row();
+    search_bar.append(&actions.search);
+    actions.root.prepend(&search_mode);
+    inner.append(&search_bar);
     inner.append(&actions.root);
 
     let (filters, filter_box) = build_filter_panel();
@@ -339,6 +338,12 @@ pub fn build_search_view() -> SearchViewParts {
         .connect_clicked(move |_| toggle.set_active(false));
 
     let root = wrap_in_scrolled_revealer(&inner);
+    let toggle = actions.filters_toggle.clone();
+    root.connect_reveal_child_notify(move |root| {
+        if !root.reveals_child() {
+            toggle.set_active(false);
+        }
+    });
 
     let modes: Rc<RefCell<Vec<u32>>> = Rc::new(RefCell::new(available_modes(true, true)));
     let modes_for_placeholder = modes.clone();
@@ -377,7 +382,13 @@ fn wrap_in_scrolled_revealer(inner: &gtk::Box) -> gtk::Revealer {
         .propagate_natural_height(true)
         .max_content_height(320)
         .css_classes(["mimick-search-scroll"])
-        .child(inner)
+        .child(
+            &libadwaita::Clamp::builder()
+                .maximum_size(760)
+                .tightening_threshold(560)
+                .child(inner)
+                .build(),
+        )
         .build();
 
     gtk::Revealer::builder()

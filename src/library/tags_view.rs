@@ -8,7 +8,7 @@ use crate::api_client::Tag;
 
 use super::LibraryWindowUi;
 use super::asset_tags::color_dot;
-use super::context_menu::show_alert_dialog;
+use super::context_menu::{show_alert_dialog, show_error_toast};
 use super::dialogs::{TextPrompt, confirm, popover_menu, prompt_text};
 use super::state::{LibraryPage, LibrarySource, Location};
 use super::tree_page::{
@@ -236,9 +236,9 @@ fn rename_tag(ui: &Rc<LibraryWindowUi>, tag: &Tag) {
         },
         move |name| {
             if name.contains('/') {
-                show_alert_dialog(
+                show_error_toast(
                     &ui_rename,
-                    "Could Not Rename Tag",
+                    "Couldn't rename the tag",
                     "Tag names can't contain “/”.",
                 );
                 return;

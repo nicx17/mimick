@@ -6,7 +6,7 @@ Default settings work for most setups. The options below are useful when you hav
 
 ## Upload Workers
 
-**Setting:** Settings → Behavior → Upload Workers (1–10, default 3)
+**Setting:** Settings → Uploads → Parallel Uploads (1–10, default 3)
 
 Each worker is an independent async upload task. Workers share the same HTTP connection pool, so adding more workers increases concurrent uploads rather than opening separate connections.
 
@@ -25,7 +25,7 @@ Changing the worker count takes effect immediately after saving — no restart n
 
 ## Startup Catch-Up Mode
 
-**Setting:** Settings → Behavior → Startup Catch-Up Mode
+**Setting:** Settings → Uploads → When Mimick Starts, Check
 
 Controls how much work Mimick does each time it launches.
 
@@ -51,7 +51,7 @@ When you close the library window, the cache is emptied and the memory is given 
 
 ## Full-Resolution Preview
 
-**Setting:** Settings → Behavior → Full-Resolution Preview (switch, default off)
+**Setting:** Settings → Library → Open Originals in Lightbox (switch, default off)
 
 When off, the lightbox loads a ~1440px server-generated preview image. When on, it loads the original file.
 

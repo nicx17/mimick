@@ -112,21 +112,16 @@ fn zoned_date_change(original: &EditValues, edited: &EditValues) -> Option<DateC
 
 /// Fetch the asset's current info and open the edit dialog.
 /// `on_saved` receives whether the capture date changed (the timeline order may move).
-/// `with_time_zone` adds a "Time zone" row and shows the date in the photo's zone.
 pub(super) fn show_edit_dialog(
     ui: Rc<LibraryWindowUi>,
     asset_id: String,
     filename: String,
     on_saved: Rc<dyn Fn(bool)>,
-    with_time_zone: bool,
 ) {
     glib::MainContext::default().spawn_local(async move {
         match ui.ctx.api_client.fetch_asset_details(&asset_id).await {
             Ok(details) => {
-                let mut original = EditValues::from_details(&details);
-                if with_time_zone {
-                    original = original.in_photo_zone(&details);
-                }
+                let original = EditValues::from_details(&details).in_photo_zone(&details);
                 present_edit_dialog(ui, asset_id, &filename, original, on_saved);
             }
             Err(err) => show_alert_dialog(&ui, "Could Not Load Info", &err),
