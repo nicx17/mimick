@@ -319,7 +319,6 @@ fn wrap_in_scrolled_revealer(inner: &gtk::Box) -> gtk::Revealer {
         .hscrollbar_policy(gtk::PolicyType::Automatic)
         .propagate_natural_height(true)
         .max_content_height(320)
-        .css_classes(["mimick-search-scroll"])
         .child(
             &libadwaita::Clamp::builder()
                 .maximum_size(760)
@@ -328,6 +327,9 @@ fn wrap_in_scrolled_revealer(inner: &gtk::Box) -> gtk::Revealer {
                 .build(),
         )
         .build();
+    scrolled
+        .hscrollbar()
+        .add_css_class("mimick-search-hscrollbar");
 
     gtk::Revealer::builder()
         .transition_type(gtk::RevealerTransitionType::SlideDown)
