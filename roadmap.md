@@ -75,6 +75,8 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - [x] **Immich Edits** — Photos cropped or rotated in Immich show their edited version.
 - [x] **Faster Scrolling** — Thumbnails load where scrolling stops, and the library gives its memory back when closed.
 - [x] **LibRaw 0.21.3** — Support for newer cameras such as the Sony A7 IV and Canon EOS R7.
+- [x] **Album Management** — Add and remove photos, set covers, album options, delete albums, leave shared albums, download albums as zip, and see which albums a photo is in (#259).
+- [x] **Change Dates** — Set or shift the date and time zone of many photos at once.
 
 ---
 

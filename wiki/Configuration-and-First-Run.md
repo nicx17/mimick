@@ -369,7 +369,11 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Shared Albums (share your albums, change roles, remove people) | `album.read`, `albumUser.create`, `albumUser.update`, `albumUser.delete`, `user.read` |
 | Shared Links (create, copy, edit, delete public links) | `sharedLink.read`, `sharedLink.create`, `sharedLink.update`, `sharedLink.delete` |
 | Library / Explore view (browse photos inside Mimick) | `asset.read`, `asset.view`, `asset.download`, `person.read` |
-| Edit info, set location, rate, or move to trash from the library | `asset.update`, `asset.delete` |
+| Edit info, set location, change dates, rate, or move to trash from the library | `asset.update`, `asset.delete` |
+| Add or remove photos in albums from the library | `albumAsset.create`, `albumAsset.delete` |
+| Leave albums shared with you | `albumUser.delete` |
+| Delete albums | `album.delete` |
+| Download albums as zip | `asset.download` |
 | Map page | `map.read` |
 | Trash view (restore, delete permanently, empty trash) | `asset.read`, `asset.delete` |
 | Tags in the details pane and tag search | `tag.read`; adding/removing tags also needs `tag.asset`, and creating new tags `tag.create` |
@@ -380,7 +384,7 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Partner sharing (add or remove partners) | `partner.read`, `partner.create`, `partner.delete`, `user.read` |
 | Browse a partner's photos | `partner.read`, plus the Library / Explore view permissions |
 | Show a partner's photos in Photos | `partner.update` |
-| Rename albums and edit descriptions | `album.update` |
+| Rename albums, edit descriptions, set covers, and change album options | `album.update` |
 | Counts and details in view headers | `asset.statistics`, `album.read`, `person.statistics` |
 | Hide pages for features turned off in your account | `userPreference.read` (without it, every page stays visible) |
 | **Sync Method** set to **Full** or **Download Only** (folder rules) | `asset.read`, `asset.download` |

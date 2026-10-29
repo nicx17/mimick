@@ -328,19 +328,26 @@ fn show_album(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, me: &str) {
     set_details(header, album_details(&album, me));
     set_description(header, Some(&album.description));
     if owns_album(&album, me) {
-        let menu = gtk::MenuButton::builder()
-            .icon_name("view-more-symbolic")
-            .tooltip_text("More")
-            .valign(gtk::Align::Center)
-            .css_classes(["flat"])
-            .build();
-        popover_menu(&menu, super::album_edit::album_menu_items(ui, &album));
-        header.actions.append(&menu);
+        add_menu(header, super::album_edit::album_menu_items(ui, &album));
         let (ui_share, share_album) = (ui.clone(), album.clone());
-        add_action(header, "emblem-shared-symbolic", "Share album", move || {
+        add_action(header, "mimick-share-symbolic", "Share album", move || {
             super::album_share_dialog::present(ui_share.clone(), share_album.clone())
         });
+    } else if !me.is_empty() {
+        let (ui_leave, leave_album) = (ui.clone(), album.clone());
+        let leave: Box<dyn Fn()> =
+            Box::new(move || super::album_assets::confirm_leave(&ui_leave, leave_album.clone()));
+        add_menu(header, vec![("Leave Album…".to_string(), leave)]);
     }
+    let (ui_zip, zip_id, zip_name) = (ui.clone(), album.id.clone(), album.album_name.clone());
+    add_action(
+        header,
+        "mimick-download-symbolic",
+        "Download album",
+        move || {
+            super::album_download::download_album(ui_zip.clone(), zip_id.clone(), zip_name.clone())
+        },
+    );
     let (ui_link, album_id) = (ui.clone(), album.id.clone());
     add_action(
         header,
@@ -356,6 +363,17 @@ fn show_album(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, me: &str) {
             )
         },
     );
+}
+
+fn add_menu(header: &SourceHeader, items: Vec<(String, Box<dyn Fn()>)>) {
+    let menu = gtk::MenuButton::builder()
+        .icon_name("view-more-symbolic")
+        .tooltip_text("More")
+        .valign(gtk::Align::Center)
+        .css_classes(["flat"])
+        .build();
+    popover_menu(&menu, items);
+    header.actions.append(&menu);
 }
 
 fn enrich_person(ui: &Rc<LibraryWindowUi>, person_id: String) {

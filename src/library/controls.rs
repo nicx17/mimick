@@ -10,6 +10,7 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
+use crate::api_client::SortOrder;
 use crate::library::state::{LibrarySortMode, LibrarySource, Location};
 use crate::settings_window::{build_settings_window_with_parent, show_queue_inspector};
 
@@ -203,8 +204,16 @@ fn connect_sort_controls(ui: &Rc<LibraryWindowUi>) {
         move |stack| {
             let view = stack.visible_child_name();
             let model = gtk::StringList::new(sort_labels_for_view(view.as_deref()));
-            ui.sort_mode.set_model(Some(&model));
-            ui.sort_mode.set_selected(0);
+            if view.as_deref() == Some("grid") && ui.album_sort_applied.get() {
+                let mode = ui.ctx.library_state.lock().sort_mode.clone();
+                ui.sort_suppressed.set(true);
+                ui.sort_mode.set_model(Some(&model));
+                ui.sort_mode.set_selected(grid_sort_index(&mode));
+                ui.sort_suppressed.set(false);
+            } else {
+                ui.sort_mode.set_model(Some(&model));
+                ui.sort_mode.set_selected(0);
+            }
             // Switching views resets in-view filters: Albums resets its album filter,
             // Explore its people search, and the grid views reset both.
             if view.as_deref() != Some("explore") {
@@ -223,18 +232,101 @@ fn connect_sort_controls(ui: &Rc<LibraryWindowUi>) {
     ));
 }
 
+const GRID_SORT_LABELS: [&str; 4] = ["Newest", "Oldest", "Filename", "File Type"];
+
 /// Sort options for the visible content view.
 fn sort_labels_for_view(view: Option<&str>) -> &'static [&'static str] {
     match view {
         Some("albums") => &["Newest", "Name", "Most assets"],
         Some("explore") => &["Default"],
-        _ => &["Newest", "Filename", "File Type"],
+        _ => &GRID_SORT_LABELS,
+    }
+}
+
+pub(super) fn grid_sort_mode(selected: u32) -> LibrarySortMode {
+    match selected {
+        1 => LibrarySortMode::OldestFirst,
+        2 => LibrarySortMode::Filename,
+        3 => LibrarySortMode::FileType,
+        _ => LibrarySortMode::NewestFirst,
+    }
+}
+
+pub(super) fn grid_sort_index(mode: &LibrarySortMode) -> u32 {
+    match mode {
+        LibrarySortMode::NewestFirst => 0,
+        LibrarySortMode::OldestFirst => 1,
+        LibrarySortMode::Filename => 2,
+        LibrarySortMode::FileType => 3,
+    }
+}
+
+pub(super) fn album_sort_mode(order: Option<SortOrder>) -> LibrarySortMode {
+    if order == Some(SortOrder::Asc) {
+        LibrarySortMode::OldestFirst
+    } else {
+        LibrarySortMode::NewestFirst
+    }
+}
+
+/// Date order pages are fetched in; client-side sorts fetch in the server's default.
+fn fetch_order(mode: &LibrarySortMode) -> SortOrder {
+    mode.server_order().unwrap_or(SortOrder::Desc)
+}
+
+/// Opening an album selects its display order; leaving it undoes that.
+/// Reloading the same source keeps whatever the user picked.
+pub(super) fn sync_album_order(ui: &LibraryWindowUi, source: &LibrarySource) {
+    if ui.ctx.library_state.lock().source == *source {
+        return;
+    }
+    match album_order(ui, source) {
+        Some(order) => apply_album_order(ui, order),
+        None if ui.album_sort_applied.get() => {
+            show_sort_mode(ui, LibrarySortMode::NewestFirst);
+            ui.album_sort_applied.set(false);
+        }
+        None => {}
+    }
+}
+
+pub(super) fn apply_album_order(ui: &LibraryWindowUi, order: Option<SortOrder>) {
+    show_sort_mode(ui, album_sort_mode(order));
+    ui.album_sort_applied.set(true);
+}
+
+fn album_order(ui: &LibraryWindowUi, source: &LibrarySource) -> Option<Option<SortOrder>> {
+    let (LibrarySource::Album { id, .. }
+    | LibrarySource::AlbumLocal { id, .. }
+    | LibrarySource::AlbumUnified { id, .. }) = source
+    else {
+        return None;
+    };
+    let state = ui.ctx.library_state.lock();
+    state
+        .albums
+        .iter()
+        .find(|album| album.id == *id)
+        .map(|album| album.order)
+}
+
+/// Set the sort without reloading, and show it if the grid's options are in the dropdown.
+fn show_sort_mode(ui: &LibraryWindowUi, mode: LibrarySortMode) {
+    let index = grid_sort_index(&mode);
+    ui.ctx.library_state.lock().apply_sort(mode);
+    if ui.content_stack.visible_child_name().as_deref() == Some("grid") {
+        ui.sort_suppressed.set(true);
+        ui.sort_mode.set_selected(index);
+        ui.sort_suppressed.set(false);
     }
 }
 
 /// Route a sort choice by active view. Albums uses an album-specific sort
 /// taxonomy; Explore intentionally doesn't sort the people row (curated server order).
 fn apply_sort_selection(ui: &Rc<LibraryWindowUi>, selected: u32) {
+    if ui.sort_suppressed.get() {
+        return;
+    }
     let view = ui.content_stack.visible_child_name();
     if view.as_deref() == Some("albums") {
         let mode = match selected {
@@ -245,14 +337,14 @@ fn apply_sort_selection(ui: &Rc<LibraryWindowUi>, selected: u32) {
         super::albums_view::set_sort_mode(&ui.albums, mode);
         return;
     }
-    let sort_mode = match selected {
-        1 => LibrarySortMode::Filename,
-        2 => LibrarySortMode::FileType,
-        _ => LibrarySortMode::NewestFirst,
-    };
+    ui.album_sort_applied.set(false);
+    let sort_mode = grid_sort_mode(selected);
     let mut state = ui.ctx.library_state.lock();
+    let order_changed = fetch_order(&state.sort_mode) != fetch_order(&sort_mode);
     state.apply_sort(sort_mode);
-    if super::timeline::eligible(&state.source, &state.sort_mode) != super::timeline::is_active(ui)
+    if order_changed
+        || super::timeline::eligible(&state.source, &state.sort_mode)
+            != super::timeline::is_active(ui)
     {
         drop(state);
         navigation::reload_current(ui);
@@ -441,8 +533,33 @@ pub(super) fn connect_grid_handlers(ui: Rc<LibraryWindowUi>) {
 
 #[cfg(test)]
 mod tests {
-    use super::{sort_labels_for_view, source_for_selection};
-    use crate::library::state::LibrarySource;
+    use super::{
+        album_sort_mode, grid_sort_index, grid_sort_mode, sort_labels_for_view,
+        source_for_selection,
+    };
+    use crate::api_client::SortOrder;
+    use crate::library::state::{LibrarySortMode, LibrarySource};
+
+    #[test]
+    fn grid_sort_index_round_trips() {
+        for i in 0..4 {
+            assert_eq!(grid_sort_index(&grid_sort_mode(i)), i);
+        }
+        assert_eq!(grid_sort_mode(1), LibrarySortMode::OldestFirst);
+    }
+
+    #[test]
+    fn album_order_picks_the_date_sort() {
+        assert_eq!(
+            album_sort_mode(Some(SortOrder::Asc)),
+            LibrarySortMode::OldestFirst
+        );
+        assert_eq!(
+            album_sort_mode(Some(SortOrder::Desc)),
+            LibrarySortMode::NewestFirst
+        );
+        assert_eq!(album_sort_mode(None), LibrarySortMode::NewestFirst);
+    }
 
     fn album() -> Option<(String, String)> {
         Some(("a1".to_string(), "Trips".to_string()))
@@ -484,7 +601,7 @@ mod tests {
     fn sort_labels_follow_the_visible_view() {
         assert_eq!(sort_labels_for_view(Some("albums"))[2], "Most assets");
         assert_eq!(sort_labels_for_view(Some("explore")), &["Default"]);
-        assert_eq!(sort_labels_for_view(Some("grid"))[1], "Filename");
+        assert_eq!(sort_labels_for_view(Some("grid"))[1], "Oldest");
         assert_eq!(sort_labels_for_view(None)[0], "Newest");
     }
 }

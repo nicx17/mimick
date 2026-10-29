@@ -26,7 +26,8 @@ pub struct SidebarParts {
     album_signature: RefCell<Vec<(String, String, u32)>>,
 }
 
-const GROUPS: [(&str, &[&str]); 3] = [
+const GROUPS: [(&str, &[&str]); 4] = [
+    ("", &["search"]),
     (
         "Library",
         &[
@@ -43,7 +44,7 @@ const GROUPS: [(&str, &[&str]); 3] = [
         "Albums & Sharing",
         &["albums", "shared-albums", "shared-links", "sharing"],
     ),
-    ("Browse", &["search", "tags", "folders"]),
+    ("Browse", &["tags", "folders"]),
 ];
 
 /// Fixed sidebar destinations: title, subtitle, icon, and the key the sidebar handler matches.
@@ -93,7 +94,7 @@ const FIXED_ROWS: [(&str, &str, &str, &str); 14] = [
     (
         "Shared Links",
         "Public links you've created",
-        "emblem-shared-symbolic",
+        "mimick-share-symbolic",
         "shared-links",
     ),
     (
@@ -226,8 +227,12 @@ fn build_groups(
         .build();
     let mut lists = Vec::new();
     for (heading, keys) in GROUPS {
-        container.append(&section_heading(heading));
         let list = selectable_list();
+        if heading.is_empty() {
+            list.add_css_class("mimick-sidebar-search");
+        } else {
+            container.append(&section_heading(heading));
+        }
         for &(title, subtitle, icon, key) in FIXED_ROWS.iter().filter(|row| keys.contains(&row.3)) {
             let row = action_row(title, subtitle, icon, key);
             list.append(&row);
@@ -469,6 +474,11 @@ mod tests {
             .map(|a| a.id.as_str())
             .collect();
         assert_eq!(ids, ["d", "b", "c"]);
+    }
+
+    #[test]
+    fn search_sits_alone_at_the_top() {
+        assert_eq!(GROUPS[0], ("", &["search"][..]));
     }
 
     #[test]

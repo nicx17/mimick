@@ -62,6 +62,34 @@ impl LibraryState {
         }
     }
 
+    /// Drop a deleted album from back/forward history so neither button leads to it.
+    pub fn forget_album(&mut self, album_id: &str) {
+        let is_album = |location: &Location| {
+            matches!(
+                location,
+                Location::Source(
+                    LibrarySource::Album { id, .. }
+                        | LibrarySource::AlbumLocal { id, .. }
+                        | LibrarySource::AlbumUnified { id, .. }
+                ) if id == album_id
+            )
+        };
+        let mut back: Vec<Location> = self
+            .nav_history
+            .drain(..)
+            .filter(|l| !is_album(l))
+            .collect();
+        back.dedup();
+        while back.last() == Some(&self.location) {
+            back.pop();
+        }
+        self.nav_history = back.into();
+        self.forward_history.retain(|location| !is_album(location));
+        if is_album(&Location::Source(self.previous_non_search_source.clone())) {
+            self.previous_non_search_source = LibrarySource::AllAssets;
+        }
+    }
+
     pub fn can_go_back(&self) -> bool {
         !self.nav_history.is_empty()
     }
@@ -192,6 +220,23 @@ mod tests {
                 name: "Holidays".into()
             }
         );
+    }
+
+    #[test]
+    fn forgetting_a_deleted_album_drops_it_from_history() {
+        let album = source(LibrarySource::Album {
+            id: "a1".into(),
+            name: "Trips".into(),
+        });
+        let albums = Location::Page(LibraryPage::Albums { shared_only: false });
+        let mut state = LibraryState::new();
+        state.navigate_to(albums.clone());
+        state.navigate_to(album.clone());
+        state.navigate_to(albums.clone());
+        state.forget_album("a1");
+        assert!(!state.nav_history.contains(&album));
+        assert!(!state.nav_history.contains(&albums));
+        assert_ne!(state.navigate_back(), Some(album));
     }
 
     #[test]

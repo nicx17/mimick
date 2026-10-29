@@ -11,7 +11,36 @@ use std::time::Duration;
 use tokio::sync::Mutex;
 
 use super::errors::{RequestContext, classify_http_issue, classify_network_issue};
-use super::{AlbumSummary, AlbumUpdate, ApiIssue, ImmichApiClient};
+use super::{AlbumSummary, AlbumUpdate, ApiIssue, ImmichApiClient, LibraryAlbum};
+
+/// One asset's result from adding to or removing from an album.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
+pub struct BulkIdResult {
+    pub id: String,
+    pub success: bool,
+    #[serde(default)]
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct BulkOutcome {
+    pub done: usize,
+    pub duplicate: usize,
+    pub denied: usize,
+}
+
+impl BulkOutcome {
+    pub fn from_results(results: &[BulkIdResult]) -> Self {
+        results.iter().fold(Self::default(), |mut outcome, result| {
+            match (result.success, result.error.as_deref()) {
+                (true, _) => outcome.done += 1,
+                (false, Some("duplicate")) => outcome.duplicate += 1,
+                (false, _) => outcome.denied += 1,
+            }
+            outcome
+        })
+    }
+}
 
 impl ImmichApiClient {
     /// Retrieve all albums from the Immich server, populating the local in-memory cache.
@@ -517,5 +546,77 @@ impl ImmichApiClient {
         self.send_json(reqwest::Method::PATCH, &path, Some(body))
             .await
             .map(|_| ())
+    }
+}
+
+impl ImmichApiClient {
+    pub async fn add_to_album(
+        &self,
+        album_id: &str,
+        asset_ids: &[String],
+    ) -> Result<Vec<BulkIdResult>, String> {
+        self.album_assets_request(reqwest::Method::PUT, album_id, asset_ids)
+            .await
+    }
+
+    pub async fn remove_from_album(
+        &self,
+        album_id: &str,
+        asset_ids: &[String],
+    ) -> Result<Vec<BulkIdResult>, String> {
+        self.album_assets_request(reqwest::Method::DELETE, album_id, asset_ids)
+            .await
+    }
+
+    async fn album_assets_request(
+        &self,
+        method: reqwest::Method,
+        album_id: &str,
+        asset_ids: &[String],
+    ) -> Result<Vec<BulkIdResult>, String> {
+        let path = format!("/api/albums/{album_id}/assets");
+        let body = serde_json::json!({ "ids": asset_ids });
+        let resp = self.send_json(method, &path, Some(body)).await?;
+        resp.json().await.map_err(|err| err.to_string())
+    }
+
+    /// Delete the album; its photos stay in the library. Forgets it in the name cache too.
+    pub async fn delete_album(&self, album_id: &str) -> Result<(), String> {
+        let path = format!("/api/albums/{album_id}");
+        self.send_json(reqwest::Method::DELETE, &path, None).await?;
+        self.refresh_album_cache().await;
+        Ok(())
+    }
+
+    pub async fn albums_containing(&self, asset_id: &str) -> Result<Vec<LibraryAlbum>, String> {
+        let path = format!("/api/albums?assetId={asset_id}");
+        let resp = self.send_json(reqwest::Method::GET, &path, None).await?;
+        let mut albums: Vec<LibraryAlbum> = resp.json().await.map_err(|err| err.to_string())?;
+        albums.sort_by_key(|album| album.album_name.to_lowercase());
+        Ok(albums)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bulk_outcome_counts_each_reason() {
+        let results: Vec<BulkIdResult> = serde_json::from_value(serde_json::json!([
+            { "id": "a", "success": true },
+            { "id": "b", "success": false, "error": "duplicate" },
+            { "id": "c", "success": false, "error": "no_permission" },
+            { "id": "d", "success": false, "error": "not_found" }
+        ]))
+        .unwrap();
+        assert_eq!(
+            BulkOutcome::from_results(&results),
+            BulkOutcome {
+                done: 1,
+                duplicate: 1,
+                denied: 2
+            }
+        );
     }
 }

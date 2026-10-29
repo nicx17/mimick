@@ -13,11 +13,15 @@ use std::time::{Duration, Instant};
 use tokio::sync::{Mutex, Semaphore};
 
 mod albums;
+pub use albums::{BulkIdResult, BulkOutcome};
+mod download;
+pub use download::DownloadArchive;
 mod errors;
 mod features;
 pub use features::LibraryFeatures;
 mod folders;
 mod library;
+pub use library::DateChange;
 mod map;
 pub use map::{MAP_USER_AGENT, MapMarker, Place};
 mod ocr;
@@ -37,6 +41,7 @@ mod timeline;
 mod trash;
 mod upload;
 mod upload_helpers;
+pub(crate) use upload_helpers::local_timezone_name;
 
 #[cfg(test)]
 use errors::{RequestContext, classify_http_issue};
@@ -112,6 +117,12 @@ pub struct LibraryAlbum {
     /// Immich's flag: shared with other users or through a shared link.
     #[serde(default)]
     pub shared: bool,
+    #[serde(default)]
+    pub order: Option<SortOrder>,
+    #[serde(rename = "isActivityEnabled", default)]
+    pub is_activity_enabled: bool,
+    #[serde(rename = "hasSharedLink", default)]
+    pub has_shared_link: bool,
 }
 
 impl LibraryAlbum {
@@ -128,6 +139,18 @@ impl LibraryAlbum {
     /// Whether the album is shared with other users or through a shared link.
     pub fn is_shared(&self) -> bool {
         self.shared || self.album_users.len() > 1
+    }
+
+    pub fn role_of(&self, user_id: &str) -> Option<&str> {
+        self.album_users
+            .iter()
+            .find(|u| u.user.id == user_id)
+            .map(|u| u.role.as_str())
+    }
+
+    /// Owners and editors can add and remove photos; viewers can't.
+    pub fn can_edit_assets(&self, user_id: &str) -> bool {
+        self.owner_id().is_empty() || matches!(self.role_of(user_id), Some("owner" | "editor"))
     }
 }
 
@@ -357,7 +380,7 @@ pub struct MetadataSearchFilters {
 }
 
 /// Direction of sort results.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SortOrder {
     /// Ascending order.
@@ -549,6 +572,9 @@ pub struct ExifInfo {
     /// Original capture datetime string.
     #[serde(default)]
     pub date_time_original: Option<String>,
+    /// IANA zone the photo was taken in, when Immich knows it.
+    #[serde(default)]
+    pub time_zone: Option<String>,
     /// Discovered city name.
     #[serde(default)]
     pub city: Option<String>,
@@ -615,6 +641,12 @@ pub struct AlbumUpdate {
     pub album_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub album_thumbnail_asset_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order: Option<SortOrder>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_activity_enabled: Option<bool>,
 }
 
 /// Editable asset fields for `PUT /api/assets/{id}`; `None` fields are left unchanged.
@@ -940,6 +972,75 @@ impl ImmichApiClient {
 mod tests {
     use super::*;
     use std::path::Path;
+
+    fn album_with_role(role: &str) -> LibraryAlbum {
+        let owner = if role == "owner" { "me" } else { "boss" };
+        let mut users = vec![serde_json::json!({ "role": "owner", "user": { "id": owner } })];
+        if role != "owner" {
+            users.push(serde_json::json!({ "role": role, "user": { "id": "me" } }));
+        }
+        serde_json::from_value(serde_json::json!({
+            "id": "a1",
+            "albumName": "Trip",
+            "assetCount": 1,
+            "albumThumbnailAssetId": null,
+            "createdAt": "2024-01-01T00:00:00.000Z",
+            "updatedAt": "2024-01-01T00:00:00.000Z",
+            "albumUsers": users
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn album_reads_order_and_activity() {
+        let album: LibraryAlbum = serde_json::from_value(serde_json::json!({
+            "id": "a1",
+            "albumName": "Trip",
+            "assetCount": 1,
+            "albumThumbnailAssetId": null,
+            "createdAt": "2024-01-01T00:00:00.000Z",
+            "updatedAt": "2024-01-01T00:00:00.000Z",
+            "order": "asc",
+            "isActivityEnabled": false
+        }))
+        .unwrap();
+        assert_eq!(album.order, Some(SortOrder::Asc));
+        assert!(!album.is_activity_enabled);
+    }
+
+    #[test]
+    fn editors_and_owners_can_edit_assets_viewers_cannot() {
+        assert!(album_with_role("owner").can_edit_assets("me"));
+        assert!(album_with_role("editor").can_edit_assets("me"));
+        assert!(!album_with_role("viewer").can_edit_assets("me"));
+        assert_eq!(album_with_role("editor").role_of("me"), Some("editor"));
+        assert_eq!(album_with_role("editor").role_of("nobody"), None);
+    }
+
+    #[test]
+    fn album_update_sends_only_the_cover() {
+        let update = AlbumUpdate {
+            album_thumbnail_asset_id: Some("x".into()),
+            ..AlbumUpdate::default()
+        };
+        assert_eq!(
+            serde_json::to_value(&update).unwrap(),
+            serde_json::json!({ "albumThumbnailAssetId": "x" })
+        );
+    }
+
+    #[test]
+    fn album_update_sends_order_and_activity() {
+        let update = AlbumUpdate {
+            order: Some(SortOrder::Asc),
+            is_activity_enabled: Some(false),
+            ..AlbumUpdate::default()
+        };
+        assert_eq!(
+            serde_json::to_value(&update).unwrap(),
+            serde_json::json!({ "order": "asc", "isActivityEnabled": false })
+        );
+    }
 
     #[test]
     fn normalize_checksum_passes_through_lowercase_hex() {

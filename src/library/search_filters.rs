@@ -1,7 +1,6 @@
 use libadwaita::prelude::*;
 
 pub struct FilterWidgets {
-    pub revealer: gtk::Revealer,
     pub filename_row: libadwaita::EntryRow,
     pub description_row: libadwaita::EntryRow,
     pub ocr_row: libadwaita::EntryRow,

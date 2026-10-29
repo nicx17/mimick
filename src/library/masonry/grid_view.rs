@@ -26,6 +26,7 @@ fn scrolled_content(canvas: &MasonryCanvas) -> (gtk::ScrolledWindow, gtk::Box) {
     let content = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .build();
+    canvas.set_vexpand(true);
     content.append(canvas);
     let scrolled = gtk::ScrolledWindow::builder()
         .child(&content)

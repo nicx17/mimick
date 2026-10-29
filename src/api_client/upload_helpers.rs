@@ -109,7 +109,7 @@ pub(super) fn unix_to_utc_iso8601(secs: u64) -> String {
 }
 
 /// Resolve the user's current local timezone name (IANA format) from system files or environment.
-pub(super) fn local_timezone_name() -> Option<String> {
+pub(crate) fn local_timezone_name() -> Option<String> {
     if let Ok(tz) = std::env::var("TZ") {
         let tz = tz.trim().trim_start_matches(':');
         if looks_like_iana_timezone(tz) {

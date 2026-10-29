@@ -37,7 +37,7 @@ pub(super) fn build_shared_links_view() -> SharedLinksView {
         .build();
     group.add(&list);
     let empty = libadwaita::StatusPage::builder()
-        .icon_name("emblem-shared-symbolic")
+        .icon_name("mimick-share-symbolic")
         .title("No Shared Links")
         .description(
             "Create one from an album's or a photo's right-click menu, or from a selection.",

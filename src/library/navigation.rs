@@ -71,8 +71,12 @@ fn show(ui: &Rc<LibraryWindowUi>, location: &Location) {
     let search_form =
         matches!(location, Location::Page(LibraryPage::Search)) || location.is_search();
     ui.search_view.root.set_reveal_child(search_form);
+    if !search_form {
+        ui.search_view.filters_toggle.set_active(false);
+    }
     match location {
         Location::Source(source) => {
+            super::controls::sync_album_order(ui, source);
             let request = ui.ctx.library_state.lock().switch_source(source.clone());
             super::apply_source_ui_state(ui, &request.1);
             ui.grid.scrolled.vadjustment().set_value(0.0);

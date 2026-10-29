@@ -27,6 +27,7 @@ use super::layout::{
 };
 pub use super::quality::GridQuality;
 use super::quality::{bucket_for_row_height, fallback_bucket};
+use super::reveal::{REVEAL_MAX_BLUR, animations_enabled, reveal_progress};
 use super::schedule::{CancelFlag, LoadRequest, LoadScheduler, SETTLE_DELAY, is_fling};
 
 mod interaction;
@@ -52,11 +53,11 @@ mod imp {
     use super::{
         ActivateHandler, AssetContextMenuHandler, AssetObject, CORNER_RADIUS, CancelFlag,
         GridQuality, LaidItem, LaidRow, LayoutConfig, LibraryAssetModel, LoadRequest,
-        LoadScheduler, MonthRequestHandler, SETTLE_DELAY, SelectModeChanger, ThumbnailCache,
-        ThumbnailSize, VIEWPORTS_AHEAD, VIEWPORTS_BEHIND, accent_bg_color, bucket_for_asset,
-        bucket_for_row_height, cached_texture, collect_dims, finish_masonry_load, is_fling,
-        load_masonry_asset, load_target_for, pack_rows, placeholder_color, resolve_symbolic_icon,
-        resolve_video_icon, rows_between,
+        LoadScheduler, MonthRequestHandler, REVEAL_MAX_BLUR, SETTLE_DELAY, SelectModeChanger,
+        ThumbnailCache, ThumbnailSize, VIEWPORTS_AHEAD, VIEWPORTS_BEHIND, accent_bg_color,
+        bucket_for_asset, bucket_for_row_height, cached_texture, collect_dims, finish_masonry_load,
+        is_fling, load_masonry_asset, load_target_for, pack_rows, placeholder_color,
+        resolve_symbolic_icon, resolve_video_icon, reveal_progress, rows_between,
     };
 
     pub(super) enum PaintResult {
@@ -134,6 +135,9 @@ mod imp {
         pub border_gap: Cell<f32>,
         /// Color painted behind tiles so the gap appears as a border.
         pub border_color: Cell<Option<gdk4::RGBA>>,
+        /// When each freshly loaded tile started fading in, in monotonic microseconds.
+        pub reveals: RefCell<HashMap<String, i64>>,
+        pub reveal_ticking: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -198,30 +202,7 @@ mod imp {
 
             let viewport = self.snapshot_viewport();
 
-            // Fill the visible area with the border color so gaps between
-            // tiles appear as a coloured border.
-            let gap = self.border_gap.get();
-            if gap > 0.0 {
-                let bc = self
-                    .border_color
-                    .get()
-                    .unwrap_or_else(|| gdk4::RGBA::new(1.0, 1.0, 1.0, 1.0));
-                if self.timeline.borrow().is_some() {
-                    for row in rows_between(&rows, viewport.top, viewport.bottom) {
-                        let band = Rect::new(0.0, row.y - gap, canvas_w, row.h + 2.0 * gap);
-                        snapshot.append_color(&bc, &band);
-                    }
-                } else {
-                    let canvas_h = self.layout_h.get();
-                    let vis_rect = Rect::new(
-                        0.0,
-                        viewport.scroll_y.max(0.0),
-                        canvas_w,
-                        (viewport.bottom - viewport.scroll_y.max(0.0)).min(canvas_h),
-                    );
-                    snapshot.append_color(&bc, &vis_rect);
-                }
-            }
+            self.paint_border_background(snapshot, &viewport, canvas_w);
 
             let sctx = self.snapshot_ctx(model, cache);
             let stats = self.paint_snapshot_rows(snapshot, &sctx, &rows, &viewport);
@@ -287,6 +268,29 @@ mod imp {
             self.layout_h.set(0.0);
             self.rows.borrow_mut().clear();
             self.obj().queue_resize();
+        }
+
+        /// With borders on, the whole visible canvas (headings and the space below the
+        /// last row included) takes the border colour, so gaps read as one border.
+        fn paint_border_background(
+            &self,
+            snapshot: &gtk::Snapshot,
+            viewport: &SnapshotViewport,
+            canvas_w: f32,
+        ) {
+            if self.border_gap.get() <= 0.0 {
+                return;
+            }
+            let color = self
+                .border_color
+                .get()
+                .unwrap_or_else(|| gdk4::RGBA::new(1.0, 1.0, 1.0, 1.0));
+            let height = (self.obj().height() as f32).max(self.layout_h.get());
+            let top = viewport.scroll_y.max(0.0);
+            let bottom = viewport.bottom.min(height);
+            if bottom > top {
+                snapshot.append_color(&color, &Rect::new(0.0, top, canvas_w, bottom - top));
+            }
         }
 
         fn snapshot_ctx<'a>(
@@ -383,7 +387,7 @@ mod imp {
             }
 
             let result = if let Some(tex) = cached.as_ref() {
-                snapshot.append_texture(tex, &rect);
+                self.paint_texture(snapshot, tex, &rect, &sctx.placeholder, &asset_id);
                 PaintResult::Hit
             } else {
                 snapshot.append_color(&sctx.placeholder, &rect);
@@ -404,6 +408,62 @@ mod imp {
                 snapshot.pop();
             }
             result
+        }
+
+        /// A loaded thumbnail, faded in and un-blurred while its reveal runs.
+        fn paint_texture(
+            &self,
+            snapshot: &gtk::Snapshot,
+            tex: &gdk4::Texture,
+            rect: &Rect,
+            placeholder: &gdk4::RGBA,
+            asset_id: &str,
+        ) {
+            let started = self.reveals.borrow().get(asset_id).copied();
+            let Some(alpha) =
+                started.and_then(|start| reveal_progress(glib::monotonic_time() - start))
+            else {
+                snapshot.append_texture(tex, rect);
+                return;
+            };
+            snapshot.append_color(placeholder, rect);
+            snapshot.push_clip(rect);
+            let blur = REVEAL_MAX_BLUR * (1.0 - alpha);
+            let blurred = blur > 0.1;
+            if blurred {
+                snapshot.push_blur(f64::from(blur));
+            }
+            snapshot.push_opacity(f64::from(alpha));
+            snapshot.append_texture(tex, rect);
+            snapshot.pop();
+            if blurred {
+                snapshot.pop();
+            }
+            snapshot.pop();
+        }
+
+        /// Start fading `asset_id` in, with one frame-clock tick driving every running reveal.
+        pub(super) fn start_reveal(&self, asset_id: &str) {
+            self.reveals
+                .borrow_mut()
+                .insert(asset_id.to_string(), glib::monotonic_time());
+            if self.reveal_ticking.replace(true) {
+                return;
+            }
+            self.obj().add_tick_callback(|canvas, _| {
+                let imp = canvas.imp();
+                let now = glib::monotonic_time();
+                imp.reveals
+                    .borrow_mut()
+                    .retain(|_, start| reveal_progress(now - *start).is_some());
+                canvas.queue_draw();
+                if imp.reveals.borrow().is_empty() {
+                    imp.reveal_ticking.set(false);
+                    glib::ControlFlow::Break
+                } else {
+                    glib::ControlFlow::Continue
+                }
+            });
         }
 
         /// Overlays on top of the thumbnail: select-mode checkbox, video play badge,
@@ -731,9 +791,15 @@ mod imp {
                 request.bucket,
                 request.is_local
             );
+            let painted_bucket = if request.is_local {
+                ThumbnailSize::Thumbnail
+            } else {
+                request.bucket
+            };
+            let reveal = cached_texture(&cache, &request.asset_id, painted_bucket).is_none();
             glib::MainContext::default().spawn_local(async move {
                 let result = load_masonry_asset(&cache, &request, &cancel).await;
-                finish_masonry_load(&widget, &model, &request, result);
+                finish_masonry_load(&widget, &model, &request, result, reveal);
             });
         }
     }
@@ -862,6 +928,7 @@ fn finish_masonry_load(
     model: &LibraryAssetModel,
     request: &LoadRequest,
     result: Result<gdk4::Texture, String>,
+    reveal: bool,
 ) {
     let imp = widget.imp();
     let asset_id = request.asset_id.as_str();
@@ -873,6 +940,9 @@ fn finish_masonry_load(
                 tex.width(),
                 tex.height(),
             );
+            if reveal && animations_enabled() {
+                imp.start_reveal(asset_id);
+            }
             propagate_dimensions(model, request.asset_index, asset_id, tex)
         }
         Err(e) if e == "cancelled" => {

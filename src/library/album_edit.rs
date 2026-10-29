@@ -13,6 +13,8 @@ pub(super) fn album_menu_items(
 ) -> Vec<(String, Box<dyn Fn()>)> {
     let (ui_rename, album_rename) = (ui.clone(), album.clone());
     let (ui_describe, album_describe) = (ui.clone(), album.clone());
+    let (ui_options, album_options) = (ui.clone(), album.clone());
+    let (ui_delete, album_delete) = (ui.clone(), album.clone());
     vec![
         (
             "Rename…".to_string(),
@@ -21,6 +23,14 @@ pub(super) fn album_menu_items(
         (
             "Edit Description…".to_string(),
             Box::new(move || edit_description(&ui_describe, &album_describe)),
+        ),
+        (
+            "Options…".to_string(),
+            Box::new(move || super::album_options::present(&ui_options, album_options.clone())),
+        ),
+        (
+            "Delete Album…".to_string(),
+            Box::new(move || super::album_delete::confirm_delete(&ui_delete, album_delete.clone())),
         ),
     ]
 }

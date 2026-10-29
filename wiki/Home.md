@@ -59,7 +59,8 @@ Mimick is a Linux background app that watches selected folders and syncs photos 
 - Select and copy text Immich recognized in photos (OCR), see the people in a photo, and see edits made in Immich, in the lightbox
 - Map of your photos, a location mini map in the lightbox, and setting the location of one or many photos
 - Shared albums with Viewer and Editor roles, public shared links, and partner sharing, including browsing a partner's photos
-- Edit asset info (description, date taken, favorite), rate assets with stars, archive, and move assets to the Immich trash from the library
+- Album management: add and remove photos, set covers, album options, delete albums, leave shared albums, download albums as zip, and see which albums a photo is in
+- Edit asset info (description, date taken, favorite), change the date and time zone of many photos at once, rate assets with stars, archive, and move assets to the Immich trash from the library
 - RAW previews and decoding, and every media format Immich supports
 - Drag files in to upload, drag photos out to export, and **Open With Mimick** from your file manager
 - Works on Linux phones, down to 360 px wide, with a bottom navigation bar

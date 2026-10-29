@@ -191,7 +191,10 @@ impl imp::MasonryCanvas {
 
     fn paint_headings(&self, snapshot: &gtk::Snapshot, top: f32, bottom: f32) {
         let widget = self.obj();
-        let color = widget.color();
+        let color = match self.border_color.get() {
+            Some(border) if self.border_gap.get() > 0.0 => readable_on(&border),
+            _ => widget.color(),
+        };
         let attrs = pango::AttrList::new();
         attrs.insert(pango::AttrInt::new_weight(pango::Weight::Bold));
         for heading in self
@@ -360,4 +363,32 @@ fn pack_month(
         }],
     };
     pack_section(&groups, width, cfg)
+}
+
+/// Near-black or near-white heading text, whichever reads better on `background`.
+fn readable_on(background: &gdk4::RGBA) -> gdk4::RGBA {
+    let luminance =
+        0.2126 * background.red() + 0.7152 * background.green() + 0.0722 * background.blue();
+    if luminance > 0.5 {
+        gdk4::RGBA::new(0.1, 0.1, 0.1, 1.0)
+    } else {
+        gdk4::RGBA::new(0.95, 0.95, 0.95, 1.0)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::readable_on;
+
+    #[test]
+    fn headings_stay_readable_on_the_border_colour() {
+        let white = gdk4::RGBA::new(1.0, 1.0, 1.0, 1.0);
+        let black = gdk4::RGBA::new(0.0, 0.0, 0.0, 1.0);
+        let yellow = gdk4::RGBA::new(1.0, 0.9, 0.2, 1.0);
+        let navy = gdk4::RGBA::new(0.1, 0.1, 0.4, 1.0);
+        assert!(readable_on(&white).red() < 0.5);
+        assert!(readable_on(&yellow).red() < 0.5);
+        assert!(readable_on(&black).red() > 0.5);
+        assert!(readable_on(&navy).red() > 0.5);
+    }
 }

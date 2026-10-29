@@ -78,6 +78,10 @@ impl ImmichApiClient {
             .map(|_| ())
     }
 
+    pub async fn leave_album(&self, album_id: &str) -> Result<(), String> {
+        self.remove_album_user(album_id, "me").await
+    }
+
     pub async fn remove_album_user(&self, album_id: &str, user_id: &str) -> Result<(), String> {
         let path = format!("/api/albums/{album_id}/user/{user_id}");
         self.send_json(reqwest::Method::DELETE, &path, None)

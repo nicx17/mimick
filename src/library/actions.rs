@@ -161,11 +161,7 @@ fn connect_delete_key(ui: Rc<LibraryWindowUi>) {
 /// Selection-bar button: create one public link for every selected server asset.
 pub(super) fn connect_bulk_share_link(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
     button.connect_clicked(move |_| {
-        let ids: Vec<String> = selected_items(&ui)
-            .iter()
-            .filter_map(TrashTarget::from_item)
-            .map(|target| target.remote_id)
-            .collect();
+        let ids = selected_server_ids(&ui);
         if ids.is_empty() {
             return;
         }
@@ -201,20 +197,34 @@ fn batch_title(owned: usize, selected: usize) -> String {
     }
 }
 
+/// The selection's server assets and, of those, the ids the user owns.
+fn owned_server_selection(ui: &Rc<LibraryWindowUi>) -> (usize, Vec<String>) {
+    let on_server: Vec<AssetObject> = selected_items(ui)
+        .into_iter()
+        .filter(|item| TrashTarget::from_item(item).is_some())
+        .collect();
+    let ids = on_server
+        .iter()
+        .filter(|item| is_mine(ui, item))
+        .filter_map(TrashTarget::from_item)
+        .map(|target| target.remote_id)
+        .collect();
+    (on_server.len(), ids)
+}
+
+fn clear_selection_after(ui: &Rc<LibraryWindowUi>) -> Rc<dyn Fn()> {
+    let ui = ui.clone();
+    Rc::new(move || {
+        ui.grid.selection.unselect_all();
+        ui.select_toggle.set_active(false);
+    })
+}
+
 /// Selection-bar button: give every selected server asset the user owns one location.
 pub(super) fn connect_bulk_location(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
     button.connect_clicked(move |_| {
-        let on_server: Vec<AssetObject> = selected_items(&ui)
-            .into_iter()
-            .filter(|item| TrashTarget::from_item(item).is_some())
-            .collect();
-        let ids: Vec<String> = on_server
-            .iter()
-            .filter(|item| is_mine(&ui, item))
-            .filter_map(TrashTarget::from_item)
-            .map(|target| target.remote_id)
-            .collect();
-        if on_server.is_empty() {
+        let (on_server, ids) = owned_server_selection(&ui);
+        if on_server == 0 {
             return;
         }
         if ids.is_empty() {
@@ -226,20 +236,56 @@ pub(super) fn connect_bulk_location(ui: Rc<LibraryWindowUi>, button: &gtk::Butto
             return;
         }
         let target = super::map::LocationTarget {
-            title: batch_title(ids.len(), on_server.len()),
+            title: batch_title(ids.len(), on_server),
             ids,
             initial: None,
         };
-        let ui_after = ui.clone();
-        super::map::set_location(
-            ui.clone(),
-            target,
-            Rc::new(move || {
-                ui_after.grid.selection.unselect_all();
-                ui_after.select_toggle.set_active(false);
-            }),
-        );
+        super::map::set_location(ui.clone(), target, clear_selection_after(&ui));
     });
+}
+
+/// Selection-bar button: set or shift the capture date of every selected asset the user owns.
+pub(super) fn connect_bulk_date(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
+    button.connect_clicked(move |_| {
+        let (on_server, ids) = owned_server_selection(&ui);
+        if on_server == 0 {
+            return;
+        }
+        if ids.is_empty() {
+            show_alert_dialog(
+                &ui,
+                "Not Your Photos",
+                "Only the owner can change when a photo was taken, and the selected photos belong to other people.",
+            );
+            return;
+        }
+        let title = batch_title(ids.len(), on_server);
+        super::bulk_date::present(&ui, ids, title, clear_selection_after(&ui));
+    });
+}
+
+/// Selection-bar button: add every selected server asset to an album.
+pub(super) fn connect_bulk_add_to_album(ui: Rc<LibraryWindowUi>) {
+    ui.bulk_add_to_album.clone().connect_clicked(move |_| {
+        let ids = selected_server_ids(&ui);
+        super::album_picker::present(&ui, ids, clear_selection_after(&ui));
+    });
+}
+
+/// Selection-bar button: take every selected server asset out of the open album.
+pub(super) fn connect_bulk_remove_from_album(ui: Rc<LibraryWindowUi>) {
+    ui.bulk_remove_from_album.clone().connect_clicked(move |_| {
+        let ids = selected_server_ids(&ui);
+        super::album_assets::remove(&ui, ids, clear_selection_after(&ui));
+    });
+}
+
+fn selected_server_ids(ui: &Rc<LibraryWindowUi>) -> Vec<String> {
+    selected_items(ui)
+        .iter()
+        .filter_map(TrashTarget::from_item)
+        .map(|target| target.remote_id)
+        .collect()
 }
 
 pub(super) fn connect_bulk_archive(ui: Rc<LibraryWindowUi>) {

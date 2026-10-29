@@ -23,9 +23,31 @@ pub enum AlbumAction {
     CreateLink,
     Rename,
     EditDescription,
+    /// Stop being a member of an album someone else shared.
+    Leave,
+    /// Save the whole album as zip files.
+    Download,
+    /// Delete one of the user's own albums; its photos stay in the library.
+    Delete,
 }
 
-/// Runs a right-click action for one of the user's own albums.
+const OWN_ALBUM_ACTIONS: &[(&str, AlbumAction)] = &[
+    ("Share…", AlbumAction::Share),
+    ("Create Share Link…", AlbumAction::CreateLink),
+    ("Rename…", AlbumAction::Rename),
+    ("Edit Description…", AlbumAction::EditDescription),
+    ("Download", AlbumAction::Download),
+    ("Delete Album…", AlbumAction::Delete),
+];
+
+const SHARED_ALBUM_ACTIONS: &[(&str, AlbumAction)] = &[
+    ("Download", AlbumAction::Download),
+    ("Leave Album…", AlbumAction::Leave),
+];
+
+type TileMenu = (AlbumShare, &'static [(&'static str, AlbumAction)]);
+
+/// Runs a right-click action on an album tile.
 pub type AlbumShare = Rc<dyn Fn(LibraryAlbum, AlbumAction)>;
 
 /// Sort modes available for the albums landing page.
@@ -277,9 +299,22 @@ fn render_albums(parts: &AlbumsViewParts) {
         owned = shared_by_you(owned);
     }
     let share = parts.cached_share.borrow().clone();
+    let menu = |actions| share.clone().map(|share| (share, actions));
     insert_tiles(&parts.recent_grid, &recent, &ctx, &on_click, None);
-    insert_tiles(&parts.owned_grid, &owned, &ctx, &on_click, share);
-    insert_tiles(&parts.shared_grid, &shared, &ctx, &on_click, None);
+    insert_tiles(
+        &parts.owned_grid,
+        &owned,
+        &ctx,
+        &on_click,
+        menu(OWN_ALBUM_ACTIONS),
+    );
+    insert_tiles(
+        &parts.shared_grid,
+        &shared,
+        &ctx,
+        &on_click,
+        menu(SHARED_ALBUM_ACTIONS),
+    );
 
     parts.recent_section.set_visible(!recent.is_empty());
     parts.owned_section.set_visible(!owned.is_empty());
@@ -314,25 +349,29 @@ fn show_empty_state(parts: &AlbumsViewParts, visible: bool, user_unknown: bool) 
     parts.empty.set_visible(visible);
 }
 
-/// Add a tile per album; `share` (own albums only) enables the right-click "Share…".
+/// Add a tile per album; `menu` gives the tiles a right-click menu of those actions.
 fn insert_tiles(
     grid: &gtk::FlowBox,
     albums: &[&LibraryAlbum],
     ctx: &Arc<AppContext>,
     on_click: &AlbumClick,
-    share: Option<AlbumShare>,
+    menu: Option<TileMenu>,
 ) {
     for album in albums {
         let tile = album_tile(ctx.clone(), album, on_click.clone());
-        if let Some(share) = &share {
-            attach_share_menu(&tile, album, share.clone());
+        if let Some((share, actions)) = &menu {
+            attach_share_menu(&tile, album, share.clone(), actions);
         }
         grid.insert(&tile, -1);
     }
 }
 
-/// Right-click a tile for "Share…" and "Create Share Link…".
-fn attach_share_menu(tile: &gtk::Button, album: &LibraryAlbum, share: AlbumShare) {
+fn attach_share_menu(
+    tile: &gtk::Button,
+    album: &LibraryAlbum,
+    share: AlbumShare,
+    actions: &'static [(&'static str, AlbumAction)],
+) {
     let click = gtk::GestureClick::builder()
         .button(gtk::gdk::BUTTON_SECONDARY)
         .build();
@@ -348,12 +387,7 @@ fn attach_share_menu(tile: &gtk::Button, album: &LibraryAlbum, share: AlbumShare
             .orientation(gtk::Orientation::Vertical)
             .spacing(4)
             .build();
-        for (label, action) in [
-            ("Share…", AlbumAction::Share),
-            ("Create Share Link…", AlbumAction::CreateLink),
-            ("Rename…", AlbumAction::Rename),
-            ("Edit Description…", AlbumAction::EditDescription),
-        ] {
+        for &(label, action) in actions {
             let button = gtk::Button::builder()
                 .label(label)
                 .css_classes(["flat"])
@@ -471,6 +505,8 @@ pub(super) fn spawn_thumbnail(ctx: Arc<AppContext>, asset_id: String, picture: g
         picture.set_paintable(Some(&texture));
         return;
     }
+    picture.add_css_class("mimick-thumb-reveal");
+    picture.add_css_class("mimick-thumb-pending");
     glib::timeout_add_local_once(std::time::Duration::from_millis(120), move || {
         glib::MainContext::default().spawn_local(async move {
             if let Ok(texture) = ctx
@@ -480,6 +516,7 @@ pub(super) fn spawn_thumbnail(ctx: Arc<AppContext>, asset_id: String, picture: g
             {
                 picture.set_paintable(Some(&texture));
             }
+            picture.remove_css_class("mimick-thumb-pending");
         });
     });
 }
@@ -517,6 +554,9 @@ mod tests {
                 role: "owner".into(),
             }],
             shared: false,
+            order: None,
+            is_activity_enabled: true,
+            has_shared_link: false,
         }
     }
 

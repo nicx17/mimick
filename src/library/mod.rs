@@ -43,6 +43,8 @@ mod archive;
 pub mod asset_model;
 pub mod asset_object;
 mod bottom_nav;
+mod bulk_date;
+mod bulk_overflow;
 pub mod explore_view;
 mod favorites;
 pub mod local_exif;
@@ -55,8 +57,13 @@ pub mod thumbnail_cache;
 
 mod about_dialog;
 mod actions;
+mod album_assets;
+mod album_delete;
+mod album_download;
 mod album_edit;
 mod album_link;
+mod album_options;
+mod album_picker;
 mod album_share_dialog;
 mod asset_edit;
 mod asset_tags;
@@ -94,6 +101,7 @@ const PAGE_SIZE: u32 = 50;
 const MAP_AREA_PAGE_SIZE: u32 = 32;
 
 mod texture_decode;
+mod time_zones;
 mod timeline;
 use texture_decode::{decode_raw_thumbnail_texture, load_texture_blocking};
 pub use texture_decode::{set_raw_cache_enabled, set_raw_full_decode};
@@ -122,6 +130,7 @@ struct LibraryWindowUi {
     app: libadwaita::Application,
     window: libadwaita::ApplicationWindow,
     nav: libadwaita::NavigationView,
+    toasts: libadwaita::ToastOverlay,
     sidebar: SidebarParts,
     grid: GridViewParts,
     explore: ExploreViewParts,
@@ -139,6 +148,7 @@ struct LibraryWindowUi {
     error_label: gtk::Label,
     transfer: window_layout::TransferParts,
     search_view: SearchViewParts,
+    filters_split: libadwaita::OverlaySplitView,
     sort_mode: gtk::DropDown,
     source_mode: gtk::DropDown,
     source_revealer: gtk::Revealer,
@@ -146,10 +156,14 @@ struct LibraryWindowUi {
     controls_row: gtk::Box,
     source_mode_suppressed: Cell<bool>,
     sidebar_suppressed: Cell<bool>,
+    sort_suppressed: Cell<bool>,
+    album_sort_applied: Cell<bool>,
     back_button: gtk::Button,
     select_toggle: gtk::ToggleButton,
     bulk_bar: gtk::Revealer,
     bulk_archive: gtk::Button,
+    bulk_add_to_album: gtk::Button,
+    bulk_remove_from_album: gtk::Button,
     trash: trash_view::TrashControls,
     bulk_count_label: gtk::Label,
     album_link_row: libadwaita::ActionRow,
@@ -173,6 +187,7 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     let bulk = &parts.content.bulk;
     let bulk_share_link = bulk.share_link.clone();
     let bulk_location = bulk.location.clone();
+    let bulk_date = bulk.date.clone();
     let (bulk_delete, bulk_download, bulk_clear) = (
         bulk.delete.clone(),
         bulk.download.clone(),
@@ -187,6 +202,9 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     actions::connect_bulk_share_link(ui.clone(), &bulk_share_link);
     actions::connect_bulk_archive(ui.clone());
     actions::connect_bulk_location(ui.clone(), &bulk_location);
+    actions::connect_bulk_date(ui.clone(), &bulk_date);
+    actions::connect_bulk_add_to_album(ui.clone());
+    actions::connect_bulk_remove_from_album(ui.clone());
     trash_view::connect_trash_controls(ui.clone());
     people_view::connect_people_view(ui.clone());
     tags_view::connect_tags_view(ui.clone());
@@ -251,6 +269,11 @@ fn connect_menus(ui: Rc<LibraryWindowUi>) {
             albums_view::AlbumAction::Rename => album_edit::rename(&ui_for_share, &album),
             albums_view::AlbumAction::EditDescription => {
                 album_edit::edit_description(&ui_for_share, &album)
+            }
+            albums_view::AlbumAction::Leave => album_assets::confirm_leave(&ui_for_share, album),
+            albums_view::AlbumAction::Delete => album_delete::confirm_delete(&ui_for_share, album),
+            albums_view::AlbumAction::Download => {
+                album_download::download_album(ui_for_share.clone(), album.id, album.album_name)
             }
             albums_view::AlbumAction::CreateLink => shared_link_dialog::present(
                 ui_for_share.clone(),
@@ -370,6 +393,31 @@ fn connect_search_view(ui: Rc<LibraryWindowUi>) {
         }
     ));
 
+    ui.search_view.panel_clear.connect_clicked(clone!(
+        #[strong]
+        ui,
+        move |_| search_view::clear_filter_rows(&ui.search_view)
+    ));
+    ui.search_view.panel_search.connect_clicked(clone!(
+        #[strong]
+        ui,
+        move |_| {
+            if ui.filters_split.is_collapsed() {
+                ui.search_view.filters_toggle.set_active(false);
+            }
+            dispatch_search_from_view(&ui);
+        }
+    ));
+    ui.search_view.filters_toggle.connect_toggled(clone!(
+        #[strong]
+        ui,
+        move |toggle| {
+            if !toggle.is_active() {
+                search_view::refresh_filter_count(&ui.search_view);
+            }
+        }
+    ));
+
     // Search button (or Enter in the entry) dispatches the search.
     let do_search = {
         let ui = ui.clone();
@@ -400,6 +448,7 @@ fn connect_search_view(ui: Rc<LibraryWindowUi>) {
 
 /// Read the search view widgets and dispatch the appropriate search source.
 fn dispatch_search_from_view(ui: &Rc<LibraryWindowUi>) {
+    search_view::refresh_filter_count(&ui.search_view);
     let query = ui.search_view.search_entry.text().trim().to_string();
     let filters = search_view::collect_filters(&ui.search_view);
     let has_filters = filters != MetadataSearchFilters::default();
@@ -840,6 +889,7 @@ fn apply_source_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
     }
 
     refresh_album_link_row(ui, source);
+    album_assets::sync_bulk_remove(ui);
 }
 
 /// Retrieve albums from the API and update the side navigation sidebar entries.
@@ -1088,7 +1138,7 @@ async fn fetch_source_page(
     match source {
         LibrarySource::LocalAll
         | LibrarySource::LocalSearch { .. }
-        | LibrarySource::AlbumLocal { .. } => fetch_local_page(ui, source, page).await,
+        | LibrarySource::AlbumLocal { .. } => fetch_local_page(ui, source, page, order).await,
         LibrarySource::Unified
         | LibrarySource::UnifiedSearch { .. }
         | LibrarySource::AlbumUnified { .. } => fetch_unified_page(ui, source, page, order).await,
@@ -1177,6 +1227,7 @@ async fn fetch_local_page(
     ui: &Rc<LibraryWindowUi>,
     source: LibrarySource,
     page: u32,
+    order: Option<SortOrder>,
 ) -> PageResult {
     if page > 1 {
         return Ok((Vec::new(), false));
@@ -1192,10 +1243,11 @@ async fn fetch_local_page(
         },
         other => unreachable!("{other:?} is not a local page source"),
     };
-    Ok((
-        locals.into_iter().map(local_to_library_asset).collect(),
-        false,
-    ))
+    let mut assets: Vec<LibraryAsset> = locals.into_iter().map(local_to_library_asset).collect();
+    if order == Some(SortOrder::Asc) {
+        assets.sort_by(|a, b| a.created_at.cmp(&b.created_at));
+    }
+    Ok((assets, false))
 }
 
 /// Remote assets overlayed with local sync state.
@@ -1344,6 +1396,7 @@ fn build_album_sidebar_row(
 }
 
 fn reload_sidebar(ui: &Rc<LibraryWindowUi>) {
+    album_assets::sync_bulk_remove(ui);
     let albums = ui.ctx.library_state.lock().albums.clone();
     sidebar::set_recent_albums(&ui.sidebar, &albums);
     if sidebar::album_list_changed(&ui.sidebar, &albums) {

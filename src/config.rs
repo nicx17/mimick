@@ -250,6 +250,144 @@ pub fn rename_album_in_watch_paths(
     changed
 }
 
+/// Album choice that names each file's album after its parent folder.
+const FOLDER_NAME_ALBUM: &str = "Default (Folder Name)";
+
+/// Watch folders that keep an album alive: re-created by name if deleted while they upload to it.
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct AlbumFolders {
+    /// Watch folders that target the album, or whose own name is the album.
+    pub linked: Vec<String>,
+    /// Subfolders of folder-name watch folders whose photos went into the album.
+    pub named_after: Vec<String>,
+}
+
+impl AlbumFolders {
+    pub fn is_empty(&self) -> bool {
+        self.linked.is_empty() && self.named_after.is_empty()
+    }
+}
+
+/// Folders tied to an album. `album_name` is `None` when another album shares the name,
+/// so name-only matches can't tell them apart; `synced_dirs` are folders of files Mimick
+/// uploaded into the album.
+pub fn album_folders(
+    entries: &[WatchPathEntry],
+    album_id: &str,
+    album_name: Option<&str>,
+    synced_dirs: &[String],
+) -> AlbumFolders {
+    let mut linked: Vec<String> = entries
+        .iter()
+        .filter(|entry| {
+            targets_album(entry, album_id, album_name) || is_named_root(entry, album_name)
+        })
+        .map(|entry| entry.path().to_string())
+        .collect();
+    let mut named_after: Vec<String> = Vec::new();
+    for dir in synced_dirs {
+        let Some(entry) = best_matching_watch_entry(Path::new(dir), entries) else {
+            continue;
+        };
+        if !names_albums_after_folders(entry) {
+            continue;
+        }
+        let list = if entry.path() == dir {
+            &mut linked
+        } else {
+            &mut named_after
+        };
+        if !list.contains(dir) {
+            list.push(dir.clone());
+        }
+    }
+    named_after.sort();
+    AlbumFolders {
+        linked,
+        named_after,
+    }
+}
+
+fn targets_album(entry: &WatchPathEntry, album_id: &str, album_name: Option<&str>) -> bool {
+    match entry {
+        WatchPathEntry::WithConfig {
+            album_id: Some(id), ..
+        } => id == album_id,
+        WatchPathEntry::WithConfig {
+            album_id: None,
+            album_name: Some(name),
+            ..
+        } => name != FOLDER_NAME_ALBUM && Some(name.as_str()) == album_name,
+        _ => false,
+    }
+}
+
+fn names_albums_after_folders(entry: &WatchPathEntry) -> bool {
+    match entry {
+        WatchPathEntry::Simple(_) => true,
+        WatchPathEntry::WithConfig {
+            album_id: None,
+            album_name: Some(name),
+            ..
+        } => name == FOLDER_NAME_ALBUM,
+        _ => false,
+    }
+}
+
+/// A folder-name watch folder whose own files go into an album named after it.
+fn is_named_root(entry: &WatchPathEntry, album_name: Option<&str>) -> bool {
+    let folder = Path::new(entry.path())
+        .file_name()
+        .and_then(|name| name.to_str());
+    names_albums_after_folders(entry) && album_name.is_some() && folder == album_name
+}
+
+/// Stop `folders` from feeding the album: linked folders upload to the library only, or are
+/// no longer watched; subfolders get a library-only entry of their own.
+pub fn detach_album_from_watch_paths(
+    entries: &mut Vec<WatchPathEntry>,
+    folders: &AlbumFolders,
+    keep_watching: bool,
+) -> bool {
+    let is_linked = |entry: &WatchPathEntry| folders.linked.iter().any(|path| path == entry.path());
+    let before = entries.len();
+    let mut changed = false;
+    if keep_watching {
+        for entry in entries.iter_mut().filter(|entry| is_linked(entry)) {
+            *entry = library_only(entry.path(), entry.rules());
+            changed = true;
+        }
+    } else {
+        entries.retain(|entry| !is_linked(entry));
+        changed = entries.len() != before;
+    }
+    for dir in &folders.named_after {
+        if entries.iter().any(|entry| entry.path() == dir) {
+            continue;
+        }
+        let rules = best_matching_watch_entry(Path::new(dir), entries)
+            .map(WatchPathEntry::rules)
+            .unwrap_or_default();
+        entries.push(library_only(dir, rules));
+        changed = true;
+    }
+    changed
+}
+
+fn library_only(path: &str, rules: FolderRules) -> WatchPathEntry {
+    WatchPathEntry::WithConfig {
+        path: path.to_string(),
+        album_id: None,
+        album_name: None,
+        rules: FolderRules {
+            sync_method: FolderSyncMethod::UploadOnly,
+            delete_folder_to_album: false,
+            delete_album_to_folder: false,
+            ..rules
+        },
+    }
+}
+
 /// Catch-up strategy applied to existing files when the application boots.
 #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq)]
 pub enum StartupCatchupMode {
@@ -873,7 +1011,93 @@ fn remove_api_key_file_fallback(config_file: &Path) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::path::Path;
+
+    fn album_watch_paths() -> Vec<WatchPathEntry> {
+        let configured =
+            |path: &str, id: Option<&str>, name: Option<&str>| WatchPathEntry::WithConfig {
+                path: path.into(),
+                album_id: id.map(Into::into),
+                album_name: name.map(Into::into),
+                rules: FolderRules {
+                    sync_method: FolderSyncMethod::Full,
+                    delete_folder_to_album: true,
+                    ..FolderRules::default()
+                },
+            };
+        vec![
+            configured("/p/by-id", Some("a1"), Some("Trip")),
+            configured("/p/by-name", None, Some("Trip")),
+            WatchPathEntry::Simple("/p/Trip".into()),
+            configured("/p/other", Some("a2"), Some("Other")),
+            configured("/p/library", None, None),
+            WatchPathEntry::Simple("/p/Pictures".into()),
+        ]
+    }
+
+    #[test]
+    fn album_folders_find_linked_entries() {
+        let folders = album_folders(&album_watch_paths(), "a1", Some("Trip"), &[]);
+        assert_eq!(folders.linked, ["/p/by-id", "/p/by-name", "/p/Trip"]);
+        assert!(folders.named_after.is_empty());
+    }
+
+    #[test]
+    fn album_folders_skip_name_matches_when_another_album_has_the_name() {
+        let folders = album_folders(&album_watch_paths(), "a1", None, &[]);
+        assert_eq!(folders.linked, ["/p/by-id"]);
+    }
+
+    #[test]
+    fn album_folders_find_subfolders_named_after_the_album() {
+        let synced = [
+            "/p/Pictures/Trip".to_string(),
+            "/p/by-id".to_string(),
+            "/p/library/sub".to_string(),
+        ];
+        let folders = album_folders(&album_watch_paths(), "a1", Some("Trip"), &synced);
+        assert_eq!(folders.named_after, ["/p/Pictures/Trip"]);
+        assert_eq!(folders.linked, ["/p/by-id", "/p/by-name", "/p/Trip"]);
+    }
+
+    #[test]
+    fn detaching_an_album_keeps_its_folders_uploading_to_the_library() {
+        let mut entries = album_watch_paths();
+        let folders = AlbumFolders {
+            linked: vec!["/p/by-id".into(), "/p/Trip".into()],
+            named_after: vec!["/p/Pictures/Trip".into()],
+        };
+        assert!(detach_album_from_watch_paths(&mut entries, &folders, true));
+        let by_path = |path: &str| entries.iter().find(|e| e.path() == path).unwrap();
+        for path in ["/p/by-id", "/p/Trip", "/p/Pictures/Trip"] {
+            let entry = by_path(path);
+            assert!(entry.uploads_to_library(), "{path}");
+            assert_eq!(entry.sync_method(), FolderSyncMethod::UploadOnly);
+            assert!(!entry.rules().delete_folder_to_album);
+        }
+        assert_eq!(by_path("/p/other").album_name(), Some("Other"));
+        assert!(matches!(by_path("/p/Pictures"), WatchPathEntry::Simple(_)));
+    }
+
+    #[test]
+    fn detaching_an_album_can_stop_watching_its_folders() {
+        let mut entries = album_watch_paths();
+        let folders = AlbumFolders {
+            linked: vec!["/p/by-id".into(), "/p/by-name".into()],
+            named_after: vec!["/p/Pictures/Trip".into()],
+        };
+        assert!(detach_album_from_watch_paths(&mut entries, &folders, false));
+        let paths: Vec<&str> = entries.iter().map(WatchPathEntry::path).collect();
+        assert_eq!(
+            paths,
+            [
+                "/p/Trip",
+                "/p/other",
+                "/p/library",
+                "/p/Pictures",
+                "/p/Pictures/Trip"
+            ]
+        );
+    }
 
     #[test]
     fn date_headings_default_to_day_and_read_lowercase() {

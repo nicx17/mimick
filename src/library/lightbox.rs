@@ -29,6 +29,7 @@ use super::trash_view;
 use super::video_player::VideoPlayer;
 use super::{LOCAL_ID_PREFIX, LibraryWindowUi, load_source_page, load_texture_oriented};
 
+mod albums;
 mod fullscreen;
 mod location;
 mod ocr;
@@ -66,6 +67,7 @@ fn exif_from_local(local: &LocalExif, file_size: Option<u64>) -> ExifInfo {
         exposure_time: local.exposure_time.clone(),
         file_size_in_byte: file_size,
         date_time_original: local.date_time_original.clone(),
+        time_zone: None,
         city: None,
         state: None,
         country: None,
@@ -634,9 +636,11 @@ struct DetailsPane {
     summary: gtk::Label,
     edit_btn: gtk::Button,
     location_btn: gtk::Button,
+    album_btn: gtk::Button,
     rating: rating::RatingSection,
     people: people::PeopleSection,
     tags: TagSection,
+    albums: albums::AlbumsSection,
     loading: gtk::Label,
     exif: gtk::Box,
 }
@@ -878,6 +882,7 @@ fn build_details_pane() -> DetailsPane {
     let summary = details_text_label();
     let edit_btn = gtk::Button::builder().label("Edit Info…").build();
     let location_btn = gtk::Button::builder().label("Set Location…").build();
+    let album_btn = gtk::Button::builder().label("Add to Album…").build();
     let edit_row = libadwaita::WrapBox::builder()
         .child_spacing(6)
         .line_spacing(6)
@@ -885,6 +890,7 @@ fn build_details_pane() -> DetailsPane {
         .build();
     edit_row.append(&edit_btn);
     edit_row.append(&location_btn);
+    edit_row.append(&album_btn);
     let loading = gtk::Label::builder()
         .xalign(0.0)
         .label("Loading details…")
@@ -904,6 +910,8 @@ fn build_details_pane() -> DetailsPane {
     inner.append(&people.root);
     let tags = TagSection::new();
     inner.append(&tags.root);
+    let albums = albums::AlbumsSection::new();
+    inner.append(&albums.root);
     inner.append(&loading);
     inner.append(&exif);
     DetailsPane {
@@ -912,9 +920,11 @@ fn build_details_pane() -> DetailsPane {
         summary,
         edit_btn,
         location_btn,
+        album_btn,
         rating,
         people,
         tags,
+        albums,
         loading,
         exif,
     }
@@ -1271,6 +1281,10 @@ impl Lightbox {
             .connect_clicked(move |_| lb.set_location_current());
         let lb = self.clone();
         self.details
+            .album_btn
+            .connect_clicked(move |_| lb.add_current_to_album());
+        let lb = self.clone();
+        self.details
             .tags
             .bind(self.ui.clone(), Rc::new(move |tag| lb.search_tag(tag)));
         self.details.rating.bind(self.ui.clone());
@@ -1280,6 +1294,18 @@ impl Lightbox {
     fn search_tag(&self, tag: Tag) {
         self.ui.nav.pop();
         super::search_by_tag(self.ui.clone(), tag);
+    }
+
+    fn add_current_to_album(&self) {
+        let Some(target) = self
+            .current_item()
+            .as_ref()
+            .and_then(TrashTarget::from_item)
+        else {
+            return;
+        };
+        let ids = vec![target.remote_id().to_string()];
+        super::album_picker::present(&self.ui, ids, Rc::new(|| {}));
     }
 
     fn current_item(&self) -> Option<AssetObject> {
@@ -1345,6 +1371,7 @@ impl Lightbox {
             target.remote_id().to_string(),
             item.property("filename"),
             Rc::new(move |date_changed| lb.after_edit(date_changed)),
+            false,
         );
     }
 
@@ -1653,6 +1680,7 @@ impl Lightbox {
         let editable = on_server && !in_trash && is_mine(&self.ui, &item);
         self.details.edit_btn.set_visible(editable);
         self.details.location_btn.set_visible(editable);
+        self.details.album_btn.set_visible(on_server && !in_trash);
         self.actions.zoom_group.set_visible(!info.is_video());
         self.actions.open_with.set_visible(info.is_video());
 
@@ -1689,6 +1717,7 @@ impl Lightbox {
         self.details.rating.clear();
         self.details.people.clear();
         self.details.tags.clear();
+        self.details.albums.clear();
     }
 
     /// Load into the *inactive* picture and commit the slide transition only after
@@ -2022,6 +2051,9 @@ impl Lightbox {
 
     /// Fetch EXIF from the server; dropped if the user has moved to another asset.
     fn load_remote_details(self: &Rc<Self>, pos: u32, asset_id: String, mine: bool) {
+        if !asset_id.starts_with(LOCAL_ID_PREFIX) && !trash_view::is_trash_active(&self.ui) {
+            self.load_albums(pos, asset_id.clone());
+        }
         let lb = self.clone();
         glib::MainContext::default().spawn_local(async move {
             let result = lb.ui.ctx.api_client.fetch_asset_details(&asset_id).await;
@@ -2051,6 +2083,19 @@ impl Lightbox {
                 let location = fill_exif_box(&lb.details.exif, &exif, "Taken");
                 lb.show_location_map(location, &exif);
                 lb.details.exif.set_visible(true);
+            }
+        });
+    }
+
+    fn load_albums(self: &Rc<Self>, pos: u32, asset_id: String) {
+        let lb = self.clone();
+        glib::MainContext::default().spawn_local(async move {
+            let result = lb.ui.ctx.api_client.albums_containing(&asset_id).await;
+            if lb.pos.get() != pos {
+                return;
+            }
+            if let Ok(albums) = result {
+                lb.details.albums.show(&lb.ui, &albums);
             }
         });
     }

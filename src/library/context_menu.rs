@@ -177,6 +177,7 @@ fn append_manage_buttons(
 
     append_favorite_button(menu, ui, item, &hooks);
     append_archive_button(menu, ui, item, &hooks);
+    append_album_buttons(menu, ui, &remote_id, &hooks);
     let (ui_link, link_id) = (ui.clone(), remote_id.clone());
     menu.add("Create Share Link…", false, move || {
         super::shared_link_dialog::present(
@@ -191,6 +192,27 @@ fn append_manage_buttons(
         append_edit_buttons(menu, ui, item, remote_id, hooks.on_edited);
     }
     append_trash_button(menu, ui, target, hooks.on_trashed);
+}
+
+/// "Add to Album…"; inside an album also "Set as Album Cover" (owner) and "Remove from Album".
+fn append_album_buttons(menu: &Menu, ui: &Rc<LibraryWindowUi>, id: &str, hooks: &AssetMenuHooks) {
+    let (ui_add, ids) = (ui.clone(), vec![id.to_string()]);
+    menu.add("Add to Album…", false, move || {
+        super::album_picker::present(&ui_add, ids.clone(), Rc::new(|| {}))
+    });
+    if let Some(album) = super::album_assets::owned_current_album(ui) {
+        let (ui_cover, asset_id) = (ui.clone(), id.to_string());
+        menu.add("Set as Album Cover", false, move || {
+            super::album_assets::set_cover(&ui_cover, album.id.clone(), asset_id.clone())
+        });
+    }
+    if super::album_assets::can_remove_here(ui) {
+        let (ui_remove, ids, on_removed) =
+            (ui.clone(), vec![id.to_string()], hooks.on_trashed.clone());
+        menu.add("Remove from Album", false, move || {
+            super::album_assets::remove(&ui_remove, ids.clone(), on_removed.clone())
+        });
+    }
 }
 
 /// "Edit Info…" and "Set Location…", offered only on the user's own assets as in Immich.
@@ -209,6 +231,7 @@ fn append_edit_buttons(
             edit_id.clone(),
             filename.clone(),
             on_edited.clone(),
+            true,
         )
     });
     append_location_button(menu, ui, item, id);

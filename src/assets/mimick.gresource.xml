@@ -40,5 +40,11 @@
     <file alias="scalable/actions/mimick-layers-symbolic.svg"
           compressed="true"
           preprocess="xml-stripblanks">scalable/actions/mimick-layers-symbolic.svg</file>
+    <file alias="scalable/actions/mimick-share-symbolic.svg"
+          compressed="true"
+          preprocess="xml-stripblanks">scalable/actions/mimick-share-symbolic.svg</file>
+    <file alias="scalable/actions/mimick-filter-symbolic.svg"
+          compressed="true"
+          preprocess="xml-stripblanks">scalable/actions/mimick-filter-symbolic.svg</file>
   </gresource>
 </gresources>

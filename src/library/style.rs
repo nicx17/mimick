@@ -206,6 +206,28 @@ picture.mimick-person-avatar:active {
     opacity: 0.88;
 }
 
+list.boxed-list.mimick-sidebar-search {
+    background-color: alpha(@accent_bg_color, 0.12);
+}
+
+list.mimick-sidebar-search row image {
+    color: @accent_color;
+}
+
+picture.mimick-thumb-reveal {
+    transition: opacity 200ms ease-out, filter 240ms ease-out;
+}
+
+picture.mimick-thumb-reveal.mimick-thumb-pending {
+    opacity: 0;
+    filter: blur(8px);
+}
+
+box.mimick-picker-cover {
+    border-radius: 6px;
+    background-color: alpha(@view_fg_color, 0.08);
+}
+
 overlay.mimick-link-cover {
     border-radius: 8px;
     background-color: alpha(@view_fg_color, 0.08);

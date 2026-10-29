@@ -368,7 +368,7 @@ async fn show_batch_conflict_dialog(
     rx.await.unwrap_or((ConflictAction::Skip, false))
 }
 
-fn unique_path(dir: &Path, filename: &str) -> PathBuf {
+pub(super) fn unique_path(dir: &Path, filename: &str) -> PathBuf {
     let name = Path::new(filename);
     let stem = name
         .file_stem()
