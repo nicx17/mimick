@@ -79,6 +79,7 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - [x] **Change Dates** — Set or shift the date and time zone of many photos at once.
 - [x] **Settings Redesign** — Plainer sections and labels, a Status headline, and short messages instead of dialogs.
 - [x] **Search Filters Panel** — Filters open in a side panel beside the results, or slide in on phones.
+- [x] **New App Icon** — A layered lotus redesign, with a symbolic version.
 
 ---
 

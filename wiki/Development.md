@@ -52,7 +52,7 @@ To integrate a native build with your desktop application launcher:
 
 ```bash
 cp setup/dev.nicx.mimick.desktop ~/.local/share/applications/
-cp setup/icons/dev.nicx.mimick.svg ~/.local/share/icons/hicolor/scalable/apps/
+cp setup/icons/mimick.svg ~/.local/share/icons/hicolor/scalable/apps/dev.nicx.mimick.svg
 update-desktop-database ~/.local/share/applications/
 ```
 
