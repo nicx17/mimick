@@ -170,8 +170,8 @@ pub(super) fn update_transfer_ui(ui: &LibraryWindowUi) {
 /// Construct a styled placeholder view containing an icon, header title, and description text.
 /// Centered Mimick-icon spinner used while library data is fetching. Shares
 /// the `mimick-loader-icon` animation with the lightbox image-load spinner.
-pub(super) fn build_loading_view() -> gtk::Box {
-    let container = gtk::Box::builder()
+fn build_empty_state_container() -> gtk::Box {
+    gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(12)
         .vexpand(true)
@@ -179,7 +179,11 @@ pub(super) fn build_loading_view() -> gtk::Box {
         .valign(gtk::Align::Center)
         .halign(gtk::Align::Center)
         .css_classes(vec!["mimick-empty".to_string()])
-        .build();
+        .build()
+}
+
+pub(super) fn build_loading_view() -> gtk::Box {
+    let container = build_empty_state_container();
     let icon = gtk::Image::builder()
         .icon_name("dev.nicx.mimick")
         .pixel_size(72)
@@ -204,15 +208,7 @@ pub(super) fn build_loading_view() -> gtk::Box {
 }
 
 pub(super) fn build_status_view(icon_name: &str, title: &str, subtitle: &str) -> gtk::Box {
-    let container = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(12)
-        .vexpand(true)
-        .hexpand(true)
-        .valign(gtk::Align::Center)
-        .halign(gtk::Align::Center)
-        .css_classes(vec!["mimick-empty".to_string()])
-        .build();
+    let container = build_empty_state_container();
     let icon = gtk::Image::builder()
         .icon_name(icon_name)
         .pixel_size(64)
@@ -268,6 +264,27 @@ pub(super) fn local_to_library_asset(local: LocalAsset) -> LibraryAsset {
     }
 }
 
+fn merge_remote_and_local(
+    mut remote: Vec<LibraryAsset>,
+    locals: Vec<LocalAsset>,
+    ui: &LibraryWindowUi,
+    has_more: bool,
+) -> (Vec<LibraryAsset>, bool) {
+    let synced_paths: std::collections::HashSet<String> = remote
+        .iter()
+        .filter_map(|asset| asset.checksum.as_deref())
+        .filter_map(immich_checksum_to_hex)
+        .filter_map(|hex| ui.ctx.sync_index.local_path_for_checksum(&hex))
+        .collect();
+    let mut local_rows: Vec<LibraryAsset> = locals
+        .into_iter()
+        .filter(|local| !synced_paths.contains(&local.path.display().to_string()))
+        .map(local_to_library_asset)
+        .collect();
+    local_rows.append(&mut remote);
+    (local_rows, has_more)
+}
+
 /// Merge a page of remote API assets with local files that haven't been synchronized yet.
 pub(super) async fn merge_unified_page(
     remote: Result<(Vec<LibraryAsset>, bool), String>,
@@ -275,7 +292,7 @@ pub(super) async fn merge_unified_page(
     ui: &Rc<LibraryWindowUi>,
     query: Option<&str>,
 ) -> Result<(Vec<LibraryAsset>, bool), String> {
-    let (mut remote, has_more) = remote?;
+    let (remote, has_more) = remote?;
     if page > 1 {
         return Ok((remote, has_more));
     }
@@ -285,23 +302,7 @@ pub(super) async fn merge_unified_page(
         locals = filter_by_filename(locals, q);
     }
 
-    let synced_paths: std::collections::HashSet<String> = {
-        remote
-            .iter()
-            .filter_map(|a| a.checksum.as_deref())
-            .filter_map(immich_checksum_to_hex)
-            .filter_map(|hex| ui.ctx.sync_index.local_path_for_checksum(&hex))
-            .collect()
-    };
-
-    let mut local_rows: Vec<LibraryAsset> = locals
-        .into_iter()
-        .filter(|l| !synced_paths.contains(&l.path.display().to_string()))
-        .map(local_to_library_asset)
-        .collect();
-
-    local_rows.append(&mut remote);
-    Ok((local_rows, has_more))
+    Ok(merge_remote_and_local(remote, locals, ui, has_more))
 }
 
 /// Return the path of the watch entry linked to `album_name`, if any.
@@ -324,7 +325,7 @@ pub(super) async fn merge_album_unified_page(
     ui: &Rc<LibraryWindowUi>,
     album_name: &str,
 ) -> Result<(Vec<LibraryAsset>, bool), String> {
-    let (mut remote, has_more) = remote?;
+    let (remote, has_more) = remote?;
     if page > 1 {
         return Ok((remote, has_more));
     }
@@ -334,23 +335,7 @@ pub(super) async fn merge_album_unified_page(
         None => Vec::new(),
     };
 
-    let synced_paths: std::collections::HashSet<String> = {
-        remote
-            .iter()
-            .filter_map(|a| a.checksum.as_deref())
-            .filter_map(immich_checksum_to_hex)
-            .filter_map(|hex| ui.ctx.sync_index.local_path_for_checksum(&hex))
-            .collect()
-    };
-
-    let mut local_rows: Vec<LibraryAsset> = locals
-        .into_iter()
-        .filter(|l| !synced_paths.contains(&l.path.display().to_string()))
-        .map(local_to_library_asset)
-        .collect();
-
-    local_rows.append(&mut remote);
-    Ok((local_rows, has_more))
+    Ok(merge_remote_and_local(remote, locals, ui, has_more))
 }
 
 /// Helper to show a permissions error dialog for library views.

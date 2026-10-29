@@ -254,7 +254,7 @@ pub fn build_search_view() -> SearchViewParts {
     let (search_bar, search_mode, search_entry) = build_search_bar();
     let actions = build_action_row();
     search_bar.append(&actions.search);
-    actions.root.prepend(&search_mode);
+    inner.append(&search_mode);
     inner.append(&search_bar);
     inner.append(&actions.root);
 

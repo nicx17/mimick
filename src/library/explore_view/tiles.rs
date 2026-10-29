@@ -5,7 +5,7 @@ use gdk4::Texture;
 use glib::Bytes;
 use gtk::prelude::*;
 
-use crate::api_client::{Person, ThumbnailSize};
+use crate::api_client::Person;
 use crate::app_context::AppContext;
 
 use super::ExploreClick;
@@ -185,30 +185,8 @@ pub(crate) fn explore_tile(
     let asset_id_owned = asset_id.to_string();
     button.connect_clicked(move |_| on_click(kind, value_owned.clone(), asset_id_owned.clone()));
 
-    spawn_asset_thumbnail(ctx, asset_id.to_string(), picture);
+    super::super::thumbnail_loader::load_into_picture(ctx, asset_id.to_string(), picture, false);
     button
-}
-
-/// Helper to asynchronously request and bind an asset cover art thumbnail image.
-fn spawn_asset_thumbnail(ctx: Arc<AppContext>, asset_id: String, picture: gtk::Picture) {
-    if let Some(texture) = ctx
-        .thumbnail_cache
-        .get_cached(&asset_id, ThumbnailSize::Thumbnail)
-    {
-        picture.set_paintable(Some(&texture));
-        return;
-    }
-    glib::timeout_add_local_once(std::time::Duration::from_millis(120), move || {
-        glib::MainContext::default().spawn_local(async move {
-            if let Ok(texture) = ctx
-                .thumbnail_cache
-                .load_thumbnail(&asset_id, ThumbnailSize::Thumbnail)
-                .await
-            {
-                picture.set_paintable(Some(&texture));
-            }
-        });
-    });
 }
 
 /// Helper to asynchronously request and render a round avatar person face thumbnail.

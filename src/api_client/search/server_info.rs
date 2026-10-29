@@ -10,46 +10,8 @@ use super::super::{
 impl ImmichApiClient {
     /// Retrieve total images, videos, and overall asset count statistics from the server.
     pub async fn fetch_server_stats(&self) -> Result<ServerStats, String> {
-        let base_url = self
-            .get_active_url()
+        self.fetch_server_info("/api/assets/statistics", RequestContext::ServerStats)
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
-        let settings = self.settings_snapshot();
-        let url = format!("{}/api/assets/statistics", base_url);
-
-        match self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
-            .header("Accept", "application/json")
-            .timeout(Duration::from_secs(10))
-            .send()
-            .await
-        {
-            Ok(resp) if resp.status().is_success() => {
-                let stats = resp
-                    .json::<ServerStats>()
-                    .await
-                    .map_err(|err| err.to_string())?;
-                self.clear_issue().await;
-                Ok(stats)
-            }
-            Ok(resp) => {
-                self.set_issue(classify_http_issue(
-                    RequestContext::ServerStats,
-                    resp.status().as_u16(),
-                    None,
-                ))
-                .await;
-                Err(format!("HTTP {}", resp.status()))
-            }
-            Err(err) => {
-                *self.active_url.lock().await = None;
-                self.set_issue(classify_network_issue(RequestContext::ServerStats, &err))
-                    .await;
-                Err(err.to_string())
-            }
-        }
     }
 
     /// Fetch server-wide statistics including per-user usage breakdown.
@@ -95,43 +57,48 @@ impl ImmichApiClient {
 
     /// Retrieve detailed Immich server system information (e.g. version).
     pub async fn fetch_server_about(&self) -> Result<ServerAbout, String> {
+        self.fetch_server_info("/api/server/about", RequestContext::ServerAbout)
+            .await
+    }
+
+    async fn fetch_server_info<T>(
+        &self,
+        endpoint: &str,
+        context: RequestContext,
+    ) -> Result<T, String>
+    where
+        T: serde::de::DeserializeOwned,
+    {
         let base_url = self
             .get_active_url()
             .await
             .ok_or_else(|| "No active connection".to_string())?;
         let settings = self.settings_snapshot();
-        let url = format!("{}/api/server/about", base_url);
-
-        match self
+        let url = format!("{base_url}{endpoint}");
+        let response = self
             .client
             .get(&url)
             .header("x-api-key", &settings.api_key)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(10))
             .send()
-            .await
-        {
-            Ok(resp) if resp.status().is_success() => {
-                let about = resp
-                    .json::<ServerAbout>()
-                    .await
-                    .map_err(|err| err.to_string())?;
+            .await;
+
+        match response {
+            Ok(response) if response.status().is_success() => {
+                let info = response.json::<T>().await.map_err(|err| err.to_string())?;
                 self.clear_issue().await;
-                Ok(about)
+                Ok(info)
             }
-            Ok(resp) => {
-                self.set_issue(classify_http_issue(
-                    RequestContext::ServerAbout,
-                    resp.status().as_u16(),
-                    None,
-                ))
-                .await;
-                Err(format!("HTTP {}", resp.status()))
+            Ok(response) => {
+                let status = response.status();
+                self.set_issue(classify_http_issue(context, status.as_u16(), None))
+                    .await;
+                Err(format!("HTTP {status}"))
             }
             Err(err) => {
                 *self.active_url.lock().await = None;
-                self.set_issue(classify_network_issue(RequestContext::ServerAbout, &err))
-                    .await;
+                self.set_issue(classify_network_issue(context, &err)).await;
                 Err(err.to_string())
             }
         }

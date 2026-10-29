@@ -49,6 +49,7 @@ pub mod sidebar;
 pub mod state;
 pub mod style;
 pub mod thumbnail_cache;
+mod thumbnail_loader;
 
 mod about_dialog;
 mod actions;

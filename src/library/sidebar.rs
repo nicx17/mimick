@@ -48,92 +48,103 @@ const GROUPS: [(&str, &[&str]); 4] = [
 ];
 
 /// Fixed sidebar destinations: title, subtitle, icon, and the key the sidebar handler matches.
-const FIXED_ROWS: [(&str, &str, &str, &str); 14] = [
-    (
+type FixedRow = (&'static str, &'static str, &'static str, &'static str);
+
+const FIXED_ROWS: [FixedRow; 14] = [
+    fixed_row(
         "Photos",
         "Timeline of every photo and video",
         "image-x-generic-symbolic",
         "photos",
     ),
-    (
+    fixed_row(
         "Search",
         "Find photos, videos, and text",
         "system-search-symbolic",
         "search",
     ),
-    (
+    fixed_row(
         "Explore",
         "People, places, and things",
         "view-grid-symbolic",
         "explore",
     ),
-    (
+    fixed_row(
         "Map",
         "Photos by where they were taken",
         "mark-location-symbolic",
         "map",
     ),
-    (
+    fixed_row(
         "People",
         "Faces Immich has recognized",
         "avatar-default-symbolic",
         "people",
     ),
-    (
+    fixed_row(
         "Albums",
         "Recent, owned, and shared",
         "folder-pictures-symbolic",
         "albums",
     ),
-    (
+    fixed_row(
         "Shared Albums",
         "Shared with you and by you",
         "folder-publicshare-symbolic",
         "shared-albums",
     ),
-    (
+    fixed_row(
         "Shared Links",
         "Public links you've created",
         "mimick-share-symbolic",
         "shared-links",
     ),
-    (
+    fixed_row(
         "Sharing",
         "Partners who share libraries",
         "system-users-symbolic",
         "sharing",
     ),
-    (
+    fixed_row(
         "Favorites",
         "Photos and videos you've marked",
         "mimick-heart-filled-symbolic",
         "favorites",
     ),
-    (
+    fixed_row(
         "Tags",
         "Browse and organize tags",
         "mimick-tag-symbolic",
         "tags",
     ),
-    (
+    fixed_row(
         "Folders",
         "Browse by folder on the server",
         "folder-symbolic",
         "folders",
     ),
-    (
+    fixed_row(
         "Archive",
         "Hidden from Photos",
         "mimick-archive-symbolic",
         "archive",
     ),
-    (
+    fixed_row(
         "Trash",
         "Restore or permanently delete",
         "user-trash-symbolic",
         "trash",
     ),
 ];
+
+const fn fixed_row(
+    title: &'static str,
+    subtitle: &'static str,
+    icon: &'static str,
+    key: &'static str,
+) -> FixedRow {
+    (title, subtitle, icon, key)
+}
 
 /// Connection and server rows at the bottom of the sidebar, in their own list.
 fn build_footer() -> (gtk::ListBox, libadwaita::ActionRow, libadwaita::ActionRow) {

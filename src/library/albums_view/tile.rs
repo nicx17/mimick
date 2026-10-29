@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use gtk::prelude::*;
 
-use crate::api_client::{LibraryAlbum, ThumbnailSize};
+use crate::api_client::LibraryAlbum;
 use crate::app_context::AppContext;
 
 use super::AlbumClick;
@@ -84,25 +84,5 @@ fn build_album_metadata(album: &LibraryAlbum) -> gtk::Box {
 
 /// Asynchronously load and set the thumbnail for an album cover art picture widget.
 pub fn spawn_thumbnail(ctx: Arc<AppContext>, asset_id: String, picture: gtk::Picture) {
-    if let Some(texture) = ctx
-        .thumbnail_cache
-        .get_cached(&asset_id, ThumbnailSize::Thumbnail)
-    {
-        picture.set_paintable(Some(&texture));
-        return;
-    }
-    picture.add_css_class("mimick-thumb-reveal");
-    picture.add_css_class("mimick-thumb-pending");
-    glib::timeout_add_local_once(std::time::Duration::from_millis(120), move || {
-        glib::MainContext::default().spawn_local(async move {
-            if let Ok(texture) = ctx
-                .thumbnail_cache
-                .load_thumbnail(&asset_id, ThumbnailSize::Thumbnail)
-                .await
-            {
-                picture.set_paintable(Some(&texture));
-            }
-            picture.remove_css_class("mimick-thumb-pending");
-        });
-    });
+    super::super::thumbnail_loader::load_into_picture(ctx, asset_id, picture, true);
 }
