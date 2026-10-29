@@ -6,10 +6,10 @@ The library view is an optional in-app browser for your Immich server's assets, 
 
 ## Enabling the Library View
 
-1. Open **Settings → Behavior → Enable Library View**.
-2. Save and restart Mimick.
+1. Turn on **Settings → App → Library View**. It saves right away.
+2. Close the window and open Mimick again. The tray menu's library entry appears after a restart.
 
-The library window opens instead of the settings window on the next launch. Settings remain accessible from the header bar gear button.
+The library window now opens instead of the settings window. Settings remain accessible from **Settings** in the header bar's main menu.
 
 |                                                     Photos (Light)                                                     |                                                       Photos (Dark)                                                        |
 | :--------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: |
@@ -19,8 +19,9 @@ The library window opens instead of the settings window on the next launch. Sett
 
 The window uses a sidebar + content split.
 
-**Sidebar** (toggle with **F9** or the sidebar button in the header), in three groups:
+**Sidebar** (toggle with **F9** or the sidebar button in the header), with **Search** at the top and then three groups:
 
+- **Search** — opens the search form above the grid
 - **Library**
   - **Photos** — opens the timeline grid
   - **Explore** — People, Places, Things
@@ -35,7 +36,6 @@ The window uses a sidebar + content split.
   - **Shared Links** — every public link you've created (see [Shared Links](#shared-links))
   - **Sharing** — partner sharing (see [Partner Sharing](#partner-sharing))
 - **Browse**
-  - **Search** — opens the search form above the grid
   - **Tags** — your tag tree (see [Tags page](#tags-page))
   - **Folders** — server photos by their original folder (see [Folders](#folders))
 - the arrow on **Albums** expands your three most recently updated albums
@@ -44,7 +44,7 @@ The window uses a sidebar + content split.
 
 **View header:** every photo view opens with a header that scrolls away with the photos. It shows the view's title and, where Immich has them, details and actions:
 
-- **Albums**: item count, date range, who it's shared with or by, description, Share and Create share link buttons, a **⋯** menu with **Rename…** and **Edit Description…** (your own albums), and the linked-folder row with **Link folder** / **Sync**
+- **Albums**: item count, date range, who it's shared with or by, description, Share, Download album, and Create share link buttons, a **⋯** menu with **Rename…**, **Edit Description…**, and **Options…** (your own albums) or **Leave Album…** (albums shared with you), and the linked-folder row with **Link folder** / **Sync**
 - **People**: face, name, photo count, age and birthday, a heart to favorite them, and the person's **⋯** menu (Rename, Set Birthday, Hide, Merge People)
 - **Tags**: color, photo count, parent tags, and the tag's **⋯** menu
 - **Places**, map areas, **Folders**, **Favorites**, **Archive**, and searches: the item count where Immich can count it; folders also show their full path
@@ -98,6 +98,7 @@ Thumbnails are loaded asynchronously. A placeholder is shown while the thumbnail
 Use the sort dropdown to order the current view by:
 
 - **Newest** — most recently created first
+- **Oldest** — earliest first; albums set to oldest first in **Album Options** open this way
 - **Filename** — alphabetical
 - **File Type** — grouped by MIME type
 - **Sync State** — local-only assets first, then synced
@@ -144,11 +145,11 @@ Switching sources clears any active search and reloads from page 1.
 
 ## Searching
 
-The search entry appears in the header bar. Enter a query and press Enter or wait for the field to commit.
+Open **Search** from the library sidebar. Its search form stays above the results while you browse; enter a query and press **Search** or Enter to run it.
 
 ### Search Modes (Remote only)
 
-Use the mode dropdown next to the search entry:
+Use the mode dropdown below the search entry, next to **Search**:
 
 | Mode             | What it searches                                | Server requirement        |
 | :--------------- | :---------------------------------------------- | :------------------------ |
@@ -159,6 +160,10 @@ Use the mode dropdown next to the search entry:
 - Smart Search and OCR both require the Immich machine-learning service to be enabled and healthy on your server. Queries against a server without ML will return empty results or an error.
 - Filename mode works without ML and is the fastest option.
 - Clearing the search entry returns to the previous non-search source.
+
+### Filters
+
+Press **Filters** under the search entry to open the filters panel: it docks on the right of the results on wide windows and slides in over them on phones (swipe it away or press the close button). The panel has the text, type and flags, tag, date, camera, and location groups, with **Reset** (clears the filters, keeping your search text) and **Search** at the bottom; on phones **Search** also closes the panel so you see the results. The **Filters** button shows how many filters are set, for example **Filters · 3**. The **Clear** button next to **Filters** clears the search text and the filters.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search_view_with_thequickbrownfox_searched_ocr_mode.png" width="80%" alt="OCR search example" />
@@ -196,7 +201,7 @@ Clicking a tile filters the grid to assets belonging to that person, place, or t
 
 Use the **Refresh** button in the header to reload the Explore data. Sections that return no results from the server are hidden automatically.
 
-**Face Visibility:** By default, unnamed faces are shown and hidden faces are excluded. You can toggle these independently in Library Settings.
+**Face Visibility:** By default, unnamed faces are shown and hidden faces are excluded. Toggle **Show unnamed** and **Show hidden** independently from the **⋯** (Filter people) menu on the People row.
 
 ---
 
@@ -262,7 +267,7 @@ Click an album tile to open it in the grid view. The album is also added to the 
 
 Click **Create album** (top right of the Albums page). Enter a name and confirm. The new album appears in the **Your albums** section immediately.
 
-To assign a new or existing album to a watch folder for automatic upload, use **Settings → Watch Folders → album dropdown** on the relevant folder row.
+To assign a new or existing album to a watch folder for automatic upload, press **Upload Target** on the folder's row in **Settings → Watch Folders**.
 
 ### Manual Upload
 
@@ -286,12 +291,17 @@ In selection mode:
 
 **Bulk actions available:**
 
+- **Add to album** — opens the album picker (see [Managing Albums](#managing-albums))
+- **Remove from album** — inside an album you own or edit, takes the selected photos out of it (see [Managing Albums](#managing-albums))
 - **Download** — saves selected remote assets to the configured download folder (local-only assets are skipped)
+- **Change date** — sets or shifts the capture date and time zone of every selected photo you own (see [Changing Dates](#changing-dates))
 - **Set location** — gives every selected photo you own the same location; photos other people own (from partners or shared albums) are left unchanged (see [Setting a Location](#setting-a-location))
 - **Move to trash** — moves selected remote assets to the Immich trash after a confirmation dialog. They can be restored from the [Trash](#trash) view or the Immich web UI. Local copies in your watch folders are kept, and local-only assets are skipped (the dialog says how many).
 - **Clear** — deselects all items without taking action
 
 Pressing **Delete** while the grid has focus does the same as **Move to trash** for the current selection.
+
+On phone-width windows, Add to album, Download, and Move to trash stay as buttons; Create share link, Archive, Set location, Change date, and Remove from album are in the **⋯** (More actions) menu.
 
 In the [Trash](#trash) view the bar shows **Restore** and **Delete Permanently** instead of Download and Move to trash.
 
@@ -307,7 +317,7 @@ Click any asset in the grid to open it in the lightbox.
 | :-----------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------: |
 | ![Lightbox details on](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_on.png) | ![Lightbox details off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_off.png) |
 
-- The lightbox shows a preview image. If **Full Resolution Preview** is enabled in Settings → Behavior, it loads the original file instead of a server-generated proxy.
+- The lightbox shows a preview image. If **Open Originals in Lightbox** is on in Settings → Library, it loads the original file instead of a server-generated proxy.
 - **Edited photos**: Photos edited in Immich (cropped or rotated) show the edited version. Download and drag-out still give the original file.
 - **RAW Previews**: By default, RAW files display using their fast embedded previews. The extractor first scans the file for the largest embedded JPEG (catching the full-resolution preview on cameras that store both a tiny thumb and a full-res one — e.g. Sony ARW); if the file contains no JPEG at all (Samsung DNG, OnePlus DNG, and other phone DNGs that store their preview as uncompressed TIFF strips), it falls back to libraw's bitmap thumbnail with container orientation applied. You can toggle **Full RAW Decoding** in settings to perform a full sensor demosaic instead.
 - **Videos**: Clicking a video opens it in the lightbox with its thumbnail as a poster and a centered play badge. Click the badge (or press **Space**) to play it in the app. Local and synced videos play from disk; server videos stream from Immich, which serves its transcoded copy when one exists. Decoding uses the GPU (VA-API) when the codec is supported.
@@ -320,7 +330,7 @@ Click any asset in the grid to open it in the lightbox.
 - **Fullscreen** (header button or **F11**) shows the asset edge to edge on black. Move the pointer or tap to bring the header back (it hides again after 3 seconds); press **Esc**, **F11**, or the header button to leave. Left/Right and swipes still change assets.
 - **Download** saves the original file to the configured download folder.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
-- **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date** (local time). Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
+- **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, the time zone, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date**. The date shows in the photo's own time zone, and the searchable **Time zone** row changes it; the date is saved as shown, in the zone you pick. Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
 - **Location**: photos with GPS coordinates show a small map with a pin under **Coordinates**; click it to open the [Map](#map) there. The copy button next to the coordinates copies them for pasting elsewhere. **Set Location…** next to **Edit Info…** sets or changes the location (see [Setting a Location](#setting-a-location)). As in Immich, **Edit Info…** and **Set Location…** only appear on photos you own.
 - Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, **Set Location…**, and **Move to Trash**.
 - **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text and show a **Copy All Text** button over the photo.
@@ -344,6 +354,10 @@ When **Ratings** is turned on in your Immich account settings (Account Settings 
 - The rating is saved right away. If Immich can't save it, the stars go back to the previous rating and an error explains why.
 - As in Immich, only your own photos can be rated. Photos shared with you show their rating without letting you change it, and no section when they have none.
 - Requires `asset.update`.
+
+### Appears In
+
+Photos on the server show an **Appears In** section listing every album they're in, with its cover and item count. Click an album to close the lightbox and open it. See [Managing Albums](#managing-albums).
 
 ### People in the Details Pane
 
@@ -384,17 +398,19 @@ Album sync is on-demand — it runs only when you press **Sync** and does not ru
 
 ## Library Settings
 
-These options are in **Settings → Behavior** and apply to the library view.
+These options are in the **Library**, **Grid Appearance**, **RAW Files**, and **Storage** sections of Settings, which appear when the library view is on.
 
 | Setting                     | Default | Effect                                                                                                                                 |
 | :-------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------- |
-| **Full-Resolution Preview** | Off     | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth.                    |
-| **Full RAW Decoding**       | Off     | Decode high-resolution sensor data instead of using fast embedded camera previews (slower).                                            |
-| **Cache Decoded RAW Files** | Off     | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled.                        |
-| **Show unnamed faces**      | On      | Show people with no assigned name in the Explore view.                                                                                 |
-| **Show hidden faces**       | Off     | Include hidden people in the Explore view.                                                                                             |
+| **Open Originals in Lightbox** | Off  | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth.                    |
+| **Thumbnail Quality**       | Thumbnail | **Automatic**, **Thumbnail**, **Preview**, or **Full Size** for grid tiles. Sharper thumbnails use more memory. Applies to an open library window right away. |
 | **Date Headings**           | By Day  | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
-| **Download Folder**         | Not set | First download opens a folder picker; the chosen path is saved and reused for subsequent downloads.                                    |
+| **Border Width**            | 0       | Gap between photos, in pixels. With a border, its colour fills the whole grid, behind the date headings too. Applies right away.        |
+| **Border Color**            | White   | Colour of the grid border. Date headings switch between dark and light text to stay readable.                                          |
+| **Full RAW Decoding**       | Off     | Decode high-resolution sensor data instead of using fast embedded camera previews (slower).                                            |
+| **Keep Decoded RAW Files**  | Off     | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled.                        |
+| **Cache Limit (MB)**        | 2000    | Disk space for thumbnails, previews, and videos, trimmed when Mimick starts. The row shows how much is in use; **Clear Cache** frees it now. |
+| **Download Folder**         | Ask each time | Without one, each download asks for a folder and offers to keep it as the default (**Always**) or use it **Just Once**. **Change…** picks one here. |
 
 See [Performance Tuning](Performance-Tuning) for guidance on choosing values for these settings.
 
@@ -448,6 +464,29 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 
 - Rename an album or edit its description from the album's header (**⋯** menu) or by right-clicking its tile on the Albums page. Only your own albums can be edited.
 - Renaming keeps linked watch folders linked: Mimick updates the folder's album name in your settings.
+
+## Managing Albums
+
+- **Add to album**: select photos and press the **+** button in the selection bar, right-click a photo, or press **Add to Album…** in the lightbox details pane. The picker lists your albums and albums shared with you where you're an editor, most recently changed first. Type to filter; when nothing matches, the first row creates an album with the name you typed (press **Enter** to pick the first row). A message says how many were added (and how many were already there), with **Open** to jump to the album. Requires `albumAsset.create` (and `album.create` for new albums).
+- **Remove from album**: inside an album you own or edit, right-click a photo or use the selection bar. Photos stay in your library; the message offers **Undo**. Editors can remove only their own photos, and the message says how many were left. Requires `albumAsset.delete`.
+- **Set as album cover**: right-click a photo inside one of your albums. Requires `album.update`.
+- **Delete album**: in your album's **⋯** menu or its tile's right-click menu, **Delete Album…** deletes it from Immich; its photos stay in your library. The confirmation says when it's also removed for people it's shared with and when its shared links stop working. Because Mimick re-creates a missing album by name, folders that would bring it back are handled too:
+  - Watch folders that sync with the album (including folders linked with **Link folder…**) are listed, and you choose **Keep backing them up to your library** (they keep uploading, without an album, and two-way sync and deletion mirroring turn off) or **Stop watching these folders**.
+  - Subfolders of a watch folder set to **Default (Folder Name)** whose photos made this album get their own library-only watch folder entry, so the rest of the parent folder still makes albums from its folders.
+  - Deleting waits while uploads are running, and while the Settings window is open (saving it would undo the folder changes). Requires `album.delete`.
+- **Leave album**: for an album someone shared with you, use **Leave Album…** in its header's **⋯** menu or right-click its tile on the Albums or Shared Albums page. Requires `albumUser.delete`.
+- **Album options**: in your album's **⋯** menu, **Options…** sets the **Display order** (newest or oldest first, which Mimick and Immich use when the album opens) and turns **Comments and likes** on or off for the Immich apps. Changes save immediately. Requires `album.update`.
+- **Download album**: the download button in the album's header, or **Download** on its tile, saves the whole album as `Album name.zip` in your download folder. Immich splits large albums (4 GiB by default, set in Immich's user settings), which download as `Album name (part 1 of 3).zip` and so on. Requires `asset.download`.
+- **Appears in**: the lightbox details pane lists the albums a photo is in; click one to open it. Requires `album.read`.
+
+## Changing Dates
+
+Select photos and choose **Change date** in the selection bar (in **⋯** on phones). Only photos you own change; the dialog says when some of the selection belongs to someone else.
+
+- **Set** gives every selected photo the same date, time, and **Time zone**. The zone list is searchable (type part of a city, e.g. "lisb") and starts at your computer's time zone; the line below shows the exact time that will be saved.
+- **Shift** moves each photo by days, hours, and minutes (negative numbers move them earlier), keeping the time between them. Pick a **Time zone** to also move them into that zone, or leave **Keep current zone**. Shifting by zero with a new zone only corrects the zone.
+
+The timeline reloads afterwards so the photos appear in their new place. Requires `asset.update`.
 
 ---
 

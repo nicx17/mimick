@@ -6,7 +6,7 @@
 //! the "search bar disappears" problem while keeping a single grid
 //! renderer.
 
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
 use std::rc::Rc;
 
 use glib::clone;
@@ -18,6 +18,7 @@ use crate::library::search_filters::{
     FilterWidgets, build_camera_group, build_date_group, build_flags_group, build_location_group,
     build_tag_group, build_text_group,
 };
+use crate::library::search_panel::{active_filter_count, build_side_panel, filters_label};
 
 /// UI widgets for the dedicated search form.
 ///
@@ -34,6 +35,12 @@ pub struct SearchViewParts {
     pub search_button: gtk::Button,
     pub clear_button: gtk::Button,
     pub filters: FilterWidgets,
+    /// Side panel holding the filter groups; docks on the right or slides over on phones.
+    pub filter_panel: gtk::Box,
+    pub filters_toggle: gtk::ToggleButton,
+    filters_toggle_label: gtk::Label,
+    pub panel_clear: gtk::Button,
+    pub panel_search: gtk::Button,
     modes: Rc<RefCell<Vec<u32>>>,
 }
 
@@ -102,6 +109,7 @@ fn build_search_bar() -> (gtk::Box, gtk::DropDown, gtk::SearchEntry) {
     let search_mode = gtk::DropDown::builder()
         .model(&mode_model)
         .selected(0)
+        .hexpand(true)
         .tooltip_text(
             "Smart: CLIP-based semantic search.\n\
              Filename: matches against file names.\n\
@@ -111,43 +119,41 @@ fn build_search_bar() -> (gtk::Box, gtk::DropDown, gtk::SearchEntry) {
 
     let search_entry = gtk::SearchEntry::builder()
         .placeholder_text("Describe what you're looking for\u{2026}")
-        .hexpand(true)
         .build();
 
-    let search_bar = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(4)
-        .build();
+    let search_bar = gtk::Box::builder().spacing(6).build();
     search_bar.append(&search_mode);
-    search_bar.append(&search_entry);
 
     (search_bar, search_mode, search_entry)
 }
 
-fn build_action_row() -> (gtk::Box, gtk::Image, gtk::Button, gtk::Button, gtk::Button) {
-    let action_row = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(6)
+struct ActionRow {
+    /// Wraps onto a second line when the window is too narrow for one.
+    root: libadwaita::WrapBox,
+    filters_toggle: gtk::ToggleButton,
+    filters_label: gtk::Label,
+    clear: gtk::Button,
+    search: gtk::Button,
+}
+
+fn build_action_row() -> ActionRow {
+    let action_row = libadwaita::WrapBox::builder()
+        .child_spacing(6)
+        .line_spacing(6)
         .margin_top(2)
         .build();
 
-    let toggle_icon = gtk::Image::from_icon_name("pan-end-symbolic");
-    let toggle_button = gtk::Button::builder()
-        .child(&{
-            let b = gtk::Box::builder()
-                .orientation(gtk::Orientation::Horizontal)
-                .spacing(4)
-                .build();
-            b.append(&toggle_icon);
-            b.append(
-                &gtk::Label::builder()
-                    .label("Filters")
-                    .css_classes(vec!["caption".to_string()])
-                    .build(),
-            );
-            b
-        })
-        .css_classes(vec!["flat".to_string()])
+    let filters_label = gtk::Label::new(Some(&filters_label(0)));
+    let toggle_content = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .spacing(6)
+        .build();
+    toggle_content.append(&gtk::Image::from_icon_name("mimick-filter-symbolic"));
+    toggle_content.append(&filters_label);
+    let toggle_button = gtk::ToggleButton::builder()
+        .child(&toggle_content)
+        .tooltip_text("Show search filters")
+        .css_classes(["flat"])
         .build();
 
     let clear_button = gtk::Button::builder()
@@ -160,23 +166,20 @@ fn build_action_row() -> (gtk::Box, gtk::Image, gtk::Button, gtk::Button, gtk::B
         .build();
 
     action_row.append(&toggle_button);
-    // Spacer pushes buttons to the right.
-    action_row.append(&gtk::Box::builder().hexpand(true).build());
     action_row.append(&clear_button);
-    action_row.append(&search_button);
 
-    (
-        action_row,
-        toggle_icon,
-        toggle_button,
-        clear_button,
-        search_button,
-    )
+    ActionRow {
+        root: action_row,
+        filters_toggle: toggle_button,
+        filters_label,
+        clear: clear_button,
+        search: search_button,
+    }
 }
 
-/// Assemble all filter groups into a revealer.
+/// The filter rows, and a column holding all their groups.
 #[allow(clippy::type_complexity)]
-fn build_filter_panel() -> FilterWidgets {
+fn build_filter_panel() -> (FilterWidgets, gtk::Box) {
     let (text_group, filename_row, description_row, ocr_row) = build_text_group();
     let (flags_group, type_row, fav, motion, not_album, deleted, vis, rating) = build_flags_group();
     let (date_group, taken_after, taken_before, created_after, created_before) = build_date_group();
@@ -193,15 +196,7 @@ fn build_filter_panel() -> FilterWidgets {
         &loc_group,
     ]);
 
-    let revealer = gtk::Revealer::builder()
-        .transition_type(gtk::RevealerTransitionType::SlideDown)
-        .transition_duration(200)
-        .reveal_child(false)
-        .child(&filter_box)
-        .build();
-
-    FilterWidgets {
-        revealer,
+    let widgets = FilterWidgets {
         filename_row,
         description_row,
         ocr_row,
@@ -224,7 +219,8 @@ fn build_filter_panel() -> FilterWidgets {
         city_row: city,
         tag_row,
         tag_ids: Rc::default(),
-    }
+    };
+    (widgets, filter_box)
 }
 
 fn stack_groups(groups: &[&libadwaita::PreferencesGroup]) -> gtk::Box {
@@ -237,25 +233,6 @@ fn stack_groups(groups: &[&libadwaita::PreferencesGroup]) -> gtk::Box {
         column.append(*group);
     }
     column
-}
-
-/// Wire the toggle button to show/hide the filters revealer.
-fn connect_filter_toggle(
-    toggle_button: &gtk::Button,
-    toggle_icon: gtk::Image,
-    revealer: gtk::Revealer,
-) {
-    let expanded = Rc::new(Cell::new(false));
-    toggle_button.connect_clicked(move |_| {
-        let now = !expanded.get();
-        expanded.set(now);
-        revealer.set_reveal_child(now);
-        toggle_icon.set_icon_name(Some(if now {
-            "pan-down-symbolic"
-        } else {
-            "pan-end-symbolic"
-        }));
-    });
 }
 
 /// Build the search form widget tree.
@@ -275,24 +252,59 @@ pub fn build_search_view() -> SearchViewParts {
         .build();
 
     let (search_bar, search_mode, search_entry) = build_search_bar();
+    let actions = build_action_row();
+    search_bar.append(&actions.search);
+    inner.append(&search_entry);
     inner.append(&search_bar);
+    inner.append(&actions.root);
 
-    let (action_row, toggle_icon, toggle_button, clear_button, search_button) = build_action_row();
-    inner.append(&action_row);
-
-    let filters = build_filter_panel();
-    inner.append(&filters.revealer);
-
+    let (filters, filter_box) = build_filter_panel();
+    let panel = build_side_panel(&filter_box);
     let root = wrap_in_scrolled_revealer(&inner);
-    connect_filter_toggle(&toggle_button, toggle_icon, filters.revealer.clone());
+    close_panel_with_form(&actions.filters_toggle, &panel.close, &root);
 
     let modes: Rc<RefCell<Vec<u32>>> = Rc::new(RefCell::new(available_modes(true, true)));
-    let modes_for_placeholder = modes.clone();
+    connect_mode_placeholder(&search_mode, &search_entry, modes.clone());
+
+    SearchViewParts {
+        root,
+        search_entry,
+        search_mode,
+        search_button: actions.search,
+        clear_button: actions.clear,
+        filters,
+        filter_panel: panel.root,
+        filters_toggle: actions.filters_toggle,
+        filters_toggle_label: actions.filters_label,
+        panel_clear: panel.clear,
+        panel_search: panel.search,
+        modes,
+    }
+}
+
+/// The panel's close button, and hiding the search form, both close the filters panel.
+fn close_panel_with_form(toggle: &gtk::ToggleButton, close: &gtk::Button, form: &gtk::Revealer) {
+    let toggle_for_close = toggle.clone();
+    close.connect_clicked(move |_| toggle_for_close.set_active(false));
+    let toggle = toggle.clone();
+    form.connect_reveal_child_notify(move |form| {
+        if !form.reveals_child() {
+            toggle.set_active(false);
+        }
+    });
+}
+
+/// Placeholder text that describes what the chosen search mode looks for.
+fn connect_mode_placeholder(
+    search_mode: &gtk::DropDown,
+    search_entry: &gtk::SearchEntry,
+    modes: Rc<RefCell<Vec<u32>>>,
+) {
     search_mode.connect_selected_notify(clone!(
         #[weak]
         search_entry,
         move |dd| {
-            let ph = match current_mode(&modes_for_placeholder, dd) {
+            let ph = match current_mode(&modes, dd) {
                 1 => "Search filenames",
                 2 => "Find words shown inside images",
                 _ => "Describe what you're looking for\u{2026}",
@@ -300,16 +312,6 @@ pub fn build_search_view() -> SearchViewParts {
             search_entry.set_placeholder_text(Some(ph));
         }
     ));
-
-    SearchViewParts {
-        root,
-        search_entry,
-        search_mode,
-        search_button,
-        clear_button,
-        filters,
-        modes,
-    }
 }
 
 fn wrap_in_scrolled_revealer(inner: &gtk::Box) -> gtk::Revealer {
@@ -317,9 +319,17 @@ fn wrap_in_scrolled_revealer(inner: &gtk::Box) -> gtk::Revealer {
         .hscrollbar_policy(gtk::PolicyType::Automatic)
         .propagate_natural_height(true)
         .max_content_height(320)
-        .css_classes(["mimick-search-scroll"])
-        .child(inner)
+        .child(
+            &libadwaita::Clamp::builder()
+                .maximum_size(760)
+                .tightening_threshold(560)
+                .child(inner)
+                .build(),
+        )
         .build();
+    scrolled
+        .hscrollbar()
+        .add_css_class("mimick-search-hscrollbar");
 
     gtk::Revealer::builder()
         .transition_type(gtk::RevealerTransitionType::SlideDown)
@@ -378,9 +388,19 @@ pub fn collect_filters(view: &SearchViewParts) -> MetadataSearchFilters {
     }
 }
 
-/// Reset all filter widgets to their default (empty) state.
+pub fn refresh_filter_count(view: &SearchViewParts) {
+    let count = active_filter_count(&collect_filters(view));
+    view.filters_toggle_label.set_label(&filters_label(count));
+}
+
+/// Reset the query and every filter.
 pub fn clear_all_filters(view: &SearchViewParts) {
     view.search_entry.set_text("");
+    clear_filter_rows(view);
+}
+
+/// Reset the filters, keeping the query.
+pub fn clear_filter_rows(view: &SearchViewParts) {
     view.filters.filename_row.set_text("");
     view.filters.description_row.set_text("");
     view.filters.ocr_row.set_text("");
@@ -402,6 +422,7 @@ pub fn clear_all_filters(view: &SearchViewParts) {
     view.filters.state_row.set_text("");
     view.filters.city_row.set_text("");
     view.filters.tag_row.set_selected(0);
+    refresh_filter_count(view);
 }
 
 fn selected_tag_id(view: &SearchViewParts) -> Option<String> {

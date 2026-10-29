@@ -37,12 +37,14 @@ Right-click the tray icon and select **Settings**, or launch with `mimick --sett
 
 The settings window is split into two pages:
 
-* **Settings**: server details, behavior switches, watch folders, and folder rules
-* **Status**: sync status, queue tools, pause/resume, manual sync, and diagnostics export
+* **Settings**: Server, Watch Folders (with each folder's rules), Uploads, App, the library sections when the Library View is on, and Troubleshooting
+* **Status**: a headline with **Sync Now**, **Pause**, and **Queue…**, each watched folder's state, and failed uploads and errors when there are any
+
+New users see three numbered steps at the top of Settings. On narrow windows the Status/Settings switcher moves to the bottom.
 
 The window follows your desktop appearance preference, so it can render in either light mode or dark mode depending on the system theme.
 
-### Connectivity & Server Details
+### Server
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_showing_connnectivity_config_details.png" width="60%" alt="Connectivity settings" />
@@ -58,7 +60,9 @@ The window follows your desktop appearance preference, so it can render in eithe
     * Copy the key and paste it into the API Key field in Mimick.
     * *The key is stored securely using the `oo7` crate (encrypted portal file in Flatpak, or D-Bus Secret Service native). On non-GNOME/KDE desktops you may need to configure the Secret portal first -- see [Keyring Setup](Keyring-Setup).*
 
-**Test Connection**: Verifies connectivity by pinging the Immich `/api/server/ping` endpoint, confirming a valid `{"res": "pong"}` JSON response to ensure you are talking to an actual Immich server rather than a captive portal.
+**Test Connection**: Verifies connectivity by pinging the Immich `/api/server/ping` endpoint, confirming a valid `{"res": "pong"}` JSON response to ensure you are talking to an actual Immich server rather than a captive portal. The result shows in the **Connection** row.
+
+**Save and Connect**: Saves the URLs and API key and connects with them. These are the only settings that wait for a button; see [Saving Changes](#saving-changes).
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_connection_successful_dialog.png" width="60%" alt="Connection test successful" />
@@ -66,14 +70,14 @@ The window follows your desktop appearance preference, so it can render in eithe
 
 ### Choosing Folders to Watch
 
-1. Under **Watch Folders**, click **+ Add Folder**.
+1. Under **Watch Folders**, click **Add Folder…**.
 2. Select a local directory (e.g., `~/Pictures`, `~/Videos/Exports`).
 3. The application monitors these folders recursively.
-4. **Album Selection**: Each folder row has a dropdown to assign an Immich album. Choose an existing album, type a custom name (a new album will be created), or leave as "Default (Folder Name)" to auto-name from the folder.
-5. **Folder Rules**: Each folder can open a rules dialog for extra filtering:
-    * **Ignore hidden files and folders**
-    * **Maximum file size (MB)**
-    * **Allowed extensions** as a comma-separated allowlist like `jpg, png, mp4`
+4. **Upload Target**: Expand a folder's row and press the **Upload Target** button. Pick **Library (No Album)**, **Default (Folder Name)** to name the album after each folder, or an existing album; type a name to filter, or to create a new album.
+5. **Folder Rules**: In the expanded row, press **Rules** next to **Folder Rules** to open the rules dialog:
+    * **Sync**: **Sync Method** (**Full Sync**, **Upload Only**, or **Download Only**) and the folder's own **When Mimick Starts, Check**
+    * **Deletions**: **Delete from Immich Too** and **Delete from This Folder Too** (not available yet)
+    * **Files**: **Skip Hidden Files**, **Upload XMP Sidecars**, **Largest File in MB**, and **Only These Types**, a comma-separated allowlist like `jpg, png, mp4`
 
 | Watch Folders List | Album Selection | Album Search |
 | :---: | :---: | :---: |
@@ -101,15 +105,15 @@ There is no limit on nesting depth. If a file matches multiple watch paths, the 
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_showing_behaviour_settings.png" width="60%" alt="Behaviour settings" />
 </div>
 
-Use the **Run on Startup** switch in the **Behavior** section if you want Mimick to launch automatically when you log in.
+Use the **Run on Startup** switch in the **App** section if you want Mimick to launch automatically when you log in.
 
 * Flatpak builds ask the desktop for permission using the background portal.
 * Native builds create `~/.config/autostart/dev.nicx.mimick.desktop`.
 
-You can also enable:
+In the **Uploads** section you can also turn on:
 
-* **Pause on Metered Network**: Mimick defers uploads when the active connection appears metered.
-* **Pause on Battery Power**: Mimick defers uploads while the system appears to be running on battery.
+* **Pause on Metered Networks**: Mimick defers uploads while the system reports a metered connection (through the network portal in the Flatpak).
+* **Pause on Battery**: Mimick defers uploads while the system appears to be running on battery.
 
 ### Background Sync
 
@@ -122,43 +126,38 @@ If you disable Background Sync and also enable Run on Startup, Mimick will launc
 
 ### Quiet Hours
 
-The **Quiet Hours** switch in the Behavior section pauses uploads during a nightly window. When enabled, two spinners let you set a start hour and an end hour (0–23, using your local clock).
+The **Quiet Hours** switch in the Uploads section pauses uploads during a nightly window. Set **From** and **Until** to whole hours, shown as times like 22:00 (using your local clock).
 
 * Uploads in progress when the quiet window begins are paused at the next worker cycle, not interrupted mid-file.
-* Uploads resume automatically when the local clock passes the end hour.
-* Wrapping windows are supported: setting start to `22` and end to `6` pauses from 22:00 until 06:00 the next morning.
-* Setting start and end to the same hour disables the window even if the switch is on.
+* Uploads resume automatically when the local clock passes the **Until** hour.
+* Wrapping windows are supported: **From** 22:00 **Until** 06:00 pauses until 06:00 the next morning.
+* Setting **From** and **Until** to the same hour disables the window even if the switch is on.
 * Quiet hours interact with other pause conditions — if the app is also manually paused or paused by a metered-network policy, it stays paused for the other reason after the quiet window ends.
 
 The quiet hours check runs on the local system clock. Timezone changes while the app is running take effect on the next worker cycle.
 
-### Startup Catch-Up Mode
+### When Mimick Starts, Check
 
-The **Startup Catch-Up** dropdown in the Behavior section controls how thoroughly Mimick rescans watch folders when it launches.
+**When Mimick Starts, Check** in the Uploads section controls how thoroughly Mimick rescans watch folders when it launches. Each folder can choose its own in its Folder Rules.
 
 | Mode | Behaviour |
 | :--- | :--- |
-| **Full** | Scans every file in every watch folder regardless of when it was last modified. Suitable if you want a complete audit on each launch. Slowest on large folders. |
-| **Recent Only** | Scans files modified in approximately the last 7 days. Faster than Full but may miss older files added while the app was not running. |
+| **All Files** | Scans every file in every watch folder regardless of when it was last modified. Suitable if you want a complete audit on each launch. Slowest on large folders. |
+| **Changed in the Last 7 Days** | Scans files modified in the last 7 days. Faster than All Files but may miss older files added while the app was not running. |
 | **New Files Only** | Only processes files not already present in the local sync index. Fastest; does not re-check files that were previously seen even if their content changed. |
 
-The default is **Full**. If startup is slow on a large library you can switch to **New Files Only** once the initial sync is complete.
+The default is **All Files**. If startup is slow on a large library you can switch to **New Files Only** once the initial sync is complete.
 
 ### Saving Changes
 
-Click **Save Changes** after changing settings. Mimick saves the updated configuration and applies it to the running app immediately, including updated server URLs, watch folders, worker count, and pause policies.
+Settings save as soon as you change them and apply to the running app immediately, including watch folders, upload targets, folder rules, parallel uploads, quiet hours, and pause policies.
 
-Most settings (worker count, quiet hours, folder rules, per-folder album, watch folder additions/removals) are applied live in the settings window. Connectivity edits (API key and server URLs) are save-only and require clicking **Save Changes** to take effect, preventing partial configuration during exploratory edits.
-
-The footer keeps **Close**, **Quit**, and **Save Changes** visible even if the current page needs scrolling.
+Server details (API key and server URLs) are the exception: they take effect only when you press **Save and Connect**, so a half-typed address or key is never used.
 
 ### Closing vs Quitting
 
-The settings window has separate actions for hiding the window and quitting the whole app:
-
-* **Close** hides the settings window and keeps Mimick running in the background.
-* **Quit** fully exits Mimick.
-* The window titlebar close button behaves the same as **Close**.
+* Closing the window keeps Mimick running in the background when **Background Sync** is on, and quits it when it's off (see [Background Sync](#background-sync)).
+* **Quit Mimick** in the main menu fully exits Mimick.
 
 ### Status Page
 
@@ -170,8 +169,10 @@ The **Status** page groups the live actions you may want while Mimick is already
 
 * **Sync Now** to trigger an immediate watched-folder scan
 * **Pause / Resume** to stop and continue uploads manually
-* **Queue Inspector** for failure recovery
-* **Export Diagnostics** for support bundles
+* **Queue…** to open the Queue Inspector for failure recovery
+* **Retry** next to failed uploads, shown only when some failed
+
+**Export Diagnostics** for support bundles is in **Settings → Troubleshooting**.
 
 ### Queue Inspector and Recovery
 
@@ -214,7 +215,7 @@ Mimick includes an opt-in library browser for albums, Explore, and search.
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_showing_library_settings_and_watch_folders.png" width="60%" alt="Library settings" />
 </div>
 
-Enable it in **Settings → Behavior → Enable Library View**, then restart. See the [Library View user guide](Library-View-User-Guide) for full usage documentation.
+Turn on **Settings → App → Library View** (the tray menu entry appears after a restart). See the [Library View user guide](Library-View-User-Guide) for full usage documentation.
 
 | Photos Page | Explore Page |
 | :---: | :---: |
@@ -251,11 +252,12 @@ Mimick keeps a local sync index so it can avoid reprocessing files that are alre
 
 ### Sync Status
 
-Open the **Settings** window to see what is currently happening:
+The headline at the top of the **Status** page shows what is currently happening:
 
-* **Idle** — Nothing is uploading. Shows total processed count.
-* **Uploading** — Shows the current filename and a progress bar for the active batch.
-* **Paused** — Mimick is intentionally holding uploads. The UI shows the pause reason, such as a manual pause, metered network, or battery-power policy.
+* **Up to Date** — Nothing is uploading. Shows when the last upload finished.
+* **Uploading 3 of 40** — Shows the current filename and a progress bar for the active batch.
+* **Paused** — Mimick is intentionally holding uploads. The line below shows the pause reason, such as a manual pause, quiet hours, metered network, or battery-power policy.
+* **Waiting for Immich** — Some uploads failed; they retry when the server is reachable.
 
 ### Offline Reliability
 
@@ -369,7 +371,11 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Shared Albums (share your albums, change roles, remove people) | `album.read`, `albumUser.create`, `albumUser.update`, `albumUser.delete`, `user.read` |
 | Shared Links (create, copy, edit, delete public links) | `sharedLink.read`, `sharedLink.create`, `sharedLink.update`, `sharedLink.delete` |
 | Library / Explore view (browse photos inside Mimick) | `asset.read`, `asset.view`, `asset.download`, `person.read` |
-| Edit info, set location, rate, or move to trash from the library | `asset.update`, `asset.delete` |
+| Edit info, set location, change dates, rate, or move to trash from the library | `asset.update`, `asset.delete` |
+| Add or remove photos in albums from the library | `albumAsset.create`, `albumAsset.delete` |
+| Leave albums shared with you | `albumUser.delete` |
+| Delete albums | `album.delete` |
+| Download albums as zip | `asset.download` |
 | Map page | `map.read` |
 | Trash view (restore, delete permanently, empty trash) | `asset.read`, `asset.delete` |
 | Tags in the details pane and tag search | `tag.read`; adding/removing tags also needs `tag.asset`, and creating new tags `tag.create` |
@@ -380,12 +386,12 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Partner sharing (add or remove partners) | `partner.read`, `partner.create`, `partner.delete`, `user.read` |
 | Browse a partner's photos | `partner.read`, plus the Library / Explore view permissions |
 | Show a partner's photos in Photos | `partner.update` |
-| Rename albums and edit descriptions | `album.update` |
+| Rename albums, edit descriptions, set covers, and change album options | `album.update` |
 | Counts and details in view headers | `asset.statistics`, `album.read`, `person.statistics` |
 | Hide pages for features turned off in your account | `userPreference.read` (without it, every page stays visible) |
 | **Sync Method** set to **Full** or **Download Only** (folder rules) | `asset.read`, `asset.download` |
-| **Mirror Folder Deletions to Album** (folder rules toggle) | `asset.delete` and `albumAsset.delete` (the latter is used when the same asset is referenced by another watch folder, so we just unlink instead of trashing) |
-| **Mirror Album Deletions to Folder** (folder rules toggle) | No additional remote permissions — the album listing is already covered by `album.read`, the trash happens locally |
+| **Delete from Immich Too** (folder rules toggle) | `asset.delete` and `albumAsset.delete` (the latter is used when the same asset is referenced by another watch folder, so we just unlink instead of trashing) |
+| **Delete from This Folder Too** (folder rules toggle) | No additional remote permissions — the album listing is already covered by `album.read`, the trash happens locally |
 
 If you grant `all`, every feature works without further configuration. The granular list above is for users who prefer scoped keys.
 
@@ -415,7 +421,7 @@ Currently, Mimick ignores metadata sidecar files (`.xmp`, etc.). Immich has limi
 The upload will fail gracefully and the file is saved to the retry queue (`~/.cache/mimick/retries.json`). On next launch, it will be automatically retried.
 
 **Q: Why is Mimick paused even though I did not click Pause?**
-Check the **Behavior** section. If **Pause on Metered Network** or **Pause on Battery Power** is enabled, Mimick can pause itself automatically when those conditions are detected.
+Check the **Uploads** section. If **Pause on Metered Networks**, **Pause on Battery**, or **Quiet Hours** is enabled, Mimick can pause itself automatically when those conditions are detected.
 
 **Q: What does Sync Now do?**
 It reruns the watched-folder scan immediately so you do not need to restart Mimick to pick up missed or newly eligible files.
@@ -424,13 +430,13 @@ It reruns the watched-folder scan immediately so you do not need to restart Mimi
 GNOME requires the "AppIndicator and KStatusNotifierItem Support" extension. Install it from the GNOME Extensions website. Without it, the warning `Watcher(ServiceUnknown)` is expected and harmless — the app still runs fully in the background.
 
 **Q: Mimick quits when I close the window.**
-Background Sync is disabled. Enable it in **Settings → Behavior → Background Sync** and save. After that, closing the window hides it instead of exiting.
+Background Sync is disabled. Turn on **Settings → App → Background Sync**. After that, closing the window hides it instead of exiting.
 
 **Q: Uploads are paused but I did not set quiet hours or enable any pause policy.**
 Open the Status page and check the status text — it shows the pause reason. Common causes: the quiet-hours window is active, a metered-network or battery-power policy triggered, or the app was paused manually from the tray.
 
 **Q: The startup scan is slow.**
-Switch **Startup Catch-Up Mode** to **New Files Only** in Settings → Behavior once your initial sync is complete. This skips files already in the sync index and only processes genuinely new additions.
+Set **When Mimick Starts, Check** to **New Files Only** in Settings → Uploads once your initial sync is complete. This skips files already in the sync index and only processes genuinely new additions.
 
 **Q: I have two watch folders pointing at the same parent and subfolder. Which album does a file use?**
 The most specific (longest) matching path wins. A file at `~/Pictures/iPhone/img.jpg` uses the album configured for `~/Pictures/iPhone`, not the one for `~/Pictures`.

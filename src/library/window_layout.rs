@@ -8,8 +8,10 @@ use std::cell::Cell;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use glib::clone;
 use gtk::prelude::*;
+
+mod bulk_bar;
+mod responsive;
 use libadwaita::prelude::*;
 
 use crate::app_context::AppContext;
@@ -21,8 +23,11 @@ use crate::library::sidebar::{SidebarParts, build_sidebar};
 
 use super::shared_links_view::{SharedLinksView, build_shared_links_view};
 use super::timeline::scrubber::TimelineScrubber;
-use super::trash_view::{self, TrashControls};
-use super::{LibraryWindowUi, build_drop_overlay, build_loading_view, build_status_view};
+use super::trash_view::TrashControls;
+use super::{
+    LibraryWindowUi, WindowInteractionState, build_drop_overlay, build_loading_view,
+    build_status_view,
+};
 
 pub(super) struct HeaderParts {
     header: libadwaita::HeaderBar,
@@ -48,22 +53,27 @@ pub(super) struct TransferParts {
 
 pub(super) struct AlbumLinkParts {
     pub listbox: gtk::ListBox,
-    row: libadwaita::ActionRow,
-    link_button: gtk::Button,
-    sync_button: gtk::Button,
+    pub(super) row: libadwaita::ActionRow,
+    pub(super) link_button: gtk::Button,
+    pub(super) sync_button: gtk::Button,
 }
 
 /// Bottom selection bar; `delete`, `download`, and `clear` are wired by `connect_bulk_actions`.
 pub(super) struct BulkParts {
-    bar: gtk::Revealer,
-    count_label: gtk::Label,
+    pub(super) bar: gtk::Revealer,
+    pub(super) count_label: gtk::Label,
     pub delete: gtk::Button,
     pub download: gtk::Button,
     pub clear: gtk::Button,
     pub share_link: gtk::Button,
     pub location: gtk::Button,
-    archive: gtk::Button,
-    trash: TrashControls,
+    pub date: gtk::Button,
+    pub add_to_album: gtk::Button,
+    pub remove_from_album: gtk::Button,
+    pub(super) archive: gtk::Button,
+    secondary: gtk::Box,
+    overflow_box: gtk::Box,
+    pub(super) trash: TrashControls,
 }
 
 /// Everything shown in the main content column, plus the sidebar.
@@ -81,6 +91,7 @@ pub(super) struct ContentParts {
     header: super::source_header::SourceHeader,
     bottom_nav: super::bottom_nav::BottomNav,
     search_view: SearchViewParts,
+    filters_split: libadwaita::OverlaySplitView,
     controls: ControlsParts,
     stack: gtk::Stack,
     scrubber: TimelineScrubber,
@@ -94,6 +105,7 @@ pub(super) struct ContentParts {
 pub(super) struct WindowParts {
     pub window: libadwaita::ApplicationWindow,
     nav: libadwaita::NavigationView,
+    toasts: libadwaita::ToastOverlay,
     header: HeaderParts,
     pub content: ContentParts,
     split: libadwaita::OverlaySplitView,
@@ -116,20 +128,25 @@ impl WindowParts {
         let narrow = Rc::new(Cell::new(false));
         let content = ContentParts::build(ctx, header.select_toggle.clone(), narrow.clone());
         let (content_with_drop, drop_overlay) = build_drop_overlay(content.column());
-        let split = build_split(
+        let split = responsive::build_split(
             &content.sidebar.root,
             &content_with_drop,
             &header.sidebar_toggle,
         );
-        let nav = build_nav(&window, &header.header, &split);
+        let (nav, toasts) = responsive::build_nav(&window, &header.header, &split);
+        split
+            .bind_property("collapsed", &content.filters_split, "collapsed")
+            .sync_create()
+            .build();
         header.header.pack_end(&content.transfer.indicator);
 
-        add_narrow_breakpoint(&window, narrow, &content);
-        add_desktop_breakpoint(&window, &content, &split);
-        add_sidebar_shortcut(&window, &split);
+        responsive::add_narrow_breakpoint(&window, narrow, &content);
+        responsive::add_desktop_breakpoint(&window, &content, &split);
+        responsive::add_sidebar_shortcut(&window, &split);
         Self {
             window,
             nav,
+            toasts,
             header,
             content,
             split,
@@ -160,9 +177,11 @@ impl ContentParts {
         stack.add_named(&sharing.root, Some("sharing"));
         let map = super::map::build_map_view();
         map.split.set_end_child(Some(&stack));
+        let search_view = build_search_view();
+        let filters_split = responsive::build_filters_split(&map.split, &search_view);
         let header = super::source_header::build_source_header();
         let album_link = build_album_link();
-        let bulk = build_bulk_bar();
+        let bulk = bulk_bar::build_bulk_bar();
         header.extra.append(&album_link.listbox);
         header.extra.append(&bulk.trash.bar);
         grid.content.prepend(&header.status);
@@ -180,7 +199,8 @@ impl ContentParts {
             map,
             header,
             bottom_nav: super::bottom_nav::build_bottom_nav(),
-            search_view: build_search_view(),
+            search_view,
+            filters_split,
             controls: build_controls(),
             stack,
             scrubber,
@@ -198,7 +218,7 @@ impl ContentParts {
             .build();
         column.append(&self.controls.root);
         column.append(&self.search_view.root);
-        column.append(&self.map.split);
+        column.append(&self.filters_split);
         column.append(&self.bottom_nav.root);
         column.append(&self.bulk.bar);
         column
@@ -218,6 +238,7 @@ impl LibraryWindowUi {
             app: app.clone(),
             window: parts.window,
             nav: parts.nav,
+            toasts: parts.toasts,
             sidebar: content.sidebar,
             grid: content.grid,
             explore: content.explore,
@@ -236,26 +257,19 @@ impl LibraryWindowUi {
             error_label: content.error_label,
             transfer: content.transfer,
             search_view: content.search_view,
+            filters_split: content.filters_split,
             sort_mode: controls.sort_mode,
             source_mode: controls.source_mode,
             source_revealer: controls.source_revealer,
             upload_button: controls.upload_button,
             controls_row: controls.root,
-            source_mode_suppressed: Cell::new(false),
-            sidebar_suppressed: Cell::new(false),
             back_button: header.back_button,
             select_toggle: header.select_toggle,
-            bulk_bar: content.bulk.bar,
-            bulk_archive: content.bulk.archive,
-            trash: content.bulk.trash,
-            bulk_count_label: content.bulk.count_label,
-            album_link_row: content.album_link.row,
-            album_link_button: content.album_link.link_button,
-            album_sync_button: content.album_link.sync_button,
-            last_seen_upload_batch: Cell::new(0),
+            bulk: content.bulk,
+            album_link: content.album_link,
+            interaction: WindowInteractionState::default(),
             split: parts.split,
             drop_overlay: parts.drop_overlay,
-            timeline: Default::default(),
         }
     }
 }
@@ -469,198 +483,8 @@ fn bulk_buttons() -> (gtk::Button, gtk::Button, gtk::Button, gtk::Button) {
         .css_classes(vec!["flat".to_string()])
         .build();
     let share_link = gtk::Button::builder()
-        .icon_name("emblem-shared-symbolic")
+        .icon_name("mimick-share-symbolic")
         .tooltip_text("Create share link for selected")
         .build();
     (delete, download, clear, share_link)
-}
-
-fn build_bulk_bar() -> BulkParts {
-    let count_label = gtk::Label::builder()
-        .xalign(0.0)
-        .hexpand(true)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .build();
-    let (delete, download, clear, share_link) = bulk_buttons();
-    let archive = gtk::Button::builder()
-        .icon_name("mimick-archive-symbolic")
-        .tooltip_text("Archive selected")
-        .build();
-    let location = gtk::Button::builder()
-        .icon_name("mark-location-symbolic")
-        .tooltip_text("Set location for selected")
-        .build();
-    let inner = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(8)
-        .margin_top(8)
-        .margin_bottom(16)
-        .margin_start(12)
-        .margin_end(12)
-        .css_classes(vec!["toolbar".to_string()])
-        .build();
-    // Share, download, and Move to trash are swapped for Restore / Delete Permanently
-    // in the Trash view.
-    let trash = trash_view::build_trash_controls(vec![
-        delete.clone(),
-        download.clone(),
-        share_link.clone(),
-        archive.clone(),
-        location.clone(),
-    ]);
-    inner.append(&count_label);
-    inner.append(&clear);
-    inner.append(&share_link);
-    inner.append(&archive);
-    inner.append(&location);
-    inner.append(&download);
-    inner.append(&delete);
-    inner.append(&trash.restore_selected);
-    inner.append(&trash.delete_selected);
-    let bar = gtk::Revealer::builder()
-        .transition_type(gtk::RevealerTransitionType::SlideUp)
-        .reveal_child(false)
-        .child(&inner)
-        .build();
-    BulkParts {
-        bar,
-        count_label,
-        delete,
-        download,
-        clear,
-        share_link,
-        location,
-        archive,
-        trash,
-    }
-}
-
-fn build_split(
-    sidebar_root: &gtk::Box,
-    content: &impl IsA<gtk::Widget>,
-    sidebar_toggle: &gtk::ToggleButton,
-) -> libadwaita::OverlaySplitView {
-    let split = libadwaita::OverlaySplitView::builder()
-        .sidebar(sidebar_root)
-        .content(content)
-        .show_sidebar(true)
-        .collapsed(true)
-        .enable_show_gesture(true)
-        .enable_hide_gesture(true)
-        .min_sidebar_width(180.0)
-        .max_sidebar_width(260.0)
-        .sidebar_width_fraction(0.3)
-        .build();
-    split
-        .bind_property("show-sidebar", sidebar_toggle, "active")
-        .sync_create()
-        .bidirectional()
-        .build();
-    split
-}
-
-/// Navigation view whose root page holds the header and split view.
-fn build_nav(
-    window: &libadwaita::ApplicationWindow,
-    header: &libadwaita::HeaderBar,
-    split: &libadwaita::OverlaySplitView,
-) -> libadwaita::NavigationView {
-    let toolbar = libadwaita::ToolbarView::builder().build();
-    toolbar.add_top_bar(header);
-    toolbar.set_content(Some(split));
-    let nav = libadwaita::NavigationView::new();
-    let root_page = libadwaita::NavigationPage::builder()
-        .child(&toolbar)
-        .title("Library")
-        .can_pop(false)
-        .build();
-    nav.add(&root_page);
-    window.set_content(Some(&nav));
-    nav
-}
-
-fn breakpoint(condition: &str) -> libadwaita::Breakpoint {
-    libadwaita::Breakpoint::new(
-        libadwaita::BreakpointCondition::parse(condition).expect("valid breakpoint condition"),
-    )
-}
-
-/// Phone width: show the bottom navigation bar and switch the grid to narrow layout.
-fn add_narrow_breakpoint(
-    window: &libadwaita::ApplicationWindow,
-    narrow: Rc<Cell<bool>>,
-    content: &ContentParts,
-) {
-    let narrow_bp = breakpoint("max-width: 600px");
-    narrow_bp.add_setter(&content.bottom_nav.root, "visible", Some(&true.to_value()));
-    narrow_bp.add_setter(
-        &content.map.split,
-        "orientation",
-        Some(&gtk::Orientation::Vertical.to_value()),
-    );
-    let (narrow_apply, canvas_apply) = (narrow.clone(), content.grid.canvas.clone());
-    let scrubber_apply = content.scrubber.clone();
-    narrow_bp.connect_apply(move |_| {
-        log::info!("NARROW breakpoint APPLIED: setting narrow=true");
-        narrow_apply.set(true);
-        canvas_apply.set_narrow(true);
-        scrubber_apply.set_compact(true);
-    });
-    let (canvas_unapply, scrubber_unapply) =
-        (content.grid.canvas.clone(), content.scrubber.clone());
-    narrow_bp.connect_unapply(move |_| {
-        log::info!("NARROW breakpoint UNAPPLIED: setting narrow=false");
-        narrow.set(false);
-        canvas_unapply.set_narrow(false);
-        scrubber_unapply.set_compact(false);
-    });
-    window.add_breakpoint(narrow_bp);
-}
-
-/// Desktop width: horizontal controls, docked sidebar, and longer album-link labels.
-fn add_desktop_breakpoint(
-    window: &libadwaita::ApplicationWindow,
-    content: &ContentParts,
-    split: &libadwaita::OverlaySplitView,
-) {
-    let desktop_bp = breakpoint("min-width: 600px");
-    let window_apply = window.clone();
-    desktop_bp.connect_apply(move |_| window_apply.add_css_class("mimick-wide"));
-    let window_unapply = window.clone();
-    desktop_bp.connect_unapply(move |_| window_unapply.remove_css_class("mimick-wide"));
-    desktop_bp.add_setter(split, "collapsed", Some(&false.to_value()));
-    desktop_bp.add_setter(
-        &content.album_link.sync_button,
-        "label",
-        Some(&"Sync…".to_value()),
-    );
-    desktop_bp.add_setter(
-        &content.album_link.link_button,
-        "label",
-        Some(&"Link folder…".to_value()),
-    );
-    window.add_breakpoint(desktop_bp);
-    // Tablet width: reserved for chrome tweaks below typical desktop widths.
-    window.add_breakpoint(breakpoint("min-width: 600px and max-width: 1000px"));
-}
-
-/// F9 toggles the sidebar.
-fn add_sidebar_shortcut(
-    window: &libadwaita::ApplicationWindow,
-    split: &libadwaita::OverlaySplitView,
-) {
-    let f9 = gtk::Shortcut::builder()
-        .trigger(&gtk::ShortcutTrigger::parse_string("F9").unwrap())
-        .action(&gtk::CallbackAction::new(clone!(
-            #[strong]
-            split,
-            move |_, _| {
-                split.set_show_sidebar(!split.shows_sidebar());
-                glib::Propagation::Stop
-            }
-        )))
-        .build();
-    let shortcut_controller = gtk::ShortcutController::new();
-    shortcut_controller.add_shortcut(f9);
-    window.add_controller(shortcut_controller);
 }

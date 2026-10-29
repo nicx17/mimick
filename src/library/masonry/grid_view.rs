@@ -8,7 +8,7 @@ use std::sync::Arc;
 use gtk::prelude::*;
 
 use super::canvas::{GridQuality, MasonryCanvas};
-use crate::app_context::AppContext;
+use crate::app_context::{AppContext, GridStyle};
 use crate::library::asset_model::LibraryAssetModel;
 
 pub type AssetContextMenuHandler = Rc<RefCell<Option<Box<dyn Fn(u32, f64, f64)>>>>;
@@ -26,6 +26,7 @@ fn scrolled_content(canvas: &MasonryCanvas) -> (gtk::ScrolledWindow, gtk::Box) {
     let content = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .build();
+    canvas.set_vexpand(true);
     content.append(canvas);
     let scrolled = gtk::ScrolledWindow::builder()
         .child(&content)
@@ -34,6 +35,29 @@ fn scrolled_content(canvas: &MasonryCanvas) -> (gtk::ScrolledWindow, gtk::Box) {
         .hexpand(true)
         .build();
     (scrolled, content)
+}
+
+fn apply_grid_style(canvas: &MasonryCanvas, style: &GridStyle) {
+    canvas.set_quality(GridQuality::parse(&style.quality));
+    if let Ok(color) = style.border_color.parse::<gdk4::RGBA>() {
+        canvas.set_border_color(color);
+    }
+    canvas.set_border_gap(style.border_width);
+}
+
+/// Apply grid settings changed in Settings while this window is open.
+fn follow_grid_style(ctx: &AppContext, canvas: &MasonryCanvas) {
+    let mut changes = ctx.grid_style.subscribe();
+    let canvas = canvas.downgrade();
+    glib::MainContext::default().spawn_local(async move {
+        while changes.changed().await.is_ok() {
+            let style = changes.borrow_and_update().clone();
+            let Some(canvas) = canvas.upgrade() else {
+                break;
+            };
+            apply_grid_style(&canvas, &style);
+        }
+    });
 }
 
 pub fn build_grid_view(
@@ -53,18 +77,8 @@ pub fn build_grid_view(
     canvas.set_narrow(narrow.get());
     canvas.set_select_mode(select_toggle.is_active());
     canvas.set_context_menu_handler(context_menu_handler.clone());
-    let initial_quality = GridQuality::parse(&ctx.config.read().data.library_grid_quality);
-    canvas.set_quality(initial_quality);
-    canvas.set_border_gap(ctx.config.read().data.grid_border_width);
-    if let Ok(color) = ctx
-        .config
-        .read()
-        .data
-        .grid_border_color
-        .parse::<gdk4::RGBA>()
-    {
-        canvas.set_border_color(color);
-    }
+    apply_grid_style(&canvas, &ctx.grid_style.borrow());
+    follow_grid_style(&ctx, &canvas);
     canvas.install_drag_source(ctx.clone());
 
     {

@@ -24,8 +24,10 @@ pub(super) struct ApplyState {
     /// Last applied startup / background-sync values, to detect changes.
     startup: Rc<Cell<bool>>,
     background_sync: Rc<Cell<bool>>,
-    /// Auto-apply fires on every control change; drop saves while one is running.
+    /// Auto-apply fires on every control change; one save runs at a time.
     in_flight: Rc<Cell<bool>>,
+    /// A change arrived during a save; save again once it finishes.
+    rerun: Rc<Cell<bool>>,
 }
 
 impl ApplyState {
@@ -37,6 +39,7 @@ impl ApplyState {
             startup: Rc::new(Cell::new(run_on_startup)),
             background_sync: Rc::new(Cell::new(background_sync)),
             in_flight: Rc::default(),
+            rerun: Rc::default(),
         }
     }
 
@@ -90,6 +93,7 @@ fn apply_settings(
     show_success_ack: bool,
 ) {
     if state.in_flight.replace(true) {
+        state.rerun.set(true);
         return;
     }
     let conn = if include_connectivity {
@@ -114,8 +118,14 @@ fn apply_settings(
     let weak = form.downgrade();
     let state = state.clone();
     glib::MainContext::default().spawn_local(async move {
-        if let Some(form) = weak.upgrade() {
-            save_and_apply(&form, &state, request).await;
+        let Some(form) = weak.upgrade() else {
+            state.in_flight.set(false);
+            return;
+        };
+        save_and_apply(&form, &state, request).await;
+        state.in_flight.set(false);
+        if state.rerun.replace(false) {
+            apply_settings(&form, &state, false, false);
         }
     });
 }
@@ -129,6 +139,7 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
         state.in_flight.set(false);
         return;
     };
+    state.ctx.publish_grid_style();
     state.startup.set(request.values.run_on_startup);
     state
         .background_sync

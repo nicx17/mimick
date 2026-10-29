@@ -11,7 +11,38 @@ use std::time::Duration;
 use tokio::sync::Mutex;
 
 use super::errors::{RequestContext, classify_http_issue, classify_network_issue};
-use super::{AlbumSummary, AlbumUpdate, ApiIssue, ImmichApiClient};
+use super::{AlbumSummary, AlbumUpdate, ApiIssue, ImmichApiClient, LibraryAlbum};
+
+mod asset_lookup;
+
+/// One asset's result from adding to or removing from an album.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
+pub struct BulkIdResult {
+    pub id: String,
+    pub success: bool,
+    #[serde(default)]
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub struct BulkOutcome {
+    pub done: usize,
+    pub duplicate: usize,
+    pub denied: usize,
+}
+
+impl BulkOutcome {
+    pub fn from_results(results: &[BulkIdResult]) -> Self {
+        results.iter().fold(Self::default(), |mut outcome, result| {
+            match (result.success, result.error.as_deref()) {
+                (true, _) => outcome.done += 1,
+                (false, Some("duplicate")) => outcome.duplicate += 1,
+                (false, _) => outcome.denied += 1,
+            }
+            outcome
+        })
+    }
+}
 
 impl ImmichApiClient {
     /// Retrieve all albums from the Immich server, populating the local in-memory cache.
@@ -167,7 +198,7 @@ impl ImmichApiClient {
             "description": "Created by Mimick"
         });
 
-        match self
+        let result = self
             .client
             .post(&url)
             .header("x-api-key", &api_key)
@@ -176,8 +207,16 @@ impl ImmichApiClient {
             .json(&body)
             .timeout(Duration::from_secs(10))
             .send()
-            .await
-        {
+            .await;
+        self.handle_create_album_response(result, album_name).await
+    }
+
+    async fn handle_create_album_response(
+        &self,
+        result: Result<reqwest::Response, reqwest::Error>,
+        album_name: &str,
+    ) -> Result<Option<String>, String> {
+        match result {
             Ok(resp) if resp.status().is_success() => {
                 let id = resp
                     .json::<serde_json::Value>()
@@ -270,110 +309,6 @@ impl ImmichApiClient {
         self.get_or_create_album(album_name).await
     }
 
-    /// Check whether an asset already exists on the server by checksum and return its asset ID.
-    /// Batch checksum existence check. Returns a map from checksum to asset id
-    /// for every checksum the server already has. Missing checksums are absent
-    /// from the result. The Immich endpoint accepts arbitrary batch sizes, but
-    /// we chunk to keep request bodies modest.
-    pub async fn bulk_existing_asset_ids(&self, checksums: &[String]) -> HashMap<String, String> {
-        const CHUNK: usize = 500;
-        let mut out: HashMap<String, String> = HashMap::new();
-        let Some(base_url) = self.get_active_url().await else {
-            return out;
-        };
-        let url = format!("{}/api/assets/bulk-upload-check", base_url);
-        let api_key = self.settings.read().api_key.clone();
-
-        for chunk in checksums.chunks(CHUNK) {
-            let assets: Vec<_> = chunk
-                .iter()
-                .map(|c| serde_json::json!({ "id": c, "checksum": c }))
-                .collect();
-            let body = serde_json::json!({ "assets": assets });
-
-            match self
-                .client
-                .post(&url)
-                .header("x-api-key", &api_key)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .json(&body)
-                .timeout(Duration::from_secs(30))
-                .send()
-                .await
-            {
-                Ok(resp) if resp.status().is_success() => {
-                    if let Ok(json) = resp.json::<serde_json::Value>().await
-                        && let Some(results) = json["results"].as_array()
-                    {
-                        for item in results {
-                            let id = item["id"].as_str();
-                            let asset_id = item["assetId"].as_str();
-                            if let (Some(checksum), Some(asset_id)) = (id, asset_id) {
-                                out.insert(checksum.to_string(), asset_id.to_string());
-                            }
-                        }
-                    }
-                }
-                Ok(resp) => log::warn!("Bulk upload check returned {}", resp.status()),
-                Err(err) => log::warn!("Bulk upload check request failed: {}", err),
-            }
-        }
-
-        out
-    }
-
-    pub async fn find_existing_asset_id(&self, checksum: &str) -> Option<String> {
-        let base_url = self.get_active_url().await?;
-        let url = format!("{}/api/assets/bulk-upload-check", base_url);
-        let api_key = self.settings.read().api_key.clone();
-        let body = serde_json::json!({
-            "assets": [
-                {
-                    "id": checksum,
-                    "checksum": checksum
-                }
-            ]
-        });
-
-        match self
-            .client
-            .post(&url)
-            .header("x-api-key", &api_key)
-            .header("Content-Type", "application/json")
-            .header("Accept", "application/json")
-            .json(&body)
-            .timeout(Duration::from_secs(10))
-            .send()
-            .await
-        {
-            Ok(resp) if resp.status().is_success() => {
-                let json = resp.json::<serde_json::Value>().await.ok()?;
-                json["results"]
-                    .as_array()
-                    .and_then(|results| results.first())
-                    .and_then(|item| item["assetId"].as_str())
-                    .map(ToString::to_string)
-            }
-            Ok(resp) => {
-                log::warn!(
-                    "Bulk upload check failed for checksum {}: {}",
-                    checksum,
-                    resp.status()
-                );
-                None
-            }
-            Err(err) => {
-                log::warn!(
-                    "Bulk upload check request failed for checksum {}: {}",
-                    checksum,
-                    err
-                );
-                None
-            }
-        }
-    }
-
     /// Add a list of asset IDs to an album.
     pub async fn add_assets_to_album(&self, album_id: &str, asset_ids: &[String]) -> bool {
         if album_id.is_empty() || asset_ids.is_empty() {
@@ -396,7 +331,7 @@ impl ImmichApiClient {
             album_id
         );
 
-        match self
+        let result = self
             .client
             .put(&url)
             .header("x-api-key", &api_key)
@@ -405,8 +340,16 @@ impl ImmichApiClient {
             .json(&body)
             .timeout(Duration::from_secs(10))
             .send()
-            .await
-        {
+            .await;
+        self.handle_add_assets_response(result, album_id).await
+    }
+
+    async fn handle_add_assets_response(
+        &self,
+        result: Result<reqwest::Response, reqwest::Error>,
+        album_id: &str,
+    ) -> bool {
+        match result {
             Ok(resp) if resp.status().is_success() => {
                 log::info!("Assets added to album successfully.");
                 self.clear_issue().await;
@@ -517,5 +460,77 @@ impl ImmichApiClient {
         self.send_json(reqwest::Method::PATCH, &path, Some(body))
             .await
             .map(|_| ())
+    }
+}
+
+impl ImmichApiClient {
+    pub async fn add_to_album(
+        &self,
+        album_id: &str,
+        asset_ids: &[String],
+    ) -> Result<Vec<BulkIdResult>, String> {
+        self.album_assets_request(reqwest::Method::PUT, album_id, asset_ids)
+            .await
+    }
+
+    pub async fn remove_from_album(
+        &self,
+        album_id: &str,
+        asset_ids: &[String],
+    ) -> Result<Vec<BulkIdResult>, String> {
+        self.album_assets_request(reqwest::Method::DELETE, album_id, asset_ids)
+            .await
+    }
+
+    async fn album_assets_request(
+        &self,
+        method: reqwest::Method,
+        album_id: &str,
+        asset_ids: &[String],
+    ) -> Result<Vec<BulkIdResult>, String> {
+        let path = format!("/api/albums/{album_id}/assets");
+        let body = serde_json::json!({ "ids": asset_ids });
+        let resp = self.send_json(method, &path, Some(body)).await?;
+        resp.json().await.map_err(|err| err.to_string())
+    }
+
+    /// Delete the album; its photos stay in the library. Forgets it in the name cache too.
+    pub async fn delete_album(&self, album_id: &str) -> Result<(), String> {
+        let path = format!("/api/albums/{album_id}");
+        self.send_json(reqwest::Method::DELETE, &path, None).await?;
+        self.refresh_album_cache().await;
+        Ok(())
+    }
+
+    pub async fn albums_containing(&self, asset_id: &str) -> Result<Vec<LibraryAlbum>, String> {
+        let path = format!("/api/albums?assetId={asset_id}");
+        let resp = self.send_json(reqwest::Method::GET, &path, None).await?;
+        let mut albums: Vec<LibraryAlbum> = resp.json().await.map_err(|err| err.to_string())?;
+        albums.sort_by_key(|album| album.album_name.to_lowercase());
+        Ok(albums)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bulk_outcome_counts_each_reason() {
+        let results: Vec<BulkIdResult> = serde_json::from_value(serde_json::json!([
+            { "id": "a", "success": true },
+            { "id": "b", "success": false, "error": "duplicate" },
+            { "id": "c", "success": false, "error": "no_permission" },
+            { "id": "d", "success": false, "error": "not_found" }
+        ]))
+        .unwrap();
+        assert_eq!(
+            BulkOutcome::from_results(&results),
+            BulkOutcome {
+                done: 1,
+                duplicate: 1,
+                denied: 2
+            }
+        );
     }
 }

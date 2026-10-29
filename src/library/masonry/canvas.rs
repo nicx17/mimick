@@ -27,6 +27,7 @@ use super::layout::{
 };
 pub use super::quality::GridQuality;
 use super::quality::{bucket_for_row_height, fallback_bucket};
+use super::reveal::{REVEAL_MAX_BLUR, animations_enabled, reveal_progress};
 use super::schedule::{CancelFlag, LoadRequest, LoadScheduler, SETTLE_DELAY, is_fling};
 
 mod interaction;
@@ -39,8 +40,6 @@ mod imp {
     use std::sync::Arc;
 
     use gtk::glib;
-    use gtk::graphene::{Rect, Size};
-    use gtk::gsk::RoundedRect;
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
 
@@ -53,10 +52,8 @@ mod imp {
         ActivateHandler, AssetContextMenuHandler, AssetObject, CORNER_RADIUS, CancelFlag,
         GridQuality, LaidItem, LaidRow, LayoutConfig, LibraryAssetModel, LoadRequest,
         LoadScheduler, MonthRequestHandler, SETTLE_DELAY, SelectModeChanger, ThumbnailCache,
-        ThumbnailSize, VIEWPORTS_AHEAD, VIEWPORTS_BEHIND, accent_bg_color, bucket_for_asset,
-        bucket_for_row_height, cached_texture, collect_dims, finish_masonry_load, is_fling,
-        load_masonry_asset, load_target_for, pack_rows, placeholder_color, resolve_symbolic_icon,
-        resolve_video_icon, rows_between,
+        ThumbnailSize, VIEWPORTS_AHEAD, VIEWPORTS_BEHIND, cached_texture, collect_dims,
+        finish_masonry_load, is_fling, load_masonry_asset, load_target_for, pack_rows,
     };
 
     pub(super) enum PaintResult {
@@ -134,6 +131,9 @@ mod imp {
         pub border_gap: Cell<f32>,
         /// Color painted behind tiles so the gap appears as a border.
         pub border_color: Cell<Option<gdk4::RGBA>>,
+        /// When each freshly loaded tile started fading in, in monotonic microseconds.
+        pub reveals: RefCell<HashMap<String, i64>>,
+        pub reveal_ticking: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -198,30 +198,7 @@ mod imp {
 
             let viewport = self.snapshot_viewport();
 
-            // Fill the visible area with the border color so gaps between
-            // tiles appear as a coloured border.
-            let gap = self.border_gap.get();
-            if gap > 0.0 {
-                let bc = self
-                    .border_color
-                    .get()
-                    .unwrap_or_else(|| gdk4::RGBA::new(1.0, 1.0, 1.0, 1.0));
-                if self.timeline.borrow().is_some() {
-                    for row in rows_between(&rows, viewport.top, viewport.bottom) {
-                        let band = Rect::new(0.0, row.y - gap, canvas_w, row.h + 2.0 * gap);
-                        snapshot.append_color(&bc, &band);
-                    }
-                } else {
-                    let canvas_h = self.layout_h.get();
-                    let vis_rect = Rect::new(
-                        0.0,
-                        viewport.scroll_y.max(0.0),
-                        canvas_w,
-                        (viewport.bottom - viewport.scroll_y.max(0.0)).min(canvas_h),
-                    );
-                    snapshot.append_color(&bc, &vis_rect);
-                }
-            }
+            self.paint_border_background(snapshot, &viewport, canvas_w);
 
             let sctx = self.snapshot_ctx(model, cache);
             let stats = self.paint_snapshot_rows(snapshot, &sctx, &rows, &viewport);
@@ -238,6 +215,10 @@ mod imp {
     /// Compact layout threshold: canvas widths below this use the
     /// smallest tile tier for phone-sized screens.
     const COMPACT_WIDTH_THRESHOLD: f32 = 400.0;
+
+    mod paint {
+        include!("canvas_paint.rs");
+    }
 
     impl MasonryCanvas {
         pub(super) fn cfg(&self) -> LayoutConfig {
@@ -287,298 +268,6 @@ mod imp {
             self.layout_h.set(0.0);
             self.rows.borrow_mut().clear();
             self.obj().queue_resize();
-        }
-
-        fn snapshot_ctx<'a>(
-            &'a self,
-            model: &'a LibraryAssetModel,
-            cache: &'a Arc<ThumbnailCache>,
-        ) -> SnapshotCtx<'a> {
-            SnapshotCtx {
-                model,
-                cache,
-                placeholder: placeholder_color(),
-                select_tint: gdk4::RGBA::new(0.30, 0.55, 0.95, 0.35),
-                selection: self.selection.get(),
-            }
-        }
-
-        fn snapshot_viewport(&self) -> SnapshotViewport {
-            let (scroll_y, viewport_h) = self.viewport();
-            SnapshotViewport {
-                scroll_y,
-                center: scroll_y + viewport_h * 0.5,
-                top: scroll_y,
-                bottom: scroll_y + viewport_h,
-                band_top: scroll_y - viewport_h * VIEWPORTS_BEHIND,
-                band_bottom: scroll_y + viewport_h * (1.0 + VIEWPORTS_AHEAD),
-            }
-        }
-
-        fn paint_snapshot_rows(
-            &self,
-            snapshot: &gtk::Snapshot,
-            sctx: &SnapshotCtx<'_>,
-            rows: &[LaidRow],
-            viewport: &SnapshotViewport,
-        ) -> SnapshotStats {
-            let mut stats = SnapshotStats::default();
-            for row in rows_between(rows, viewport.top, viewport.bottom) {
-                for it in &row.items {
-                    stats.record(self.paint_item(snapshot, sctx, row, it));
-                }
-            }
-            stats
-        }
-
-        fn wanted_loads(
-            &self,
-            model: &LibraryAssetModel,
-            rows: &[LaidRow],
-            viewport: &SnapshotViewport,
-        ) -> Vec<LoadRequest> {
-            if self.flinging.get() {
-                return Vec::new();
-            }
-            let mut wanted = Vec::new();
-            for row in rows_between(rows, viewport.band_top, viewport.band_bottom) {
-                let bucket = bucket_for_row_height(row.h, self.quality.get());
-                wanted.extend(
-                    row.items.iter().filter_map(|it| {
-                        self.load_request(model, it, row, viewport.center, bucket)
-                    }),
-                );
-            }
-            wanted
-        }
-
-        fn paint_item(
-            &self,
-            snapshot: &gtk::Snapshot,
-            sctx: &SnapshotCtx<'_>,
-            row: &LaidRow,
-            it: &LaidItem,
-        ) -> PaintResult {
-            let asset = sctx
-                .model
-                .item(it.asset_index)
-                .and_downcast::<AssetObject>();
-            let rect = Rect::new(it.x, row.y, it.w, row.h);
-
-            let Some(asset) = asset else {
-                snapshot.append_color(&sctx.placeholder, &rect);
-                return PaintResult::Miss;
-            };
-
-            let asset_id = asset.property::<String>("id");
-            let local_path = asset.property::<String>("local-path");
-            let bucket = bucket_for_asset(&asset_id, &local_path, row.h, self.quality.get());
-            let cached = cached_texture(sctx.cache, &asset_id, bucket);
-
-            let clipped = CORNER_RADIUS > 0.0;
-            if clipped {
-                let corner = Size::new(CORNER_RADIUS, CORNER_RADIUS);
-                let rounded = RoundedRect::new(rect, corner, corner, corner, corner);
-                snapshot.push_rounded_clip(&rounded);
-            }
-
-            let result = if let Some(tex) = cached.as_ref() {
-                snapshot.append_texture(tex, &rect);
-                PaintResult::Hit
-            } else {
-                snapshot.append_color(&sctx.placeholder, &rect);
-                PaintResult::Miss
-            };
-
-            let selected = sctx
-                .selection
-                .map(|s| s.is_selected(it.asset_index))
-                .unwrap_or(false);
-            if selected {
-                snapshot.append_color(&sctx.select_tint, &rect);
-            }
-
-            self.paint_badges(snapshot, &asset, it, row, selected);
-
-            if clipped {
-                snapshot.pop();
-            }
-            result
-        }
-
-        /// Overlays on top of the thumbnail: select-mode checkbox, video play badge,
-        /// and the favorite heart.
-        fn paint_badges(
-            &self,
-            snapshot: &gtk::Snapshot,
-            asset: &AssetObject,
-            it: &LaidItem,
-            row: &LaidRow,
-            selected: bool,
-        ) {
-            if self.select_mode.get() {
-                self.paint_checkbox(snapshot, it.x, row.y, row.h, selected);
-            }
-            let is_video = asset
-                .property::<String>("asset-type")
-                .eq_ignore_ascii_case("VIDEO");
-            if is_video {
-                self.paint_video_badge(snapshot, it.x, row.y, it.w, row.h);
-            }
-            if asset.is_favorite() {
-                self.paint_favorite_badge(snapshot, it.x + it.w, row.y + row.h, row.h);
-            }
-        }
-
-        /// Paint the video play-icon badge centred on the cell.
-        ///
-        /// A semi-transparent dark circle is drawn behind the icon for contrast,
-        /// then the cached `mimick-video-symbolic` icon is rendered on top.
-        fn paint_video_badge(
-            &self,
-            snapshot: &gtk::Snapshot,
-            cell_x: f32,
-            cell_y: f32,
-            cell_w: f32,
-            cell_h: f32,
-        ) {
-            let icon = self
-                .video_icon
-                .get_or_init(|| resolve_video_icon(&self.obj()));
-
-            let icon_size = (cell_h * 0.22).clamp(16.0, 48.0);
-            let bg_size = icon_size * 1.6;
-
-            // Centre the background circle.
-            let bg_x = cell_x + (cell_w - bg_size) * 0.5;
-            let bg_y = cell_y + (cell_h - bg_size) * 0.5;
-            let bg_rect = Rect::new(bg_x, bg_y, bg_size, bg_size);
-            let half = bg_size * 0.5;
-            let corner = Size::new(half, half);
-            let rounded = RoundedRect::new(bg_rect, corner, corner, corner, corner);
-
-            let bg_color = gdk4::RGBA::new(0.0, 0.0, 0.0, 0.55);
-            snapshot.push_rounded_clip(&rounded);
-            snapshot.append_color(&bg_color, &bg_rect);
-            snapshot.pop();
-
-            // Centre the icon inside the circle.
-            let icon_x = cell_x + (cell_w - icon_size) * 0.5;
-            let icon_y = cell_y + (cell_h - icon_size) * 0.5;
-            snapshot.save();
-            snapshot.translate(&gtk::graphene::Point::new(icon_x, icon_y));
-            icon.snapshot(
-                snapshot.upcast_ref::<gdk4::Snapshot>(),
-                icon_size as f64,
-                icon_size as f64,
-            );
-            snapshot.restore();
-        }
-
-        /// Paint a white heart in the bottom-right corner (`right`, `bottom`) of a
-        /// favorited tile. A dark copy offset by one pixel keeps it legible on bright photos.
-        fn paint_favorite_badge(
-            &self,
-            snapshot: &gtk::Snapshot,
-            right: f32,
-            bottom: f32,
-            cell_h: f32,
-        ) {
-            let icon = self
-                .heart_icon
-                .get_or_init(|| resolve_symbolic_icon(&self.obj(), "mimick-heart-filled-symbolic"));
-            let Some(symbolic) = icon.dynamic_cast_ref::<gtk::SymbolicPaintable>() else {
-                return;
-            };
-            let size = (cell_h * 0.12).clamp(14.0, 22.0);
-            let margin = (size * 0.4).max(6.0);
-            let shadow = gdk4::RGBA::new(0.0, 0.0, 0.0, 0.45);
-            let white = gdk4::RGBA::new(1.0, 1.0, 1.0, 0.95);
-            for (offset, color) in [(1.0, shadow), (0.0, white)] {
-                snapshot.save();
-                snapshot.translate(&gtk::graphene::Point::new(
-                    right - margin - size + offset,
-                    bottom - margin - size + offset,
-                ));
-                symbolic.snapshot_symbolic(
-                    snapshot.upcast_ref::<gdk4::Snapshot>(),
-                    size as f64,
-                    size as f64,
-                    &[color],
-                );
-                snapshot.restore();
-            }
-        }
-
-        /// Paint a checkbox indicator in the top-left corner of a tile.
-        fn paint_checkbox(
-            &self,
-            snapshot: &gtk::Snapshot,
-            cell_x: f32,
-            cell_y: f32,
-            cell_h: f32,
-            selected: bool,
-        ) {
-            let box_size = (cell_h * 0.14).clamp(16.0, 26.0);
-            let margin = 6.0_f32;
-            let bx = cell_x + margin;
-            let by = cell_y + margin;
-            if selected {
-                self.paint_checked_box(snapshot, bx, by, box_size);
-            } else {
-                Self::paint_unchecked_box(snapshot, bx, by, box_size);
-            }
-        }
-
-        /// Accent-filled square with a checkmark icon.
-        fn paint_checked_box(&self, snapshot: &gtk::Snapshot, bx: f32, by: f32, box_size: f32) {
-            let r = 4.0_f32;
-            let corner = Size::new(r, r);
-            let rect = Rect::new(bx, by, box_size, box_size);
-            let rounded = RoundedRect::new(rect, corner, corner, corner, corner);
-            snapshot.push_rounded_clip(&rounded);
-            snapshot.append_color(&accent_bg_color(), &rect);
-            snapshot.pop();
-
-            let icon = self
-                .check_icon
-                .get_or_init(|| resolve_symbolic_icon(&self.obj(), "object-select-symbolic"));
-            let inset = 3.0_f32;
-            let icon_size = box_size - inset * 2.0;
-            snapshot.save();
-            snapshot.translate(&gtk::graphene::Point::new(bx + inset, by + inset));
-            icon.snapshot(
-                snapshot.upcast_ref::<gdk4::Snapshot>(),
-                icon_size as f64,
-                icon_size as f64,
-            );
-            snapshot.restore();
-        }
-
-        /// Bordered empty square (outline only).
-        fn paint_unchecked_box(snapshot: &gtk::Snapshot, bx: f32, by: f32, box_size: f32) {
-            let r = 4.0_f32;
-            let border_w = 2.0_f32;
-            let corner = Size::new(r, r);
-            let outer_rect = Rect::new(bx, by, box_size, box_size);
-            let outer_round = RoundedRect::new(outer_rect, corner, corner, corner, corner);
-
-            snapshot.push_rounded_clip(&outer_round);
-            snapshot.append_color(&gdk4::RGBA::new(1.0, 1.0, 1.0, 0.8), &outer_rect);
-
-            let ir = (r - border_w).max(0.0);
-            let ic = Size::new(ir, ir);
-            let inner = Rect::new(
-                bx + border_w,
-                by + border_w,
-                box_size - border_w * 2.0,
-                box_size - border_w * 2.0,
-            );
-            let inner_round = RoundedRect::new(inner, ic, ic, ic, ic);
-            snapshot.push_rounded_clip(&inner_round);
-            snapshot.append_color(&gdk4::RGBA::new(0.0, 0.0, 0.0, 0.3), &inner);
-            snapshot.pop();
-            snapshot.pop();
         }
 
         fn load_request(
@@ -731,15 +420,28 @@ mod imp {
                 request.bucket,
                 request.is_local
             );
+            let painted_bucket = if request.is_local {
+                ThumbnailSize::Thumbnail
+            } else {
+                request.bucket
+            };
+            let reveal = cached_texture(&cache, &request.asset_id, painted_bucket).is_none();
             glib::MainContext::default().spawn_local(async move {
                 let result = load_masonry_asset(&cache, &request, &cancel).await;
-                finish_masonry_load(&widget, &model, &request, result);
+                finish_masonry_load(&widget, &model, &request, result, reveal);
             });
         }
     }
 }
 
 use super::load::{collect_dims, load_with_fallback, propagate_dimensions};
+mod helpers {
+    include!("canvas_helpers.rs");
+}
+use helpers::{
+    accent_bg_color, bucket_for_asset, cached_texture, load_masonry_asset, load_target_for,
+    placeholder_color, resolve_symbolic_icon, resolve_video_icon, rows_between, scrolled_child,
+};
 
 glib::wrapper! {
     pub struct MasonryCanvas(ObjectSubclass<imp::MasonryCanvas>)
@@ -757,115 +459,35 @@ impl imp::SnapshotStats {
     }
 }
 
-/// Get the current theme accent background colour from libadwaita.
-fn scrolled_child(widget: &gtk::Widget) -> Option<gtk::Widget> {
-    let mut node = Some(widget.clone());
-    while let Some(current) = node {
-        if let Some(scrolled) = current.downcast_ref::<gtk::ScrolledWindow>() {
-            return scrolled.child();
-        }
-        node = current.parent();
+/// Explain a thumbnail permission error once per grid.
+fn warn_missing_permission(widget: &MasonryCanvas) {
+    let imp = widget.imp();
+    if imp.permission_warned.replace(true) {
+        return;
     }
-    None
-}
-
-fn accent_bg_color() -> gdk4::RGBA {
-    let accent = libadwaita::StyleManager::default().accent_color();
-    accent.to_rgba()
-}
-
-fn placeholder_color() -> gdk4::RGBA {
-    if libadwaita::StyleManager::default().is_dark() {
-        gdk4::RGBA::new(0.20, 0.20, 0.22, 1.0)
-    } else {
-        gdk4::RGBA::new(0.90, 0.90, 0.92, 1.0)
+    if let Some(window) = widget
+        .root()
+        .and_downcast::<libadwaita::ApplicationWindow>()
+    {
+        let dialog = libadwaita::AlertDialog::builder()
+            .heading("Missing API Permissions")
+            .body("Your API key is missing permissions required to view thumbnails. Please ensure the key has 'asset.view' enabled.")
+            .build();
+        dialog.add_response("ok", "OK");
+        dialog.present(Some(&window));
     }
 }
 
-/// Resolve the video badge icon from the icon theme. The result is cached
-/// per-canvas via a `OnceCell` so the theme lookup only happens once.
-fn resolve_video_icon(widget: &MasonryCanvas) -> gdk4::Paintable {
-    resolve_symbolic_icon(widget, "mimick-video-symbolic")
-}
-
-fn resolve_symbolic_icon(widget: &MasonryCanvas, icon_name: &str) -> gdk4::Paintable {
-    let display = widget
-        .native()
-        .map(|n| n.display())
-        .unwrap_or_else(|| gtk::gdk::Display::default().expect("default GDK display"));
-    let theme = gtk::IconTheme::for_display(&display);
-    let icon = theme.lookup_icon(
-        icon_name,
-        &[],
-        48,
-        1,
-        gtk::TextDirection::None,
-        gtk::IconLookupFlags::FORCE_SYMBOLIC,
-    );
-    icon.upcast::<gdk4::Paintable>()
-}
-
-fn bucket_for_asset(
-    asset_id: &str,
-    local_path: &str,
-    row_h: f32,
-    quality: GridQuality,
-) -> ThumbnailSize {
-    if !local_path.is_empty() && asset_id.starts_with(crate::library::LOCAL_ID_PREFIX) {
-        ThumbnailSize::Thumbnail
-    } else {
-        bucket_for_row_height(row_h, quality)
-    }
-}
-
-fn cached_texture(
-    cache: &ThumbnailCache,
-    asset_id: &str,
-    bucket: ThumbnailSize,
-) -> Option<gdk4::Texture> {
-    let get = |size| cache.get_cached(asset_id, size);
-    get(bucket).or_else(|| fallback_bucket(bucket).and_then(get))
-}
-
-fn rows_between(rows: &[LaidRow], top: f32, bottom: f32) -> impl Iterator<Item = &LaidRow> {
-    rows[first_row_at_or_after(rows, top)..]
-        .iter()
-        .take_while(move |row| row.y <= bottom)
-}
-
-fn load_target_for(model: &LibraryAssetModel, it: &LaidItem) -> Option<(String, String, bool)> {
-    let asset = model.item(it.asset_index).and_downcast::<AssetObject>()?;
-    let asset_id = asset.property::<String>("id");
-    let local_path = asset.property::<String>("local-path");
-    let is_local = !local_path.is_empty() && asset_id.starts_with(crate::library::LOCAL_ID_PREFIX);
-    Some((asset_id, local_path, is_local))
-}
-
-async fn load_masonry_asset(
-    cache: &ThumbnailCache,
-    request: &LoadRequest,
-    cancel: &CancelFlag,
-) -> Result<gdk4::Texture, String> {
-    let is_cancelled = || cancel.get();
-    if request.is_local {
-        let path = std::path::PathBuf::from(&request.local_path);
-        cache
-            .load_local_thumbnail_cancellable(&request.asset_id, &path, &is_cancelled)
-            .await
-    } else {
-        load_with_fallback(cache, &request.asset_id, request.bucket, &is_cancelled).await
-    }
-}
-
-fn finish_masonry_load(
+fn apply_masonry_load_result(
     widget: &MasonryCanvas,
     model: &LibraryAssetModel,
     request: &LoadRequest,
-    result: Result<gdk4::Texture, String>,
-) {
+    result: &Result<gdk4::Texture, String>,
+    reveal: bool,
+) -> bool {
     let imp = widget.imp();
     let asset_id = request.asset_id.as_str();
-    let dims_changed = match &result {
+    match result {
         Ok(tex) => {
             log::trace!(
                 "masonry load OK id={} dims=({}x{})",
@@ -873,6 +495,9 @@ fn finish_masonry_load(
                 tex.width(),
                 tex.height(),
             );
+            if reveal && animations_enabled() {
+                imp.start_reveal(asset_id);
+            }
             propagate_dimensions(model, request.asset_index, asset_id, tex)
         }
         Err(e) if e == "cancelled" => {
@@ -881,25 +506,25 @@ fn finish_masonry_load(
         }
         Err(e) => {
             imp.failed.borrow_mut().insert(asset_id.to_string());
-
-            if (e.contains("HTTP 401") || e.contains("HTTP 403")) && !imp.permission_warned.get() {
-                imp.permission_warned.set(true);
-                if let Some(window) = widget
-                    .root()
-                    .and_downcast::<libadwaita::ApplicationWindow>()
-                {
-                    let dialog = libadwaita::AlertDialog::builder()
-                        .heading("Missing API Permissions")
-                        .body("Your API key is missing permissions required to view thumbnails. Please ensure the key has 'asset.view' enabled.")
-                        .build();
-                    dialog.add_response("ok", "OK");
-                    dialog.present(Some(&window));
-                }
+            if e.contains("HTTP 401") || e.contains("HTTP 403") {
+                warn_missing_permission(widget);
             }
             log::warn!("masonry load ERR id={} err={}", asset_id, e);
             false
         }
-    };
+    }
+}
+
+fn finish_masonry_load(
+    widget: &MasonryCanvas,
+    model: &LibraryAssetModel,
+    request: &LoadRequest,
+    result: Result<gdk4::Texture, String>,
+    reveal: bool,
+) {
+    let imp = widget.imp();
+    let asset_id = request.asset_id.as_str();
+    let dims_changed = apply_masonry_load_result(widget, model, request, &result, reveal);
     imp.scheduler.borrow_mut().finish(asset_id);
     if dims_changed {
         imp.relayout_for_position(request.asset_index);

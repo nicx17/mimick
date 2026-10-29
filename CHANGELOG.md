@@ -23,9 +23,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a **Show in Photos** switch for each partner who shares with you, which adds their photos to your Photos timeline.
 - Added star ratings in the lightbox details pane: click a star to rate a photo or video from 1 to 5, or **Clear** to remove the rating. It appears when **Ratings** is turned on in your Immich account settings, and like Immich, only your own photos can be rated.
 - Added a **People** section to the lightbox details pane showing the people recognized in your photos, with their age when the photo was taken if a birth date is set. Click someone to see all their photos.
+- Added **Add to Album** for photos in the selection bar, the right-click menu, and the lightbox details pane. Pick one of your albums or one shared with you as an editor, filter by name, or create a new album, and open it from the confirmation (#260).
+- Added **Remove from Album** inside an album, from the selection bar and the right-click menu, with **Undo**. Like Immich, editors can remove only their own photos (#261).
+- Added **Set as Album Cover** to the right-click menu inside your own albums (#262).
+- Added **Delete Album** to your albums' header menu and tile menu. The photos stay in your library. Watch folders that sync with the album would otherwise bring it back, so you choose whether they keep backing up to your library or stop being watched, and subfolders that named the album go to your library instead.
+- Added **Leave Album** for albums shared with you, from the album's header menu and its tile on the Albums and Shared Albums pages (#263).
+- Added **Album Options** to your albums' header menu: display order (newest or oldest first) and turning comments and likes on or off. The grid's sort menu gains **Oldest**, and albums open in their display order (#264).
+- Added downloading a whole album as a zip from its header or its tile; large albums download as numbered parts, as Immich splits them (#265).
+- Added an **Appears In** section to the lightbox details pane listing the albums a photo is in; click one to open it (#267).
+- Added **Change Date** for selected photos: give them all one date, time, and time zone, or shift each one earlier or later, optionally moving them to another time zone.
+- **Edit Info…** now has a **Time zone** row and shows the date in the photo's own time zone.
 
 ### Changed
 
+- Thumbnails now fade in as they load, in the grid and on album covers, unless animations are turned off in your system settings.
+- **Search** now sits at the top of the library sidebar.
+- The search field now spans the whole search form, with the mode menu next to **Search** below it, so there's more room to type on narrow windows.
+- Reorganized the settings window:
+  - **Settings** now reads Server, Watch Folders, Uploads, App, then the library sections (Library, Grid Appearance, RAW Files, Storage, shown only when the library view is on) and Troubleshooting. Labels and descriptions are plainer throughout, and quiet hours show as times ("From 22:00 Until 07:00").
+  - **Save and Connect** replaces Save Credentials, and **Test Connection** shows its result in place instead of a dialog.
+  - **Status** opens with a headline (Up to Date, Uploading 3 of 40, Paused, Waiting for Immich) with Sync Now, Pause, and Queue, lists each watched folder's state, and only shows failed uploads (with **Retry**) and errors when there are any.
+  - The cache limit shows how much is in use, with **Clear Cache** beside it; **Export Diagnostics** moved to Troubleshooting, and **Quit** to the main menu.
+  - Folder Rules are grouped into Sync, Deletions, and Files, and each sync method says what it does.
+  - New users see three numbered steps; on narrow windows the Status/Settings switcher moves to the bottom.
+- Finished downloads, copied share links, "already in sync", and errors from quick actions (rating, favorite, tags, copy, open, playback, album changes) now show as short messages at the bottom of the window instead of dialogs. Downloads offer **Open Folder**, and errors offer **Details** with the full message.
+- Search filters now open in a side panel that docks beside the results, or slides in from the right on phones, instead of a short list above them. The **Filters** button shows how many filters are set.
+- With grid borders turned on, the border colour now fills the whole grid, including the space below the last photos and behind the date headings, and headings switch to dark or light text so they stay readable.
+- The share buttons (album header, selection bar, Shared Links) use a proper share icon instead of a grey square on themes without one.
+- On phone-width windows, the selection bar keeps Add to Album, Download, and Move to Trash as buttons and puts the rest in a **More actions** menu.
 - The photo grids now load thumbnails only where scrolling stops: placeholders show while you fling, loads for tiles you scrolled past are cancelled, and the nearest tiles load first. Scrolling far no longer loads every photo on the way.
 - Grid thumbnails now load 16 at a time (was 8) over connections that stay open between scrolls, and photos opened in the lightbox no longer wait behind grid thumbnails.
 - **Explore → Places** now loads with one request instead of scanning the whole library.
@@ -46,6 +71,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Pause on Metered Network** now works in the Flatpak: it follows the system's network portal instead of `nmcli`, which isn't available in the sandbox.
+- Turning **Upload XMP Sidecars** on or off now saves straight away, and settings changed while a save was still running are no longer lost.
+- **Thumbnail Quality**, **Border Width**, and **Border Color** now apply to an open library window right away, keeping your place in the grid, instead of after reopening it.
 - RAW files that LibRaw can't open now still show their embedded JPEG preview instead of "Preview unavailable".
 - 16-bit embedded RAW thumbnails no longer display as garbled images.
 - The RAW decode cache no longer discards an entry that is being written when the same file is opened again.

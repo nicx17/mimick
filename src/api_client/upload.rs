@@ -33,10 +33,28 @@ impl ImmichApiClient {
             None => return None,
         };
 
-        let meta = match self.read_asset_metadata(file_path).await {
-            Some(m) => m,
-            None => return None,
-        };
+        let (form, filename, file_len, desired_time_zone) = self
+            .prepare_upload_form(file_path, checksum, sidecar_path, progress.as_ref())
+            .await?;
+        self.execute_upload_request(
+            form,
+            base_url,
+            filename,
+            file_len,
+            desired_time_zone,
+            progress,
+        )
+        .await
+    }
+
+    async fn prepare_upload_form(
+        &self,
+        file_path: &str,
+        checksum: &str,
+        sidecar_path: Option<&str>,
+        progress: Option<&TransferProgressCallback>,
+    ) -> Option<(reqwest::multipart::Form, String, u64, Option<String>)> {
+        let meta = self.read_asset_metadata(file_path).await?;
         let path = Path::new(file_path);
 
         let (created_ts, modified_ts) = file_timestamps(&meta);
@@ -56,7 +74,7 @@ impl ImmichApiClient {
         // Stream the file body so large videos do not get buffered into memory.
         let file = self.open_asset_file(path, file_path).await?;
 
-        let progress_for_stream = progress.clone();
+        let progress_for_stream = progress.cloned();
         let mut uploaded_bytes = 0_u64;
         let stream = tokio_util::codec::FramedRead::new(file, tokio_util::codec::BytesCodec::new())
             .inspect_ok(move |chunk| {
@@ -80,15 +98,7 @@ impl ImmichApiClient {
 
         let form = Self::attach_sidecar(form, sidecar_path).await;
 
-        self.execute_upload_request(
-            form,
-            base_url,
-            filename,
-            file_len,
-            desired_time_zone,
-            progress,
-        )
-        .await
+        Some((form, filename, file_len, desired_time_zone))
     }
 
     async fn handle_upload_response(

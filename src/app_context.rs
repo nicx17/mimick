@@ -10,7 +10,7 @@ use std::time::{Duration, Instant};
 use tokio::sync::mpsc::UnboundedSender;
 
 use crate::api_client::ImmichApiClient;
-use crate::config::{Config, DateHeadings, WatchPathEntry};
+use crate::config::{Config, ConfigData, DateHeadings, WatchPathEntry};
 use crate::library::state::LibraryState;
 use crate::library::thumbnail_cache::ThumbnailCache;
 use crate::monitor::MonitorHandle;
@@ -108,6 +108,36 @@ impl PendingDeletions {
     }
 }
 
+/// The grid settings an open library window applies live.
+#[derive(Debug, Clone, PartialEq)]
+pub struct GridStyle {
+    pub quality: String,
+    pub border_width: f32,
+    pub border_color: String,
+}
+
+impl GridStyle {
+    pub fn from_config(data: &ConfigData) -> Self {
+        Self {
+            quality: data.library_grid_quality.clone(),
+            border_width: data.grid_border_width,
+            border_color: data.grid_border_color.clone(),
+        }
+    }
+}
+
+impl AppContext {
+    /// Tell an open library window about saved grid settings, if they changed.
+    pub fn publish_grid_style(&self) {
+        let style = GridStyle::from_config(&self.config.read().data);
+        self.grid_style.send_if_modified(|current| {
+            let changed = *current != style;
+            *current = style;
+            changed
+        });
+    }
+}
+
 /// Shared application context holding all dependency handles that UI and background
 /// tasks need. Wrapped in `Arc` at construction time so it can be cloned cheaply.
 pub struct AppContext {
@@ -133,6 +163,8 @@ pub struct AppContext {
     pub library_state: Arc<Mutex<LibraryState>>,
     /// Date headings mode; the open library window follows changes.
     pub date_headings: tokio::sync::watch::Sender<DateHeadings>,
+    /// Grid thumbnail quality and borders; the open library window follows changes.
+    pub grid_style: tokio::sync::watch::Sender<GridStyle>,
     /// Authenticated user unique identifier, fetched at bootstrap.
     pub current_user_id: Arc<Mutex<Option<String>>>,
     /// Tracking lists of deletions requested by Mimick itself.

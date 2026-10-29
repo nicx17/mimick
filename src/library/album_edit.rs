@@ -3,7 +3,7 @@ use std::rc::Rc;
 use crate::api_client::{AlbumUpdate, LibraryAlbum};
 
 use super::LibraryWindowUi;
-use super::context_menu::show_alert_dialog;
+use super::context_menu::show_error_toast;
 use super::dialogs::{TextPrompt, prompt_multiline, prompt_text};
 use super::state::LibrarySource;
 
@@ -13,6 +13,8 @@ pub(super) fn album_menu_items(
 ) -> Vec<(String, Box<dyn Fn()>)> {
     let (ui_rename, album_rename) = (ui.clone(), album.clone());
     let (ui_describe, album_describe) = (ui.clone(), album.clone());
+    let (ui_options, album_options) = (ui.clone(), album.clone());
+    let (ui_delete, album_delete) = (ui.clone(), album.clone());
     vec![
         (
             "Rename…".to_string(),
@@ -21,6 +23,14 @@ pub(super) fn album_menu_items(
         (
             "Edit Description…".to_string(),
             Box::new(move || edit_description(&ui_describe, &album_describe)),
+        ),
+        (
+            "Options…".to_string(),
+            Box::new(move || super::album_options::present(&ui_options, album_options.clone())),
+        ),
+        (
+            "Delete Album…".to_string(),
+            Box::new(move || super::album_delete::confirm_delete(&ui_delete, album_delete.clone())),
         ),
     ]
 }
@@ -72,7 +82,7 @@ fn save(
     glib::MainContext::default().spawn_local(async move {
         match ui.ctx.api_client.update_album(&album_id, &update).await {
             Ok(()) => after(&ui),
-            Err(err) => show_alert_dialog(&ui, "Could Not Update Album", &err),
+            Err(err) => show_error_toast(&ui, "Couldn't update the album", &err),
         }
     });
 }

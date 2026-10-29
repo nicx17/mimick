@@ -22,7 +22,7 @@ fn delete_request_body(asset_ids: &[String], force: bool) -> serde_json::Value {
 }
 
 /// Writes a response body to `output_path` chunk by chunk, reporting bytes written.
-async fn stream_to_file(
+pub(super) async fn stream_to_file(
     mut resp: reqwest::Response,
     output_path: &std::path::Path,
     progress: Option<&TransferProgressCallback>,
@@ -41,6 +41,42 @@ async fn stream_to_file(
         }
     }
     Ok(())
+}
+
+/// A new capture date for many assets: one fixed moment, or a shift that keeps their spacing.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DateChange {
+    /// `date_time` is RFC 3339 with `time_zone`'s offset on that date.
+    Set {
+        date_time: String,
+        time_zone: String,
+    },
+    Shift {
+        minutes: i64,
+        time_zone: Option<String>,
+    },
+}
+
+fn date_change_body(ids: &[String], change: &DateChange) -> serde_json::Value {
+    let mut body = serde_json::json!({ "ids": ids });
+    match change {
+        DateChange::Set {
+            date_time,
+            time_zone,
+        } => {
+            body["dateTimeOriginal"] = date_time.as_str().into();
+            body["timeZone"] = time_zone.as_str().into();
+        }
+        DateChange::Shift { minutes, time_zone } => {
+            if *minutes != 0 {
+                body["dateTimeRelative"] = (*minutes).into();
+            }
+            if let Some(zone) = time_zone {
+                body["timeZone"] = zone.as_str().into();
+            }
+        }
+    }
+    body
 }
 
 /// API path for a thumbnail; `edited=true` is added only for edited assets so existing URLs don't change.
@@ -160,16 +196,23 @@ impl ImmichApiClient {
             .ok_or_else(|| "No active connection".to_string())?;
         let settings = self.settings_snapshot();
         let url = format!("{base_url}{}", thumbnail_path(asset_id, size, edited));
-
-        match self
+        let result = self
             .client
             .get(&url)
             .header("x-api-key", &settings.api_key)
             .header("Accept", "application/octet-stream")
             .timeout(Duration::from_secs(10))
             .send()
-            .await
-        {
+            .await;
+        self.handle_thumbnail_response(result, asset_id).await
+    }
+
+    async fn handle_thumbnail_response(
+        &self,
+        result: Result<reqwest::Response, reqwest::Error>,
+        asset_id: &str,
+    ) -> Result<Vec<u8>, String> {
+        match result {
             Ok(resp) if resp.status().is_success() => {
                 let bytes = resp.bytes().await.map_err(|err| err.to_string())?;
                 self.clear_issue().await;
@@ -383,6 +426,16 @@ impl ImmichApiClient {
             .map(|_| ())
     }
 
+    pub async fn set_assets_date(&self, ids: &[String], change: &DateChange) -> Result<(), String> {
+        self.send_json(
+            reqwest::Method::PUT,
+            "/api/assets",
+            Some(date_change_body(ids, change)),
+        )
+        .await
+        .map(|_| ())
+    }
+
     /// Soft-delete specified assets from the Immich server.
     pub async fn delete_assets(&self, asset_ids: &[String]) -> Result<(), String> {
         self.delete_assets_with(asset_ids, false).await
@@ -427,7 +480,47 @@ impl ImmichApiClient {
 
 #[cfg(test)]
 mod tests {
-    use super::{ThumbnailSize, delete_request_body, original_path, thumbnail_path};
+    use super::{
+        DateChange, ThumbnailSize, date_change_body, delete_request_body, original_path,
+        thumbnail_path,
+    };
+
+    #[test]
+    fn date_change_body_sets_or_shifts() {
+        let ids = vec!["a".to_string()];
+        let set = DateChange::Set {
+            date_time: "2024-01-15T19:55:15+05:30".into(),
+            time_zone: "Asia/Kolkata".into(),
+        };
+        assert_eq!(
+            date_change_body(&ids, &set),
+            serde_json::json!({
+                "ids": ["a"],
+                "dateTimeOriginal": "2024-01-15T19:55:15+05:30",
+                "timeZone": "Asia/Kolkata"
+            })
+        );
+        assert_eq!(
+            date_change_body(
+                &ids,
+                &DateChange::Shift {
+                    minutes: -90,
+                    time_zone: None
+                }
+            ),
+            serde_json::json!({ "ids": ["a"], "dateTimeRelative": -90 })
+        );
+        assert_eq!(
+            date_change_body(
+                &ids,
+                &DateChange::Shift {
+                    minutes: 0,
+                    time_zone: Some("Europe/Lisbon".into())
+                }
+            ),
+            serde_json::json!({ "ids": ["a"], "timeZone": "Europe/Lisbon" })
+        );
+    }
 
     #[test]
     fn thumbnail_path_adds_edited_only_when_requested() {

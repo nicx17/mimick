@@ -10,8 +10,11 @@ use std::sync::Arc;
 
 use gtk::prelude::*;
 
-use crate::api_client::{LibraryAlbum, ThumbnailSize};
+use crate::api_client::LibraryAlbum;
 use crate::app_context::AppContext;
+
+mod tile;
+pub(super) use tile::spawn_thumbnail;
 
 pub type AlbumClick = Rc<dyn Fn(&str, String)>;
 /// Right-click actions on the user's own album tiles.
@@ -23,9 +26,31 @@ pub enum AlbumAction {
     CreateLink,
     Rename,
     EditDescription,
+    /// Stop being a member of an album someone else shared.
+    Leave,
+    /// Save the whole album as zip files.
+    Download,
+    /// Delete one of the user's own albums; its photos stay in the library.
+    Delete,
 }
 
-/// Runs a right-click action for one of the user's own albums.
+const OWN_ALBUM_ACTIONS: &[(&str, AlbumAction)] = &[
+    ("Share…", AlbumAction::Share),
+    ("Create Share Link…", AlbumAction::CreateLink),
+    ("Rename…", AlbumAction::Rename),
+    ("Edit Description…", AlbumAction::EditDescription),
+    ("Download", AlbumAction::Download),
+    ("Delete Album…", AlbumAction::Delete),
+];
+
+const SHARED_ALBUM_ACTIONS: &[(&str, AlbumAction)] = &[
+    ("Download", AlbumAction::Download),
+    ("Leave Album…", AlbumAction::Leave),
+];
+
+type TileMenu = (AlbumShare, &'static [(&'static str, AlbumAction)]);
+
+/// Runs a right-click action on an album tile.
 pub type AlbumShare = Rc<dyn Fn(LibraryAlbum, AlbumAction)>;
 
 /// Sort modes available for the albums landing page.
@@ -277,9 +302,22 @@ fn render_albums(parts: &AlbumsViewParts) {
         owned = shared_by_you(owned);
     }
     let share = parts.cached_share.borrow().clone();
+    let menu = |actions| share.clone().map(|share| (share, actions));
     insert_tiles(&parts.recent_grid, &recent, &ctx, &on_click, None);
-    insert_tiles(&parts.owned_grid, &owned, &ctx, &on_click, share);
-    insert_tiles(&parts.shared_grid, &shared, &ctx, &on_click, None);
+    insert_tiles(
+        &parts.owned_grid,
+        &owned,
+        &ctx,
+        &on_click,
+        menu(OWN_ALBUM_ACTIONS),
+    );
+    insert_tiles(
+        &parts.shared_grid,
+        &shared,
+        &ctx,
+        &on_click,
+        menu(SHARED_ALBUM_ACTIONS),
+    );
 
     parts.recent_section.set_visible(!recent.is_empty());
     parts.owned_section.set_visible(!owned.is_empty());
@@ -314,25 +352,29 @@ fn show_empty_state(parts: &AlbumsViewParts, visible: bool, user_unknown: bool) 
     parts.empty.set_visible(visible);
 }
 
-/// Add a tile per album; `share` (own albums only) enables the right-click "Share…".
+/// Add a tile per album; `menu` gives the tiles a right-click menu of those actions.
 fn insert_tiles(
     grid: &gtk::FlowBox,
     albums: &[&LibraryAlbum],
     ctx: &Arc<AppContext>,
     on_click: &AlbumClick,
-    share: Option<AlbumShare>,
+    menu: Option<TileMenu>,
 ) {
     for album in albums {
-        let tile = album_tile(ctx.clone(), album, on_click.clone());
-        if let Some(share) = &share {
-            attach_share_menu(&tile, album, share.clone());
+        let tile = tile::album_tile(ctx.clone(), album, on_click.clone());
+        if let Some((share, actions)) = &menu {
+            attach_share_menu(&tile, album, share.clone(), actions);
         }
         grid.insert(&tile, -1);
     }
 }
 
-/// Right-click a tile for "Share…" and "Create Share Link…".
-fn attach_share_menu(tile: &gtk::Button, album: &LibraryAlbum, share: AlbumShare) {
+fn attach_share_menu(
+    tile: &gtk::Button,
+    album: &LibraryAlbum,
+    share: AlbumShare,
+    actions: &'static [(&'static str, AlbumAction)],
+) {
     let click = gtk::GestureClick::builder()
         .button(gtk::gdk::BUTTON_SECONDARY)
         .build();
@@ -348,12 +390,7 @@ fn attach_share_menu(tile: &gtk::Button, album: &LibraryAlbum, share: AlbumShare
             .orientation(gtk::Orientation::Vertical)
             .spacing(4)
             .build();
-        for (label, action) in [
-            ("Share…", AlbumAction::Share),
-            ("Create Share Link…", AlbumAction::CreateLink),
-            ("Rename…", AlbumAction::Rename),
-            ("Edit Description…", AlbumAction::EditDescription),
-        ] {
+        for &(label, action) in actions {
             let button = gtk::Button::builder()
                 .label(label)
                 .css_classes(["flat"])
@@ -396,94 +433,6 @@ fn build_section(title: &str) -> (gtk::Box, gtk::Label, gtk::FlowBox) {
     (section, label, grid)
 }
 
-/// Build a clickable tile representing an individual album complete with cover art.
-fn album_tile(ctx: Arc<AppContext>, album: &LibraryAlbum, on_click: AlbumClick) -> gtk::Button {
-    let tile_box = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(4)
-        .build();
-
-    // Fixed-height thumbnail container (same pattern as explore_tile):
-    // the Overlay sizes itself from the spacer child (100px) so portrait
-    // cover images cannot inflate the row height.
-    let thumb = gtk::Overlay::builder()
-        .overflow(gtk::Overflow::Hidden)
-        .css_classes(vec!["mimick-explore-tile".to_string()])
-        .build();
-    let spacer = gtk::Box::builder()
-        .css_classes(vec!["mimick-explore-spacer".to_string()])
-        .build();
-    let picture = gtk::Picture::builder()
-        .can_shrink(true)
-        .content_fit(gtk::ContentFit::Cover)
-        .build();
-    thumb.set_child(Some(&spacer));
-    thumb.add_overlay(&picture);
-
-    let meta_row = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(8)
-        .build();
-    let title_label = gtk::Label::builder()
-        .label(&album.album_name)
-        .xalign(0.0)
-        .hexpand(true)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .width_chars(1)
-        .max_width_chars(1)
-        .css_classes(vec!["caption-heading".to_string()])
-        .build();
-    let count_label = gtk::Label::builder()
-        .label(format!(
-            "{} item{}",
-            album.asset_count,
-            if album.asset_count == 1 { "" } else { "s" }
-        ))
-        .xalign(1.0)
-        .css_classes(vec!["caption".to_string(), "dim-label".to_string()])
-        .build();
-    meta_row.append(&title_label);
-    meta_row.append(&count_label);
-    tile_box.append(&thumb);
-    tile_box.append(&meta_row);
-
-    let button = gtk::Button::builder()
-        .child(&tile_box)
-        .css_classes(vec!["flat".to_string()])
-        .build();
-
-    if let Some(thumb_id) = album.thumbnail_asset_id.clone() {
-        spawn_thumbnail(ctx, thumb_id, picture);
-    }
-
-    let id = album.id.clone();
-    let name = album.album_name.clone();
-    button.connect_clicked(move |_| on_click(&id, name.clone()));
-    button
-}
-
-/// Asynchronously load and set the thumbnail for an album cover art picture widget.
-pub(super) fn spawn_thumbnail(ctx: Arc<AppContext>, asset_id: String, picture: gtk::Picture) {
-    if let Some(texture) = ctx
-        .thumbnail_cache
-        .get_cached(&asset_id, ThumbnailSize::Thumbnail)
-    {
-        picture.set_paintable(Some(&texture));
-        return;
-    }
-    glib::timeout_add_local_once(std::time::Duration::from_millis(120), move || {
-        glib::MainContext::default().spawn_local(async move {
-            if let Ok(texture) = ctx
-                .thumbnail_cache
-                .load_thumbnail(&asset_id, ThumbnailSize::Thumbnail)
-                .await
-            {
-                picture.set_paintable(Some(&texture));
-            }
-        });
-    });
-}
-
 /// Remove all child widgets from the specified flow box.
 fn clear(flow: &gtk::FlowBox) {
     while let Some(child) = flow.first_child() {
@@ -517,6 +466,9 @@ mod tests {
                 role: "owner".into(),
             }],
             shared: false,
+            order: None,
+            is_activity_enabled: true,
+            has_shared_link: false,
         }
     }
 

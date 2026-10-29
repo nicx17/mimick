@@ -1,32 +1,31 @@
 //! Provides best-effort checks of system conditions to determine when uploads should be deferred.
 //!
-//! Reads `/sys/class/power_supply` to detect battery state and parses
-//! NetworkManager D-Bus properties to identify metered connections. All
-//! checks are non-fatal: if a sysfs path is missing or D-Bus is unavailable,
-//! the condition is assumed to be clear.
+//! Reads `/sys/class/power_supply` to detect battery state, and follows GIO's network
+//! monitor (the network portal inside the Flatpak) for metered connections. All checks
+//! are non-fatal: if a source is unavailable, the condition is assumed to be clear.
 
 use std::fs;
 use std::path::Path;
-use std::process::Command;
+use std::sync::atomic::{AtomicBool, Ordering};
 
-/// Returns true if the current primary network connection is metered.
+use gtk::gio::prelude::*;
+
+static METERED: AtomicBool = AtomicBool::new(false);
+
+/// Follow the system's metered-network state. Call once on the GTK main thread.
+pub fn watch_metered_network() {
+    let monitor = gtk::gio::NetworkMonitor::default();
+    METERED.store(monitor.is_network_metered(), Ordering::Relaxed);
+    monitor.connect_network_metered_notify(|monitor| {
+        let metered = monitor.is_network_metered();
+        log::debug!("Metered network: {}", metered);
+        METERED.store(metered, Ordering::Relaxed);
+    });
+}
+
+/// Returns true if the current network connection is metered.
 pub fn is_metered_connection() -> bool {
-    let output = match Command::new("nmcli")
-        .args([
-            "-t",
-            "-f",
-            "GENERAL.METERED",
-            "connection",
-            "show",
-            "--active",
-        ])
-        .output()
-    {
-        Ok(output) if output.status.success() => output,
-        _ => return false,
-    };
-
-    is_metered_connection_from_nmcli_output(&String::from_utf8_lossy(&output.stdout))
+    METERED.load(Ordering::Relaxed)
 }
 
 /// Returns true if the system appears to be running on battery power.
@@ -54,12 +53,6 @@ pub fn is_on_battery_power() -> bool {
     }
 
     is_on_battery_power_from_statuses(&statuses)
-}
-
-/// Check if the nmcli output string indicates a metered network connection.
-fn is_metered_connection_from_nmcli_output(stdout: &str) -> bool {
-    let stdout = stdout.to_ascii_lowercase();
-    stdout.contains("yes") || stdout.contains("guessed-yes")
 }
 
 /// Determine if running on battery based on parsed power supply types and online statuses.
@@ -90,28 +83,12 @@ fn is_on_battery_power_from_statuses(
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        is_metered_connection, is_metered_connection_from_nmcli_output, is_on_battery_power,
-        is_on_battery_power_from_statuses,
-    };
+    use super::{is_metered_connection, is_on_battery_power, is_on_battery_power_from_statuses};
 
     #[test]
     fn runtime_checks_are_safe() {
         let _ = is_metered_connection();
         let _ = is_on_battery_power();
-    }
-
-    #[test]
-    fn test_metered_connection_parser() {
-        assert!(is_metered_connection_from_nmcli_output(
-            "GENERAL.METERED:yes\n"
-        ));
-        assert!(is_metered_connection_from_nmcli_output(
-            "GENERAL.METERED:guessed-yes\n"
-        ));
-        assert!(!is_metered_connection_from_nmcli_output(
-            "GENERAL.METERED:no\n"
-        ));
     }
 
     #[test]

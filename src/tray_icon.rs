@@ -41,58 +41,74 @@ impl ksni::Tray for MimickTray {
     }
 
     fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
-        let library_enabled = self.library_view_enabled;
-        let mut items: Vec<ksni::MenuItem<Self>> = Vec::new();
-        if library_enabled {
-            items.push(
-                StandardItem {
-                    label: "Library".into(),
-                    activate: Box::new(|tray: &mut Self| {
-                        let _ = tray.library_tx.send(true);
-                    }),
-                    ..Default::default()
-                }
-                .into(),
-            );
+        let mut items = Vec::new();
+        if self.library_view_enabled {
+            items.push(library_item());
         }
-        items.extend(vec![
-            StandardItem {
-                label: "Settings".into(),
-                activate: Box::new(|tray: &mut Self| {
-                    // Signal the GTK main loop — no new process spawned.
-                    let _ = tray.settings_tx.send(true);
-                }),
-                ..Default::default()
-            }
-            .into(),
-            StandardItem {
-                label: "Pause / Resume".into(),
-                activate: Box::new(|tray: &mut Self| {
-                    let _ = tray.pause_tx.send(true);
-                }),
-                ..Default::default()
-            }
-            .into(),
-            StandardItem {
-                label: "Sync Now".into(),
-                activate: Box::new(|tray: &mut Self| {
-                    let _ = tray.sync_now_tx.send(true);
-                }),
-                ..Default::default()
-            }
-            .into(),
+        items.extend([
+            settings_item(),
+            pause_item(),
+            sync_now_item(),
             MenuItem::Separator,
-            StandardItem {
-                label: "Quit".into(),
-                activate: Box::new(|tray: &mut Self| {
-                    let _ = tray.quit_tx.send(true);
-                }),
-                ..Default::default()
-            }
-            .into(),
+            quit_item(),
         ]);
         items
     }
+}
+
+fn library_item() -> MenuItem<MimickTray> {
+    StandardItem {
+        label: "Library".into(),
+        activate: Box::new(|tray: &mut MimickTray| {
+            let _ = tray.library_tx.send(true);
+        }),
+        ..Default::default()
+    }
+    .into()
+}
+
+fn settings_item() -> MenuItem<MimickTray> {
+    StandardItem {
+        label: "Settings".into(),
+        activate: Box::new(|tray: &mut MimickTray| {
+            let _ = tray.settings_tx.send(true);
+        }),
+        ..Default::default()
+    }
+    .into()
+}
+
+fn pause_item() -> MenuItem<MimickTray> {
+    StandardItem {
+        label: "Pause / Resume".into(),
+        activate: Box::new(|tray: &mut MimickTray| {
+            let _ = tray.pause_tx.send(true);
+        }),
+        ..Default::default()
+    }
+    .into()
+}
+
+fn sync_now_item() -> MenuItem<MimickTray> {
+    StandardItem {
+        label: "Sync Now".into(),
+        activate: Box::new(|tray: &mut MimickTray| {
+            let _ = tray.sync_now_tx.send(true);
+        }),
+        ..Default::default()
+    }
+    .into()
+}
+
+fn quit_item() -> MenuItem<MimickTray> {
+    StandardItem {
+        label: "Quit".into(),
+        activate: Box::new(|tray: &mut MimickTray| {
+            let _ = tray.quit_tx.send(true);
+        }),
+        ..Default::default()
+    }
+    .into()
 }
 
 /// Channels and handles returned by tray initialization to manage signals.

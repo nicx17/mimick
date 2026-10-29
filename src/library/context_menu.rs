@@ -177,6 +177,7 @@ fn append_manage_buttons(
 
     append_favorite_button(menu, ui, item, &hooks);
     append_archive_button(menu, ui, item, &hooks);
+    append_album_buttons(menu, ui, &remote_id, &hooks);
     let (ui_link, link_id) = (ui.clone(), remote_id.clone());
     menu.add("Create Share Link…", false, move || {
         super::shared_link_dialog::present(
@@ -191,6 +192,27 @@ fn append_manage_buttons(
         append_edit_buttons(menu, ui, item, remote_id, hooks.on_edited);
     }
     append_trash_button(menu, ui, target, hooks.on_trashed);
+}
+
+/// "Add to Album…"; inside an album also "Set as Album Cover" (owner) and "Remove from Album".
+fn append_album_buttons(menu: &Menu, ui: &Rc<LibraryWindowUi>, id: &str, hooks: &AssetMenuHooks) {
+    let (ui_add, ids) = (ui.clone(), vec![id.to_string()]);
+    menu.add("Add to Album…", false, move || {
+        super::album_picker::present(&ui_add, ids.clone(), Rc::new(|| {}))
+    });
+    if let Some(album) = super::album_assets::owned_current_album(ui) {
+        let (ui_cover, asset_id) = (ui.clone(), id.to_string());
+        menu.add("Set as Album Cover", false, move || {
+            super::album_assets::set_cover(&ui_cover, album.id.clone(), asset_id.clone())
+        });
+    }
+    if super::album_assets::can_remove_here(ui) {
+        let (ui_remove, ids, on_removed) =
+            (ui.clone(), vec![id.to_string()], hooks.on_trashed.clone());
+        menu.add("Remove from Album", false, move || {
+            super::album_assets::remove(&ui_remove, ids.clone(), on_removed.clone())
+        });
+    }
 }
 
 /// "Edit Info…" and "Set Location…", offered only on the user's own assets as in Immich.
@@ -317,12 +339,16 @@ fn copy_asset_to_clipboard(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {
         let path = match original_path(&ui, &asset).await {
             Ok(path) => path,
             Err(err) => {
-                show_alert_dialog(&ui, "Copy Failed", &err);
+                show_error_toast(&ui, "Couldn't copy the photo", &err);
                 return;
             }
         };
         let Some(texture) = load_texture_oriented(&path).await else {
-            show_alert_dialog(&ui, "Copy Failed", "Could not decode the original image.");
+            show_error_toast(
+                &ui,
+                "Couldn't copy the photo",
+                "Could not decode the original image.",
+            );
             return;
         };
         if let Some(display) = gdk4::Display::default() {
@@ -335,7 +361,7 @@ fn open_asset_in_default_app(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {
     glib::MainContext::default().spawn_local(async move {
         match original_path(&ui, &asset).await {
             Ok(path) => open_local_with_default_app(&path.display().to_string()),
-            Err(err) => show_alert_dialog(&ui, "Open Failed", &err),
+            Err(err) => show_error_toast(&ui, "Couldn't open the file", &err),
         }
     });
 }
@@ -390,6 +416,20 @@ pub(super) async fn ensure_original_asset_path(
         .await;
     finish_download_item(&ui.ctx, remote_asset_id);
     result.map(|_| path).map_err(|err| err.to_string())
+}
+
+/// A failed quick action as a toast; "Details" opens the full message.
+pub(super) fn show_error_toast(ui: &LibraryWindowUi, title: &str, details: &str) {
+    let (window, title_text, details) = (ui.window.clone(), title.to_string(), details.to_string());
+    let toast = super::dialogs::toast_with_action(title, "Details", move || {
+        let alert = libadwaita::AlertDialog::builder()
+            .heading(&title_text)
+            .body(&details)
+            .build();
+        alert.add_response("ok", "OK");
+        alert.present(Some(&window));
+    });
+    ui.toasts.add_toast(toast);
 }
 
 pub(super) fn show_alert_dialog(ui: &LibraryWindowUi, heading: &str, body: &str) {

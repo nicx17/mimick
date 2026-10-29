@@ -24,9 +24,7 @@ struct StatusSnapshot {
     current_file: String,
     paused: bool,
     pause_reason: Option<String>,
-    pending: usize,
     route: Option<String>,
-    watched_folder_count: usize,
     last_successful_sync_at: Option<f64>,
     last_error: Option<String>,
     last_error_guidance: Option<String>,
@@ -43,9 +41,7 @@ impl StatusSnapshot {
             current_file: s.current_file.clone().unwrap_or_else(|| "...".to_string()),
             paused: s.paused,
             pause_reason: s.pause_reason.clone(),
-            pending: s.queue_size,
             route: s.active_server_route.clone(),
-            watched_folder_count: s.watched_folder_count,
             last_successful_sync_at: s.last_successful_sync_at,
             last_error: s.last_error.clone(),
             last_error_guidance: s.last_error_guidance.clone(),
@@ -54,97 +50,109 @@ impl StatusSnapshot {
 }
 
 /// Refresh the status page twice a second. No disk I/O; the timer stops once the
-/// status widgets are destroyed with the window.
+/// window is closed and the status widgets are taken out of it.
 pub(super) fn start_status_poller(
-    widgets: &StatusWidgets,
-    pause_btn: &gtk::Button,
+    widgets: StatusWidgets,
     tracked_rows: Rc<RefCell<Vec<FolderRowData>>>,
     shared_state: Arc<parking_lot::Mutex<AppState>>,
 ) {
-    let weak_pause = pause_btn.downgrade();
-    let rows = StatusRows::from_widgets(widgets);
+    let shown_paths: RefCell<Vec<String>> = RefCell::default();
     glib::timeout_add_local(Duration::from_millis(500), move || {
-        let (Some(rows), Some(pause_btn)) = (rows.upgrade(), weak_pause.upgrade()) else {
+        if widgets.title.root().is_none() {
             return glib::ControlFlow::Break;
-        };
-        let (snapshot, folder_subtitles) = {
-            let state = shared_state.lock();
-            (
-                StatusSnapshot::from_state(&state),
-                folder_subtitles(&tracked_rows.borrow(), &state),
-            )
-        };
-        pause_btn.set_label(if snapshot.paused { "Resume" } else { "Pause" });
-        rows.show(&snapshot);
-        for (row, subtitle) in folder_subtitles {
-            row.set_subtitle(&subtitle);
         }
+        let paths: Vec<String> = tracked_rows
+            .borrow()
+            .iter()
+            .map(|r| r.path.clone())
+            .collect();
+        let (snapshot, folder_lines) = {
+            let state = shared_state.lock();
+            let lines: Vec<String> = paths
+                .iter()
+                .map(|path| folder_status_line(state.folder_statuses.get(path)))
+                .collect();
+            (StatusSnapshot::from_state(&state), lines)
+        };
+        widgets.show(&snapshot);
+        if *shown_paths.borrow() != paths {
+            rebuild_folder_rows(&widgets.folders_list, &paths);
+            *shown_paths.borrow_mut() = paths;
+        }
+        update_folder_rows(&widgets.folders_list, &folder_lines);
         glib::ControlFlow::Continue
     });
 }
 
-/// Weak handles to the status rows, upgraded on each tick.
-struct StatusRows {
-    status_row: glib::WeakRef<libadwaita::ActionRow>,
-    progress_bar: glib::WeakRef<gtk::ProgressBar>,
-    route_row: glib::WeakRef<libadwaita::ActionRow>,
-    folders_row: glib::WeakRef<libadwaita::ActionRow>,
-    queue_health_row: glib::WeakRef<libadwaita::ActionRow>,
-    last_sync_row: glib::WeakRef<libadwaita::ActionRow>,
-    error_row: glib::WeakRef<libadwaita::ActionRow>,
-}
-
-impl StatusRows {
-    fn from_widgets(widgets: &StatusWidgets) -> Self {
-        Self {
-            status_row: widgets.status_row.downgrade(),
-            progress_bar: widgets.progress_bar.downgrade(),
-            route_row: widgets.route_row.downgrade(),
-            folders_row: widgets.folders_row.downgrade(),
-            queue_health_row: widgets.queue_health_row.downgrade(),
-            last_sync_row: widgets.last_sync_row.downgrade(),
-            error_row: widgets.error_row.downgrade(),
-        }
-    }
-
-    fn upgrade(&self) -> Option<StatusWidgets> {
-        Some(StatusWidgets {
-            status_row: self.status_row.upgrade()?,
-            progress_bar: self.progress_bar.upgrade()?,
-            route_row: self.route_row.upgrade()?,
-            folders_row: self.folders_row.upgrade()?,
-            queue_health_row: self.queue_health_row.upgrade()?,
-            last_sync_row: self.last_sync_row.upgrade()?,
-            error_row: self.error_row.upgrade()?,
-        })
-    }
-}
-
 impl StatusWidgets {
     fn show(&self, s: &StatusSnapshot) {
+        if let Some(headline) = status_headline(s) {
+            self.icon.set_icon_name(Some(headline.icon));
+            self.title.set_label(&headline.title);
+            self.subtitle.set_label(&headline.subtitle);
+            self.subtitle.set_visible(!headline.subtitle.is_empty());
+            self.progress_bar.set_visible(headline.progress.is_some());
+            self.progress_bar
+                .set_fraction(headline.progress.unwrap_or(0.0));
+        }
+        self.pause_btn
+            .set_label(if s.paused { "Resume" } else { "Pause" });
+        self.failed_row.set_visible(s.failed > 0);
+        self.failed_row.set_title(&failed_title(s.failed));
+        self.error_row.set_visible(s.last_error.is_some());
+        self.error_row
+            .set_title(s.last_error.as_deref().unwrap_or_default());
+        self.error_row
+            .set_subtitle(s.last_error_guidance.as_deref().unwrap_or_default());
+        self.attention_group
+            .set_visible(s.failed > 0 || s.last_error.is_some());
         self.route_row
             .set_subtitle(route_subtitle(s.route.as_deref()));
-        self.folders_row
-            .set_subtitle(&format!("{} configured", s.watched_folder_count));
-        self.queue_health_row.set_subtitle(&format!(
-            "{} pending, {} waiting to retry",
-            s.pending, s.failed
-        ));
         self.last_sync_row
             .set_subtitle(&format_sync_age(s.last_successful_sync_at));
-        self.error_row
-            .set_title(s.last_error.as_deref().unwrap_or("No recent errors"));
-        self.error_row.set_subtitle(
-            s.last_error_guidance
-                .as_deref()
-                .unwrap_or("Uploads are healthy."),
+    }
+}
+
+fn failed_title(failed: usize) -> String {
+    match failed {
+        1 => "1 upload failed".to_string(),
+        n => format!("{n} uploads failed"),
+    }
+}
+
+/// One row per watched folder, or a hint to add one.
+fn rebuild_folder_rows(list: &gtk::ListBox, paths: &[String]) {
+    list.remove_all();
+    if paths.is_empty() {
+        list.append(
+            &libadwaita::ActionRow::builder()
+                .title("No folders yet")
+                .subtitle("Add one under Settings → Watch Folders.")
+                .build(),
         );
-        // Unknown statuses leave the headline row as it was.
-        if let Some((title, subtitle, fraction)) = status_headline(s) {
-            self.status_row.set_title(&title);
-            self.status_row.set_subtitle(&subtitle);
-            self.progress_bar.set_fraction(fraction);
+        return;
+    }
+    for path in paths {
+        let row = libadwaita::ActionRow::builder()
+            .title(crate::watch_path_display::display_watch_path(path))
+            .title_lines(1)
+            .use_markup(false)
+            .build();
+        row.add_prefix(&gtk::Image::from_icon_name("folder-symbolic"));
+        list.append(&row);
+    }
+}
+
+fn update_folder_rows(list: &gtk::ListBox, lines: &[String]) {
+    let mut child = list.first_child();
+    for line in lines {
+        let Some(widget) = child else {
+            return;
+        };
+        if let Some(row) = widget.downcast_ref::<libadwaita::ActionRow>() {
+            row.set_subtitle(line);
         }
+        child = widget.next_sibling();
     }
 }
 
@@ -157,74 +165,74 @@ fn route_subtitle(route: Option<&str>) -> &'static str {
     }
 }
 
-/// Status row title, subtitle, and progress fraction for the current sync state.
-fn status_headline(s: &StatusSnapshot) -> Option<(String, String, f64)> {
-    let progress = f64::from(s.progress) / 100.0;
-    if s.status == "paused" || s.paused {
-        let reason = s
-            .pause_reason
-            .as_deref()
-            .unwrap_or("Sync has been temporarily paused.");
-        return Some(("Paused".into(), reason.into(), progress));
-    }
-    match s.status.as_str() {
-        // Failed items while idle are waiting for the network to come back.
-        "idle" if s.failed > 0 => Some((
-            "Offline / Waiting".into(),
-            format!("{} item(s) pending network", s.failed),
-            1.0,
-        )),
-        "idle" => Some((
-            "Idle".into(),
-            format!(
-                "Successfully processed {} file(s)",
-                s.processed.saturating_sub(s.failed)
-            ),
-            if s.processed > 0 { 1.0 } else { 0.0 },
-        )),
-        "uploading" => {
-            let filename = std::path::Path::new(&s.current_file)
-                .file_name()
-                .map(|n| n.to_string_lossy().into_owned())
-                .unwrap_or_else(|| "...".to_string());
-            Some((
-                format!("Uploading ({}/{})", s.processed, s.total),
-                filename,
-                progress,
-            ))
-        }
-        _ => None,
-    }
+/// What the status headline shows.
+struct Headline {
+    icon: &'static str,
+    title: String,
+    subtitle: String,
+    /// Shown as a progress bar while uploading.
+    progress: Option<f64>,
 }
 
-fn folder_subtitles(
-    rows: &[FolderRowData],
-    state: &AppState,
-) -> Vec<(libadwaita::ExpanderRow, String)> {
-    rows.iter()
-        .map(|row| {
-            let line = folder_status_line(state.folder_statuses.get(&row.path));
-            let subtitle = if row.base_subtitle.is_empty() {
-                line
-            } else {
-                format!("{}\n{}", row.base_subtitle, line)
-            };
-            (row.action_row.clone(), subtitle)
-        })
-        .collect()
+/// Headline for the current sync state; `None` for states that keep the last one.
+fn status_headline(s: &StatusSnapshot) -> Option<Headline> {
+    if s.status == "paused" || s.paused {
+        return Some(Headline {
+            icon: "media-playback-pause-symbolic",
+            title: "Paused".into(),
+            subtitle: s.pause_reason.clone().unwrap_or_default(),
+            progress: None,
+        });
+    }
+    match s.status.as_str() {
+        "idle" if s.failed > 0 => Some(Headline {
+            icon: "network-offline-symbolic",
+            title: "Waiting for Immich".into(),
+            subtitle: "Failed uploads retry when the server is reachable.".into(),
+            progress: None,
+        }),
+        "idle" => Some(Headline {
+            icon: "mimick-check-circle-symbolic",
+            title: "Up to Date".into(),
+            subtitle: match s.last_successful_sync_at {
+                Some(_) => format!(
+                    "Last upload {}",
+                    format_sync_age(s.last_successful_sync_at).to_lowercase()
+                ),
+                None => String::new(),
+            },
+            progress: None,
+        }),
+        "uploading" => Some(Headline {
+            icon: "mimick-upload-symbolic",
+            title: format!("Uploading {} of {}", s.processed, s.total),
+            subtitle: std::path::Path::new(&s.current_file)
+                .file_name()
+                .map(|n| n.to_string_lossy().into_owned())
+                .unwrap_or_default(),
+            progress: Some(f64::from(s.progress) / 100.0),
+        }),
+        _ => None,
+    }
 }
 
 /// One folder's status line: its error, or pending count and last sync time.
 fn folder_status_line(status: Option<&FolderSyncStatus>) -> String {
     let Some(status) = status else {
-        return "Status: Idle".to_string();
+        return "Up to date".to_string();
     };
     if let Some(err) = &status.last_error {
-        return format!("Error: {}", err);
+        return format!("Problem: {err}");
     }
-    let mut line = format!("Pending: {}", status.pending_count);
+    let mut line = match status.pending_count {
+        0 => "Up to date".to_string(),
+        n => format!("{n} waiting to upload"),
+    };
     if let Some(t) = status.last_sync_at {
-        line.push_str(&format!(" - Last Sync: {}", format_sync_age(Some(t))));
+        line.push_str(&format!(
+            " · last upload {}",
+            format_sync_age(Some(t)).to_lowercase()
+        ));
     }
     line
 }
@@ -250,41 +258,44 @@ mod tests {
     fn headline_for_paused_idle_and_uploading() {
         let paused = StatusSnapshot {
             paused: true,
-            progress: 40,
+            pause_reason: Some("Paused by user".into()),
             ..StatusSnapshot::default()
         };
-        let (title, subtitle, fraction) = status_headline(&paused).unwrap();
-        assert_eq!(title, "Paused");
-        assert_eq!(subtitle, "Sync has been temporarily paused.");
-        assert!((fraction - 0.4).abs() < f64::EPSILON);
+        let headline = status_headline(&paused).unwrap();
+        assert_eq!(headline.title, "Paused");
+        assert_eq!(headline.subtitle, "Paused by user");
+        assert!(headline.progress.is_none());
 
         let waiting = StatusSnapshot {
             status: "idle".into(),
             failed: 2,
             ..StatusSnapshot::default()
         };
-        assert_eq!(status_headline(&waiting).unwrap().0, "Offline / Waiting");
+        assert_eq!(
+            status_headline(&waiting).unwrap().title,
+            "Waiting for Immich"
+        );
 
         let idle = StatusSnapshot {
             status: "idle".into(),
-            processed: 5,
-            failed: 0,
             ..StatusSnapshot::default()
         };
-        let (_, subtitle, fraction) = status_headline(&idle).unwrap();
-        assert_eq!(subtitle, "Successfully processed 5 file(s)");
-        assert_eq!(fraction, 1.0);
+        let headline = status_headline(&idle).unwrap();
+        assert_eq!(headline.title, "Up to Date");
+        assert_eq!(headline.subtitle, "");
 
         let uploading = StatusSnapshot {
             status: "uploading".into(),
             processed: 1,
             total: 3,
+            progress: 40,
             current_file: "/photos/a.jpg".into(),
             ..StatusSnapshot::default()
         };
-        let (title, subtitle, _) = status_headline(&uploading).unwrap();
-        assert_eq!(title, "Uploading (1/3)");
-        assert_eq!(subtitle, "a.jpg");
+        let headline = status_headline(&uploading).unwrap();
+        assert_eq!(headline.title, "Uploading 1 of 3");
+        assert_eq!(headline.subtitle, "a.jpg");
+        assert_eq!(headline.progress, Some(0.4));
 
         let unknown = StatusSnapshot {
             status: "starting".into(),
@@ -295,17 +306,20 @@ mod tests {
 
     #[test]
     fn folder_status_line_prefers_errors() {
-        assert_eq!(folder_status_line(None), "Status: Idle");
+        assert_eq!(folder_status_line(None), "Up to date");
         let failing = FolderSyncStatus {
             last_error: Some("Permission lost".into()),
             pending_count: 3,
             ..FolderSyncStatus::default()
         };
-        assert_eq!(folder_status_line(Some(&failing)), "Error: Permission lost");
+        assert_eq!(
+            folder_status_line(Some(&failing)),
+            "Problem: Permission lost"
+        );
         let pending = FolderSyncStatus {
             pending_count: 3,
             ..FolderSyncStatus::default()
         };
-        assert_eq!(folder_status_line(Some(&pending)), "Pending: 3");
+        assert_eq!(folder_status_line(Some(&pending)), "3 waiting to upload");
     }
 }

@@ -6,7 +6,7 @@ use gtk::prelude::*;
 use libadwaita::prelude::*;
 
 use crate::library::LibraryWindowUi;
-use crate::library::context_menu::show_alert_dialog;
+use crate::library::context_menu::show_error_toast;
 
 const STAR_COUNT: u8 = 5;
 
@@ -111,7 +111,7 @@ impl RatingSection {
                 section.rating.set(previous);
                 section.refresh();
             }
-            show_alert_dialog(&ui, "Could Not Save Rating", &err);
+            show_error_toast(&ui, "Couldn't save the rating", &err);
         });
     }
 

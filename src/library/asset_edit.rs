@@ -10,14 +10,17 @@ use chrono::{DateTime, Local, NaiveDateTime, TimeZone, Utc};
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::api_client::{AssetDetails, AssetUpdate};
+use crate::api_client::{AssetDetails, AssetUpdate, DateChange};
 
 use super::LibraryWindowUi;
 use super::context_menu::show_alert_dialog;
 use super::favorites::{apply_saved_favorite, drop_from_favorites_view, heart_icon};
+use super::time_zones::{self, wall_time_in, zone_labels, zone_row, zoned_rfc3339};
+
+mod date_picker;
 
 /// Format shown in and accepted by the "Date taken" field (local time).
-const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
+pub(super) const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
 /// Field values as shown in the dialog.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -25,6 +28,8 @@ struct EditValues {
     description: String,
     date_text: String,
     favorite: bool,
+    /// The photo's IANA zone; empty when the dialog shows dates in local time.
+    time_zone: String,
 }
 
 impl EditValues {
@@ -37,7 +42,25 @@ impl EditValues {
                 .and_then(format_local_datetime)
                 .unwrap_or_default(),
             favorite: details.is_favorite,
+            time_zone: String::new(),
         }
+    }
+
+    /// Show the date in the photo's own zone (or this computer's), with that zone picked.
+    fn in_photo_zone(mut self, details: &AssetDetails) -> Self {
+        let exif = details.exif_info.as_ref();
+        let zone = exif
+            .and_then(|e| e.time_zone.clone())
+            .or_else(crate::api_client::local_timezone_name)
+            .unwrap_or_else(|| "UTC".to_string());
+        if let Some(text) = exif
+            .and_then(|e| e.date_time_original.as_deref())
+            .and_then(|iso| wall_time_in(iso, &zone))
+        {
+            self.date_text = text;
+        }
+        self.time_zone = zone;
+        self
     }
 }
 
@@ -76,6 +99,19 @@ fn update_from(original: &EditValues, edited: &EditValues) -> Option<AssetUpdate
     })
 }
 
+/// The date and zone to send when either changed in a dialog that shows the zone.
+fn zoned_date_change(original: &EditValues, edited: &EditValues) -> Option<DateChange> {
+    let unchanged =
+        edited.date_text == original.date_text && edited.time_zone == original.time_zone;
+    if edited.time_zone.is_empty() || unchanged {
+        return None;
+    }
+    Some(DateChange::Set {
+        date_time: zoned_rfc3339(&edited.date_text, &edited.time_zone)?,
+        time_zone: edited.time_zone.clone(),
+    })
+}
+
 /// Fetch the asset's current info and open the edit dialog.
 /// `on_saved` receives whether the capture date changed (the timeline order may move).
 pub(super) fn show_edit_dialog(
@@ -87,7 +123,7 @@ pub(super) fn show_edit_dialog(
     glib::MainContext::default().spawn_local(async move {
         match ui.ctx.api_client.fetch_asset_details(&asset_id).await {
             Ok(details) => {
-                let original = EditValues::from_details(&details);
+                let original = EditValues::from_details(&details).in_photo_zone(&details);
                 present_edit_dialog(ui, asset_id, &filename, original, on_saved);
             }
             Err(err) => show_alert_dialog(&ui, "Could Not Load Info", &err),
@@ -100,22 +136,23 @@ struct EditForm {
     group: libadwaita::PreferencesGroup,
     description_row: libadwaita::EntryRow,
     date: DateField,
+    zone: Option<(Vec<String>, libadwaita::ComboRow)>,
     favorite_button: gtk::ToggleButton,
 }
 
 /// "Date taken" row showing the chosen local date, with a calendar + time picker.
-struct DateField {
-    row: libadwaita::ActionRow,
+pub(super) struct DateField {
+    pub(super) row: libadwaita::ActionRow,
     /// Local date in `DATE_FORMAT`, or empty when the asset has no capture date.
-    text: Rc<RefCell<String>>,
+    pub(super) text: Rc<RefCell<String>>,
 }
 
 impl DateField {
-    fn new(original: &str) -> Self {
+    pub(super) fn new(original: &str) -> Self {
         let text = Rc::new(RefCell::new(original.to_string()));
         let row = libadwaita::ActionRow::builder()
             .title("Date taken")
-            .subtitle(display_date(original))
+            .subtitle(date_picker::display_date(original))
             .build();
         let button = gtk::MenuButton::builder()
             .icon_name("x-office-calendar-symbolic")
@@ -123,130 +160,10 @@ impl DateField {
             .valign(gtk::Align::Center)
             .css_classes(["flat"])
             .build();
-        button.set_popover(Some(&date_popover(&row, &text)));
+        button.set_popover(Some(&date_picker::date_popover(&row, &text)));
         row.add_suffix(&button);
         row.set_activatable_widget(Some(&button));
         Self { row, text }
-    }
-}
-
-/// Calendar plus hour/minute/second spinners for picking a local date and time.
-struct DatePicker {
-    calendar: gtk::Calendar,
-    hour: gtk::SpinButton,
-    minute: gtk::SpinButton,
-    second: gtk::SpinButton,
-}
-
-impl DatePicker {
-    fn new(parts: DateParts) -> Self {
-        let calendar = gtk::Calendar::new();
-        if let Ok(day) =
-            glib::DateTime::from_local(parts.0, parts.1 as i32, parts.2 as i32, 0, 0, 0.0)
-        {
-            calendar.set_date(&day);
-        }
-        let spin = |max: f64, value: u32| {
-            let button = gtk::SpinButton::with_range(0.0, max, 1.0);
-            button.set_value(f64::from(value));
-            button.set_wrap(true);
-            button
-        };
-        Self {
-            calendar,
-            hour: spin(23.0, parts.3),
-            minute: spin(59.0, parts.4),
-            second: spin(59.0, parts.5),
-        }
-    }
-
-    /// "HH : MM : SS" spinner row.
-    fn time_row(&self) -> gtk::Box {
-        let time = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .spacing(4)
-            .halign(gtk::Align::Center)
-            .build();
-        time.append(&self.hour);
-        time.append(&gtk::Label::new(Some(":")));
-        time.append(&self.minute);
-        time.append(&gtk::Label::new(Some(":")));
-        time.append(&self.second);
-        time
-    }
-
-    fn picked_text(&self) -> Option<String> {
-        let day = self.calendar.date();
-        compose_date_text(
-            day.year(),
-            day.month() as u32,
-            day.day_of_month() as u32,
-            self.hour.value() as u32,
-            self.minute.value() as u32,
-            self.second.value() as u32,
-        )
-    }
-}
-
-/// Popover with the date picker; "Set Date" writes the result back to the row.
-fn date_popover(row: &libadwaita::ActionRow, text: &Rc<RefCell<String>>) -> gtk::Popover {
-    let picker = DatePicker::new(date_parts(&text.borrow()).unwrap_or_else(now_parts));
-    let apply = gtk::Button::builder()
-        .label("Set Date")
-        .css_classes(["suggested-action"])
-        .build();
-    let content = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(8)
-        .build();
-    content.append(&picker.calendar);
-    content.append(&picker.time_row());
-    content.append(&apply);
-    let popover = gtk::Popover::builder().child(&content).build();
-    let (row, text, popover_ref) = (row.clone(), text.clone(), popover.clone());
-    apply.connect_clicked(move |_| {
-        if let Some(picked) = picker.picked_text() {
-            row.set_subtitle(&picked);
-            *text.borrow_mut() = picked;
-        }
-        popover_ref.popdown();
-    });
-    popover
-}
-
-type DateParts = (i32, u32, u32, u32, u32, u32);
-
-/// `(year, month, day, hour, minute, second)` from a `DATE_FORMAT` string.
-fn date_parts(text: &str) -> Option<DateParts> {
-    use chrono::{Datelike, Timelike};
-    let dt = NaiveDateTime::parse_from_str(text.trim(), DATE_FORMAT).ok()?;
-    Some((
-        dt.year(),
-        dt.month(),
-        dt.day(),
-        dt.hour(),
-        dt.minute(),
-        dt.second(),
-    ))
-}
-
-/// Picker start for assets without a capture date: now, local time.
-fn now_parts() -> DateParts {
-    let now = Local::now().naive_local().format(DATE_FORMAT).to_string();
-    date_parts(&now).unwrap_or((2000, 1, 1, 12, 0, 0))
-}
-
-/// `DATE_FORMAT` text for picked values, or `None` for an impossible date.
-fn compose_date_text(year: i32, month: u32, day: u32, h: u32, m: u32, s: u32) -> Option<String> {
-    let date = chrono::NaiveDate::from_ymd_opt(year, month, day)?;
-    Some(date.and_hms_opt(h, m, s)?.format(DATE_FORMAT).to_string())
-}
-
-fn display_date(text: &str) -> String {
-    if text.trim().is_empty() {
-        "Not set".to_string()
-    } else {
-        text.to_string()
     }
 }
 
@@ -274,17 +191,22 @@ impl EditForm {
             .text(&original.description)
             .build();
         let date = DateField::new(&original.date_text);
+        let zone = (!original.time_zone.is_empty()).then(|| photo_zone_row(original));
         let (favorite_row, favorite_button) = favorite_row(original.favorite);
         let group = libadwaita::PreferencesGroup::builder()
             .description(filename)
             .build();
         group.add(&description_row);
         group.add(&date.row);
+        if let Some((_, row)) = &zone {
+            group.add(row);
+        }
         group.add(&favorite_row);
         Self {
             group,
             description_row,
             date,
+            zone,
             favorite_button,
         }
     }
@@ -294,8 +216,34 @@ impl EditForm {
             description: self.description_row.text().to_string(),
             date_text: self.date.text.borrow().clone(),
             favorite: self.favorite_button.is_active(),
+            time_zone: self
+                .zone
+                .as_ref()
+                .and_then(|(zones, row)| zones.get(row.selected() as usize).cloned())
+                .unwrap_or_default(),
         }
     }
+}
+
+fn photo_zone_row(original: &EditValues) -> (Vec<String>, libadwaita::ComboRow) {
+    let mut zones = time_zones::all();
+    if !zones.contains(&original.time_zone) {
+        zones.push(original.time_zone.clone());
+        zones.sort();
+    }
+    let selected = zones
+        .iter()
+        .position(|zone| *zone == original.time_zone)
+        .unwrap_or(0);
+    let now = Local::now().format(DATE_FORMAT).to_string();
+    let at = if original.date_text.is_empty() {
+        &now
+    } else {
+        &original.date_text
+    };
+    let labels = zone_labels(&zones, at);
+    let row = zone_row(labels.iter().map(String::as_str), selected);
+    (zones, row)
 }
 
 /// Dialog with Cancel/Save in the header bar around `form`; returns the dialog and both buttons.
@@ -347,10 +295,15 @@ fn present_edit_dialog(
     let dialog_for_save = dialog.clone();
     let ui_for_save = ui.clone();
     save_btn.connect_clicked(move |btn| {
-        let Some(update) = update_from(&original, &form.values()) else {
+        let edited = form.values();
+        let Some(mut update) = update_from(&original, &edited) else {
             return;
         };
-        if update == AssetUpdate::default() {
+        let date_change = zoned_date_change(&original, &edited);
+        if !edited.time_zone.is_empty() {
+            update.date_time_original = None;
+        }
+        if update == AssetUpdate::default() && date_change.is_none() {
             dialog_for_save.close();
             return;
         }
@@ -358,9 +311,8 @@ fn present_edit_dialog(
         save_update(
             ui_for_save.clone(),
             asset_id.clone(),
-            update,
-            dialog_for_save.clone(),
-            btn.clone(),
+            (update, date_change),
+            (dialog_for_save.clone(), btn.clone()),
             on_saved.clone(),
         );
     });
@@ -371,13 +323,12 @@ fn present_edit_dialog(
 fn save_update(
     ui: Rc<LibraryWindowUi>,
     asset_id: String,
-    update: AssetUpdate,
-    dialog: libadwaita::Dialog,
-    save_btn: gtk::Button,
+    (update, date_change): (AssetUpdate, Option<DateChange>),
+    (dialog, save_btn): (libadwaita::Dialog, gtk::Button),
     on_saved: Rc<dyn Fn(bool)>,
 ) {
     glib::MainContext::default().spawn_local(async move {
-        match ui.ctx.api_client.update_asset(&asset_id, &update).await {
+        match send_edits(&ui, &asset_id, &update, date_change.as_ref()).await {
             Ok(()) => {
                 dialog.close();
                 if let Some(favorite) = update.is_favorite {
@@ -386,7 +337,7 @@ fn save_update(
                         drop_from_favorites_view(&ui, &asset_id);
                     }
                 }
-                on_saved(update.date_time_original.is_some());
+                on_saved(update.date_time_original.is_some() || date_change.is_some());
             }
             Err(err) => {
                 // Re-enable Save so the user can retry after fixing permissions or connectivity.
@@ -401,15 +352,58 @@ fn save_update(
     });
 }
 
+async fn send_edits(
+    ui: &LibraryWindowUi,
+    asset_id: &str,
+    update: &AssetUpdate,
+    date_change: Option<&DateChange>,
+) -> Result<(), String> {
+    let api = &ui.ctx.api_client;
+    if *update != AssetUpdate::default() {
+        api.update_asset(asset_id, update).await?;
+    }
+    if let Some(change) = date_change {
+        api.set_assets_date(&[asset_id.to_string()], change).await?;
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
+    use super::date_picker::{compose_date_text, date_parts, display_date, now_parts};
     use super::*;
+
+    #[test]
+    fn zoned_date_change_only_when_date_or_zone_moves() {
+        let mut original = values("", "2024-01-15 15:55:15", false);
+        original.time_zone = "Asia/Kolkata".into();
+        assert_eq!(zoned_date_change(&original, &original), None);
+        let mut moved = original.clone();
+        moved.time_zone = "Europe/Lisbon".into();
+        assert_eq!(
+            zoned_date_change(&original, &moved),
+            Some(DateChange::Set {
+                date_time: "2024-01-15T15:55:15+00:00".into(),
+                time_zone: "Europe/Lisbon".into(),
+            })
+        );
+        let mut redated = original.clone();
+        redated.date_text = "2024-01-16 08:00:00".into();
+        assert_eq!(
+            zoned_date_change(&original, &redated),
+            Some(DateChange::Set {
+                date_time: "2024-01-16T08:00:00+05:30".into(),
+                time_zone: "Asia/Kolkata".into(),
+            })
+        );
+    }
 
     fn values(description: &str, date_text: &str, favorite: bool) -> EditValues {
         EditValues {
             description: description.into(),
             date_text: date_text.into(),
             favorite,
+            time_zone: String::new(),
         }
     }
 

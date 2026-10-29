@@ -13,7 +13,7 @@ use libadwaita::prelude::*;
 use crate::api_client::Tag;
 
 use super::LibraryWindowUi;
-use super::context_menu::show_alert_dialog;
+use super::context_menu::show_error_toast;
 
 /// Most tags listed in the picker at once; typing narrows the list.
 const PICKER_LIMIT: usize = 8;
@@ -177,7 +177,7 @@ impl TagSection {
                     section.rebuild_chips();
                 }
                 Ok(()) => {}
-                Err(err) => show_alert_dialog(&ui, "Could Not Remove Tag", &err),
+                Err(err) => show_error_toast(&ui, "Couldn't remove the tag", &err),
             }
         });
     }
@@ -207,7 +207,7 @@ impl TagSection {
                     section.show(&asset_id, tags);
                 }
                 Ok(_) => {}
-                Err(err) => show_alert_dialog(&ui, "Could Not Add Tag", &err),
+                Err(err) => show_error_toast(&ui, "Couldn't add the tag", &err),
             }
         });
     }

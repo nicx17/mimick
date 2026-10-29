@@ -235,6 +235,12 @@ impl LibraryState {
         self.albums = albums;
     }
 
+    pub fn set_album_order(&mut self, album_id: &str, order: crate::api_client::SortOrder) {
+        if let Some(album) = self.albums.iter_mut().find(|album| album.id == album_id) {
+            album.order = Some(order);
+        }
+    }
+
     pub fn load_initial_source(&mut self) -> (u64, LibrarySource, u32) {
         self.switch_source(LibrarySource::AllAssets)
     }
@@ -498,6 +504,27 @@ mod tests {
             state.assets.iter().map(|a| a.id.clone()).collect();
         assert_eq!(unique.len(), state.assets.len());
         assert_eq!(state.assets.len(), 100);
+    }
+
+    #[test]
+    fn set_album_order_updates_the_cached_album() {
+        let mut state = LibraryState::default();
+        state.load_albums(vec![
+            serde_json::from_value(serde_json::json!({
+                "id": "a1",
+                "albumName": "Trip",
+                "assetCount": 1,
+                "albumThumbnailAssetId": null,
+                "createdAt": "2024-01-01T00:00:00.000Z",
+                "updatedAt": "2024-01-01T00:00:00.000Z"
+            }))
+            .unwrap(),
+        ]);
+        state.set_album_order("a1", crate::api_client::SortOrder::Asc);
+        assert_eq!(
+            state.albums[0].order,
+            Some(crate::api_client::SortOrder::Asc)
+        );
     }
 
     #[test]

@@ -74,7 +74,8 @@ fn nav_button(label: &str, icon: &str) -> gtk::ToggleButton {
 }
 
 pub(super) fn connect_bottom_nav(ui: &Rc<LibraryWindowUi>) {
-    ui.bulk_bar
+    ui.bulk
+        .bar
         .bind_property("reveal-child", &ui.bottom_nav.revealer, "reveal-child")
         .invert_boolean()
         .sync_create()

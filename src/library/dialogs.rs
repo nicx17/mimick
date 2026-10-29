@@ -136,3 +136,16 @@ pub(super) fn popover_menu(button: &gtk::MenuButton, items: Vec<(String, Box<dyn
     popover.set_child(Some(&content));
     button.set_popover(Some(&popover));
 }
+
+pub(super) fn toast_with_action(
+    title: &str,
+    button: &str,
+    on_click: impl Fn() + 'static,
+) -> libadwaita::Toast {
+    let toast = libadwaita::Toast::builder()
+        .title(title)
+        .button_label(button)
+        .build();
+    toast.connect_button_clicked(move |_| on_click());
+    toast
+}

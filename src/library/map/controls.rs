@@ -7,7 +7,7 @@ use gtk::gio;
 use gtk::prelude::*;
 
 use crate::library::LibraryWindowUi;
-use crate::library::context_menu::show_alert_dialog;
+use crate::library::context_menu::show_error_toast;
 
 use super::camera::{self, ROTATE_STEP};
 use super::styles::MapStyle;
@@ -206,7 +206,7 @@ fn locate_me(ui: &Rc<LibraryWindowUi>) {
     glib::MainContext::default().spawn_local(async move {
         match locate::current_position(&ui.window).await {
             Ok(point) => view::show_here(&ui, point),
-            Err(err) => show_alert_dialog(&ui, "Location Unavailable", &err),
+            Err(err) => show_error_toast(&ui, "Your location isn't available", &err),
         }
         button.set_sensitive(true);
     });

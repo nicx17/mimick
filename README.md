@@ -85,7 +85,7 @@ Mimick is an unofficial Immich desktop client for Linux. It provides a GTK4/liba
 ### Environment & Desktop Integration
 
 - **Native Implementation**: Developed purely in Rust, utilizing GTK4 and Libadwaita bindings alongside an AppIndicator system tray for headless daemon control.
-- **Hardware Awareness**: Integrates with `nmcli` and `/sys/class/power_supply` to identify running states and optionally defer daemon I/O operations strictly during explicitly metered networks or active battery deployments.
+- **Hardware Awareness**: Follows the system's metered-network state (through the network portal in the Flatpak) and `/sys/class/power_supply` to identify running states and optionally defer daemon I/O operations strictly during explicitly metered networks or active battery deployments.
 - **Sandbox Security**: Employs Flatpak desktop portal file-choosers to grant the application isolated, per-directory access without requesting system-wide filesystem permissons.
 - **Encrypted Keystore**: API keys are stored securely via the [oo7](https://github.com/linux-credentials/oo7) keyring library. Inside Flatpak, credentials are kept in a portal-encrypted file within the sandbox. On native installs, the desktop's Secret Service (GNOME Keyring, KWallet) is used.
 - **Quiet Hours**: Configurable chronological barriers to globally suspend daemon uploads.
@@ -103,7 +103,7 @@ Each watched directory operates with isolated logical constraints:
 
 ### Library View (Optional)
 
-An optional desktop library interface for browsing and managing your Immich photos directly on Linux (toggle via **Settings → Behavior → Enable Library View**):
+An optional desktop library interface for browsing and managing your Immich photos directly on Linux (turn on **Settings → App → Library View**):
 
 - **Browsing & Lightbox:** Timeline and album grid, full-resolution previews that show edits made in Immich, fullscreen viewing, selectable and copyable recognized text (OCR), media metadata viewer, asset download, an Explore landing page (people, places, things), and a map of your photos with location editing for one or many photos.
 - **Video Playback:** In-app playback that streams from Immich with hardware (VA-API) decoding, seeking, speed control, loop, audio/subtitle tracks, and **Open with…** for an external player.
@@ -156,15 +156,13 @@ The UI is fully responsive and automatically adapts its layout for narrow widths
 2. **External URL** — WAN/Public address (e.g., `https://photos.example.com`). _At least one must be enabled._
 3. **API Key** — Generate in Immich Web UI under Account Settings > API Keys. See [Required API Key permissions](#required-api-key-permissions) below for the minimum scopes and which features unlock with each.
 4. **Watch Paths** — Add folders to monitor with the built-in folder picker. Each folder can upload directly to your library, use a selected album, or use a folder-name album.
-5. **Run on Startup** — Enable this in the **Behavior** section to start Mimick automatically when you log in.
+5. **Run on Startup** — Enable this in the **App** section to start Mimick automatically when you log in.
 6. **Folder Rules** — Each watched folder can open a rules dialog to ignore hidden paths, set a max size in MB, or restrict uploads to specific extensions.
 7. **Sync Controls** — Use **Pause**, **Resume**, or **Sync Now** from the settings window or tray menu when you want manual control.
 8. **Queue Inspector** — Review recent queue events, inspect failed uploads, retry individual files, retry all failures, or clear the failed queue.
-9. **Export Diagnostics** — Create a support bundle from the settings window when troubleshooting sync issues.
-10. **Save Changes** — Applies your settings immediately without relaunching Mimick.
-11. **Close / Quit** — `Close` hides the settings window and leaves Mimick running; `Quit` fully exits the app.
-
-The bottom footer keeps **Close**, **Quit**, and **Save Changes** visible even when the page content needs scrolling.
+9. **Export Diagnostics** — Create a support bundle from **Settings → Troubleshooting** when troubleshooting sync issues.
+10. **Saving** — Settings save and apply as soon as you change them, without relaunching Mimick; server details wait for **Save and Connect**.
+11. **Close / Quit** — Closing the window leaves Mimick running when **Background Sync** is on; **Quit Mimick** in the main menu fully exits the app.
 
 ### Required API Key permissions
 
@@ -201,7 +199,7 @@ Mimick now uses selected-folder access instead of full home-directory access in 
 
 Mimick can process existing files and adapt to configuration changes automatically.
 
-- On startup (or when clicking **Sync Now**), Mimick rescans watched folders to queue missing media. You can constrain this with the **Startup Catch-up Mode** (e.g., "Recent Changed Only" or "New Files Only") to save disk I/O.
+- On startup (or when clicking **Sync Now**), Mimick rescans watched folders to queue missing media. You can constrain this with **When Mimick Starts, Check** (**Changed in the Last 7 Days** or **New Files Only**) to save disk I/O.
 - A local sync index (stored safely in the persistent data directory) ensures unchanged files that are already synced are skipped efficiently. Clearing the application cache will not wipe your sync state.
 - If you change a watch folder's target album, unchanged files are automatically reassociated to the new album on the next scan without requiring a full reupload.
 - If a previously targeted album is deleted, Mimick refreshes album resolution and recreates or rebinds the target album as needed.
@@ -230,9 +228,9 @@ On the **Status** page:
 
 ### Network and Power-Aware Behavior
 
-If enabled in the **Behavior** section, Mimick can pause uploads automatically:
+If enabled in the **Uploads** section, Mimick can pause uploads automatically:
 
-- on metered connections, detected best-effort via `nmcli`
+- on metered connections, as reported by the system (through the network portal in the Flatpak)
 - while running on battery power, detected best-effort from `/sys/class/power_supply`
 
 These options defer uploads rather than changing your watch configuration, so syncing resumes when conditions improve or when you manually resume.

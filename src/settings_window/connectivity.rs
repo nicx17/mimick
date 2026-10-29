@@ -10,6 +10,8 @@ pub struct ConnectivityWidgets {
     pub api_key_entry: PasswordEntry,
     pub test_btn: Button,
     pub save_btn: Button,
+    /// Shows the result of the last connection test.
+    pub status_row: adw::ActionRow,
 }
 
 pub fn build_connectivity_group(
@@ -17,7 +19,8 @@ pub fn build_connectivity_group(
     window: &adw::ApplicationWindow,
 ) -> ConnectivityWidgets {
     let conn_group = adw::PreferencesGroup::builder()
-        .title("Connectivity")
+        .title("Server")
+        .description("Where your Immich server is and the key Mimick signs in with.")
         .build();
     settings_page.add(&conn_group);
 
@@ -26,8 +29,13 @@ pub fn build_connectivity_group(
     let (external_row, external_switch, external_entry) =
         add_url_row(&conn_group, "External URL (WAN)", "https://...");
     let api_key_entry = add_api_key_row(&conn_group);
+    let status_row = adw::ActionRow::builder()
+        .title("Connection")
+        .subtitle("Not tested yet")
+        .build();
+    conn_group.add(&status_row);
     let test_btn = add_group_button(&conn_group, "Test Connection", None, 12);
-    let save_btn = add_group_button(&conn_group, "Save Credentials", Some("suggested-action"), 6);
+    let save_btn = add_group_button(&conn_group, "Save and Connect", Some("suggested-action"), 6);
 
     add_connectivity_breakpoint(
         window,
@@ -46,6 +54,7 @@ pub fn build_connectivity_group(
         api_key_entry,
         test_btn,
         save_btn,
+        status_row,
     }
 }
 
