@@ -15,7 +15,7 @@ ksni = "0.3.4"
 libadwaita = { version = "0.9.1", features = ["v1_10"] }
 shumate = { version = "0.8.1", package = "libshumate", features = ["v1_7", "gtk_v4_18"] }
 log = "0.4.29"
-lru = "0.18.0"
+lru = "0.19.0"
 parking_lot = "0.12.5"
 blake3 = "1.8.5"
 url = "2.5.8"
