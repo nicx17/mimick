@@ -377,29 +377,26 @@ fn no_matches_row() -> gtk::ListBoxRow {
         .build()
 }
 
-fn cover_frame() -> gtk::Box {
-    gtk::Box::builder()
+fn cover_frame() -> gtk::Overlay {
+    let spacer = gtk::Box::builder()
         .width_request(COVER_SIZE)
         .height_request(COVER_SIZE)
+        .build();
+    gtk::Overlay::builder()
+        .child(&spacer)
         .valign(gtk::Align::Center)
         .overflow(gtk::Overflow::Hidden)
         .css_classes(["mimick-picker-cover"])
         .build()
 }
 
-fn cover_placeholder(icon: &str) -> gtk::Box {
+fn cover_placeholder(icon: &str) -> gtk::Overlay {
     let frame = cover_frame();
-    frame.append(
-        &gtk::Image::builder()
-            .icon_name(icon)
-            .hexpand(true)
-            .halign(gtk::Align::Center)
-            .build(),
-    );
+    frame.add_overlay(&gtk::Image::from_icon_name(icon));
     frame
 }
 
-pub(super) fn album_cover(ui: &LibraryWindowUi, album: &LibraryAlbum) -> gtk::Box {
+pub(super) fn album_cover(ui: &LibraryWindowUi, album: &LibraryAlbum) -> gtk::Overlay {
     let Some(thumb_id) = album.thumbnail_asset_id.clone() else {
         return cover_placeholder("folder-pictures-symbolic");
     };
@@ -407,9 +404,8 @@ pub(super) fn album_cover(ui: &LibraryWindowUi, album: &LibraryAlbum) -> gtk::Bo
     let picture = gtk::Picture::builder()
         .content_fit(gtk::ContentFit::Cover)
         .can_shrink(true)
-        .hexpand(true)
         .build();
-    frame.append(&picture);
+    frame.add_overlay(&picture);
     spawn_thumbnail(ui.ctx.clone(), thumb_id, picture);
     frame
 }
