@@ -3031,14 +3031,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/notify-types/notify-types-2.1.0.crate",
-        "sha256": "42b8cfee0e339a0337359f3c88165702ac6e600dc01c0cc9579a92d62b08477a",
-        "dest": "cargo/vendor/notify-types-2.1.0"
+        "url": "https://static.crates.io/crates/notify-types/notify-types-2.2.0.crate",
+        "sha256": "0a437a9308232ce794b1e7fdf540d38ea37efc3c73492640c13b4c8568b8f108",
+        "dest": "cargo/vendor/notify-types-2.2.0"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"42b8cfee0e339a0337359f3c88165702ac6e600dc01c0cc9579a92d62b08477a\", \"files\": {}}",
-        "dest": "cargo/vendor/notify-types-2.1.0",
+        "contents": "{\"package\": \"0a437a9308232ce794b1e7fdf540d38ea37efc3c73492640c13b4c8568b8f108\", \"files\": {}}",
+        "dest": "cargo/vendor/notify-types-2.2.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {
@@ -3265,14 +3265,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/openssl-probe/openssl-probe-0.2.1.crate",
-        "sha256": "7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe",
-        "dest": "cargo/vendor/openssl-probe-0.2.1"
+        "url": "https://static.crates.io/crates/openssl-probe/openssl-probe-0.2.2.crate",
+        "sha256": "7e036b411754132fd6b74e94b74e9a13c5cf606fa93d1885c35860d3060820b1",
+        "dest": "cargo/vendor/openssl-probe-0.2.2"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe\", \"files\": {}}",
-        "dest": "cargo/vendor/openssl-probe-0.2.1",
+        "contents": "{\"package\": \"7e036b411754132fd6b74e94b74e9a13c5cf606fa93d1885c35860d3060820b1\", \"files\": {}}",
+        "dest": "cargo/vendor/openssl-probe-0.2.2",
         "dest-filename": ".cargo-checksum.json"
     },
     {
@@ -3928,14 +3928,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/rustix/rustix-1.1.5.crate",
-        "sha256": "891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d",
-        "dest": "cargo/vendor/rustix-1.1.5"
+        "url": "https://static.crates.io/crates/rustix/rustix-1.1.6.crate",
+        "sha256": "e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa",
+        "dest": "cargo/vendor/rustix-1.1.6"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d\", \"files\": {}}",
-        "dest": "cargo/vendor/rustix-1.1.5",
+        "contents": "{\"package\": \"e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa\", \"files\": {}}",
+        "dest": "cargo/vendor/rustix-1.1.6",
         "dest-filename": ".cargo-checksum.json"
     },
     {
