@@ -196,16 +196,23 @@ impl ImmichApiClient {
             .ok_or_else(|| "No active connection".to_string())?;
         let settings = self.settings_snapshot();
         let url = format!("{base_url}{}", thumbnail_path(asset_id, size, edited));
-
-        match self
+        let result = self
             .client
             .get(&url)
             .header("x-api-key", &settings.api_key)
             .header("Accept", "application/octet-stream")
             .timeout(Duration::from_secs(10))
             .send()
-            .await
-        {
+            .await;
+        self.handle_thumbnail_response(result, asset_id).await
+    }
+
+    async fn handle_thumbnail_response(
+        &self,
+        result: Result<reqwest::Response, reqwest::Error>,
+        asset_id: &str,
+    ) -> Result<Vec<u8>, String> {
+        match result {
             Ok(resp) if resp.status().is_success() => {
                 let bytes = resp.bytes().await.map_err(|err| err.to_string())?;
                 self.clear_issue().await;

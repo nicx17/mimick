@@ -1,29 +1,30 @@
 //! Settings window construction helpers and signal wiring.
 
-use std::cell::Cell;
 use std::rc::Rc;
 use std::sync::Arc;
-use std::time::Duration;
 
 use adw::prelude::*;
 use glib::clone;
 use gtk::prelude::*;
-use gtk::{Button, FileDialog, ListBox, ScrolledWindow};
+use gtk::{Button, ScrolledWindow};
 use libadwaita as adw;
 
 use crate::app_context::AppContext;
-use crate::config::{Config, DateHeadings, WatchPathEntry};
-use crate::diagnostics;
 
-use super::apply::ApplyState;
 use super::behavior::BehaviorWidgets;
 use super::connectivity::ConnectivityWidgets;
 use super::form::SettingsForm;
-use super::library::LibraryWidgets;
 use super::queue_inspector::show_about_dialog;
 use super::status::StatusWidgets;
-use super::watch_folders::add_folder_row;
 use super::{show_alert, show_queue_inspector};
+
+mod diagnostics_wiring;
+mod folder_wiring;
+mod library_wiring;
+pub(super) use folder_wiring::{
+    add_folders_group, connect_download_folder, fetch_albums_for_picker, folders_group,
+};
+pub(super) use library_wiring::connect_library_rows;
 
 /// Window with Status / Settings pages behind a header view switcher.
 pub(super) fn build_window_shell(
@@ -327,314 +328,6 @@ fn grid_quality_value(index: u32) -> &'static str {
 }
 
 /// Library rows save straight to config (no Save button needed).
-pub(super) fn connect_library_rows(
-    ctx: &Arc<AppContext>,
-    library: &LibraryWidgets,
-    library_view_row: &adw::SwitchRow,
-) {
-    let enabled = ctx.config.read().data.library_view_enabled;
-    for group in &library.library_groups {
-        group.set_visible(enabled);
-    }
-    let (c, groups) = (ctx.clone(), library.library_groups.clone());
-    library_view_row.connect_active_notify(move |row| {
-        let active = row.is_active();
-        for group in &groups {
-            group.set_visible(active);
-        }
-        save_flag(&c, |d| {
-            std::mem::replace(&mut d.library_view_enabled, active) != active
-        });
-    });
-    let c = ctx.clone();
-    library.preview_full_row.connect_active_notify(move |row| {
-        let active = row.is_active();
-        save_flag(&c, |d| {
-            std::mem::replace(&mut d.library_preview_full_resolution, active) != active
-        });
-    });
-    library.grid_quality_row.set_selected(grid_quality_index(
-        &ctx.config.read().data.library_grid_quality,
-    ));
-    let c = ctx.clone();
-    library
-        .grid_quality_row
-        .connect_selected_notify(move |row| {
-            let value = grid_quality_value(row.selected());
-            save_flag(&c, |d| {
-                let changed = d.library_grid_quality != value;
-                d.library_grid_quality = value.to_string();
-                changed
-            });
-            c.publish_grid_style();
-        });
-    connect_date_headings_row(ctx, &library.date_headings_row);
-    connect_raw_rows(ctx, library);
-    connect_disk_cache_row(ctx, &library.disk_cache_row);
-    connect_clear_cache(ctx, library);
-    refresh_cache_usage(&library.disk_cache_row);
-}
-
-/// Measure the caches off the GTK thread and show it under the cache limit.
-fn refresh_cache_usage(row: &adw::SpinRow) {
-    let row = row.downgrade();
-    glib::MainContext::default().spawn_local(async move {
-        let used = tokio::task::spawn_blocking(crate::cache_manager::total_size_blocking)
-            .await
-            .unwrap_or(0);
-        if let Some(row) = row.upgrade() {
-            row.set_subtitle(&super::library::cache_usage_label(used, row.value() as u32));
-        }
-    });
-}
-
-fn connect_clear_cache(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
-    let (thumbnail_cache, row) = (ctx.thumbnail_cache.clone(), library.disk_cache_row.clone());
-    library.clear_cache_btn.connect_clicked(move |btn| {
-        let _ = thumbnail_cache.clear();
-        btn.set_sensitive(false);
-        let (btn, row) = (btn.clone(), row.clone());
-        glib::MainContext::default().spawn_local(async move {
-            let result = tokio::task::spawn_blocking(crate::cache_manager::clear_all_blocking)
-                .await
-                .map_err(|err| err.to_string())
-                .and_then(|inner| inner);
-            btn.set_sensitive(true);
-            if let Err(err) = result
-                && let Some(window) = btn.root().and_downcast::<gtk::Window>()
-            {
-                show_alert(&window, "Could Not Clear Cache", &err);
-            }
-            refresh_cache_usage(&row);
-        });
-    });
-}
-
-fn connect_date_headings_row(ctx: &Arc<AppContext>, row: &adw::ComboRow) {
-    let current = ctx.config.read().data.library_date_headings;
-    let index = DateHeadings::ALL.iter().position(|mode| *mode == current);
-    row.set_selected(index.unwrap_or_default() as u32);
-    let ctx = ctx.clone();
-    row.connect_selected_notify(move |row| {
-        let mode = DateHeadings::ALL
-            .get(row.selected() as usize)
-            .copied()
-            .unwrap_or_default();
-        save_flag(&ctx, |d| {
-            std::mem::replace(&mut d.library_date_headings, mode) != mode
-        });
-        ctx.date_headings.send_replace(mode);
-    });
-}
-
-fn connect_raw_rows(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
-    library
-        .raw_cache_row
-        .set_sensitive(library.raw_full_decode_row.is_active());
-    let (c, cache_row) = (ctx.clone(), library.raw_cache_row.clone());
-    library
-        .raw_full_decode_row
-        .connect_active_notify(move |row| {
-            let active = row.is_active();
-            cache_row.set_sensitive(active);
-            crate::library::set_raw_full_decode(active);
-            save_flag(&c, |d| {
-                std::mem::replace(&mut d.raw_full_decode, active) != active
-            });
-        });
-    let c = ctx.clone();
-    library.raw_cache_row.connect_active_notify(move |row| {
-        let active = row.is_active();
-        crate::library::set_raw_cache_enabled(active);
-        save_flag(&c, |d| {
-            std::mem::replace(&mut d.raw_decode_cache_enabled, active) != active
-        });
-    });
-}
-
-/// Debounced: the spin row fires on every step, so save 400ms after the last change.
-fn connect_disk_cache_row(ctx: &Arc<AppContext>, row: &adw::SpinRow) {
-    let pending: Rc<Cell<Option<glib::SourceId>>> = Rc::new(Cell::new(None));
-    let ctx = ctx.clone();
-    row.connect_value_notify(move |row| {
-        let new_value = row.value() as u32;
-        if let Some(id) = pending.take() {
-            id.remove();
-        }
-        let (ctx, pending_for_save, row) = (ctx.clone(), pending.clone(), row.clone());
-        let id = glib::timeout_add_local_once(Duration::from_millis(400), move || {
-            pending_for_save.set(None);
-            refresh_cache_usage(&row);
-            save_flag(&ctx, |d| {
-                std::mem::replace(&mut d.cache_disk_cap_mb, new_value) != new_value
-            });
-        });
-        pending.set(Some(id));
-    });
-}
-
-/// Choose / clear the folder library downloads are saved to.
-pub(super) fn connect_download_folder(
-    ctx: &Arc<AppContext>,
-    library: &LibraryWidgets,
-    window: &adw::ApplicationWindow,
-) {
-    if let Some(path) = ctx.config.read().data.download_target_path.as_deref() {
-        library.download_folder_row.set_subtitle(path);
-        library.download_clear_btn.set_visible(true);
-    }
-    let (c, row, clear) = (
-        ctx.clone(),
-        library.download_folder_row.clone(),
-        library.download_clear_btn.clone(),
-    );
-    library.download_change_btn.connect_clicked(clone!(
-        #[weak]
-        window,
-        move |_| {
-            let (ctx, row, clear) = (c.clone(), row.clone(), clear.clone());
-            let dialog = FileDialog::builder()
-                .title("Choose Download Folder")
-                .build();
-            dialog.select_folder(Some(&window), gtk::gio::Cancellable::NONE, move |res| {
-                let Some(path) = res.ok().and_then(|f| f.path()) else {
-                    return;
-                };
-                let path_str = path.to_string_lossy().to_string();
-                row.set_subtitle(&path_str);
-                clear.set_visible(true);
-                let mut cfg = ctx.config.write();
-                cfg.data.download_target_path = Some(path_str);
-                cfg.save();
-            });
-        }
-    ));
-    let c = ctx.clone();
-    library.download_clear_btn.connect_clicked(clone!(
-        #[weak(rename_to = row)]
-        library.download_folder_row,
-        move |btn| {
-            row.set_subtitle("Ask each time");
-            btn.set_visible(false);
-            let mut cfg = c.config.write();
-            cfg.data.download_target_path = None;
-            cfg.save();
-        }
-    ));
-}
-
-/// Load albums for the folder-row picker.
-pub(super) fn fetch_albums_for_picker(window: &adw::ApplicationWindow, state: &ApplyState) {
-    // Hold the window weakly across the fetch so closing it mid-request frees the
-    // row widgets instead of accumulating them over open/close cycles.
-    let weak_win = window.downgrade();
-    // Reuse the app-wide API client: a new reqwest client per window open keeps
-    // its connection pool alive ~30s, so RAM grows with each open/close.
-    let client = state.ctx.api_client.clone();
-    let albums_ref = state.albums.clone();
-    glib::MainContext::default().spawn_local(async move {
-        let fetched = client.get_all_albums().await.unwrap_or_default();
-        // Window closed during the fetch; returning drops albums_ref right away.
-        if weak_win.upgrade().is_none() {
-            log::debug!("Settings window closed during album fetch — discarding result.");
-            return;
-        }
-        // The album picker reads albums_ref when opened, so rows need no update.
-        *albums_ref.borrow_mut() = fetched;
-    });
-}
-
-/// Empty "Watch Folders" section, added early so it sits right after Server.
-pub(super) fn folders_group(settings_page: &adw::PreferencesPage) -> adw::PreferencesGroup {
-    let folders_group = adw::PreferencesGroup::builder()
-        .title("Watch Folders")
-        .description("Folders Mimick backs up. Expand one to pick its album and rules.")
-        .build();
-    settings_page.add(&folders_group);
-    folders_group
-}
-
-/// Fill the "Watch Folders" section: one row per configured folder plus an Add button.
-pub(super) fn add_folders_group(
-    folders_group: &adw::PreferencesGroup,
-    window: &adw::ApplicationWindow,
-    config: &Config,
-    state: &ApplyState,
-    on_changed: Rc<dyn Fn()>,
-) {
-    // Folder list first, then the Add button below it.
-    let folders_list = ListBox::builder()
-        .margin_top(12)
-        .selection_mode(gtk::SelectionMode::None)
-        .css_classes(vec!["boxed-list".to_string()])
-        .build();
-    folders_group.add(&folders_list);
-    let add_folder_btn = Button::builder()
-        .label("Add Folder…")
-        .margin_top(12)
-        .build();
-    folders_group.add(&add_folder_btn);
-
-    let catchup = config.data.startup_catchup_mode.clone();
-    for entry in &config.data.watch_paths {
-        add_folder_row(
-            &folders_list,
-            entry,
-            catchup.clone(),
-            state.albums.clone(),
-            &state.tracked_rows,
-            on_changed.clone(),
-        );
-    }
-    let state = state.clone();
-    let window = window.clone();
-    add_folder_btn.connect_clicked(move |_| {
-        pick_new_folder(
-            &window,
-            &folders_list,
-            &state,
-            catchup.clone(),
-            on_changed.clone(),
-        );
-    });
-}
-
-/// Ask for a folder and add it as a row (ignoring folders already listed).
-fn pick_new_folder(
-    window: &adw::ApplicationWindow,
-    folders_list: &ListBox,
-    state: &ApplyState,
-    catchup: crate::config::StartupCatchupMode,
-    on_changed: Rc<dyn Fn()>,
-) {
-    let dialog = FileDialog::builder().title("Select Watch Folder").build();
-    let (list, state) = (folders_list.clone(), state.clone());
-    dialog.select_folder(Some(window), gtk::gio::Cancellable::NONE, move |res| {
-        let Some(path) = res.ok().and_then(|file| file.path()) else {
-            return;
-        };
-        let path_str = path.to_string_lossy().to_string();
-        if state
-            .tracked_rows
-            .borrow()
-            .iter()
-            .any(|r| r.path == path_str)
-        {
-            return;
-        }
-        add_folder_row(
-            &list,
-            &WatchPathEntry::Simple(path_str),
-            catchup,
-            state.albums.clone(),
-            &state.tracked_rows,
-            on_changed.clone(),
-        );
-        on_changed();
-    });
-}
-
-/// Status page buttons (sync now, pause, queue, retry) and the diagnostics export.
 pub(super) fn connect_action_buttons(
     window: &adw::ApplicationWindow,
     ctx: &Arc<AppContext>,
@@ -673,62 +366,7 @@ pub(super) fn connect_action_buttons(
     export_btn.connect_clicked(clone!(
         #[weak]
         window,
-        move |_| choose_diagnostics_folder(&window, c.clone())
-    ));
-}
-
-fn choose_diagnostics_folder(window: &adw::ApplicationWindow, ctx: Arc<AppContext>) {
-    let dialog = FileDialog::builder()
-        .title("Choose Diagnostics Export Folder")
-        .build();
-    dialog.select_folder(
-        Some(window),
-        gtk::gio::Cancellable::NONE,
-        clone!(
-            #[weak]
-            window,
-            move |res| {
-                if let Some(path) = res.ok().and_then(|folder| folder.path()) {
-                    export_diagnostics(&window, &ctx, path);
-                }
-            }
-        ),
-    );
-}
-
-/// Write the diagnostics bundle off the GTK thread and report where it went.
-fn export_diagnostics(window: &adw::ApplicationWindow, ctx: &AppContext, path: std::path::PathBuf) {
-    let state_snapshot = ctx.state.lock().clone();
-    let config_snapshot = ctx.config.read().clone();
-    glib::MainContext::default().spawn_local(clone!(
-        #[weak]
-        window,
-        async move {
-            let export_result = tokio::task::spawn_blocking(move || {
-                diagnostics::export_bundle(&path, &state_snapshot, &config_snapshot)
-            })
-            .await;
-            let (heading, body) = match export_result {
-                Ok(Ok(bundle_dir)) => (
-                    "Diagnostics Exported",
-                    format!(
-                        "Saved diagnostics bundle to {}",
-                        crate::watch_path_display::display_watch_path_inline(
-                            &bundle_dir.parent().unwrap_or(&bundle_dir).to_string_lossy()
-                        )
-                    ),
-                ),
-                Ok(Err(err)) => (
-                    "Diagnostics Export Failed",
-                    format!("Could not write diagnostics bundle: {}", err),
-                ),
-                Err(err) => (
-                    "Diagnostics Export Failed",
-                    format!("Diagnostics task could not complete: {}", err),
-                ),
-            };
-            show_alert(&window, heading, &body);
-        }
+        move |_| diagnostics_wiring::choose_diagnostics_folder(&window, c.clone())
     ));
 }
 

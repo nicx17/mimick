@@ -17,6 +17,8 @@ use super::context_menu::show_alert_dialog;
 use super::favorites::{apply_saved_favorite, drop_from_favorites_view, heart_icon};
 use super::time_zones::{self, wall_time_in, zone_labels, zone_row, zoned_rfc3339};
 
+mod date_picker;
+
 /// Format shown in and accepted by the "Date taken" field (local time).
 pub(super) const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
@@ -150,7 +152,7 @@ impl DateField {
         let text = Rc::new(RefCell::new(original.to_string()));
         let row = libadwaita::ActionRow::builder()
             .title("Date taken")
-            .subtitle(display_date(original))
+            .subtitle(date_picker::display_date(original))
             .build();
         let button = gtk::MenuButton::builder()
             .icon_name("x-office-calendar-symbolic")
@@ -158,130 +160,10 @@ impl DateField {
             .valign(gtk::Align::Center)
             .css_classes(["flat"])
             .build();
-        button.set_popover(Some(&date_popover(&row, &text)));
+        button.set_popover(Some(&date_picker::date_popover(&row, &text)));
         row.add_suffix(&button);
         row.set_activatable_widget(Some(&button));
         Self { row, text }
-    }
-}
-
-/// Calendar plus hour/minute/second spinners for picking a local date and time.
-struct DatePicker {
-    calendar: gtk::Calendar,
-    hour: gtk::SpinButton,
-    minute: gtk::SpinButton,
-    second: gtk::SpinButton,
-}
-
-impl DatePicker {
-    fn new(parts: DateParts) -> Self {
-        let calendar = gtk::Calendar::new();
-        if let Ok(day) =
-            glib::DateTime::from_local(parts.0, parts.1 as i32, parts.2 as i32, 0, 0, 0.0)
-        {
-            calendar.set_date(&day);
-        }
-        let spin = |max: f64, value: u32| {
-            let button = gtk::SpinButton::with_range(0.0, max, 1.0);
-            button.set_value(f64::from(value));
-            button.set_wrap(true);
-            button
-        };
-        Self {
-            calendar,
-            hour: spin(23.0, parts.3),
-            minute: spin(59.0, parts.4),
-            second: spin(59.0, parts.5),
-        }
-    }
-
-    /// "HH : MM : SS" spinner row.
-    fn time_row(&self) -> gtk::Box {
-        let time = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .spacing(4)
-            .halign(gtk::Align::Center)
-            .build();
-        time.append(&self.hour);
-        time.append(&gtk::Label::new(Some(":")));
-        time.append(&self.minute);
-        time.append(&gtk::Label::new(Some(":")));
-        time.append(&self.second);
-        time
-    }
-
-    fn picked_text(&self) -> Option<String> {
-        let day = self.calendar.date();
-        compose_date_text(
-            day.year(),
-            day.month() as u32,
-            day.day_of_month() as u32,
-            self.hour.value() as u32,
-            self.minute.value() as u32,
-            self.second.value() as u32,
-        )
-    }
-}
-
-/// Popover with the date picker; "Set Date" writes the result back to the row.
-fn date_popover(row: &libadwaita::ActionRow, text: &Rc<RefCell<String>>) -> gtk::Popover {
-    let picker = DatePicker::new(date_parts(&text.borrow()).unwrap_or_else(now_parts));
-    let apply = gtk::Button::builder()
-        .label("Set Date")
-        .css_classes(["suggested-action"])
-        .build();
-    let content = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(8)
-        .build();
-    content.append(&picker.calendar);
-    content.append(&picker.time_row());
-    content.append(&apply);
-    let popover = gtk::Popover::builder().child(&content).build();
-    let (row, text, popover_ref) = (row.clone(), text.clone(), popover.clone());
-    apply.connect_clicked(move |_| {
-        if let Some(picked) = picker.picked_text() {
-            row.set_subtitle(&picked);
-            *text.borrow_mut() = picked;
-        }
-        popover_ref.popdown();
-    });
-    popover
-}
-
-type DateParts = (i32, u32, u32, u32, u32, u32);
-
-/// `(year, month, day, hour, minute, second)` from a `DATE_FORMAT` string.
-fn date_parts(text: &str) -> Option<DateParts> {
-    use chrono::{Datelike, Timelike};
-    let dt = NaiveDateTime::parse_from_str(text.trim(), DATE_FORMAT).ok()?;
-    Some((
-        dt.year(),
-        dt.month(),
-        dt.day(),
-        dt.hour(),
-        dt.minute(),
-        dt.second(),
-    ))
-}
-
-/// Picker start for assets without a capture date: now, local time.
-fn now_parts() -> DateParts {
-    let now = Local::now().naive_local().format(DATE_FORMAT).to_string();
-    date_parts(&now).unwrap_or((2000, 1, 1, 12, 0, 0))
-}
-
-/// `DATE_FORMAT` text for picked values, or `None` for an impossible date.
-fn compose_date_text(year: i32, month: u32, day: u32, h: u32, m: u32, s: u32) -> Option<String> {
-    let date = chrono::NaiveDate::from_ymd_opt(year, month, day)?;
-    Some(date.and_hms_opt(h, m, s)?.format(DATE_FORMAT).to_string())
-}
-
-fn display_date(text: &str) -> String {
-    if text.trim().is_empty() {
-        "Not set".to_string()
-    } else {
-        text.to_string()
     }
 }
 
@@ -488,6 +370,7 @@ async fn send_edits(
 
 #[cfg(test)]
 mod tests {
+    use super::date_picker::{compose_date_text, date_parts, display_date, now_parts};
     use super::*;
 
     #[test]

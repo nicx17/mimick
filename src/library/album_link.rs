@@ -21,47 +21,49 @@ pub(super) fn refresh_album_link_row(ui: &LibraryWindowUi, source: &LibrarySourc
         | LibrarySource::AlbumLocal { name, .. }
         | LibrarySource::AlbumUnified { name, .. } => name,
         _ => {
-            ui.album_link_row.set_visible(false);
-            if let Some(parent) = ui.album_link_row.parent() {
+            ui.album_link.row.set_visible(false);
+            if let Some(parent) = ui.album_link.row.parent() {
                 parent.set_visible(false);
             }
             return;
         }
     };
 
-    ui.album_link_row.set_visible(true);
-    if let Some(parent) = ui.album_link_row.parent() {
+    ui.album_link.row.set_visible(true);
+    if let Some(parent) = ui.album_link.row.parent() {
         parent.set_visible(true);
     }
 
     let entries = ui.ctx.live_watch_paths.lock().clone();
     match crate::config::watch_entry_for_album(name, &entries) {
         Some(entry) => {
-            ui.album_link_row.set_title("Linked folder");
-            ui.album_link_row
+            ui.album_link.row.set_title("Linked folder");
+            ui.album_link
+                .row
                 .set_subtitle(&crate::watch_path_display::display_watch_path_inline(
                     entry.path(),
                 ));
-            ui.album_link_button.set_label("Unlink");
-            ui.album_sync_button.set_visible(true);
+            ui.album_link.link_button.set_label("Unlink");
+            ui.album_link.sync_button.set_visible(true);
         }
         None => {
-            ui.album_link_row.set_title("No local folder linked");
-            ui.album_link_row
+            ui.album_link.row.set_title("No local folder linked");
+            ui.album_link
+                .row
                 .set_subtitle("Drop files in the linked folder to sync this album");
-            ui.album_link_button.set_label("Link folder\u{2026}");
-            ui.album_sync_button.set_visible(false);
+            ui.album_link.link_button.set_label("Link folder\u{2026}");
+            ui.album_link.sync_button.set_visible(false);
         }
     }
 }
 
 pub(super) fn connect_album_link_row(ui: Rc<LibraryWindowUi>, _listbox: gtk::ListBox) {
-    ui.album_link_button.connect_clicked(clone!(
+    ui.album_link.link_button.connect_clicked(clone!(
         #[strong]
         ui,
         move |_| handle_album_link_click(ui.clone())
     ));
-    ui.album_sync_button.connect_clicked(clone!(
+    ui.album_link.sync_button.connect_clicked(clone!(
         #[strong]
         ui,
         move |_| handle_album_sync_click(ui.clone())

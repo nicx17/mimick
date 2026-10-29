@@ -21,8 +21,8 @@ use super::download::start_download_group;
 
 pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::ToggleButton) {
     let selection = ui.grid.selection.clone();
-    let bulk_bar = ui.bulk_bar.clone();
-    let count_label = ui.bulk_count_label.clone();
+    let bulk_bar = ui.bulk.bar.clone();
+    let count_label = ui.bulk.count_label.clone();
 
     let refresh = {
         let selection = selection.clone();
@@ -52,6 +52,14 @@ pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::T
         }
     });
 
+    connect_transient_select_keys(ui, select_toggle, selection);
+}
+
+fn connect_transient_select_keys(
+    ui: Rc<LibraryWindowUi>,
+    select_toggle: gtk::ToggleButton,
+    selection: gtk::MultiSelection,
+) {
     // Ctrl-hold transient checkboxes: pressing Ctrl reveals the selection UI;
     // releasing Ctrl without having selected anything dismisses it again.
     // Ctrl+click then commits a selection (handled separately in grid_view)
@@ -148,7 +156,7 @@ fn connect_delete_key(ui: Rc<LibraryWindowUi>) {
                 return glib::Propagation::Proceed;
             }
             if super::trash_view::is_trash_active(&ui) {
-                ui.trash.delete_selected.emit_clicked();
+                ui.bulk.trash.delete_selected.emit_clicked();
             } else {
                 confirm_and_bulk_delete(ui.clone());
             }
@@ -266,7 +274,7 @@ pub(super) fn connect_bulk_date(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
 
 /// Selection-bar button: add every selected server asset to an album.
 pub(super) fn connect_bulk_add_to_album(ui: Rc<LibraryWindowUi>) {
-    ui.bulk_add_to_album.clone().connect_clicked(move |_| {
+    ui.bulk.add_to_album.clone().connect_clicked(move |_| {
         let ids = selected_server_ids(&ui);
         super::album_picker::present(&ui, ids, clear_selection_after(&ui));
     });
@@ -274,7 +282,7 @@ pub(super) fn connect_bulk_add_to_album(ui: Rc<LibraryWindowUi>) {
 
 /// Selection-bar button: take every selected server asset out of the open album.
 pub(super) fn connect_bulk_remove_from_album(ui: Rc<LibraryWindowUi>) {
-    ui.bulk_remove_from_album.clone().connect_clicked(move |_| {
+    ui.bulk.remove_from_album.clone().connect_clicked(move |_| {
         let ids = selected_server_ids(&ui);
         super::album_assets::remove(&ui, ids, clear_selection_after(&ui));
     });
@@ -289,7 +297,7 @@ fn selected_server_ids(ui: &Rc<LibraryWindowUi>) -> Vec<String> {
 }
 
 pub(super) fn connect_bulk_archive(ui: Rc<LibraryWindowUi>) {
-    ui.bulk_archive.clone().connect_clicked(move |_| {
+    ui.bulk.archive.clone().connect_clicked(move |_| {
         let archived = !matches!(
             ui.ctx.library_state.lock().source,
             super::state::LibrarySource::Archive

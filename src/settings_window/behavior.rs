@@ -18,6 +18,36 @@ pub struct BehaviorWidgets {
 
 /// "Uploads" (how and when files go up) then "App" (how Mimick runs), in that order.
 pub fn build_behavior_group(settings_page: &adw::PreferencesPage) -> BehaviorWidgets {
+    let uploads = build_uploads_group(settings_page);
+    let app = build_app_group(settings_page);
+    BehaviorWidgets {
+        startup_row: app.startup,
+        background_sync_row: app.background_sync,
+        metered_row: uploads.metered,
+        battery_row: uploads.battery,
+        notifications_row: app.notifications,
+        library_view_row: app.library_view,
+        catchup_row: uploads.catchup,
+        concurrency_row: uploads.concurrency,
+        xmp_sidecar_row: uploads.xmp_sidecar,
+        quiet_hours_row: uploads.quiet_hours,
+        quiet_start_row: uploads.quiet_start,
+        quiet_end_row: uploads.quiet_end,
+    }
+}
+
+struct UploadWidgets {
+    concurrency: adw::SpinRow,
+    xmp_sidecar: adw::SwitchRow,
+    catchup: adw::ComboRow,
+    metered: adw::SwitchRow,
+    battery: adw::SwitchRow,
+    quiet_hours: adw::SwitchRow,
+    quiet_start: adw::SpinRow,
+    quiet_end: adw::SpinRow,
+}
+
+fn build_uploads_group(settings_page: &adw::PreferencesPage) -> UploadWidgets {
     let uploads = adw::PreferencesGroup::builder()
         .title("Uploads")
         .description("How and when your watched folders are backed up.")
@@ -46,7 +76,26 @@ pub fn build_behavior_group(settings_page: &adw::PreferencesPage) -> BehaviorWid
         "Wait until the computer is plugged in.",
     );
     let (quiet_hours_row, quiet_start_row, quiet_end_row) = add_quiet_hours_rows(&uploads);
+    UploadWidgets {
+        concurrency: concurrency_row,
+        xmp_sidecar: xmp_sidecar_row,
+        catchup: catchup_row,
+        metered: metered_row,
+        battery: battery_row,
+        quiet_hours: quiet_hours_row,
+        quiet_start: quiet_start_row,
+        quiet_end: quiet_end_row,
+    }
+}
 
+struct AppWidgets {
+    startup: adw::SwitchRow,
+    background_sync: adw::SwitchRow,
+    notifications: adw::SwitchRow,
+    library_view: adw::SwitchRow,
+}
+
+fn build_app_group(settings_page: &adw::PreferencesPage) -> AppWidgets {
     let app = adw::PreferencesGroup::builder().title("App").build();
     settings_page.add(&app);
     let startup_row = add_switch(&app, "Run on Startup", "Start Mimick when you log in.");
@@ -65,19 +114,11 @@ pub fn build_behavior_group(settings_page: &adw::PreferencesPage) -> BehaviorWid
         "Library View",
         "Browse your Immich photos in Mimick. The tray menu updates after a restart.",
     );
-    BehaviorWidgets {
-        startup_row,
-        background_sync_row,
-        metered_row,
-        battery_row,
-        notifications_row,
-        library_view_row,
-        catchup_row,
-        concurrency_row,
-        xmp_sidecar_row,
-        quiet_hours_row,
-        quiet_start_row,
-        quiet_end_row,
+    AppWidgets {
+        startup: startup_row,
+        background_sync: background_sync_row,
+        notifications: notifications_row,
+        library_view: library_view_row,
     }
 }
 

@@ -17,6 +17,9 @@ use crate::settings_window::{build_settings_window_with_parent, show_queue_inspe
 use super::navigation;
 use super::{LibraryWindowUi, load_albums, load_source_page, load_status, open_lightbox};
 
+mod source_mode;
+pub(super) use source_mode::{connect_source_controls, current_album};
+
 pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
     connect_window_actions(&ui);
     connect_shortcuts_action(&ui);
@@ -204,12 +207,12 @@ fn connect_sort_controls(ui: &Rc<LibraryWindowUi>) {
         move |stack| {
             let view = stack.visible_child_name();
             let model = gtk::StringList::new(sort_labels_for_view(view.as_deref()));
-            if view.as_deref() == Some("grid") && ui.album_sort_applied.get() {
+            if view.as_deref() == Some("grid") && ui.interaction.album_sort_applied.get() {
                 let mode = ui.ctx.library_state.lock().sort_mode.clone();
-                ui.sort_suppressed.set(true);
+                ui.interaction.sort_suppressed.set(true);
                 ui.sort_mode.set_model(Some(&model));
                 ui.sort_mode.set_selected(grid_sort_index(&mode));
-                ui.sort_suppressed.set(false);
+                ui.interaction.sort_suppressed.set(false);
             } else {
                 ui.sort_mode.set_model(Some(&model));
                 ui.sort_mode.set_selected(0);
@@ -282,9 +285,9 @@ pub(super) fn sync_album_order(ui: &LibraryWindowUi, source: &LibrarySource) {
     }
     match album_order(ui, source) {
         Some(order) => apply_album_order(ui, order),
-        None if ui.album_sort_applied.get() => {
+        None if ui.interaction.album_sort_applied.get() => {
             show_sort_mode(ui, LibrarySortMode::NewestFirst);
-            ui.album_sort_applied.set(false);
+            ui.interaction.album_sort_applied.set(false);
         }
         None => {}
     }
@@ -292,7 +295,7 @@ pub(super) fn sync_album_order(ui: &LibraryWindowUi, source: &LibrarySource) {
 
 pub(super) fn apply_album_order(ui: &LibraryWindowUi, order: Option<SortOrder>) {
     show_sort_mode(ui, album_sort_mode(order));
-    ui.album_sort_applied.set(true);
+    ui.interaction.album_sort_applied.set(true);
 }
 
 fn album_order(ui: &LibraryWindowUi, source: &LibrarySource) -> Option<Option<SortOrder>> {
@@ -315,16 +318,16 @@ fn show_sort_mode(ui: &LibraryWindowUi, mode: LibrarySortMode) {
     let index = grid_sort_index(&mode);
     ui.ctx.library_state.lock().apply_sort(mode);
     if ui.content_stack.visible_child_name().as_deref() == Some("grid") {
-        ui.sort_suppressed.set(true);
+        ui.interaction.sort_suppressed.set(true);
         ui.sort_mode.set_selected(index);
-        ui.sort_suppressed.set(false);
+        ui.interaction.sort_suppressed.set(false);
     }
 }
 
 /// Route a sort choice by active view. Albums uses an album-specific sort
 /// taxonomy; Explore intentionally doesn't sort the people row (curated server order).
 fn apply_sort_selection(ui: &Rc<LibraryWindowUi>, selected: u32) {
-    if ui.sort_suppressed.get() {
+    if ui.interaction.sort_suppressed.get() {
         return;
     }
     let view = ui.content_stack.visible_child_name();
@@ -337,7 +340,7 @@ fn apply_sort_selection(ui: &Rc<LibraryWindowUi>, selected: u32) {
         super::albums_view::set_sort_mode(&ui.albums, mode);
         return;
     }
-    ui.album_sort_applied.set(false);
+    ui.interaction.album_sort_applied.set(false);
     let sort_mode = grid_sort_mode(selected);
     let mut state = ui.ctx.library_state.lock();
     let order_changed = fetch_order(&state.sort_mode) != fetch_order(&sort_mode);
@@ -353,43 +356,6 @@ fn apply_sort_selection(ui: &Rc<LibraryWindowUi>, selected: u32) {
     ui.grid
         .model
         .reset(&ui.ctx, &state.assets, &state.sort_mode);
-}
-
-/// Remote/Local/Unified dropdown.
-fn connect_source_controls(ui: &Rc<LibraryWindowUi>) {
-    ui.source_mode.connect_selected_notify(clone!(
-        #[strong]
-        ui,
-        move |dropdown| {
-            if ui.source_mode_suppressed.get() {
-                return;
-            }
-            let source = source_for_selection(dropdown.selected(), current_album(&ui));
-            navigation::navigate_source(&ui, source);
-        }
-    ));
-}
-
-/// The album being browsed, if any, as `(id, name)`.
-fn current_album(ui: &LibraryWindowUi) -> Option<(String, String)> {
-    match ui.ctx.library_state.lock().source.clone() {
-        LibrarySource::Album { id, name }
-        | LibrarySource::AlbumLocal { id, name }
-        | LibrarySource::AlbumUnified { id, name } => Some((id, name)),
-        _ => None,
-    }
-}
-
-/// Source for a Remote (0) / Local (1) / Unified (2) choice, scoped to the open album if any.
-fn source_for_selection(selected: u32, album: Option<(String, String)>) -> LibrarySource {
-    match (selected, album) {
-        (1, Some((id, name))) => LibrarySource::AlbumLocal { id, name },
-        (1, None) => LibrarySource::LocalAll,
-        (2, Some((id, name))) => LibrarySource::AlbumUnified { id, name },
-        (2, None) => LibrarySource::Unified,
-        (_, Some((id, name))) => LibrarySource::Album { id, name },
-        (_, None) => LibrarySource::AllAssets,
-    }
 }
 
 pub(super) fn refresh_library_surfaces(ui: Rc<LibraryWindowUi>, include_current_source: bool) {
@@ -445,7 +411,7 @@ pub(super) fn connect_sidebar_handlers(ui: Rc<LibraryWindowUi>) {
         #[strong]
         ui,
         move |_, row| {
-            if ui.sidebar_suppressed.get() {
+            if ui.interaction.sidebar_suppressed.get() {
                 return;
             }
             let Some(tooltip) = row.and_then(|row| row.tooltip_text()) else {
@@ -471,7 +437,7 @@ fn connect_fixed_list(ui: &Rc<LibraryWindowUi>, list: &gtk::ListBox) {
         #[strong]
         ui,
         move |_, row| {
-            if ui.sidebar_suppressed.get() {
+            if ui.interaction.sidebar_suppressed.get() {
                 return;
             }
             let Some(row) = row else {
@@ -533,10 +499,8 @@ pub(super) fn connect_grid_handlers(ui: Rc<LibraryWindowUi>) {
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        album_sort_mode, grid_sort_index, grid_sort_mode, sort_labels_for_view,
-        source_for_selection,
-    };
+    use super::source_mode::source_for_selection;
+    use super::{album_sort_mode, grid_sort_index, grid_sort_mode, sort_labels_for_view};
     use crate::api_client::SortOrder;
     use crate::library::state::{LibrarySortMode, LibrarySource};
 

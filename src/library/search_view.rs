@@ -18,6 +18,7 @@ use crate::library::search_filters::{
     FilterWidgets, build_camera_group, build_date_group, build_flags_group, build_location_group,
     build_tag_group, build_text_group,
 };
+use crate::library::search_panel::{active_filter_count, build_side_panel, filters_label};
 
 /// UI widgets for the dedicated search form.
 ///
@@ -222,79 +223,6 @@ fn build_filter_panel() -> (FilterWidgets, gtk::Box) {
     (widgets, filter_box)
 }
 
-struct SidePanel {
-    root: gtk::Box,
-    close: gtk::Button,
-    clear: gtk::Button,
-    search: gtk::Button,
-}
-
-/// "Filters" title with a close button, the scrolling groups, then Clear and Search.
-fn build_side_panel(filter_box: &gtk::Box) -> SidePanel {
-    let title = gtk::Label::builder()
-        .label("Filters")
-        .xalign(0.0)
-        .hexpand(true)
-        .css_classes(["title-4"])
-        .build();
-    let close = gtk::Button::builder()
-        .icon_name("window-close-symbolic")
-        .tooltip_text("Close filters")
-        .css_classes(["flat", "circular"])
-        .build();
-    let header = gtk::Box::builder()
-        .spacing(6)
-        .margin_top(10)
-        .margin_bottom(6)
-        .margin_start(12)
-        .margin_end(8)
-        .build();
-    header.append(&title);
-    header.append(&close);
-    filter_box.set_margin_start(12);
-    filter_box.set_margin_end(12);
-    filter_box.set_margin_bottom(12);
-    let scroller = gtk::ScrolledWindow::builder()
-        .hscrollbar_policy(gtk::PolicyType::External)
-        .vexpand(true)
-        .child(filter_box)
-        .build();
-    let clear = gtk::Button::builder()
-        .label("Reset")
-        .tooltip_text("Clear every filter, keeping the search text")
-        .hexpand(true)
-        .build();
-    let search = gtk::Button::builder()
-        .label("Search")
-        .hexpand(true)
-        .css_classes(["suggested-action"])
-        .build();
-    let footer = gtk::Box::builder()
-        .spacing(8)
-        .margin_top(8)
-        .margin_bottom(12)
-        .margin_start(12)
-        .margin_end(12)
-        .build();
-    footer.append(&clear);
-    footer.append(&search);
-    let root = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .css_classes(["mimick-filters-pane"])
-        .build();
-    root.append(&header);
-    root.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-    root.append(&scroller);
-    root.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
-    root.append(&footer);
-    SidePanel {
-        root,
-        close,
-        clear,
-        search,
-    }
-}
-
 fn stack_groups(groups: &[&libadwaita::PreferencesGroup]) -> gtk::Box {
     let column = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
@@ -332,33 +260,11 @@ pub fn build_search_view() -> SearchViewParts {
 
     let (filters, filter_box) = build_filter_panel();
     let panel = build_side_panel(&filter_box);
-    let toggle = actions.filters_toggle.clone();
-    panel
-        .close
-        .connect_clicked(move |_| toggle.set_active(false));
-
     let root = wrap_in_scrolled_revealer(&inner);
-    let toggle = actions.filters_toggle.clone();
-    root.connect_reveal_child_notify(move |root| {
-        if !root.reveals_child() {
-            toggle.set_active(false);
-        }
-    });
+    close_panel_with_form(&actions.filters_toggle, &panel.close, &root);
 
     let modes: Rc<RefCell<Vec<u32>>> = Rc::new(RefCell::new(available_modes(true, true)));
-    let modes_for_placeholder = modes.clone();
-    search_mode.connect_selected_notify(clone!(
-        #[weak]
-        search_entry,
-        move |dd| {
-            let ph = match current_mode(&modes_for_placeholder, dd) {
-                1 => "Search filenames",
-                2 => "Find words shown inside images",
-                _ => "Describe what you're looking for\u{2026}",
-            };
-            search_entry.set_placeholder_text(Some(ph));
-        }
-    ));
+    connect_mode_placeholder(&search_mode, &search_entry, modes.clone());
 
     SearchViewParts {
         root,
@@ -374,6 +280,38 @@ pub fn build_search_view() -> SearchViewParts {
         panel_search: panel.search,
         modes,
     }
+}
+
+/// The panel's close button, and hiding the search form, both close the filters panel.
+fn close_panel_with_form(toggle: &gtk::ToggleButton, close: &gtk::Button, form: &gtk::Revealer) {
+    let toggle_for_close = toggle.clone();
+    close.connect_clicked(move |_| toggle_for_close.set_active(false));
+    let toggle = toggle.clone();
+    form.connect_reveal_child_notify(move |form| {
+        if !form.reveals_child() {
+            toggle.set_active(false);
+        }
+    });
+}
+
+/// Placeholder text that describes what the chosen search mode looks for.
+fn connect_mode_placeholder(
+    search_mode: &gtk::DropDown,
+    search_entry: &gtk::SearchEntry,
+    modes: Rc<RefCell<Vec<u32>>>,
+) {
+    search_mode.connect_selected_notify(clone!(
+        #[weak]
+        search_entry,
+        move |dd| {
+            let ph = match current_mode(&modes, dd) {
+                1 => "Search filenames",
+                2 => "Find words shown inside images",
+                _ => "Describe what you're looking for\u{2026}",
+            };
+            search_entry.set_placeholder_text(Some(ph));
+        }
+    ));
 }
 
 fn wrap_in_scrolled_revealer(inner: &gtk::Box) -> gtk::Revealer {
@@ -445,24 +383,6 @@ pub fn collect_filters(view: &SearchViewParts) -> MetadataSearchFilters {
             _ => None,
         },
         ..Default::default()
-    }
-}
-
-/// How many filters are set; the sort order isn't a filter.
-pub fn active_filter_count(filters: &MetadataSearchFilters) -> usize {
-    match serde_json::to_value(filters) {
-        Ok(serde_json::Value::Object(fields)) => {
-            fields.keys().filter(|key| *key != "order").count()
-        }
-        _ => 0,
-    }
-}
-
-pub fn filters_label(count: usize) -> String {
-    if count == 0 {
-        "Filters".to_string()
-    } else {
-        format!("Filters · {count}")
     }
 }
 
@@ -570,24 +490,6 @@ pub fn normalise_iso_date(text: &gtk::glib::GString) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn filter_count_ignores_sort_order() {
-        assert_eq!(active_filter_count(&MetadataSearchFilters::default()), 0);
-        let filters = MetadataSearchFilters {
-            is_favorite: Some(true),
-            city: Some("Lisbon".into()),
-            order: Some(crate::api_client::SortOrder::Asc),
-            ..MetadataSearchFilters::default()
-        };
-        assert_eq!(active_filter_count(&filters), 2);
-    }
-
-    #[test]
-    fn filters_label_shows_the_count() {
-        assert_eq!(filters_label(0), "Filters");
-        assert_eq!(filters_label(3), "Filters · 3");
-    }
 
     #[test]
     fn available_modes_keep_filename_search() {

@@ -43,7 +43,7 @@ fn partner_id(source: &LibrarySource) -> Option<String> {
 }
 
 pub(super) fn is_active(ui: &LibraryWindowUi) -> bool {
-    ui.timeline.borrow().is_some()
+    ui.interaction.timeline.borrow().is_some()
 }
 
 pub(super) fn connect(ui: &Rc<LibraryWindowUi>) {
@@ -122,7 +122,7 @@ fn show(
         Some((months.iter().position(|month| month.key == key)?, offset))
     });
     let index = Rc::new(RefCell::new(TimelineIndex::new(months)));
-    ui.timeline.replace(Some(Rc::new(Timeline {
+    ui.interaction.timeline.replace(Some(Rc::new(Timeline {
         index: index.clone(),
         generation,
         user_id,
@@ -141,7 +141,7 @@ fn show(
 }
 
 pub(super) fn close(ui: &LibraryWindowUi) {
-    if ui.timeline.take().is_some() {
+    if ui.interaction.timeline.take().is_some() {
         ui.grid.canvas.set_timeline(None);
         ui.scrubber.set_index(None);
         ui.grid
@@ -163,7 +163,7 @@ pub(super) fn reload(ui: &Rc<LibraryWindowUi>) {
 }
 
 fn anchor(ui: &LibraryWindowUi) -> Option<(String, f32)> {
-    let timeline = ui.timeline.borrow().clone()?;
+    let timeline = ui.interaction.timeline.borrow().clone()?;
     let sections = ui.grid.canvas.timeline_sections();
     let top = ui.grid.canvas.scroll_top();
     let month = section_at(&sections, top)?;
@@ -187,7 +187,7 @@ fn scroll_when_laid_out(ui: &LibraryWindowUi, month: usize, offset: f32) {
 }
 
 pub(super) fn load_months(ui: &Rc<LibraryWindowUi>, months: Vec<usize>) {
-    let Some(timeline) = ui.timeline.borrow().clone() else {
+    let Some(timeline) = ui.interaction.timeline.borrow().clone() else {
         return;
     };
     for month in months {
@@ -236,7 +236,8 @@ fn load_month(ui: &Rc<LibraryWindowUi>, timeline: &Rc<Timeline>, month: usize) {
 }
 
 fn is_current(ui: &LibraryWindowUi, timeline: &Rc<Timeline>) -> bool {
-    ui.timeline
+    ui.interaction
+        .timeline
         .borrow()
         .as_ref()
         .is_some_and(|current| Rc::ptr_eq(current, timeline))
@@ -269,7 +270,7 @@ pub(super) fn load_neighbor_then(
     forward: bool,
     then: impl FnOnce(Option<(u32, u32)>) + 'static,
 ) -> bool {
-    let Some(timeline) = ui.timeline.borrow().clone() else {
+    let Some(timeline) = ui.interaction.timeline.borrow().clone() else {
         return false;
     };
     let Some(month) = timeline.index.borrow().unloaded_neighbor(position, forward) else {
@@ -281,18 +282,22 @@ pub(super) fn load_neighbor_then(
 }
 
 pub(super) fn has_unloaded_neighbor(ui: &LibraryWindowUi, position: u32, forward: bool) -> bool {
-    ui.timeline.borrow().as_ref().is_some_and(|timeline| {
-        timeline
-            .index
-            .borrow()
-            .unloaded_neighbor(position, forward)
-            .is_some()
-    })
+    ui.interaction
+        .timeline
+        .borrow()
+        .as_ref()
+        .is_some_and(|timeline| {
+            timeline
+                .index
+                .borrow()
+                .unloaded_neighbor(position, forward)
+                .is_some()
+        })
 }
 
 /// Drop deleted or archived photos in place; false when Photos isn't a timeline.
 pub(super) fn remove(ui: &Rc<LibraryWindowUi>, ids: &[String]) -> bool {
-    let Some(timeline) = ui.timeline.borrow().clone() else {
+    let Some(timeline) = ui.interaction.timeline.borrow().clone() else {
         return false;
     };
     let positions = ui.grid.model.remove_ids(ids);

@@ -79,6 +79,31 @@ struct Hero {
 
 impl Hero {
     fn build() -> Self {
+        let (icon, title, subtitle) = Self::build_labels();
+        let progress_bar = Self::build_progress_bar();
+        let (sync_now_btn, pause_btn, queue_btn) = Self::build_actions();
+        let root = Self::build_root(
+            &icon,
+            &title,
+            &subtitle,
+            &progress_bar,
+            &sync_now_btn,
+            &pause_btn,
+            &queue_btn,
+        );
+        Self {
+            root,
+            icon,
+            title,
+            subtitle,
+            progress_bar,
+            sync_now_btn,
+            pause_btn,
+            queue_btn,
+        }
+    }
+
+    fn build_labels() -> (gtk::Image, gtk::Label, gtk::Label) {
         let icon = gtk::Image::builder()
             .icon_name("mimick-check-circle-symbolic")
             .pixel_size(48)
@@ -96,14 +121,34 @@ impl Hero {
             .ellipsize(gtk::pango::EllipsizeMode::Middle)
             .css_classes(["dim-label"])
             .build();
-        let progress_bar = ProgressBar::builder()
+        (icon, title, subtitle)
+    }
+
+    fn build_progress_bar() -> ProgressBar {
+        ProgressBar::builder()
             .visible(false)
             .margin_start(24)
             .margin_end(24)
-            .build();
-        let sync_now_btn = pill("Sync Now", true);
-        let pause_btn = pill("Pause", false);
-        let queue_btn = pill("Queue…", false);
+            .build()
+    }
+
+    fn build_actions() -> (Button, Button, Button) {
+        (
+            pill("Sync Now", true),
+            pill("Pause", false),
+            pill("Queue…", false),
+        )
+    }
+
+    fn build_root(
+        icon: &gtk::Image,
+        title: &gtk::Label,
+        subtitle: &gtk::Label,
+        progress_bar: &ProgressBar,
+        sync_now_btn: &Button,
+        pause_btn: &Button,
+        queue_btn: &Button,
+    ) -> gtk::Box {
         let buttons = gtk::FlowBox::builder()
             .selection_mode(gtk::SelectionMode::None)
             .homogeneous(true)
@@ -114,7 +159,7 @@ impl Hero {
             .halign(gtk::Align::Center)
             .margin_top(6)
             .build();
-        for button in [&sync_now_btn, &pause_btn, &queue_btn] {
+        for button in [sync_now_btn, pause_btn, queue_btn] {
             buttons.insert(button, -1);
         }
         let root = gtk::Box::builder()
@@ -132,16 +177,7 @@ impl Hero {
         ] {
             root.append(child);
         }
-        Self {
-            root,
-            icon,
-            title,
-            subtitle,
-            progress_bar,
-            sync_now_btn,
-            pause_btn,
-            queue_btn,
-        }
+        root
     }
 }
 

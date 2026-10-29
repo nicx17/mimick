@@ -11,20 +11,15 @@ use std::sync::Arc;
 
 use glib::clone;
 use gtk::prelude::*;
-use libadwaita::prelude::*;
 
-use crate::api_client::{LibraryAsset, MetadataSearchFilters, SharedLinkTarget, SortOrder, Tag};
+use crate::api_client::SharedLinkTarget;
 use crate::app_context::AppContext;
-use crate::library::albums_view::{AlbumClick, AlbumsViewParts, populate_albums};
+use crate::library::albums_view::AlbumsViewParts;
 use crate::library::explore_view::ExploreViewParts;
-use crate::library::local_source::{
-    LocalAsset, enumerate_local, enumerate_local_for_entry, filter_by_filename,
-};
 use crate::library::masonry::GridViewParts;
 use crate::library::search_view::SearchViewParts;
 use crate::library::sidebar::SidebarParts;
-use crate::library::state::{LibraryLoadState, LibraryPage, LibrarySource, Location};
-use crate::state_manager::TransferDirection;
+use crate::library::state::Location;
 
 use self::actions::{connect_bulk_actions, connect_select_mode};
 use self::album_link::{connect_album_link_row, refresh_album_link_row};
@@ -65,12 +60,15 @@ mod album_link;
 mod album_options;
 mod album_picker;
 mod album_share_dialog;
+mod album_wiring;
 mod asset_edit;
 mod asset_tags;
+mod content_state;
 mod context_menu;
 mod controls;
 mod dialogs;
 mod download;
+mod drop_target;
 mod features;
 mod folders_view;
 mod header_format;
@@ -81,7 +79,22 @@ mod navigation;
 mod people_view;
 mod person_merge_dialog;
 pub mod search_filters;
+mod search_panel;
 pub mod search_view;
+mod search_wiring;
+mod source_loading;
+use album_wiring::{
+    connect_albums_create, refresh_albums_view, refresh_search_tags, search_by_tag,
+};
+use content_state::{
+    build_loading_view, build_status_view, immich_checksum_to_hex, sync_content_state,
+    update_footer, update_transfer_ui,
+};
+use drop_target::{connect_drop_target, handle_album_drop_upload, show_unsupported_drop_toast};
+use source_loading::{
+    apply_source_ui_state, load_albums, load_explore_landing, load_pages, load_source_page,
+    load_status,
+};
 mod server_stats_dialog;
 mod shared_link_dialog;
 mod shared_links_view;
@@ -95,6 +108,7 @@ mod tree_page;
 mod upload_picker;
 mod video_player;
 mod window_layout;
+use search_wiring::{connect_lightweight_filters, connect_search_view};
 
 const PAGE_SIZE: u32 = 50;
 /// Map areas load each photo by ID, so smaller pages show the first ones sooner.
@@ -154,57 +168,83 @@ struct LibraryWindowUi {
     source_revealer: gtk::Revealer,
     upload_button: gtk::Button,
     controls_row: gtk::Box,
+    back_button: gtk::Button,
+    select_toggle: gtk::ToggleButton,
+    bulk: window_layout::BulkParts,
+    album_link: window_layout::AlbumLinkParts,
+    interaction: WindowInteractionState,
+    split: libadwaita::OverlaySplitView,
+    drop_overlay: gtk::Revealer,
+    scrubber: timeline::scrubber::TimelineScrubber,
+}
+
+#[derive(Default)]
+struct WindowInteractionState {
     source_mode_suppressed: Cell<bool>,
     sidebar_suppressed: Cell<bool>,
     sort_suppressed: Cell<bool>,
     album_sort_applied: Cell<bool>,
-    back_button: gtk::Button,
-    select_toggle: gtk::ToggleButton,
-    bulk_bar: gtk::Revealer,
-    bulk_archive: gtk::Button,
-    bulk_add_to_album: gtk::Button,
-    bulk_remove_from_album: gtk::Button,
-    trash: trash_view::TrashControls,
-    bulk_count_label: gtk::Label,
-    album_link_row: libadwaita::ActionRow,
-    album_link_button: gtk::Button,
-    album_sync_button: gtk::Button,
     last_seen_upload_batch: Cell<u64>,
-    split: libadwaita::OverlaySplitView,
-    drop_overlay: gtk::Revealer,
     timeline: RefCell<Option<Rc<timeline::Timeline>>>,
-    scrubber: timeline::scrubber::TimelineScrubber,
 }
 
 /// Build and display the main library window application layout.
 pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>) {
     style::ensure_registered();
     register_app_icons();
+    let (ui, window) = build_window_ui(app, ctx);
+    bootstrap_window(ui);
+    window.present();
+}
 
+fn build_window_ui(
+    app: &libadwaita::Application,
+    ctx: Arc<AppContext>,
+) -> (Rc<LibraryWindowUi>, libadwaita::ApplicationWindow) {
     let parts = window_layout::WindowParts::build(app, &ctx);
     let window = parts.window.clone();
     crate::debug_width::install(&window);
     crate::debug_width::trace_overflow_warnings(&window);
-    let album_link_listbox = parts.content.album_link.listbox.clone();
     let bulk = &parts.content.bulk;
-    let bulk_share_link = bulk.share_link.clone();
-    let bulk_location = bulk.location.clone();
-    let bulk_date = bulk.date.clone();
-    let (bulk_delete, bulk_download, bulk_clear) = (
-        bulk.delete.clone(),
-        bulk.download.clone(),
-        bulk.clear.clone(),
-    );
+    let controls = WindowControls {
+        album_link_listbox: parts.content.album_link.listbox.clone(),
+        bulk_delete: bulk.delete.clone(),
+        bulk_download: bulk.download.clone(),
+        bulk_clear: bulk.clear.clone(),
+        bulk_share_link: bulk.share_link.clone(),
+        bulk_location: bulk.location.clone(),
+        bulk_date: bulk.date.clone(),
+    };
     let ui = Rc::new(LibraryWindowUi::from_parts(ctx, app, parts));
+    connect_window_controls(&ui, controls);
+    install_close_handler(&ui, &window);
+    (ui, window)
+}
 
+struct WindowControls {
+    album_link_listbox: gtk::ListBox,
+    bulk_delete: gtk::Button,
+    bulk_download: gtk::Button,
+    bulk_clear: gtk::Button,
+    bulk_share_link: gtk::Button,
+    bulk_location: gtk::Button,
+    bulk_date: gtk::Button,
+}
+
+fn connect_window_controls(ui: &Rc<LibraryWindowUi>, controls: WindowControls) {
     connect_menus(ui.clone());
-    connect_album_link_row(ui.clone(), album_link_listbox);
+    connect_album_link_row(ui.clone(), controls.album_link_listbox);
     connect_select_mode(ui.clone(), ui.select_toggle.clone());
-    connect_bulk_actions(ui.clone(), bulk_delete, bulk_download, bulk_clear);
-    actions::connect_bulk_share_link(ui.clone(), &bulk_share_link);
+    connect_bulk_actions(
+        ui.clone(),
+        controls.bulk_delete,
+        controls.bulk_download,
+        controls.bulk_clear,
+    );
+    actions::connect_bulk_share_link(ui.clone(), &controls.bulk_share_link);
     actions::connect_bulk_archive(ui.clone());
-    actions::connect_bulk_location(ui.clone(), &bulk_location);
-    actions::connect_bulk_date(ui.clone(), &bulk_date);
+    actions::connect_bulk_location(ui.clone(), &controls.bulk_location);
+    actions::connect_bulk_date(ui.clone(), &controls.bulk_date);
     actions::connect_bulk_add_to_album(ui.clone());
     actions::connect_bulk_remove_from_album(ui.clone());
     trash_view::connect_trash_controls(ui.clone());
@@ -212,25 +252,24 @@ pub fn build_library_window(app: &libadwaita::Application, ctx: Arc<AppContext>)
     tags_view::connect_tags_view(ui.clone());
     sharing_view::connect_sharing_view(ui.clone());
     shared_links_view::connect_shared_links_view(ui.clone());
-    map::connect_map_view(&ui);
-    timeline::connect(&ui);
-    bottom_nav::connect_bottom_nav(&ui);
+    map::connect_map_view(ui);
+    timeline::connect(ui);
+    bottom_nav::connect_bottom_nav(ui);
     connect_sidebar_handlers(ui.clone());
     connect_controls(ui.clone());
     connect_grid_handlers(ui.clone());
     connect_search_view(ui.clone());
     connect_lightweight_filters(ui.clone());
     connect_drop_target(ui.clone());
+}
 
+fn install_close_handler(ui: &Rc<LibraryWindowUi>, window: &libadwaita::ApplicationWindow) {
     let close_ctx = ui.ctx.clone();
     window.connect_close_request(move |_| {
         close_ctx.thumbnail_cache.clear_memory();
         glib::timeout_add_seconds_local_once(3, release_freed_memory);
         glib::Propagation::Proceed
     });
-
-    bootstrap_window(ui);
-    window.present();
 }
 
 #[cfg(target_env = "gnu")]
@@ -362,286 +401,6 @@ fn build_drop_overlay(content: gtk::Box) -> (gtk::Overlay, gtk::Revealer) {
 }
 
 /// Wire the lightweight filter entries embedded in Albums and Explore views.
-fn connect_lightweight_filters(ui: Rc<LibraryWindowUi>) {
-    // Albums: live-filter tiles as the user types.
-    ui.albums.filter_entry.connect_search_changed(clone!(
-        #[strong]
-        ui,
-        move |entry| {
-            let query = entry.text().to_string();
-            albums_view::set_search_filter(&ui.albums, &query);
-        }
-    ));
-
-    // Explore: live-filter people tiles as the user types.
-    ui.explore.filter_entry.connect_search_changed(clone!(
-        #[strong]
-        ui,
-        move |entry| {
-            let query = entry.text().to_string();
-            explore_view::set_people_search(&ui.explore, &query);
-        }
-    ));
-}
-
-/// Wire the dedicated search view's interactive handlers.
-fn connect_search_view(ui: Rc<LibraryWindowUi>) {
-    // Clear button resets all fields.
-    ui.search_view.clear_button.connect_clicked(clone!(
-        #[strong]
-        ui,
-        move |_| {
-            search_view::clear_all_filters(&ui.search_view);
-        }
-    ));
-
-    ui.search_view.panel_clear.connect_clicked(clone!(
-        #[strong]
-        ui,
-        move |_| search_view::clear_filter_rows(&ui.search_view)
-    ));
-    ui.search_view.panel_search.connect_clicked(clone!(
-        #[strong]
-        ui,
-        move |_| {
-            if ui.filters_split.is_collapsed() {
-                ui.search_view.filters_toggle.set_active(false);
-            }
-            dispatch_search_from_view(&ui);
-        }
-    ));
-    ui.search_view.filters_toggle.connect_toggled(clone!(
-        #[strong]
-        ui,
-        move |toggle| {
-            if !toggle.is_active() {
-                search_view::refresh_filter_count(&ui.search_view);
-            }
-        }
-    ));
-
-    // Search button (or Enter in the entry) dispatches the search.
-    let do_search = {
-        let ui = ui.clone();
-        move || {
-            dispatch_search_from_view(&ui);
-        }
-    };
-
-    let do_search_btn = do_search.clone();
-    ui.search_view.search_button.connect_clicked(clone!(
-        #[strong]
-        ui,
-        move |_| {
-            let _ = &ui;
-            do_search_btn();
-        }
-    ));
-
-    ui.search_view.search_entry.connect_activate(clone!(
-        #[strong]
-        ui,
-        move |_| {
-            let _ = &ui;
-            do_search();
-        }
-    ));
-}
-
-/// Read the search view widgets and dispatch the appropriate search source.
-fn dispatch_search_from_view(ui: &Rc<LibraryWindowUi>) {
-    search_view::refresh_filter_count(&ui.search_view);
-    let query = ui.search_view.search_entry.text().trim().to_string();
-    let filters = search_view::collect_filters(&ui.search_view);
-    let has_filters = filters != MetadataSearchFilters::default();
-    let mode = search_view::selected_mode(&ui.search_view); // 0=Smart, 1=Filename, 2=OCR
-
-    let source = build_search_source(mode, &query, has_filters, filters);
-    let Some(source) = source else {
-        return;
-    };
-
-    navigation::navigate_source(ui, source);
-}
-
-/// Decide which `LibrarySource` variant to use based on mode, query, and filters.
-fn build_search_source(
-    mode: u32,
-    query: &str,
-    has_filters: bool,
-    filters: MetadataSearchFilters,
-) -> Option<LibrarySource> {
-    if query.is_empty() && !has_filters {
-        return None;
-    }
-
-    match mode {
-        // Smart Search
-        0 => {
-            if query.is_empty() {
-                // Filters only -> metadata search
-                Some(LibrarySource::AdvancedSearch {
-                    filters: Box::new(filters),
-                })
-            } else {
-                Some(LibrarySource::SmartSearch {
-                    query: query.to_string(),
-                })
-            }
-        }
-        // Filename
-        1 => {
-            let mut f = filters;
-            if !query.is_empty() {
-                f.original_file_name = Some(query.to_string());
-            }
-            Some(LibrarySource::AdvancedSearch {
-                filters: Box::new(f),
-            })
-        }
-        // OCR
-        2 => {
-            let mut f = filters;
-            if !query.is_empty() {
-                f.ocr = Some(query.to_string());
-            }
-            Some(LibrarySource::AdvancedSearch {
-                filters: Box::new(f),
-            })
-        }
-        _ => None,
-    }
-}
-
-/// Attach a `DropTarget` to the library window for drag-and-drop file uploads.
-fn connect_drop_target(ui: Rc<LibraryWindowUi>) {
-    let drop_target = gtk::DropTarget::new(
-        gtk::gdk::FileList::static_type(),
-        gtk::gdk::DragAction::COPY,
-    );
-
-    let ui_enter = ui.clone();
-    drop_target.connect_enter(move |target, _x, _y| {
-        // Reject internal drags (from our own DragSource).
-        if target.current_drop().is_some_and(|d| d.drag().is_some()) {
-            return gtk::gdk::DragAction::empty();
-        }
-        ui_enter.drop_overlay.set_reveal_child(true);
-        gtk::gdk::DragAction::COPY
-    });
-
-    let ui_leave = ui.clone();
-    drop_target.connect_leave(move |_target| {
-        ui_leave.drop_overlay.set_reveal_child(false);
-    });
-
-    let ui_drop = ui.clone();
-    drop_target.connect_drop(move |target, value, _x, _y| {
-        ui_drop.drop_overlay.set_reveal_child(false);
-
-        // Reject internal drags.
-        if target.current_drop().is_some_and(|d| d.drag().is_some()) {
-            return false;
-        }
-
-        handle_drop(&ui_drop, value)
-    });
-
-    ui.window.add_controller(drop_target);
-}
-
-fn handle_drop(ui: &LibraryWindowUi, value: &gtk::glib::Value) -> bool {
-    let file_list = match value.get::<gtk::gdk::FileList>() {
-        Ok(fl) => fl,
-        Err(_) => return false,
-    };
-
-    let paths: Vec<std::path::PathBuf> = file_list
-        .files()
-        .iter()
-        .filter_map(gtk::gio::prelude::FileExt::path)
-        .filter(|p| crate::media_kinds::is_supported_path(p))
-        .collect();
-
-    if paths.is_empty() {
-        show_unsupported_drop_toast(ui);
-        return true;
-    }
-
-    let album = match ui.ctx.library_state.lock().source.clone() {
-        LibrarySource::Album { id, name }
-        | LibrarySource::AlbumLocal { id, name }
-        | LibrarySource::AlbumUnified { id, name } => Some((id, name)),
-        _ => None,
-    };
-
-    if let Some(album) = album {
-        handle_album_drop_upload(ui, album, paths);
-    } else {
-        handle_library_drop_upload(ui, paths);
-    }
-
-    true
-}
-
-fn show_unsupported_drop_toast(ui: &LibraryWindowUi) {
-    let toast = libadwaita::Toast::new("No supported media files in drop");
-    if let Some(overlay) = ui
-        .window
-        .content()
-        .and_then(|w| w.first_child())
-        .and_downcast::<libadwaita::ToastOverlay>()
-    {
-        overlay.add_toast(toast);
-    } else {
-        log::info!("No supported media files in drop");
-    }
-}
-
-fn handle_album_drop_upload(
-    ui: &LibraryWindowUi,
-    album: (String, String),
-    paths: Vec<std::path::PathBuf>,
-) {
-    let count = paths.len();
-    upload_picker::spawn_enqueue_with_callback(
-        ui.ctx.clone(),
-        Some(album.clone()),
-        paths,
-        move |queued, _skipped| {
-            log::info!(
-                "Drop upload to album '{}': queued {}/{} file(s)",
-                album.1,
-                queued,
-                count
-            );
-        },
-    );
-}
-
-fn handle_library_drop_upload(ui: &LibraryWindowUi, paths: Vec<std::path::PathBuf>) {
-    let count = paths.len();
-    let ctx_for_album = ui.ctx.clone();
-    let window_for_album = ui.window.clone();
-    let paths_for_album = paths.clone();
-
-    upload_picker::spawn_enqueue_with_callback(
-        ui.ctx.clone(),
-        None,
-        paths,
-        move |queued, _skipped| {
-            log::info!(
-                "Drop upload to library: queued {}/{} file(s)",
-                queued,
-                count
-            );
-            if queued > 0 {
-                staging_view::show_album_picker(window_for_album, ctx_for_album, paths_for_album);
-            }
-        },
-    );
-}
-
 fn stop_timers_on_close(window: &libadwaita::ApplicationWindow, timers: Vec<glib::SourceId>) {
     let timers = RefCell::new(timers);
     window.connect_close_request(move |_| {
@@ -685,8 +444,8 @@ fn spawn_server_ping_loop(ui: Rc<LibraryWindowUi>) -> glib::SourceId {
 fn spawn_transfer_poll_loop(ui: Rc<LibraryWindowUi>) -> glib::SourceId {
     glib::timeout_add_local(std::time::Duration::from_millis(250), move || {
         let completed_batches = ui.ctx.state.lock().completed_upload_batches;
-        if completed_batches != ui.last_seen_upload_batch.get() {
-            ui.last_seen_upload_batch.set(completed_batches);
+        if completed_batches != ui.interaction.last_seen_upload_batch.get() {
+            ui.interaction.last_seen_upload_batch.set(completed_batches);
             refresh_library_after_mutation(ui.clone(), true);
         }
         update_transfer_ui(&ui);
@@ -716,614 +475,6 @@ async fn ensure_current_user_id(ctx: &AppContext) -> Option<String> {
             None
         }
     }
-}
-
-/// Connect action handlers to the album creation widgets.
-fn connect_albums_create(ui: Rc<LibraryWindowUi>) {
-    ui.albums.create_button.connect_clicked(clone!(
-        #[strong]
-        ui,
-        move |_| prompt_create_album(ui.clone())
-    ));
-}
-
-/// Show a popup modal dialog prompting the user to name and create a new album.
-fn prompt_create_album(ui: Rc<LibraryWindowUi>) {
-    let dialog = libadwaita::AlertDialog::builder()
-        .heading("Create album")
-        .body("Choose a name for the new album.")
-        .build();
-    let entry = gtk::Entry::builder()
-        .placeholder_text("Album name")
-        .activates_default(true)
-        .build();
-    dialog.set_extra_child(Some(&entry));
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("create", "Create");
-    dialog.set_response_appearance("create", libadwaita::ResponseAppearance::Suggested);
-    dialog.set_default_response(Some("create"));
-    dialog.set_close_response("cancel");
-
-    let ui_for_choice = ui.clone();
-    let entry_for_choice = entry.clone();
-    dialog.connect_response(None, move |dlg, response| {
-        if response != "create" {
-            return;
-        }
-        let name = entry_for_choice.text().to_string();
-        if name.trim().is_empty() {
-            return;
-        }
-        let ui = ui_for_choice.clone();
-        glib::MainContext::default().spawn_local(async move {
-            match ui.ctx.api_client.create_album(name.trim()).await {
-                Ok(_) => {
-                    refresh_library_after_mutation(ui.clone(), false);
-                }
-                Err(err) => log::error!("Create album failed: {}", err),
-            }
-        });
-        dlg.close();
-    });
-    dialog.present(Some(&ui.window));
-}
-
-/// Asynchronously fetch the latest albums from the server and redraw the album views.
-///
-/// Late-arriving fetches must not hijack the stack: if the user navigated to
-/// another tab while we were waiting on the network, we still bind the data
-/// (so the grid is current when they come back) but we do *not* force the
-/// stack child to "albums" or "error".
-fn refresh_albums_view(ui: Rc<LibraryWindowUi>) {
-    glib::MainContext::default().spawn_local(async move {
-        // Albums are split into yours and shared-with-you by owner, so the id must be known.
-        ensure_current_user_id(&ui.ctx).await;
-        match ui.ctx.api_client.fetch_library_albums().await {
-            Ok(albums) => {
-                let on_click = album_click_handler(ui.clone());
-                populate_albums(&ui.albums, ui.ctx.clone(), albums, on_click);
-                if on_albums_page(&ui) {
-                    ui.content_stack.set_visible_child_name("albums");
-                }
-            }
-            Err(err) => {
-                log::warn!("Albums fetch failed: {}", err);
-                if !ui.albums.populated.get() && on_albums_page(&ui) {
-                    ui.error_label
-                        .set_label(&format!("Could not load albums: {}", err));
-                    ui.content_stack.set_visible_child_name("error");
-                }
-            }
-        }
-    });
-}
-
-fn on_albums_page(ui: &LibraryWindowUi) -> bool {
-    matches!(
-        navigation::current(ui),
-        Location::Page(LibraryPage::Albums { .. })
-    )
-}
-
-fn album_click_handler(ui: Rc<LibraryWindowUi>) -> AlbumClick {
-    Rc::new(move |id: &str, name: String| {
-        navigation::navigate_source(
-            &ui,
-            LibrarySource::Album {
-                id: id.to_string(),
-                name,
-            },
-        );
-    })
-}
-
-/// Apply header control layout adjustments when switching view modes.
-/// Refresh the search form's Tag dropdown from the server, then select `select` if given.
-fn refresh_search_tags(ui: Rc<LibraryWindowUi>, select: Option<String>) {
-    glib::MainContext::default().spawn_local(async move {
-        match ui.ctx.api_client.fetch_tags().await {
-            Ok(tags) => {
-                search_view::set_available_tags(&ui.search_view, &tags);
-                if let Some(tag_id) = select {
-                    search_view::select_tag(&ui.search_view, &tag_id);
-                }
-            }
-            // Tags are optional (`tag.read`); the dropdown just stays at "Any".
-            Err(err) => log::debug!("Could not load tags for search: {}", err),
-        }
-    });
-}
-
-fn search_by_tag(ui: Rc<LibraryWindowUi>, tag: Tag) {
-    navigation::navigate_source(
-        &ui,
-        LibrarySource::Tag {
-            id: tag.id,
-            name: tag.value,
-        },
-    );
-}
-
-fn apply_source_ui_state(ui: &LibraryWindowUi, source: &LibrarySource) {
-    let is_local = matches!(
-        source,
-        LibrarySource::LocalAll
-            | LibrarySource::LocalSearch { .. }
-            | LibrarySource::AlbumLocal { .. }
-    );
-    let is_unified = matches!(
-        source,
-        LibrarySource::Unified
-            | LibrarySource::UnifiedSearch { .. }
-            | LibrarySource::AlbumUnified { .. }
-    );
-    let in_album = matches!(
-        source,
-        LibrarySource::Album { .. }
-            | LibrarySource::AlbumLocal { .. }
-            | LibrarySource::AlbumUnified { .. }
-    );
-
-    // Source-mode (Remote/Local/Unified) only relevant inside an album.
-    ui.source_revealer.set_reveal_child(in_album);
-    trash_view::set_trash_mode(ui, matches!(source, LibrarySource::Trash));
-    archive::sync_bulk_button(&ui.bulk_archive, source);
-
-    if in_album {
-        ui.upload_button.set_tooltip_text(Some("Upload to album"));
-    } else {
-        ui.upload_button.set_tooltip_text(Some("Upload to library"));
-    }
-
-    // Keep source dropdown visually consistent with the active source so
-    // sidebar selections don't leave it showing the wrong tab.
-    let target = if is_local {
-        1
-    } else if is_unified {
-        2
-    } else {
-        0
-    };
-    if ui.source_mode.selected() != target {
-        ui.source_mode_suppressed.set(true);
-        ui.source_mode.set_selected(target);
-        ui.source_mode_suppressed.set(false);
-    }
-
-    refresh_album_link_row(ui, source);
-    album_assets::sync_bulk_remove(ui);
-}
-
-/// Retrieve albums from the API and update the side navigation sidebar entries.
-fn load_albums(ui: Rc<LibraryWindowUi>) {
-    glib::MainContext::default().spawn_local(clone!(
-        #[strong]
-        ui,
-        async move {
-            match ui.ctx.api_client.fetch_library_albums().await {
-                Ok(albums) => {
-                    ui.ctx.library_state.lock().load_albums(albums);
-                    reload_sidebar(&ui);
-                }
-                Err(err) => {
-                    // Sidebar-list refresh: never hijack the user's current
-                    // tab with an error page just because the albums list
-                    // couldn't reload. Only surface the error view when the
-                    // user is actively waiting on something.
-                    log::warn!("Albums sidebar refresh failed: {}", err);
-                    if ui.content_stack.visible_child_name().as_deref() == Some("loading") {
-                        ui.error_label
-                            .set_label(&format!("Could not load albums: {}", err));
-                        ui.content_stack.set_visible_child_name("error");
-                    }
-                }
-            }
-        }
-    ));
-}
-
-/// Fetch and populate active server version details and stats into the UI.
-fn load_status(ui: Rc<LibraryWindowUi>) {
-    glib::MainContext::default().spawn_local(clone!(
-        #[strong]
-        ui,
-        async move {
-            let stats = ui.ctx.api_client.fetch_server_stats().await.ok();
-            let about = ui.ctx.api_client.fetch_server_about().await.ok();
-            let route = ui.ctx.api_client.active_route_label().await;
-
-            {
-                let mut state = ui.ctx.library_state.lock();
-                state.set_status(stats, about);
-            }
-            update_footer(&ui, route);
-            if matches!(
-                navigation::current(&ui),
-                Location::Source(LibrarySource::AllAssets | LibrarySource::Unified)
-            ) {
-                source_header::refresh(&ui);
-            }
-        }
-    ));
-}
-
-/// Load smart/metadata sections onto the Explore dashboard view.
-///
-/// Switches to the Explore stack child immediately so the user sees the
-/// section headers + per-section spinners while data is in flight. Each of
-/// the three fetches runs as an independent task, so a slow endpoint never
-/// blocks the others — first contentful paint happens as soon as the
-/// fastest section returns.
-fn load_explore_landing(ui: Rc<LibraryWindowUi>) {
-    if ui.explore.populated.get() {
-        log::debug!("Explore: populated=true, reusing cached widgets");
-        ui.content_stack.set_visible_child_name("explore");
-        return;
-    }
-    ui.explore.populated.set(true);
-    explore_view::wire_people_filter(&ui.explore, ui.ctx.clone(), || {});
-    explore_view::show_loading(&ui.explore);
-    ui.content_stack.set_visible_child_name("explore");
-
-    let sections = ui.explore.sections.get();
-    if sections.people {
-        load_explore_people(ui.clone());
-    }
-    // Fetch places (slow paginated scan) only if not cached.
-    if sections.places && explore_view::has_cached_places(&ui.explore) {
-        log::debug!("Explore: rendering places from cache");
-        explore_view::render_cached_places(&ui.explore, ui.ctx.clone());
-    } else if sections.places {
-        log::debug!("Explore: places cache empty, fetching from server");
-        load_explore_places(ui.clone());
-    }
-    load_explore_sections(ui);
-}
-
-/// The fetched value, or its default after telling the user if the API key lacks permission.
-fn unwrap_or_report_permission<T: Default>(ui: &LibraryWindowUi, result: Result<T, String>) -> T {
-    if let Err(e) = &result
-        && (e.contains("HTTP 401") || e.contains("HTTP 403"))
-    {
-        show_library_permission_error(&ui.window);
-    }
-    result.unwrap_or_default()
-}
-
-fn load_explore_people(ui: Rc<LibraryWindowUi>) {
-    glib::MainContext::default().spawn_local(async move {
-        let people = unwrap_or_report_permission(&ui, ui.ctx.api_client.fetch_people(false).await);
-        let click_ui = ui.clone();
-        explore_view::populate_people(&ui.explore, ui.ctx.clone(), people, move |id, name| {
-            navigation::navigate_source(&click_ui, LibrarySource::Person { id, name });
-        });
-    });
-}
-
-fn load_explore_places(ui: Rc<LibraryWindowUi>) {
-    glib::MainContext::default().spawn_local(async move {
-        let places = unwrap_or_report_permission(&ui, ui.ctx.api_client.fetch_all_places().await);
-        let click_ui = ui.clone();
-        explore_view::populate_places(
-            &ui.explore,
-            ui.ctx.clone(),
-            places,
-            move |_kind, value, _asset_id| {
-                navigation::navigate_source(&click_ui, LibrarySource::Place { city: value });
-            },
-        );
-    });
-}
-
-fn load_explore_sections(ui: Rc<LibraryWindowUi>) {
-    glib::MainContext::default().spawn_local(async move {
-        let sections = unwrap_or_report_permission(&ui, ui.ctx.api_client.fetch_explore().await);
-        let click_ui = ui.clone();
-        explore_view::populate_explore(
-            &ui.explore,
-            ui.ctx.clone(),
-            sections,
-            move |kind, value, asset_id| {
-                if kind == "recent" {
-                    open_asset_in_lightbox(click_ui.clone(), asset_id);
-                    return;
-                }
-                let source = if kind == "place" {
-                    LibrarySource::Place { city: value }
-                } else {
-                    LibrarySource::Thing { query: value }
-                };
-                navigation::navigate_source(&click_ui, source);
-            },
-        );
-    });
-}
-
-/// Fetch a single asset by ID and open it in lightbox without leaving explore.
-///
-/// Temporarily loads the asset into the grid model so the lightbox can display
-/// it, then restores the previous library state when the lightbox page is popped.
-fn open_asset_in_lightbox(ui: Rc<LibraryWindowUi>, asset_id: String) {
-    glib::MainContext::default().spawn_local(clone!(
-        #[strong]
-        ui,
-        async move {
-            let asset = match ui.ctx.api_client.fetch_asset_by_id(&asset_id).await {
-                Ok(a) => a,
-                Err(e) => {
-                    log::warn!("Failed to fetch asset {} for lightbox: {}", asset_id, e);
-                    return;
-                }
-            };
-
-            // Snapshot the current state so we can restore it after lightbox.
-            let prev_source = ui.ctx.library_state.lock().source.clone();
-
-            // Temporarily load just this asset so open_lightbox can read it.
-            {
-                let mut state = ui.ctx.library_state.lock();
-                let generation = state.generation;
-                state.replace_assets_with_more(generation, vec![asset], false);
-                ui.grid
-                    .model
-                    .reset(&ui.ctx, &state.assets, &state.sort_mode);
-            }
-
-            // Open lightbox at position 0 (the single asset).
-            open_lightbox(ui.clone(), 0);
-
-            // After the lightbox page is popped, restore the explore state.
-            let restore_ui = ui.clone();
-            let handler_id = Rc::new(RefCell::new(None::<glib::SignalHandlerId>));
-            let handler_id_clone = handler_id.clone();
-            let id = ui.nav.connect_popped(move |nav, _page| {
-                let request = restore_ui
-                    .ctx
-                    .library_state
-                    .lock()
-                    .switch_source(prev_source.clone());
-                load_source_page(restore_ui.clone(), request, false);
-                // Disconnect this handler so it only fires once.
-                if let Some(id) = handler_id_clone.borrow_mut().take() {
-                    nav.disconnect(id);
-                }
-            });
-            *handler_id.borrow_mut() = Some(id);
-        }
-    ));
-}
-
-/// Load a paginated subset of assets for the current source.
-fn load_source_page(ui: Rc<LibraryWindowUi>, request: (u64, LibrarySource, u32), append: bool) {
-    if matches!(request.1, LibrarySource::Explore) {
-        load_explore_landing(ui);
-        return;
-    }
-    if !append && !navigation::on_page(&ui) {
-        source_header::set_status(&ui, "loading", None);
-        ui.content_stack.set_visible_child_name("grid");
-    }
-    if !append {
-        let sort = ui.ctx.library_state.lock().sort_mode.clone();
-        if timeline::eligible(&request.1, &sort) {
-            timeline::open(&ui, request, None);
-            return;
-        }
-        timeline::close(&ui);
-    }
-    load_pages(ui, request, append);
-}
-
-fn load_pages(ui: Rc<LibraryWindowUi>, request: (u64, LibrarySource, u32), append: bool) {
-    log::debug!("Loading library source {:?} page={}", request.1, request.2);
-    glib::MainContext::default().spawn_local(clone!(
-        #[strong]
-        ui,
-        async move {
-            let (generation, source, page) = request;
-            let order = ui.ctx.library_state.lock().sort_mode.server_order();
-            let result = fetch_source_page(&ui, source, page, order).await;
-            apply_page_result(&ui, generation, append, result);
-        }
-    ));
-}
-
-/// One page of assets plus whether more pages follow.
-type PageResult = Result<(Vec<LibraryAsset>, bool), String>;
-
-async fn fetch_source_page(
-    ui: &Rc<LibraryWindowUi>,
-    source: LibrarySource,
-    page: u32,
-    order: Option<SortOrder>,
-) -> PageResult {
-    match source {
-        LibrarySource::LocalAll
-        | LibrarySource::LocalSearch { .. }
-        | LibrarySource::AlbumLocal { .. } => fetch_local_page(ui, source, page, order).await,
-        LibrarySource::Unified
-        | LibrarySource::UnifiedSearch { .. }
-        | LibrarySource::AlbumUnified { .. } => fetch_unified_page(ui, source, page, order).await,
-        remote => fetch_remote_page(&ui.ctx.api_client, remote, page, order).await,
-    }
-}
-
-async fn fetch_remote_page(
-    api: &crate::api_client::ImmichApiClient,
-    source: LibrarySource,
-    page: u32,
-    order: Option<SortOrder>,
-) -> PageResult {
-    if let Some(filters) = remote_filters(&source, order) {
-        return api
-            .search_metadata_with_filters(&filters, page, PAGE_SIZE)
-            .await;
-    }
-    match source {
-        LibrarySource::Folder { path } => {
-            if page > 1 {
-                return Ok((Vec::new(), false));
-            }
-            let mut assets = api.fetch_folder_assets(&path).await?;
-            folders_view::sort_by_date(&mut assets, order);
-            Ok((assets, false))
-        }
-        LibrarySource::Album { id, .. } => {
-            api.fetch_album_assets(&id, page, PAGE_SIZE, order).await
-        }
-        LibrarySource::SmartSearch { query } | LibrarySource::Thing { query } => {
-            api.search_smart(&query, page, PAGE_SIZE).await
-        }
-        LibrarySource::OcrSearch { query } => api.search_ocr(&query, page, PAGE_SIZE, order).await,
-        LibrarySource::Partner { id, .. } => api.fetch_user_month_page(&id, page).await,
-        LibrarySource::MetadataSearch { query } => {
-            api.search_metadata(&query, page, PAGE_SIZE, order).await
-        }
-        LibrarySource::MapArea { ids, .. } => {
-            let (page_ids, more) = ids.page(page, MAP_AREA_PAGE_SIZE);
-            let assets = api.fetch_assets_by_ids(page_ids).await?;
-            Ok((assets, more))
-        }
-        other => unreachable!("{other:?} is not a remote page source"),
-    }
-}
-
-fn remote_filters(
-    source: &LibrarySource,
-    order: Option<SortOrder>,
-) -> Option<MetadataSearchFilters> {
-    let base = match source {
-        LibrarySource::AllAssets => MetadataSearchFilters {
-            visibility: Some("timeline".to_string()),
-            ..MetadataSearchFilters::default()
-        },
-        LibrarySource::Archive => MetadataSearchFilters {
-            visibility: Some("archive".to_string()),
-            ..MetadataSearchFilters::default()
-        },
-        LibrarySource::Favorites => MetadataSearchFilters {
-            is_favorite: Some(true),
-            ..MetadataSearchFilters::default()
-        },
-        LibrarySource::Trash => MetadataSearchFilters::trashed(),
-        LibrarySource::Person { id, .. } => MetadataSearchFilters {
-            person_ids: Some(vec![id.clone()]),
-            ..MetadataSearchFilters::default()
-        },
-        LibrarySource::Tag { id, .. } => MetadataSearchFilters {
-            tag_ids: Some(vec![id.clone()]),
-            ..MetadataSearchFilters::default()
-        },
-        LibrarySource::Place { city } => MetadataSearchFilters {
-            city: Some(city.clone()),
-            ..MetadataSearchFilters::default()
-        },
-        LibrarySource::AdvancedSearch { filters } => (**filters).clone(),
-        _ => return None,
-    };
-    Some(MetadataSearchFilters { order, ..base })
-}
-
-/// Local enumeration is bounded, so local sources return everything as one page.
-async fn fetch_local_page(
-    ui: &Rc<LibraryWindowUi>,
-    source: LibrarySource,
-    page: u32,
-    order: Option<SortOrder>,
-) -> PageResult {
-    if page > 1 {
-        return Ok((Vec::new(), false));
-    }
-    let locals = match source {
-        LibrarySource::LocalAll => enumerate_local(ui.ctx.clone()).await,
-        LibrarySource::LocalSearch { query } => {
-            filter_by_filename(enumerate_local(ui.ctx.clone()).await, &query)
-        }
-        LibrarySource::AlbumLocal { name, .. } => match linked_entry_path_for_album(ui, &name) {
-            Some(path) => enumerate_local_for_entry(ui.ctx.clone(), path).await,
-            None => Vec::new(),
-        },
-        other => unreachable!("{other:?} is not a local page source"),
-    };
-    let mut assets: Vec<LibraryAsset> = locals.into_iter().map(local_to_library_asset).collect();
-    if order == Some(SortOrder::Asc) {
-        assets.sort_by(|a, b| a.created_at.cmp(&b.created_at));
-    }
-    Ok((assets, false))
-}
-
-/// Remote assets overlayed with local sync state.
-async fn fetch_unified_page(
-    ui: &Rc<LibraryWindowUi>,
-    source: LibrarySource,
-    page: u32,
-    order: Option<SortOrder>,
-) -> PageResult {
-    let api = &ui.ctx.api_client;
-    match source {
-        LibrarySource::Unified => {
-            let remote = api
-                .search_metadata_with_filters(
-                    &remote_filters(&LibrarySource::AllAssets, order).unwrap_or_default(),
-                    page,
-                    PAGE_SIZE,
-                )
-                .await;
-            merge_unified_page(remote, page, ui, None).await
-        }
-        LibrarySource::UnifiedSearch { query } => {
-            let remote = api.search_metadata(&query, page, PAGE_SIZE, order).await;
-            merge_unified_page(remote, page, ui, Some(&query)).await
-        }
-        LibrarySource::AlbumUnified { id, name } => {
-            let remote = api.fetch_album_assets(&id, page, PAGE_SIZE, order).await;
-            merge_album_unified_page(remote, page, ui, &name).await
-        }
-        other => unreachable!("{other:?} is not a unified page source"),
-    }
-}
-
-fn apply_page_result(ui: &Rc<LibraryWindowUi>, generation: u64, append: bool, result: PageResult) {
-    let (items, has_more) = match result {
-        Ok(page) => page,
-        Err(err) => {
-            let current = {
-                let mut state = ui.ctx.library_state.lock();
-                state.mark_error(generation, err.clone());
-                state.generation == generation
-            };
-            if current && !append && !navigation::on_page(ui) {
-                let message = format!("Could not load library assets: {err}");
-                source_header::set_status(ui, "error", Some(&message));
-                ui.content_stack.set_visible_child_name("grid");
-            }
-            return;
-        }
-    };
-    {
-        let mut state = ui.ctx.library_state.lock();
-        let applied = if append {
-            state.append_assets_with_more(generation, items, has_more)
-        } else {
-            state.replace_assets_with_more(generation, items, has_more)
-        };
-        if !applied {
-            return;
-        }
-        if append {
-            ui.grid
-                .model
-                .extend(&ui.ctx, &state.assets, &state.sort_mode);
-        } else {
-            ui.grid
-                .model
-                .reset(&ui.ctx, &state.assets, &state.sort_mode);
-        }
-    }
-    // Lock is released before touching GTK widgets so that signal handlers
-    // triggered by the stack transition can safely re-acquire library_state.
-    sync_content_state(ui);
-    reload_sidebar(ui);
 }
 
 fn setup_album_drop_target(
@@ -1374,350 +525,4 @@ fn setup_album_drop_target(
         true
     });
     row.add_controller(row_drop);
-}
-
-fn build_album_sidebar_row(
-    ui: &Rc<LibraryWindowUi>,
-    album: &crate::api_client::LibraryAlbum,
-) -> gtk::ListBoxRow {
-    let subtitle = format!("{} asset(s)", album.asset_count);
-    let row: gtk::ListBoxRow = libadwaita::ActionRow::builder()
-        .title(&album.album_name)
-        .subtitle(&subtitle)
-        .title_lines(1)
-        .subtitle_lines(1)
-        .tooltip_text(format!("{}:{}", album.id, album.album_name))
-        .build()
-        .upcast();
-
-    // Per-row drop target: dragging files onto an album row uploads
-    // them directly into that album.
-    setup_album_drop_target(ui, &row, album.id.clone(), album.album_name.clone());
-
-    row
-}
-
-fn reload_sidebar(ui: &Rc<LibraryWindowUi>) {
-    album_assets::sync_bulk_remove(ui);
-    let albums = ui.ctx.library_state.lock().albums.clone();
-    sidebar::set_recent_albums(&ui.sidebar, &albums);
-    if sidebar::album_list_changed(&ui.sidebar, &albums) {
-        let had_focus = ui.sidebar.albums_list.focus_child().is_some();
-        ui.sidebar_suppressed.set(true);
-        while let Some(row) = ui.sidebar.albums_list.first_child() {
-            ui.sidebar.albums_list.remove(&row);
-        }
-        for album in &albums {
-            let row = build_album_sidebar_row(ui, album);
-            ui.sidebar.albums_list.append(&row);
-        }
-        ui.sidebar_suppressed.set(false);
-        navigation::sync_sidebar(ui);
-        if had_focus {
-            match ui.sidebar.albums_list.selected_row() {
-                Some(row) => row.grab_focus(),
-                None => ui.sidebar.fixed_lists[0].grab_focus(),
-            };
-        }
-        return;
-    }
-    navigation::sync_sidebar(ui);
-}
-
-/// Sync the visibility of the grid, loading, empty, and error page widgets.
-///
-/// The lock on `library_state` is released **before** calling
-/// `set_visible_child_name` because that GTK call triggers widget
-/// realization, factory binds, and signal handlers that may need to
-/// re-acquire the same lock.  Holding it across the call caused a
-/// parking_lot deadlock on first library open.
-fn sync_content_state(ui: &LibraryWindowUi) {
-    if navigation::on_page(ui) {
-        return;
-    }
-    let (status, error_msg, single_page_count) = {
-        let state = ui.ctx.library_state.lock();
-        let single_page = matches!(
-            state.source,
-            LibrarySource::Folder { .. }
-                | LibrarySource::LocalAll
-                | LibrarySource::LocalSearch { .. }
-        );
-        let count = (single_page && !state.has_more).then_some(state.assets.len());
-        match &state.load_state {
-            LibraryLoadState::Idle | LibraryLoadState::Loading => ("loading", None, None),
-            LibraryLoadState::Loaded => ("none", None, count),
-            LibraryLoadState::Empty => ("empty", None, count),
-            LibraryLoadState::Error(msg) => ("error", Some(msg.clone()), None),
-        }
-    };
-    source_header::set_status(ui, status, error_msg.as_deref());
-    if let Some(count) = single_page_count {
-        source_header::set_loaded_count(ui, count);
-    }
-    ui.content_stack.set_visible_child_name("grid");
-}
-
-/// Update the status sidebar rows with the current server route and statistics.
-fn update_footer(ui: &LibraryWindowUi, route: Option<String>) {
-    let (stats_text, about_text) = {
-        let state = ui.ctx.library_state.lock();
-        let stats = state
-            .status
-            .stats
-            .as_ref()
-            .map(|stats| format!("{} photos, {} videos", stats.images, stats.videos))
-            .unwrap_or_else(|| "Statistics unavailable".to_string());
-        let about = state
-            .status
-            .about
-            .as_ref()
-            .map(|about| format!("Immich {}", about.version))
-            .unwrap_or_else(|| "Version unavailable".to_string());
-        (stats, about)
-    };
-    let route_subtitle = route
-        .as_deref()
-        .map(|route| match route {
-            "LAN" => "Connected through LAN",
-            "WAN" => "Connected through WAN",
-            _ => "Connected through configured server",
-        })
-        .unwrap_or("Offline");
-    ui.sidebar.connection_row.set_subtitle(route_subtitle);
-    ui.sidebar
-        .server_row
-        .set_subtitle(&format!("{stats_text} | {about_text}"));
-}
-
-/// Synchronize the ongoing upload/download progress indicator bar and rate information text.
-fn update_transfer_ui(ui: &LibraryWindowUi) {
-    let transfer = {
-        let mut state = ui.ctx.state.lock();
-        if state.transfer.active
-            && state.transfer.active_uploads == 0
-            && state.transfer.active_downloads == 0
-        {
-            // Guard against sessions that were opened but never queued.
-            state.transfer.reset_runtime();
-        }
-        state.transfer.clone()
-    };
-    ui.transfer.indicator.set_visible(transfer.active);
-    if !transfer.active {
-        return;
-    }
-    let icon_name = match transfer.direction {
-        TransferDirection::Upload => "mimick-upload-symbolic",
-        TransferDirection::Download => "mimick-download-symbolic",
-    };
-    ui.transfer.icon.set_icon_name(Some(icon_name));
-    let detail = transfer
-        .active_item_label
-        .as_deref()
-        .unwrap_or(match transfer.direction {
-            TransferDirection::Upload => "queued asset",
-            TransferDirection::Download => "selected asset",
-        });
-    ui.transfer.indicator.set_tooltip_text(Some(detail));
-    match transfer.total_bytes {
-        Some(total) if total > 0 => {
-            let fraction = (transfer.current_bytes as f64 / total as f64).clamp(0.0, 1.0);
-            ui.transfer.progress.set_fraction(fraction);
-        }
-        _ => ui.transfer.progress.pulse(),
-    }
-}
-
-/// Construct a styled placeholder view containing an icon, header title, and description text.
-/// Centered Mimick-icon spinner used while library data is fetching. Shares
-/// the `mimick-loader-icon` animation with the lightbox image-load spinner.
-fn build_loading_view() -> gtk::Box {
-    let container = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(12)
-        .vexpand(true)
-        .hexpand(true)
-        .valign(gtk::Align::Center)
-        .halign(gtk::Align::Center)
-        .css_classes(vec!["mimick-empty".to_string()])
-        .build();
-    let icon = gtk::Image::builder()
-        .icon_name("dev.nicx.mimick")
-        .pixel_size(72)
-        .css_classes(["mimick-loader-icon"])
-        .build();
-    let title = gtk::Label::builder()
-        .label("Loading…")
-        .css_classes(vec!["mimick-empty-title".to_string()])
-        .build();
-    let subtitle = gtk::Label::builder()
-        .label("Fetching library data from the Immich server")
-        .wrap(true)
-        .wrap_mode(gtk::pango::WrapMode::WordChar)
-        .justify(gtk::Justification::Center)
-        .max_width_chars(28)
-        .css_classes(vec!["mimick-empty-subtitle".to_string()])
-        .build();
-    container.append(&icon);
-    container.append(&title);
-    container.append(&subtitle);
-    container
-}
-
-fn build_status_view(icon_name: &str, title: &str, subtitle: &str) -> gtk::Box {
-    let container = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(12)
-        .vexpand(true)
-        .hexpand(true)
-        .valign(gtk::Align::Center)
-        .halign(gtk::Align::Center)
-        .css_classes(vec!["mimick-empty".to_string()])
-        .build();
-    let icon = gtk::Image::builder()
-        .icon_name(icon_name)
-        .pixel_size(64)
-        .build();
-    icon.add_css_class("dim-label");
-    let title_label = gtk::Label::builder()
-        .label(title)
-        .wrap(true)
-        .wrap_mode(gtk::pango::WrapMode::WordChar)
-        .justify(gtk::Justification::Center)
-        .max_width_chars(28)
-        .css_classes(vec!["mimick-empty-title".to_string()])
-        .build();
-    let subtitle_label = gtk::Label::builder()
-        .label(subtitle)
-        .wrap(true)
-        .wrap_mode(gtk::pango::WrapMode::WordChar)
-        .justify(gtk::Justification::Center)
-        .max_width_chars(28)
-        .css_classes(vec!["mimick-empty-subtitle".to_string()])
-        .build();
-    container.append(&icon);
-    container.append(&title_label);
-    container.append(&subtitle_label);
-    container
-}
-
-/// Convert a Base64-encoded Immich checksum string to its standard hexadecimal representation.
-pub(super) fn immich_checksum_to_hex(b64: &str) -> Option<String> {
-    use base64::Engine as _;
-    let bytes = base64::engine::general_purpose::STANDARD.decode(b64).ok()?;
-    Some(bytes.iter().map(|b| format!("{:02x}", b)).collect())
-}
-
-/// Build a synthetic `LibraryAsset` from a physical local folder file.
-fn local_to_library_asset(local: LocalAsset) -> LibraryAsset {
-    LibraryAsset {
-        id: format!("{}{}", LOCAL_ID_PREFIX, local.path.display()),
-        filename: local.filename,
-        mime_type: local.mime,
-        created_at: local.created_at,
-        asset_type: local.asset_type.to_string(),
-        thumbhash: None,
-        width: None,
-        height: None,
-        checksum: None,
-        exif_info: None,
-        is_favorite: false,
-        visibility: String::new(),
-        is_edited: false,
-        owner_id: String::new(),
-        local_date_time: None,
-    }
-}
-
-/// Merge a page of remote API assets with local files that haven't been synchronized yet.
-async fn merge_unified_page(
-    remote: Result<(Vec<LibraryAsset>, bool), String>,
-    page: u32,
-    ui: &Rc<LibraryWindowUi>,
-    query: Option<&str>,
-) -> Result<(Vec<LibraryAsset>, bool), String> {
-    let (mut remote, has_more) = remote?;
-    if page > 1 {
-        return Ok((remote, has_more));
-    }
-
-    let mut locals = enumerate_local(ui.ctx.clone()).await;
-    if let Some(q) = query {
-        locals = filter_by_filename(locals, q);
-    }
-
-    let synced_paths: std::collections::HashSet<String> = {
-        remote
-            .iter()
-            .filter_map(|a| a.checksum.as_deref())
-            .filter_map(immich_checksum_to_hex)
-            .filter_map(|hex| ui.ctx.sync_index.local_path_for_checksum(&hex))
-            .collect()
-    };
-
-    let mut local_rows: Vec<LibraryAsset> = locals
-        .into_iter()
-        .filter(|l| !synced_paths.contains(&l.path.display().to_string()))
-        .map(local_to_library_asset)
-        .collect();
-
-    local_rows.append(&mut remote);
-    Ok((local_rows, has_more))
-}
-
-/// Return the path of the watch entry linked to `album_name`, if any.
-/// Find the local directory watch path mapped to the specified album.
-fn linked_entry_path_for_album(ui: &Rc<LibraryWindowUi>, album_name: &str) -> Option<String> {
-    let entries = ui.ctx.live_watch_paths.lock().clone();
-    crate::config::watch_entry_for_album(album_name, &entries).map(|e| e.path().to_string())
-}
-
-/// Album-scoped variant of `merge_unified_page`: takes the album's asset
-/// page from the remote API and overlays sync state from the album's
-/// linked local folder only — never from siblings.
-/// Merge a page of remote album assets with local folder files linked to the album.
-async fn merge_album_unified_page(
-    remote: Result<(Vec<LibraryAsset>, bool), String>,
-    page: u32,
-    ui: &Rc<LibraryWindowUi>,
-    album_name: &str,
-) -> Result<(Vec<LibraryAsset>, bool), String> {
-    let (mut remote, has_more) = remote?;
-    if page > 1 {
-        return Ok((remote, has_more));
-    }
-
-    let locals = match linked_entry_path_for_album(ui, album_name) {
-        Some(path) => enumerate_local_for_entry(ui.ctx.clone(), path).await,
-        None => Vec::new(),
-    };
-
-    let synced_paths: std::collections::HashSet<String> = {
-        remote
-            .iter()
-            .filter_map(|a| a.checksum.as_deref())
-            .filter_map(immich_checksum_to_hex)
-            .filter_map(|hex| ui.ctx.sync_index.local_path_for_checksum(&hex))
-            .collect()
-    };
-
-    let mut local_rows: Vec<LibraryAsset> = locals
-        .into_iter()
-        .filter(|l| !synced_paths.contains(&l.path.display().to_string()))
-        .map(local_to_library_asset)
-        .collect();
-
-    local_rows.append(&mut remote);
-    Ok((local_rows, has_more))
-}
-
-/// Helper to show a permissions error dialog for library views.
-fn show_library_permission_error(window: &libadwaita::ApplicationWindow) {
-    let dialog = libadwaita::AlertDialog::builder()
-        .heading("Missing API Permissions")
-        .body("Your API key is missing permissions required for the Library view. Please ensure the key has 'asset.read', 'asset.view', 'asset.download', and 'person.read' enabled.")
-        .build();
-    dialog.add_response("close", "Close");
-    dialog.present(Some(window));
 }

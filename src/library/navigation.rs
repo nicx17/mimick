@@ -189,7 +189,7 @@ pub(super) fn sync_sidebar(ui: &LibraryWindowUi) {
             SidebarTarget::Album(_) => "albums",
         },
     );
-    ui.sidebar_suppressed.set(true);
+    ui.interaction.sidebar_suppressed.set(true);
     match target {
         SidebarTarget::Fixed(key) => {
             super::sidebar::select_fixed(sidebar, key);
@@ -209,7 +209,7 @@ pub(super) fn sync_sidebar(ui: &LibraryWindowUi) {
             }
         },
     }
-    ui.sidebar_suppressed.set(false);
+    ui.interaction.sidebar_suppressed.set(false);
 }
 
 fn album_row(list: &gtk::ListBox, album_id: &str) -> Option<gtk::ListBoxRow> {
@@ -230,41 +230,49 @@ fn album_row(list: &gtk::ListBox, album_id: &str) -> Option<gtk::ListBoxRow> {
 }
 
 fn sidebar_target(location: &Location) -> SidebarTarget {
-    let key = match location {
-        Location::Page(page) => match page {
-            LibraryPage::Albums { shared_only: false } => "albums",
-            LibraryPage::Albums { shared_only: true } => "shared-albums",
-            LibraryPage::SharedLinks => "shared-links",
-            LibraryPage::People => "people",
-            LibraryPage::Tags { .. } => "tags",
-            LibraryPage::Folders { .. } => "folders",
-            LibraryPage::Sharing => "sharing",
-            LibraryPage::Search => "search",
-            LibraryPage::Map => "map",
-        },
-        Location::Source(source) => match source {
-            LibrarySource::Album { id, .. }
-            | LibrarySource::AlbumLocal { id, .. }
-            | LibrarySource::AlbumUnified { id, .. } => return SidebarTarget::Album(id.clone()),
-            LibrarySource::AllAssets | LibrarySource::Unified | LibrarySource::LocalAll => "photos",
-            LibrarySource::Explore | LibrarySource::Place { .. } | LibrarySource::Thing { .. } => {
-                "explore"
-            }
-            LibrarySource::Person { .. } => "people",
-            LibrarySource::Partner { .. } => "sharing",
-            LibrarySource::Tag { .. } => "tags",
-            LibrarySource::Folder { .. } => "folders",
-            LibrarySource::MapArea { .. } => "map",
-            LibrarySource::Favorites => "favorites",
-            LibrarySource::Archive => "archive",
-            LibrarySource::Trash => "trash",
-            LibrarySource::SmartSearch { .. }
-            | LibrarySource::MetadataSearch { .. }
-            | LibrarySource::OcrSearch { .. }
-            | LibrarySource::AdvancedSearch { .. }
-            | LibrarySource::LocalSearch { .. }
-            | LibrarySource::UnifiedSearch { .. } => "search",
-        },
+    match location {
+        Location::Page(page) => SidebarTarget::Fixed(page_key(page)),
+        Location::Source(source) => source_target(source),
+    }
+}
+
+fn page_key(page: &LibraryPage) -> &'static str {
+    match page {
+        LibraryPage::Albums { shared_only: false } => "albums",
+        LibraryPage::Albums { shared_only: true } => "shared-albums",
+        LibraryPage::SharedLinks => "shared-links",
+        LibraryPage::People => "people",
+        LibraryPage::Tags { .. } => "tags",
+        LibraryPage::Folders { .. } => "folders",
+        LibraryPage::Sharing => "sharing",
+        LibraryPage::Search => "search",
+        LibraryPage::Map => "map",
+    }
+}
+
+fn source_target(source: &LibrarySource) -> SidebarTarget {
+    let key = match source {
+        LibrarySource::Album { id, .. }
+        | LibrarySource::AlbumLocal { id, .. }
+        | LibrarySource::AlbumUnified { id, .. } => return SidebarTarget::Album(id.clone()),
+        LibrarySource::AllAssets | LibrarySource::Unified | LibrarySource::LocalAll => "photos",
+        LibrarySource::Explore | LibrarySource::Place { .. } | LibrarySource::Thing { .. } => {
+            "explore"
+        }
+        LibrarySource::Person { .. } => "people",
+        LibrarySource::Partner { .. } => "sharing",
+        LibrarySource::Tag { .. } => "tags",
+        LibrarySource::Folder { .. } => "folders",
+        LibrarySource::MapArea { .. } => "map",
+        LibrarySource::Favorites => "favorites",
+        LibrarySource::Archive => "archive",
+        LibrarySource::Trash => "trash",
+        LibrarySource::SmartSearch { .. }
+        | LibrarySource::MetadataSearch { .. }
+        | LibrarySource::OcrSearch { .. }
+        | LibrarySource::AdvancedSearch { .. }
+        | LibrarySource::LocalSearch { .. }
+        | LibrarySource::UnifiedSearch { .. } => "search",
     };
     SidebarTarget::Fixed(key)
 }

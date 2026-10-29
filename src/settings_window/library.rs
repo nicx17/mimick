@@ -25,6 +25,44 @@ fn group(page: &adw::PreferencesPage, title: &str) -> adw::PreferencesGroup {
 }
 
 pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidgets {
+    let (viewer, preview_full_row, grid_quality_row, date_headings_row) =
+        build_viewer_group(settings_page);
+    let (grid, border_width_row, border_color_btn) = build_appearance_group(settings_page);
+    let (raw, raw_full_decode_row, raw_cache_row) = build_raw_group(settings_page);
+    let (
+        storage,
+        disk_cache_row,
+        clear_cache_btn,
+        download_folder_row,
+        download_change_btn,
+        download_clear_btn,
+    ) = build_storage_group(settings_page);
+
+    LibraryWidgets {
+        library_groups: vec![viewer, grid, raw, storage],
+        preview_full_row,
+        grid_quality_row,
+        date_headings_row,
+        raw_full_decode_row,
+        raw_cache_row,
+        disk_cache_row,
+        clear_cache_btn,
+        download_folder_row,
+        download_change_btn,
+        download_clear_btn,
+        border_width_row,
+        border_color_btn,
+    }
+}
+
+fn build_viewer_group(
+    settings_page: &adw::PreferencesPage,
+) -> (
+    adw::PreferencesGroup,
+    adw::SwitchRow,
+    adw::ComboRow,
+    adw::ComboRow,
+) {
     let viewer = group(settings_page, "Library");
     let preview_full_row = adw::SwitchRow::builder()
         .title("Open Originals in Lightbox")
@@ -48,7 +86,17 @@ pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidge
         .model(&gtk::StringList::new(&["By Day", "By Month", "Off"]))
         .build();
     viewer.add(&date_headings_row);
+    (
+        viewer,
+        preview_full_row,
+        grid_quality_row,
+        date_headings_row,
+    )
+}
 
+fn build_appearance_group(
+    settings_page: &adw::PreferencesPage,
+) -> (adw::PreferencesGroup, adw::SpinRow, gtk::ColorDialogButton) {
     let grid = group(settings_page, "Grid Appearance");
     let border_width_row = adw::SpinRow::builder()
         .title("Border Width")
@@ -65,7 +113,12 @@ pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidge
     border_color_row.add_suffix(&border_color_btn);
     border_color_row.set_activatable_widget(Some(&border_color_btn));
     grid.add(&border_color_row);
+    (grid, border_width_row, border_color_btn)
+}
 
+fn build_raw_group(
+    settings_page: &adw::PreferencesPage,
+) -> (adw::PreferencesGroup, adw::SwitchRow, adw::SwitchRow) {
     let raw = group(settings_page, "RAW Files");
     let raw_full_decode_row = adw::SwitchRow::builder()
         .title("Full RAW Decoding")
@@ -77,7 +130,19 @@ pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidge
         .subtitle("Reopen instantly, using disk space.")
         .build();
     raw.add(&raw_cache_row);
+    (raw, raw_full_decode_row, raw_cache_row)
+}
 
+fn build_storage_group(
+    settings_page: &adw::PreferencesPage,
+) -> (
+    adw::PreferencesGroup,
+    adw::SpinRow,
+    gtk::Button,
+    adw::ActionRow,
+    gtk::Button,
+    gtk::Button,
+) {
     let storage = group(settings_page, "Storage");
     let disk_cache_row = adw::SpinRow::builder()
         .title("Cache Limit (MB)")
@@ -116,22 +181,14 @@ pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidge
     download_folder_row.add_suffix(&download_clear_btn);
     download_folder_row.add_suffix(&download_change_btn);
     storage.add(&download_folder_row);
-
-    LibraryWidgets {
-        library_groups: vec![viewer, grid, raw, storage],
-        preview_full_row,
-        grid_quality_row,
-        date_headings_row,
-        raw_full_decode_row,
-        raw_cache_row,
+    (
+        storage,
         disk_cache_row,
         clear_cache_btn,
         download_folder_row,
         download_change_btn,
         download_clear_btn,
-        border_width_row,
-        border_color_btn,
-    }
+    )
 }
 
 /// "Using 1.2 GB of 2.0 GB" for the cache limit row.

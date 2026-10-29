@@ -94,7 +94,7 @@ pub(super) fn is_trash_active(ui: &LibraryWindowUi) -> bool {
 
 /// Show the trash bar and trash selection actions only while the Trash source is active.
 pub(super) fn set_trash_mode(ui: &LibraryWindowUi, active: bool) {
-    let trash = &ui.trash;
+    let trash = &ui.bulk.trash;
     trash.bar.set_reveal_child(active);
     trash.restore_selected.set_visible(active);
     trash.delete_selected.set_visible(active);
@@ -105,19 +105,23 @@ pub(super) fn set_trash_mode(ui: &LibraryWindowUi, active: bool) {
 
 pub(super) fn connect_trash_controls(ui: Rc<LibraryWindowUi>) {
     let ui_restore_all = ui.clone();
-    ui.trash
+    ui.bulk
+        .trash
         .restore_all
         .connect_clicked(move |_| restore_all(ui_restore_all.clone()));
     let ui_empty = ui.clone();
-    ui.trash
+    ui.bulk
+        .trash
         .empty
         .connect_clicked(move |_| confirm_empty_trash(ui_empty.clone()));
     let ui_restore = ui.clone();
-    ui.trash
+    ui.bulk
+        .trash
         .restore_selected
         .connect_clicked(move |_| restore_selected(ui_restore.clone()));
     let ui_delete = ui.clone();
-    ui.trash
+    ui.bulk
+        .trash
         .delete_selected
         .connect_clicked(move |_| confirm_delete_selected(ui_delete.clone()));
 }

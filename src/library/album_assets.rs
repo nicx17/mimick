@@ -68,7 +68,7 @@ pub(super) fn can_remove_here(ui: &LibraryWindowUi) -> bool {
 }
 
 pub(super) fn sync_bulk_remove(ui: &LibraryWindowUi) {
-    ui.bulk_remove_from_album.set_visible(can_remove_here(ui));
+    ui.bulk.remove_from_album.set_visible(can_remove_here(ui));
 }
 
 pub(super) fn removed_message(outcome: BulkOutcome, album: &str) -> String {

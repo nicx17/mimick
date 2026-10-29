@@ -10,8 +10,11 @@ use std::sync::Arc;
 
 use gtk::prelude::*;
 
-use crate::api_client::{LibraryAlbum, ThumbnailSize};
+use crate::api_client::LibraryAlbum;
 use crate::app_context::AppContext;
+
+mod tile;
+pub(super) use tile::spawn_thumbnail;
 
 pub type AlbumClick = Rc<dyn Fn(&str, String)>;
 /// Right-click actions on the user's own album tiles.
@@ -358,7 +361,7 @@ fn insert_tiles(
     menu: Option<TileMenu>,
 ) {
     for album in albums {
-        let tile = album_tile(ctx.clone(), album, on_click.clone());
+        let tile = tile::album_tile(ctx.clone(), album, on_click.clone());
         if let Some((share, actions)) = &menu {
             attach_share_menu(&tile, album, share.clone(), actions);
         }
@@ -428,97 +431,6 @@ fn build_section(title: &str) -> (gtk::Box, gtk::Label, gtk::FlowBox) {
     section.append(&label);
     section.append(&grid);
     (section, label, grid)
-}
-
-/// Build a clickable tile representing an individual album complete with cover art.
-fn album_tile(ctx: Arc<AppContext>, album: &LibraryAlbum, on_click: AlbumClick) -> gtk::Button {
-    let tile_box = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(4)
-        .build();
-
-    // Fixed-height thumbnail container (same pattern as explore_tile):
-    // the Overlay sizes itself from the spacer child (100px) so portrait
-    // cover images cannot inflate the row height.
-    let thumb = gtk::Overlay::builder()
-        .overflow(gtk::Overflow::Hidden)
-        .css_classes(vec!["mimick-explore-tile".to_string()])
-        .build();
-    let spacer = gtk::Box::builder()
-        .css_classes(vec!["mimick-explore-spacer".to_string()])
-        .build();
-    let picture = gtk::Picture::builder()
-        .can_shrink(true)
-        .content_fit(gtk::ContentFit::Cover)
-        .build();
-    thumb.set_child(Some(&spacer));
-    thumb.add_overlay(&picture);
-
-    let meta_row = gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .spacing(8)
-        .build();
-    let title_label = gtk::Label::builder()
-        .label(&album.album_name)
-        .xalign(0.0)
-        .hexpand(true)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .width_chars(1)
-        .max_width_chars(1)
-        .css_classes(vec!["caption-heading".to_string()])
-        .build();
-    let count_label = gtk::Label::builder()
-        .label(format!(
-            "{} item{}",
-            album.asset_count,
-            if album.asset_count == 1 { "" } else { "s" }
-        ))
-        .xalign(1.0)
-        .css_classes(vec!["caption".to_string(), "dim-label".to_string()])
-        .build();
-    meta_row.append(&title_label);
-    meta_row.append(&count_label);
-    tile_box.append(&thumb);
-    tile_box.append(&meta_row);
-
-    let button = gtk::Button::builder()
-        .child(&tile_box)
-        .css_classes(vec!["flat".to_string()])
-        .build();
-
-    if let Some(thumb_id) = album.thumbnail_asset_id.clone() {
-        spawn_thumbnail(ctx, thumb_id, picture);
-    }
-
-    let id = album.id.clone();
-    let name = album.album_name.clone();
-    button.connect_clicked(move |_| on_click(&id, name.clone()));
-    button
-}
-
-/// Asynchronously load and set the thumbnail for an album cover art picture widget.
-pub(super) fn spawn_thumbnail(ctx: Arc<AppContext>, asset_id: String, picture: gtk::Picture) {
-    if let Some(texture) = ctx
-        .thumbnail_cache
-        .get_cached(&asset_id, ThumbnailSize::Thumbnail)
-    {
-        picture.set_paintable(Some(&texture));
-        return;
-    }
-    picture.add_css_class("mimick-thumb-reveal");
-    picture.add_css_class("mimick-thumb-pending");
-    glib::timeout_add_local_once(std::time::Duration::from_millis(120), move || {
-        glib::MainContext::default().spawn_local(async move {
-            if let Ok(texture) = ctx
-                .thumbnail_cache
-                .load_thumbnail(&asset_id, ThumbnailSize::Thumbnail)
-                .await
-            {
-                picture.set_paintable(Some(&texture));
-            }
-            picture.remove_css_class("mimick-thumb-pending");
-        });
-    });
 }
 
 /// Remove all child widgets from the specified flow box.
