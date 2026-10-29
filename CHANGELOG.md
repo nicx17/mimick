@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Thumbnails now fade in as they load, in the grid and on album covers, unless animations are turned off in your system settings.
 - **Search** now sits at the top of the library sidebar.
+- The search field now spans the whole search form, with the mode menu next to **Search** below it, so there's more room to type on narrow windows.
 - Reorganized the settings window:
   - **Settings** now reads Server, Watch Folders, Uploads, App, then the library sections (Library, Grid Appearance, RAW Files, Storage, shown only when the library view is on) and Troubleshooting. Labels and descriptions are plainer throughout, and quiet hours show as times ("From 22:00 Until 07:00").
   - **Save and Connect** replaces Save Credentials, and **Test Connection** shows its result in place instead of a dialog.

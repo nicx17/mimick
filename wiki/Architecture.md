@@ -79,6 +79,7 @@ Initializes the GTK4 `adw::Application` with ID `dev.nicx.mimick`. Only the prim
 - `connect_command_line` opens the library window when `--settings` or `--library` is passed **or** when `cmdline.is_remote()` is true (user clicks the app icon while the daemon is already running)
 - Shared `Arc<Mutex<AppState>>` is created before all closures and threaded into both `connect_startup` (workers) and `connect_command_line` (library window)
 - Shared `AppContext` is stored in a `OnceLock` and reused by UI windows and shutdown paths (single API client, queue manager, monitor handle)
+- `main/ui_lifecycle.rs` handles the command line, tray, window opening, and shutdown; `main/file_events.rs` runs the file event loop, the catch-up scan, and the **Sync Now** listener
 
 ### 2. File Monitor (`src/monitor.rs`)
 
@@ -104,8 +105,9 @@ Thread-safe upload orchestrator using a single `Arc<Mutex<AppState>>` for all co
 - Records recent queue events and pause reasons in shared state for UI visibility and diagnostics
 - The `QueueManager` lives in `AppContext`; shutdown calls `flush_retries()` from the shared handle after `app.run()` returns
 - Environment-aware pause policy: metered network, battery power, and quiet-hours window deferral
+- `queue_manager/progress.rs` runs the worker loop and retry requeueing, `upload.rs` uploads one file and reads and writes the retry file, and `batch_notifications.rs` schedules the batch summary
 
-### 4. API Client (`src/api_client.rs`)
+### 4. API Client (`src/api_client/`)
 
 - LAN-first, WAN fallback connectivity check
 - Active URL cached in `Mutex<Option<String>>`; cleared on network error to force re-check
@@ -117,17 +119,30 @@ Thread-safe upload orchestrator using a single `Arc<Mutex<AppState>>` for all co
 - Single shared instance via `AppContext` -- no new reqwest pool per window open
 - Structured error diagnostics with actionable guidance for common failure modes
 - Extended endpoints for library integration (Explore, Albums, Search, Smart Search, OCR)
+- Request and response types live in `models.rs`; album zip downloads (`download.rs`) ask `/api/download/info` how Immich splits the album and stream each part from `/api/download/archive`
 
 ### 5. Library View & Settings UI (`src/settings_window/`, `src/library/`)
 
-- The main user interface is a unified `adw::PreferencesWindow` that doubles as the Library View and the Settings panel.
+- The settings window (`settings_window/`) has **Status** and **Settings** pages; when the Library View is on, the library window (`library/`) opens instead and settings stay one click away.
 - Built on demand from `AppContext`; close destroys the window (unless background sync is disabled, in which case the app quits)
 - Includes distinct library pages: **Photos**, **Explore**, **Albums**, and **Search**.
 - Supports manual uploads via the `upload_picker` module, directly enqueueing multi-file selections.
 - The main menu's **Keyboard Shortcuts** item (`win.shortcuts`, **Ctrl+?**) opens an `AdwShortcutsDialog` built from the static table in `shortcuts_dialog.rs`; a unit test checks every listed key name parses.
-- `Arc<Mutex<AppState>>` accessed from `AppContext`; the 500ms `glib::timeout_add_local` timer reads it without any disk I/O to drive the footer Sync Status indicator.
+- `Arc<Mutex<AppState>>` accessed from `AppContext`; the 500ms `glib::timeout_add_local` timer in `status_poll.rs` reads it without any disk I/O to drive the Status page headline and folder list.
 - Test Connection button uses the shared client -- no new reqwest pool per click
-- Saving applies updated API settings, queue policy, worker limit, and watched folders to the running process without a restart
+- Settings apply as soon as they change; server URLs and the API key wait for **Save and Connect**. Either way they reach the running process without a restart
+- Library actions report results and quick-action errors as `adw::Toast`s on the window's `ToastOverlay` (`dialogs::toast_with_action`, `context_menu::show_error_toast`) instead of dialogs
+
+The library UI is split by responsibility so view construction, event wiring, and shared behavior stay separate:
+
+- `search_view.rs`, `search_filters.rs`, `search_panel.rs`, and `search_wiring.rs` divide the search form, filter widgets, side panel, and event handlers.
+- `albums_view/tile.rs` and `explore_view/tiles.rs` use `thumbnail_loader.rs` for delayed tile thumbnail loading. The shared loader preserves the grid's reveal treatment where needed and uses the common thumbnail cache.
+- `content_state.rs` centralizes library loading, empty, and error widget construction, plus the merge logic for remote assets and locally enumerated files.
+- `navigation.rs` and `sidebar.rs` keep source routing separate from sidebar row construction and selection.
+- `api_client/search/server_info.rs` shares request handling for server info endpoints, including timeout and connection issue reporting, while keeping endpoint-specific response types.
+- `source_loading.rs` loads each source and page: `fetch_source_page` and `remote_filters` map a `LibrarySource` to API calls.
+- Album management lives in `album_picker.rs` (Add to Album), `album_assets.rs` (remove, set cover, leave), `album_delete.rs` (delete, and detaching the watch folders that would re-create it), `album_options.rs`, and `album_download.rs`; the lightbox's **Appears In** list is `lightbox/albums.rs`.
+- **Change Date** is `bulk_date.rs`, with the time zone list from the system's tzdata in `time_zones.rs`.
 
 ### 6. Thumbnail Cache (`src/library/thumbnail_cache.rs`)
 
@@ -157,7 +172,7 @@ Supports bidirectional synchronization directly from the Albums page.
 
 Best-effort helpers used by queue policy:
 
-- `nmcli` parsing to detect metered or guessed-metered connections
+- `gio::NetworkMonitor` to follow the metered-network state (the network portal inside the Flatpak)
 - `/sys/class/power_supply` inspection to detect battery-powered operation
 
 These checks are advisory and only affect uploads when the corresponding behavior switches are enabled.
@@ -170,6 +185,7 @@ Walks all configured watch folders on launch and queues media files that are not
 - Applies the same per-folder rules and media-extension filter used by the live monitor
 - Detects album-target changes and queues reassociation-only tasks for unchanged files that have moved albums
 - Also used by the manual `Sync Now` action from the tray and Library View footer
+- `startup_scan/enumeration.rs` picks candidate files and resolves their albums; `reconcile.rs` holds `reconcile_entry`, the album↔folder diff
 
 ### 11. Sync Index (`src/sync_index.rs`)
 
@@ -185,7 +201,7 @@ Maintains a persistent map of previously synced files at `~/.local/share/mimick/
 
 Provides desktop notification helpers using `gio::Notification` and the XDG notification portal.
 
-- Global enable/disable toggle controlled by the user-facing "Enable Notifications" switch
+- Global enable/disable toggle controlled by the user-facing **Notifications** switch
 - Batch sync-complete summary notification (fired once when the queue drains, not per file)
 - Connectivity-lost notification (fired once per session after consecutive upload failures)
 - All dispatches route through `glib::idle_add_once` to stay on the GTK main thread
@@ -253,4 +269,5 @@ Full-screen viewer with its own multi-format decoder pipeline, independent of th
 - **RAW Decode cache**: `~/.cache/mimick/raw_decode/` for persisting full sensor demosaics
 - **Local EXIF cache**: `~/.cache/mimick/exif/` for persisting local metadata reads
 - **Notifications**: natively handled via `gio::Notification` and the XDG notification portal; ensures safe delivery without `notify-send` sub-processes when sandboxed
-- **Keyring**: API keys are securely persisted through the `oo7` crate -- natively talking D-Bus Secret Service, or reading an encrypted sandbox file when running across the Flatpak boundary
+- **Config**: `src/config/schema.rs` defines `ConfigData`, and `src/config/folders.rs` the watch-folder entries and folder rules
+- **Keyring** (`src/config/keyring.rs`): API keys are securely persisted through the `oo7` crate -- natively talking D-Bus Secret Service, or reading an encrypted sandbox file when running across the Flatpak boundary

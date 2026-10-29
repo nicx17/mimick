@@ -6,10 +6,10 @@ The library view is an optional in-app browser for your Immich server's assets, 
 
 ## Enabling the Library View
 
-1. Open **Settings → App → Library View**.
-2. Save and restart Mimick.
+1. Turn on **Settings → App → Library View**. It saves right away.
+2. Close the window and open Mimick again. The tray menu's library entry appears after a restart.
 
-The library window opens instead of the settings window on the next launch. Settings remain accessible from the header bar gear button.
+The library window now opens instead of the settings window. Settings remain accessible from **Settings** in the header bar's main menu.
 
 |                                                     Photos (Light)                                                     |                                                       Photos (Dark)                                                        |
 | :--------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: |
@@ -145,11 +145,11 @@ Switching sources clears any active search and reloads from page 1.
 
 ## Searching
 
-The search entry appears in the header bar. Enter a query and press Enter or wait for the field to commit.
+Open **Search** from the library sidebar. Its search form stays above the results while you browse; enter a query and press **Search** or Enter to run it.
 
 ### Search Modes (Remote only)
 
-Use the mode dropdown next to the search entry:
+Use the mode dropdown below the search entry, next to **Search**:
 
 | Mode             | What it searches                                | Server requirement        |
 | :--------------- | :---------------------------------------------- | :------------------------ |
@@ -201,7 +201,7 @@ Clicking a tile filters the grid to assets belonging to that person, place, or t
 
 Use the **Refresh** button in the header to reload the Explore data. Sections that return no results from the server are hidden automatically.
 
-**Face Visibility:** By default, unnamed faces are shown and hidden faces are excluded. You can toggle these independently in Library Settings.
+**Face Visibility:** By default, unnamed faces are shown and hidden faces are excluded. Toggle **Show unnamed** and **Show hidden** independently from the **⋯** (Filter people) menu on the People row.
 
 ---
 
@@ -267,7 +267,7 @@ Click an album tile to open it in the grid view. The album is also added to the 
 
 Click **Create album** (top right of the Albums page). Enter a name and confirm. The new album appears in the **Your albums** section immediately.
 
-To assign a new or existing album to a watch folder for automatic upload, use **Settings → Watch Folders → album dropdown** on the relevant folder row.
+To assign a new or existing album to a watch folder for automatic upload, press **Upload Target** on the folder's row in **Settings → Watch Folders**.
 
 ### Manual Upload
 
@@ -402,13 +402,15 @@ These options are in the **Library**, **Grid Appearance**, **RAW Files**, and **
 
 | Setting                     | Default | Effect                                                                                                                                 |
 | :-------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------- |
-| **Full-Resolution Preview** | Off     | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth.                    |
-| **Full RAW Decoding**       | Off     | Decode high-resolution sensor data instead of using fast embedded camera previews (slower).                                            |
-| **Cache Decoded RAW Files** | Off     | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled.                        |
-| **Show unnamed faces**      | On      | Show people with no assigned name in the Explore view.                                                                                 |
-| **Show hidden faces**       | Off     | Include hidden people in the Explore view.                                                                                             |
+| **Open Originals in Lightbox** | Off  | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth.                    |
+| **Thumbnail Quality**       | Thumbnail | **Automatic**, **Thumbnail**, **Preview**, or **Full Size** for grid tiles. Sharper thumbnails use more memory. Applies to an open library window right away. |
 | **Date Headings**           | By Day  | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
-| **Download Folder**         | Not set | First download opens a folder picker; the chosen path is saved and reused for subsequent downloads.                                    |
+| **Border Width**            | 0       | Gap between photos, in pixels. With a border, its colour fills the whole grid, behind the date headings too. Applies right away.        |
+| **Border Color**            | White   | Colour of the grid border. Date headings switch between dark and light text to stay readable.                                          |
+| **Full RAW Decoding**       | Off     | Decode high-resolution sensor data instead of using fast embedded camera previews (slower).                                            |
+| **Keep Decoded RAW Files**  | Off     | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled.                        |
+| **Cache Limit (MB)**        | 2000    | Disk space for thumbnails, previews, and videos, trimmed when Mimick starts. The row shows how much is in use; **Clear Cache** frees it now. |
+| **Download Folder**         | Ask each time | Without one, each download asks for a folder and offers to keep it as the default (**Always**) or use it **Just Once**. **Change…** picks one here. |
 
 See [Performance Tuning](Performance-Tuning) for guidance on choosing values for these settings.
 

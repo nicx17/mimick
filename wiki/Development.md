@@ -149,7 +149,7 @@ RUST_LOG=debug cargo run
 	- folder add/remove
 	- per-folder album target and folder rules
 
-- Connectivity fields (API Key, Internal/External server URLs) are treated as save-only. Changes to these fields are applied only when the user clicks **Save** in the Connectivity section to avoid partially-applied network credentials during configuration edits.
+- Connectivity fields (API Key, Internal/External server URLs) are treated as save-only. Changes to these fields are applied only when the user clicks **Save and Connect** in the Server section to avoid partially-applied network credentials during configuration edits.
 
 ## Notifications
 

@@ -39,7 +39,7 @@ The key is valid but missing one or more permissions Mimick uses. Confirm in Imm
 
 - Base sync: `user.read`, `asset.upload`, `asset.update`, `album.read`, `album.create`, `albumAsset.create`
 - Add `asset.read`, `asset.view`, `asset.download`, and `person.read` if you use Library view or Download Only / Full sync method
-- Add `asset.delete` and `albumAsset.delete` if you enabled **Mirror Folder Deletions to Album** in any folder's rules
+- Add `asset.delete` and `albumAsset.delete` if you enabled **Delete from Immich Too** in any folder's rules
 
 See Configuration & First Run → "API Key Security & Required Permissions" for the full feature/permission mapping.
 
@@ -153,10 +153,10 @@ If Immich re-uploads existing files:
 
 ### Mimick Stays Paused
 If uploads do not resume on their own:
-- Open the settings window and check the current status text. Mimick records the pause reason.
+- Open the **Status** page and check the headline. Mimick shows the pause reason below it.
 - If you manually paused it, use **Pause / Resume** from the tray or settings window.
-- If **Pause on Metered Network** is enabled, Mimick may pause while `nmcli` reports a metered or guessed-metered connection.
-- If **Pause on Battery Power** is enabled, Mimick may pause while the system appears to be running on battery according to `/sys/class/power_supply`.
+- If **Pause on Metered Networks** is enabled, Mimick may pause while the system reports a metered connection (through the network portal in the Flatpak).
+- If **Pause on Battery** is enabled, Mimick may pause while the system appears to be running on battery according to `/sys/class/power_supply`.
 
 ## Logs & Diagnostics
 

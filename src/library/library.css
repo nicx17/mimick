@@ -120,7 +120,7 @@ label.mimick-stat-label {
    is Automatic (not Never) so the scrolled window's minimum width is
    decoupled from the wide AdwEntryRow children (~434px).  The scrollbar
    itself is never needed visually. */
-.mimick-search-scroll .horizontal {
+scrolledwindow.mimick-search-scroll scrollbar.horizontal {
     min-height: 0;
     opacity: 0;
 }
@@ -451,7 +451,8 @@ button.mimick-map-photo.selected {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
-.mimick-map-card .mimick-map-control {
+.mimick-map-card .mimick-map-control,
+.mimick-map-card menubutton.mimick-map-control > button {
     min-width: 36px;
     min-height: 36px;
     padding: 0;

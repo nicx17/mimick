@@ -109,6 +109,7 @@ fn build_search_bar() -> (gtk::Box, gtk::DropDown, gtk::SearchEntry) {
     let search_mode = gtk::DropDown::builder()
         .model(&mode_model)
         .selected(0)
+        .hexpand(true)
         .tooltip_text(
             "Smart: CLIP-based semantic search.\n\
              Filename: matches against file names.\n\
@@ -118,11 +119,10 @@ fn build_search_bar() -> (gtk::Box, gtk::DropDown, gtk::SearchEntry) {
 
     let search_entry = gtk::SearchEntry::builder()
         .placeholder_text("Describe what you're looking for\u{2026}")
-        .hexpand(true)
         .build();
 
     let search_bar = gtk::Box::builder().spacing(6).build();
-    search_bar.append(&search_entry);
+    search_bar.append(&search_mode);
 
     (search_bar, search_mode, search_entry)
 }
@@ -254,7 +254,7 @@ pub fn build_search_view() -> SearchViewParts {
     let (search_bar, search_mode, search_entry) = build_search_bar();
     let actions = build_action_row();
     search_bar.append(&actions.search);
-    inner.append(&search_mode);
+    inner.append(&search_entry);
     inner.append(&search_bar);
     inner.append(&actions.root);
 
