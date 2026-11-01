@@ -33,8 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an **Appears In** section to the lightbox details pane listing the albums a photo is in; click one to open it (#267).
 - Added **Change Date** for selected photos: give them all one date, time, and time zone, or shift each one earlier or later, optionally moving them to another time zone.
 - **Edit Info…** now has a **Time zone** row and shows the date in the photo's own time zone.
-- Added a **Memory Limit (MB)** setting in Settings → Storage for decoded thumbnails and lightbox pictures: 2 GB by default and never more than half your RAM. The cache used to grow to 20% of your RAM, between 500 MB and 3 GB.
-- Added a **Fit Thumbnails to Tiles** setting, on by default: with **Thumbnail Quality** set to Automatic, Preview, or Full Size, grid thumbnails are decoded at their tile's size instead of 1440 or 2560 px, using far less memory and making scrolling smoother.
+- Added a **Memory Limit (MB)** setting in Settings → Storage for decoded thumbnails and lightbox pictures: 2 GB by default and never more than half your RAM. The cache used to grow to 20% of your RAM, between 500 MB and 3 GB (#280).
+- Added a **Fit Thumbnails to Tiles** setting, on by default: with **Thumbnail Quality** set to Automatic, Preview, or Full Size, grid thumbnails are decoded at their tile's size instead of 1440 or 2560 px, using far less memory and making scrolling smoother (#281).
 
 ### Changed
 
@@ -71,15 +71,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Native builds now require GTK 4.24, libadwaita 1.10, and libheif 1.21 or newer (matching the GNOME 51 runtime), plus GStreamer with GstPlay and the GTK 4 video sink plugin (`gst-plugin-gtk4`) for video playback, and libclang for generating the LibRaw bindings.
 - Removed the **Archived only** search filter, which Immich v3 ignores; use **Visibility → Archive** instead.
 - The **Shared Links** page now shows each link's cover photo, what visitors may do (Upload, Download, Exif, Password), and expired links in red. Click a link to edit it. **Copy link** now confirms with a checkmark on the button instead of a dialog.
-- Photos in the lightbox now follow your finger or a two-finger touchpad swipe and spring to the next or previous one. **Left**/**Right** and the header buttons use the same motion, pressing them quickly glides through photos instead of restarting each slide, and the photos on either side are already loaded when you swipe.
-- The lightbox opens large photos much faster and steps between them smoothly: local files and originals are decoded at your screen's resolution (JPEGs shrink while decoding), the full resolution loads in the background when you zoom in past it, and the photos before and after the current one on disk are prepared ahead of time.
-- **Upload to Album** in the upload window, and after dropping files on the library, now uses the same album picker as **Add to Album**, with album covers, a filter, and **New Album**.
+- Photos in the lightbox now follow your finger or a two-finger touchpad swipe and spring to the next or previous one. **Left**/**Right** and the header buttons use the same motion, pressing them quickly glides through photos instead of restarting each slide, and the photos on either side are already loaded when you swipe (#282).
+- The lightbox opens large photos much faster and steps between them smoothly: local files and originals are decoded at your screen's resolution (JPEGs shrink while decoding), the full resolution loads in the background when you zoom in past it, and the photos before and after the current one on disk are prepared ahead of time (#278).
+- **Upload to Album** in the upload window, and after dropping files on the library, now uses the same album picker as **Add to Album**, with album covers, a filter, and **New Album** (#277).
 
 ### Fixed
 
-- Closing the library window now stops a playing video instead of leaving its sound running in the background.
-- The lightbox no longer keeps full-size images in memory after it closes, and stepping to another photo frees the previous one. Right-click menus no longer stay in memory after they close.
-- Reopening the library window now returns to the view you left, instead of an endless spinner with the wrong page selected in the sidebar.
+- Closing the library window now stops a playing video instead of leaving its sound running in the background (#273).
+- The lightbox no longer keeps its images in memory after it closes, and a photo you zoomed into gives back its full-size image when you move on. Right-click menus no longer stay in memory after they close (#274).
+- Reopening the library window now returns to the view you left, instead of an endless spinner with the wrong page selected in the sidebar (#275).
 
 - **Pause on Metered Network** now works in the Flatpak: it follows the system's network portal instead of `nmcli`, which isn't available in the sandbox.
 - Turning **Upload XMP Sidecars** on or off now saves straight away, and settings changed while a save was still running are no longer lost.
