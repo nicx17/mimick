@@ -52,20 +52,20 @@ impl Lightbox {
         self.connect_ocr_mouse_selection();
         self.connect_ocr_taps();
         self.connect_ocr_hover();
-        let lb = self.clone();
-        self.picture
-            .ocr_copy
-            .connect_clicked(move |_| lb.copy_ocr_text());
+        self.on_click(&self.picture.ocr_copy, |lb| lb.copy_ocr_text());
     }
 
     fn connect_ocr_toggle(self: &Rc<Self>) {
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         self.actions.ocr_toggle.connect_toggled(move |btn| {
             btn.set_tooltip_text(Some(if btn.is_active() {
                 "Hide recognized text (T)"
             } else {
                 "Show recognized text (T)"
             }));
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
             if !btn.is_active() {
                 lb.picture.ocr.clear_selection();
             }
@@ -99,9 +99,12 @@ impl Lightbox {
         drag.set_propagation_phase(gtk::PropagationPhase::Capture);
         let start = Rc::new(Cell::new(None::<(f64, f64)>));
         let begin = start.clone();
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         drag.connect_drag_begin(move |gesture, x, y| {
             begin.set(None);
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
             let Some(idx) = (!is_touch(gesture))
                 .then(|| lb.ocr_box_under(x, y))
                 .flatten()
@@ -118,9 +121,9 @@ impl Lightbox {
             }
             lb.sync_ocr_controls();
         });
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         drag.connect_drag_update(move |_, dx, dy| {
-            let Some((x, y)) = start.get() else {
+            let (Some((x, y)), Some(lb)) = (start.get(), lb.upgrade()) else {
                 return;
             };
             if let Some(idx) = lb.ocr_box_under(x + dx, y + dy) {
@@ -141,8 +144,11 @@ impl Lightbox {
         click.connect_pressed(move |_, _, _, _| pressed.set(false));
         let stopped = dragged.clone();
         click.connect_stopped(move |_| stopped.set(true));
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         click.connect_released(move |gesture, _, x, y| {
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
             if dragged.get() || !lb.picture.ocr.area.is_visible() {
                 return;
             }
@@ -166,15 +172,26 @@ impl Lightbox {
     fn connect_ocr_hover(self: &Rc<Self>) {
         let scrolled = &self.picture.scrolled;
         let motion = gtk::EventControllerMotion::new();
-        let lb = self.clone();
-        motion.connect_motion(move |_, x, y| lb.set_ocr_hover(lb.ocr_box_under(x, y)));
-        let lb = self.clone();
-        motion.connect_leave(move |_| lb.set_ocr_hover(None));
+        let lb = Rc::downgrade(self);
+        motion.connect_motion(move |_, x, y| {
+            if let Some(lb) = lb.upgrade() {
+                lb.set_ocr_hover(lb.ocr_box_under(x, y));
+            }
+        });
+        let lb = Rc::downgrade(self);
+        motion.connect_leave(move |_| {
+            if let Some(lb) = lb.upgrade() {
+                lb.set_ocr_hover(None);
+            }
+        });
         scrolled.add_controller(motion);
 
         scrolled.set_has_tooltip(true);
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         scrolled.connect_query_tooltip(move |_, x, y, _, tooltip| {
+            let Some(lb) = lb.upgrade() else {
+                return false;
+            };
             let text = lb
                 .ocr_box_under(f64::from(x), f64::from(y))
                 .and_then(|idx| lb.picture.ocr.text_at(idx));

@@ -34,12 +34,13 @@ pub(crate) async fn load_with_fallback<F: Fn() -> bool>(
     cache: &ThumbnailCache,
     asset_id: &str,
     requested: ThumbnailSize,
+    fit: Option<u32>,
     is_cancelled: &F,
 ) -> Result<Texture, String> {
     let mut current = requested;
     loop {
         match cache
-            .load_thumbnail_cancellable(asset_id, current, is_cancelled)
+            .load_fitted_cancellable(asset_id, current, fit, is_cancelled)
             .await
         {
             Ok(tex) => return Ok(tex),

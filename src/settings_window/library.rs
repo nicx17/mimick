@@ -6,10 +6,12 @@ pub struct LibraryWidgets {
     pub library_groups: Vec<adw::PreferencesGroup>,
     pub preview_full_row: adw::SwitchRow,
     pub grid_quality_row: adw::ComboRow,
+    pub grid_fit_row: adw::SwitchRow,
     pub date_headings_row: adw::ComboRow,
     pub raw_full_decode_row: adw::SwitchRow,
     pub raw_cache_row: adw::SwitchRow,
     pub disk_cache_row: adw::SpinRow,
+    pub memory_cache_row: adw::SpinRow,
     pub clear_cache_btn: gtk::Button,
     pub download_folder_row: adw::ActionRow,
     pub download_change_btn: gtk::Button,
@@ -25,13 +27,14 @@ fn group(page: &adw::PreferencesPage, title: &str) -> adw::PreferencesGroup {
 }
 
 pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidgets {
-    let (viewer, preview_full_row, grid_quality_row, date_headings_row) =
+    let (viewer, preview_full_row, grid_quality_row, grid_fit_row, date_headings_row) =
         build_viewer_group(settings_page);
     let (grid, border_width_row, border_color_btn) = build_appearance_group(settings_page);
     let (raw, raw_full_decode_row, raw_cache_row) = build_raw_group(settings_page);
     let (
         storage,
         disk_cache_row,
+        memory_cache_row,
         clear_cache_btn,
         download_folder_row,
         download_change_btn,
@@ -42,10 +45,12 @@ pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidge
         library_groups: vec![viewer, grid, raw, storage],
         preview_full_row,
         grid_quality_row,
+        grid_fit_row,
         date_headings_row,
         raw_full_decode_row,
         raw_cache_row,
         disk_cache_row,
+        memory_cache_row,
         clear_cache_btn,
         download_folder_row,
         download_change_btn,
@@ -61,6 +66,7 @@ fn build_viewer_group(
     adw::PreferencesGroup,
     adw::SwitchRow,
     adw::ComboRow,
+    adw::SwitchRow,
     adw::ComboRow,
 ) {
     let viewer = group(settings_page, "Library");
@@ -80,6 +86,11 @@ fn build_viewer_group(
         ]))
         .build();
     viewer.add(&grid_quality_row);
+    let grid_fit_row = adw::SwitchRow::builder()
+        .title("Fit Thumbnails to Tiles")
+        .subtitle("Preview and Full Size thumbnails use far less memory.")
+        .build();
+    viewer.add(&grid_fit_row);
     let date_headings_row = adw::ComboRow::builder()
         .title("Date Headings")
         .subtitle("Dates between photos in Photos.")
@@ -90,6 +101,7 @@ fn build_viewer_group(
         viewer,
         preview_full_row,
         grid_quality_row,
+        grid_fit_row,
         date_headings_row,
     )
 }
@@ -138,6 +150,7 @@ fn build_storage_group(
 ) -> (
     adw::PreferencesGroup,
     adw::SpinRow,
+    adw::SpinRow,
     gtk::Button,
     adw::ActionRow,
     gtk::Button,
@@ -152,6 +165,14 @@ fn build_storage_group(
         ))
         .build();
     storage.add(&disk_cache_row);
+    let memory_cache_row = adw::SpinRow::builder()
+        .title("Memory Limit (MB)")
+        .subtitle("Thumbnails kept in RAM for instant scrolling. At most half your RAM.")
+        .adjustment(&gtk::Adjustment::new(
+            2048.0, 256.0, 16384.0, 256.0, 1024.0, 0.0,
+        ))
+        .build();
+    storage.add(&memory_cache_row);
     let clear_cache_btn = gtk::Button::builder()
         .label("Clear")
         .valign(gtk::Align::Center)
@@ -184,6 +205,7 @@ fn build_storage_group(
     (
         storage,
         disk_cache_row,
+        memory_cache_row,
         clear_cache_btn,
         download_folder_row,
         download_change_btn,

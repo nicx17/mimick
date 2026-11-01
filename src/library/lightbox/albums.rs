@@ -61,7 +61,7 @@ fn album_row(ui: &Rc<LibraryWindowUi>, album: &LibraryAlbum) -> libadwaita::Acti
         .activatable(true)
         .tooltip_text(format!("Open “{}”", album.album_name))
         .build();
-    row.add_prefix(&album_cover(ui, album));
+    row.add_prefix(&album_cover(&ui.ctx, album));
     row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
     let (ui, id, name) = (ui.clone(), album.id.clone(), album.album_name.clone());
     row.connect_activated(move |_| open_album(&ui, &id, &name));

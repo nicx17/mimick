@@ -80,6 +80,9 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - [x] **Settings Redesign** — Plainer sections and labels, a Status headline, and short messages instead of dialogs.
 - [x] **Search Filters Panel** — Filters open in a side panel beside the results, or slide in on phones.
 - [x] **New App Icon** — A layered lotus redesign, with a symbolic version.
+- [x] **Swipe Between Photos** — Photos follow touch and touchpad swipes in the lightbox and spring to the next one (#282).
+- [x] **Large Photos** — Even 200-megapixel photos open quickly; full resolution loads when you zoom in (#278).
+- [x] **Memory Settings** — A Memory Limit, and grid thumbnails decoded at tile size (#280, #281).
 
 ---
 

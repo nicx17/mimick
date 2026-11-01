@@ -14,8 +14,10 @@ use super::super::details::{
     drag_export_path, edited_original_cache_path, fill_exif_box, format_datetime_display,
     local_details_exif, original_preview_cache_path, probe_local_file,
 };
+use super::super::strip::Slot;
 use super::super::{AssetInfo, Lightbox, LoadResult, PictureLoad};
 use super::super::{apply_lightbox_zoom, lightbox_title_cap, rating};
+use crate::api_client::ThumbnailSize;
 use crate::library::{LOCAL_ID_PREFIX, load_texture_oriented, timeline, trash_view};
 
 impl Lightbox {
@@ -60,7 +62,9 @@ impl Lightbox {
         self.prepare_video(info.is_video());
         self.picture.ocr.clear();
         self.sync_ocr_controls();
+        self.fill_slot(Slot::Current, Some(pos));
         self.start_picture_load(&info);
+        self.fill_neighbours();
         self.details.loading.set_visible(true);
         if info.is_local() && !info.is_video() {
             self.load_local_details(pos, info.local_path);
@@ -93,29 +97,14 @@ impl Lightbox {
         self.details.albums.clear();
     }
 
-    /// Load into the *inactive* picture and commit the slide transition only after
-    /// the texture is set, so the user keeps seeing the current image (with the
-    /// loader spinner) until the new one is actually ready.
     fn start_picture_load(self: &Rc<Self>, info: &AssetInfo) {
-        let target_is_a = !self.active_a.get();
-        let target = if target_is_a {
-            self.picture.picture_a.clone()
-        } else {
-            self.picture.picture_b.clone()
-        };
+        let target = self.picture.strip.picture(Slot::Current);
         self.zoom_level.set(1.0);
         apply_lightbox_zoom(&target, &self.picture.scrolled, 1.0);
+        self.picture.strip.set_swipe_enabled(true);
         self.actions.zoom_reset.set_label("100%");
-        self.picture
-            .stack
-            .set_transition_type(match self.nav_dir.get() {
-                1 => gtk::StackTransitionType::SlideLeft,
-                -1 => gtk::StackTransitionType::SlideRight,
-                _ => gtk::StackTransitionType::None,
-            });
         self.load_into_picture(PictureLoad {
             target,
-            target_is_a,
             asset_id: info.asset_id.clone(),
             filename: info.filename.clone(),
             mime: info.mime.clone(),
@@ -124,11 +113,9 @@ impl Lightbox {
             is_video: info.is_video(),
             edited: info.edited,
         });
-        // The slide direction applies to this navigation only.
-        self.nav_dir.set(0);
     }
 
-    /// Reset overlays, show any cached thumbnail, then load the real picture asynchronously.
+    /// Reset overlays, then load the real picture asynchronously.
     fn load_into_picture(self: &Rc<Self>, load: PictureLoad) {
         let generation = self.load_gen.get().wrapping_add(1);
         self.load_gen.set(generation);
@@ -149,48 +136,172 @@ impl Lightbox {
             lb.show_load_result(&load, result);
             cancel_loader.set(true);
             lb.picture.loader.set_reveal_child(false);
-            lb.prefetch_neighbors();
+            lb.load_neighbours();
         });
     }
 
-    fn prefetch_neighbors(&self) {
-        if self.actions.resolution_toggle.is_active() {
+    pub(in crate::library::lightbox) fn fill_neighbours(&self) {
+        let pos = self.pos.get();
+        let next = pos
+            .checked_add(1)
+            .filter(|&next| next < self.ui.grid.model.n_items());
+        self.fill_slot(Slot::Prev, pos.checked_sub(1));
+        self.fill_slot(Slot::Next, next);
+        self.picture.strip.set_neighbours(pos > 0, next.is_some());
+    }
+
+    fn fill_slot(&self, slot: Slot, pos: Option<u32>) {
+        let strip = &self.picture.strip;
+        let info = pos
+            .and_then(|pos| self.ui.grid.model.item(pos))
+            .and_downcast::<AssetObject>()
+            .map(|item| AssetInfo::from_item(&item));
+        let asset_id = info.as_ref().map_or("", |info| info.asset_id.as_str());
+        if strip.asset(slot) == asset_id {
             return;
         }
-        let pos = self.pos.get();
-        for neighbor in [pos.checked_sub(1), pos.checked_add(1)]
-            .into_iter()
+        strip.set_asset(slot, asset_id);
+        let texture = info.as_ref().and_then(|info| self.instant_texture(info));
+        strip.picture(slot).set_paintable(texture.as_ref());
+    }
+
+    fn instant_texture(&self, info: &AssetInfo) -> Option<gdk4::Texture> {
+        let cache = &self.ui.ctx.thumbnail_cache;
+        let edited = info.edited && !info.is_video();
+        info.decoded_from_disk()
+            .then(|| cache.cached_screen(&info.asset_id, false, self.screen_edge()))
             .flatten()
-        {
-            let Some(item) = self
-                .ui
-                .grid
-                .model
-                .item(neighbor)
-                .and_downcast::<AssetObject>()
-            else {
-                continue;
-            };
-            let info = AssetInfo::from_item(&item);
-            let decoded_from_disk = !info.local_path.is_empty() && !info.edited;
-            if info.is_video() || decoded_from_disk || info.asset_id.starts_with(LOCAL_ID_PREFIX) {
-                continue;
+            .or_else(|| cache.get_cached_preview(&info.asset_id, edited))
+            .or_else(|| cache.get_cached(&info.asset_id, ThumbnailSize::Thumbnail))
+    }
+
+    fn load_neighbours(&self) {
+        let pos = self.pos.get();
+        for (slot, neighbour) in [
+            (Slot::Prev, pos.checked_sub(1)),
+            (Slot::Next, pos.checked_add(1)),
+        ] {
+            let item = neighbour
+                .and_then(|pos| self.ui.grid.model.item(pos))
+                .and_downcast::<AssetObject>();
+            if let Some(info) = item.map(|item| AssetInfo::from_item(&item))
+                && self.picture.strip.asset(slot) == info.asset_id
+            {
+                self.load_neighbour(self.picture.strip.picture(slot), info);
             }
-            let cache = self.ui.ctx.thumbnail_cache.clone();
-            glib::MainContext::default().spawn_local(async move {
-                let _ = cache.load_preview(&info.asset_id, info.edited).await;
-            });
         }
     }
 
-    /// Clear the previous asset's overlays and drag path, set up the video badge,
-    /// and show the cached grid thumbnail until the real picture arrives.
+    fn load_neighbour(&self, picture: gtk::Picture, info: AssetInfo) {
+        let from_disk = info.decoded_from_disk().then(|| {
+            (
+                std::path::PathBuf::from(&info.local_path),
+                self.screen_edge(),
+            )
+        });
+        if from_disk.is_none() && info.asset_id.starts_with(LOCAL_ID_PREFIX) {
+            return;
+        }
+        let cache = self.ui.ctx.thumbnail_cache.clone();
+        let strip = self.picture.strip.clone();
+        glib::MainContext::default().spawn_local(async move {
+            let loaded = match from_disk {
+                Some((path, edge)) => cache.load_screen(&info.asset_id, false, path, edge).await,
+                None => {
+                    let edited = info.edited && !info.is_video();
+                    cache.load_preview(&info.asset_id, edited).await
+                }
+            };
+            if let Ok(texture) = loaded
+                && strip.neighbour_shows(&picture, &info.asset_id)
+            {
+                picture.set_paintable(Some(&texture));
+            }
+        });
+    }
+
+    /// Badge, unavailable card, and recognised text stay put while photos slide, so they hide.
+    pub(in crate::library::lightbox) fn show_overlays(&self, shown: bool) {
+        let opacity = if shown { 1.0 } else { 0.0 };
+        self.video_badge_button.set_opacity(opacity);
+        self.unavailable.overlay.set_opacity(opacity);
+        self.picture.ocr.area.set_opacity(opacity);
+    }
+
+    fn screen_edge(&self) -> u32 {
+        let monitor = self
+            .ui
+            .window
+            .surface()
+            .and_then(|surface| surface.display().monitor_at_surface(&surface));
+        let edge = match monitor {
+            Some(monitor) => {
+                let area = monitor.geometry();
+                f64::from(area.width().max(area.height())) * monitor.scale()
+            }
+            None => f64::from(FALLBACK_SCREEN_EDGE),
+        };
+        edge.ceil() as u32
+    }
+
+    async fn load_screen(
+        &self,
+        asset_id: &str,
+        edited: bool,
+        path: &std::path::Path,
+    ) -> Option<gdk4::Texture> {
+        self.ui
+            .ctx
+            .thumbnail_cache
+            .load_screen(asset_id, edited, path.to_path_buf(), self.screen_edge())
+            .await
+            .inspect_err(|err| log::debug!("Lightbox decode failed for {}: {err}", path.display()))
+            .ok()
+    }
+
+    pub(in crate::library::lightbox) fn sharpen_for_zoom(self: &Rc<Self>, content_width: f64) {
+        let picture = self.active_picture();
+        let shown = picture.paintable().map_or(0, |p| p.intrinsic_width());
+        if content_width * f64::from(picture.scale_factor()) <= f64::from(shown) {
+            return;
+        }
+        let Some(path) = self.full_source.borrow_mut().take() else {
+            return;
+        };
+        let generation = self.load_gen.get();
+        let cancel_loader = self.arm_loader_spinner(250);
+        let lb = Rc::downgrade(self);
+        glib::MainContext::default().spawn_local(async move {
+            let started = std::time::Instant::now();
+            let full = load_texture_oriented(&path).await;
+            cancel_loader.set(true);
+            let Some(lb) = lb.upgrade().filter(|lb| lb.load_gen.get() == generation) else {
+                return;
+            };
+            lb.picture.loader.set_reveal_child(false);
+            match full {
+                Some(texture) => {
+                    log::debug!(
+                        "Lightbox sharpened to {}x{} in {}ms",
+                        texture.width(),
+                        texture.height(),
+                        started.elapsed().as_millis()
+                    );
+                    picture.set_paintable(Some(&texture));
+                }
+                None => log::warn!("Full-size decode failed for {}", path.display()),
+            }
+        });
+    }
+
+    /// Clear the previous asset's overlays and drag path, and set up the video badge.
     fn prepare_for_load(&self, load: &PictureLoad) {
         self.unavailable.overlay.set_reveal_child(false);
         self.unavailable.overlay.set_can_target(false);
         *self.unavailable_path.borrow_mut() = None;
         // Clear drag path while loading; updated once resolved.
         *self.drag_path.borrow_mut() = None;
+        *self.full_source.borrow_mut() = None;
         log::debug!(
             "Lightbox load: asset={} file={:?} mime={} source={} full_res={} kind={}",
             load.asset_id,
@@ -207,15 +318,6 @@ impl Lightbox {
         // Videos use the still thumbnail as a poster + play badge; image
         // decoders would all fail and fall through to "unavailable".
         self.video_badge_button.set_visible(load.is_video);
-        // Show the cached grid thumbnail immediately while the real picture loads.
-        if let Some(texture) = self
-            .ui
-            .ctx
-            .thumbnail_cache
-            .get_cached_preview(&load.asset_id, load.edited)
-        {
-            load.target.set_paintable(Some(&texture));
-        }
     }
 
     /// Reveal the spinner after `delay_ms` unless the returned flag is set first.
@@ -239,14 +341,22 @@ impl Lightbox {
         if load.is_video {
             // Use the grid's preview thumbnail as the poster.
             return match self.load_preview_thumbnail(&load.asset_id, false).await {
-                Ok(texture) => LoadResult::Texture(texture, None),
+                Ok(texture) => LoadResult::Texture {
+                    texture,
+                    drag_path: None,
+                    full_source: None,
+                },
                 Err(_) => LoadResult::KeepPoster,
             };
         }
         if !load.local_path.is_empty() && !load.edited {
             let local = std::path::PathBuf::from(&load.local_path);
-            if let Some(texture) = load_texture_oriented(&local).await {
-                return LoadResult::Texture(texture, Some(local));
+            if let Some(texture) = self.load_screen(&load.asset_id, false, &local).await {
+                return LoadResult::Texture {
+                    texture,
+                    drag_path: Some(local.clone()),
+                    full_source: Some(local),
+                };
             }
             if load.asset_id.starts_with(LOCAL_ID_PREFIX) {
                 return LoadResult::Unavailable(Some(load.local_path.clone()));
@@ -259,15 +369,23 @@ impl Lightbox {
                 .load_preview_thumbnail(&load.asset_id, load.edited)
                 .await
             {
-                Ok(texture) => LoadResult::Texture(texture, load.edited_local_path()),
+                Ok(texture) => LoadResult::Texture {
+                    texture,
+                    drag_path: load.edited_local_path(),
+                    full_source: None,
+                },
                 Err(_) => LoadResult::Unavailable(None),
             }
         };
         if let LoadResult::Unavailable(_) = result
             && let Some(local) = load.edited_local_path()
-            && let Some(texture) = load_texture_oriented(&local).await
+            && let Some(texture) = self.load_screen(&load.asset_id, false, &local).await
         {
-            return LoadResult::Texture(texture, Some(local));
+            return LoadResult::Texture {
+                texture,
+                drag_path: Some(local.clone()),
+                full_source: Some(local),
+            };
         }
         result
     }
@@ -308,12 +426,17 @@ impl Lightbox {
             log::warn!("Lightbox original fetch failed: {}", err);
             return LoadResult::Unavailable(None);
         }
-        match load_texture_oriented(&temp).await {
-            Some(texture) if load.edited => LoadResult::Texture(texture, load.edited_local_path()),
-            Some(texture) => LoadResult::Texture(
+        let drag_path = if load.edited {
+            load.edited_local_path()
+        } else {
+            drag_export_path(&load.asset_id, &load.filename, &temp)
+        };
+        match self.load_screen(&load.asset_id, load.edited, &temp).await {
+            Some(texture) => LoadResult::Texture {
                 texture,
-                drag_export_path(&load.asset_id, &load.filename, &temp),
-            ),
+                drag_path,
+                full_source: Some(temp),
+            },
             None if load.edited => LoadResult::Unavailable(None),
             None => LoadResult::Unavailable(Some(temp.display().to_string())),
         }
@@ -363,9 +486,22 @@ impl Lightbox {
     /// Apply a load result, then slide to the target picture.
     fn show_load_result(self: &Rc<Self>, load: &PictureLoad, result: LoadResult) {
         match result {
-            LoadResult::Texture(texture, drag_path) => {
+            LoadResult::Texture {
+                texture,
+                drag_path,
+                full_source,
+            } => {
+                log::debug!(
+                    "Lightbox showing asset={} {}x{} decoded={}MB",
+                    load.asset_id,
+                    texture.width(),
+                    texture.height(),
+                    texture_megabytes(&texture),
+                );
                 load.target.set_paintable(Some(&texture));
                 *self.drag_path.borrow_mut() = drag_path;
+                let capped = texture.width().max(texture.height()) as u32 >= self.screen_edge();
+                *self.full_source.borrow_mut() = full_source.filter(|_| capped);
                 if !load.is_video
                     && !load.asset_id.starts_with(LOCAL_ID_PREFIX)
                     && self.ui.features.get().ocr
@@ -386,15 +522,19 @@ impl Lightbox {
             }
             LoadResult::KeepPoster => {}
         }
-        // Defer the child switch by one idle so the target picture
-        // re-measures with the new texture before the slide starts.
-        let pic_stack = self.picture.stack.clone();
-        let target_is_a = load.target_is_a;
-        let lb = self.clone();
-        glib::idle_add_local_once(move || {
-            pic_stack.set_visible_child_name(if target_is_a { "a" } else { "b" });
-            lb.active_a.set(target_is_a);
-        });
+    }
+
+    /// A photo sharpened for zooming goes back to its screen-size copy as it slides away.
+    pub(in crate::library::lightbox) fn drop_full_resolution(&self) {
+        let picture = self.active_picture();
+        let edge = i32::try_from(self.screen_edge()).unwrap_or(i32::MAX);
+        let sharpened = picture
+            .paintable()
+            .is_some_and(|p| p.intrinsic_width().max(p.intrinsic_height()) > edge);
+        if sharpened && let Some(item) = self.current_item() {
+            let texture = self.instant_texture(&AssetInfo::from_item(&item));
+            picture.set_paintable(texture.as_ref());
+        }
     }
 
     /// Local image: parse EXIF on a blocking worker (cached on disk, so repeat opens are cheap).
@@ -472,4 +612,10 @@ impl Lightbox {
             }
         });
     }
+}
+
+const FALLBACK_SCREEN_EDGE: u32 = 2560;
+
+fn texture_megabytes(texture: &gtk::gdk::Texture) -> usize {
+    texture.width().max(0) as usize * texture.height().max(0) as usize * 4 / (1024 * 1024)
 }

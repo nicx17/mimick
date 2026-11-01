@@ -3,7 +3,7 @@ use gtk::prelude::*;
 use super::{
     AssetObject, CancelFlag, GridQuality, LaidItem, LaidRow, LibraryAssetModel, LoadRequest,
     MasonryCanvas, ThumbnailCache, ThumbnailSize, bucket_for_row_height, fallback_bucket,
-    first_row_at_or_after, load_with_fallback,
+    first_row_at_or_after, fit_candidates, fit_edge, load_with_fallback,
 };
 
 /// Get the current theme accent background colour from libadwaita.
@@ -71,9 +71,17 @@ pub(super) fn cached_texture(
     cache: &ThumbnailCache,
     asset_id: &str,
     bucket: ThumbnailSize,
+    fit: Option<u32>,
 ) -> Option<gdk4::Texture> {
-    let get = |size| cache.get_cached(asset_id, size);
+    let get = |size| fit_candidates(fit).find_map(|edge| cache.get_fitted(asset_id, size, edge));
     get(bucket).or_else(|| fallback_bucket(bucket).and_then(get))
+}
+
+pub(super) fn tile_fit(fit_tiles: bool, bucket: ThumbnailSize, edge_px: f32) -> Option<u32> {
+    if !fit_tiles || bucket == ThumbnailSize::Thumbnail {
+        return None;
+    }
+    fit_edge(edge_px)
 }
 
 pub(super) fn rows_between(rows: &[LaidRow], top: f32, bottom: f32) -> impl Iterator<Item = &LaidRow> {
@@ -102,7 +110,14 @@ pub(super) async fn load_masonry_asset(
             .load_local_thumbnail_cancellable(&request.asset_id, &path, &is_cancelled)
             .await
     } else {
-        load_with_fallback(cache, &request.asset_id, request.bucket, &is_cancelled).await
+        load_with_fallback(
+            cache,
+            &request.asset_id,
+            request.bucket,
+            request.fit,
+            &is_cancelled,
+        )
+        .await
     }
 }
 

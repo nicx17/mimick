@@ -22,6 +22,7 @@ mod location;
 mod ocr;
 mod people;
 mod rating;
+mod strip;
 mod video;
 mod widgets;
 #[cfg(test)]
@@ -65,7 +66,6 @@ fn apply_lightbox_zoom(
 /// One request to load an asset into the inactive picture.
 struct PictureLoad {
     target: gtk::Picture,
-    target_is_a: bool,
     asset_id: String,
     filename: String,
     mime: String,
@@ -85,8 +85,12 @@ impl PictureLoad {
 
 /// What a finished load shows; applied only if the user is still on that asset.
 enum LoadResult {
-    /// Texture plus the file that drag-out should export.
-    Texture(gdk4::Texture, Option<std::path::PathBuf>),
+    /// A texture, the file drag-out exports, and the file to decode in full when zooming in.
+    Texture {
+        texture: gdk4::Texture,
+        drag_path: Option<std::path::PathBuf>,
+        full_source: Option<std::path::PathBuf>,
+    },
     /// "Preview unavailable" card; a path enables "Open in external app".
     Unavailable(Option<String>),
     /// Video poster failed; keep whatever cached thumbnail is showing.
@@ -125,14 +129,18 @@ impl AssetInfo {
         crate::media_kinds::asset_kind(&self.mime) == crate::media_kinds::AssetKind::Video
     }
 
+    fn decoded_from_disk(&self) -> bool {
+        !self.local_path.is_empty() && !self.edited && !self.is_video()
+    }
+
     fn is_local(&self) -> bool {
         !self.local_path.is_empty() && self.asset_id.starts_with(LOCAL_ID_PREFIX)
     }
 }
 
 /// Lightbox page widgets plus the state shared by its signal handlers.
-/// Handlers hold strong `Rc`s, so it lives as long as the page's widgets.
-struct Lightbox {
+/// The window's `interaction.lightbox` slot owns it while open; handlers must hold `Weak`s.
+pub(super) struct Lightbox {
     ui: Rc<LibraryWindowUi>,
     header: LightboxHeader,
     picture: PictureArea,
@@ -146,10 +154,7 @@ struct Lightbox {
     // they were started for and skip UI writes if the user has navigated away
     // by the time their decode finishes (relevant for slow RAW files).
     load_gen: Cell<u64>,
-    active_a: Cell<bool>,
     zoom_level: Cell<f64>,
-    // -1 = back/prev (slide right), +1 = forward/next (slide left), 0 = no transition
-    nav_dir: Cell<i8>,
     // Cursor position over the picture area, so zoom can be focal-point aware.
     // None when the cursor is outside the viewer; zoom then uses the centre.
     cursor_pos: Cell<Option<(f64, f64)>>,
@@ -158,9 +163,11 @@ struct Lightbox {
     unavailable_path: RefCell<Option<String>>,
     video: RefCell<Option<Rc<VideoPlayer>>>,
     fullscreen_handler: RefCell<Option<glib::SignalHandlerId>>,
+    collapse_handler: RefCell<Option<glib::SignalHandlerId>>,
     // Original file exported by drag-out. Updated by the load logic whenever an
     // asset is displayed (from its local path or the preview cache).
     drag_path: RefCell<Option<std::path::PathBuf>>,
+    full_source: RefCell<Option<std::path::PathBuf>>,
     // A capture date was edited: reload the grid when the lightbox closes, since the
     // asset's timeline position moved (reloading now would shift the open photo).
     reload_on_close: Cell<bool>,
@@ -183,6 +190,54 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
     lightbox.connect_fullscreen();
     lightbox.render();
     lightbox.ui.nav.push(&lightbox.header.page);
+    let slot = &lightbox.ui.interaction.lightbox;
+    if let Some(previous) = slot.replace(Some(lightbox.clone())) {
+        lightbox.reload_on_close.set(previous.reload_on_close.get());
+        previous.release();
+    }
+    log::debug!("Lightbox opened at position {position}");
+}
+
+pub(super) fn close_lightbox(ui: &LibraryWindowUi) {
+    if let Some(lightbox) = ui.interaction.lightbox.take() {
+        log::debug!("Lightbox closed with its window");
+        lightbox.release();
+    }
+}
+
+impl Lightbox {
+    fn release(&self) {
+        self.close_fullscreen();
+        if let Some(handler) = self.collapse_handler.take() {
+            self.ui.split.disconnect(handler);
+        }
+        self.close_video();
+        self.picture.strip.stop();
+        for picture in self.picture.strip.pictures() {
+            picture.set_paintable(None::<&gtk::gdk::Paintable>);
+        }
+    }
+
+    fn close(self: &Rc<Self>) {
+        self.release();
+        if self.reload_on_close.replace(false) {
+            crate::library::refresh_library_after_mutation(self.ui.clone(), true);
+        }
+        let slot = &self.ui.interaction.lightbox;
+        if slot
+            .borrow()
+            .as_ref()
+            .is_some_and(|open| Rc::ptr_eq(open, self))
+        {
+            slot.take();
+        }
+    }
+}
+
+impl Drop for Lightbox {
+    fn drop(&mut self) {
+        log::debug!("Lightbox dropped");
+    }
 }
 
 #[cfg(test)]

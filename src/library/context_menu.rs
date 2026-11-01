@@ -129,6 +129,10 @@ impl Menu {
             .autohide(true)
             .build();
         popover.set_parent(parent);
+        popover.connect_closed(|popover| {
+            let popover = popover.clone();
+            glib::idle_add_local_once(move || popover.unparent());
+        });
         popover.set_pointing_to(Some(&gtk::gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
         let content = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
@@ -433,10 +437,14 @@ pub(super) fn show_error_toast(ui: &LibraryWindowUi, title: &str, details: &str)
 }
 
 pub(super) fn show_alert_dialog(ui: &LibraryWindowUi, heading: &str, body: &str) {
+    show_alert_on(&ui.window, heading, body);
+}
+
+pub(super) fn show_alert_on(parent: &impl IsA<gtk::Widget>, heading: &str, body: &str) {
     let alert = libadwaita::AlertDialog::builder()
         .heading(heading)
         .body(body)
         .build();
     alert.add_response("ok", "OK");
-    alert.present(Some(&ui.window));
+    alert.present(Some(parent));
 }

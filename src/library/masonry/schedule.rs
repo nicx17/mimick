@@ -16,6 +16,7 @@ pub(super) struct LoadRequest {
     pub(super) asset_id: String,
     pub(super) asset_index: u32,
     pub(super) bucket: ThumbnailSize,
+    pub(super) fit: Option<u32>,
     pub(super) local_path: String,
     pub(super) is_local: bool,
 }
@@ -87,6 +88,7 @@ mod tests {
             asset_id: id.to_string(),
             asset_index: 0,
             bucket: ThumbnailSize::Thumbnail,
+            fit: None,
             local_path: String::new(),
             is_local: false,
         }

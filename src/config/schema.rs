@@ -73,11 +73,17 @@ pub struct ConfigData {
     /// Grid thumbnail quality: "auto", "thumbnail", "preview". Defaults to auto.
     #[serde(default = "default_grid_quality")]
     pub library_grid_quality: String,
+    /// Decode Preview and Full Size grid thumbnails at their tile's size.
+    #[serde(default = "default_true")]
+    pub library_grid_fit_tiles: bool,
     /// Total on-disk cache cap in megabytes across all subcaches
     /// (thumbnails, raw_decode, exif, video, preview, open-in).
     /// Pruning runs once at startup. Defaults to 2000 MB.
     #[serde(default = "default_cache_disk_cap_mb")]
     pub cache_disk_cap_mb: u32,
+    /// RAM for decoded thumbnails in megabytes; capped at half the system's RAM.
+    #[serde(default = "default_cache_memory_cap_mb")]
+    pub cache_memory_cap_mb: u32,
     /// When true, decoded RAW textures are cached to disk for faster re-opens.
     /// Disable to save storage; each cached file is a full-resolution PNG.
     #[serde(default)]
@@ -137,7 +143,9 @@ impl Default for ConfigData {
             download_target_path: None,
             library_preview_full_resolution: false,
             library_grid_quality: default_grid_quality(),
+            library_grid_fit_tiles: true,
             cache_disk_cap_mb: default_cache_disk_cap_mb(),
+            cache_memory_cap_mb: default_cache_memory_cap_mb(),
             raw_decode_cache_enabled: false,
             raw_full_decode: false,
             show_unnamed_faces: true,
@@ -170,6 +178,10 @@ fn default_upload_concurrency() -> u8 {
 /// Default total on-disk cache cap in MB.
 fn default_cache_disk_cap_mb() -> u32 {
     2000
+}
+
+fn default_cache_memory_cap_mb() -> u32 {
+    2048
 }
 
 fn default_grid_border_color() -> String {

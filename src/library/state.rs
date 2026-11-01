@@ -241,10 +241,6 @@ impl LibraryState {
         }
     }
 
-    pub fn load_initial_source(&mut self) -> (u64, LibrarySource, u32) {
-        self.switch_source(LibrarySource::AllAssets)
-    }
-
     pub fn switch_source(&mut self, source: LibrarySource) -> (u64, LibrarySource, u32) {
         if !source.is_search() {
             self.previous_non_search_source = source.clone();
@@ -466,7 +462,7 @@ mod tests {
     #[test]
     fn test_stale_generation_results_are_ignored() {
         let mut state = LibraryState::new();
-        let (generation, _, _) = state.load_initial_source();
+        let (generation, _, _) = state.switch_source(LibrarySource::AllAssets);
         let newer_generation = state.switch_source(LibrarySource::MetadataSearch {
             query: "cats".into(),
         });
@@ -480,7 +476,7 @@ mod tests {
     #[test]
     fn test_duplicate_page_requests_are_suppressed() {
         let mut state = LibraryState::new();
-        let (_, _, _) = state.load_initial_source();
+        let (_, _, _) = state.switch_source(LibrarySource::AllAssets);
         assert!(state.load_next_page_if_needed().is_none());
         state.page_in_flight = false;
         assert!(state.load_next_page_if_needed().is_some());
@@ -490,7 +486,7 @@ mod tests {
     #[test]
     fn test_dedup_drops_duplicates_across_appends() {
         let mut state = LibraryState::new();
-        let (generation, _, _) = state.load_initial_source();
+        let (generation, _, _) = state.switch_source(LibrarySource::AllAssets);
         let mk_page = |start: u32| -> Vec<LibraryAsset> {
             (0..50)
                 .map(|i| asset(&format!("{}", start + i), "a.jpg"))
@@ -569,7 +565,7 @@ mod tests {
     #[test]
     fn timeline_months_insert_in_place_and_stop_paging() {
         let mut state = LibraryState::new();
-        let (generation, _, _) = state.load_initial_source();
+        let (generation, _, _) = state.switch_source(LibrarySource::AllAssets);
         assert!(state.enter_timeline(generation, false));
         assert!(state.load_next_page_if_needed().is_none());
         assert!(state.insert_assets_at(

@@ -70,6 +70,19 @@ fn close_panel(ui: &Rc<LibraryWindowUi>) {
 
 /// Two thirds of the width for the map beside the photos, or half the height above them.
 fn place_divider(split: &gtk::Paned) {
+    if try_place_divider(split) {
+        return;
+    }
+    split.add_tick_callback(|split, _| {
+        if try_place_divider(split) {
+            glib::ControlFlow::Break
+        } else {
+            glib::ControlFlow::Continue
+        }
+    });
+}
+
+fn try_place_divider(split: &gtk::Paned) -> bool {
     let position = match split.orientation() {
         gtk::Orientation::Horizontal => split.width() * 2 / 3,
         _ => split.height() / 2,
@@ -77,6 +90,7 @@ fn place_divider(split: &gtk::Paned) {
     if position > 0 {
         split.set_position(position);
     }
+    position > 0
 }
 
 #[cfg(test)]

@@ -19,7 +19,6 @@ use crate::library::explore_view::ExploreViewParts;
 use crate::library::masonry::GridViewParts;
 use crate::library::search_view::SearchViewParts;
 use crate::library::sidebar::SidebarParts;
-use crate::library::state::Location;
 
 use self::actions::{connect_bulk_actions, connect_select_mode};
 use self::album_link::{connect_album_link_row, refresh_album_link_row};
@@ -118,7 +117,9 @@ const MAP_AREA_PAGE_SIZE: u32 = 32;
 mod texture_decode;
 mod time_zones;
 mod timeline;
-use texture_decode::{decode_raw_thumbnail_texture, load_texture_blocking};
+use texture_decode::{
+    decode_raw_thumbnail_texture, load_texture_blocking, load_texture_fitted_blocking,
+};
 pub use texture_decode::{set_raw_cache_enabled, set_raw_full_decode};
 
 /// Register application custom icons with the Gtk icon theme system.
@@ -187,6 +188,7 @@ struct WindowInteractionState {
     album_sort_applied: Cell<bool>,
     last_seen_upload_batch: Cell<u64>,
     timeline: RefCell<Option<Rc<timeline::Timeline>>>,
+    lightbox: RefCell<Option<Rc<lightbox::Lightbox>>>,
 }
 
 /// Build and display the main library window application layout.
@@ -266,7 +268,12 @@ fn connect_window_controls(ui: &Rc<LibraryWindowUi>, controls: WindowControls) {
 
 fn install_close_handler(ui: &Rc<LibraryWindowUi>, window: &libadwaita::ApplicationWindow) {
     let close_ctx = ui.ctx.clone();
+    let weak = Rc::downgrade(ui);
     window.connect_close_request(move |_| {
+        log::info!("Library window closing");
+        if let Some(ui) = weak.upgrade() {
+            lightbox::close_lightbox(&ui);
+        }
         close_ctx.thumbnail_cache.clear_memory();
         glib::timeout_add_seconds_local_once(3, release_freed_memory);
         glib::Propagation::Proceed
@@ -328,14 +335,6 @@ fn connect_menus(ui: Rc<LibraryWindowUi>) {
 
 /// Bootstrap initial data loading and background tasks for the library window.
 fn bootstrap_window(ui: Rc<LibraryWindowUi>) {
-    let initial_request = {
-        let mut state = ui.ctx.library_state.lock();
-        state.load_initial_source()
-    };
-
-    apply_source_ui_state(&ui, &initial_request.1);
-    source_header::show(&ui, &initial_request.1);
-    navigation::sync_controls(&ui, &Location::Source(initial_request.1.clone()));
     load_albums(ui.clone());
     load_status(ui.clone());
     features::load(&ui);
@@ -346,7 +345,7 @@ fn bootstrap_window(ui: Rc<LibraryWindowUi>) {
         spawn_transfer_poll_loop(ui.clone()),
     ];
     stop_timers_on_close(&ui.window, timers);
-    load_source_page(ui, initial_request, false);
+    navigation::restore(&ui);
 }
 
 /// Build a drop overlay widget and wrap `content` in a `gtk::Overlay`.

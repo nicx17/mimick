@@ -59,6 +59,11 @@ pub(super) fn reload_current(ui: &Rc<LibraryWindowUi>) {
     show(ui, &location);
 }
 
+pub(super) fn restore(ui: &Rc<LibraryWindowUi>) {
+    log::debug!("Library window restoring its last view");
+    show(ui, &current(ui));
+}
+
 pub(super) fn current(ui: &LibraryWindowUi) -> Location {
     ui.ctx.library_state.lock().location.clone()
 }
@@ -68,6 +73,7 @@ pub(super) fn on_page(ui: &LibraryWindowUi) -> bool {
 }
 
 fn show(ui: &Rc<LibraryWindowUi>, location: &Location) {
+    log::debug!("Library view -> {location:?}");
     let search_form =
         matches!(location, Location::Page(LibraryPage::Search)) || location.is_search();
     ui.search_view.root.set_reveal_child(search_form);

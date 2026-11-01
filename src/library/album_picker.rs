@@ -2,51 +2,79 @@
 
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
+use std::sync::Arc;
 
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
 use crate::api_client::{BulkOutcome, LibraryAlbum};
+use crate::app_context::AppContext;
 
 use super::LibraryWindowUi;
 use super::album_assets::{open_album, refresh_albums, showing_album};
 use super::albums_view::spawn_thumbnail;
-use super::context_menu::{show_alert_dialog, show_error_toast};
-use super::dialogs::{TextPrompt, prompt_text, toast_with_action};
+use super::context_menu::{show_alert_on, show_error_toast};
+use super::dialogs::{TextPrompt, prompt_text_on, toast_with_action};
 use super::header_format::count_label;
 
 const COVER_SIZE: i32 = 40;
+
+type OnChosen = Rc<dyn Fn(String, String)>;
 
 pub(super) fn present(ui: &Rc<LibraryWindowUi>, asset_ids: Vec<String>, on_added: Rc<dyn Fn()>) {
     if asset_ids.is_empty() {
         return;
     }
-    let ui = ui.clone();
+    let count = asset_ids.len();
+    let ui_add = ui.clone();
+    choose(
+        ui.window.upcast_ref(),
+        ui.ctx.clone(),
+        "Add to Album",
+        count,
+        Rc::new(move |id, name| {
+            add_and_report(&ui_add, id, name, asset_ids.clone(), on_added.clone());
+        }),
+    );
+}
+
+pub(super) fn choose(
+    parent: &gtk::Widget,
+    ctx: Arc<AppContext>,
+    title: &'static str,
+    count: usize,
+    on_chosen: OnChosen,
+) {
+    let parent = parent.clone();
     glib::MainContext::default().spawn_local(async move {
-        let me = super::ensure_current_user_id(&ui.ctx)
+        let me = super::ensure_current_user_id(&ctx)
             .await
             .unwrap_or_default();
-        let albums = known_albums(&ui).await;
-        let picker = Picker::new(ui, asset_ids, on_added, albums, me);
+        let albums = known_albums(&ctx).await;
+        log::debug!(
+            "Album picker \"{title}\" opened with {} albums",
+            albums.len()
+        );
+        let picker = Picker::new(ctx, parent, on_chosen, albums, me, (title, count));
         picker.render();
         let keep_alive = RefCell::new(Some(picker.clone()));
         picker.dialog.connect_closed(move |_| {
             keep_alive.borrow_mut().take();
         });
-        picker.dialog.present(Some(&picker.ui.window));
+        picker.dialog.present(Some(&picker.parent));
         picker.filter.grab_focus();
     });
 }
 
-async fn known_albums(ui: &LibraryWindowUi) -> Vec<LibraryAlbum> {
-    let cached = ui.ctx.library_state.lock().albums.clone();
+async fn known_albums(ctx: &AppContext) -> Vec<LibraryAlbum> {
+    let cached = ctx.library_state.lock().albums.clone();
     if !cached.is_empty() {
         return cached;
     }
-    ui.ctx
-        .api_client
+    ctx.api_client
         .fetch_library_albums()
         .await
+        .inspect_err(|err| log::warn!("Album picker could not load albums: {err}"))
         .unwrap_or_default()
 }
 
@@ -126,23 +154,17 @@ fn report_added(ui: &Rc<LibraryWindowUi>, outcome: BulkOutcome, album_id: String
     ui.toasts.add_toast(toast);
 }
 
-fn create_and_add(
-    ui: &Rc<LibraryWindowUi>,
-    name: String,
-    asset_ids: Vec<String>,
-    on_added: Rc<dyn Fn()>,
-) {
-    let ui = ui.clone();
+fn create_then(ctx: Arc<AppContext>, parent: gtk::Widget, name: String, on_chosen: OnChosen) {
     glib::MainContext::default().spawn_local(async move {
-        match ui.ctx.api_client.create_album(&name).await {
-            Ok(Some(id)) => add_and_report(&ui, id, name, asset_ids, on_added),
-            Ok(None) => show_alert_dialog(
-                &ui,
+        match ctx.api_client.create_album(&name).await {
+            Ok(Some(id)) => on_chosen(id, name),
+            Ok(None) => show_alert_on(
+                &parent,
                 "Could Not Create Album",
                 "Immich didn't return the new album.",
             ),
-            Err(err) => show_alert_dialog(
-                &ui,
+            Err(err) => show_alert_on(
+                &parent,
                 "Could Not Create Album",
                 &format!("Immich rejected the request: {err}"),
             ),
@@ -151,9 +173,9 @@ fn create_and_add(
 }
 
 struct Picker {
-    ui: Rc<LibraryWindowUi>,
-    asset_ids: Vec<String>,
-    on_added: Rc<dyn Fn()>,
+    ctx: Arc<AppContext>,
+    parent: gtk::Widget,
+    on_chosen: OnChosen,
     albums: Vec<LibraryAlbum>,
     me: String,
     dialog: libadwaita::Dialog,
@@ -164,11 +186,12 @@ struct Picker {
 
 impl Picker {
     fn new(
-        ui: Rc<LibraryWindowUi>,
-        asset_ids: Vec<String>,
-        on_added: Rc<dyn Fn()>,
+        ctx: Arc<AppContext>,
+        parent: gtk::Widget,
+        on_chosen: OnChosen,
         albums: Vec<LibraryAlbum>,
         me: String,
+        (title, count): (&str, usize),
     ) -> Rc<Self> {
         let filter = gtk::SearchEntry::builder()
             .placeholder_text("Filter albums")
@@ -178,12 +201,13 @@ impl Picker {
             .selection_mode(gtk::SelectionMode::None)
             .css_classes(["boxed-list"])
             .valign(gtk::Align::Start)
+            .hexpand(true)
             .build();
-        let dialog = picker_dialog(&filter, &list, asset_ids.len());
+        let dialog = picker_dialog(&filter, &list, title, count);
         let picker = Rc::new(Self {
-            ui,
-            asset_ids,
-            on_added,
+            ctx,
+            parent,
+            on_chosen,
             albums,
             me,
             dialog,
@@ -263,7 +287,7 @@ impl Picker {
             .title_lines(1)
             .activatable(true)
             .build();
-        row.add_prefix(&album_cover(&self.ui, album));
+        row.add_prefix(&album_cover(&self.ctx, album));
         let (weak, id, name) = (
             Rc::downgrade(self),
             album.id.clone(),
@@ -279,13 +303,7 @@ fn pick_album(picker: &Weak<Picker>, album_id: String, name: String) {
         return;
     };
     picker.dialog.close();
-    add_and_report(
-        &picker.ui,
-        album_id,
-        name,
-        picker.asset_ids.clone(),
-        picker.on_added.clone(),
-    );
+    (picker.on_chosen)(album_id, name);
 }
 
 /// Create an album named `name`, or ask for a name first when there isn't one.
@@ -294,18 +312,17 @@ fn pick_new(picker: &Weak<Picker>, name: Option<String>) {
         return;
     };
     picker.dialog.close();
-    let (ui, ids, on_added) = (
-        picker.ui.clone(),
-        picker.asset_ids.clone(),
-        picker.on_added.clone(),
+    let (ctx, parent, on_chosen) = (
+        picker.ctx.clone(),
+        picker.parent.clone(),
+        picker.on_chosen.clone(),
     );
     if let Some(name) = name {
-        create_and_add(&ui, name, ids, on_added);
+        create_then(ctx, parent, name, on_chosen);
         return;
     }
-    let ui_create = ui.clone();
-    prompt_text(
-        &ui,
+    prompt_text_on(
+        &picker.parent,
         TextPrompt {
             heading: "New Album",
             body: "The selected items will be added to it.",
@@ -313,18 +330,19 @@ fn pick_new(picker: &Weak<Picker>, name: Option<String>) {
             placeholder: "Album name",
             accept: "Create",
         },
-        move |name| create_and_add(&ui_create, name, ids.clone(), on_added.clone()),
+        move |name| create_then(ctx.clone(), parent.clone(), name, on_chosen.clone()),
     );
 }
 
 fn picker_dialog(
     filter: &gtk::SearchEntry,
     list: &gtk::ListBox,
+    title: &str,
     count: usize,
 ) -> libadwaita::Dialog {
     let header = libadwaita::HeaderBar::builder()
         .title_widget(&libadwaita::WindowTitle::new(
-            "Add to Album",
+            title,
             &count_label(count as u64),
         ))
         .build();
@@ -356,7 +374,7 @@ fn picker_dialog(
     toolbar.add_top_bar(&header);
     toolbar.add_top_bar(&search);
     libadwaita::Dialog::builder()
-        .title("Add to Album")
+        .title(title)
         .content_width(400)
         .content_height(560)
         .child(&toolbar)
@@ -396,7 +414,7 @@ fn cover_placeholder(icon: &str) -> gtk::Overlay {
     frame
 }
 
-pub(super) fn album_cover(ui: &LibraryWindowUi, album: &LibraryAlbum) -> gtk::Overlay {
+pub(super) fn album_cover(ctx: &Arc<AppContext>, album: &LibraryAlbum) -> gtk::Overlay {
     let Some(thumb_id) = album.thumbnail_asset_id.clone() else {
         return cover_placeholder("folder-pictures-symbolic");
     };
@@ -406,7 +424,7 @@ pub(super) fn album_cover(ui: &LibraryWindowUi, album: &LibraryAlbum) -> gtk::Ov
         .can_shrink(true)
         .build();
     frame.add_overlay(&picture);
-    spawn_thumbnail(ui.ctx.clone(), thumb_id, picture);
+    spawn_thumbnail(ctx.clone(), thumb_id, picture);
     frame
 }
 

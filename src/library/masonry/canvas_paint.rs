@@ -50,6 +50,8 @@ impl MasonryCanvas {
                 placeholder: placeholder_color(),
                 select_tint: gdk4::RGBA::new(0.30, 0.55, 0.95, 0.35),
                 selection: self.selection.get(),
+                fit_tiles: self.fit_tiles.get(),
+                scale: self.obj().scale_factor() as f32,
             }
         }
 
@@ -83,7 +85,7 @@ impl MasonryCanvas {
 
         pub(super) fn wanted_loads(
             &self,
-            model: &LibraryAssetModel,
+            sctx: &SnapshotCtx<'_>,
             rows: &[LaidRow],
             viewport: &SnapshotViewport,
         ) -> Vec<LoadRequest> {
@@ -95,7 +97,7 @@ impl MasonryCanvas {
                 let bucket = bucket_for_row_height(row.h, self.quality.get());
                 wanted.extend(
                     row.items.iter().filter_map(|it| {
-                        self.load_request(model, it, row, viewport.center, bucket)
+                        self.load_request(sctx, it, row, viewport.center, bucket)
                     }),
                 );
             }
@@ -123,7 +125,7 @@ impl MasonryCanvas {
             let asset_id = asset.property::<String>("id");
             let local_path = asset.property::<String>("local-path");
             let bucket = bucket_for_asset(&asset_id, &local_path, row.h, self.quality.get());
-            let cached = cached_texture(sctx.cache, &asset_id, bucket);
+            let cached = cached_texture(sctx.cache, &asset_id, bucket, sctx.fit(bucket, it, row));
 
             let clipped = CORNER_RADIUS > 0.0;
             if clipped {

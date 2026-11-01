@@ -53,6 +53,63 @@ pub(super) fn load_texture_blocking(path: &std::path::Path) -> Option<gdk4::Text
     result
 }
 
+/// Decode `path` to fit `max_edge` pixels on its long side; JPEGs shrink while decoding.
+pub(super) fn load_texture_fitted_blocking(
+    path: &std::path::Path,
+    max_edge: u32,
+) -> Option<gdk4::Texture> {
+    let started = std::time::Instant::now();
+    let texture = (texture_decoder_for_path(path) == TextureDecoder::Jpeg)
+        .then(|| decode_jpeg(path, Some(max_edge)))
+        .flatten()
+        .or_else(|| load_texture_blocking(path))?;
+    let texture = fit_texture(texture, max_edge);
+    log::debug!(
+        "Decoded {} to fit {max_edge}px in {}ms ({}x{})",
+        path.display(),
+        started.elapsed().as_millis(),
+        texture.width(),
+        texture.height(),
+    );
+    Some(texture)
+}
+
+fn fitted_size(width: i32, height: i32, max_edge: u32) -> Option<(i32, i32)> {
+    let max = i32::try_from(max_edge).ok()?;
+    let long = width.max(height);
+    if long <= max {
+        return None;
+    }
+    let scale = f64::from(max) / f64::from(long);
+    let fit = |side: i32| ((f64::from(side) * scale).round() as i32).max(1);
+    Some((fit(width), fit(height)))
+}
+
+fn fit_pixbuf(pixbuf: gtk::gdk_pixbuf::Pixbuf, max_edge: u32) -> gtk::gdk_pixbuf::Pixbuf {
+    fitted_size(pixbuf.width(), pixbuf.height(), max_edge)
+        .and_then(|(w, h)| pixbuf.scale_simple(w, h, gtk::gdk_pixbuf::InterpType::Bilinear))
+        .unwrap_or(pixbuf)
+}
+
+fn fit_texture(texture: gdk4::Texture, max_edge: u32) -> gdk4::Texture {
+    if fitted_size(texture.width(), texture.height(), max_edge).is_none() {
+        return texture;
+    }
+    let mut downloader = gdk4::TextureDownloader::new(&texture);
+    downloader.set_format(gdk4::MemoryFormat::R8g8b8a8);
+    let (bytes, stride) = downloader.download_bytes();
+    let pixbuf = gtk::gdk_pixbuf::Pixbuf::from_bytes(
+        &bytes,
+        gtk::gdk_pixbuf::Colorspace::Rgb,
+        true,
+        8,
+        texture.width(),
+        texture.height(),
+        stride as i32,
+    );
+    pixbuf_to_texture(&fit_pixbuf(pixbuf, max_edge)).unwrap_or(texture)
+}
+
 fn decode_with_fallbacks(
     path: &std::path::Path,
     decoder: TextureDecoder,
@@ -1158,6 +1215,10 @@ fn decode_pixbuf_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
 }
 
 fn decode_jpeg_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
+    decode_jpeg(path, None)
+}
+
+fn decode_jpeg(path: &std::path::Path, max_edge: Option<u32>) -> Option<gdk4::Texture> {
     let bytes = match std::fs::read(path) {
         Ok(bytes) => bytes,
         Err(err) => {
@@ -1165,31 +1226,77 @@ fn decode_jpeg_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
             return None;
         }
     };
-    let orient = read_jpeg_exif_orientation(&bytes);
-    match turbojpeg::decompress(&bytes, turbojpeg::PixelFormat::RGB) {
-        Ok(image) => {
-            let width: i32 = image.width.try_into().ok()?;
-            let height: i32 = image.height.try_into().ok()?;
-            let raw_pixbuf = gtk::gdk_pixbuf::Pixbuf::from_mut_slice(
-                image.pixels,
-                gtk::gdk_pixbuf::Colorspace::Rgb,
-                false,
-                8,
-                width,
-                height,
-                image.pitch as i32,
-            );
-            let oriented = match orient {
-                Some(o) if o != 1 => apply_exif_orientation(&raw_pixbuf, o),
-                _ => raw_pixbuf,
-            };
-            pixbuf_to_texture(&oriented)
-        }
+    let orient = read_jpeg_exif_orientation(&bytes).filter(|&o| o != 1);
+    let image = match decompress_jpeg(&bytes, max_edge) {
+        Ok(image) => image,
         Err(err) => {
             log::debug!("turbojpeg decode failed for {}: {}", path.display(), err);
-            None
+            return None;
         }
+    };
+    let width: i32 = image.width.try_into().ok()?;
+    let height: i32 = image.height.try_into().ok()?;
+    let oversized = max_edge.is_some_and(|edge| fitted_size(width, height, edge).is_some());
+    if orient.is_none() && !oversized {
+        return memory_texture(
+            image.width.try_into().ok()?,
+            image.height.try_into().ok()?,
+            gdk4::MemoryFormat::R8g8b8,
+            image.pixels,
+            image.pitch,
+        );
     }
+    let raw_pixbuf = gtk::gdk_pixbuf::Pixbuf::from_mut_slice(
+        image.pixels,
+        gtk::gdk_pixbuf::Colorspace::Rgb,
+        false,
+        8,
+        width,
+        height,
+        image.pitch as i32,
+    );
+    let oriented = match orient {
+        Some(o) => apply_exif_orientation(&raw_pixbuf, o),
+        None => raw_pixbuf,
+    };
+    let fitted = match max_edge {
+        Some(edge) => fit_pixbuf(oriented, edge),
+        None => oriented,
+    };
+    pixbuf_to_texture(&fitted)
+}
+
+fn decompress_jpeg(
+    bytes: &[u8],
+    max_edge: Option<u32>,
+) -> Result<turbojpeg::Image<Vec<u8>>, turbojpeg::Error> {
+    let mut decompressor = turbojpeg::Decompressor::new()?;
+    let header = decompressor.read_header(bytes)?;
+    let factor = max_edge.map_or(turbojpeg::ScalingFactor::ONE, |edge| {
+        jpeg_scale_for(header.width.max(header.height), edge)
+    });
+    decompressor.set_scaling_factor(factor)?;
+    let scaled = header.scaled(factor);
+    let format = turbojpeg::PixelFormat::RGB;
+    let pitch = scaled.width * format.size();
+    let mut image = turbojpeg::Image {
+        pixels: vec![0; scaled.height * pitch],
+        width: scaled.width,
+        pitch,
+        height: scaled.height,
+        format,
+    };
+    decompressor.decompress(bytes, image.as_deref_mut())?;
+    Ok(image)
+}
+
+fn jpeg_scale_for(long_edge: usize, max_edge: u32) -> turbojpeg::ScalingFactor {
+    let target = max_edge as usize;
+    turbojpeg::Decompressor::supported_scaling_factors()
+        .into_iter()
+        .filter(|factor| factor.num() <= factor.denom() && factor.scale(long_edge) >= target)
+        .min_by_key(|factor| factor.scale(long_edge))
+        .unwrap_or(turbojpeg::ScalingFactor::ONE)
 }
 
 fn decode_webp_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
@@ -1261,6 +1368,30 @@ mod texture_decoder_tests {
             dimensions,
             "fixture `{name}` decoded with unexpected dimensions"
         );
+    }
+
+    #[test]
+    fn jpeg_scale_picks_the_smallest_factor_that_still_covers_the_edge() {
+        assert_eq!(jpeg_scale_for(16384, 2560).scale(16384), 4096);
+        assert_eq!(jpeg_scale_for(6000, 2560).scale(6000), 3000);
+        assert_eq!(jpeg_scale_for(1000, 2560), turbojpeg::ScalingFactor::ONE);
+    }
+
+    #[test]
+    fn fitted_decodes_shrink_to_the_edge_without_upscaling() {
+        let dir = tempfile::tempdir().unwrap();
+        let jpeg = dir.path().join("big.jpg");
+        image::RgbImage::new(1600, 1200).save(&jpeg).unwrap();
+        let png = dir.path().join("wide.png");
+        image::RgbImage::new(1000, 500).save(&png).unwrap();
+        let size = |path: &std::path::Path, edge| {
+            let texture = load_texture_fitted_blocking(path, edge).unwrap();
+            (texture.width(), texture.height())
+        };
+        assert_eq!(size(&jpeg, 400), (400, 300));
+        assert_eq!(size(&jpeg, 500), (500, 375));
+        assert_eq!(size(&png, 250), (250, 125));
+        assert_eq!(size(&png, 4000), (1000, 500));
     }
 
     #[test]
