@@ -112,6 +112,7 @@ impl PendingDeletions {
 #[derive(Debug, Clone, PartialEq)]
 pub struct GridStyle {
     pub quality: String,
+    pub fit_tiles: bool,
     pub border_width: f32,
     pub border_color: String,
 }
@@ -120,6 +121,7 @@ impl GridStyle {
     pub fn from_config(data: &ConfigData) -> Self {
         Self {
             quality: data.library_grid_quality.clone(),
+            fit_tiles: data.library_grid_fit_tiles,
             border_width: data.grid_border_width,
             border_color: data.grid_border_color.clone(),
         }

@@ -39,6 +39,7 @@ fn scrolled_content(canvas: &MasonryCanvas) -> (gtk::ScrolledWindow, gtk::Box) {
 
 fn apply_grid_style(canvas: &MasonryCanvas, style: &GridStyle) {
     canvas.set_quality(GridQuality::parse(&style.quality));
+    canvas.set_fit_tiles(style.fit_tiles);
     if let Ok(color) = style.border_color.parse::<gdk4::RGBA>() {
         canvas.set_border_color(color);
     }

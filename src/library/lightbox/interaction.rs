@@ -66,7 +66,9 @@ impl Lightbox {
             unavailable_path: RefCell::new(None),
             video: RefCell::new(None),
             fullscreen_handler: RefCell::new(None),
+            collapse_handler: RefCell::new(None),
             drag_path: RefCell::new(None),
+            full_source: RefCell::new(None),
             reload_on_close: Cell::new(false),
             chrome: fullscreen::Chrome::new(),
         })
@@ -74,22 +76,18 @@ impl Lightbox {
 
     /// Wire the external-open button, the video play badge, and the drag-out source.
     pub(super) fn connect_overlays(self: &Rc<Self>) {
-        let lb = self.clone();
-        self.unavailable.open.connect_clicked(move |_| {
+        self.on_click(&self.unavailable.open, |lb| {
             if let Some(path) = lb.unavailable_path.borrow().as_deref() {
                 open_local_with_default_app(path);
             }
         });
-
-        let lb = self.clone();
-        self.video_badge_button
-            .connect_clicked(move |_| lb.toggle_video());
+        self.on_click(&self.video_badge_button, |lb| lb.toggle_video());
 
         let drag_source = gtk::DragSource::new();
         drag_source.set_actions(gtk::gdk::DragAction::COPY);
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         drag_source.connect_prepare(move |_source, _x, _y| {
-            let path = lb.drag_path.borrow().clone()?;
+            let path = lb.upgrade()?.drag_path.borrow().clone()?;
             if !path.exists() {
                 return None;
             }
@@ -115,52 +113,53 @@ impl Lightbox {
             }
         };
         sync_nav_visibility();
-        self.ui
+        let handler = self
+            .ui
             .split
             .connect_notify_local(Some("collapsed"), move |_, _| sync_nav_visibility());
+        *self.collapse_handler.borrow_mut() = Some(handler);
 
-        let lb = self.clone();
-        self.header
-            .prev_btn
-            .connect_clicked(move |_| lb.goto_prev());
-        let lb = self.clone();
-        self.header
-            .next_btn
-            .connect_clicked(move |_| lb.goto_next());
+        self.on_click(&self.header.prev_btn, |lb| lb.goto_prev());
+        self.on_click(&self.header.next_btn, |lb| lb.goto_next());
 
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         self.header.page.connect_hidden(move |_| {
-            lb.close_fullscreen();
-            lb.close_video();
-            if lb.reload_on_close.replace(false) {
-                crate::library::refresh_library_after_mutation(lb.ui.clone(), true);
+            if let Some(lb) = lb.upgrade() {
+                lb.close();
+            }
+        });
+    }
+
+    pub(super) fn on_click(
+        self: &Rc<Self>,
+        button: &impl IsA<gtk::Button>,
+        action: impl Fn(&Rc<Self>) + 'static,
+    ) {
+        let lb = Rc::downgrade(self);
+        button.connect_clicked(move |_| {
+            if let Some(lb) = lb.upgrade() {
+                action(&lb);
             }
         });
     }
 
     /// Zoom buttons, pinch, drag-to-pan, double/middle click, and Ctrl+scroll.
     pub(super) fn connect_zoom_controls(self: &Rc<Self>) {
-        let lb = self.clone();
-        self.actions
-            .zoom_in
-            .connect_clicked(move |_| lb.zoom_by(1.2));
-        let lb = self.clone();
-        self.actions
-            .zoom_out
-            .connect_clicked(move |_| lb.zoom_by(1.0 / 1.2));
-        let lb = self.clone();
-        self.actions
-            .zoom_reset
-            .connect_clicked(move |_| lb.zoom_reset());
+        self.on_click(&self.actions.zoom_in, |lb| lb.zoom_by(1.2));
+        self.on_click(&self.actions.zoom_out, |lb| lb.zoom_by(1.0 / 1.2));
+        self.on_click(&self.actions.zoom_reset, |lb| lb.zoom_reset());
 
         self.connect_pan_and_pinch();
 
         // Double-click on the picture: zoom in 2x toward the click position.
         let double_click = gtk::GestureClick::new();
         double_click.set_button(gtk::gdk::BUTTON_PRIMARY);
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         double_click.connect_pressed(move |_, n_press, x, y| {
-            if n_press == 2 && lb.ocr_box_under(x, y).is_none() {
+            if let Some(lb) = lb.upgrade()
+                && n_press == 2
+                && lb.ocr_box_under(x, y).is_none()
+            {
                 lb.cursor_pos.set(Some((x, y)));
                 lb.set_zoom(lb.zoom_level.get() * 2.0);
             }
@@ -170,8 +169,12 @@ impl Lightbox {
         // Middle-click: reset zoom to 100%.
         let middle_click = gtk::GestureClick::new();
         middle_click.set_button(gtk::gdk::BUTTON_MIDDLE);
-        let lb = self.clone();
-        middle_click.connect_pressed(move |_, _, _, _| lb.zoom_reset());
+        let lb = Rc::downgrade(self);
+        middle_click.connect_pressed(move |_, _, _, _| {
+            if let Some(lb) = lb.upgrade() {
+                lb.zoom_reset();
+            }
+        });
         self.picture.scrolled.add_controller(middle_click);
 
         // Ctrl+wheel zoom on the picture area, captured before the scrolled window
@@ -180,8 +183,11 @@ impl Lightbox {
         let zoom_scroll =
             gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::BOTH_AXES);
         zoom_scroll.set_propagation_phase(gtk::PropagationPhase::Capture);
-        let lb = self.clone();
-        zoom_scroll.connect_scroll(move |ctrl, dx, dy| lb.handle_zoom_scroll(ctrl, dx, dy));
+        let lb = Rc::downgrade(self);
+        zoom_scroll.connect_scroll(move |ctrl, dx, dy| match lb.upgrade() {
+            Some(lb) => lb.handle_zoom_scroll(ctrl, dx, dy),
+            None => glib::Propagation::Proceed,
+        });
         self.picture.scrolled.add_controller(zoom_scroll);
     }
 
@@ -190,10 +196,18 @@ impl Lightbox {
         // Trackpad pinch-to-zoom. On the picture scroller so it shares a stable
         // coordinate frame with drag (see drag comment below).
         let pinch = gtk::GestureZoom::new();
-        let lb = self.clone();
-        pinch.connect_begin(move |_, _| lb.pinch_start.set(lb.zoom_level.get()));
-        let lb = self.clone();
-        pinch.connect_scale_changed(move |_, scale| lb.set_zoom(lb.pinch_start.get() * scale));
+        let lb = Rc::downgrade(self);
+        pinch.connect_begin(move |_, _| {
+            if let Some(lb) = lb.upgrade() {
+                lb.pinch_start.set(lb.zoom_level.get());
+            }
+        });
+        let lb = Rc::downgrade(self);
+        pinch.connect_scale_changed(move |_, scale| {
+            if let Some(lb) = lb.upgrade() {
+                lb.set_zoom(lb.pinch_start.get() * scale);
+            }
+        });
         self.picture.scrolled.add_controller(pinch.clone());
 
         // Click-and-drag panning when zoomed in. Attached to the scroller, not the
@@ -202,14 +216,20 @@ impl Lightbox {
         // and jitters the image.
         let drag = gtk::GestureDrag::new();
         drag.set_button(gtk::gdk::BUTTON_PRIMARY);
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         drag.connect_drag_begin(move |_, _, _| {
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
             let hadj = lb.picture.scrolled.hadjustment();
             let vadj = lb.picture.scrolled.vadjustment();
             lb.drag_start.set((hadj.value(), vadj.value()));
         });
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         drag.connect_drag_update(move |_, off_x, off_y| {
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
             let (sx0, sy0) = lb.drag_start.get();
             lb.picture.scrolled.hadjustment().set_value(sx0 - off_x);
             lb.picture.scrolled.vadjustment().set_value(sy0 - off_y);
@@ -221,17 +241,28 @@ impl Lightbox {
     /// Cursor tracking for focal zoom, the right-click menu, and swipe navigation.
     pub(super) fn connect_pointer_gestures(self: &Rc<Self>) {
         let motion = gtk::EventControllerMotion::new();
-        let lb = self.clone();
-        motion.connect_motion(move |_, x, y| lb.cursor_pos.set(Some((x, y))));
-        let lb = self.clone();
-        motion.connect_leave(move |_| lb.cursor_pos.set(None));
+        let lb = Rc::downgrade(self);
+        motion.connect_motion(move |_, x, y| {
+            if let Some(lb) = lb.upgrade() {
+                lb.cursor_pos.set(Some((x, y)));
+            }
+        });
+        let lb = Rc::downgrade(self);
+        motion.connect_leave(move |_| {
+            if let Some(lb) = lb.upgrade() {
+                lb.cursor_pos.set(None);
+            }
+        });
         self.picture.scrolled.add_controller(motion);
 
         // Right-click: open the standard asset context menu.
         let right_click = gtk::GestureClick::new();
         right_click.set_button(gtk::gdk::BUTTON_SECONDARY);
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         right_click.connect_pressed(move |_, _, x, y| {
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
             show_asset_context_menu(
                 lb.ui.clone(),
                 &lb.picture.scrolled,
@@ -246,23 +277,29 @@ impl Lightbox {
         // Horizontal swipe for prev/next navigation; ignored when zoomed in.
         let swipe = gtk::GestureSwipe::new();
         swipe.set_touch_only(false);
-        let lb = self.clone();
-        swipe.connect_swipe(move |_, vx, _vy| lb.handle_swipe(vx));
+        let lb = Rc::downgrade(self);
+        swipe.connect_swipe(move |_, vx, _vy| {
+            if let Some(lb) = lb.upgrade() {
+                lb.handle_swipe(vx);
+            }
+        });
         self.picture.stack.add_controller(swipe);
     }
 
     /// Ctrl +/-/0 zoom, Left/Right navigate, I toggles details, Escape closes.
     pub(super) fn connect_keys(self: &Rc<Self>) {
         let key_controller = gtk::EventControllerKey::new();
-        let lb = self.clone();
-        key_controller.connect_key_pressed(move |_, key, _, mods| lb.handle_key(key, mods));
+        let lb = Rc::downgrade(self);
+        key_controller.connect_key_pressed(move |_, key, _, mods| match lb.upgrade() {
+            Some(lb) => lb.handle_key(key, mods),
+            None => glib::Propagation::Proceed,
+        });
         self.header.page.add_controller(key_controller);
     }
 
     /// Download button and the preview/original resolution toggle.
     pub(super) fn connect_actions(self: &Rc<Self>) {
-        let lb = self.clone();
-        self.actions.download.connect_clicked(move |_| {
+        self.on_click(&self.actions.download, |lb| {
             let Some(item) = lb
                 .ui
                 .grid
@@ -278,45 +315,31 @@ impl Lightbox {
             }
         });
 
-        let lb = self.clone();
-        self.actions
-            .open_with
-            .connect_clicked(move |_| lb.open_current_with());
+        self.on_click(&self.actions.open_with, |lb| lb.open_current_with());
 
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         self.actions.resolution_toggle.connect_toggled(move |btn| {
             btn.set_label(if btn.is_active() { "Raw" } else { "Prev" });
-            lb.render();
+            if let Some(lb) = lb.upgrade() {
+                lb.render();
+            }
         });
 
-        let lb = self.clone();
-        self.actions
-            .trash
-            .connect_clicked(move |_| lb.confirm_trash_current());
-        let lb = self.clone();
-        self.actions
-            .favorite
-            .connect_clicked(move |_| lb.toggle_current_favorite());
-        let lb = self.clone();
-        self.actions
-            .archive
-            .connect_clicked(move |_| lb.toggle_current_archive());
-        let lb = self.clone();
-        self.details
-            .edit_btn
-            .connect_clicked(move |_| lb.edit_current());
-        let lb = self.clone();
-        self.details
-            .location_btn
-            .connect_clicked(move |_| lb.set_location_current());
-        let lb = self.clone();
-        self.details
-            .album_btn
-            .connect_clicked(move |_| lb.add_current_to_album());
-        let lb = self.clone();
-        self.details
-            .tags
-            .bind(self.ui.clone(), Rc::new(move |tag| lb.search_tag(tag)));
+        self.on_click(&self.actions.trash, |lb| lb.confirm_trash_current());
+        self.on_click(&self.actions.favorite, |lb| lb.toggle_current_favorite());
+        self.on_click(&self.actions.archive, |lb| lb.toggle_current_archive());
+        self.on_click(&self.details.edit_btn, |lb| lb.edit_current());
+        self.on_click(&self.details.location_btn, |lb| lb.set_location_current());
+        self.on_click(&self.details.album_btn, |lb| lb.add_current_to_album());
+        let lb = Rc::downgrade(self);
+        self.details.tags.bind(
+            self.ui.clone(),
+            Rc::new(move |tag| {
+                if let Some(lb) = lb.upgrade() {
+                    lb.search_tag(tag);
+                }
+            }),
+        );
         self.details.rating.bind(self.ui.clone());
     }
 
@@ -477,16 +500,16 @@ impl Lightbox {
         }
     }
 
-    pub(super) fn zoom_by(&self, factor: f64) {
+    pub(super) fn zoom_by(self: &Rc<Self>, factor: f64) {
         self.set_zoom(self.zoom_level.get() * factor);
     }
 
-    pub(super) fn zoom_reset(&self) {
+    pub(super) fn zoom_reset(self: &Rc<Self>) {
         self.set_zoom(1.0);
     }
 
     /// Zoom to `z` (clamped to 1–10×), keeping the focal point under the cursor.
-    fn set_zoom(&self, z: f64) {
+    fn set_zoom(self: &Rc<Self>, z: f64) {
         let z_new = z.clamp(1.0, 10.0);
         let z_old = self.zoom_level.get();
         let zoom_label = format!("{}%", (z_new * 100.0).round() as i32);
@@ -526,5 +549,8 @@ impl Lightbox {
         vadj.set_page_size(viewer_h);
         hadj.set_value(target_scroll_x);
         vadj.set_value(target_scroll_y);
+        if let Some((content_width, _)) = content {
+            self.sharpen_for_zoom(content_width);
+        }
     }
 }

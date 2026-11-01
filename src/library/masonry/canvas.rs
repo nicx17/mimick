@@ -26,7 +26,7 @@ use super::layout::{
     LaidItem, LaidRow, LayoutConfig, first_row_at_or_after, item_at_x, pack_rows, row_at_y,
 };
 pub use super::quality::GridQuality;
-use super::quality::{bucket_for_row_height, fallback_bucket};
+use super::quality::{bucket_for_row_height, fallback_bucket, fit_candidates, fit_edge};
 use super::reveal::{REVEAL_MAX_BLUR, animations_enabled, reveal_progress};
 use super::schedule::{CancelFlag, LoadRequest, LoadScheduler, SETTLE_DELAY, is_fling};
 
@@ -53,7 +53,7 @@ mod imp {
         GridQuality, LaidItem, LaidRow, LayoutConfig, LibraryAssetModel, LoadRequest,
         LoadScheduler, MonthRequestHandler, SETTLE_DELAY, SelectModeChanger, ThumbnailCache,
         ThumbnailSize, VIEWPORTS_AHEAD, VIEWPORTS_BEHIND, cached_texture, collect_dims,
-        finish_masonry_load, is_fling, load_masonry_asset, load_target_for, pack_rows,
+        finish_masonry_load, is_fling, load_masonry_asset, load_target_for, pack_rows, tile_fit,
     };
 
     pub(super) enum PaintResult {
@@ -67,6 +67,14 @@ mod imp {
         placeholder: gdk4::RGBA,
         select_tint: gdk4::RGBA,
         selection: Option<&'a gtk::MultiSelection>,
+        fit_tiles: bool,
+        scale: f32,
+    }
+
+    impl SnapshotCtx<'_> {
+        fn fit(&self, bucket: ThumbnailSize, it: &LaidItem, row: &LaidRow) -> Option<u32> {
+            tile_fit(self.fit_tiles, bucket, it.w.max(row.h) * self.scale)
+        }
     }
 
     #[derive(Default)]
@@ -93,6 +101,7 @@ mod imp {
         pub narrow: Cell<bool>,
         pub select_mode: Cell<bool>,
         pub quality: Cell<GridQuality>,
+        pub fit_tiles: Cell<bool>,
         pub rows: RefCell<Vec<LaidRow>>,
         pub cached_width: Cell<f32>,
         pub layout_h: Cell<f32>,
@@ -206,7 +215,7 @@ mod imp {
                 self.paint_timeline_extras(snapshot, viewport.top, viewport.bottom, canvas_w);
                 self.request_visible_months(viewport.band_top, viewport.band_bottom);
             }
-            let wanted = self.wanted_loads(model, &rows, &viewport);
+            let wanted = self.wanted_loads(&sctx, &rows, &viewport);
             drop(rows);
             self.finish_snapshot(cache, &viewport, &stats, wanted);
         }
@@ -272,19 +281,20 @@ mod imp {
 
         fn load_request(
             &self,
-            model: &LibraryAssetModel,
+            sctx: &SnapshotCtx<'_>,
             it: &LaidItem,
             row: &LaidRow,
             viewport_center: f32,
             bucket: ThumbnailSize,
         ) -> Option<LoadRequest> {
-            let (asset_id, local_path, is_local_only) = load_target_for(model, it)?;
+            let (asset_id, local_path, is_local_only) = load_target_for(sctx.model, it)?;
             let lookup_bucket = if is_local_only {
                 ThumbnailSize::Thumbnail
             } else {
                 bucket
             };
-            if self.load_is_blocked(&asset_id, lookup_bucket) {
+            let fit = sctx.fit(lookup_bucket, it, row);
+            if self.load_is_blocked(&asset_id, lookup_bucket, fit) {
                 return None;
             }
             let cell_center = row.y + row.h * 0.5;
@@ -293,17 +303,18 @@ mod imp {
                 asset_id,
                 asset_index: it.asset_index,
                 bucket,
+                fit,
                 local_path,
                 is_local: is_local_only,
             })
         }
 
-        fn load_is_blocked(&self, asset_id: &str, bucket: ThumbnailSize) -> bool {
+        fn load_is_blocked(&self, asset_id: &str, bucket: ThumbnailSize, fit: Option<u32>) -> bool {
             self.failed.borrow().contains(asset_id)
                 || self
                     .cache
                     .get()
-                    .is_none_or(|cache| cache.peek_cached(asset_id, bucket).is_some())
+                    .is_none_or(|cache| cache.peek_fitted(asset_id, bucket, fit).is_some())
         }
 
         fn finish_snapshot(
@@ -327,6 +338,9 @@ mod imp {
             stats: &SnapshotStats,
             queued: usize,
         ) {
+            if !log::log_enabled!(log::Level::Debug) {
+                return;
+            }
             let (cache_n, cache_bytes, cache_max, cache_evicts) = cache.cache_stats();
             log::debug!(
                 "masonry snapshot y={:.0} painted={} hits={} misses={} pending={} queued={} cache={}/{}/{}MB evicts={}",
@@ -425,7 +439,8 @@ mod imp {
             } else {
                 request.bucket
             };
-            let reveal = cached_texture(&cache, &request.asset_id, painted_bucket).is_none();
+            let reveal =
+                cached_texture(&cache, &request.asset_id, painted_bucket, request.fit).is_none();
             glib::MainContext::default().spawn_local(async move {
                 let result = load_masonry_asset(&cache, &request, &cancel).await;
                 finish_masonry_load(&widget, &model, &request, result, reveal);
@@ -441,6 +456,7 @@ mod helpers {
 use helpers::{
     accent_bg_color, bucket_for_asset, cached_texture, load_masonry_asset, load_target_for,
     placeholder_color, resolve_symbolic_icon, resolve_video_icon, rows_between, scrolled_child,
+    tile_fit,
 };
 
 glib::wrapper! {

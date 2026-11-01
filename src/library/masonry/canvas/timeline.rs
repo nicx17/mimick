@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use chrono::NaiveDate;
@@ -15,7 +16,7 @@ use crate::library::timeline::dates::{day_groups, day_heading, local_day, month_
 use crate::library::timeline::index::{MonthState, TimelineIndex};
 use crate::library::timeline::layout::{
     ESTIMATED_ASPECT, Group, HEADING_HEIGHT, LaidSection, PackedSection, Placed, TimelineLayout,
-    anchored_scroll, compose, estimated_height, pack_section,
+    anchored_scroll, compose, estimated_height, pack_run, pack_section,
 };
 
 const HEADING_INSET: f32 = 12.0;
@@ -32,6 +33,7 @@ struct SectionKey {
 
 pub(super) struct CachedSection {
     key: SectionKey,
+    months: usize,
     packed: PackedSection,
 }
 
@@ -60,7 +62,7 @@ impl MasonryCanvas {
 
     pub fn invalidate_month(&self, month: usize) {
         let imp = self.imp();
-        imp.section_cache.borrow_mut().remove(&month);
+        forget_month(&mut imp.section_cache.borrow_mut(), month);
         imp.schedule_relayout();
     }
 
@@ -99,22 +101,26 @@ impl imp::MasonryCanvas {
         };
         let offsets = self.pack_loaded_months(model, index, key, cfg);
         let cache = self.section_cache.borrow();
-        let placed: Vec<Placed<'_>> = index
-            .months()
-            .iter()
-            .enumerate()
-            .map(|(month, entry)| match cache.get(&month) {
+        let months = index.months();
+        let mut placed: Vec<Placed<'_>> = Vec::with_capacity(months.len());
+        let mut month = 0;
+        while month < months.len() {
+            match cache.get(&month) {
                 Some(cached) if matches!(index.state(month), MonthState::Loaded(_)) => {
-                    Placed::Packed {
+                    placed.push(Placed::Packed {
                         section: &cached.packed,
                         model_offset: offsets[month],
-                    }
+                    });
+                    month += cached.months;
                 }
-                _ => Placed::Estimated {
-                    height: estimated_height(entry.count, width, cfg, mode),
-                },
-            })
-            .collect();
+                _ => {
+                    placed.push(Placed::Estimated {
+                        height: estimated_height(months[month].count, width, cfg, mode),
+                    });
+                    month += 1;
+                }
+            }
+        }
         compose(&placed)
     }
 
@@ -126,19 +132,55 @@ impl imp::MasonryCanvas {
         cfg: LayoutConfig,
     ) -> Vec<u32> {
         let today = chrono::Local::now().date_naive();
-        let mut offsets = Vec::with_capacity(index.months().len());
-        let mut offset = 0;
+        let months = index.months();
+        let lens: Vec<Option<u32>> = (0..months.len())
+            .map(|month| match index.state(month) {
+                MonthState::Loaded(len) => Some(len),
+                _ => None,
+            })
+            .collect();
+        let offsets: Vec<u32> = lens
+            .iter()
+            .scan(0, |offset, len| {
+                let start = *offset;
+                *offset += len.unwrap_or(0);
+                Some(start)
+            })
+            .collect();
         let mut cache = self.section_cache.borrow_mut();
-        for (month, entry) in index.months().iter().enumerate() {
-            offsets.push(offset);
-            let MonthState::Loaded(len) = index.state(month) else {
+        let mut month = 0;
+        while month < months.len() {
+            let run = run_lens(&lens[month..], key.headings);
+            if run.is_empty() {
+                month += 1;
                 continue;
-            };
-            if cache.get(&month).is_none_or(|cached| cached.key != key) {
-                let packed = pack_month(model, offset, len, &entry.key, key, cfg, today);
-                cache.insert(month, CachedSection { key, packed });
             }
-            offset += len;
+            let fresh = cache
+                .get(&month)
+                .is_some_and(|cached| cached.key == key && cached.months == run.len());
+            if !fresh {
+                let end = month + run.len();
+                cache.retain(|first, cached| first + cached.months <= month || *first >= end);
+                let packed = pack_month(
+                    model,
+                    offsets[month],
+                    &run,
+                    &months[month].key,
+                    key,
+                    cfg,
+                    today,
+                );
+                let months = run.len();
+                cache.insert(
+                    month,
+                    CachedSection {
+                        key,
+                        months,
+                        packed,
+                    },
+                );
+            }
+            month += run.len();
         }
         offsets
     }
@@ -274,7 +316,7 @@ impl imp::MasonryCanvas {
         match timeline {
             Some(index) => {
                 if let Some(month) = index.borrow().month_at(position) {
-                    self.section_cache.borrow_mut().remove(&month);
+                    forget_month(&mut self.section_cache.borrow_mut(), month);
                 }
                 self.schedule_relayout();
             }
@@ -351,24 +393,36 @@ impl imp::MasonryCanvas {
     }
 }
 
+fn run_lens(lens: &[Option<u32>], headings: DateHeadings) -> Vec<u32> {
+    let loaded = lens.iter().map_while(|len| *len);
+    match headings {
+        DateHeadings::Off => loaded.collect(),
+        DateHeadings::Day | DateHeadings::Month => loaded.take(1).collect(),
+    }
+}
+
+fn forget_month(cache: &mut HashMap<usize, CachedSection>, month: usize) {
+    cache.retain(|first, cached| !(*first <= month && month < first + cached.months));
+}
+
 fn pack_month(
     model: &LibraryAssetModel,
     offset: u32,
-    len: u32,
+    lens: &[u32],
     month_key: &str,
     key: SectionKey,
     cfg: LayoutConfig,
     today: NaiveDate,
 ) -> PackedSection {
     let width = key.width;
+    let len: u32 = lens.iter().sum();
     let objects: Vec<AssetObject> = (offset..offset + len)
         .filter_map(|position| model.item(position).and_downcast::<AssetObject>())
         .collect();
-    if objects.is_empty() {
-        return pack_section(&[], width, cfg);
-    }
     let dims: Vec<(u32, u32)> = objects.iter().map(|o| (o.width(), o.height())).collect();
     let groups: Vec<Group<'_>> = match key.headings {
+        DateHeadings::Off => return pack_run(&dims, lens, width, cfg),
+        _ if objects.is_empty() => Vec::new(),
         DateHeadings::Day => {
             let days: Vec<Option<NaiveDate>> = objects
                 .iter()
@@ -384,10 +438,6 @@ fn pack_month(
         }
         DateHeadings::Month => vec![Group {
             heading: month_heading(month_key),
-            dims: &dims,
-        }],
-        DateHeadings::Off => vec![Group {
-            heading: None,
             dims: &dims,
         }],
     };

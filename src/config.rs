@@ -194,6 +194,19 @@ mod tests {
     }
 
     #[test]
+    fn grid_fit_and_memory_limit_defaults() {
+        let mut saved = serde_json::to_value(ConfigData::default()).unwrap();
+        saved
+            .as_object_mut()
+            .unwrap()
+            .remove("library_grid_fit_tiles");
+        saved.as_object_mut().unwrap().remove("cache_memory_cap_mb");
+        let data: ConfigData = serde_json::from_value(saved).unwrap();
+        assert!(data.library_grid_fit_tiles);
+        assert_eq!(data.cache_memory_cap_mb, 2048);
+    }
+
+    #[test]
     fn date_headings_default_to_day_and_read_lowercase() {
         let mut saved = serde_json::to_value(ConfigData::default()).unwrap();
         saved

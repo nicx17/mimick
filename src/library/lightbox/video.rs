@@ -154,6 +154,8 @@ impl Lightbox {
             return;
         };
         player.stop();
+        self.picture.overlay.remove_overlay(player.surface());
+        self.picture.overlay.remove_overlay(player.controls());
         let mut config = self.ui.ctx.config.write();
         if config.data.video_volume != player.volume() || config.data.video_muted != player.muted()
         {

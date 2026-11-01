@@ -55,6 +55,12 @@ impl MasonryCanvas {
         }
     }
 
+    pub fn set_fit_tiles(&self, fit: bool) {
+        if self.imp().fit_tiles.replace(fit) != fit {
+            self.queue_draw();
+        }
+    }
+
     pub fn set_border_gap(&self, gap: f32) {
         let imp = self.imp();
         if (imp.border_gap.get() - gap).abs() > f32::EPSILON {

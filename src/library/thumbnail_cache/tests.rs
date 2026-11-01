@@ -157,3 +157,88 @@ async fn test_load_local_raw_thumbnail() {
         }
     }
 }
+
+#[test]
+fn memory_budget_is_the_limit_but_at_most_half_of_ram() {
+    const MB: usize = 1024 * 1024;
+    const GB: usize = 1024 * MB;
+    assert_eq!(memory_budget(2048, 16 * GB), 2 * GB);
+    assert_eq!(memory_budget(2048, 3 * GB), 3 * GB / 2);
+    assert_eq!(memory_budget(512, 0), 512 * MB);
+}
+
+#[test]
+fn lowering_the_limit_evicts_down_to_it() {
+    let mut memory = SizedLruCache::new(8);
+    memory.insert("thumbnail:1".into(), texture_from_png());
+    memory.insert("thumbnail:2".into(), texture_from_png());
+    memory.set_max_bytes(4);
+    assert_eq!((memory.inner.len(), memory.current_bytes), (1, 4));
+    assert!(memory.peek("thumbnail:2").is_some());
+}
+
+#[test]
+fn telemetry_counts_load_lookups_and_the_first_fill() {
+    let mut memory = SizedLruCache::new(4);
+    memory.insert("thumbnail:1".into(), texture_from_png());
+    assert!(memory.lookup("thumbnail:1").is_some());
+    assert!(memory.lookup("thumbnail:2").is_none());
+    assert!(memory.get("thumbnail:1").is_some());
+    assert_eq!((memory.hits, memory.misses), (1, 1));
+    assert!(!memory.full);
+    memory.insert("thumbnail:2".into(), texture_from_png());
+    assert!(memory.full);
+    assert_eq!(memory.evictions, 1);
+    memory.clear();
+    assert!(!memory.full);
+}
+
+#[test]
+fn fitted_keys_fall_back_to_the_bucket_at_or_past_its_size() {
+    let target = |fit| memory_target("1", ThumbnailSize::Preview, false, fit);
+    assert_eq!(target(Some(480)), ("preview@480:1".to_string(), 480));
+    assert_eq!(target(Some(1920)), ("preview:1".to_string(), 1440));
+    assert_eq!(target(None), ("preview:1".to_string(), 1440));
+}
+
+#[tokio::test]
+async fn fitted_loads_decode_to_the_tile_and_keep_their_own_key() {
+    let cache = cache(64 * 1024 * 1024);
+    let mut png = Vec::new();
+    image::RgbImage::new(1000, 500)
+        .write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png)
+        .unwrap();
+    std::fs::create_dir_all(&cache.cache_dir).unwrap();
+    std::fs::write(cache.cache_file("1", ThumbnailSize::Preview, false), &png).unwrap();
+
+    let fitted = cache
+        .load_fitted_cancellable("1", ThumbnailSize::Preview, Some(320), || false)
+        .await
+        .unwrap();
+
+    assert_eq!((fitted.width(), fitted.height()), (320, 160));
+    assert!(
+        cache
+            .peek_fitted("1", ThumbnailSize::Preview, Some(320))
+            .is_some()
+    );
+    assert!(cache.get_cached_preview("1", false).is_none());
+}
+
+#[tokio::test]
+async fn screen_loads_fit_the_edge_and_come_back_from_memory() {
+    let cache = cache(64 * 1024 * 1024);
+    let dir = tempdir().unwrap();
+    let path = dir.path().join("huge.png");
+    image::RgbImage::new(2000, 1000).save(&path).unwrap();
+
+    let first = cache
+        .load_screen("1", false, path.clone(), 500)
+        .await
+        .unwrap();
+    std::fs::remove_file(&path).unwrap();
+    let again = cache.load_screen("1", false, path, 500).await.unwrap();
+
+    assert_eq!((first.width(), first.height()), (500, 250));
+    assert_eq!(first, again);
+}

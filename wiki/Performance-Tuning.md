@@ -41,9 +41,9 @@ Switch from All Files to New Files Only once your initial sync is complete. Star
 
 ## Thumbnail Memory Cache
 
-There is no setting for this: Mimick sizes the cache from your RAM.
+**Setting:** Settings → Storage → Memory Limit (MB) (default 2048)
 
-The library view keeps decoded thumbnails and lightbox previews in memory so scrolling back is instant. The cache can grow to 20% of your RAM, but never below 500 MB or above 3 GB. When it's full, the images you looked at longest ago are dropped first. Images also stay in the on-disk cache (**Cache Limit (MB)** in Settings → Storage), so a dropped image reloads from disk instead of the server.
+The library view keeps decoded thumbnails and lightbox pictures in memory so scrolling back and stepping between photos is instant. The cache grows up to the limit, but never past half of your RAM, so phones stay usable. Changes apply right away. When it's full, the images you looked at longest ago are dropped first. Images also stay in the on-disk cache (**Cache Limit (MB)** in Settings → Storage), so a dropped image reloads from disk instead of the server.
 
 When you close the library window, the cache is emptied and the memory is given back to the system, so Mimick running in the tray uses little RAM.
 
@@ -54,6 +54,8 @@ When you close the library window, the cache is emptied and the memory is given 
 **Setting:** Settings → Library → Open Originals in Lightbox (switch, default off)
 
 When off, the lightbox loads a ~1440px server-generated preview image. When on, it loads the original file.
+
+Photos already on disk always open from the local file. Originals and local files are decoded at your screen's resolution first (JPEGs shrink while decoding), so even 200-megapixel photos open quickly; the full resolution loads in the background when you zoom in past it.
 
 - Full-resolution mode uses significantly more bandwidth and takes longer to load on slow connections.
 - Use it only if you need to inspect originals or are on a fast LAN connection to your Immich server.

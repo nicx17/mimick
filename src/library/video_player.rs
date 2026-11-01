@@ -84,6 +84,7 @@ impl VideoPlayer {
         player.connect_buttons();
         player.connect_volume();
         player.connect_pointer();
+        log::debug!("Video player created volume={volume:.2} muted={muted}");
         Ok(player)
     }
 
@@ -135,6 +136,12 @@ impl VideoPlayer {
     }
 
     pub(super) fn load(&self, source: VideoSource) {
+        let origin = if source.api_key.is_some() {
+            "server"
+        } else {
+            "local"
+        };
+        log::debug!("Video load source={origin}");
         *self.api_key.lock() = source.api_key;
         self.loaded.set(true);
         self.play.set_uri(Some(&source.uri));
@@ -162,6 +169,7 @@ impl VideoPlayer {
     }
 
     pub(super) fn stop(&self) {
+        log::debug!("Video stop requested state={:?}", self.state.get());
         self.restarting.set(false);
         self.play.stop();
     }
@@ -239,6 +247,11 @@ impl VideoPlayer {
     }
 
     fn on_state_changed(self: &Rc<Self>, state: PlayState) {
+        log::debug!(
+            "Video state {:?} -> {state:?} restarting={}",
+            self.state.get(),
+            self.restarting.get()
+        );
         if self.restarting.get() {
             if state == PlayState::Stopped {
                 return;
@@ -253,6 +266,10 @@ impl VideoPlayer {
     }
 
     fn on_end_of_stream(&self) {
+        log::debug!(
+            "Video end of stream repeat={}",
+            self.controls.repeat.is_active()
+        );
         if self.controls.repeat.is_active() {
             self.restarting.set(true);
             self.play.play();
@@ -496,6 +513,13 @@ impl VideoPlayer {
             || c.volume_menu.is_active()
             || c.tracks.is_active()
             || c.speed.is_active()
+    }
+}
+
+impl Drop for VideoPlayer {
+    fn drop(&mut self) {
+        self.play.stop();
+        log::debug!("Video player dropped, pipeline stopped");
     }
 }
 

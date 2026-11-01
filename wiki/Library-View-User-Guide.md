@@ -91,7 +91,7 @@ If Mimick can't read these settings (for example, an API key without `userPrefer
 
 Assets load in pages of 50. Scroll to the bottom of the grid to load the next page. The footer label shows the current count.
 
-Thumbnails are loaded asynchronously. A placeholder is shown while the thumbnail downloads. Decoded thumbnails are cached in RAM (up to 20% of your RAM, between 500 MB and 3 GB) and freed when you close the library window.
+Thumbnails are loaded asynchronously. A placeholder is shown while the thumbnail downloads. Decoded thumbnails are cached in RAM, up to **Memory Limit (MB)** in Settings → Storage (2 GB by default, never more than half your RAM), and freed when you close the library window.
 
 ### Sorting
 
@@ -318,6 +318,7 @@ Click any asset in the grid to open it in the lightbox.
 | ![Lightbox details on](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_on.png) | ![Lightbox details off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_off.png) |
 
 - The lightbox shows a preview image. If **Open Originals in Lightbox** is on in Settings → Library, it loads the original file instead of a server-generated proxy.
+- Local files and originals are shown at your screen's resolution; zooming in past it loads the full resolution in the background, with a spinner while it decodes.
 - **Edited photos**: Photos edited in Immich (cropped or rotated) show the edited version. Download and drag-out still give the original file.
 - **RAW Previews**: By default, RAW files display using their fast embedded previews. The extractor first scans the file for the largest embedded JPEG (catching the full-resolution preview on cameras that store both a tiny thumb and a full-res one — e.g. Sony ARW); if the file contains no JPEG at all (Samsung DNG, OnePlus DNG, and other phone DNGs that store their preview as uncompressed TIFF strips), it falls back to libraw's bitmap thumbnail with container orientation applied. You can toggle **Full RAW Decoding** in settings to perform a full sensor demosaic instead.
 - **Videos**: Clicking a video opens it in the lightbox with its thumbnail as a poster and a centered play badge. Click the badge (or press **Space**) to play it in the app. Local and synced videos play from disk; server videos stream from Immich, which serves its transcoded copy when one exists. Decoding uses the GPU (VA-API) when the codec is supported.
@@ -404,12 +405,14 @@ These options are in the **Library**, **Grid Appearance**, **RAW Files**, and **
 | :-------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------- |
 | **Open Originals in Lightbox** | Off  | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth.                    |
 | **Thumbnail Quality**       | Thumbnail | **Automatic**, **Thumbnail**, **Preview**, or **Full Size** for grid tiles. Sharper thumbnails use more memory. Applies to an open library window right away. |
+| **Fit Thumbnails to Tiles** | On      | Decodes **Preview** and **Full Size** grid thumbnails at their tile's on-screen size instead of 1440 or 2560 px, using far less memory. Has no effect with **Thumbnail**. Applies right away. |
 | **Date Headings**           | By Day  | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
 | **Border Width**            | 0       | Gap between photos, in pixels. With a border, its colour fills the whole grid, behind the date headings too. Applies right away.        |
 | **Border Color**            | White   | Colour of the grid border. Date headings switch between dark and light text to stay readable.                                          |
 | **Full RAW Decoding**       | Off     | Decode high-resolution sensor data instead of using fast embedded camera previews (slower).                                            |
 | **Keep Decoded RAW Files**  | Off     | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled.                        |
 | **Cache Limit (MB)**        | 2000    | Disk space for thumbnails, previews, and videos, trimmed when Mimick starts. The row shows how much is in use; **Clear Cache** frees it now. |
+| **Memory Limit (MB)**       | 2048    | RAM for decoded thumbnails and lightbox pictures, never more than half your RAM. Applies right away. |
 | **Download Folder**         | Ask each time | Without one, each download asks for a folder and offers to keep it as the default (**Always**) or use it **Just Once**. **Change…** picks one here. |
 
 See [Performance Tuning](Performance-Tuning) for guidance on choosing values for these settings.

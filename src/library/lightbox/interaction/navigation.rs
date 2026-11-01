@@ -28,7 +28,7 @@ impl Lightbox {
     }
 
     /// Ctrl +/-/0 zoom; false for any other key.
-    fn handle_zoom_key(&self, key: gtk::gdk::Key) -> bool {
+    fn handle_zoom_key(self: &Rc<Self>, key: gtk::gdk::Key) -> bool {
         use gtk::gdk::Key;
         match key {
             Key::plus | Key::equal | Key::KP_Add => self.zoom_by(1.2),
@@ -64,7 +64,7 @@ impl Lightbox {
 
     /// Zoom on Ctrl+scroll; plain scrolling falls through to panning.
     pub(super) fn handle_zoom_scroll(
-        &self,
+        self: &Rc<Self>,
         ctrl: &gtk::EventControllerScroll,
         dx: f64,
         dy: f64,
@@ -150,11 +150,14 @@ impl Lightbox {
         // One-shot handler: it disconnects itself once the new page has arrived.
         let handler_id = Rc::new(RefCell::new(None::<glib::SignalHandlerId>));
         let handler_id_clone = handler_id.clone();
-        let lb = self.clone();
+        let lb = Rc::downgrade(self);
         let id = model.connect_items_changed(move |m, _, _, _| {
             if m.n_items() <= prev_count {
                 return;
             }
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
             let pos = lb.pos.get();
             if pos + 1 < m.n_items() {
                 lb.pos.set(pos + 1);

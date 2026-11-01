@@ -18,6 +18,14 @@ pub(super) fn prompt_text(
     prompt: TextPrompt<'_>,
     on_accept: impl Fn(String) + 'static,
 ) {
+    prompt_text_on(&ui.window, prompt, on_accept);
+}
+
+pub(super) fn prompt_text_on(
+    parent: &impl IsA<gtk::Widget>,
+    prompt: TextPrompt<'_>,
+    on_accept: impl Fn(String) + 'static,
+) {
     let dialog = libadwaita::AlertDialog::builder()
         .heading(prompt.heading)
         .body(prompt.body)
@@ -45,7 +53,7 @@ pub(super) fn prompt_text(
             on_accept(text);
         }
     });
-    dialog.present(Some(&ui.window));
+    dialog.present(Some(parent));
     entry.grab_focus();
 }
 

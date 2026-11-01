@@ -43,11 +43,12 @@ pub(crate) fn connect_library_rows(
     library.grid_quality_row.set_selected(grid_quality_index(
         &ctx.config.read().data.library_grid_quality,
     ));
-    let c = ctx.clone();
+    let (c, fit_row) = (ctx.clone(), library.grid_fit_row.clone());
     library
         .grid_quality_row
         .connect_selected_notify(move |row| {
             let value = grid_quality_value(row.selected());
+            fit_row.set_sensitive(value != "thumbnail");
             save_flag(&c, |d| {
                 let changed = d.library_grid_quality != value;
                 d.library_grid_quality = value.to_string();
@@ -55,9 +56,11 @@ pub(crate) fn connect_library_rows(
             });
             c.publish_grid_style();
         });
+    connect_grid_fit_row(ctx, library);
     connect_date_headings_row(ctx, &library.date_headings_row);
     connect_raw_rows(ctx, library);
     connect_disk_cache_row(ctx, &library.disk_cache_row);
+    connect_memory_cache_row(ctx, &library.memory_cache_row);
     connect_clear_cache(ctx, library);
     refresh_cache_usage(&library.disk_cache_row);
 }
@@ -97,6 +100,41 @@ fn connect_clear_cache(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
             }
             refresh_cache_usage(&row);
         });
+    });
+}
+
+fn connect_grid_fit_row(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
+    let row = &library.grid_fit_row;
+    row.set_active(ctx.config.read().data.library_grid_fit_tiles);
+    row.set_sensitive(grid_quality_value(library.grid_quality_row.selected()) != "thumbnail");
+    let ctx = ctx.clone();
+    row.connect_active_notify(move |row| {
+        let active = row.is_active();
+        save_flag(&ctx, |d| {
+            std::mem::replace(&mut d.library_grid_fit_tiles, active) != active
+        });
+        ctx.publish_grid_style();
+    });
+}
+
+fn connect_memory_cache_row(ctx: &Arc<AppContext>, row: &adw::SpinRow) {
+    row.set_value(f64::from(ctx.config.read().data.cache_memory_cap_mb));
+    let pending: Rc<Cell<Option<glib::SourceId>>> = Rc::new(Cell::new(None));
+    let ctx = ctx.clone();
+    row.connect_value_notify(move |row| {
+        let limit = row.value() as u32;
+        if let Some(id) = pending.take() {
+            id.remove();
+        }
+        let (ctx, pending_for_save) = (ctx.clone(), pending.clone());
+        let id = glib::timeout_add_local_once(Duration::from_millis(400), move || {
+            pending_for_save.set(None);
+            ctx.thumbnail_cache.set_memory_limit(limit);
+            save_flag(&ctx, |d| {
+                std::mem::replace(&mut d.cache_memory_cap_mb, limit) != limit
+            });
+        });
+        pending.set(Some(id));
     });
 }
 

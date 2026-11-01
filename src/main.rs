@@ -235,6 +235,10 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
 
     let tray_library_enabled = config.data.library_view_enabled;
     let date_headings = config.data.library_date_headings;
+    let thumbnail_cache = Arc::new(ThumbnailCache::new(
+        api_client.clone(),
+        config.data.cache_memory_cap_mb,
+    ));
     let grid_style = app_context::GridStyle::from_config(&config.data);
     let ctx = Arc::new(AppContext {
         live_watch_paths: Arc::new(Mutex::new(config.data.watch_paths.clone())),
@@ -245,7 +249,7 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
         monitor_handle,
         sync_index,
         sync_now_tx: manual_sync_tx,
-        thumbnail_cache: Arc::new(ThumbnailCache::new(api_client)),
+        thumbnail_cache,
         library_state: Arc::new(parking_lot::Mutex::new(LibraryState::new())),
         date_headings: tokio::sync::watch::Sender::new(date_headings),
         grid_style: tokio::sync::watch::Sender::new(grid_style),

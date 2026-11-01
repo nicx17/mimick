@@ -16,11 +16,13 @@ pub struct LaidHeading {
     pub text: String,
 }
 
-/// One month packed on its own: `y` and `asset_index` start at the month.
+/// One month, or a run of months without headings, packed on its own:
+/// `y` and `asset_index` start at the section; `starts` holds each month's top.
 pub struct PackedSection {
     pub rows: Vec<LaidRow>,
     pub headings: Vec<LaidHeading>,
     pub height: f32,
+    pub starts: Vec<f32>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -53,6 +55,7 @@ pub fn pack_section(groups: &[Group<'_>], width: f32, cfg: LayoutConfig) -> Pack
         rows: Vec::new(),
         headings: Vec::new(),
         height: 0.0,
+        starts: vec![0.0],
     };
     let mut first_index = 0;
     for group in groups {
@@ -78,11 +81,47 @@ pub fn pack_section(groups: &[Group<'_>], width: f32, cfg: LayoutConfig) -> Pack
     packed
 }
 
+pub fn pack_run(dims: &[(u32, u32)], lens: &[u32], width: f32, cfg: LayoutConfig) -> PackedSection {
+    let mut packed = pack_section(
+        &[Group {
+            heading: None,
+            dims,
+        }],
+        width,
+        cfg,
+    );
+    packed.starts = month_starts(&packed.rows, lens, packed.height);
+    packed
+}
+
+fn month_starts(rows: &[LaidRow], lens: &[u32], height: f32) -> Vec<f32> {
+    let total: u32 = lens.iter().sum();
+    let mut next = 0;
+    lens.iter()
+        .map(|len| {
+            let first = next;
+            next += len;
+            if first == 0 {
+                return 0.0;
+            }
+            if first >= total {
+                return height;
+            }
+            let row = rows.partition_point(|row| {
+                row.items
+                    .first()
+                    .is_some_and(|item| item.asset_index <= first)
+            });
+            rows[..row].last().map_or(height, |row| row.y)
+        })
+        .collect()
+}
+
 pub fn compose(placed: &[Placed<'_>]) -> TimelineLayout {
     let mut layout = TimelineLayout::default();
     for place in placed {
         let y = layout.height;
-        let (h, loaded) = match place {
+        match place {
             Placed::Packed {
                 section,
                 model_offset,
@@ -107,12 +146,25 @@ pub fn compose(placed: &[Placed<'_>]) -> TimelineLayout {
                         y: heading.y + y,
                         text: heading.text.clone(),
                     }));
-                (section.height, true)
+                let ends = section.starts.iter().skip(1).chain([&section.height]);
+                for (start, end) in section.starts.iter().zip(ends) {
+                    layout.sections.push(LaidSection {
+                        y: y + start,
+                        h: end - start,
+                        loaded: true,
+                    });
+                }
+                layout.height += section.height;
             }
-            Placed::Estimated { height } => (*height, false),
-        };
-        layout.sections.push(LaidSection { y, h, loaded });
-        layout.height += h;
+            Placed::Estimated { height } => {
+                layout.sections.push(LaidSection {
+                    y,
+                    h: *height,
+                    loaded: false,
+                });
+                layout.height += height;
+            }
+        }
     }
     layout
 }
@@ -208,6 +260,60 @@ mod tests {
         assert_eq!(layout.rows[0].y, 500.0);
         assert_eq!(layout.rows[0].items[0].asset_index, 7);
         assert!(!layout.sections[0].loaded && layout.sections[1].loaded);
+    }
+
+    fn row_width(row: &LaidRow) -> f32 {
+        row.items.iter().map(|item| item.w).sum()
+    }
+
+    #[test]
+    fn months_without_headings_flow_into_full_rows() {
+        let dims = [(4, 3); 10];
+        let run = pack_run(&dims, &[5, 5], 1000.0, cfg());
+        let (last, full) = run.rows.split_last().unwrap();
+        assert!(full.iter().all(|row| (row_width(row) - 1000.0).abs() < 0.5));
+        assert_eq!(last.items.last().unwrap().asset_index, 9);
+        let alone = pack_run(&dims[..5], &[5], 1000.0, cfg());
+        assert!(row_width(alone.rows.last().unwrap()) < 999.0);
+    }
+
+    #[test]
+    fn a_run_keeps_one_section_per_month() {
+        let dims = [(4, 3); 10];
+        let run = pack_run(&dims, &[5, 5], 1000.0, cfg());
+        let layout = compose(&[
+            Placed::Estimated { height: 100.0 },
+            Placed::Packed {
+                section: &run,
+                model_offset: 3,
+            },
+        ]);
+        assert_eq!(layout.sections.len(), 3);
+        let shared_row = run
+            .rows
+            .iter()
+            .find(|row| row.items.iter().any(|item| item.asset_index == 5));
+        assert_eq!(layout.sections[2].y, 100.0 + shared_row.unwrap().y);
+        assert_eq!(
+            layout.sections[1].y + layout.sections[1].h,
+            layout.sections[2].y
+        );
+        assert_eq!(layout.sections[2].y + layout.sections[2].h, layout.height);
+        assert_eq!(layout.rows[0].items[0].asset_index, 3);
+    }
+
+    #[test]
+    fn empty_months_in_a_run_take_no_space() {
+        let dims = [(4, 3); 6];
+        let run = pack_run(&dims, &[3, 0, 3, 0], 1000.0, cfg());
+        let layout = compose(&[Placed::Packed {
+            section: &run,
+            model_offset: 0,
+        }]);
+        let heights: Vec<f32> = layout.sections.iter().map(|s| s.h).collect();
+        assert_eq!(layout.sections.len(), 4);
+        assert_eq!((heights[1], heights[3]), (0.0, 0.0));
+        assert_eq!(heights.iter().sum::<f32>(), layout.height);
     }
 
     #[test]
