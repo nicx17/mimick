@@ -10,6 +10,7 @@ use crate::library::asset_object::AssetObject;
 mod navigation;
 mod rendering;
 use super::fullscreen;
+use super::strip::Slot;
 use super::{
     LOCAL_ID_PREFIX, LibraryWindowUi, Lightbox, apply_lightbox_zoom, build_action_bar,
     build_details_pane, build_header, build_picture_area, build_split_view, build_unavailable_card,
@@ -57,9 +58,7 @@ impl Lightbox {
             viewer,
             pos: Cell::new(position),
             load_gen: Cell::new(0),
-            active_a: Cell::new(true),
             zoom_level: Cell::new(1.0),
-            nav_dir: Cell::new(0),
             cursor_pos: Cell::new(None),
             drag_start: Cell::new((0.0, 0.0)),
             pinch_start: Cell::new(1.0),
@@ -273,17 +272,7 @@ impl Lightbox {
             );
         });
         self.picture.scrolled.add_controller(right_click);
-
-        // Horizontal swipe for prev/next navigation; ignored when zoomed in.
-        let swipe = gtk::GestureSwipe::new();
-        swipe.set_touch_only(false);
-        let lb = Rc::downgrade(self);
-        swipe.connect_swipe(move |_, vx, _vy| {
-            if let Some(lb) = lb.upgrade() {
-                lb.handle_swipe(vx);
-            }
-        });
-        self.picture.stack.add_controller(swipe);
+        self.connect_swipe_tracker();
     }
 
     /// Ctrl +/-/0 zoom, Left/Right navigate, I toggles details, Escape closes.
@@ -493,11 +482,7 @@ impl Lightbox {
     }
 
     fn active_picture(&self) -> gtk::Picture {
-        if self.active_a.get() {
-            self.picture.picture_a.clone()
-        } else {
-            self.picture.picture_b.clone()
-        }
+        self.picture.strip.picture(Slot::Current)
     }
 
     pub(super) fn zoom_by(self: &Rc<Self>, factor: f64) {
@@ -535,6 +520,9 @@ impl Lightbox {
         let target_scroll_y = (vadj.value() + fy) * ratio - fy;
 
         self.zoom_level.set(z_new);
+        self.picture
+            .strip
+            .set_swipe_enabled((z_new - 1.0).abs() < 0.001);
         let content = apply_lightbox_zoom(&self.active_picture(), scrolled, z_new);
         self.actions.zoom_reset.set_label(&zoom_label);
 

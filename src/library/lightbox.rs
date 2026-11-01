@@ -22,6 +22,7 @@ mod location;
 mod ocr;
 mod people;
 mod rating;
+mod strip;
 mod video;
 mod widgets;
 #[cfg(test)]
@@ -65,7 +66,6 @@ fn apply_lightbox_zoom(
 /// One request to load an asset into the inactive picture.
 struct PictureLoad {
     target: gtk::Picture,
-    target_is_a: bool,
     asset_id: String,
     filename: String,
     mime: String,
@@ -129,6 +129,10 @@ impl AssetInfo {
         crate::media_kinds::asset_kind(&self.mime) == crate::media_kinds::AssetKind::Video
     }
 
+    fn decoded_from_disk(&self) -> bool {
+        !self.local_path.is_empty() && !self.edited && !self.is_video()
+    }
+
     fn is_local(&self) -> bool {
         !self.local_path.is_empty() && self.asset_id.starts_with(LOCAL_ID_PREFIX)
     }
@@ -150,10 +154,7 @@ pub(super) struct Lightbox {
     // they were started for and skip UI writes if the user has navigated away
     // by the time their decode finishes (relevant for slow RAW files).
     load_gen: Cell<u64>,
-    active_a: Cell<bool>,
     zoom_level: Cell<f64>,
-    // -1 = back/prev (slide right), +1 = forward/next (slide left), 0 = no transition
-    nav_dir: Cell<i8>,
     // Cursor position over the picture area, so zoom can be focal-point aware.
     // None when the cursor is outside the viewer; zoom then uses the centre.
     cursor_pos: Cell<Option<(f64, f64)>>,
@@ -211,7 +212,8 @@ impl Lightbox {
             self.ui.split.disconnect(handler);
         }
         self.close_video();
-        for picture in [&self.picture.picture_a, &self.picture.picture_b] {
+        self.picture.strip.stop();
+        for picture in self.picture.strip.pictures() {
             picture.set_paintable(None::<&gtk::gdk::Paintable>);
         }
     }

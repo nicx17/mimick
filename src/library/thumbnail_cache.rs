@@ -419,6 +419,10 @@ impl ThumbnailCache {
         Ok(texture)
     }
 
+    pub fn cached_screen(&self, asset_id: &str, edited: bool, edge: u32) -> Option<Texture> {
+        self.memory.lock().get(&screen_key(asset_id, edited, edge))
+    }
+
     /// A lightbox picture decoded from `path` to fit `edge` pixels, cached with the previews.
     pub async fn load_screen(
         &self,

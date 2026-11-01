@@ -58,11 +58,9 @@ pub(crate) struct LightboxHeader {
     pub(super) fullscreen_btn: gtk::Button,
 }
 
-/// Two pictures in a sliding stack, their scroller, and the overlay holding the spinner.
+/// The photo strip, its scroller, and the overlay holding the spinner.
 pub(crate) struct PictureArea {
-    pub(super) stack: gtk::Stack,
-    pub(super) picture_a: gtk::Picture,
-    pub(super) picture_b: gtk::Picture,
+    pub(super) strip: super::strip::PhotoStrip,
     pub(super) scrolled: gtk::ScrolledWindow,
     pub(super) overlay: gtk::Overlay,
     pub(super) loader: gtk::Revealer,
@@ -161,19 +159,9 @@ pub(crate) fn build_header(ui: &Rc<LibraryWindowUi>, initial_filename: &str) -> 
 }
 
 pub(crate) fn build_picture_area() -> PictureArea {
-    // Two picture widgets in a stack so navigation can slide between them.
-    let picture_a = lightbox_picture();
-    let picture_b = lightbox_picture();
-    let stack = gtk::Stack::builder()
-        .transition_duration(180)
-        .vexpand(true)
-        .hexpand(true)
-        .build();
-    stack.add_named(&picture_a, Some("a"));
-    stack.add_named(&picture_b, Some("b"));
-    stack.set_visible_child_name("a");
+    let strip = super::strip::PhotoStrip::new();
     let ocr = ocr::OcrLayer::new();
-    let content = gtk::Overlay::builder().child(&stack).build();
+    let content = gtk::Overlay::builder().child(&strip).build();
     content.add_overlay(&ocr.area);
     let scrolled = gtk::ScrolledWindow::builder()
         .hscrollbar_policy(gtk::PolicyType::Automatic)
@@ -202,9 +190,7 @@ pub(crate) fn build_picture_area() -> PictureArea {
     let ocr_copy = ocr::copy_button();
     overlay.add_overlay(&ocr_copy);
     PictureArea {
-        stack,
-        picture_a,
-        picture_b,
+        strip,
         scrolled,
         overlay,
         loader,

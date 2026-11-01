@@ -71,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Native builds now require GTK 4.24, libadwaita 1.10, and libheif 1.21 or newer (matching the GNOME 51 runtime), plus GStreamer with GstPlay and the GTK 4 video sink plugin (`gst-plugin-gtk4`) for video playback, and libclang for generating the LibRaw bindings.
 - Removed the **Archived only** search filter, which Immich v3 ignores; use **Visibility → Archive** instead.
 - The **Shared Links** page now shows each link's cover photo, what visitors may do (Upload, Download, Exif, Password), and expired links in red. Click a link to edit it. **Copy link** now confirms with a checkmark on the button instead of a dialog.
+- Photos in the lightbox now follow your finger or a two-finger touchpad swipe and spring to the next or previous one. **Left**/**Right** and the header buttons use the same motion, pressing them quickly glides through photos instead of restarting each slide, and the photos on either side are already loaded when you swipe.
 - The lightbox opens large photos much faster and steps between them smoothly: local files and originals are decoded at your screen's resolution (JPEGs shrink while decoding), the full resolution loads in the background when you zoom in past it, and the photos before and after the current one on disk are prepared ahead of time.
 - **Upload to Album** in the upload window, and after dropping files on the library, now uses the same album picker as **Add to Album**, with album covers, a filter, and **New Album**.
 

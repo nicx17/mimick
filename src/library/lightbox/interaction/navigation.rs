@@ -82,29 +82,29 @@ impl Lightbox {
     }
 
     pub(super) fn goto_prev(self: &Rc<Self>) {
+        let velocity = self.take_motion();
         let pos = self.pos.get();
-        if self.step_into_unloaded_month(pos, false) {
-            return;
-        }
-        if pos > 0 {
-            self.pos.set(pos - 1);
-            self.nav_dir.set(-1);
-            self.render();
-        }
+        let step = if !self.step_into_unloaded_month(pos, false) && pos > 0 {
+            -1
+        } else {
+            0
+        };
+        self.slide(step, velocity);
     }
 
     /// Step forward, fetching the next grid page first when at the end.
     pub(super) fn goto_next(self: &Rc<Self>) {
+        let velocity = self.take_motion();
         let pos = self.pos.get();
         if self.step_into_unloaded_month(pos, true) {
+            self.slide(0, velocity);
             return;
         }
         if pos + 1 < self.ui.grid.model.n_items() {
-            self.pos.set(pos + 1);
-            self.nav_dir.set(1);
-            self.render();
+            self.slide(1, velocity);
             return;
         }
+        self.slide(0, velocity);
         let next_request = self.ui.ctx.library_state.lock().load_next_page_if_needed();
         let Some(req) = next_request else {
             return;
@@ -143,6 +143,87 @@ impl Lightbox {
         started
     }
 
+    /// Spring toward the photo `step` away, or back into place for 0; the step lands when it settles.
+    pub(in crate::library::lightbox) fn slide(self: &Rc<Self>, step: i32, velocity: f64) {
+        let strip = self.picture.strip.clone();
+        if step == 0 && strip.progress().abs() < f64::EPSILON {
+            self.show_overlays(true);
+            return;
+        }
+        if step != 0 {
+            self.leave_current();
+        }
+        let lb = Rc::downgrade(self);
+        strip.animate_to(f64::from(step), velocity, move || {
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
+            if step != 0 {
+                lb.commit(step);
+            }
+            lb.show_overlays(true);
+        });
+    }
+
+    fn leave_current(self: &Rc<Self>) {
+        if (self.zoom_level.get() - 1.0).abs() > 0.001 {
+            self.zoom_reset();
+        }
+        self.drop_full_resolution();
+        let player = self.video.borrow().clone();
+        if let Some(player) = player {
+            player.stop();
+        }
+        self.fill_neighbours();
+        self.show_overlays(false);
+    }
+
+    fn take_motion(self: &Rc<Self>) -> f64 {
+        let Some((to, velocity)) = self.picture.strip.stop() else {
+            return 0.0;
+        };
+        if to.abs() > 0.5 && self.picture.strip.progress() * to > 0.0 {
+            self.commit(to.round() as i32);
+        }
+        velocity
+    }
+
+    fn commit(self: &Rc<Self>, step: i32) {
+        self.pos.set(self.pos.get().saturating_add_signed(step));
+        self.picture.strip.rotate(step);
+        log::debug!("Lightbox stepped {step} to position {}", self.pos.get());
+        self.render();
+    }
+
+    pub(in crate::library::lightbox) fn connect_swipe_tracker(self: &Rc<Self>) {
+        let tracker = self.picture.strip.tracker();
+        let lb = Rc::downgrade(self);
+        tracker.connect_prepare(move |_, _| {
+            if let Some(lb) = lb.upgrade() {
+                lb.fill_neighbours();
+            }
+        });
+        let lb = Rc::downgrade(self);
+        tracker.connect_begin_swipe(move |_| {
+            if let Some(lb) = lb.upgrade() {
+                lb.picture.strip.stop();
+                lb.show_overlays(false);
+            }
+        });
+        let strip = self.picture.strip.downgrade();
+        tracker.connect_update_swipe(move |_, progress| {
+            if let Some(strip) = strip.upgrade() {
+                strip.set_progress(progress);
+            }
+        });
+        let lb = Rc::downgrade(self);
+        tracker.connect_end_swipe(move |_, velocity, to| {
+            if let Some(lb) = lb.upgrade() {
+                lb.slide(to.round() as i32, velocity);
+            }
+        });
+    }
+
     /// Advance once the next page lands in the grid model, then drop the handler.
     fn advance_when_page_loads(self: &Rc<Self>) {
         let model = self.ui.grid.model.clone();
@@ -158,11 +239,8 @@ impl Lightbox {
             let Some(lb) = lb.upgrade() else {
                 return;
             };
-            let pos = lb.pos.get();
-            if pos + 1 < m.n_items() {
-                lb.pos.set(pos + 1);
-                lb.nav_dir.set(1);
-                lb.render();
+            if lb.pos.get() + 1 < m.n_items() {
+                lb.slide(1, 0.0);
             }
             lb.header.next_btn.set_sensitive(true);
             if let Some(hid) = handler_id_clone.borrow_mut().take() {
