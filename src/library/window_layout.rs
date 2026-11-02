@@ -114,12 +114,13 @@ pub(super) struct WindowParts {
 
 impl WindowParts {
     pub(super) fn build(app: &libadwaita::Application, ctx: &Arc<AppContext>) -> Self {
+        let (width, height) = crate::window_size::capped(1480, 780);
         let window = libadwaita::ApplicationWindow::builder()
             .application(app)
             .title("Mimick Library")
             .name("mimick-library-window")
-            .default_width(1480)
-            .default_height(780)
+            .default_width(width)
+            .default_height(height)
             .width_request(360)
             .height_request(480)
             .build();

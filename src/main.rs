@@ -51,6 +51,7 @@ mod sync_index;
 mod tray_icon;
 mod util;
 mod watch_path_display;
+mod window_size;
 
 use api_client::ImmichApiClient;
 use app_context::AppContext;

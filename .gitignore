@@ -74,3 +74,4 @@ scripts/sstool.py
 .github/instructions/codacy.instructions.md
 /.codacy
 tests/fixtures/web_assets
+scripts/screenshots.py

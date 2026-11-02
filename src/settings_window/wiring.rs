@@ -35,12 +35,13 @@ pub(super) fn build_window_shell(
     adw::PreferencesPage,
     adw::PreferencesPage,
 ) {
+    let (width, height) = crate::window_size::capped(700, 1000);
     let mut window_builder = adw::ApplicationWindow::builder()
         .application(app)
         .title("Mimick")
         .name("mimick-settings-window")
-        .default_width(520)
-        .default_height(780);
+        .default_width(width)
+        .default_height(height);
     if let Some(parent) = parent {
         window_builder = window_builder
             .transient_for(parent)
