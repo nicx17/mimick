@@ -118,6 +118,9 @@ pub struct ConfigData {
     /// Map style id (`immich`, a VersaTiles palette, or `osm`); empty means Immich's own.
     #[serde(default)]
     pub library_map_style: String,
+    /// Map appearance id (`light` or `dark`); empty means follow the system.
+    #[serde(default)]
+    pub library_map_appearance: String,
     #[serde(default)]
     pub library_date_headings: DateHeadings,
 }
@@ -156,6 +159,7 @@ impl Default for ConfigData {
             video_volume: default_video_volume(),
             video_muted: false,
             library_map_style: String::new(),
+            library_map_appearance: String::new(),
             library_date_headings: DateHeadings::default(),
         }
     }

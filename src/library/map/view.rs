@@ -21,7 +21,7 @@ use super::coords::GeoPoint;
 use super::layout::Mode;
 use super::markers::{self, Members};
 use super::minimap::Minimap;
-use super::styles::MapStyle;
+use super::styles::{MapAppearance, MapStyle};
 use super::tiles::Tiles;
 
 const REFRESH_DELAY: Duration = Duration::from_millis(120);
@@ -160,8 +160,11 @@ fn resize_watch() -> gtk::DrawingArea {
 
 /// Recluster as the map moves or resizes, and follow the theme and the saved style.
 pub fn connect_map_view(ui: &Rc<LibraryWindowUi>) {
-    let saved = MapStyle::from_id(&ui.ctx.config.read().data.library_map_style);
-    ui.map.tiles.preset(saved);
+    let config = ui.ctx.config.read();
+    let style = MapStyle::from_id(&config.data.library_map_style);
+    let appearance = MapAppearance::from_id(&config.data.library_map_appearance);
+    drop(config);
+    ui.map.tiles.preset(style, appearance);
     camera::hold_in_world(&ui.map.map);
     if let Some(viewport) = ui.map.map.viewport() {
         let weak = Rc::downgrade(ui);

@@ -1,10 +1,11 @@
-//! Turns a server-provided MapLibre style into a libshumate vector renderer.
+//! Turns a server-provided or bundled MapLibre style into a libshumate vector renderer.
 //!
 //! libshumate needs TileJSON embedded in the style, loads no sprites by itself, and
 //! rejects a whole style over one unknown operator, so each is handled here.
 
 use std::collections::BTreeMap;
 
+use gtk::gio;
 use serde_json::Value;
 use shumate::prelude::*;
 
@@ -13,6 +14,7 @@ use crate::api_client::ImmichApiClient;
 /// Operators libshumate cannot parse; Pango shapes every script, so these hold anyway.
 const ALWAYS_TRUE_OPERATORS: [&str; 1] = ["is-supported-script"];
 const TILEJSON_KEYS: [&str; 5] = ["tiles", "minzoom", "maxzoom", "attribution", "bounds"];
+const BUNDLED_STYLES: &str = "/dev/nicx/mimick/map-styles";
 
 struct Sprite {
     png: Vec<u8>,
@@ -24,7 +26,34 @@ pub async fn load_renderer(
     api: &ImmichApiClient,
     url: &str,
 ) -> Result<shumate::VectorRenderer, String> {
-    let mut style = fetch_json(api, url).await?;
+    let style = fetch_json(api, url).await?;
+    prepare_renderer(api, style, url).await
+}
+
+pub async fn load_bundled_renderer(
+    api: &ImmichApiClient,
+    theme: &str,
+) -> Result<shumate::VectorRenderer, String> {
+    let path = bundled_path(theme);
+    let style = bundled_style(&path)?;
+    prepare_renderer(api, style, &path).await
+}
+
+fn bundled_path(theme: &str) -> String {
+    format!("{BUNDLED_STYLES}/{theme}.json")
+}
+
+fn bundled_style(path: &str) -> Result<Value, String> {
+    let bytes = gio::resources_lookup_data(path, gio::ResourceLookupFlags::NONE)
+        .map_err(|err| format!("{path}: {err}"))?;
+    serde_json::from_slice(&bytes).map_err(|err| format!("{path}: {err}"))
+}
+
+async fn prepare_renderer(
+    api: &ImmichApiClient,
+    mut style: Value,
+    id: &str,
+) -> Result<shumate::VectorRenderer, String> {
     keep_main_source(&mut style);
     let base = sprite_base(&style);
     let (inlined, sprite) = futures_util::join!(inline_tilejson(api, &mut style), async {
@@ -37,7 +66,7 @@ pub async fn load_renderer(
     rewrite_unsupported(&mut style);
     flatten_text_fonts(&mut style);
     let credit = attribution(&style);
-    let renderer = build_renderer(&cache_id(url), style)?;
+    let renderer = build_renderer(&cache_id(id), style)?;
     if let Some(credit) = credit {
         renderer.set_license(&credit);
     }
@@ -330,6 +359,7 @@ fn attach_sprite(renderer: &shumate::VectorRenderer, sprite: &Sprite) {
 
 #[cfg(test)]
 mod tests {
+    use super::super::styles::MapStyle;
     use super::*;
     use serde_json::json;
 
@@ -343,6 +373,42 @@ mod tests {
             source,
             json!({ "type": "vector", "tiles": ["https://t/{z}/{x}/{y}.mvt"], "maxzoom": 12 })
         );
+    }
+
+    #[test]
+    fn every_bundled_theme_builds_a_renderer() {
+        gio::resources_register_include!("mimick.gresource").unwrap();
+        let themes = MapStyle::ALL
+            .into_iter()
+            .filter_map(MapStyle::themes)
+            .flat_map(|(light, dark)| [light, dark]);
+        for theme in themes {
+            let path = bundled_path(&theme);
+            let mut style = bundled_style(&path).unwrap();
+            keep_main_source(&mut style);
+            rewrite_unsupported(&mut style);
+            flatten_text_fonts(&mut style);
+            assert_eq!(parse_without_gtk(&style), Ok(()), "{theme}");
+        }
+    }
+
+    fn parse_without_gtk(style: &Value) -> Result<(), String> {
+        use glib::translate::{FromGlibPtrFull, ToGlibPtr};
+        let json = style.to_string();
+        let mut error = std::ptr::null_mut();
+        let renderer = unsafe {
+            shumate::ffi::shumate_vector_renderer_new(
+                c"test".as_ptr(),
+                json.as_str().to_glib_none().0,
+                &mut error,
+            )
+        };
+        if renderer.is_null() {
+            let error: glib::Error = unsafe { glib::Error::from_glib_full(error) };
+            return Err(error.to_string());
+        }
+        unsafe { glib::gobject_ffi::g_object_unref(renderer.cast()) };
+        Ok(())
     }
 
     #[test]

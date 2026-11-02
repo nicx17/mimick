@@ -1,4 +1,4 @@
-//! Map tiles shared by every map in the window, for the chosen style and the system theme.
+//! Map tiles shared by every map in the window, for the chosen style and appearance.
 
 use std::cell::{Cell, OnceCell, RefCell};
 use std::rc::Rc;
@@ -10,7 +10,7 @@ use shumate::prelude::*;
 use crate::api_client::{ImmichApiClient, MAP_USER_AGENT};
 use crate::library::LibraryWindowUi;
 
-use super::styles::MapStyle;
+use super::styles::{MapAppearance, MapStyle};
 
 const OSM_TILE_URL: &str = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const OSM_CREDIT: &str =
@@ -25,18 +25,22 @@ struct Sources {
 }
 
 impl Sources {
-    fn raster() -> Self {
-        let raster = raster();
+    fn single(source: shumate::MapSource) -> Self {
         Self {
-            light: raster.clone(),
-            dark: raster,
+            light: source.clone(),
+            dark: source,
         }
+    }
+
+    fn raster() -> Self {
+        Self::single(raster())
     }
 }
 
 /// Loads the chosen style once and keeps attached maps on its light or dark variant.
 pub struct Tiles {
     style: Cell<MapStyle>,
+    appearance: Cell<MapAppearance>,
     /// Loaded styles, most recently loaded first.
     sources: RefCell<Vec<(MapStyle, Sources)>>,
     loading: Cell<Option<MapStyle>>,
@@ -52,6 +56,7 @@ impl Tiles {
         shumate::functions::set_user_agent(Some(MAP_USER_AGENT));
         Rc::new(Self {
             style: Cell::new(MapStyle::Immich),
+            appearance: Cell::new(MapAppearance::System),
             sources: RefCell::default(),
             loading: Cell::new(None),
             retry: Cell::new(false),
@@ -64,9 +69,20 @@ impl Tiles {
         self.style.get()
     }
 
-    /// Start with `style` (the saved choice) without loading anything yet.
-    pub fn preset(&self, style: MapStyle) {
+    pub fn appearance(&self) -> MapAppearance {
+        self.appearance.get()
+    }
+
+    /// Start with the saved style and appearance without loading anything yet.
+    pub fn preset(&self, style: MapStyle, appearance: MapAppearance) {
         self.style.set(style);
+        self.appearance.set(appearance);
+    }
+
+    pub fn set_appearance(&self, appearance: MapAppearance) {
+        if self.appearance.replace(appearance) != appearance {
+            self.apply();
+        }
     }
 
     pub fn attach(self: &Rc<Self>, ui: &Rc<LibraryWindowUi>, map: &shumate::SimpleMap) {
@@ -131,7 +147,8 @@ impl Tiles {
     }
 
     fn current(&self) -> Option<shumate::MapSource> {
-        let dark = libadwaita::StyleManager::default().is_dark();
+        let system_dark = libadwaita::StyleManager::default().is_dark();
+        let dark = self.appearance.get().is_dark(system_dark);
         let style = self.style.get();
         self.sources
             .borrow()
@@ -181,15 +198,25 @@ async fn load_sources(api: &ImmichApiClient, style: MapStyle) -> (Sources, bool)
     if style == MapStyle::Immich {
         return server_sources(api).await;
     }
-    match style.palette_urls() {
-        Some((light, dark)) => {
-            let (light, dark) = futures_util::join!(
-                style_source(api, Some(&light)),
-                style_source(api, Some(&dark))
-            );
-            (Sources { light, dark }, true)
+    let Some((light, dark)) = style.themes() else {
+        return (Sources::raster(), true);
+    };
+    if light == dark {
+        let light = bundled_source(api, &light).await;
+        return (Sources::single(light), true);
+    }
+    let (light, dark) =
+        futures_util::join!(bundled_source(api, &light), bundled_source(api, &dark));
+    (Sources { light, dark }, true)
+}
+
+async fn bundled_source(api: &ImmichApiClient, theme: &str) -> shumate::MapSource {
+    match super::style::load_bundled_renderer(api, theme).await {
+        Ok(renderer) => renderer.upcast(),
+        Err(err) => {
+            log::warn!("Map style {theme} unavailable, using OpenStreetMap: {err}");
+            raster()
         }
-        None => (Sources::raster(), true),
     }
 }
 
