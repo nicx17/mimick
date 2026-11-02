@@ -111,6 +111,32 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="9.12.0" date="2026-11-02">
+      <description>
+        <p>The library now matches much more of Immich's web app: its timeline, video playback, map, and album and photo editing.</p>
+        <ul>
+          <li>Photos is now a timeline like Immich's web app, with date headings and a year and month scrubber.</li>
+          <li>Play videos in the app, with audio and subtitle tracks, playback speed, and hardware decoding.</li>
+          <li>View photos and videos fullscreen (F11).</li>
+          <li>Swipe between photos in the lightbox, and open large photos much faster.</li>
+          <li>New Map page with your photos on a map, and a small location map for each photo.</li>
+          <li>Set the location of one or many photos.</li>
+          <li>Select and copy text Immich recognized in photos.</li>
+          <li>Browse a partner's photos, and show them in your Photos timeline.</li>
+          <li>Rate photos with stars, and see who is in each photo.</li>
+          <li>Add and remove album photos, set covers, delete or leave albums, and download albums as a zip.</li>
+          <li>Change the date and time zone of many photos at once.</li>
+          <li>Photos edited in Immich now show their edited version.</li>
+          <li>Redesigned settings with a clearer Status page.</li>
+          <li>Search filters now open in a side panel.</li>
+          <li>New Keyboard Shortcuts dialog (Ctrl+?).</li>
+          <li>Smoother scrolling, lower memory use, and a new Memory Limit setting.</li>
+          <li>Support for newer RAW cameras such as the Sony A7 IV and Canon EOS R7.</li>
+          <li>New app icon.</li>
+          <li>Fixed Pause on Metered Network in the Flatpak.</li>
+        </ul>
+      </description>
+    </release>
     <release version="9.11.0" date="2026-10-17">
       <description>
         <ul>

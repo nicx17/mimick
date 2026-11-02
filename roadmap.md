@@ -56,12 +56,7 @@ Per-release highlights and live open issues are on the [roadmap page](https://mi
 - [x] 47 unit tests across 13 modules (`api_client`, `autostart`, `config`, `diagnostics`, `main`, `monitor`, `queue_manager`, `runtime_env`, `settings_window`, `startup_scan`, `state_manager`, `sync_index`, `watch_path_display`).
 - [x] All GTK4 widgets updated to 4.10+ standards (no deprecated `ComboBoxText`, `MessageDialog`).
 
----
-
-## In Pipeline
-
-Finished on `main` and coming in the next release (see the Unreleased section of [CHANGELOG.md](CHANGELOG.md)).
-
+### 9.12.0 Library Release
 - [x] **Photos Timeline** — Date headings and a year and month scrubber; only the months you scroll to are loaded.
 - [x] **Video Playback** — In-app playback with hardware decoding, audio and subtitle tracks, and fullscreen (#80).
 - [x] **Fullscreen Lightbox** — Photos and videos edge to edge (F11).
@@ -83,6 +78,14 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - [x] **Swipe Between Photos** — Photos follow touch and touchpad swipes in the lightbox and spring to the next one (#282).
 - [x] **Large Photos** — Even 200-megapixel photos open quickly; full resolution loads when you zoom in (#278).
 - [x] **Memory Settings** — A Memory Limit, and grid thumbnails decoded at tile size (#280, #281).
+
+---
+
+## In Pipeline
+
+Finished on `main` and coming in the next release (see the Unreleased section of [CHANGELOG.md](CHANGELOG.md)).
+
+Nothing merged yet since 9.12.0.
 
 ---
 
