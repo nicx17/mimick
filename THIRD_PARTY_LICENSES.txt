@@ -723,7 +723,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 --------------------------------------------------------------------------------
 BSD 3-Clause "New" or "Revised" License (BSD-3-Clause)
 Used by:
-  - encoding_rs 0.8.42
+  - encoding_rs 0.8.44
 --------------------------------------------------------------------------------
 
 Copyright © WHATWG (Apple, Google, Mozilla, Microsoft).
@@ -759,7 +759,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 Creative Commons Zero v1.0 Universal (CC0-1.0)
 Used by:
-  - notify 8.2.0
+  - notify 8.2.1
 --------------------------------------------------------------------------------
 
 Creative Commons CC0 1.0 Universal
@@ -809,7 +809,7 @@ For these and/or other purposes and motivations, and without any expectation of 
 --------------------------------------------------------------------------------
 GNU General Public License v3.0 or later (GPL-3.0-or-later)
 Used by:
-  - mimick 9.11.0
+  - mimick 9.12.0
 --------------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
@@ -1857,16 +1857,16 @@ DEALINGS IN THE SOFTWARE.
 MIT License (MIT)
 Used by:
   - cfg-if 1.0.5
-  - js-sys 0.3.106
-  - openssl-probe 0.2.1
+  - js-sys 0.3.107
+  - openssl-probe 0.2.2
   - openssl-sys 0.9.117
   - socket2 0.6.5
-  - wasm-bindgen-futures 0.4.79
-  - wasm-bindgen-macro-support 0.2.129
-  - wasm-bindgen-macro 0.2.129
-  - wasm-bindgen-shared 0.2.129
-  - wasm-bindgen 0.2.129
-  - web-sys 0.3.106
+  - wasm-bindgen-futures 0.4.80
+  - wasm-bindgen-macro-support 0.2.130
+  - wasm-bindgen-macro 0.2.130
+  - wasm-bindgen-shared 0.2.130
+  - wasm-bindgen 0.2.130
+  - web-sys 0.3.107
 --------------------------------------------------------------------------------
 
 Copyright (c) 2014 Alex Crichton
@@ -1996,7 +1996,7 @@ THE SOFTWARE.
 MIT License (MIT)
 Used by:
   - bitflags 2.13.2
-  - log 0.4.34
+  - log 0.4.35
   - num-bigint-dig 0.9.1
   - num-bigint 0.4.8
   - num-complex 0.4.6
@@ -2305,7 +2305,7 @@ MIT License (MIT)
 Used by:
   - heck 0.5.0
   - unicode-bidi 0.3.18
-  - unicode-properties 0.1.4
+  - unicode-properties 0.1.5
 --------------------------------------------------------------------------------
 
 Copyright (c) 2015 The Rust Project Developers
@@ -4650,7 +4650,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - notify-types 2.1.0
+  - notify-types 2.2.0
 --------------------------------------------------------------------------------
 
 Copyright (c) 2023 Notify Contributors
@@ -4753,7 +4753,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - zcheapstr 1.1.0
+  - zcheapstr 1.2.0
 --------------------------------------------------------------------------------
 
 Copyright (c) 2026 Zeeshan Ali Khan & zcheapstr contributors
@@ -5097,9 +5097,10 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - encoding_rs 0.8.42
+  - encoding_rs 0.8.44
   - multiversion_no_op 1.0.0
-  - utf8_iter 1.0.4
+  - utf8_iter 1.1.0
+  - utf_types 1.0.0
 --------------------------------------------------------------------------------
 
 Copyright Mozilla Foundation
@@ -5701,7 +5702,11 @@ Used by:
   - gstreamer-play-sys 0.25.4
   - gstreamer-play 0.25.0
   - libm 0.2.16
+  - libshumate-sys 0.8.1
+  - libshumate 0.8.1
   - libwebp-sys 0.9.6
+  - objc2-core-foundation 0.3.2
+  - objc2-core-services 0.3.2
   - r-efi 6.0.0
   - rsraw-sys 0.1.1
   - windows-core 0.62.2
@@ -5710,17 +5715,7 @@ Used by:
   - windows-link 0.2.1
   - windows-result 0.4.1
   - windows-strings 0.5.1
-  - windows-sys 0.60.2
   - windows-sys 0.61.2
-  - windows-targets 0.53.5
-  - windows_aarch64_gnullvm 0.53.1
-  - windows_aarch64_msvc 0.53.1
-  - windows_i686_gnu 0.53.1
-  - windows_i686_gnullvm 0.53.1
-  - windows_i686_msvc 0.53.1
-  - windows_x86_64_gnu 0.53.1
-  - windows_x86_64_gnullvm 0.53.1
-  - windows_x86_64_msvc 0.53.1
 --------------------------------------------------------------------------------
 
 MIT License
@@ -6115,7 +6110,7 @@ Used by:
   - proc-macro-crate 3.5.0
   - proc-macro2 1.0.107
   - quote 1.0.47
-  - rustix 1.1.5
+  - rustix 1.1.6
   - rustversion 1.0.23
   - serde 1.0.229
   - serde_bytes 0.11.19
@@ -6482,38 +6477,6 @@ THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - fsevent-sys 4.1.0
---------------------------------------------------------------------------------
-
-The MIT License (MIT)
-
-Copyright (c) 2015 Pierre Baillet
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-
-
-================================================================================
-
---------------------------------------------------------------------------------
-MIT License (MIT)
-Used by:
   - security-framework-sys 2.17.0
   - security-framework 3.7.0
 --------------------------------------------------------------------------------
@@ -6737,7 +6700,7 @@ SOFTWARE.
 MIT License (MIT)
 Used by:
   - roxmltree 0.20.0
-  - roxmltree 0.21.1
+  - roxmltree 0.21.2
 --------------------------------------------------------------------------------
 
 The MIT License (MIT)
@@ -7482,6 +7445,55 @@ UNICODE LICENSE V3
 COPYRIGHT AND PERMISSION NOTICE
 
 Copyright © 1991-2023 Unicode, Inc.
+
+NOTICE TO USER: Carefully read the following legal agreement. BY
+DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR
+SOFTWARE, YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE
+TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT
+DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of data files and any associated documentation (the "Data Files") or
+software and any associated documentation (the "Software") to deal in the
+Data Files or Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, and/or sell
+copies of the Data Files or Software, and to permit persons to whom the
+Data Files or Software are furnished to do so, provided that either (a)
+this copyright and permission notice appear with all copies of the Data
+Files or Software, or (b) this copyright and permission notice appear in
+associated Documentation.
+
+THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
+THIRD PARTY RIGHTS.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
+BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA
+FILES OR SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall
+not be used in advertising or otherwise to promote the sale, use or other
+dealings in these Data Files or Software without prior written
+authorization of the copyright holder.
+
+
+================================================================================
+
+--------------------------------------------------------------------------------
+Unicode License v3 (Unicode-3.0)
+Used by:
+  - unicode-properties 0.1.5
+--------------------------------------------------------------------------------
+
+UNICODE LICENSE V3
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright © 1991-2026 Unicode, Inc.
 
 NOTICE TO USER: Carefully read the following legal agreement. BY
 DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR

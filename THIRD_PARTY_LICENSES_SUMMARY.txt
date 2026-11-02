@@ -2,8 +2,8 @@ Mimick bundles or links against the third-party Rust crates listed below.
 Full license texts are shipped alongside the application binary.
 
 == Summary ==
-  368 crates: MIT License (MIT)
-  19 crates: Unicode License v3 (Unicode-3.0)
+  362 crates: MIT License (MIT)
+  20 crates: Unicode License v3 (Unicode-3.0)
   6 crates: Apache License 2.0 (Apache-2.0)
   6 crates: BSD 3-Clause "New" or "Revised" License (BSD-3-Clause)
   2 crates: BSD 2-Clause "Simplified" License (BSD-2-Clause)
@@ -28,9 +28,9 @@ Full license texts are shipped alongside the application binary.
   alloc-no-stdlib 2.0.4 — BSD-3-Clause
   subtle 2.6.1 — BSD-3-Clause
   alloc-stdlib 0.2.4 — BSD-3-Clause
-  encoding_rs 0.8.42 — BSD-3-Clause
-  notify 8.2.0 — CC0-1.0
-  mimick 9.11.0 — GPL-3.0-or-later
+  encoding_rs 0.8.44 — BSD-3-Clause
+  notify 8.2.1 — CC0-1.0
+  mimick 9.12.0 — GPL-3.0-or-later
   inotify-sys 0.1.8 — ISC
   inotify 0.11.5 — ISC
   rustybuzz 0.20.1 — MIT
@@ -49,21 +49,21 @@ Full license texts are shipped alongside the application binary.
   percent-encoding 2.3.2 — MIT
   url 2.5.8 — MIT
   cfg-if 1.0.5 — MIT
-  js-sys 0.3.106 — MIT
-  openssl-probe 0.2.1 — MIT
+  js-sys 0.3.107 — MIT
+  openssl-probe 0.2.2 — MIT
   openssl-sys 0.9.117 — MIT
   socket2 0.6.5 — MIT
-  wasm-bindgen-futures 0.4.79 — MIT
-  wasm-bindgen-macro-support 0.2.129 — MIT
-  wasm-bindgen-macro 0.2.129 — MIT
-  wasm-bindgen-shared 0.2.129 — MIT
-  wasm-bindgen 0.2.129 — MIT
-  web-sys 0.3.106 — MIT
+  wasm-bindgen-futures 0.4.80 — MIT
+  wasm-bindgen-macro-support 0.2.130 — MIT
+  wasm-bindgen-macro 0.2.130 — MIT
+  wasm-bindgen-shared 0.2.130 — MIT
+  wasm-bindgen 0.2.130 — MIT
+  web-sys 0.3.107 — MIT
   mio 1.2.4 — MIT
   errno 0.3.14 — MIT
   mime 0.3.17 — MIT
   bitflags 2.13.2 — MIT
-  log 0.4.34 — MIT
+  log 0.4.35 — MIT
   num-bigint-dig 0.9.1 — MIT
   num-bigint 0.4.8 — MIT
   num-complex 0.4.6 — MIT
@@ -87,7 +87,7 @@ Full license texts are shipped alongside the application binary.
   tempfile 3.27.0 — MIT
   heck 0.5.0 — MIT
   unicode-bidi 0.3.18 — MIT
-  unicode-properties 0.1.4 — MIT
+  unicode-properties 0.1.5 — MIT
   quick-error 2.0.1 — MIT
   png 0.18.1 — MIT
   schannel 0.1.30 — MIT
@@ -181,14 +181,14 @@ Full license texts are shipped alongside the application binary.
   strict-num 0.1.1 — MIT
   hybrid-array 0.4.15 — MIT
   rustls-pki-types 1.15.1 — MIT
-  notify-types 2.1.0 — MIT
+  notify-types 2.2.0 — MIT
   hyper-util 0.1.21 — MIT
   zbus 5.19.0 — MIT
   zbus_macros 5.19.0 — MIT
   zbus_names 4.3.5 — MIT
   zvariant 5.15.1 — MIT
   zvariant_derive 5.15.1 — MIT
-  zcheapstr 1.1.0 — MIT
+  zcheapstr 1.2.0 — MIT
   kstring 2.0.5 — MIT
   toml_datetime 1.1.2+spec-1.1.0 — MIT
   toml_edit 0.25.17+spec-1.1.0 — MIT
@@ -205,9 +205,10 @@ Full license texts are shipped alongside the application binary.
   turbojpeg 1.5.1 — MIT
   zerocopy-derive 0.8.63 — MIT
   zerocopy 0.8.63 — MIT
-  encoding_rs 0.8.42 — MIT
+  encoding_rs 0.8.44 — MIT
   multiversion_no_op 1.0.0 — MIT
-  utf8_iter 1.0.4 — MIT
+  utf8_iter 1.1.0 — MIT
+  utf_types 1.0.0 — MIT
   fax 0.2.7 — MIT
   lru 0.18.5 — MIT
   field-offset 0.3.6 — MIT
@@ -233,7 +234,11 @@ Full license texts are shipped alongside the application binary.
   gstreamer-play-sys 0.25.4 — MIT
   gstreamer-play 0.25.0 — MIT
   libm 0.2.16 — MIT
+  libshumate-sys 0.8.1 — MIT
+  libshumate 0.8.1 — MIT
   libwebp-sys 0.9.6 — MIT
+  objc2-core-foundation 0.3.2 — MIT
+  objc2-core-services 0.3.2 — MIT
   r-efi 6.0.0 — MIT
   rsraw-sys 0.1.1 — MIT
   windows-core 0.62.2 — MIT
@@ -242,17 +247,7 @@ Full license texts are shipped alongside the application binary.
   windows-link 0.2.1 — MIT
   windows-result 0.4.1 — MIT
   windows-strings 0.5.1 — MIT
-  windows-sys 0.60.2 — MIT
   windows-sys 0.61.2 — MIT
-  windows-targets 0.53.5 — MIT
-  windows_aarch64_gnullvm 0.53.1 — MIT
-  windows_aarch64_msvc 0.53.1 — MIT
-  windows_i686_gnu 0.53.1 — MIT
-  windows_i686_gnullvm 0.53.1 — MIT
-  windows_i686_msvc 0.53.1 — MIT
-  windows_x86_64_gnu 0.53.1 — MIT
-  windows_x86_64_gnullvm 0.53.1 — MIT
-  windows_x86_64_msvc 0.53.1 — MIT
   tokio-util 0.7.20 — MIT
   tokio 1.54.1 — MIT
   simd-adler32 0.3.10 — MIT
@@ -311,7 +306,7 @@ Full license texts are shipped alongside the application binary.
   proc-macro-crate 3.5.0 — MIT
   proc-macro2 1.0.107 — MIT
   quote 1.0.47 — MIT
-  rustix 1.1.5 — MIT
+  rustix 1.1.6 — MIT
   rustversion 1.0.23 — MIT
   serde 1.0.229 — MIT
   serde_bytes 0.11.19 — MIT
@@ -373,7 +368,6 @@ Full license texts are shipped alongside the application binary.
   byteorder-lite 0.1.0 — MIT
   memchr 2.8.3 — MIT
   walkdir 2.5.0 — MIT
-  fsevent-sys 4.1.0 — MIT
   security-framework-sys 2.17.0 — MIT
   security-framework 3.7.0 — MIT
   gif 0.14.2 — MIT
@@ -385,7 +379,7 @@ Full license texts are shipped alongside the application binary.
   simplecss 0.2.2 — MIT
   unicode-vo 0.1.0 — MIT
   roxmltree 0.20.0 — MIT
-  roxmltree 0.21.1 — MIT
+  roxmltree 0.21.2 — MIT
   xmlwriter 0.1.0 — MIT
   crossbeam-deque 0.8.8 — MIT
   crossbeam-epoch 0.9.21 — MIT
@@ -403,6 +397,7 @@ Full license texts are shipped alongside the application binary.
   generic-array 0.14.7 — MIT
   option-ext 0.2.0 — MPL-2.0
   unicode-ident 1.0.27 — Unicode-3.0
+  unicode-properties 0.1.5 — Unicode-3.0
   icu_collections 2.4.0 — Unicode-3.0
   icu_locale_core 2.4.0 — Unicode-3.0
   icu_normalizer 2.4.0 — Unicode-3.0

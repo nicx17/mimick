@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.12.0] - 2026-11-02
+
 ### Added
 
 - Photos is now a timeline like Immich's web app: date headings between photos, a scrubber on the right edge with years and months (a drag handle on phone-width windows), and the whole library's height known up front. Only the months you scroll or jump to are loaded.
