@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The map's attribution footer now links to its sources, such as OpenStreetMap's copyright page.
+- The About dialog now credits OpenStreetMap contributors, VersaTiles, Immich, and the libraries Mimick is built with.
+
+### Fixed
+
+- Fixed the Colorful, Natural, Muted, Gray, and Toner map styles falling back to OpenStreetMap after VersaTiles added a second tile source that libshumate cannot draw; the map now uses only their main source.
+- The Flatpak now ships the full third-party license texts, including those of the bundled libjpeg-turbo, libwebp, and LibRaw.
+
 ## [9.12.0] - 2026-11-02
 
 ### Added

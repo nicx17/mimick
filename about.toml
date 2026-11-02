@@ -14,6 +14,8 @@ accepted = [
     "LGPL-2.1-or-later",
     "LGPL-3.0-only",
     "LGPL-2.1",
+    "LGPL-2.1-only",
+    "IJG",
     "CC0-1.0",
     "Unlicense",
     "0BSD",
@@ -21,3 +23,32 @@ accepted = [
 
 ignore-build-dependencies = true
 ignore-dev-dependencies = true
+
+[turbojpeg-sys.clarify]
+license = "(Unlicense OR MIT) AND BSD-3-Clause AND IJG"
+
+[[turbojpeg-sys.clarify.files]]
+path = "libjpeg-turbo/LICENSE.md"
+license = "BSD-3-Clause"
+checksum = "96f5b328adbb78eeaaec6980d73fd558cb1e4d62560ed615646bc3cf5e532430"
+
+[[turbojpeg-sys.clarify.files]]
+path = "libjpeg-turbo/README.ijg"
+license = "IJG"
+checksum = "75815e3bf6484201a3c3d17a1bbf10f2e8e3237f84df10a2357ea896db2a81d6"
+
+[libwebp-sys.clarify]
+license = "MIT AND BSD-3-Clause"
+
+[[libwebp-sys.clarify.files]]
+path = "vendor/COPYING"
+license = "BSD-3-Clause"
+checksum = "5aec868f669e384a22372a4e8a1a6cd7d44c64cd451f960ca69cc170d1e13acf"
+
+[rsraw-sys.clarify]
+license = "MIT AND (LGPL-2.1-only OR CDDL-1.0)"
+
+[[rsraw-sys.clarify.files]]
+path = "LibRaw/LICENSE.LGPL"
+license = "LGPL-2.1-only"
+checksum = "eea173a556abac0370461e57e12aab266894ea6be3874c2be05fd87871f75449"

@@ -3,6 +3,8 @@
 //! libshumate needs TileJSON embedded in the style, loads no sprites by itself, and
 //! rejects a whole style over one unknown operator, so each is handled here.
 
+use std::collections::BTreeMap;
+
 use serde_json::Value;
 use shumate::prelude::*;
 
@@ -23,6 +25,7 @@ pub async fn load_renderer(
     url: &str,
 ) -> Result<shumate::VectorRenderer, String> {
     let mut style = fetch_json(api, url).await?;
+    keep_main_source(&mut style);
     let base = sprite_base(&style);
     let (inlined, sprite) = futures_util::join!(inline_tilejson(api, &mut style), async {
         match &base {
@@ -47,6 +50,38 @@ pub async fn load_renderer(
 async fn fetch_json(api: &ImmichApiClient, url: &str) -> Result<Value, String> {
     let bytes = api.fetch_public_bytes(url).await?;
     serde_json::from_slice(&bytes).map_err(|err| format!("{url}: {err}"))
+}
+
+fn keep_main_source(style: &mut Value) {
+    let Some(main) = main_source(style) else {
+        return;
+    };
+    if let Some(sources) = style.get_mut("sources").and_then(Value::as_object_mut) {
+        sources.retain(|id, _| *id == main);
+    }
+    if let Some(layers) = style.get_mut("layers").and_then(Value::as_array_mut) {
+        layers.retain(|layer| {
+            layer
+                .get("source")
+                .and_then(Value::as_str)
+                .is_none_or(|source| source == main)
+        });
+    }
+}
+
+fn main_source(style: &Value) -> Option<String> {
+    let mut counts = BTreeMap::<&str, usize>::new();
+    let layers = style.get("layers")?.as_array()?;
+    for source in layers
+        .iter()
+        .filter_map(|layer| layer.get("source")?.as_str())
+    {
+        *counts.entry(source).or_default() += 1;
+    }
+    counts
+        .into_iter()
+        .max_by_key(|(_, count)| *count)
+        .map(|(id, _)| id.to_owned())
 }
 
 async fn inline_tilejson(api: &ImmichApiClient, style: &mut Value) -> Result<(), String> {
@@ -78,31 +113,65 @@ fn merge_tilejson(source: &mut Value, tilejson: &Value) {
     }
 }
 
-/// The style's source attributions as plain text, since libshumate's licence label is not HTML.
+/// The style's source attributions as Pango markup, keeping their links.
 fn attribution(style: &Value) -> Option<String> {
     let parts: Vec<String> = style
         .get("sources")?
         .as_object()?
         .values()
         .filter_map(|source| source.get("attribution")?.as_str())
-        .map(plain_text)
+        .map(markup)
         .filter(|text| !text.is_empty())
         .collect();
     (!parts.is_empty()).then(|| parts.join(" · "))
 }
 
-/// HTML with its tags dropped, common entities decoded, and whitespace collapsed.
-fn plain_text(html: &str) -> String {
-    let mut text = String::with_capacity(html.len());
-    let mut in_tag = false;
-    for c in html.chars() {
-        match c {
-            '<' => in_tag = true,
-            '>' => in_tag = false,
-            _ if !in_tag => text.push(c),
-            _ => {}
-        }
+/// HTML as Pango markup: links kept, other tags dropped, and whitespace collapsed.
+fn markup(html: &str) -> String {
+    let mut out = String::with_capacity(html.len());
+    let mut in_link = false;
+    let mut rest = html;
+    while let Some((text, after)) = rest.split_once('<') {
+        out.push_str(&escape(text));
+        let (tag, tail) = after.split_once('>').unwrap_or((after, ""));
+        out.push_str(&link_tag(tag.trim(), &mut in_link));
+        rest = tail;
     }
+    out.push_str(&escape(rest));
+    if in_link {
+        out.push_str("</a>");
+    }
+    out.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+fn link_tag(tag: &str, in_link: &mut bool) -> String {
+    if tag.eq_ignore_ascii_case("/a") && *in_link {
+        *in_link = false;
+        return "</a>".to_string();
+    }
+    match href(tag) {
+        Some(url) if !*in_link => {
+            *in_link = true;
+            format!("<a href=\"{}\">", escape(url))
+        }
+        _ => String::new(),
+    }
+}
+
+fn href(tag: &str) -> Option<&str> {
+    let (name, attributes) = tag.split_once(char::is_whitespace)?;
+    if !name.eq_ignore_ascii_case("a") {
+        return None;
+    }
+    let (_, value) = attributes.split_once("href=\"")?;
+    value.split_once('"').map(|(url, _)| url)
+}
+
+fn escape(html: &str) -> glib::GString {
+    glib::markup_escape_text(&decode_entities(html))
+}
+
+fn decode_entities(html: &str) -> String {
     let entities = [
         ("&copy;", "©"),
         ("&nbsp;", " "),
@@ -112,10 +181,11 @@ fn plain_text(html: &str) -> String {
         ("&gt;", ">"),
         ("&amp;", "&"),
     ];
-    let decoded = entities
+    entities
         .iter()
-        .fold(text, |text, (entity, plain)| text.replace(entity, plain));
-    decoded.split_whitespace().collect::<Vec<_>>().join(" ")
+        .fold(html.to_string(), |text, (entity, plain)| {
+            text.replace(entity, plain)
+        })
 }
 
 fn rewrite_unsupported(value: &mut Value) {
@@ -276,6 +346,31 @@ mod tests {
     }
 
     #[test]
+    fn only_the_most_used_source_is_kept() {
+        let mut style = json!({
+            "sources": { "osm": {}, "landcover": {} },
+            "layers": [
+                { "id": "background", "type": "background" },
+                { "id": "forest", "source": "landcover" },
+                { "id": "roads", "source": "osm" },
+                { "id": "labels", "source": "osm" }
+            ]
+        });
+        keep_main_source(&mut style);
+        assert_eq!(
+            style,
+            json!({
+                "sources": { "osm": {} },
+                "layers": [
+                    { "id": "background", "type": "background" },
+                    { "id": "roads", "source": "osm" },
+                    { "id": "labels", "source": "osm" }
+                ]
+            })
+        );
+    }
+
+    #[test]
     fn unsupported_operators_become_true() {
         let mut layer = json!({
             "layout": { "text-field": ["case", ["is-supported-script", ["get", "name"]], ["get", "name"], ""] }
@@ -288,17 +383,20 @@ mod tests {
     }
 
     #[test]
-    fn attributions_become_plain_text() {
+    fn attributions_become_markup_with_links() {
         let style = json!({ "sources": {
             "immich": { "attribution": "<a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">&copy; OpenStreetMap</a>" },
             "plain": { "tiles": [] }
         } });
-        assert_eq!(attribution(&style).as_deref(), Some("© OpenStreetMap"));
         assert_eq!(
-            plain_text(
-                "<a href=\"x\">&copy; OpenStreetMap contributors</a> · <a>CC BY 4.0</a>\n Tom &amp; Jerry"
-            ),
-            "© OpenStreetMap contributors · CC BY 4.0 Tom & Jerry"
+            attribution(&style).as_deref(),
+            Some("<a href=\"https://www.openstreetmap.org/copyright\">© OpenStreetMap</a>")
+        );
+        let html = "<a href=\"x?a=1&b=2\">&copy; OSM</a> · <a>CC BY 4.0</a> <b>Tom</b> &amp; <i>Jerry\n <a href=\"y\">open";
+        let text = markup(html);
+        assert_eq!(
+            text,
+            "<a href=\"x?a=1&amp;b=2\">© OSM</a> · CC BY 4.0 Tom &amp; Jerry <a href=\"y\">open</a>"
         );
         assert_eq!(attribution(&json!({ "sources": {} })), None);
     }

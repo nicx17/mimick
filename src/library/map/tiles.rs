@@ -4,6 +4,8 @@ use std::cell::{Cell, OnceCell, RefCell};
 use std::rc::Rc;
 
 use glib::prelude::*;
+use gtk::prelude::*;
+use shumate::prelude::*;
 
 use crate::api_client::{ImmichApiClient, MAP_USER_AGENT};
 use crate::library::LibraryWindowUi;
@@ -11,6 +13,8 @@ use crate::library::LibraryWindowUi;
 use super::styles::MapStyle;
 
 const OSM_TILE_URL: &str = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const OSM_CREDIT: &str =
+    "<a href=\"https://www.openstreetmap.org/copyright\">© OpenStreetMap contributors</a>";
 /// Recently used styles stay loaded, so switching back to one is instant.
 const KEPT_STYLES: usize = 3;
 
@@ -72,6 +76,7 @@ impl Tiles {
             maps.push(map.downgrade());
         }
         drop(maps);
+        show_license_links(map);
         match self.current() {
             Some(source) => map.set_map_source(Some(&source)),
             None => self.reference_placeholder(map),
@@ -222,9 +227,21 @@ async fn style_source(api: &ImmichApiClient, url: Option<&str>) -> shumate::MapS
 }
 
 fn raster() -> shumate::MapSource {
-    shumate::MapSourceRegistry::with_defaults()
+    let source = shumate::MapSourceRegistry::with_defaults()
         .by_id(shumate::MAP_SOURCE_OSM_MAPNIK)
-        .unwrap_or_else(|| shumate::RasterRenderer::from_url(OSM_TILE_URL).upcast())
+        .unwrap_or_else(|| shumate::RasterRenderer::from_url(OSM_TILE_URL).upcast());
+    source.set_license(OSM_CREDIT);
+    source
+}
+
+fn show_license_links(map: &shumate::SimpleMap) {
+    let label = map
+        .license()
+        .and_then(|license| license.first_child())
+        .and_downcast::<gtk::Label>();
+    if let Some(label) = label {
+        label.set_use_markup(true);
+    }
 }
 
 #[cfg(test)]
