@@ -45,9 +45,9 @@ Mimick is a Linux background app that watches selected folders and syncs photos 
 
 ## Project Notes
 
-- By default Mimick only uploads local media to Immich and never changes local files. A folder's **Sync Method** can also be **Download Only** or **Full**, which download its album's photos into the folder; only **Delete from This Folder Too** removes local files, by moving them to the trash.
-- The app stores API keys in the desktop keyring and keeps operational state in `~/.cache/mimick/`.
-- Startup rescans use a local sync index so already-synced unchanged files are skipped quickly.
+- By default a watch folder only uploads to Immich and never changes local files. Its **Sync Method** can also be **Download Only** or **Full Sync**, which download its album's photos into the folder. See [Sync Behavior](Sync-Behavior).
+- API keys are stored in the desktop keyring. Logs and the retry queue live in `~/.cache/mimick/`, and the sync index in `~/.local/share/mimick/`.
+- Startup rescans use the sync index, so unchanged files that are already synced are skipped quickly.
 
 ## Current App Highlights
 
@@ -57,7 +57,7 @@ Mimick is a Linux background app that watches selected folders and syncs photos 
 - Optional in-app library viewer: a Photos timeline with date headings and a scrubber, albums, Explore, search, People, Tags, Folders, Favorites, Archive, and Trash
 - In-app video playback (streamed from Immich, hardware-decoded) and fullscreen viewing in the lightbox
 - Select and copy text Immich recognized in photos (OCR), see the people in a photo, and see edits made in Immich, in the lightbox
-- Map of your photos, a location mini map in the lightbox, and setting the location of one or many photos
+- Map of your photos with place search, a location mini map in the lightbox, and setting the location of one or many photos
 - Shared albums with Viewer and Editor roles, public shared links, and partner sharing, including browsing a partner's photos
 - Album management: add and remove photos, set covers, album options, delete albums, leave shared albums, download albums as zip, and see which albums a photo is in
 - Edit asset info (description, date taken, favorite), change the date and time zone of many photos at once, rate assets with stars, archive, and move assets to the Immich trash from the library

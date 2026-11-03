@@ -85,7 +85,11 @@ Per-release highlights and live open issues are on the [roadmap page](https://mi
 
 Finished on `main` and coming in the next release (see the Unreleased section of [CHANGELOG.md](CHANGELOG.md)).
 
-Nothing merged yet since 9.12.0.
+- 11 more map styles from VersaTiles, and an Appearance choice to keep maps light or dark
+- Satellite map style with imagery and place names from VersaTiles
+- Place search on the Map page and in Set Location, powered by Photon
+- VersaTiles map styles ship with Mimick, so changes on VersaTiles' side can't break them
+- Linked map attribution, and credits for map data and libraries in the About dialog
 
 ---
 

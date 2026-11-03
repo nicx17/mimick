@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added 11 more map styles from VersaTiles under **More Styles** in the map's style menu: Positrino, Protocol, Protostar, Protozoa, Fnord, Classic, Googol, Freedom, Macbob, Mactaylor, and Bingo.
+- Added a **Satellite** map style with imagery from VersaTiles and place names on top. Sharp aerial photos cover about 35 European countries; elsewhere the imagery is sharp to about town level, and zooming in further enlarges it instead of leaving blank squares.
+- Added place search to the Map page: type a place, street, or address and the map flies there and drops a red pin, zoomed to fit what you found. Results come from [Photon](https://photon.komoot.io) (OpenStreetMap data), ranked by how close they are to where the map is looking and named in your system language when Photon has it (English, German, or French). If Photon can't be reached, Immich's own place search answers instead. The **Set Location** dialog uses the same search. **Ctrl+F** jumps to the Map page's search field.
+- Added keyboard shortcuts: **Ctrl+K** opens Search, **Ctrl+1** to **Ctrl+9** go to the sidebar pages, **Ctrl+A** selects every loaded photo, and **D**, **M**, and **Y** step Photos to the next day, month, or year (**Shift** for the previous one). On the map, **+** and **−** zoom, **[** and **]** turn it, **N** points north, and **Ctrl+L** shows your location. In the viewer, **1** to **5** rate (**0** clears), **E** opens Edit Info, and **Shift+D** downloads. All are listed under **Keyboard Shortcuts** (**Ctrl+?**).
+- Added an **Appearance** choice to the map's style menu: follow the system style, or keep maps light or dark.
+- The map's attribution footer now links to its sources, such as OpenStreetMap's copyright page.
+- The About dialog now credits OpenStreetMap contributors, VersaTiles, Immich, and the libraries Mimick is built with.
+
+### Changed
+
+- The details pane now follows Immich's order: the description, rating, and people come first, then **Details** (date taken, dimensions, size; formerly **Image**), **Camera**, **Location**, **Appears In**, and **Tags**.
+- The details pane's summary no longer repeats the date as **Created** when **Details** already shows when the photo was taken.
+- Your photos without a description show **Add a description** in the details pane, which opens **Edit Info…**.
+- The details pane's **Set Location…** button is now a pen button on the **Coordinates** row. Your photos without a location show **Not set** there, with the same pen.
+- A photo's location on the details pane's mini map and in the Set Location dialog is now a round badge with a photo icon, so it no longer looks like the blue "you are here" dot. Each map marker names what it marks when you rest the pointer on it.
+
+### Fixed
+
+- Fixed the Colorful, Natural, Muted, Gray, and Toner map styles falling back to OpenStreetMap after VersaTiles changed its hosted styles. The VersaTiles styles now ship with Mimick, so changes on VersaTiles' side can't break them; their tiles still come from VersaTiles.
+- A server map style with more than one tile source now shows its main source instead of falling back to OpenStreetMap.
+- The Flatpak now ships the full third-party license texts, including those of the bundled libjpeg-turbo, libwebp, and LibRaw.
+
 ## [9.12.0] - 2026-11-02
 
 ### Added

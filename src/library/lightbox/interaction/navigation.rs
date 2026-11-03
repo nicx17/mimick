@@ -13,11 +13,13 @@ impl Lightbox {
         mods: gtk::gdk::ModifierType,
     ) -> glib::Propagation {
         let ctrl = mods.contains(gtk::gdk::ModifierType::CONTROL_MASK);
+        let shift = mods.contains(gtk::gdk::ModifierType::SHIFT_MASK);
         let handled = if ctrl {
             self.handle_ocr_key(key, true) || self.handle_zoom_key(key)
         } else {
             self.handle_video_key(key)
                 || self.handle_ocr_key(key, false)
+                || self.handle_edit_key(key, shift)
                 || self.handle_plain_key(key)
         };
         if handled {
@@ -37,6 +39,19 @@ impl Lightbox {
             _ => return false,
         }
         true
+    }
+
+    /// 0 to 5 rate, Shift+D downloads, E opens Edit Info; false when the key does none of these.
+    fn handle_edit_key(self: &Rc<Self>, key: gtk::gdk::Key, shift: bool) -> bool {
+        use gtk::gdk::Key;
+        match key {
+            Key::D if shift => press_if_shown(&self.actions.download),
+            Key::e | Key::E if self.details.edit_btn.is_visible() => {
+                self.edit_current();
+                true
+            }
+            _ => rating_digit(key).is_some_and(|stars| self.details.rating.rate(stars)),
+        }
     }
 
     /// Keys without Ctrl: arrows, I, Delete, F11, F, A, Escape; false for any other key.
@@ -248,5 +263,34 @@ impl Lightbox {
             }
         });
         *handler_id.borrow_mut() = Some(id);
+    }
+}
+
+fn press_if_shown(button: &gtk::Button) -> bool {
+    let shown = button.is_visible() && button.is_sensitive();
+    if shown {
+        button.emit_clicked();
+    }
+    shown
+}
+
+/// The rating a digit key stands for, from 0 to 5.
+fn rating_digit(key: gtk::gdk::Key) -> Option<u8> {
+    let digit = key.to_unicode()?.to_digit(10)?;
+    u8::try_from(digit).ok().filter(|stars| *stars <= 5)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use gtk::gdk::Key;
+
+    #[test]
+    fn digits_up_to_five_are_ratings() {
+        assert_eq!(rating_digit(Key::_0), Some(0));
+        assert_eq!(rating_digit(Key::_5), Some(5));
+        assert_eq!(rating_digit(Key::KP_3), Some(3));
+        assert_eq!(rating_digit(Key::_6), None);
+        assert_eq!(rating_digit(Key::e), None);
     }
 }

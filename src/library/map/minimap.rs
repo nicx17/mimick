@@ -88,8 +88,18 @@ impl Minimap {
 
 /// Round marker for one position.
 pub fn pin(point: GeoPoint) -> shumate::Marker {
-    let dot = gtk::Box::builder().css_classes(["mimick-map-pin"]).build();
-    let marker = shumate::Marker::builder().child(&dot).build();
+    let icon = gtk::Image::builder()
+        .icon_name("image-x-generic-symbolic")
+        .pixel_size(12)
+        .hexpand(true)
+        .halign(gtk::Align::Center)
+        .build();
+    let badge = gtk::Box::builder()
+        .tooltip_text("Photo location")
+        .css_classes(["mimick-map-pin"])
+        .build();
+    badge.append(&icon);
+    let marker = shumate::Marker::builder().child(&badge).build();
     marker.set_location(point.lat, point.lon);
     marker
 }

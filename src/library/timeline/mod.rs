@@ -4,6 +4,7 @@ pub mod dates;
 pub mod index;
 pub mod layout;
 pub mod marks;
+pub mod nav;
 pub mod scrubber;
 
 use std::cell::RefCell;
@@ -13,6 +14,7 @@ use gtk::glib;
 use gtk::prelude::*;
 
 use super::LibraryWindowUi;
+use super::asset_object::AssetObject;
 use super::state::{LibrarySortMode, LibrarySource};
 use crate::api_client::LibraryAsset;
 use index::{Month, TimelineIndex};
@@ -44,6 +46,58 @@ fn partner_id(source: &LibrarySource) -> Option<String> {
 
 pub(super) fn is_active(ui: &LibraryWindowUi) -> bool {
     ui.interaction.timeline.borrow().is_some()
+}
+
+/// Scroll Photos to the next or previous day, month, or year; `false` when it isn't shown.
+pub(super) fn jump(ui: &LibraryWindowUi, step: nav::Step, forward: bool) -> bool {
+    let canvas = &ui.grid.canvas;
+    if !is_active(ui) || !canvas.is_mapped() {
+        return false;
+    }
+    let (top, sections) = (canvas.scroll_top(), canvas.timeline_sections());
+    let target = match step {
+        nav::Step::Day => nav::day_target(
+            &row_days(ui),
+            &canvas.heading_tops(),
+            &sections,
+            top,
+            forward,
+        )
+        .or_else(|| nav::month_target(&sections, top, forward)),
+        nav::Step::Month => nav::month_target(&sections, top, forward),
+        nav::Step::Year => nav::year_target(&sections, &month_years(ui), top, forward),
+    };
+    if let Some(y) = target {
+        canvas.scroll_to(y);
+    }
+    true
+}
+
+fn row_days(ui: &LibraryWindowUi) -> Vec<(f32, Option<chrono::NaiveDate>)> {
+    let model = &ui.grid.model;
+    let day_of = |position: u32| {
+        let item = model.item(position).and_downcast::<AssetObject>()?;
+        dates::local_day(&item.local_date_time())
+    };
+    ui.grid
+        .canvas
+        .row_starts()
+        .into_iter()
+        .map(|(y, first)| (y, first.and_then(day_of)))
+        .collect()
+}
+
+fn month_years(ui: &LibraryWindowUi) -> Vec<Option<i32>> {
+    let timeline = ui.interaction.timeline.borrow();
+    let Some(timeline) = timeline.as_ref() else {
+        return Vec::new();
+    };
+    let index = timeline.index.borrow();
+    index
+        .months()
+        .iter()
+        .map(|month| dates::month_year(&month.key))
+        .collect()
 }
 
 pub(super) fn connect(ui: &Rc<LibraryWindowUi>) {

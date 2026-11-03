@@ -21,7 +21,8 @@ use super::coords::GeoPoint;
 use super::layout::Mode;
 use super::markers::{self, Members};
 use super::minimap::Minimap;
-use super::styles::MapStyle;
+use super::search::{self, MapSearch};
+use super::styles::{MapAppearance, MapStyle};
 use super::tiles::Tiles;
 
 const REFRESH_DELAY: Duration = Duration::from_millis(120);
@@ -53,6 +54,7 @@ pub struct MapView {
     status: libadwaita::StatusPage,
     resize_watch: gtk::DrawingArea,
     pub(super) controls: MapControls,
+    pub(super) search: MapSearch,
     pub tiles: Rc<Tiles>,
     /// Markers are loaded; cleared after location edits so the next visit reloads.
     pub populated: Cell<bool>,
@@ -98,7 +100,9 @@ pub fn build_map_view() -> MapView {
     let viewport = map.viewport().expect("SimpleMap creates its viewport");
     let here_layer = shumate::MarkerLayer::new(&viewport);
     let layer = shumate::MarkerLayer::new(&viewport);
+    let search = search::build(&viewport);
     map.add_overlay_layer(&here_layer);
+    map.add_overlay_layer(&search.pin_layer);
     map.add_overlay_layer(&layer);
     let (status, resize_watch) = (status_page(), resize_watch());
     let controls = controls::build(&viewport);
@@ -106,6 +110,7 @@ pub fn build_map_view() -> MapView {
     overlay.add_overlay(&resize_watch);
     overlay.add_overlay(&status);
     overlay.add_overlay(&controls.root);
+    overlay.add_overlay(&search.root);
     let root = libadwaita::ToastOverlay::new();
     root.set_child(Some(&overlay));
     root.set_visible(false);
@@ -118,6 +123,7 @@ pub fn build_map_view() -> MapView {
         status,
         resize_watch,
         controls,
+        search,
         tiles: Tiles::new(),
         populated: Cell::new(false),
         mode: Cell::default(),
@@ -160,8 +166,11 @@ fn resize_watch() -> gtk::DrawingArea {
 
 /// Recluster as the map moves or resizes, and follow the theme and the saved style.
 pub fn connect_map_view(ui: &Rc<LibraryWindowUi>) {
-    let saved = MapStyle::from_id(&ui.ctx.config.read().data.library_map_style);
-    ui.map.tiles.preset(saved);
+    let config = ui.ctx.config.read();
+    let style = MapStyle::from_id(&config.data.library_map_style);
+    let appearance = MapAppearance::from_id(&config.data.library_map_appearance);
+    drop(config);
+    ui.map.tiles.preset(style, appearance);
     camera::hold_in_world(&ui.map.map);
     if let Some(viewport) = ui.map.map.viewport() {
         let weak = Rc::downgrade(ui);
@@ -173,9 +182,10 @@ pub fn connect_map_view(ui: &Rc<LibraryWindowUi>) {
         });
     }
     let weak = Rc::downgrade(ui);
-    ui.map.resize_watch.connect_resize(move |_, _, height| {
+    ui.map.resize_watch.connect_resize(move |_, width, height| {
         if let Some(ui) = weak.upgrade() {
             controls::fit_height(&ui, height);
+            search::fit_width(&ui, width);
             camera::keep_in_world(&ui.map.map);
             schedule_refresh(&ui);
         }
@@ -187,6 +197,7 @@ pub fn connect_map_view(ui: &Rc<LibraryWindowUi>) {
         }
     });
     controls::connect(ui);
+    search::connect(ui);
     super::layout::connect(ui);
 }
 

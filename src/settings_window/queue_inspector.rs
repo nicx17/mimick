@@ -305,6 +305,33 @@ pub(super) fn show_about_dialog(parent: &impl gtk::prelude::IsA<gtk::Widget>) {
         Some("Icon Design"),
         &["Round Icons https://unsplash.com/illustrations/a-white-and-orange-flower-on-a-white-background-IkQ_WrJzZOM"],
     );
+    about.add_acknowledgement_section(
+        Some("Map Data and Styles"),
+        &[
+            "OpenStreetMap contributors https://www.openstreetmap.org/copyright",
+            "VersaTiles https://versatiles.org",
+            "VersaTiles satellite imagery sources https://versatiles.org/sources/",
+        ],
+    );
+    about.add_acknowledgement_section(
+        Some("Place Search"),
+        &["Photon by komoot, Apache License 2.0 https://github.com/komoot/photon"],
+    );
+    about.add_acknowledgement_section(Some("Special Thanks"), &["Immich https://immich.app"]);
+    about.add_acknowledgement_section(
+        Some("Built With"),
+        &[
+            "GTK https://www.gtk.org",
+            "libadwaita https://gnome.pages.gitlab.gnome.org/libadwaita/",
+            "libshumate https://gitlab.gnome.org/GNOME/libshumate",
+            "GStreamer https://gstreamer.freedesktop.org",
+            "libheif https://github.com/strukturag/libheif",
+            "LibRaw https://www.libraw.org",
+            "libjpeg-turbo https://libjpeg-turbo.org",
+            "libwebp https://chromium.googlesource.com/webm/libwebp",
+            "OpenJPEG https://www.openjpeg.org",
+        ],
+    );
 
     let third_party =
         glib::markup_escape_text(include_str!("../../THIRD_PARTY_LICENSES_SUMMARY.txt"));

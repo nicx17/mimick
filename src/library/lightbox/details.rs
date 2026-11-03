@@ -94,7 +94,7 @@ pub(super) fn drag_export_path(
 
 /// Populate the details sidebar with sectioned EXIF metadata.
 ///
-/// Groups fall into three categories — Camera, Image, Location — each rendered
+/// Groups fall into three categories — Details, Camera, Location — each rendered
 /// as an `AdwPreferencesGroup` with accent-coloured prefix icons. Empty groups
 /// (e.g. an image with no GPS) are skipped so the pane stays compact.
 ///
@@ -102,37 +102,49 @@ pub(super) fn drag_export_path(
 /// DateTimeOriginal — the camera's capture moment) or "Modified" (filesystem
 /// mtime fallback when no capture timestamp exists).
 ///
+/// `edit_location` goes on the Coordinates row, which then shows even without GPS.
 /// Returns the Location group, if any, so the caller can add the mini map to it.
 pub(super) fn fill_exif_box(
     container: &gtk::Box,
     exif: &crate::api_client::ExifInfo,
     taken_label: &str,
+    edit_location: Option<gtk::Button>,
 ) -> Option<libadwaita::PreferencesGroup> {
-    if let Some(group) = build_camera_group(exif) {
-        container.append(&group);
-    }
     if let Some(group) = build_image_group(exif, taken_label) {
         container.append(&group);
     }
-    let location = build_location_group(exif);
+    if let Some(group) = build_camera_group(exif) {
+        container.append(&group);
+    }
+    let location = build_location_group(exif, edit_location);
     if let Some(group) = &location {
         container.append(group);
     }
-    if let Some(desc) = &exif.description
-        && !desc.trim().is_empty()
-    {
-        let note_group = libadwaita::PreferencesGroup::builder()
-            .title("Description")
-            .build();
-        let row = libadwaita::ActionRow::builder()
-            .title(desc.as_str())
+    location
+}
+
+/// The description, at the top of the pane; `add` stands in when there is none.
+pub(super) fn fill_description(
+    container: &gtk::Box,
+    exif: &crate::api_client::ExifInfo,
+    add: Option<libadwaita::ActionRow>,
+) {
+    let text = exif.description.as_deref().filter(|d| !d.trim().is_empty());
+    let row = match (text, add) {
+        (Some(desc), _) => libadwaita::ActionRow::builder()
+            .title(desc)
             .title_lines(0)
             .css_classes(["property"])
-            .build();
-        note_group.add(&row);
-        container.append(&note_group);
-    }
-    location
+            .build(),
+        (None, Some(add)) => add,
+        (None, None) => return,
+    };
+    let note_group = libadwaita::PreferencesGroup::builder()
+        .title("Description")
+        .build();
+    note_group.add(&row);
+    container.append(&note_group);
+    container.set_visible(true);
 }
 
 fn build_camera_group(exif: &crate::api_client::ExifInfo) -> Option<libadwaita::PreferencesGroup> {
@@ -172,14 +184,34 @@ fn build_camera_group(exif: &crate::api_client::ExifInfo) -> Option<libadwaita::
     (rows > 0).then_some(group)
 }
 
+/// Whether Details shows the camera's capture date, making the summary's "Created" redundant.
+pub(super) fn shows_taken_date(exif: &crate::api_client::ExifInfo, taken_label: &str) -> bool {
+    taken_label == "Taken"
+        && exif
+            .date_time_original
+            .as_deref()
+            .is_some_and(|dt| !dt.trim().is_empty())
+}
+
 fn build_image_group(
     exif: &crate::api_client::ExifInfo,
     taken_label: &str,
 ) -> Option<libadwaita::PreferencesGroup> {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Image")
+        .title("Details")
         .build();
     let mut rows = 0u32;
+    if let Some(dt) = &exif.date_time_original
+        && !dt.trim().is_empty()
+    {
+        group.add(&accent_row(
+            "x-office-calendar-symbolic",
+            "mimick-accent-image",
+            taken_label,
+            &format_datetime_display(dt),
+        ));
+        rows += 1;
+    }
     if let (Some(w), Some(h)) = (exif.exif_image_width, exif.exif_image_height) {
         group.add(&accent_row(
             "view-grid-symbolic",
@@ -198,22 +230,12 @@ fn build_image_group(
         ));
         rows += 1;
     }
-    if let Some(dt) = &exif.date_time_original
-        && !dt.trim().is_empty()
-    {
-        group.add(&accent_row(
-            "x-office-calendar-symbolic",
-            "mimick-accent-image",
-            taken_label,
-            &format_datetime_display(dt),
-        ));
-        rows += 1;
-    }
     (rows > 0).then_some(group)
 }
 
 fn build_location_group(
     exif: &crate::api_client::ExifInfo,
+    edit: Option<gtk::Button>,
 ) -> Option<libadwaita::PreferencesGroup> {
     let group = libadwaita::PreferencesGroup::builder()
         .title("Location")
@@ -228,14 +250,24 @@ fn build_location_group(
         ));
         rows += 1;
     }
-    if let (Some(lat), Some(lon)) = (exif.latitude, exif.longitude) {
+    let coords = exif.latitude.zip(exif.longitude);
+    if coords.is_some() || edit.is_some() {
+        let value = coords.map_or_else(
+            || "Not set".to_string(),
+            |(lat, lon)| format!("{lat:.5}, {lon:.5}"),
+        );
         let row = accent_row(
             "find-location-symbolic",
             "mimick-accent-location",
             "Coordinates",
-            &format!("{lat:.5}, {lon:.5}"),
+            &value,
         );
-        row.add_suffix(&location::copy_coordinates_button(lat, lon));
+        if let Some((lat, lon)) = coords {
+            row.add_suffix(&location::copy_coordinates_button(lat, lon));
+        }
+        if let Some(edit) = edit {
+            row.add_suffix(&edit);
+        }
         group.add(&row);
         rows += 1;
     }
@@ -408,4 +440,21 @@ pub(super) fn local_details_exif(probe: &LocalProbe) -> Option<(ExifInfo, &'stat
         "Taken"
     };
     Some((exif_from_local(&info, probe.file_size), taken_label))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::api_client::ExifInfo;
+
+    #[test]
+    fn created_is_redundant_only_beside_a_capture_date() {
+        let mut exif = ExifInfo::default();
+        assert!(!shows_taken_date(&exif, "Taken"));
+        exif.date_time_original = Some("  ".into());
+        assert!(!shows_taken_date(&exif, "Taken"));
+        exif.date_time_original = Some("2024-05-01T10:00:00Z".into());
+        assert!(shows_taken_date(&exif, "Taken"));
+        assert!(!shows_taken_date(&exif, "Modified"));
+    }
 }

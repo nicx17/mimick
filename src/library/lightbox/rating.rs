@@ -72,6 +72,19 @@ impl RatingSection {
         self.root.set_visible(editable || rating.is_some());
     }
 
+    /// Rate from the keyboard: 1 to 5 stars, or 0 to clear; `false` when ratings can't be changed.
+    pub(super) fn rate(&self, value: u8) -> bool {
+        if !self.editable.get() || !self.root.is_visible() {
+            return false;
+        }
+        match self.stars.get(usize::from(value).wrapping_sub(1)) {
+            Some(star) => self.choose(star, value),
+            None if value == 0 && self.rating.get().is_some() => self.save(None),
+            None => {}
+        }
+        true
+    }
+
     fn connect(&self) {
         for (star, value) in self.stars.iter().zip(1..) {
             let section = self.clone();

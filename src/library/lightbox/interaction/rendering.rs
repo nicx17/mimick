@@ -11,8 +11,9 @@ use crate::library::local_exif;
 
 use super::super::details::truncate_filename;
 use super::super::details::{
-    drag_export_path, edited_original_cache_path, fill_exif_box, format_datetime_display,
-    local_details_exif, original_preview_cache_path, probe_local_file,
+    drag_export_path, edited_original_cache_path, fill_description, fill_exif_box,
+    format_datetime_display, local_details_exif, original_preview_cache_path, probe_local_file,
+    shows_taken_date,
 };
 use super::super::strip::Slot;
 use super::super::{AssetInfo, Lightbox, LoadResult, PictureLoad};
@@ -54,7 +55,6 @@ impl Lightbox {
         self.show_archive(info.archived);
         let editable = on_server && !in_trash && is_mine(&self.ui, &item);
         self.details.edit_btn.set_visible(editable);
-        self.details.location_btn.set_visible(editable);
         self.details.album_btn.set_visible(on_server && !in_trash);
         self.actions.zoom_group.set_visible(!info.is_video());
         self.actions.open_with.set_visible(info.is_video());
@@ -81,16 +81,20 @@ impl Lightbox {
             1 => "Local only",
             _ => "On Immich only",
         };
-        self.details.summary.set_label(&format!(
-            "{} · {}\nCreated: {}",
-            info.mime,
-            sync_label,
+        self.details
+            .summary
+            .set_label(&format!("{} · {}", info.mime, sync_label));
+        self.details.created.set_label(&format!(
+            "Created: {}",
             format_datetime_display(&info.created)
         ));
-        while let Some(c) = self.details.exif.first_child() {
-            self.details.exif.remove(&c);
+        self.details.created.set_visible(true);
+        for section in [&self.details.exif, &self.details.description] {
+            while let Some(c) = section.first_child() {
+                section.remove(&c);
+            }
+            section.set_visible(false);
         }
-        self.details.exif.set_visible(false);
         self.details.rating.clear();
         self.details.people.clear();
         self.details.tags.clear();
@@ -552,10 +556,13 @@ impl Lightbox {
             }
             lb.details.loading.set_visible(false);
             // Render whatever we have. Files without an EXIF block (Unsplash,
-            // screenshots, edited copies) still get the Image group populated from
+            // screenshots, edited copies) still get the Details group populated from
             // filesystem + Pixbuf data, so the user always sees *something*.
             if let Some((exif, taken_label)) = probed.as_ref().and_then(local_details_exif) {
-                let location = fill_exif_box(&lb.details.exif, &exif, taken_label);
+                fill_description(&lb.details.description, &exif, None);
+                let location = fill_exif_box(&lb.details.exif, &exif, taken_label, None);
+                let taken = shows_taken_date(&exif, taken_label);
+                lb.details.created.set_visible(!taken);
                 lb.show_location_map(location, &exif);
                 lb.details.exif.set_visible(true);
             }
@@ -592,8 +599,17 @@ impl Lightbox {
             if on_server && features.tags {
                 lb.details.tags.show(&asset_id, details.tags);
             }
-            if let Some(exif) = details.exif_info {
-                let location = fill_exif_box(&lb.details.exif, &exif, "Taken");
+            let exif = details
+                .exif_info
+                .or_else(|| mine.then(crate::api_client::ExifInfo::default));
+            if let Some(exif) = exif {
+                let edit = mine.then(|| lb.set_location_button());
+                let add_description = mine.then(|| lb.add_description_row());
+                fill_description(&lb.details.description, &exif, add_description);
+                let location = fill_exif_box(&lb.details.exif, &exif, "Taken", edit);
+                lb.details
+                    .created
+                    .set_visible(!shows_taken_date(&exif, "Taken"));
                 lb.show_location_map(location, &exif);
                 lb.details.exif.set_visible(true);
             }

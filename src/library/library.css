@@ -463,6 +463,21 @@ button.mimick-map-photo.selected {
     border-top: 1px solid alpha(@view_fg_color, 0.1);
 }
 
+.mimick-map-search {
+    min-height: 36px;
+    background-color: @view_bg_color;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.mimick-map-results {
+    background: transparent;
+}
+
+.mimick-map-credit {
+    padding: 6px 12px;
+}
+
 .mimick-map-here {
     min-width: 16px;
     min-height: 16px;
@@ -476,9 +491,15 @@ button.mimick-map-photo.selected {
     min-width: 18px;
     min-height: 18px;
     border-radius: 999px;
-    border: 3px solid white;
+    border: 2px solid white;
     background: @accent_bg_color;
+    color: @accent_fg_color;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.mimick-map-searched {
+    color: #e01b24;
+    -gtk-icon-shadow: 0 0 1px white, 0 0 1px white, 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 button.mimick-minimap {

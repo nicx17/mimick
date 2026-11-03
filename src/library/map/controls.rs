@@ -10,7 +10,7 @@ use crate::library::LibraryWindowUi;
 use crate::library::context_menu::show_error_toast;
 
 use super::camera::{self, ROTATE_STEP};
-use super::styles::MapStyle;
+use super::styles::{MapAppearance, MapStyle};
 use super::{locate, view};
 
 const NORTH_TOLERANCE: f64 = 1e-3;
@@ -127,27 +127,35 @@ fn card(buttons: &[&gtk::Widget]) -> gtk::Box {
 }
 
 fn style_menu() -> gio::Menu {
-    let sections: [&[MapStyle]; 3] = [
-        &[MapStyle::Immich],
-        &[
-            MapStyle::Colorful,
-            MapStyle::Natural,
-            MapStyle::Muted,
-            MapStyle::Gray,
-            MapStyle::Toner,
-        ],
-        &[MapStyle::OpenStreetMap],
-    ];
     let menu = gio::Menu::new();
-    for styles in sections {
-        let section = gio::Menu::new();
-        for style in styles {
-            let action = format!("map.style::{}", style.id());
-            section.append(Some(style.label()), Some(&action));
-        }
-        menu.append_section(None, &section);
-    }
+    menu.append_section(None, &style_items(&[MapStyle::Immich]));
+    let palettes = style_items(&MapStyle::PALETTES);
+    palettes.append_submenu(Some("More Styles"), &style_items(&MapStyle::LOOKALIKES));
+    menu.append_section(None, &palettes);
+    menu.append_section(
+        None,
+        &style_items(&[MapStyle::Satellite, MapStyle::OpenStreetMap]),
+    );
+    menu.append_section(Some("Appearance"), &appearance_items());
     menu
+}
+
+fn appearance_items() -> gio::Menu {
+    let items = gio::Menu::new();
+    for appearance in MapAppearance::ALL {
+        let action = format!("map.appearance::{}", appearance.id());
+        items.append(Some(appearance.label()), Some(&action));
+    }
+    items
+}
+
+fn style_items(styles: &[MapStyle]) -> gio::Menu {
+    let items = gio::Menu::new();
+    for style in styles {
+        let action = format!("map.style::{}", style.id());
+        items.append(Some(style.label()), Some(&action));
+    }
+    items
 }
 
 pub fn connect(ui: &Rc<LibraryWindowUi>) {
@@ -171,7 +179,56 @@ pub fn connect(ui: &Rc<LibraryWindowUi>) {
     on_click(&controls.north, ui, |ui| camera::reset_north(&ui.map.map));
     on_click(&controls.area, ui, show_area);
     on_click(&controls.locate, ui, locate_me);
-    install_style_action(ui);
+    install_map_actions(ui);
+    connect_keys(ui);
+}
+
+/// Plus and minus zoom, brackets rotate, N points north, and Ctrl+L finds you, while a map shows.
+fn connect_keys(ui: &Rc<LibraryWindowUi>) {
+    let keys = gtk::EventControllerKey::new();
+    let weak = Rc::downgrade(ui);
+    keys.connect_key_pressed(move |_, keyval, _, mods| {
+        let handled = weak.upgrade().is_some_and(|ui| {
+            ui.map.root.is_mapped()
+                && crate::library::controls::no_dialog_open(&ui)
+                && map_key(&ui, keyval, mods)
+        });
+        if handled {
+            glib::Propagation::Stop
+        } else {
+            glib::Propagation::Proceed
+        }
+    });
+    ui.window.add_controller(keys);
+}
+
+fn map_key(ui: &Rc<LibraryWindowUi>, keyval: gtk::gdk::Key, mods: gtk::gdk::ModifierType) -> bool {
+    use gtk::gdk::{Key, ModifierType};
+    if mods.intersects(ModifierType::ALT_MASK | ModifierType::SUPER_MASK) {
+        return false;
+    }
+    let ctrl = mods.contains(ModifierType::CONTROL_MASK);
+    match (ctrl, keyval.to_lower()) {
+        (true, Key::l) if ui.map.controls.locate.is_sensitive() => locate_me(ui),
+        (true, Key::l) => {}
+        (false, Key::plus | Key::equal | Key::KP_Add) => zoom(ui, true),
+        (false, Key::minus | Key::KP_Subtract) => zoom(ui, false),
+        (false, Key::bracketleft) => camera::rotate_by(&ui.map.map, -ROTATE_STEP),
+        (false, Key::bracketright) => camera::rotate_by(&ui.map.map, ROTATE_STEP),
+        (false, Key::n) => camera::reset_north(&ui.map.map),
+        _ => return false,
+    }
+    true
+}
+
+fn zoom(ui: &LibraryWindowUi, closer: bool) {
+    if let Some(map) = ui.map.map.map() {
+        if closer {
+            map.zoom_in();
+        } else {
+            map.zoom_out();
+        }
+    }
 }
 
 fn on_click(button: &gtk::Button, ui: &Rc<LibraryWindowUi>, action: fn(&Rc<LibraryWindowUi>)) {
@@ -212,9 +269,31 @@ fn locate_me(ui: &Rc<LibraryWindowUi>) {
     });
 }
 
-fn install_style_action(ui: &Rc<LibraryWindowUi>) {
-    let current = ui.map.tiles.style().id().to_variant();
-    let action = gio::SimpleAction::new_stateful("style", Some(glib::VariantTy::STRING), &current);
+fn install_map_actions(ui: &Rc<LibraryWindowUi>) {
+    let tiles = &ui.map.tiles;
+    let actions = gio::SimpleActionGroup::new();
+    actions.add_action(&choice_action(ui, "style", tiles.style().id(), |ui, id| {
+        choose_style(ui, MapStyle::from_id(id));
+    }));
+    actions.add_action(&choice_action(
+        ui,
+        "appearance",
+        tiles.appearance().id(),
+        |ui, id| {
+            choose_appearance(ui, MapAppearance::from_id(id));
+        },
+    ));
+    ui.map.root.insert_action_group("map", Some(&actions));
+}
+
+fn choice_action(
+    ui: &Rc<LibraryWindowUi>,
+    name: &str,
+    current: &str,
+    choose: fn(&Rc<LibraryWindowUi>, &str),
+) -> gio::SimpleAction {
+    let state = current.to_variant();
+    let action = gio::SimpleAction::new_stateful(name, Some(glib::VariantTy::STRING), &state);
     let weak = Rc::downgrade(ui);
     action.connect_change_state(move |action, value| {
         let (Some(ui), Some(value)) = (weak.upgrade(), value) else {
@@ -224,11 +303,9 @@ fn install_style_action(ui: &Rc<LibraryWindowUi>) {
             return;
         };
         action.set_state(value);
-        choose_style(&ui, MapStyle::from_id(&id));
+        choose(&ui, &id);
     });
-    let actions = gio::SimpleActionGroup::new();
-    actions.add_action(&action);
-    ui.map.root.insert_action_group("map", Some(&actions));
+    action
 }
 
 fn choose_style(ui: &Rc<LibraryWindowUi>, style: MapStyle) {
@@ -237,6 +314,15 @@ fn choose_style(ui: &Rc<LibraryWindowUi>, style: MapStyle) {
     config.data.library_map_style = style.id().to_string();
     if !config.save() {
         log::warn!("Could not save the map style");
+    }
+}
+
+fn choose_appearance(ui: &Rc<LibraryWindowUi>, appearance: MapAppearance) {
+    ui.map.tiles.set_appearance(appearance);
+    let mut config = ui.ctx.config.write();
+    config.data.library_map_appearance = appearance.id().to_string();
+    if !config.save() {
+        log::warn!("Could not save the map appearance");
     }
 }
 

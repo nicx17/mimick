@@ -81,6 +81,25 @@ impl MasonryCanvas {
             adj.set_value(adj.value() + f64::from(y - imp.viewport().0));
         }
     }
+
+    /// Each laid row's top and the model position of its first photo, top to bottom.
+    pub fn row_starts(&self) -> Vec<(f32, Option<u32>)> {
+        self.imp()
+            .rows
+            .borrow()
+            .iter()
+            .map(|row| (row.y, row.items.first().map(|item| item.asset_index)))
+            .collect()
+    }
+
+    pub fn heading_tops(&self) -> Vec<f32> {
+        self.imp()
+            .headings
+            .borrow()
+            .iter()
+            .map(|heading| heading.y)
+            .collect()
+    }
 }
 
 impl imp::MasonryCanvas {

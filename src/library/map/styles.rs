@@ -1,6 +1,4 @@
-//! Map styles to pick from: the server's own, VersaTiles palettes, or OpenStreetMap.
-
-const VERSATILES_STYLES: &str = "https://tiles.versatiles.org/assets/styles";
+//! Map styles to pick from: the server's own, bundled VersaTiles themes, satellite imagery, or OpenStreetMap.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MapStyle {
@@ -10,42 +8,97 @@ pub enum MapStyle {
     Muted,
     Gray,
     Toner,
+    Positrino,
+    Protocol,
+    Protostar,
+    Protozoa,
+    Fnord,
+    Classic,
+    Googol,
+    Freedom,
+    Macbob,
+    Mactaylor,
+    Bingo,
+    Satellite,
     OpenStreetMap,
 }
 
 impl MapStyle {
-    pub const ALL: [Self; 7] = [
+    pub const ALL: [Self; 19] = [
         Self::Immich,
         Self::Colorful,
         Self::Natural,
         Self::Muted,
         Self::Gray,
         Self::Toner,
+        Self::Positrino,
+        Self::Protocol,
+        Self::Protostar,
+        Self::Protozoa,
+        Self::Fnord,
+        Self::Classic,
+        Self::Googol,
+        Self::Freedom,
+        Self::Macbob,
+        Self::Mactaylor,
+        Self::Bingo,
+        Self::Satellite,
         Self::OpenStreetMap,
     ];
 
-    /// Saved in the config; the palette ids double as VersaTiles style names.
+    /// VersaTiles' own palettes, listed before the themes that resemble other maps.
+    pub const PALETTES: [Self; 5] = [
+        Self::Colorful,
+        Self::Natural,
+        Self::Muted,
+        Self::Gray,
+        Self::Toner,
+    ];
+
+    pub const LOOKALIKES: [Self; 11] = [
+        Self::Positrino,
+        Self::Protocol,
+        Self::Protostar,
+        Self::Protozoa,
+        Self::Fnord,
+        Self::Classic,
+        Self::Googol,
+        Self::Freedom,
+        Self::Macbob,
+        Self::Mactaylor,
+        Self::Bingo,
+    ];
+
+    /// Saved in the config; the theme ids double as bundled style file names.
     pub fn id(self) -> &'static str {
-        match self {
-            Self::Immich => "immich",
-            Self::Colorful => "colorful",
-            Self::Natural => "natural",
-            Self::Muted => "muted",
-            Self::Gray => "gray",
-            Self::Toner => "toner",
-            Self::OpenStreetMap => "osm",
-        }
+        self.names().0
     }
 
     pub fn label(self) -> &'static str {
+        self.names().1
+    }
+
+    fn names(self) -> (&'static str, &'static str) {
         match self {
-            Self::Immich => "Immich",
-            Self::Colorful => "Colorful",
-            Self::Natural => "Natural",
-            Self::Muted => "Muted",
-            Self::Gray => "Gray",
-            Self::Toner => "Toner",
-            Self::OpenStreetMap => "OpenStreetMap",
+            Self::Immich => ("immich", "Immich"),
+            Self::Colorful => ("colorful", "Colorful"),
+            Self::Natural => ("natural", "Natural"),
+            Self::Muted => ("muted", "Muted"),
+            Self::Gray => ("gray", "Gray"),
+            Self::Toner => ("toner", "Toner"),
+            Self::Positrino => ("positrino", "Positrino"),
+            Self::Protocol => ("protocol", "Protocol"),
+            Self::Protostar => ("protostar", "Protostar"),
+            Self::Protozoa => ("protozoa", "Protozoa"),
+            Self::Fnord => ("fnord", "Fnord"),
+            Self::Classic => ("classic", "Classic"),
+            Self::Googol => ("googol", "Googol"),
+            Self::Freedom => ("freedom", "Freedom"),
+            Self::Macbob => ("macbob", "Macbob"),
+            Self::Mactaylor => ("mactaylor", "Mactaylor"),
+            Self::Bingo => ("bingo", "Bingo"),
+            Self::Satellite => ("satellite", "Satellite"),
+            Self::OpenStreetMap => ("osm", "OpenStreetMap"),
         }
     }
 
@@ -57,16 +110,70 @@ impl MapStyle {
             .unwrap_or(Self::Immich)
     }
 
-    /// Light and dark style URLs of a VersaTiles palette.
-    pub fn palette_urls(self) -> Option<(String, String)> {
-        if matches!(self, Self::Immich | Self::OpenStreetMap) {
-            return None;
+    /// The bundled themes for light and dark mode; a theme without a dark twin is used for both.
+    pub fn themes(self) -> Option<(String, String)> {
+        let id = self.id();
+        match self {
+            Self::Immich | Self::Satellite | Self::OpenStreetMap => None,
+            Self::Colorful
+            | Self::Natural
+            | Self::Muted
+            | Self::Gray
+            | Self::Toner
+            | Self::Positrino
+            | Self::Protocol
+            | Self::Protostar => Some((id.to_string(), format!("{id}-dark"))),
+            _ => Some((id.to_string(), id.to_string())),
         }
-        let name = self.id();
-        Some((
-            format!("{VERSATILES_STYLES}/{name}/style.json"),
-            format!("{VERSATILES_STYLES}/{name}-dark/style.json"),
-        ))
+    }
+
+    /// The bundled labels-only theme drawn over the style's imagery.
+    pub fn labels(self) -> Option<&'static str> {
+        (self == Self::Satellite).then_some("satellite-labels")
+    }
+}
+
+/// Whether maps follow the system's light or dark style, or keep one.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MapAppearance {
+    System,
+    Light,
+    Dark,
+}
+
+impl MapAppearance {
+    pub const ALL: [Self; 3] = [Self::System, Self::Light, Self::Dark];
+
+    pub fn id(self) -> &'static str {
+        match self {
+            Self::System => "system",
+            Self::Light => "light",
+            Self::Dark => "dark",
+        }
+    }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::System => "Follow System",
+            Self::Light => "Light",
+            Self::Dark => "Dark",
+        }
+    }
+
+    /// Unknown or empty ids follow the system.
+    pub fn from_id(id: &str) -> Self {
+        Self::ALL
+            .into_iter()
+            .find(|appearance| appearance.id() == id)
+            .unwrap_or(Self::System)
+    }
+
+    pub fn is_dark(self, system_dark: bool) -> bool {
+        match self {
+            Self::System => system_dark,
+            Self::Light => false,
+            Self::Dark => true,
+        }
     }
 }
 
@@ -75,26 +182,47 @@ mod tests {
     use super::*;
 
     #[test]
+    fn appearances_round_trip_and_decide_dark() {
+        for appearance in MapAppearance::ALL {
+            assert_eq!(MapAppearance::from_id(appearance.id()), appearance);
+        }
+        assert_eq!(MapAppearance::from_id(""), MapAppearance::System);
+        assert!(MapAppearance::System.is_dark(true));
+        assert!(!MapAppearance::System.is_dark(false));
+        assert!(!MapAppearance::Light.is_dark(true));
+        assert!(MapAppearance::Dark.is_dark(false));
+    }
+
+    #[test]
     fn ids_round_trip_and_unknown_falls_back() {
         for style in MapStyle::ALL {
             assert_eq!(MapStyle::from_id(style.id()), style);
         }
         assert_eq!(MapStyle::from_id(""), MapStyle::Immich);
-        assert_eq!(MapStyle::from_id("satellite"), MapStyle::Immich);
+        assert_eq!(MapStyle::from_id("terrain"), MapStyle::Immich);
     }
 
     #[test]
-    fn only_palettes_have_versatiles_urls() {
-        let (light, dark) = MapStyle::Gray.palette_urls().unwrap();
-        assert_eq!(
-            light,
-            "https://tiles.versatiles.org/assets/styles/gray/style.json"
-        );
-        assert_eq!(
-            dark,
-            "https://tiles.versatiles.org/assets/styles/gray-dark/style.json"
-        );
-        assert_eq!(MapStyle::Immich.palette_urls(), None);
-        assert_eq!(MapStyle::OpenStreetMap.palette_urls(), None);
+    fn themes_pair_light_and_dark() {
+        let pair = |style: MapStyle| style.themes().unwrap();
+        assert_eq!(pair(MapStyle::Gray), ("gray".into(), "gray-dark".into()));
+        assert_eq!(pair(MapStyle::Googol), ("googol".into(), "googol".into()));
+        assert_eq!(pair(MapStyle::Fnord), ("fnord".into(), "fnord".into()));
+        assert_eq!(MapStyle::Immich.themes(), None);
+        assert_eq!(MapStyle::Satellite.themes(), None);
+        assert_eq!(MapStyle::Satellite.labels(), Some("satellite-labels"));
+        assert_eq!(MapStyle::Gray.labels(), None);
+        assert_eq!(MapStyle::OpenStreetMap.themes(), None);
+    }
+
+    #[test]
+    fn every_bundled_style_is_in_one_menu_group() {
+        let grouped: Vec<MapStyle> = [MapStyle::Immich]
+            .into_iter()
+            .chain(MapStyle::PALETTES)
+            .chain(MapStyle::LOOKALIKES)
+            .chain([MapStyle::Satellite, MapStyle::OpenStreetMap])
+            .collect();
+        assert_eq!(grouped, MapStyle::ALL);
     }
 }

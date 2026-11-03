@@ -7,11 +7,13 @@ use gtk::prelude::*;
 use libadwaita::prelude::*;
 use shumate::prelude::*;
 
-use crate::api_client::Place;
 use crate::library::LibraryWindowUi;
 use crate::library::context_menu::show_alert_dialog;
 
 use super::coords::GeoPoint;
+use super::place_search::{
+    self, Found, FoundPlace, MIN_QUERY_CHARS, SEARCH_DELAY_MS, SearchFooter,
+};
 
 const PLACE_ZOOM: f64 = 12.0;
 const WORLD_ZOOM: f64 = 2.0;
@@ -19,8 +21,6 @@ const WORLD_CENTRE: (f64, f64) = (20.0, 0.0);
 const MIN_MAP_HEIGHT: i32 = 200;
 const DIALOG_HEIGHT: i32 = 640;
 const MAX_RESULTS_HEIGHT: i32 = 220;
-const MAX_RESULTS: usize = 8;
-const MIN_QUERY_CHARS: usize = 2;
 
 /// The assets to move and where the pin starts.
 pub struct LocationTarget {
@@ -155,7 +155,8 @@ struct Picker {
     search: gtk::SearchEntry,
     results: gtk::ListBox,
     results_scroller: gtk::ScrolledWindow,
-    places: RefCell<Vec<Place>>,
+    footer: SearchFooter,
+    places: RefCell<Vec<FoundPlace>>,
     search_generation: Cell<u32>,
     map: shumate::SimpleMap,
     layer: shumate::MarkerLayer,
@@ -171,9 +172,11 @@ impl Picker {
     fn new(save: gtk::Button) -> Rc<Self> {
         let search = gtk::SearchEntry::builder()
             .placeholder_text("Search places")
-            .search_delay(400)
+            .search_delay(SEARCH_DELAY_MS)
             .build();
         let (results, results_scroller) = results_list();
+        let footer = place_search::search_footer();
+        footer.root.set_visible(false);
         let (map, layer) = picker_map();
         let (coords, paste) = coords_row();
         let content = gtk::Box::builder()
@@ -186,6 +189,7 @@ impl Picker {
             .build();
         content.append(&search);
         content.append(&results_scroller);
+        content.append(&footer.root);
         content.append(&map);
         content.append(&coords_list(&coords));
         Rc::new(Self {
@@ -193,6 +197,7 @@ impl Picker {
             search,
             results,
             results_scroller,
+            footer,
             places: RefCell::default(),
             search_generation: Cell::new(0),
             map,
@@ -330,44 +335,49 @@ impl Picker {
         let generation = self.search_generation.get().wrapping_add(1);
         self.search_generation.set(generation);
         if query.chars().count() < MIN_QUERY_CHARS {
-            self.show_places(Vec::new());
+            self.show_places(None);
             return;
         }
-        let (picker, api) = (self.clone(), ui.ctx.api_client.clone());
-        glib::MainContext::default().spawn_local(async move {
-            let places = api.search_places(&query).await.unwrap_or_else(|err| {
-                log::warn!("Place search failed: {err}");
-                Vec::new()
-            });
-            if picker.search_generation.get() == generation {
-                picker.show_places(places);
+        let (searcher, bias) = (
+            super::search::searcher(ui),
+            place_search::bias_of(&self.map),
+        );
+        if let Some(found) = searcher.cached(&query, bias) {
+            self.show_places(Some(found));
+            return;
+        }
+        self.footer.searching();
+        self.footer.root.set_visible(true);
+        let weak = Rc::downgrade(self);
+        searcher.search(query, bias, move |found| {
+            if let Some(picker) = weak.upgrade()
+                && picker.search_generation.get() == generation
+            {
+                picker.show_places(Some(found));
             }
         });
     }
 
-    fn show_places(&self, mut places: Vec<Place>) {
-        places.truncate(MAX_RESULTS);
+    fn show_places(&self, found: Option<Found>) {
         self.results.remove_all();
+        let places = found.map_or_else(Vec::new, |found| {
+            self.footer.answered(found.source);
+            found.places
+        });
         for place in &places {
-            let row = libadwaita::ActionRow::builder()
-                .title(&place.name)
-                .subtitle(place_region(place))
-                .use_markup(false)
-                .activatable(true)
-                .build();
-            self.results.append(&row);
+            self.results.append(&place_search::place_row(place));
         }
         self.results_scroller.set_visible(!places.is_empty());
+        self.footer.root.set_visible(!places.is_empty());
         self.places.replace(places);
     }
 
     fn choose_place(&self, index: i32) {
         let point = usize::try_from(index)
             .ok()
-            .and_then(|i| self.places.borrow().get(i).cloned())
-            .and_then(|place| GeoPoint::new(place.latitude, place.longitude));
+            .and_then(|i| self.places.borrow().get(i).map(|place| place.point));
         if let Some(point) = point {
-            self.show_places(Vec::new());
+            self.show_places(None);
             self.set_point(point, Origin::Place);
         }
     }
@@ -428,48 +438,4 @@ fn coords_list(coords: &libadwaita::EntryRow) -> gtk::ListBox {
         .build();
     list.append(coords);
     list
-}
-
-/// "District, Region" under a search result, skipping missing or repeated parts.
-fn place_region(place: &Place) -> String {
-    let mut parts: Vec<&str> = Vec::new();
-    for part in [&place.admin2name, &place.admin1name].into_iter().flatten() {
-        let part = part.trim();
-        if !part.is_empty() && part != place.name && !parts.contains(&part) {
-            parts.push(part);
-        }
-    }
-    parts.join(", ")
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn place(name: &str, admin2: Option<&str>, admin1: Option<&str>) -> Place {
-        Place {
-            name: name.into(),
-            latitude: 0.0,
-            longitude: 0.0,
-            admin1name: admin1.map(Into::into),
-            admin2name: admin2.map(Into::into),
-        }
-    }
-
-    #[test]
-    fn place_region_skips_missing_and_repeated_parts() {
-        assert_eq!(
-            place_region(&place("Sintra", Some("Lisboa"), Some("Lisbon"))),
-            "Lisboa, Lisbon"
-        );
-        assert_eq!(
-            place_region(&place("Porto", Some("Porto"), Some("Porto"))),
-            ""
-        );
-        assert_eq!(
-            place_region(&place("Faro", None, Some("Faro District"))),
-            "Faro District"
-        );
-        assert_eq!(place_region(&place("X", Some(" "), None)), "");
-    }
 }
