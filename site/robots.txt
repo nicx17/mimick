@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mimick.nicx.dev/mimick/sitemap.xml
+Sitemap: https://mimick.nicx.dev/sitemap.xml

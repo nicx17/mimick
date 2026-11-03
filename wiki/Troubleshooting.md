@@ -52,7 +52,7 @@ If you are running on a server without a desktop session (e.g., via SSH only), t
 ### Tray Icon Missing
 Some desktops restrict or hide legacy tray icons.
 - **Wayland (GNOME/KDE) & Ubuntu 24+:** Modern desktop environments deprecate or heavily restrict legacy system trays. The app uses `ksni` (StatusNotifierItem via D-Bus).
-- GNOME often needs the **AppIndicator/KStatusNotifierItem Support** extension installed.
+- GNOME often needs the **AppIndicator/KStatusNotifierItem Support** extension installed. Without it, the log warning `Watcher(ServiceUnknown)` is expected and harmless.
 - If tray support is unavailable, launching Mimick again should still intelligently detect the running instance and open the settings window instead.
 
 ### Notifications Look Wrong / No Progress Bars
@@ -126,6 +126,10 @@ KDE's "Restore previous session" feature re-launches the app independently of th
 2. Go to **Session** → **Desktop Session**
 3. Under "On Login", select **Start with an empty session**
 
+### Mimick Quits When I Close the Window
+
+**Background Sync** is off, which is the default. Turn on **Settings → App → Background Sync**; closing the window then hides it and Mimick keeps syncing.
+
 ### Two Tray Icons Appear (Flatpak on KDE)
 
 If you are running the Flatpak version on KDE and see two tray icons, this is a known interaction between the XDG Background portal, KDE's session restore, and the Flatpak sandbox. Following the fix above (starting with an empty session) will usually resolve the duplicate tray icon as well.
@@ -144,7 +148,7 @@ If a file seems to be ignored completely, check:
 > The built-in Queue Inspector can tell you instantly if files are failing to upload.
 
 > **Test Connection**
-> If you suspect network issues, use the Ping Test dialog to test server reachability.
+> If you suspect network issues, press **Test Connection** in **Settings → Server**.
 
 ### Checksums / Deduplication Failures
 If Immich re-uploads existing files:
@@ -155,8 +159,18 @@ If Immich re-uploads existing files:
 If uploads do not resume on their own:
 - Open the **Status** page and check the headline. Mimick shows the pause reason below it.
 - If you manually paused it, use **Pause / Resume** from the tray or settings window.
+- If **Quiet Hours** is on, Mimick pauses between the **From** and **Until** hours.
 - If **Pause on Metered Networks** is enabled, Mimick may pause while the system reports a metered connection (through the network portal in the Flatpak).
 - If **Pause on Battery** is enabled, Mimick may pause while the system appears to be running on battery according to `/sys/class/power_supply`.
+
+### Startup Scan Is Slow
+Once the first sync is done, set **When Mimick Starts, Check** to **New Files Only** in **Settings → Uploads**. See [Performance Tuning](Performance-Tuning) for large libraries.
+
+### Will Mimick Delete My Local Files?
+Not with the default **Upload Only** sync method, which never changes local files. **Download Only** and **Full Sync** add album photos to the folder. Local files are removed only when you choose to move local items to the trash in the Library's **Sync** album dialog; **Delete from This Folder Too** is not available yet. See [Sync Behavior](Sync-Behavior#sync-methods).
+
+### Are XMP Sidecars Uploaded?
+Yes, by default: a photo's `.xmp` file is uploaded with it. Turn off **Upload XMP Sidecars** in a folder's rules to skip them.
 
 ## Logs & Diagnostics
 
@@ -168,7 +182,7 @@ rm -f ~/.cache/mimick/retries.json
 *(In Flatpak, use `~/.var/app/dev.nicx.mimick/cache/mimick/retries.json`)*
 
 ### Export a Diagnostics Bundle
-Use `Export Diagnostics` from the Status page to collect:
+Use **Export Diagnostics** in **Settings → Troubleshooting** to collect:
 - `summary.txt`
 - `privacy-note.txt`
 - `config.redacted.json`
@@ -190,11 +204,6 @@ Native log:
 tail -f ~/.cache/mimick/mimick.log
 ```
 
-If running as a systemd service (Native):
-```bash
-journalctl --user -u mimick -f
-```
-
 Terminal run:
 ```bash
 cargo run
@@ -211,8 +220,8 @@ If `jq` reports an error, the file is malformed.
 
 ### Cache Files (Advanced)
 
-Important runtime files (Flatpak paths shown, replace with `~/.cache/mimick/` for native):
+Important runtime files (Flatpak paths shown; native installs use `~/.cache/mimick/` and `~/.local/share/mimick/`):
 - `~/.var/app/dev.nicx.mimick/cache/mimick/mimick.log`
 - `~/.var/app/dev.nicx.mimick/cache/mimick/retries.json`
-- `~/.var/app/dev.nicx.mimick/cache/mimick/synced_index.json`
 - `~/.var/app/dev.nicx.mimick/cache/mimick/status.json`
+- `~/.var/app/dev.nicx.mimick/data/mimick/synced_index.json` (in the data directory, so clearing the cache keeps it)

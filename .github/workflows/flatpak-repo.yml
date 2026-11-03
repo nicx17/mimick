@@ -44,6 +44,7 @@ jobs:
           cp site/roadmap.html public/roadmap.html
           cp site/styles.css public/styles.css
           cp site/icon.png public/icon.png
+          cp site/og-image.jpg public/og-image.jpg
           cp site/robots.txt public/robots.txt
           cp site/sitemap.xml public/sitemap.xml
           cp -r docs/screenshots public/screenshots

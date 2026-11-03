@@ -3,32 +3,32 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mimick - Immich Desktop Client for Linux</title>
+    <title>Mimick – Immich Desktop Client and Photo Sync for Linux</title>
     <meta
       name="description"
-      content="Mimick is an unofficial Immich desktop client for Linux with background folder sync, a library browser, album management, Smart Search, OCR, and Flatpak support.">
-    <meta
-      name="keywords"
-      content="Immich desktop client, Immich GUI Linux, Immich sync app, Linux photo sync, self-hosted photo backup, GTK4 Immich client">
-    <link rel="canonical" href="https://mimick.nicx.dev">
+      content="Mimick is a free, open-source Immich desktop app for Linux. Back up photo and video folders to your self-hosted Immich server and browse your library.">
+    <link rel="canonical" href="https://mimick.nicx.dev/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mimick">
     <meta
       property="og:title"
-      content="Mimick - Immich Desktop Client for Linux">
+      content="Mimick – Immich Desktop Client for Linux">
     <meta
       property="og:description"
-      content="A native GTK4 desktop client for your self-hosted Immich server — background sync, library browser, album sync, and search.">
-    <meta property="og:url" content="https://mimick.nicx.dev">
-    <meta property="og:image" content="https://mimick.nicx.dev/icon.png">
-    <meta name="twitter:card" content="summary">
+      content="Back up photo and video folders to your self-hosted Immich server and browse your library from a native GTK4 app.">
+    <meta property="og:url" content="https://mimick.nicx.dev/">
+    <meta property="og:image" content="https://mimick.nicx.dev/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Mimick showing an Immich photo library on the Linux desktop">
+    <meta name="twitter:card" content="summary_large_image">
     <meta
       name="twitter:title"
-      content="Mimick - Immich Desktop Client for Linux">
+      content="Mimick – Immich Desktop Client for Linux">
     <meta
       name="twitter:description"
-      content="GTK4/libadwaita Immich client for Linux — background sync, library browser, and album management.">
-    <meta name="twitter:image" content="https://mimick.nicx.dev/icon.png">
+      content="Back up photo and video folders to your self-hosted Immich server and browse your library from a native GTK4 app.">
+    <meta name="twitter:image" content="https://mimick.nicx.dev/og-image.jpg">
     <link rel="preload" href="fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
     <meta name="theme-color" content="#000000">
@@ -41,19 +41,33 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Mimick",
-        "description": "An Immich desktop client for Linux with background folder sync and a built-in library browser for viewing, searching, and managing assets on a self-hosted Immich server.",
+        "alternateName": "Mimick for Immich",
+        "description": "An unofficial Immich desktop client for Linux that backs up photo and video folders to a self-hosted Immich server in the background and includes a library browser for viewing, searching, and managing photos.",
         "applicationCategory": "MultimediaApplication",
+        "applicationSubCategory": "Photo backup and sync",
         "operatingSystem": "Linux",
-        "softwareRequirements": "GTK4, libadwaita, Flatpak",
+        "softwareRequirements": "Flatpak",
         "isAccessibleForFree": true,
+        "license": "https://www.gnu.org/licenses/gpl-3.0.html",
         "offers": {
           "@type": "Offer",
           "price": "0",
           "priceCurrency": "USD"
         },
-        "codeRepository": "https://github.com/nicx17/mimick",
+        "author": {
+          "@type": "Person",
+          "name": "Nick Cardoso",
+          "url": "https://github.com/nicx17"
+        },
+        "image": "https://mimick.nicx.dev/og-image.jpg",
+        "screenshot": "https://mimick.nicx.dev/screenshots/photos_page_view_sidebar_on.png",
         "downloadUrl": "https://flathub.org/apps/dev.nicx.mimick",
-        "url": "https://mimick.nicx.dev/"
+        "installUrl": "https://flathub.org/apps/dev.nicx.mimick",
+        "url": "https://mimick.nicx.dev/",
+        "sameAs": [
+          "https://github.com/nicx17/mimick",
+          "https://flathub.org/apps/dev.nicx.mimick"
+        ]
       }
     </script>
   </head>
@@ -87,9 +101,9 @@
           </div>
         </header>
 
-        <section class="feature-summary" aria-label="Mimick features">
+        <section class="feature-summary" aria-label="About Mimick">
           <p>
-            Mimick is an unofficial Immich desktop client for Linux. It provides a native GTK4/libadwaita interface for automatic background sync of local photo and video folders to a self-hosted Immich server. It features an optional library browser for viewing, searching, and managing assets directly from the desktop (editing info, tags, a trash view, in-app video playback, copyable recognized text, a photo map, and location editing), complete with bidirectional album sync, Smart Search, OCR search, and offline queuing.
+            Mimick is an unofficial Immich desktop client for Linux. It backs up your photo and video folders to a self-hosted Immich server in the background, and its optional library browser lets you view, search, and manage your Immich photos from the desktop.
           </p>
         </section>
 
@@ -119,6 +133,36 @@
             >
             remote configured on your system.
           </p>
+        </section>
+
+        <section class="info-section" aria-labelledby="features-heading">
+          <h2 id="features-heading">Features</h2>
+          <div class="feature-grid">
+            <article>
+              <h3>Automatic folder backup to Immich</h3>
+              <p>Watch any folder and upload new photos and videos as they appear, with up to 10 parallel uploads and checksums that skip files already on your server.</p>
+            </article>
+            <article>
+              <h3>Per-folder sync rules</h3>
+              <p>Send each folder to your library, an album, or an album named after the folder. Choose Upload Only, Download Only, or Full sync, and filter by file type or size.</p>
+            </article>
+            <article>
+              <h3>Reliable on any network</h3>
+              <p>Failed uploads are saved and retried, Mimick switches between your home and remote server addresses, and it can pause on metered networks, on battery, or during quiet hours.</p>
+            </article>
+            <article>
+              <h3>Browse your Immich library</h3>
+              <p>A Photos timeline, albums, people, tags, folders, a photo map, smart and text (OCR) search, video playback, sharing, archive, and trash, in a native GTK4 window.</p>
+            </article>
+            <article>
+              <h3>Made for the Linux desktop</h3>
+              <p>Tray icon, start on login, drag and drop, and Open With Mimick from your file manager. The Flatpak only reads folders you pick, and your API key stays in the keyring.</p>
+            </article>
+            <article>
+              <h3>Works on Linux phones</h3>
+              <p>The layout adapts down to 360 pixels wide with a bottom navigation bar, so Mimick runs on Linux phones as well as desktops.</p>
+            </article>
+          </div>
         </section>
 
         <section class="links-container" aria-label="Repository links">
@@ -166,118 +210,134 @@
           <h2>Screenshots</h2>
           <div class="screenshots-grid">
             <button type="button" class="screenshot-item">
-              <img src="screenshots/photos_page_view_sidebar_on.png" alt="Library (Light)" loading="lazy">
+              <img src="screenshots/photos_page_view_sidebar_on.png" alt="Mimick Immich client: Library (Light)" loading="lazy">
               <span class="figcaption">Library (Light)</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/photos_page_view_dark_sidebar_on.png" alt="Library (Dark)" loading="lazy">
+              <img src="screenshots/photos_page_view_dark_sidebar_on.png" alt="Mimick Immich client: Library (Dark)" loading="lazy">
               <span class="figcaption">Library (Dark)</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/explore_page_view_showing_people_places_sidebar_on.png" alt="Explore Page" loading="lazy">
+              <img src="screenshots/explore_page_view_showing_people_places_sidebar_on.png" alt="Mimick Immich client: Explore Page" loading="lazy">
               <span class="figcaption">Explore Page</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/album_page_view_showing_albums_recent_youralbums.png" alt="Album Page" loading="lazy">
+              <img src="screenshots/album_page_view_showing_albums_recent_youralbums.png" alt="Mimick Immich client: Album Page" loading="lazy">
               <span class="figcaption">Album Page</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/selected_album_view_dark.png" alt="Selected Album (Dark)" loading="lazy">
+              <img src="screenshots/selected_album_view_dark.png" alt="Mimick Immich client: Selected Album (Dark)" loading="lazy">
               <span class="figcaption">Selected Album (Dark)</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/name_dark_album_selected_view_sidebar_off.png" alt="Album View (Dark, Sidebar Off)" loading="lazy">
+              <img src="screenshots/name_dark_album_selected_view_sidebar_off.png" alt="Mimick Immich client: Album View (Dark, Sidebar Off)" loading="lazy">
               <span class="figcaption">Album View (Dark, Sidebar Off)</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/lightbox_view_details_pane_on.png" alt="Lightbox (Details On)" loading="lazy">
+              <img src="screenshots/lightbox_view_details_pane_on.png" alt="Mimick Immich client: Lightbox (Details On)" loading="lazy">
               <span class="figcaption">Lightbox (Details On)</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/lightbox_view_details_pane_off.png" alt="Lightbox (Details Off)" loading="lazy">
+              <img src="screenshots/lightbox_view_details_pane_off.png" alt="Mimick Immich client: Lightbox (Details Off)" loading="lazy">
               <span class="figcaption">Lightbox (Details Off)</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/library_view_photos_page_showing_selected_assets_with_checkboxes.png" alt="Multi-Select with Checkboxes" loading="lazy">
+              <img src="screenshots/library_view_photos_page_showing_selected_assets_with_checkboxes.png" alt="Mimick Immich client: Multi-Select with Checkboxes" loading="lazy">
               <span class="figcaption">Multi-Select with Checkboxes</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/search_view_with_thequickbrownfox_searched_ocr_mode.png" alt="OCR Search" loading="lazy">
+              <img src="screenshots/search_view_with_thequickbrownfox_searched_ocr_mode.png" alt="Mimick Immich client: OCR Search" loading="lazy">
               <span class="figcaption">OCR Search</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/search_options_menu_library_view.png" alt="Search Options" loading="lazy">
+              <img src="screenshots/search_options_menu_library_view.png" alt="Mimick Immich client: Search Options" loading="lazy">
               <span class="figcaption">Search Options</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/library_view_showing_view_options_for_albums_remote_local_unified.png" alt="View Options (Remote / Local / Unified)" loading="lazy">
+              <img src="screenshots/library_view_showing_view_options_for_albums_remote_local_unified.png" alt="Mimick Immich client: View Options (Remote / Local / Unified)" loading="lazy">
               <span class="figcaption">View Options (Remote / Local / Unified)</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/advanced_filters_menu_library_view.png" alt="Advanced Filters" loading="lazy">
+              <img src="screenshots/advanced_filters_menu_library_view.png" alt="Mimick Immich client: Advanced Filters" loading="lazy">
               <span class="figcaption">Advanced Filters</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/advanced_filters_menu_library_view_more_options.png" alt="Advanced Filters (More Options)" loading="lazy">
+              <img src="screenshots/advanced_filters_menu_library_view_more_options.png" alt="Mimick Immich client: Advanced Filters (More Options)" loading="lazy">
               <span class="figcaption">Advanced Filters (More Options)</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/library_view_showing_sync_album_dialog_upload_download_apply_cancel.png" alt="Sync Album Dialog" loading="lazy">
+              <img src="screenshots/library_view_showing_sync_album_dialog_upload_download_apply_cancel.png" alt="Mimick Immich client: Sync Album Dialog" loading="lazy">
               <span class="figcaption">Sync Album Dialog</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/queue_inspector_dialog.png" alt="Queue Inspector" loading="lazy">
+              <img src="screenshots/queue_inspector_dialog.png" alt="Mimick Immich client: Queue Inspector" loading="lazy">
               <span class="figcaption">Queue Inspector</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/settings_pane_showing_connnectivity_config_details.png" alt="Connectivity" loading="lazy">
+              <img src="screenshots/settings_pane_showing_connnectivity_config_details.png" alt="Mimick Immich client: Connectivity" loading="lazy">
               <span class="figcaption">Connectivity</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/settings_pane_connection_successful_dialog.png" alt="Connection Successful" loading="lazy">
+              <img src="screenshots/settings_pane_connection_successful_dialog.png" alt="Mimick Immich client: Connection Successful" loading="lazy">
               <span class="figcaption">Connection Successful</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/settings_pane_showing_behaviour_settings.png" alt="Behaviour Settings" loading="lazy">
+              <img src="screenshots/settings_pane_showing_behaviour_settings.png" alt="Mimick Immich client: Behaviour Settings" loading="lazy">
               <span class="figcaption">Behaviour Settings</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/settings_pane_showing_library_settings_and_watch_folders.png" alt="Library and Watch Folders" loading="lazy">
+              <img src="screenshots/settings_pane_showing_library_settings_and_watch_folders.png" alt="Mimick Immich client: Library and Watch Folders" loading="lazy">
               <span class="figcaption">Library and Watch Folders</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/watching_folders_list_in_settings_showing_folder_details.png" alt="Watch Folder Details" loading="lazy">
+              <img src="screenshots/watching_folders_list_in_settings_showing_folder_details.png" alt="Mimick Immich client: Watch Folder Details" loading="lazy">
               <span class="figcaption">Watch Folder Details</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/album_selection_menu_for_watching_folder.png" alt="Album Selection for Watch Folder" loading="lazy">
+              <img src="screenshots/album_selection_menu_for_watching_folder.png" alt="Mimick Immich client: Album Selection for Watch Folder" loading="lazy">
               <span class="figcaption">Album Selection for Watch Folder</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/watching_folder_album_selection_menu_with_search_feat.png" alt="Album Selection with Search" loading="lazy">
+              <img src="screenshots/watching_folder_album_selection_menu_with_search_feat.png" alt="Mimick Immich client: Album Selection with Search" loading="lazy">
               <span class="figcaption">Album Selection with Search</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/album_specific_rule_dialog.png" alt="Folder Rules Dialog" loading="lazy">
+              <img src="screenshots/album_specific_rule_dialog.png" alt="Mimick Immich client: Folder Rules Dialog" loading="lazy">
               <span class="figcaption">Folder Rules Dialog</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/status_pane_sync_status_health_dashboard_actions.png" alt="Status and Health Dashboard" loading="lazy">
+              <img src="screenshots/status_pane_sync_status_health_dashboard_actions.png" alt="Mimick Immich client: Status and Health Dashboard" loading="lazy">
               <span class="figcaption">Status and Health Dashboard</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/about_mimick_dialog.png" alt="About Mimick" loading="lazy">
+              <img src="screenshots/about_mimick_dialog.png" alt="Mimick Immich client: About Mimick" loading="lazy">
               <span class="figcaption">About Mimick</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/tray_icon_menu.png" alt="Tray Icon Menu" loading="lazy">
+              <img src="screenshots/tray_icon_menu.png" alt="Mimick Immich client: Tray Icon Menu" loading="lazy">
               <span class="figcaption">Tray Icon Menu</span>
             </button>
             <button type="button" class="screenshot-item">
-              <img src="screenshots/mimick_notification_popup_on_desktop.png" alt="Desktop Notification" loading="lazy">
+              <img src="screenshots/mimick_notification_popup_on_desktop.png" alt="Mimick Immich client: Desktop Notification" loading="lazy">
               <span class="figcaption">Desktop Notification</span>
             </button>
 
+          </div>
+        </section>
+
+        <section class="info-section" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq-list">
+            <h3>Is there an Immich desktop app for Linux?</h3>
+            <p>Yes. Mimick is a free, open-source Immich desktop client for Linux. It is a community project and not made by the Immich team.</p>
+            <h3>How do I back up a folder to Immich automatically?</h3>
+            <p>Install Mimick from Flathub, enter your server address and an Immich API key, and add the folder under Watch Folders. New photos and videos upload in the background from then on.</p>
+            <h3>Which Linux distributions does it run on?</h3>
+            <p>Any distribution with Flatpak, including Fedora, Ubuntu, Debian, Arch Linux, openSUSE, Linux Mint, and Pop!_OS, on GNOME, KDE Plasma, and other desktops.</p>
+            <h3>Will Mimick change or delete my local files?</h3>
+            <p>Not by default. Folders start as Upload Only, which never changes local files. Download Only and Full sync add your album's photos to the folder.</p>
+            <h3>Which Immich versions are supported?</h3>
+            <p>Immich v3.0.0 and later.</p>
           </div>
         </section>
       </div>
@@ -351,7 +411,7 @@
         const openModal = () => {
           modalImg.src = img.src;
           modalImg.alt = img.alt;
-          modalCaption.textContent = img.alt;
+          modalCaption.textContent = figure.querySelector(".figcaption").textContent;
           modal.showModal();
           modal.classList.add("visible");
           document.body.style.overflow = "hidden";

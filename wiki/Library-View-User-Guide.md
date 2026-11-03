@@ -15,6 +15,8 @@ The library window now opens instead of the settings window. Settings remain acc
 | :--------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: |
 | ![Photos light](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos_page_view_sidebar_on.png) | ![Photos dark](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos_page_view_dark_sidebar_on.png) |
 
+---
+
 ## Layout
 
 The window uses a sidebar + content split.
@@ -243,38 +245,6 @@ When the map is short (for example on a phone, with photos listed below it), the
 
 ---
 
-## Albums
-
-Select **Albums** in the sidebar to open the album landing page.
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album_page_view_showing_albums_recent_youralbums.png" width="80%" alt="Album page" />
-</div>
-
-Three sections are shown:
-
-- **Recent** — recently accessed albums
-- **Your albums** — albums you own
-- **Shared with you** — albums shared by other users
-
-Click an album tile to open it in the grid view. The album is also added to the sidebar list for quick re-access.
-
-|                                               Selected Album (Dark)                                               |                                                         Album View (Sidebar Off)                                                          |
-| :---------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------: |
-| ![Album dark](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/selected_album_view_dark.png) | ![Album sidebar off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/name_dark_album_selected_view_sidebar_off.png) |
-
-### Creating an Album
-
-Click **Create album** (top right of the Albums page). Enter a name and confirm. The new album appears in the **Your albums** section immediately.
-
-To assign a new or existing album to a watch folder for automatic upload, press **Upload Target** on the folder's row in **Settings → Watch Folders**.
-
-### Manual Upload
-
-You can upload files directly to the library or to a specific album using the **Upload** button in the header bar. This opens a multi-file picker and enqueues the selections for upload without requiring a watch folder.
-
----
-
 ## Selection Mode
 
 Click the checkbox icon in the header bar (or use **Esc** to exit) to toggle selection mode.
@@ -374,6 +344,102 @@ Your own photos show a **People** section below the rating with everyone Immich 
 
 ---
 
+## Favorites
+
+- The heart button in the lightbox action bar (or **F**) marks the current asset as a favorite; it fills in at once and saves to Immich in the background. If Immich refuses (for example, a key without `asset.update`), the heart reverts and an error is shown.
+- The right-click menu has **Add to Favorites** / **Remove from Favorites**, and **Edit Info…** has a heart toggle.
+- Favorited thumbnails show a small white heart in the bottom-right corner.
+- The **Favorites** sidebar entry lists every favorite. Removing a favorite there drops it from the list (the lightbox moves on to the next asset).
+
+---
+
+## Changing Dates
+
+Select photos and choose **Change date** in the selection bar (in **⋯** on phones). Only photos you own change; the dialog says when some of the selection belongs to someone else.
+
+- **Set** gives every selected photo the same date, time, and **Time zone**. The zone list is searchable (type part of a city, e.g. "lisb") and starts at your computer's time zone; the line below shows the exact time that will be saved.
+- **Shift** moves each photo by days, hours, and minutes (negative numbers move them earlier), keeping the time between them. Pick a **Time zone** to also move them into that zone, or leave **Keep current zone**. Shifting by zero with a new zone only corrects the zone.
+
+The timeline reloads afterwards so the photos appear in their new place. Requires `asset.update`.
+
+---
+
+## Archive
+
+- Archiving hides an asset from the **Photos** timeline without deleting it.
+- Archive from the right-click menu, the lightbox's archive button (or **A**), or the selection bar.
+- The **Archive** sidebar entry lists archived assets; **Unarchive** there puts them back in Photos.
+
+---
+
+## Trash
+
+The **Trash** sidebar entry lists everything in the Immich trash in the normal grid.
+
+- **Restore All** and **Empty Trash** sit in the Trash header. Emptying asks for confirmation and can't be undone.
+- Select assets to **Restore** them or **Delete Permanently** from the selection bar. **Delete** with a selection also deletes permanently, after confirmation.
+- Right-click an asset (in the grid or the lightbox) for **Restore** and **Delete Permanently**.
+- Immich deletes trashed assets for good after its retention period (30 days by default, configurable on the server).
+- Deleting only affects the server; local copies in your watch folders are kept.
+- Requires the `asset.delete` API key permission.
+
+---
+
+## Albums
+
+Select **Albums** in the sidebar to open the album landing page.
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album_page_view_showing_albums_recent_youralbums.png" width="80%" alt="Album page" />
+</div>
+
+Three sections are shown:
+
+- **Recent** — recently accessed albums
+- **Your albums** — albums you own
+- **Shared with you** — albums shared by other users
+
+Click an album tile to open it in the grid view. The album is also added to the sidebar list for quick re-access.
+
+|                                               Selected Album (Dark)                                               |                                                         Album View (Sidebar Off)                                                          |
+| :---------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------: |
+| ![Album dark](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/selected_album_view_dark.png) | ![Album sidebar off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/name_dark_album_selected_view_sidebar_off.png) |
+
+### Creating an Album
+
+Click **Create album** (top right of the Albums page). Enter a name and confirm. The new album appears in the **Your albums** section immediately.
+
+To assign a new or existing album to a watch folder for automatic upload, press **Upload Target** on the folder's row in **Settings → Watch Folders**.
+
+### Manual Upload
+
+You can upload files directly to the library or to a specific album using the **Upload** button in the header bar. This opens a multi-file picker and enqueues the selections for upload without requiring a watch folder.
+
+---
+
+## Editing Albums
+
+- Rename an album or edit its description from the album's header (**⋯** menu) or by right-clicking its tile on the Albums page. Only your own albums can be edited.
+- Renaming keeps linked watch folders linked: Mimick updates the folder's album name in your settings.
+
+---
+
+## Managing Albums
+
+- **Add to album**: select photos and press the **+** button in the selection bar, right-click a photo, or press **Add to Album…** in the lightbox details pane. The picker lists your albums and albums shared with you where you're an editor, most recently changed first. Type to filter; when nothing matches, the first row creates an album with the name you typed (press **Enter** to pick the first row). A message says how many were added (and how many were already there), with **Open** to jump to the album. Requires `albumAsset.create` (and `album.create` for new albums).
+- **Remove from album**: inside an album you own or edit, right-click a photo or use the selection bar. Photos stay in your library; the message offers **Undo**. Editors can remove only their own photos, and the message says how many were left. Requires `albumAsset.delete`.
+- **Set as album cover**: right-click a photo inside one of your albums. Requires `album.update`.
+- **Delete album**: in your album's **⋯** menu or its tile's right-click menu, **Delete Album…** deletes it from Immich; its photos stay in your library. The confirmation says when it's also removed for people it's shared with and when its shared links stop working. Because Mimick re-creates a missing album by name, folders that would bring it back are handled too:
+  - Watch folders that sync with the album (including folders linked with **Link folder…**) are listed, and you choose **Keep backing them up to your library** (they keep uploading, without an album, and two-way sync and deletion mirroring turn off) or **Stop watching these folders**.
+  - Subfolders of a watch folder set to **Default (Folder Name)** whose photos made this album get their own library-only watch folder entry, so the rest of the parent folder still makes albums from its folders.
+  - Deleting waits while uploads are running, and while the Settings window is open (saving it would undo the folder changes). Requires `album.delete`.
+- **Leave album**: for an album someone shared with you, use **Leave Album…** in its header's **⋯** menu or right-click its tile on the Albums or Shared Albums page. Requires `albumUser.delete`.
+- **Album options**: in your album's **⋯** menu, **Options…** sets the **Display order** (newest or oldest first, which Mimick and Immich use when the album opens) and turns **Comments and likes** on or off for the Immich apps. Changes save immediately. Requires `album.update`.
+- **Download album**: the download button in the album's header, or **Download** on its tile, saves the whole album as `Album name.zip` in your download folder. Immich splits large albums (4 GiB by default, set in Immich's user settings), which download as `Album name (part 1 of 3).zip` and so on. Requires `asset.download`.
+- **Appears in**: the lightbox details pane lists the albums a photo is in; click one to open it. Requires `album.read`.
+
+---
+
 ## Album Sync (Bidirectional)
 
 When viewing an album, its header shows the linked local watch folder (if any) and two action buttons.
@@ -390,33 +456,39 @@ When viewing an album, its header shows the linked local watch folder (if any) a
 **Sync steps:**
 
 1. Mimick computes SHA-1 checksums for local files in the linked folder.
-2. Files present locally but missing from the remote album are uploaded.
-3. Assets in the remote album missing from the local folder are downloaded.
-4. Name collisions during download are resolved with a numeric suffix.
+2. A dialog lists the differences; tick the directions to apply: upload to the album, download to the folder, or move extra items to the trash on either side.
+3. Name collisions during download are resolved with a numeric suffix.
 
-Album sync is on-demand — it runs only when you press **Sync** and does not run automatically in the background. It respects the same file extension filters as the main sync engine.
+Album sync is on-demand — it runs only when you press **Sync**. For automatic syncing, set the folder's **Sync Method** to **Full Sync** (see [Sync Behavior](Sync-Behavior#sync-methods)). It respects the same file extension filters as the main sync engine.
 
 ---
 
-## Library Settings
+## People
 
-These options are in the **Library**, **Grid Appearance**, **RAW Files**, and **Storage** sections of Settings, which appear when the library view is on.
+- The **People** sidebar entry shows every recognized face. Type in the search box to filter by name; the eye button also shows people you've hidden (dimmed).
+- Click a face to see that person's photos.
+- The **⋯** button on each face has:
+  - **Rename…** (or **Add Name…**)
+  - **Add to Favorites** / **Remove from Favorites**: favorites get a heart on their face and are listed first.
+  - **Set Birthday…**: pick a date, or **Remove** it.
+  - **Hide** / **Unhide**: hidden people don't appear in People or Explore.
+  - **Merge People…**: tick the people who are really this person; their faces move to them. This can't be undone.
 
-| Setting                     | Default | Effect                                                                                                                                 |
-| :-------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------- |
-| **Open Originals in Lightbox** | Off  | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth.                    |
-| **Thumbnail Quality**       | Thumbnail | **Automatic**, **Thumbnail**, **Preview**, or **Full Size** for grid tiles. Sharper thumbnails use more memory. Applies to an open library window right away. |
-| **Fit Thumbnails to Tiles** | On      | Decodes **Preview** and **Full Size** grid thumbnails at their tile's on-screen size instead of 1440 or 2560 px, using far less memory. Has no effect with **Thumbnail**. Applies right away. |
-| **Date Headings**           | By Day  | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
-| **Border Width**            | 0       | Gap between photos, in pixels. With a border, its colour fills the whole grid, behind the date headings too. Applies right away.        |
-| **Border Color**            | White   | Colour of the grid border. Date headings switch between dark and light text to stay readable.                                          |
-| **Full RAW Decoding**       | Off     | Decode high-resolution sensor data instead of using fast embedded camera previews (slower).                                            |
-| **Keep Decoded RAW Files**  | Off     | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled.                        |
-| **Cache Limit (MB)**        | 2000    | Disk space for thumbnails, previews, and videos, trimmed when Mimick starts. The row shows how much is in use; **Clear Cache** frees it now. |
-| **Memory Limit (MB)**       | 2048    | RAM for decoded thumbnails and lightbox pictures, never more than half your RAM. Applies right away. |
-| **Download Folder**         | Ask each time | Without one, each download asks for a folder and offers to keep it as the default (**Always**) or use it **Just Once**. **Change…** picks one here. |
+---
 
-See [Performance Tuning](Performance-Tuning) for guidance on choosing values for these settings.
+## Tags page
+
+- The **Tags** sidebar entry lists your top-level tags. Click a tag to see its photos; the **›** button opens the tags inside it, and the path at the top takes you back up.
+- **+** creates a tag at the current level.
+- Each tag's **⋯** menu has **Rename…**, **Change Color…** (a preset or a custom color), and **Delete…**.
+- Renaming tags needs a newer Immich than v3.0.0; older servers show an error instead.
+
+---
+
+## Folders
+
+- The **Folders** sidebar entry shows the folders your photos came from on the server. It opens at the first level that has more than one folder; the path at the top takes you back up.
+- Click a folder to open it. A folder without subfolders opens its photos directly; otherwise **Photos in …** at the top of the list shows the photos in that folder itself.
 
 ---
 
@@ -442,74 +514,6 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 
 ---
 
-## Favorites
-
-- The heart button in the lightbox action bar (or **F**) marks the current asset as a favorite; it fills in at once and saves to Immich in the background. If Immich refuses (for example, a key without `asset.update`), the heart reverts and an error is shown.
-- The right-click menu has **Add to Favorites** / **Remove from Favorites**, and **Edit Info…** has a heart toggle.
-- Favorited thumbnails show a small white heart in the bottom-right corner.
-- The **Favorites** sidebar entry lists every favorite. Removing a favorite there drops it from the list (the lightbox moves on to the next asset).
-
----
-
-## People
-
-- The **People** sidebar entry shows every recognized face. Type in the search box to filter by name; the eye button also shows people you've hidden (dimmed).
-- Click a face to see that person's photos.
-- The **⋯** button on each face has:
-  - **Rename…** (or **Add Name…**)
-  - **Add to Favorites** / **Remove from Favorites**: favorites get a heart on their face and are listed first.
-  - **Set Birthday…**: pick a date, or **Remove** it.
-  - **Hide** / **Unhide**: hidden people don't appear in People or Explore.
-  - **Merge People…**: tick the people who are really this person; their faces move to them. This can't be undone.
-
----
-
-## Editing Albums
-
-- Rename an album or edit its description from the album's header (**⋯** menu) or by right-clicking its tile on the Albums page. Only your own albums can be edited.
-- Renaming keeps linked watch folders linked: Mimick updates the folder's album name in your settings.
-
-## Managing Albums
-
-- **Add to album**: select photos and press the **+** button in the selection bar, right-click a photo, or press **Add to Album…** in the lightbox details pane. The picker lists your albums and albums shared with you where you're an editor, most recently changed first. Type to filter; when nothing matches, the first row creates an album with the name you typed (press **Enter** to pick the first row). A message says how many were added (and how many were already there), with **Open** to jump to the album. Requires `albumAsset.create` (and `album.create` for new albums).
-- **Remove from album**: inside an album you own or edit, right-click a photo or use the selection bar. Photos stay in your library; the message offers **Undo**. Editors can remove only their own photos, and the message says how many were left. Requires `albumAsset.delete`.
-- **Set as album cover**: right-click a photo inside one of your albums. Requires `album.update`.
-- **Delete album**: in your album's **⋯** menu or its tile's right-click menu, **Delete Album…** deletes it from Immich; its photos stay in your library. The confirmation says when it's also removed for people it's shared with and when its shared links stop working. Because Mimick re-creates a missing album by name, folders that would bring it back are handled too:
-  - Watch folders that sync with the album (including folders linked with **Link folder…**) are listed, and you choose **Keep backing them up to your library** (they keep uploading, without an album, and two-way sync and deletion mirroring turn off) or **Stop watching these folders**.
-  - Subfolders of a watch folder set to **Default (Folder Name)** whose photos made this album get their own library-only watch folder entry, so the rest of the parent folder still makes albums from its folders.
-  - Deleting waits while uploads are running, and while the Settings window is open (saving it would undo the folder changes). Requires `album.delete`.
-- **Leave album**: for an album someone shared with you, use **Leave Album…** in its header's **⋯** menu or right-click its tile on the Albums or Shared Albums page. Requires `albumUser.delete`.
-- **Album options**: in your album's **⋯** menu, **Options…** sets the **Display order** (newest or oldest first, which Mimick and Immich use when the album opens) and turns **Comments and likes** on or off for the Immich apps. Changes save immediately. Requires `album.update`.
-- **Download album**: the download button in the album's header, or **Download** on its tile, saves the whole album as `Album name.zip` in your download folder. Immich splits large albums (4 GiB by default, set in Immich's user settings), which download as `Album name (part 1 of 3).zip` and so on. Requires `asset.download`.
-- **Appears in**: the lightbox details pane lists the albums a photo is in; click one to open it. Requires `album.read`.
-
-## Changing Dates
-
-Select photos and choose **Change date** in the selection bar (in **⋯** on phones). Only photos you own change; the dialog says when some of the selection belongs to someone else.
-
-- **Set** gives every selected photo the same date, time, and **Time zone**. The zone list is searchable (type part of a city, e.g. "lisb") and starts at your computer's time zone; the line below shows the exact time that will be saved.
-- **Shift** moves each photo by days, hours, and minutes (negative numbers move them earlier), keeping the time between them. Pick a **Time zone** to also move them into that zone, or leave **Keep current zone**. Shifting by zero with a new zone only corrects the zone.
-
-The timeline reloads afterwards so the photos appear in their new place. Requires `asset.update`.
-
----
-
-## Tags page
-
-- The **Tags** sidebar entry lists your top-level tags. Click a tag to see its photos; the **›** button opens the tags inside it, and the path at the top takes you back up.
-- **+** creates a tag at the current level.
-- Each tag's **⋯** menu has **Rename…**, **Change Color…** (a preset or a custom color), and **Delete…**.
-- Renaming tags needs a newer Immich than v3.0.0; older servers show an error instead.
-
----
-
-## Folders
-
-- The **Folders** sidebar entry shows the folders your photos came from on the server. It opens at the first level that has more than one folder; the path at the top takes you back up.
-- Click a folder to open it. A folder without subfolders opens its photos directly; otherwise **Photos in …** at the top of the list shows the photos in that folder itself.
-
----
-
 ## Partner Sharing
 
 - The **Sharing** sidebar entry lists the partners you share your library with, and the people who share theirs with you.
@@ -520,24 +524,25 @@ The timeline reloads afterwards so the photos appear in their new place. Require
 
 ---
 
-## Archive
+## Library Settings
 
-- Archiving hides an asset from the **Photos** timeline without deleting it.
-- Archive from the right-click menu, the lightbox's archive button (or **A**), or the selection bar.
-- The **Archive** sidebar entry lists archived assets; **Unarchive** there puts them back in Photos.
+These options are in the **Library**, **Grid Appearance**, **RAW Files**, and **Storage** sections of Settings, which appear when the library view is on.
 
----
+| Setting                     | Default | Effect                                                                                                                                 |
+| :-------------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------- |
+| **Open Originals in Lightbox** | Off  | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth.                    |
+| **Thumbnail Quality**       | Thumbnail | **Automatic**, **Thumbnail**, **Preview**, or **Full Size** for grid tiles. Sharper thumbnails use more memory. Applies to an open library window right away. |
+| **Fit Thumbnails to Tiles** | On      | Decodes **Preview** and **Full Size** grid thumbnails at their tile's on-screen size instead of 1440 or 2560 px, using far less memory. Has no effect with **Thumbnail**. Applies right away. |
+| **Date Headings**           | By Day  | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
+| **Border Width**            | 0       | Gap between photos, in pixels. With a border, its colour fills the whole grid, behind the date headings too. Applies right away.        |
+| **Border Color**            | White   | Colour of the grid border. Date headings switch between dark and light text to stay readable.                                          |
+| **Full RAW Decoding**       | Off     | Decode high-resolution sensor data instead of using fast embedded camera previews (slower).                                            |
+| **Keep Decoded RAW Files**  | Off     | Store demosaiced RAW images on disk so re-opens are instant. Only applicable when Full RAW Decoding is enabled.                        |
+| **Cache Limit (MB)**        | 2000    | Disk space for thumbnails, previews, and videos, trimmed when Mimick starts. The row shows how much is in use; **Clear Cache** frees it now. |
+| **Memory Limit (MB)**       | 2048    | RAM for decoded thumbnails and lightbox pictures, never more than half your RAM. Applies right away. |
+| **Download Folder**         | Ask each time | Without one, each download asks for a folder and offers to keep it as the default (**Always**) or use it **Just Once**. **Change…** picks one here. |
 
-## Trash
-
-The **Trash** sidebar entry lists everything in the Immich trash in the normal grid.
-
-- **Restore All** and **Empty Trash** sit in the Trash header. Emptying asks for confirmation and can't be undone.
-- Select assets to **Restore** them or **Delete Permanently** from the selection bar. **Delete** with a selection also deletes permanently, after confirmation.
-- Right-click an asset (in the grid or the lightbox) for **Restore** and **Delete Permanently**.
-- Immich deletes trashed assets for good after its retention period (30 days by default, configurable on the server).
-- Deleting only affects the server; local copies in your watch folders are kept.
-- Requires the `asset.delete` API key permission.
+See [Performance Tuning](Performance-Tuning) for guidance on choosing values for these settings.
 
 ---
 

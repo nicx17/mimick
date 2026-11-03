@@ -172,6 +172,13 @@ The **Status** page groups the live actions you may want while Mimick is already
 * **Queue…** to open the Queue Inspector for failure recovery
 * **Retry** next to failed uploads, shown only when some failed
 
+The headline shows what is currently happening:
+
+* **Up to Date** — Nothing is uploading. Shows when the last upload finished.
+* **Uploading 3 of 40** — Shows the current filename and a progress bar for the active batch.
+* **Paused** — Mimick is intentionally holding uploads. The line below shows the pause reason, such as a manual pause, quiet hours, metered network, or battery-power policy.
+* **Waiting for Immich** — Some uploads failed; they retry when the server is reachable.
+
 **Export Diagnostics** for support bundles is in **Settings → Troubleshooting**.
 
 ### Queue Inspector and Recovery
@@ -192,7 +199,7 @@ This is useful when a server outage, permission issue, or bad file temporarily b
 
 ### Diagnostics Export
 
-Use **Export Diagnostics** in the settings window when you need a support snapshot.
+Use **Export Diagnostics** in **Settings → Troubleshooting** when you need a support snapshot.
 
 The export creates a timestamped `mimick-diagnostics-*` folder containing redacted support files:
 
@@ -227,47 +234,11 @@ Turn on **Settings → App → Library View** (the tray menu entry appears after
 
 ## 3. How Syncing Works
 
-### Automatic Detection
-
-Once configured, the application runs silently in the background. It handles syncing in two ways:
-
-1. On startup, Mimick rescans watched folders for media that has not been synced yet.
-2. While running, Mimick watches those folders for newly added or changed media.
-
-For live changes, `mimick` detects files via filesystem monitoring:
-
-1. Waits for the file size to stabilise (file is fully written to disk).
-2. Calculates a SHA-1 checksum for deduplication.
-3. Streams the file to Immich using the standard asset API.
-4. Adds the asset to the configured album.
-
-### Existing Files and Reassignment
-
-Mimick keeps a local sync index so it can avoid reprocessing files that are already known to be synced.
-
-* Unchanged files that were already synced are skipped during startup rescans.
-* Files whose content changed are rehashed and uploaded again.
-* If you change the target album for a watched folder, Mimick can reassociate unchanged files to the new album on a later startup without needing to reupload the media data.
-* If the previously targeted album was deleted, Mimick refreshes the album mapping and retries using the current configured album name.
-
-### Sync Status
-
-The headline at the top of the **Status** page shows what is currently happening:
-
-* **Up to Date** — Nothing is uploading. Shows when the last upload finished.
-* **Uploading 3 of 40** — Shows the current filename and a progress bar for the active batch.
-* **Paused** — Mimick is intentionally holding uploads. The line below shows the pause reason, such as a manual pause, quiet hours, metered network, or battery-power policy.
-* **Waiting for Immich** — Some uploads failed; they retry when the server is reachable.
-
-### Offline Reliability
-
-If an upload fails, the file is saved to `~/.cache/mimick/retries.json`. On the next launch, any persisted retries are automatically re-queued and uploaded.
-
-Files blocked by folder rules are skipped before they ever enter the queue. Temporary files are also ignored until the final media file exists.
+See [Sync Behavior](Sync-Behavior) for sync methods, startup scans, live monitoring, and retries.
 
 ---
 
-## 4. Advanced Configuration 
+## 4. Advanced Configuration
 
 ### Manual Configuration (JSON)
 
@@ -397,46 +368,4 @@ If you grant `all`, every feature works without further configuration. The granu
 
 The bulk-upload-check endpoint Mimick uses for pre-flight dedup is covered by `asset.upload` (same scope as the upload it replaces).
 
-### Systemd Service Configuration (Native Only)
-
-If running native, the application can run as a user service. The service file is located at `~/.config/systemd/user/mimick.service`.
-
-**Environment Variables:**
-Ideally, configure environment variables in `~/.config/environment.d/mimick.conf`.
-
-- `DISPLAY`: Usually `:0`
-- `XDG_RUNTIME_DIR`: Required for DBus session bus access.
-
----
-
-## 5. Frequently Asked Questions
-
-**Q: Will this delete my local files?**
-No. Mimick is strictly one-way (backup mode). It reads local files and uploads them. It never modifies or deletes files on your local machine.
-
-**Q: Are sidecar files supported?**
-Currently, Mimick ignores metadata sidecar files (`.xmp`, etc.). Immich has limited sidecar support via the standard API, so they are filtered to prevent clutter.
-
-**Q: What happens if my server is offline?**
-The upload will fail gracefully and the file is saved to the retry queue (`~/.cache/mimick/retries.json`). On next launch, it will be automatically retried.
-
-**Q: Why is Mimick paused even though I did not click Pause?**
-Check the **Uploads** section. If **Pause on Metered Networks**, **Pause on Battery**, or **Quiet Hours** is enabled, Mimick can pause itself automatically when those conditions are detected.
-
-**Q: What does Sync Now do?**
-It reruns the watched-folder scan immediately so you do not need to restart Mimick to pick up missed or newly eligible files.
-
-**Q: The tray icon does not appear on GNOME.**
-GNOME requires the "AppIndicator and KStatusNotifierItem Support" extension. Install it from the GNOME Extensions website. Without it, the warning `Watcher(ServiceUnknown)` is expected and harmless — the app still runs fully in the background.
-
-**Q: Mimick quits when I close the window.**
-Background Sync is disabled. Turn on **Settings → App → Background Sync**. After that, closing the window hides it instead of exiting.
-
-**Q: Uploads are paused but I did not set quiet hours or enable any pause policy.**
-Open the Status page and check the status text — it shows the pause reason. Common causes: the quiet-hours window is active, a metered-network or battery-power policy triggered, or the app was paused manually from the tray.
-
-**Q: The startup scan is slow.**
-Set **When Mimick Starts, Check** to **New Files Only** in Settings → Uploads once your initial sync is complete. This skips files already in the sync index and only processes genuinely new additions.
-
-**Q: I have two watch folders pointing at the same parent and subfolder. Which album does a file use?**
-The most specific (longest) matching path wins. A file at `~/Pictures/iPhone/img.jpg` uses the album configured for `~/Pictures/iPhone`, not the one for `~/Pictures`.
+Common questions are answered in [Troubleshooting](Troubleshooting).

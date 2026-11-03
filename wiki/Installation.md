@@ -37,25 +37,9 @@ Open the settings window directly with:
 flatpak run dev.nicx.mimick --settings
 ```
 
-## Local Development Build
+## Building from Source
 
-For a native development run:
-
-```bash
-cargo run
-```
-
-Open settings immediately:
-
-```bash
-cargo run -- --settings
-```
-
-For a local Flatpak build that uses the current checkout instead of the GitHub source tag:
-
-```bash
-flatpak-builder --user --install --force-clean build-dir dev.nicx.mimick.local.yml
-```
+To build Mimick yourself, natively or as a local Flatpak, see [Development](Development).
 
 ## What Gets Installed
 
@@ -63,4 +47,5 @@ flatpak-builder --user --install --force-clean build-dir dev.nicx.mimick.local.y
 - Binary: `mimick`
 - Config file: `~/.config/mimick/config.json` (native) or `~/.var/app/dev.nicx.mimick/config/mimick/config.json` (Flatpak)
 - Cache directory: `~/.cache/mimick/` (native) or `~/.var/app/dev.nicx.mimick/cache/mimick/` (Flatpak)
+- Data directory (sync index): `~/.local/share/mimick/` (native) or `~/.var/app/dev.nicx.mimick/data/mimick/` (Flatpak)
 - Keyring: Managed by `oo7` -- encrypted file inside the sandbox (Flatpak) or D-Bus Secret Service (native)

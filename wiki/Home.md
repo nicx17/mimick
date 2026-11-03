@@ -45,9 +45,9 @@ Mimick is a Linux background app that watches selected folders and syncs photos 
 
 ## Project Notes
 
-- By default Mimick only uploads local media to Immich and never changes local files. A folder's **Sync Method** can also be **Download Only** or **Full**, which download its album's photos into the folder; only **Delete from This Folder Too** removes local files, by moving them to the trash.
-- The app stores API keys in the desktop keyring and keeps operational state in `~/.cache/mimick/`.
-- Startup rescans use a local sync index so already-synced unchanged files are skipped quickly.
+- By default a watch folder only uploads to Immich and never changes local files. Its **Sync Method** can also be **Download Only** or **Full Sync**, which download its album's photos into the folder. See [Sync Behavior](Sync-Behavior).
+- API keys are stored in the desktop keyring. Logs and the retry queue live in `~/.cache/mimick/`, and the sync index in `~/.local/share/mimick/`.
+- Startup rescans use the sync index, so unchanged files that are already synced are skipped quickly.
 
 ## Current App Highlights
 
