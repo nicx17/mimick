@@ -71,50 +71,34 @@ impl MapStyle {
 
     /// Saved in the config; the theme ids double as bundled style file names.
     pub fn id(self) -> &'static str {
-        match self {
-            Self::Immich => "immich",
-            Self::Colorful => "colorful",
-            Self::Natural => "natural",
-            Self::Muted => "muted",
-            Self::Gray => "gray",
-            Self::Toner => "toner",
-            Self::Positrino => "positrino",
-            Self::Protocol => "protocol",
-            Self::Protostar => "protostar",
-            Self::Protozoa => "protozoa",
-            Self::Fnord => "fnord",
-            Self::Classic => "classic",
-            Self::Googol => "googol",
-            Self::Freedom => "freedom",
-            Self::Macbob => "macbob",
-            Self::Mactaylor => "mactaylor",
-            Self::Bingo => "bingo",
-            Self::Satellite => "satellite",
-            Self::OpenStreetMap => "osm",
-        }
+        self.names().0
     }
 
     pub fn label(self) -> &'static str {
+        self.names().1
+    }
+
+    fn names(self) -> (&'static str, &'static str) {
         match self {
-            Self::Immich => "Immich",
-            Self::Colorful => "Colorful",
-            Self::Natural => "Natural",
-            Self::Muted => "Muted",
-            Self::Gray => "Gray",
-            Self::Toner => "Toner",
-            Self::Positrino => "Positrino",
-            Self::Protocol => "Protocol",
-            Self::Protostar => "Protostar",
-            Self::Protozoa => "Protozoa",
-            Self::Fnord => "Fnord",
-            Self::Classic => "Classic",
-            Self::Googol => "Googol",
-            Self::Freedom => "Freedom",
-            Self::Macbob => "Macbob",
-            Self::Mactaylor => "Mactaylor",
-            Self::Bingo => "Bingo",
-            Self::Satellite => "Satellite",
-            Self::OpenStreetMap => "OpenStreetMap",
+            Self::Immich => ("immich", "Immich"),
+            Self::Colorful => ("colorful", "Colorful"),
+            Self::Natural => ("natural", "Natural"),
+            Self::Muted => ("muted", "Muted"),
+            Self::Gray => ("gray", "Gray"),
+            Self::Toner => ("toner", "Toner"),
+            Self::Positrino => ("positrino", "Positrino"),
+            Self::Protocol => ("protocol", "Protocol"),
+            Self::Protostar => ("protostar", "Protostar"),
+            Self::Protozoa => ("protozoa", "Protozoa"),
+            Self::Fnord => ("fnord", "Fnord"),
+            Self::Classic => ("classic", "Classic"),
+            Self::Googol => ("googol", "Googol"),
+            Self::Freedom => ("freedom", "Freedom"),
+            Self::Macbob => ("macbob", "Macbob"),
+            Self::Mactaylor => ("mactaylor", "Mactaylor"),
+            Self::Bingo => ("bingo", "Bingo"),
+            Self::Satellite => ("satellite", "Satellite"),
+            Self::OpenStreetMap => ("osm", "OpenStreetMap"),
         }
     }
 

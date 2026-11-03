@@ -1,10 +1,7 @@
 //! VersaTiles satellite imagery, enlarging the nearest coarser tile where sharp imagery runs out.
 
-use std::cell::{Cell, OnceCell, RefCell};
 use std::collections::HashSet;
-use std::future::Future;
 use std::ops::RangeInclusive;
-use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -12,7 +9,6 @@ use gtk::gio;
 use gtk::prelude::*;
 use image::ImageEncoder;
 use image::codecs::png::{CompressionType, FilterType, PngEncoder};
-use shumate::prelude::*;
 use shumate::subclass::prelude::*;
 
 use crate::api_client::{ImmichApiClient, TileFetch};
@@ -108,7 +104,19 @@ fn is_expired(modified: Option<&glib::DateTime>, now: &glib::DateTime) -> bool {
 }
 
 mod imp {
-    use super::*;
+    use std::cell::{Cell, OnceCell, RefCell};
+    use std::collections::HashSet;
+    use std::future::Future;
+    use std::pin::Pin;
+    use std::sync::Arc;
+    use std::time::Instant;
+
+    use gtk::gio;
+    use shumate::prelude::*;
+    use shumate::subclass::prelude::*;
+
+    use super::TileId;
+    use crate::api_client::ImmichApiClient;
 
     #[derive(Default)]
     pub struct SatelliteData {
@@ -120,7 +128,7 @@ mod imp {
 
     #[glib::object_subclass]
     impl ObjectSubclass for SatelliteData {
-        const NAME: &'static str = "MimickSatelliteData";
+        const NAME: &str = "MimickSatelliteData";
         type Type = super::SatelliteData;
         type ParentType = shumate::DataSource;
     }
