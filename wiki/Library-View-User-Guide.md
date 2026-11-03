@@ -216,7 +216,7 @@ Select **Map** in the sidebar to see every photo and video with a location.
 - The first visit zooms to fit all your photos. The map remembers where you were until you refresh. You can't zoom out past the point where the world fills the map's height.
 - Archived photos are not shown, matching Immich's web map.
 
-**Search places** (top left): type a country, city, neighbourhood, street, address, or landmark. Results appear as you type (a spinner shows while Photon answers, which can take a second or two; places you already searched come back at once), with places near where the map is looking ranked first; click one, or press **Enter** for the first, and the map flies there, zoomed to fit the place, with a red pin on it. **Esc** or the clear button empties the field and removes the pin. The search works the same with every map style.
+**Search places** (top left): type a country, city, neighbourhood, street, address, or landmark. Results appear as you type (a spinner shows while Photon answers, which can take a second or two; places you already searched come back at once), with places near where the map is looking ranked first; click one, or press **Enter** for the first, and the map flies there, zoomed to fit the place, with a red pin on it. **Ctrl+F** jumps to the field from anywhere on the Map page, and after you pick a place the arrow keys move the map. **Esc** or the clear button empties the field and removes the pin. The search works the same with every map style.
 
 Searches go to [Photon](https://photon.komoot.io), a free place search built on OpenStreetMap data and run by komoot. Mimick sends the text you type, the map's centre and zoom (to rank nearby places first), and your language; nothing about your photos. It waits until you stop typing, sends one search at a time, and remembers recent answers. If Photon can't be reached or asks Mimick to slow down, the results come from your Immich server instead and say so; those only know cities and towns.
 
@@ -558,10 +558,23 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 | :---------------------------- | :------------------------------------------------------------------------------------------------------------ |
 | **Ctrl+?**                    | Show keyboard shortcuts (also **Keyboard Shortcuts** in the main menu)                                        |
 | **F9**                        | Toggle sidebar                                                                                                |
+| **Ctrl+K**                    | Open Search                                                                                                   |
+| **Ctrl+1** … **Ctrl+9**       | Go to Photos, Explore, Map, People, Favorites, Archive, Trash, Albums, Sharing                                |
+| **Ctrl+A**                    | Select every photo loaded in the grid (in Photos, the months loaded so far)                                   |
 | **Esc**                       | Exit selection mode                                                                                           |
+| **D** / **M** / **Y**         | Next day / month / year in Photos (newest first); with **Shift**, the previous one                            |
+| **Ctrl+F**                    | Search places (Map page and map beside photos)                                                                |
+| Arrow keys                    | Move the map (after clicking it or picking a searched place)                                                  |
+| **+** / **−**                 | Zoom the map in / out                                                                                         |
+| **[** / **]**                 | Turn the map left / right                                                                                     |
+| **N**                         | Point the map north                                                                                           |
+| **Ctrl+L**                    | Show my location on the map                                                                                   |
 | **Delete**                    | Move the selection (grid) or the current asset (lightbox) to the trash; in the Trash view, delete permanently |
 | **F**                         | Toggle favorite for the current asset (lightbox)                                                              |
 | **A**                         | Archive or unarchive the current asset (lightbox)                                                             |
+| **1**–**5** / **0**           | Rate the current asset with 1 to 5 stars / clear the rating (lightbox, your photos)                           |
+| **E**                         | Edit Info… for the current asset (lightbox, your photos)                                                      |
+| **Shift+D**                   | Download the current asset (lightbox)                                                                         |
 | **T**                         | Show or hide recognized text (lightbox, when Immich found text)                                               |
 | **Ctrl+A**                    | Select all recognized text (lightbox, while shown)                                                            |
 | **Ctrl+C**                    | Copy the selected recognized text, or all of it when nothing is selected (lightbox)                           |

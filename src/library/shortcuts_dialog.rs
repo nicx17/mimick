@@ -27,8 +27,21 @@ const GENERAL: &[Shortcut] = &[
     key("Show keyboard shortcuts", "<Control>question"),
     key("Toggle sidebar", "F9"),
     key("Refresh", "F5"),
+    key("Search", "<Control>k"),
     hint("Go back", "<Alt>Left", "Or the mouse back button"),
     hint("Go forward", "<Alt>Right", "Or the mouse forward button"),
+];
+
+const GO_TO: &[Shortcut] = &[
+    key("Photos", "<Control>1"),
+    key("Explore", "<Control>2"),
+    key("Map", "<Control>3"),
+    key("People", "<Control>4"),
+    key("Favorites", "<Control>5"),
+    key("Archive", "<Control>6"),
+    key("Trash", "<Control>7"),
+    key("Albums", "<Control>8"),
+    key("Sharing", "<Control>9"),
 ];
 
 const SELECTION: &[Shortcut] = &[
@@ -47,7 +60,18 @@ const SELECTION: &[Shortcut] = &[
         "Delete",
         "Deletes permanently in the Trash view",
     ),
+    hint("Select all", "<Control>a", "Every photo loaded in the grid"),
     key("Exit selection mode", "Escape"),
+];
+
+const TIMELINE: &[Shortcut] = &[
+    hint(
+        "Next or previous day",
+        "d <Shift>d",
+        "In Photos, sorted newest first",
+    ),
+    key("Next or previous month", "m <Shift>m"),
+    key("Next or previous year", "y <Shift>y"),
 ];
 
 const LIGHTBOX: &[Shortcut] = &[
@@ -56,6 +80,9 @@ const LIGHTBOX: &[Shortcut] = &[
     key("Toggle details", "i"),
     key("Toggle favorite", "f"),
     key("Archive or unarchive", "a"),
+    hint("Rate", "1 2 3 4 5", "0 clears the rating"),
+    key("Edit info", "e"),
+    key("Download", "<Shift>d"),
     hint(
         "Show or hide recognized text",
         "t",
@@ -92,9 +119,32 @@ const VIDEO: &[Shortcut] = &[
     key("Mute or unmute", "m"),
 ];
 
+const MAP: &[Shortcut] = &[
+    key("Search places", "<Control>f"),
+    key("Zoom in", "plus"),
+    key("Zoom out", "minus"),
+    key("Rotate left", "bracketleft"),
+    key("Rotate right", "bracketright"),
+    key("Point north", "n"),
+    key("Show my location", "<Control>l"),
+    hint(
+        "Clear the search",
+        "Escape",
+        "While typing in the search field",
+    ),
+    hint(
+        "Move the map",
+        "Up Down Left Right",
+        "After clicking the map",
+    ),
+];
+
 const SECTIONS: &[(&str, &[Shortcut])] = &[
     ("General", GENERAL),
+    ("Go To", GO_TO),
     ("Selection", SELECTION),
+    ("Timeline", TIMELINE),
+    ("Map", MAP),
     ("Viewer", LIGHTBOX),
     ("Video", VIDEO),
 ];

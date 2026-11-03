@@ -180,6 +180,55 @@ pub fn connect(ui: &Rc<LibraryWindowUi>) {
     on_click(&controls.area, ui, show_area);
     on_click(&controls.locate, ui, locate_me);
     install_map_actions(ui);
+    connect_keys(ui);
+}
+
+/// Plus and minus zoom, brackets rotate, N points north, and Ctrl+L finds you, while a map shows.
+fn connect_keys(ui: &Rc<LibraryWindowUi>) {
+    let keys = gtk::EventControllerKey::new();
+    let weak = Rc::downgrade(ui);
+    keys.connect_key_pressed(move |_, keyval, _, mods| {
+        let handled = weak.upgrade().is_some_and(|ui| {
+            ui.map.root.is_mapped()
+                && crate::library::controls::no_dialog_open(&ui)
+                && map_key(&ui, keyval, mods)
+        });
+        if handled {
+            glib::Propagation::Stop
+        } else {
+            glib::Propagation::Proceed
+        }
+    });
+    ui.window.add_controller(keys);
+}
+
+fn map_key(ui: &Rc<LibraryWindowUi>, keyval: gtk::gdk::Key, mods: gtk::gdk::ModifierType) -> bool {
+    use gtk::gdk::{Key, ModifierType};
+    if mods.intersects(ModifierType::ALT_MASK | ModifierType::SUPER_MASK) {
+        return false;
+    }
+    let ctrl = mods.contains(ModifierType::CONTROL_MASK);
+    match (ctrl, keyval.to_lower()) {
+        (true, Key::l) if ui.map.controls.locate.is_sensitive() => locate_me(ui),
+        (true, Key::l) => {}
+        (false, Key::plus | Key::equal | Key::KP_Add) => zoom(ui, true),
+        (false, Key::minus | Key::KP_Subtract) => zoom(ui, false),
+        (false, Key::bracketleft) => camera::rotate_by(&ui.map.map, -ROTATE_STEP),
+        (false, Key::bracketright) => camera::rotate_by(&ui.map.map, ROTATE_STEP),
+        (false, Key::n) => camera::reset_north(&ui.map.map),
+        _ => return false,
+    }
+    true
+}
+
+fn zoom(ui: &LibraryWindowUi, closer: bool) {
+    if let Some(map) = ui.map.map.map() {
+        if closer {
+            map.zoom_in();
+        } else {
+            map.zoom_out();
+        }
+    }
 }
 
 fn on_click(button: &gtk::Button, ui: &Rc<LibraryWindowUi>, action: fn(&Rc<LibraryWindowUi>)) {

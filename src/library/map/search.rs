@@ -92,7 +92,19 @@ pub fn searcher(ui: &LibraryWindowUi) -> Rc<PlaceSearch> {
         .clone()
 }
 
+/// Ctrl+F jumps to the field while a map is on screen, and selects what is there.
+fn focus_field(ui: &Rc<LibraryWindowUi>) -> bool {
+    let entry = &ui.map.search.entry;
+    if !entry.is_mapped() || !crate::library::controls::no_dialog_open(ui) {
+        return false;
+    }
+    entry.grab_focus();
+    entry.select_region(0, -1);
+    true
+}
+
 pub fn connect(ui: &Rc<LibraryWindowUi>) {
+    crate::library::controls::add_shortcut(ui, "<Control>f", focus_field);
     let search = &ui.map.search;
     let weak = Rc::downgrade(ui);
     search.entry.connect_search_changed(move |entry| {
@@ -165,6 +177,9 @@ fn choose(ui: &Rc<LibraryWindowUi>, index: usize) {
         .pin_layer
         .add_marker(&super::markers::searched(place.point, &place.name));
     place_search::fly_to(&ui.map.map, &place);
+    if let Some(map) = ui.map.map.map() {
+        map.grab_focus();
+    }
 }
 
 impl MapSearch {

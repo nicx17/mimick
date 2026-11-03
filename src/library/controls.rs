@@ -24,6 +24,8 @@ pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
     connect_window_actions(&ui);
     connect_shortcuts_action(&ui);
     connect_navigation_controls(&ui);
+    connect_page_shortcuts(&ui);
+    connect_timeline_keys(&ui);
     connect_sort_controls(&ui);
     connect_source_controls(&ui);
 }
@@ -118,7 +120,7 @@ fn connect_navigation_controls(ui: &Rc<LibraryWindowUi>) {
     ui.window.add_controller(f5_controller);
 }
 
-type NavAction = fn(&Rc<LibraryWindowUi>) -> bool;
+pub(super) type NavAction = fn(&Rc<LibraryWindowUi>) -> bool;
 
 fn connect_back_controls(ui: &Rc<LibraryWindowUi>) {
     ui.back_button.connect_clicked(clone!(
@@ -152,7 +154,11 @@ fn add_mouse_button(ui: &Rc<LibraryWindowUi>, button: u32, action: NavAction) {
     ui.window.add_controller(gesture);
 }
 
-fn add_shortcut(ui: &Rc<LibraryWindowUi>, trigger: &str, action: NavAction) {
+pub(super) fn add_shortcut(
+    ui: &Rc<LibraryWindowUi>,
+    trigger: &str,
+    action: impl Fn(&Rc<LibraryWindowUi>) -> bool + 'static,
+) {
     let shortcut = gtk::Shortcut::builder()
         .trigger(&gtk::ShortcutTrigger::parse_string(trigger).expect("valid shortcut"))
         .action(&gtk::CallbackAction::new(clone!(
@@ -170,6 +176,96 @@ fn add_shortcut(ui: &Rc<LibraryWindowUi>, trigger: &str, action: NavAction) {
     let controller = gtk::ShortcutController::new();
     controller.add_shortcut(shortcut);
     ui.window.add_controller(controller);
+}
+
+/// Sidebar pages for Ctrl+1 to Ctrl+9; Search has Ctrl+K.
+const PAGE_KEYS: [&str; 9] = [
+    "photos",
+    "explore",
+    "map",
+    "people",
+    "favorites",
+    "archive",
+    "trash",
+    "albums",
+    "sharing",
+];
+
+fn connect_page_shortcuts(ui: &Rc<LibraryWindowUi>) {
+    add_shortcut(ui, "<Control>k", open_search);
+    add_shortcut(ui, "<Control>a", select_all);
+    for (number, key) in (1..).zip(PAGE_KEYS) {
+        add_shortcut(ui, &format!("<Control>{number}"), move |ui| {
+            go_to_page(ui, key)
+        });
+    }
+}
+
+/// New shortcuts leave the page behind an open dialog alone.
+pub(super) fn no_dialog_open(ui: &LibraryWindowUi) -> bool {
+    ui.window.visible_dialog().is_none()
+}
+
+/// Only while the library itself is showing, not the lightbox over it.
+fn go_to_page(ui: &Rc<LibraryWindowUi>, key: &str) -> bool {
+    let Some(location) = navigation::location_for_key(key) else {
+        return false;
+    };
+    let shown = ui.content_stack.is_mapped() && no_dialog_open(ui);
+    if !shown || !super::features::is_available(&ui.features.get(), &location) {
+        return false;
+    }
+    navigation::navigate(ui, location);
+    true
+}
+
+fn open_search(ui: &Rc<LibraryWindowUi>) -> bool {
+    let opened = go_to_page(ui, "search");
+    if opened {
+        ui.search_view.search_entry.grab_focus();
+    }
+    opened
+}
+
+fn select_all(ui: &Rc<LibraryWindowUi>) -> bool {
+    if !ui.grid.canvas.is_mapped() || ui.grid.model.n_items() == 0 || !no_dialog_open(ui) {
+        return false;
+    }
+    ui.select_toggle.set_active(true);
+    ui.grid.selection.select_all();
+    true
+}
+
+/// D, M, and Y step Photos to the next day, month, or year; with Shift, the previous one.
+fn connect_timeline_keys(ui: &Rc<LibraryWindowUi>) {
+    let keys = gtk::EventControllerKey::new();
+    keys.connect_key_pressed(clone!(
+        #[strong]
+        ui,
+        move |_, keyval, _, mods| {
+            let held = gtk::gdk::ModifierType::CONTROL_MASK
+                | gtk::gdk::ModifierType::ALT_MASK
+                | gtk::gdk::ModifierType::SUPER_MASK;
+            let step =
+                timeline_step(keyval).filter(|_| !mods.intersects(held) && no_dialog_open(&ui));
+            let forward = !mods.contains(gtk::gdk::ModifierType::SHIFT_MASK);
+            match step {
+                Some(step) if super::timeline::jump(&ui, step, forward) => glib::Propagation::Stop,
+                _ => glib::Propagation::Proceed,
+            }
+        }
+    ));
+    ui.window.add_controller(keys);
+}
+
+fn timeline_step(keyval: gtk::gdk::Key) -> Option<super::timeline::nav::Step> {
+    use super::timeline::nav::Step;
+    match keyval.to_lower() {
+        gtk::gdk::Key::d => Some(Step::Day),
+        gtk::gdk::Key::m => Some(Step::Month),
+        gtk::gdk::Key::y => Some(Step::Year),
+        _ => None,
+    }
 }
 
 fn connect_swipe_back(ui: &Rc<LibraryWindowUi>) {
