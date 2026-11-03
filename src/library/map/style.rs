@@ -378,10 +378,12 @@ mod tests {
     #[test]
     fn every_bundled_theme_builds_a_renderer() {
         gio::resources_register_include!("mimick.gresource").unwrap();
+        let labels = MapStyle::ALL.into_iter().filter_map(MapStyle::labels);
         let themes = MapStyle::ALL
             .into_iter()
             .filter_map(MapStyle::themes)
-            .flat_map(|(light, dark)| [light, dark]);
+            .flat_map(|(light, dark)| [light, dark])
+            .chain(labels.map(str::to_string));
         for theme in themes {
             let path = bundled_path(&theme);
             let mut style = bundled_style(&path).unwrap();

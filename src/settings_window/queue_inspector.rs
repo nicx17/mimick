@@ -310,7 +310,12 @@ pub(super) fn show_about_dialog(parent: &impl gtk::prelude::IsA<gtk::Widget>) {
         &[
             "OpenStreetMap contributors https://www.openstreetmap.org/copyright",
             "VersaTiles https://versatiles.org",
+            "VersaTiles satellite imagery sources https://versatiles.org/sources/",
         ],
+    );
+    about.add_acknowledgement_section(
+        Some("Place Search"),
+        &["Photon by komoot, Apache License 2.0 https://github.com/komoot/photon"],
     );
     about.add_acknowledgement_section(Some("Special Thanks"), &["Immich https://immich.app"]);
     about.add_acknowledgement_section(

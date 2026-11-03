@@ -97,8 +97,9 @@ pub(crate) struct DetailsPane {
     pub(super) pane: gtk::ScrolledWindow,
     pub(super) filename: gtk::Label,
     pub(super) summary: gtk::Label,
+    pub(super) created: gtk::Label,
+    pub(super) description: gtk::Box,
     pub(super) edit_btn: gtk::Button,
-    pub(super) location_btn: gtk::Button,
     pub(super) album_btn: gtk::Button,
     pub(super) rating: rating::RatingSection,
     pub(super) people: people::PeopleSection,
@@ -328,22 +329,35 @@ pub(crate) fn build_details_pane() -> DetailsPane {
         .margin_end(10)
         .build();
     let pane = details_scroller(&inner);
-    let (filename, summary, edit_btn, location_btn, album_btn) = build_detail_actions(&inner);
-    let (loading, exif) = build_exif_area(&inner);
+    let (filename, summary, created, edit_btn, album_btn) = build_detail_actions(&inner);
+    let (loading, exif) = build_exif_area();
+    let description = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .visible(false)
+        .build();
     let rating = rating::RatingSection::new();
     let people = people::PeopleSection::new();
     let tags = TagSection::new();
     let albums = albums::AlbumsSection::new();
-    inner.append(&rating.root);
-    inner.append(&people.root);
-    inner.append(&tags.root);
-    inner.append(&albums.root);
+    let sections: [&gtk::Widget; 7] = [
+        loading.upcast_ref(),
+        description.upcast_ref(),
+        rating.root.upcast_ref(),
+        people.root.upcast_ref(),
+        exif.upcast_ref(),
+        albums.root.upcast_ref(),
+        tags.root.upcast_ref(),
+    ];
+    for section in sections {
+        inner.append(section);
+    }
     DetailsPane {
         pane,
         filename,
         summary,
+        created,
+        description,
         edit_btn,
-        location_btn,
         album_btn,
         rating,
         people,
@@ -356,18 +370,17 @@ pub(crate) fn build_details_pane() -> DetailsPane {
 
 fn build_detail_actions(
     inner: &gtk::Box,
-) -> (
-    gtk::Label,
-    gtk::Label,
-    gtk::Button,
-    gtk::Button,
-    gtk::Button,
-) {
+) -> (gtk::Label, gtk::Label, gtk::Label, gtk::Button, gtk::Button) {
     let filename = details_text_label();
     filename.add_css_class("title-3");
     let summary = details_text_label();
+    let created = details_text_label();
+    let facts = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .build();
+    facts.append(&summary);
+    facts.append(&created);
     let edit_btn = gtk::Button::builder().label("Edit Info…").build();
-    let location_btn = gtk::Button::builder().label("Set Location…").build();
     let album_btn = gtk::Button::builder().label("Add to Album…").build();
     let edit_row = libadwaita::WrapBox::builder()
         .child_spacing(6)
@@ -375,15 +388,14 @@ fn build_detail_actions(
         .halign(gtk::Align::Start)
         .build();
     edit_row.append(&edit_btn);
-    edit_row.append(&location_btn);
     edit_row.append(&album_btn);
     inner.append(&filename);
-    inner.append(&summary);
+    inner.append(&facts);
     inner.append(&edit_row);
-    (filename, summary, edit_btn, location_btn, album_btn)
+    (filename, summary, created, edit_btn, album_btn)
 }
 
-fn build_exif_area(inner: &gtk::Box) -> (gtk::Label, gtk::Box) {
+fn build_exif_area() -> (gtk::Label, gtk::Box) {
     let loading = gtk::Label::builder()
         .xalign(0.0)
         .label("Loading details…")
@@ -394,8 +406,6 @@ fn build_exif_area(inner: &gtk::Box) -> (gtk::Label, gtk::Box) {
         .spacing(4)
         .visible(false)
         .build();
-    inner.append(&loading);
-    inner.append(&exif);
     (loading, exif)
 }
 

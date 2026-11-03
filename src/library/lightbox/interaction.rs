@@ -318,7 +318,6 @@ impl Lightbox {
         self.on_click(&self.actions.favorite, |lb| lb.toggle_current_favorite());
         self.on_click(&self.actions.archive, |lb| lb.toggle_current_archive());
         self.on_click(&self.details.edit_btn, |lb| lb.edit_current());
-        self.on_click(&self.details.location_btn, |lb| lb.set_location_current());
         self.on_click(&self.details.album_btn, |lb| lb.add_current_to_album());
         let lb = Rc::downgrade(self);
         self.details.tags.bind(
@@ -398,6 +397,23 @@ impl Lightbox {
             self.pos.set(n - 1);
         }
         self.render();
+    }
+
+    /// Stands in for an empty description on the user's own photos and opens Edit Info.
+    fn add_description_row(self: &Rc<Self>) -> libadwaita::ActionRow {
+        let row = libadwaita::ActionRow::builder()
+            .title("Add a description")
+            .activatable(true)
+            .css_classes(["dim-label"])
+            .build();
+        row.add_suffix(&gtk::Image::from_icon_name("document-edit-symbolic"));
+        let weak = Rc::downgrade(self);
+        row.connect_activated(move |_| {
+            if let Some(lb) = weak.upgrade() {
+                lb.edit_current();
+            }
+        });
+        row
     }
 
     fn edit_current(self: &Rc<Self>) {

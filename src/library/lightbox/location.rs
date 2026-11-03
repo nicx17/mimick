@@ -24,6 +24,23 @@ impl Lightbox {
         );
     }
 
+    /// The pen on the Coordinates row, shown on the user's own photos.
+    pub(super) fn set_location_button(self: &Rc<Self>) -> gtk::Button {
+        let button = gtk::Button::builder()
+            .icon_name("document-edit-symbolic")
+            .tooltip_text("Set location")
+            .valign(gtk::Align::Center)
+            .css_classes(["flat"])
+            .build();
+        let weak = Rc::downgrade(self);
+        button.connect_clicked(move |_| {
+            if let Some(lb) = weak.upgrade() {
+                lb.set_location_current();
+            }
+        });
+        button
+    }
+
     /// Mini map under the location rows when the asset has GPS coordinates.
     pub(super) fn show_location_map(
         &self,

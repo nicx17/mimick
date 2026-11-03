@@ -118,6 +118,61 @@ impl ImmichApiClient {
             .map(|bytes| bytes.to_vec())
             .map_err(|err| err.to_string())
     }
+
+    /// GET a public map tile, revalidating a cached copy when its `etag` is given.
+    pub async fn fetch_map_tile(&self, url: &str, etag: Option<&str>) -> Result<TileFetch, String> {
+        let mut request = self
+            .client
+            .get(url)
+            .header(reqwest::header::USER_AGENT, MAP_USER_AGENT)
+            .timeout(Duration::from_secs(15));
+        if let Some(etag) = etag {
+            request = request.header(reqwest::header::IF_NONE_MATCH, etag);
+        }
+        let resp = request.send().await.map_err(|err| err.to_string())?;
+        let headers = resp.headers();
+        match resp.status() {
+            reqwest::StatusCode::NOT_MODIFIED => return Ok(TileFetch::Unchanged),
+            reqwest::StatusCode::NOT_FOUND => return Ok(TileFetch::Missing),
+            reqwest::StatusCode::TOO_MANY_REQUESTS => {
+                let wait = header_text(headers, reqwest::header::RETRY_AFTER);
+                return Ok(TileFetch::RetryAfter(retry_after(wait)));
+            }
+            status if !status.is_success() => return Err(format!("{url}: HTTP {status}")),
+            _ => {}
+        }
+        let etag = header_text(headers, reqwest::header::ETAG).map(str::to_owned);
+        let bytes = resp.bytes().await.map_err(|err| err.to_string())?;
+        Ok(TileFetch::Found {
+            bytes: bytes.to_vec(),
+            etag,
+        })
+    }
+}
+
+/// A tile server's answer for one tile.
+#[derive(Debug, PartialEq, Eq)]
+pub enum TileFetch {
+    Found {
+        bytes: Vec<u8>,
+        etag: Option<String>,
+    },
+    Unchanged,
+    Missing,
+    RetryAfter(Duration),
+}
+
+fn header_text(
+    headers: &reqwest::header::HeaderMap,
+    name: reqwest::header::HeaderName,
+) -> Option<&str> {
+    headers.get(name).and_then(|value| value.to_str().ok())
+}
+
+/// The `Retry-After` delay in seconds; an HTTP date or a missing header waits a minute.
+pub(super) fn retry_after(value: Option<&str>) -> Duration {
+    let seconds = value.and_then(|value| value.trim().parse().ok());
+    Duration::from_secs(seconds.unwrap_or(60))
 }
 
 /// Assets that loaded; an error only when nothing did.
@@ -151,6 +206,16 @@ mod tests {
             "type": "IMAGE"
         }))
         .unwrap()
+    }
+
+    #[test]
+    fn retry_after_reads_seconds_and_defaults_to_a_minute() {
+        assert_eq!(retry_after(Some(" 30 ")), Duration::from_secs(30));
+        assert_eq!(
+            retry_after(Some("Wed, 21 Oct 2026 07:28:00 GMT")),
+            Duration::from_secs(60)
+        );
+        assert_eq!(retry_after(None), Duration::from_secs(60));
     }
 
     #[test]

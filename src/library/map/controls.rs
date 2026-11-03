@@ -132,7 +132,10 @@ fn style_menu() -> gio::Menu {
     let palettes = style_items(&MapStyle::PALETTES);
     palettes.append_submenu(Some("More Styles"), &style_items(&MapStyle::LOOKALIKES));
     menu.append_section(None, &palettes);
-    menu.append_section(None, &style_items(&[MapStyle::OpenStreetMap]));
+    menu.append_section(
+        None,
+        &style_items(&[MapStyle::Satellite, MapStyle::OpenStreetMap]),
+    );
     menu.append_section(Some("Appearance"), &appearance_items());
     menu
 }

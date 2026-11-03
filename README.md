@@ -141,7 +141,8 @@ Pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for commit and
 ## Credits
 
 - **Icon design:** illustration by [Round Icons](https://unsplash.com/illustrations/a-white-and-orange-flower-on-a-white-background-IkQ_WrJzZOM) on Unsplash.
-- **Map data and styles:** © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) and [VersaTiles](https://versatiles.org).
+- **Map data and styles:** © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) and [VersaTiles](https://versatiles.org), with satellite imagery from the [VersaTiles sources](https://versatiles.org/sources/).
+- **Place search:** [Photon](https://github.com/komoot/photon) by komoot, licensed under the [Apache License 2.0](https://github.com/komoot/photon/blob/master/LICENSE), searching OpenStreetMap data. Map searches are sent to the public server at [photon.komoot.io](https://photon.komoot.io).
 - **Special thanks:** [Immich](https://immich.app).
 - **Built with:** [GTK](https://www.gtk.org), [libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/), [libshumate](https://gitlab.gnome.org/GNOME/libshumate), [GStreamer](https://gstreamer.freedesktop.org), [libheif](https://github.com/strukturag/libheif), [LibRaw](https://www.libraw.org), [libjpeg-turbo](https://libjpeg-turbo.org), [libwebp](https://chromium.googlesource.com/webm/libwebp), and [OpenJPEG](https://www.openjpeg.org).
 

@@ -1,4 +1,5 @@
-//! Marker widgets for the Map page: count bubbles, photo thumbnails, and the "you are here" dot.
+//! Marker widgets for the Map page: count bubbles, photo thumbnails, the "you are here" dot,
+//! and the searched place's pin.
 
 use std::sync::Arc;
 
@@ -12,6 +13,9 @@ use super::cluster::{self, Cluster};
 use super::coords::GeoPoint;
 
 const PHOTO_PX: i32 = 48;
+const PIN_PX: i32 = 32;
+/// Where the pin icon's tip sits, as a share of its size.
+const PIN_TIP: (f64, f64) = (0.5, 15.0 / 16.0);
 
 /// The photos a marker stands for, without holding a whole zoom level for a single photo.
 #[derive(Clone)]
@@ -86,6 +90,21 @@ pub fn here(point: GeoPoint) -> shumate::Marker {
         .tooltip_text("You are here")
         .build();
     let marker = shumate::Marker::builder().child(&dot).build();
+    marker.set_location(point.lat, point.lon);
+    marker
+}
+
+/// Red pin for a searched place, with its tip on the spot.
+pub fn searched(point: GeoPoint, name: &str) -> shumate::Marker {
+    let pin = gtk::Image::builder()
+        .icon_name("mark-location-symbolic")
+        .pixel_size(PIN_PX)
+        .tooltip_text(name)
+        .css_classes(["mimick-map-searched"])
+        .build();
+    let marker = shumate::Marker::builder().child(&pin).build();
+    let size = f64::from(PIN_PX);
+    marker.set_hotspot(size * PIN_TIP.0, size * PIN_TIP.1);
     marker.set_location(point.lat, point.lon);
     marker
 }

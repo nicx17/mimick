@@ -92,6 +92,8 @@
           compressed="true">map-styles/protostar.json</file>
     <file alias="protozoa.json"
           compressed="true">map-styles/protozoa.json</file>
+    <file alias="satellite-labels.json"
+          compressed="true">map-styles/satellite-labels.json</file>
     <file alias="toner-dark.json"
           compressed="true">map-styles/toner-dark.json</file>
     <file alias="toner.json"

@@ -2,6 +2,7 @@
 
 use std::cell::{Cell, OnceCell, RefCell};
 use std::rc::Rc;
+use std::sync::Arc;
 
 use glib::prelude::*;
 use gtk::prelude::*;
@@ -22,6 +23,7 @@ const KEPT_STYLES: usize = 3;
 struct Sources {
     light: shumate::MapSource,
     dark: shumate::MapSource,
+    labels: Option<shumate::MapSource>,
 }
 
 impl Sources {
@@ -29,12 +31,23 @@ impl Sources {
         Self {
             light: source.clone(),
             dark: source,
+            labels: None,
         }
     }
 
     fn raster() -> Self {
         Self::single(raster())
     }
+}
+
+struct Shown {
+    base: shumate::MapSource,
+    labels: Option<shumate::MapSource>,
+}
+
+struct Attached {
+    map: glib::WeakRef<shumate::SimpleMap>,
+    labels: Option<shumate::MapLayer>,
 }
 
 /// Loads the chosen style once and keeps attached maps on its light or dark variant.
@@ -46,7 +59,7 @@ pub struct Tiles {
     loading: Cell<Option<MapStyle>>,
     /// The server was unreachable, so the next attach asks it for its styles again.
     retry: Cell<bool>,
-    maps: RefCell<Vec<glib::WeakRef<shumate::SimpleMap>>>,
+    maps: RefCell<Vec<Attached>>,
     /// Projection for maps still waiting for their style, so markers can be placed.
     placeholder: OnceCell<shumate::MapSource>,
 }
@@ -87,14 +100,20 @@ impl Tiles {
 
     pub fn attach(self: &Rc<Self>, ui: &Rc<LibraryWindowUi>, map: &shumate::SimpleMap) {
         let mut maps = self.maps.borrow_mut();
-        maps.retain(|weak| weak.upgrade().is_some());
-        if !maps.iter().any(|weak| weak.upgrade().as_ref() == Some(map)) {
-            maps.push(map.downgrade());
+        maps.retain(|attached| attached.map.upgrade().is_some());
+        if !maps
+            .iter()
+            .any(|attached| attached.map.upgrade().as_ref() == Some(map))
+        {
+            maps.push(Attached {
+                map: map.downgrade(),
+                labels: None,
+            });
         }
         drop(maps);
         show_license_links(map);
         match self.current() {
-            Some(source) => map.set_map_source(Some(&source)),
+            Some(_) => self.apply(),
             None => self.reference_placeholder(map),
         }
         self.ensure_loaded(ui);
@@ -117,36 +136,36 @@ impl Tiles {
         self.ensure_loaded(ui);
     }
 
-    /// Point every live map at the current style's light or dark source.
+    /// Point every live map at the current style's light or dark source and its labels.
     pub fn apply(&self) {
-        let Some(source) = self.current() else {
+        let Some(shown) = self.current() else {
             return;
         };
-        for map in self.live_maps() {
-            map.set_map_source(Some(&source));
+        for attached in self.maps.borrow_mut().iter_mut() {
+            if let Some(map) = attached.map.upgrade() {
+                map.set_map_source(Some(&shown.base));
+                attached.labels = show_labels(&map, attached.labels.take(), shown.labels.as_ref());
+            }
         }
     }
 
     /// Request tiles that failed to download again, e.g. after reconnecting.
     pub fn retry_failed(&self) {
-        for layer in self
-            .live_maps()
-            .iter()
-            .filter_map(|map| map.base_map_layer())
-        {
-            layer.retry_failed();
+        for attached in self.maps.borrow().iter() {
+            let Some(map) = attached.map.upgrade() else {
+                continue;
+            };
+            for layer in map
+                .base_map_layer()
+                .into_iter()
+                .chain(attached.labels.clone())
+            {
+                layer.retry_failed();
+            }
         }
     }
 
-    fn live_maps(&self) -> Vec<shumate::SimpleMap> {
-        self.maps
-            .borrow()
-            .iter()
-            .filter_map(|weak| weak.upgrade())
-            .collect()
-    }
-
-    fn current(&self) -> Option<shumate::MapSource> {
+    fn current(&self) -> Option<Shown> {
         let system_dark = libadwaita::StyleManager::default().is_dark();
         let dark = self.appearance.get().is_dark(system_dark);
         let style = self.style.get();
@@ -154,7 +173,10 @@ impl Tiles {
             .borrow()
             .iter()
             .find(|(loaded, _)| *loaded == style)
-            .map(|(_, sources)| if dark { &sources.dark } else { &sources.light }.clone())
+            .map(|(_, sources)| Shown {
+                base: if dark { &sources.dark } else { &sources.light }.clone(),
+                labels: sources.labels.clone(),
+            })
     }
 
     fn needs_load(&self) -> bool {
@@ -194,9 +216,14 @@ fn remember<T>(loaded: &mut Vec<(MapStyle, T)>, style: MapStyle, value: T) {
 }
 
 /// The style's light and dark sources, and whether the server answered when asked.
-async fn load_sources(api: &ImmichApiClient, style: MapStyle) -> (Sources, bool) {
+async fn load_sources(api: &Arc<ImmichApiClient>, style: MapStyle) -> (Sources, bool) {
     if style == MapStyle::Immich {
         return server_sources(api).await;
+    }
+    if style == MapStyle::Satellite {
+        let mut sources = Sources::single(super::satellite::source(api));
+        sources.labels = labels_source(api, style).await;
+        return (sources, true);
     }
     let Some((light, dark)) = style.themes() else {
         return (Sources::raster(), true);
@@ -207,7 +234,25 @@ async fn load_sources(api: &ImmichApiClient, style: MapStyle) -> (Sources, bool)
     }
     let (light, dark) =
         futures_util::join!(bundled_source(api, &light), bundled_source(api, &dark));
-    (Sources { light, dark }, true)
+    (
+        Sources {
+            light,
+            dark,
+            labels: None,
+        },
+        true,
+    )
+}
+
+async fn labels_source(api: &ImmichApiClient, style: MapStyle) -> Option<shumate::MapSource> {
+    let theme = style.labels()?;
+    match super::style::load_bundled_renderer(api, theme).await {
+        Ok(renderer) => Some(renderer.upcast()),
+        Err(err) => {
+            log::warn!("Map labels {theme} unavailable: {err}");
+            None
+        }
+    }
 }
 
 async fn bundled_source(api: &ImmichApiClient, theme: &str) -> shumate::MapSource {
@@ -237,7 +282,14 @@ async fn server_sources(api: &ImmichApiClient) -> (Sources, bool) {
             style_source(api, urls.dark.as_deref())
         )
     };
-    (Sources { light, dark }, true)
+    (
+        Sources {
+            light,
+            dark,
+            labels: None,
+        },
+        true,
+    )
 }
 
 async fn style_source(api: &ImmichApiClient, url: Option<&str>) -> shumate::MapSource {
@@ -259,6 +311,44 @@ fn raster() -> shumate::MapSource {
         .unwrap_or_else(|| shumate::RasterRenderer::from_url(OSM_TILE_URL).upcast());
     source.set_license(OSM_CREDIT);
     source
+}
+
+fn show_labels(
+    map: &shumate::SimpleMap,
+    layer: Option<shumate::MapLayer>,
+    source: Option<&shumate::MapSource>,
+) -> Option<shumate::MapLayer> {
+    if layer
+        .as_ref()
+        .and_then(shumate::MapLayer::map_source)
+        .as_ref()
+        == source
+    {
+        return layer;
+    }
+    if let Some(layer) = layer {
+        remove_labels(map, &layer);
+    }
+    add_labels(map, source?)
+}
+
+fn remove_labels(map: &shumate::SimpleMap, layer: &shumate::MapLayer) {
+    if let Some(inner) = map.map() {
+        inner.remove_layer(layer);
+    }
+    if let (Some(license), Some(source)) = (map.license(), layer.map_source()) {
+        license.remove_map_source(&source);
+    }
+}
+
+fn add_labels(map: &shumate::SimpleMap, source: &shumate::MapSource) -> Option<shumate::MapLayer> {
+    let layer = shumate::MapLayer::new(source, &map.viewport()?);
+    map.map()?
+        .insert_layer_above(&layer, map.base_map_layer().as_ref());
+    if let Some(license) = map.license() {
+        license.append_map_source(source);
+    }
+    Some(layer)
 }
 
 fn show_license_links(map: &shumate::SimpleMap) {

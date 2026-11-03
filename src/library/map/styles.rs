@@ -1,4 +1,4 @@
-//! Map styles to pick from: the server's own, bundled VersaTiles themes, or OpenStreetMap.
+//! Map styles to pick from: the server's own, bundled VersaTiles themes, satellite imagery, or OpenStreetMap.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MapStyle {
@@ -19,11 +19,12 @@ pub enum MapStyle {
     Macbob,
     Mactaylor,
     Bingo,
+    Satellite,
     OpenStreetMap,
 }
 
 impl MapStyle {
-    pub const ALL: [Self; 18] = [
+    pub const ALL: [Self; 19] = [
         Self::Immich,
         Self::Colorful,
         Self::Natural,
@@ -41,6 +42,7 @@ impl MapStyle {
         Self::Macbob,
         Self::Mactaylor,
         Self::Bingo,
+        Self::Satellite,
         Self::OpenStreetMap,
     ];
 
@@ -87,6 +89,7 @@ impl MapStyle {
             Self::Macbob => "macbob",
             Self::Mactaylor => "mactaylor",
             Self::Bingo => "bingo",
+            Self::Satellite => "satellite",
             Self::OpenStreetMap => "osm",
         }
     }
@@ -110,6 +113,7 @@ impl MapStyle {
             Self::Macbob => "Macbob",
             Self::Mactaylor => "Mactaylor",
             Self::Bingo => "Bingo",
+            Self::Satellite => "Satellite",
             Self::OpenStreetMap => "OpenStreetMap",
         }
     }
@@ -126,7 +130,7 @@ impl MapStyle {
     pub fn themes(self) -> Option<(String, String)> {
         let id = self.id();
         match self {
-            Self::Immich | Self::OpenStreetMap => None,
+            Self::Immich | Self::Satellite | Self::OpenStreetMap => None,
             Self::Colorful
             | Self::Natural
             | Self::Muted
@@ -137,6 +141,11 @@ impl MapStyle {
             | Self::Protostar => Some((id.to_string(), format!("{id}-dark"))),
             _ => Some((id.to_string(), id.to_string())),
         }
+    }
+
+    /// The bundled labels-only theme drawn over the style's imagery.
+    pub fn labels(self) -> Option<&'static str> {
+        (self == Self::Satellite).then_some("satellite-labels")
     }
 }
 
@@ -206,7 +215,7 @@ mod tests {
             assert_eq!(MapStyle::from_id(style.id()), style);
         }
         assert_eq!(MapStyle::from_id(""), MapStyle::Immich);
-        assert_eq!(MapStyle::from_id("satellite"), MapStyle::Immich);
+        assert_eq!(MapStyle::from_id("terrain"), MapStyle::Immich);
     }
 
     #[test]
@@ -216,6 +225,9 @@ mod tests {
         assert_eq!(pair(MapStyle::Googol), ("googol".into(), "googol".into()));
         assert_eq!(pair(MapStyle::Fnord), ("fnord".into(), "fnord".into()));
         assert_eq!(MapStyle::Immich.themes(), None);
+        assert_eq!(MapStyle::Satellite.themes(), None);
+        assert_eq!(MapStyle::Satellite.labels(), Some("satellite-labels"));
+        assert_eq!(MapStyle::Gray.labels(), None);
         assert_eq!(MapStyle::OpenStreetMap.themes(), None);
     }
 
@@ -225,7 +237,7 @@ mod tests {
             .into_iter()
             .chain(MapStyle::PALETTES)
             .chain(MapStyle::LOOKALIKES)
-            .chain([MapStyle::OpenStreetMap])
+            .chain([MapStyle::Satellite, MapStyle::OpenStreetMap])
             .collect();
         assert_eq!(grouped, MapStyle::ALL);
     }
