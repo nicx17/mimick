@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed switches not toggling when you clicked their knob. A click anywhere on a switch now toggles it.
 - Fixed the Colorful, Natural, Muted, Gray, and Toner map styles falling back to OpenStreetMap after VersaTiles changed its hosted styles. The VersaTiles styles now ship with Mimick, so changes on VersaTiles' side can't break them; their tiles still come from VersaTiles.
 - A server map style with more than one tile source now shows its main source instead of falling back to OpenStreetMap.
 - The Flatpak now ships the full third-party license texts, including those of the bundled libjpeg-turbo, libwebp, and LibRaw.

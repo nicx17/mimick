@@ -146,9 +146,9 @@ picture.mimick-thumbnail-square.mimick-thumbnail-error {
    Subtle scale-down on press for all interactive elements. The reduced-motion
    media query below removes these transitions and transforms on request.
 
-   Covers: header-bar buttons, dialog buttons, sidebar rows,
-   settings switch/action/spin rows, lightbox actions, grid tiles,
-   explore/album tiles, and any widget with .mimick-pressable.  */
+   Covers: header-bar buttons, dialog buttons, lightbox actions, grid tiles,
+   explore/album tiles, and any widget with .mimick-pressable. Activatable
+   rows only dim: scaling one slides its switch away mid-press.  */
 
 button,
 .mimick-pressable,
@@ -157,9 +157,12 @@ button,
 }
 
 button:active,
-.mimick-pressable:active,
-.activatable:active {
+.mimick-pressable:active {
     transform: scale(0.97);
+    opacity: 0.88;
+}
+
+.activatable:active {
     opacity: 0.88;
 }
 
@@ -531,7 +534,6 @@ button.mimick-minimap {
 
     button:active,
     .mimick-pressable:active,
-    .activatable:active,
     .mimick-cell:active,
     .mimick-explore-tile:active,
     .mimick-person-avatar:active {
