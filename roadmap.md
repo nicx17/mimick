@@ -90,6 +90,7 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - Place search on the Map page and in Set Location, powered by Photon
 - VersaTiles map styles ship with Mimick, so changes on VersaTiles' side can't break them
 - Linked map attribution, and credits for map data and libraries in the About dialog
+- Likes and comments on shared albums, in the album and the lightbox
 
 ---
 

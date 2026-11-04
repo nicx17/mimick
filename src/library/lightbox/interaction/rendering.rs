@@ -19,7 +19,9 @@ use super::super::strip::Slot;
 use super::super::{AssetInfo, Lightbox, LoadResult, PictureLoad};
 use super::super::{apply_lightbox_zoom, lightbox_title_cap, rating};
 use crate::api_client::ThumbnailSize;
-use crate::library::{LOCAL_ID_PREFIX, load_texture_oriented, timeline, trash_view};
+use crate::library::{
+    LOCAL_ID_PREFIX, album_activity, album_assets, load_texture_oriented, timeline, trash_view,
+};
 
 impl Lightbox {
     pub(in crate::library::lightbox) fn render(self: &Rc<Self>) {
@@ -99,6 +101,7 @@ impl Lightbox {
         self.details.people.clear();
         self.details.tags.clear();
         self.details.albums.clear();
+        self.details.activity.clear();
     }
 
     fn start_picture_load(self: &Rc<Self>, info: &AssetInfo) {
@@ -573,6 +576,7 @@ impl Lightbox {
     fn load_remote_details(self: &Rc<Self>, pos: u32, asset_id: String, mine: bool) {
         if !asset_id.starts_with(LOCAL_ID_PREFIX) && !trash_view::is_trash_active(&self.ui) {
             self.load_albums(pos, asset_id.clone());
+            self.show_activity(&asset_id);
         }
         let lb = self.clone();
         glib::MainContext::default().spawn_local(async move {
@@ -614,6 +618,13 @@ impl Lightbox {
                 lb.details.exif.set_visible(true);
             }
         });
+    }
+
+    fn show_activity(&self, asset_id: &str) {
+        let album = album_assets::current_album(&self.ui).filter(album_activity::has_activity);
+        if let Some(album) = album {
+            self.details.activity.show(&self.ui, &album, asset_id);
+        }
     }
 
     fn load_albums(self: &Rc<Self>, pos: u32, asset_id: String) {

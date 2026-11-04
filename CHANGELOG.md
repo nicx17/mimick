@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an **Appearance** choice to the map's style menu: follow the system style, or keep maps light or dark.
 - The map's attribution footer now links to its sources, such as OpenStreetMap's copyright page.
 - The About dialog now credits OpenStreetMap contributors, VersaTiles, Immich, and the libraries Mimick is built with.
+- Added likes and comments on shared albums. When **Comments and likes** is on in **Album Options**, the album's header shows a comment button with the number of likes and comments; it opens the album's activity, where you can like the album, comment, and delete your own likes and comments (album owners can delete anyone's). Photos opened from the album show their own likes and comments in an **Activity** section of the details pane.
 
 ### Changed
 

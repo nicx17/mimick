@@ -118,6 +118,11 @@ fn show_album(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, me: &str) {
     *header.count.borrow_mut() = Some(count_label(album.asset_count.into()));
     set_details(header, album_details(&album, me));
     set_description(header, Some(&album.description));
+    if super::super::album_activity::has_activity(&album) {
+        header
+            .actions
+            .append(&super::super::album_activity::header_button(ui, &album));
+    }
     if owns_album(&album, me) {
         add_menu(
             header,

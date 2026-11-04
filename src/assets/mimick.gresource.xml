@@ -28,6 +28,9 @@
     <file alias="scalable/actions/mimick-heart-outline-symbolic.svg"
           compressed="true"
           preprocess="xml-stripblanks">scalable/actions/mimick-heart-outline-symbolic.svg</file>
+    <file alias="scalable/actions/mimick-comment-symbolic.svg"
+          compressed="true"
+          preprocess="xml-stripblanks">scalable/actions/mimick-comment-symbolic.svg</file>
     <file alias="scalable/actions/mimick-archive-symbolic.svg"
           compressed="true"
           preprocess="xml-stripblanks">scalable/actions/mimick-archive-symbolic.svg</file>

@@ -24,8 +24,8 @@ mod places;
 mod tiles;
 pub use people::{populate_people, set_people_search, wire_people_filter};
 pub use places::{has_cached_places, populate_places, render_cached_places};
-use tiles::{explore_tile, format_relative_date};
-pub(super) use tiles::{person_tile, spawn_person_thumbnail};
+use tiles::explore_tile;
+pub(super) use tiles::{format_relative_date, person_tile, spawn_person_thumbnail};
 
 /// Contains references to individual grid widgets of the explore tab dashboard display.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

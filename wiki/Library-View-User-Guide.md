@@ -304,7 +304,7 @@ Click any asset in the grid to open it in the lightbox.
   - On narrow windows (phones) the ±10 s buttons are hidden to fit the bar (**J** / **L** still work), and swiping on a playing video moves to the previous or next asset.
   - **Open with…** in the action bar opens the video in another app you pick (remote videos download to the cache first).
   - Volume and mute are remembered between sessions. Zoom, resolution toggle, and download controls are hidden for videos.
-- EXIF metadata is fetched (including for local files) and displayed alongside the asset. The details pane lists, from the top: the filename with **Edit Info…** and **Add to Album…**, then **Description**, **Rating**, and **People**, then **Details** (date taken, dimensions, size), **Camera**, **Location**, **Appears In** (albums), and **Tags**, the same order as Immich. Sections with nothing to show are left out. Under the filename, the summary shows the file type, where the file is (on Immich, local, or both), and when it was created; **Created** is left out when **Details** shows the date the photo was taken. On your photos without a description, **Description** shows **Add a description**, which opens **Edit Info…**.
+- EXIF metadata is fetched (including for local files) and displayed alongside the asset. The details pane lists, from the top: the filename with **Edit Info…** and **Add to Album…**, then **Description**, **Rating**, and **People**, then **Details** (date taken, dimensions, size), **Camera**, **Location**, **Appears In** (albums), and **Tags**, the same order as Immich, and in shared albums with comments and likes on, **Activity** (see [Album Activity](#album-activity)). Sections with nothing to show are left out. Under the filename, the summary shows the file type, where the file is (on Immich, local, or both), and when it was created; **Created** is left out when **Details** shows the date the photo was taken. On your photos without a description, **Description** shows **Add a description**, which opens **Edit Info…**.
 - **Fullscreen** (header button or **F11**) shows the asset edge to edge on black. Move the pointer or tap to bring the header back (it hides again after 3 seconds); press **Esc**, **F11**, or the header button to leave. Left/Right and swipes still change assets.
 - **Download** saves the original file to the configured download folder.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
@@ -440,9 +440,18 @@ You can upload files directly to the library or to a specific album using the **
   - Subfolders of a watch folder set to **Default (Folder Name)** whose photos made this album get their own library-only watch folder entry, so the rest of the parent folder still makes albums from its folders.
   - Deleting waits while uploads are running, and while the Settings window is open (saving it would undo the folder changes). Requires `album.delete`.
 - **Leave album**: for an album someone shared with you, use **Leave Album…** in its header's **⋯** menu or right-click its tile on the Albums or Shared Albums page. Requires `albumUser.delete`.
-- **Album options**: in your album's **⋯** menu, **Options…** sets the **Display order** (newest or oldest first, which Mimick and Immich use when the album opens) and turns **Comments and likes** on or off for the Immich apps. Changes save immediately. Requires `album.update`.
+- **Album options**: in your album's **⋯** menu, **Options…** sets the **Display order** (newest or oldest first, which Mimick and Immich use when the album opens) and turns **Comments and likes** on or off (see [Album Activity](#album-activity)). Changes save immediately. Requires `album.update`.
 - **Download album**: the download button in the album's header, or **Download** on its tile, saves the whole album as `Album name.zip` in your download folder. Immich splits large albums (4 GiB by default, set in Immich's user settings), which download as `Album name (part 1 of 3).zip` and so on. Requires `asset.download`.
 - **Appears in**: the lightbox details pane lists the albums a photo is in; click one to open it. Requires `album.read`.
+
+### Album Activity
+
+Shared albums with **Comments and likes** turned on (in **Album Options**) have likes and comments, the same ones the Immich apps show:
+
+- **In the album**: the comment button in the album's header shows how many likes and comments the album and its photos have. Click it to see them all, oldest first; likes and comments on a photo show its thumbnail. The heart likes or unlikes the album, and the box at the bottom posts a comment (press Enter or click send).
+- **In the lightbox**: a photo opened from the album shows an **Activity** section at the bottom of the details pane with that photo's likes and comments, a heart to like it, and a comment box.
+- You can delete your own likes and comments with the trash button; the album's owner can delete anyone's.
+- Requires `activity.read` to see them and `activity.statistics` for the header count; liking and commenting need `activity.create`, and deleting `activity.delete`.
 
 ---
 
