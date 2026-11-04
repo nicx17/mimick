@@ -8,7 +8,7 @@ use libadwaita::prelude::*;
 use crate::api_client::{AlbumUpdate, LibraryAlbum, SortOrder};
 
 use super::LibraryWindowUi;
-use super::album_assets::showing_album;
+use super::album_assets::{refresh_albums, showing_album};
 
 const ORDERS: [SortOrder; 2] = [SortOrder::Desc, SortOrder::Asc];
 
@@ -98,11 +98,8 @@ fn after_order_saved(ui: &Rc<LibraryWindowUi>, album_id: &str, order: SortOrder)
     }
 }
 
-fn after_activity_saved(ui: &Rc<LibraryWindowUi>, album_id: &str, active: bool) {
-    ui.ctx
-        .library_state
-        .lock()
-        .set_album_activity(album_id, active);
+fn after_activity_saved(ui: &Rc<LibraryWindowUi>, album_id: &str) {
+    refresh_albums(ui);
     if showing_album(ui, album_id) {
         super::source_header::refresh(ui);
     }
@@ -136,7 +133,7 @@ fn connect_activity(
             match ui.ctx.api_client.update_album(&album_id, &update).await {
                 Ok(()) => {
                     saved.set(active);
-                    after_activity_saved(&ui, &album_id, active);
+                    after_activity_saved(&ui, &album_id);
                 }
                 Err(err) => {
                     row.set_active(saved.get());

@@ -241,12 +241,6 @@ impl LibraryState {
         }
     }
 
-    pub fn set_album_activity(&mut self, album_id: &str, enabled: bool) {
-        if let Some(album) = self.albums.iter_mut().find(|album| album.id == album_id) {
-            album.is_activity_enabled = enabled;
-        }
-    }
-
     pub fn switch_source(&mut self, source: LibrarySource) -> (u64, LibrarySource, u32) {
         if !source.is_search() {
             self.previous_non_search_source = source.clone();
@@ -527,8 +521,6 @@ mod tests {
             state.albums[0].order,
             Some(crate::api_client::SortOrder::Asc)
         );
-        state.set_album_activity("a1", true);
-        assert!(state.albums[0].is_activity_enabled);
     }
 
     #[test]

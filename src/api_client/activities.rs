@@ -34,20 +34,16 @@ fn activity_query(album_id: &str, asset_id: Option<&str>) -> String {
     }
 }
 
-fn create_body(
-    album_id: &str,
-    asset_id: Option<&str>,
-    kind: ActivityKind,
-    comment: Option<&str>,
-) -> serde_json::Value {
-    let mut body = serde_json::json!({ "albumId": album_id, "type": kind });
-    if let Some(asset_id) = asset_id {
-        body["assetId"] = asset_id.into();
-    }
-    if let Some(comment) = comment {
-        body["comment"] = comment.into();
-    }
-    body
+#[derive(Debug, serde::Serialize)]
+pub struct NewActivity<'a> {
+    #[serde(rename = "albumId")]
+    pub album_id: &'a str,
+    #[serde(rename = "assetId", skip_serializing_if = "Option::is_none")]
+    pub asset_id: Option<&'a str>,
+    #[serde(rename = "type")]
+    pub kind: ActivityKind,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub comment: Option<&'a str>,
 }
 
 impl ImmichApiClient {
@@ -74,14 +70,8 @@ impl ImmichApiClient {
         resp.json().await.map_err(|err| err.to_string())
     }
 
-    pub async fn add_activity(
-        &self,
-        album_id: &str,
-        asset_id: Option<&str>,
-        kind: ActivityKind,
-        comment: Option<&str>,
-    ) -> Result<Activity, String> {
-        let body = create_body(album_id, asset_id, kind, comment);
+    pub async fn add_activity(&self, activity: &NewActivity<'_>) -> Result<Activity, String> {
+        let body = serde_json::to_value(activity).map_err(|err| err.to_string())?;
         let resp = self
             .send_json(reqwest::Method::POST, "/api/activities", Some(body))
             .await?;
@@ -107,17 +97,25 @@ mod tests {
     }
 
     #[test]
-    fn like_body_has_no_comment() {
+    fn new_activity_leaves_out_missing_fields() {
+        let like = NewActivity {
+            album_id: "al",
+            asset_id: None,
+            kind: ActivityKind::Like,
+            comment: None,
+        };
         assert_eq!(
-            create_body("al", None, ActivityKind::Like, None),
+            serde_json::to_value(&like).unwrap(),
             serde_json::json!({ "albumId": "al", "type": "like" })
         );
-    }
-
-    #[test]
-    fn comment_body_targets_the_asset() {
+        let comment = NewActivity {
+            asset_id: Some("as"),
+            kind: ActivityKind::Comment,
+            comment: Some("Nice"),
+            ..like
+        };
         assert_eq!(
-            create_body("al", Some("as"), ActivityKind::Comment, Some("Nice")),
+            serde_json::to_value(&comment).unwrap(),
             serde_json::json!({
                 "albumId": "al",
                 "assetId": "as",
