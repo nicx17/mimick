@@ -13,11 +13,13 @@ use gtk::prelude::*;
 use crate::api_client::LibraryAlbum;
 use crate::app_context::AppContext;
 
+use super::context_menu::{Menu, connect_context_menu, menu_key};
+
 mod tile;
 pub(super) use tile::spawn_thumbnail;
 
 pub type AlbumClick = Rc<dyn Fn(&str, String)>;
-/// Right-click actions on the user's own album tiles.
+/// Context-menu actions on album tiles.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AlbumAction {
     /// Manage which users the album is shared with.
@@ -50,7 +52,7 @@ const SHARED_ALBUM_ACTIONS: &[(&str, AlbumAction)] = &[
 
 type TileMenu = (AlbumShare, &'static [(&'static str, AlbumAction)]);
 
-/// Runs a right-click action on an album tile.
+/// Runs a context-menu action on an album tile.
 pub type AlbumShare = Rc<dyn Fn(LibraryAlbum, AlbumAction)>;
 
 /// Sort modes available for the albums landing page.
@@ -302,22 +304,13 @@ fn render_albums(parts: &AlbumsViewParts) {
         owned = shared_by_you(owned);
     }
     let share = parts.cached_share.borrow().clone();
-    let menu = |actions| share.clone().map(|share| (share, actions));
-    insert_tiles(&parts.recent_grid, &recent, &ctx, &on_click, None);
-    insert_tiles(
-        &parts.owned_grid,
-        &owned,
-        &ctx,
-        &on_click,
-        menu(OWN_ALBUM_ACTIONS),
-    );
-    insert_tiles(
-        &parts.shared_grid,
-        &shared,
-        &ctx,
-        &on_click,
-        menu(SHARED_ALBUM_ACTIONS),
-    );
+    let menu = |album: &LibraryAlbum| {
+        let actions = tile_actions(album, &current_user)?;
+        share.clone().map(|share| (share, actions))
+    };
+    insert_tiles(&parts.recent_grid, &recent, &ctx, &on_click, &menu);
+    insert_tiles(&parts.owned_grid, &owned, &ctx, &on_click, &menu);
+    insert_tiles(&parts.shared_grid, &shared, &ctx, &on_click, &menu);
 
     parts.recent_section.set_visible(!recent.is_empty());
     parts.owned_section.set_visible(!owned.is_empty());
@@ -352,60 +345,77 @@ fn show_empty_state(parts: &AlbumsViewParts, visible: bool, user_unknown: bool) 
     parts.empty.set_visible(visible);
 }
 
-/// Add a tile per album; `menu` gives the tiles a right-click menu of those actions.
+/// Own-album actions, member actions, or none while the current user is unknown.
+fn tile_actions(
+    album: &LibraryAlbum,
+    current_user: &str,
+) -> Option<&'static [(&'static str, AlbumAction)]> {
+    if current_user.is_empty() {
+        None
+    } else if album.owner_id() == current_user {
+        Some(OWN_ALBUM_ACTIONS)
+    } else {
+        Some(SHARED_ALBUM_ACTIONS)
+    }
+}
+
+/// Add a tile per album, with the context menu `menu` picks for it.
 fn insert_tiles(
     grid: &gtk::FlowBox,
     albums: &[&LibraryAlbum],
     ctx: &Arc<AppContext>,
     on_click: &AlbumClick,
-    menu: Option<TileMenu>,
+    menu: &dyn Fn(&LibraryAlbum) -> Option<TileMenu>,
 ) {
     for album in albums {
         let tile = tile::album_tile(ctx.clone(), album, on_click.clone());
-        if let Some((share, actions)) = &menu {
-            attach_share_menu(&tile, album, share.clone(), actions);
+        if let Some((share, actions)) = menu(album) {
+            attach_tile_menu(&tile, album, share, actions);
         }
         grid.insert(&tile, -1);
     }
 }
 
-fn attach_share_menu(
+fn attach_tile_menu(
     tile: &gtk::Button,
     album: &LibraryAlbum,
     share: AlbumShare,
     actions: &'static [(&'static str, AlbumAction)],
 ) {
-    let click = gtk::GestureClick::builder()
-        .button(gtk::gdk::BUTTON_SECONDARY)
-        .build();
-    let (tile_ref, album) = (tile.clone(), album.clone());
-    click.connect_pressed(move |_, _, x, y| {
-        let popover = gtk::Popover::builder()
-            .has_arrow(true)
-            .autohide(true)
-            .build();
-        popover.set_parent(&tile_ref);
-        popover.set_pointing_to(Some(&gtk::gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
-        let menu = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .spacing(4)
-            .build();
-        for &(label, action) in actions {
-            let button = gtk::Button::builder()
-                .label(label)
-                .css_classes(["flat"])
-                .build();
-            let (share, album, popover_ref) = (share.clone(), album.clone(), popover.clone());
-            button.connect_clicked(move |_| {
-                popover_ref.popdown();
-                share(album.clone(), action);
-            });
-            menu.append(&button);
+    let (weak, album) = (tile.downgrade(), album.clone());
+    let open = Rc::new(move |x, y| {
+        if let Some(tile) = weak.upgrade() {
+            show_tile_menu(&tile, &album, &share, actions, x, y);
         }
-        popover.set_child(Some(&menu));
-        popover.popup();
     });
-    tile.add_controller(click);
+    let on_secondary = open.clone();
+    connect_context_menu(tile, move |x, y| on_secondary(x, y));
+    let weak = tile.downgrade();
+    tile.add_controller(menu_key(move || {
+        if let Some(tile) = weak.upgrade() {
+            open(
+                f64::from(tile.width()) / 2.0,
+                f64::from(tile.height()) / 2.0,
+            );
+        }
+    }));
+}
+
+fn show_tile_menu(
+    tile: &gtk::Button,
+    album: &LibraryAlbum,
+    share: &AlbumShare,
+    actions: &'static [(&'static str, AlbumAction)],
+    x: f64,
+    y: f64,
+) {
+    let menu = Menu::new(tile, x, y);
+    for &(label, action) in actions {
+        let destructive = matches!(action, AlbumAction::Delete | AlbumAction::Leave);
+        let (share, album) = (share.clone(), album.clone());
+        menu.add(label, destructive, move || share(album.clone(), action));
+    }
+    menu.popup();
 }
 
 /// Build a single category grid section with a text label and a flow box layout.
@@ -587,5 +597,13 @@ mod tests {
         }
         let (recent, _, _) = project_albums(&items, "me", "", AlbumsSort::Newest);
         assert_eq!(recent.len(), 8);
+    }
+
+    #[test]
+    fn tile_actions_follow_album_owner() {
+        let items = fixture();
+        assert_eq!(tile_actions(&items[0], "me"), Some(OWN_ALBUM_ACTIONS));
+        assert_eq!(tile_actions(&items[1], "me"), Some(SHARED_ALBUM_ACTIONS));
+        assert_eq!(tile_actions(&items[0], ""), None);
     }
 }

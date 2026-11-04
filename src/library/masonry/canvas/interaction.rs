@@ -5,12 +5,14 @@ use std::sync::Arc;
 use gtk::prelude::*;
 use gtk::subclass::prelude::ObjectSubclassIsExt;
 
+use super::keyboard::shift_focus;
 use super::{
     AssetContextMenuHandler, GridQuality, LibraryAssetModel, MasonryCanvas, ThumbnailCache, imp,
     item_at_x, row_at_y,
 };
 use crate::app_context::AppContext;
 use crate::library::asset_object::AssetObject;
+use crate::library::context_menu::connect_context_menu;
 
 impl Default for MasonryCanvas {
     fn default() -> Self {
@@ -101,6 +103,7 @@ impl MasonryCanvas {
         let Some(pos) = self.hit_test(x, y) else {
             return;
         };
+        self.focus_clicked(pos);
         let imp = self.imp();
         let mods = gesture.current_event_state();
         let ctrl = mods.contains(gtk::gdk::ModifierType::CONTROL_MASK);
@@ -146,8 +149,14 @@ impl MasonryCanvas {
     }
 
     fn install_gestures(&self) {
+        self.install_keyboard();
         self.add_controller(primary_click_controller(self));
-        self.add_controller(secondary_click_controller(self));
+        let weak = self.downgrade();
+        connect_context_menu(self, move |x, y| {
+            if let Some(canvas) = weak.upgrade() {
+                canvas.handle_secondary_click(x, y);
+            }
+        });
     }
 
     /// Install a `DragSource` for exporting original asset files via drag.
@@ -283,6 +292,9 @@ fn handle_model_changed(
     added: u32,
 ) {
     let imp = canvas.imp();
+    let focused = imp.focused.get();
+    imp.focused
+        .set(focused.and_then(|f| shift_focus(f, position, removed, added)));
     retain_failed_ids_for_model(imp, model);
     log::debug!(
         "masonry items_changed pos={} removed={} added={} model_n={}",
@@ -317,7 +329,7 @@ fn retain_failed_ids_for_model(imp: &imp::MasonryCanvas, model: &LibraryAssetMod
         .retain(|id| current_ids.contains(id));
 }
 
-fn enable_select_mode_if_needed(imp: &imp::MasonryCanvas, _pos: u32) {
+pub(super) fn enable_select_mode_if_needed(imp: &imp::MasonryCanvas, _pos: u32) {
     if !imp.select_mode.get()
         && let Some(changer) = imp.select_mode_changer.borrow().clone()
     {
@@ -342,19 +354,7 @@ fn primary_click_controller(canvas: &MasonryCanvas) -> gtk::GestureClick {
     primary
 }
 
-fn secondary_click_controller(canvas: &MasonryCanvas) -> gtk::GestureClick {
-    let secondary = gtk::GestureClick::new();
-    secondary.set_button(gtk::gdk::BUTTON_SECONDARY);
-    let weak = canvas.downgrade();
-    secondary.connect_pressed(move |_, _, x, y| {
-        if let Some(canvas) = weak.upgrade() {
-            canvas.handle_secondary_click(x, y);
-        }
-    });
-    secondary
-}
-
-fn toggle_selection(sel: &gtk::MultiSelection, pos: u32) {
+pub(super) fn toggle_selection(sel: &gtk::MultiSelection, pos: u32) {
     if sel.is_selected(pos) {
         sel.unselect_item(pos);
     } else {

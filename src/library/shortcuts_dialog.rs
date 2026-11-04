@@ -30,6 +30,11 @@ const GENERAL: &[Shortcut] = &[
     key("Search", "<Control>k"),
     hint("Go back", "<Alt>Left", "Or the mouse back button"),
     hint("Go forward", "<Alt>Right", "Or the mouse forward button"),
+    hint(
+        "Open context menu",
+        "<Shift>F10",
+        "Or the Menu key; in the grid, the viewer, and on album tiles",
+    ),
 ];
 
 const GO_TO: &[Shortcut] = &[
@@ -42,6 +47,17 @@ const GO_TO: &[Shortcut] = &[
     key("Trash", "<Control>7"),
     key("Albums", "<Control>8"),
     key("Sharing", "<Control>9"),
+];
+
+const GRID: &[Shortcut] = &[
+    hint(
+        "Move between photos",
+        "Up Down Left Right",
+        "After clicking a photo or tabbing to the grid",
+    ),
+    key("First or last photo", "Home End"),
+    key("Open photo", "Return"),
+    key("Select or deselect photo", "space"),
 ];
 
 const SELECTION: &[Shortcut] = &[
@@ -142,6 +158,7 @@ const MAP: &[Shortcut] = &[
 const SECTIONS: &[(&str, &[Shortcut])] = &[
     ("General", GENERAL),
     ("Go To", GO_TO),
+    ("Grid", GRID),
     ("Selection", SELECTION),
     ("Timeline", TIMELINE),
     ("Map", MAP),

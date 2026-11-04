@@ -93,6 +93,10 @@ If Mimick can't read these settings (for example, an API key without `userPrefer
 
 Assets load in pages of 50. Scroll to the bottom of the grid to load the next page. The footer label shows the current count.
 
+Right-click an asset, or long-press it on a touch screen, for its context menu. Everywhere this guide says right-click, a long-press works too.
+
+With the keyboard, click a photo or press **Tab** until the grid is focused, then move between photos with the arrow keys (**Home** and **End** jump to the first and last loaded photo). A ring marks the current photo. **Enter** opens it, **Space** selects or deselects it, and **Shift+F10** or the **Menu** key opens its context menu.
+
 Thumbnails are loaded asynchronously. A placeholder is shown while the thumbnail downloads. Decoded thumbnails are cached in RAM, up to **Memory Limit (MB)** in Settings → Storage (2 GB by default, never more than half your RAM), and freed when you close the library window.
 
 ### Sorting
@@ -295,6 +299,7 @@ Click any asset in the grid to open it in the lightbox.
 
 - The lightbox shows a preview image. If **Open Originals in Lightbox** is on in Settings → Library, it loads the original file instead of a server-generated proxy.
 - Local files and originals are shown at your screen's resolution; zooming in past it loads the full resolution in the background, with a spinner while it decodes.
+- Double-click or double-tap the picture to zoom in 2× at that spot; do it again while zoomed in to zoom back out. Pinch, **Ctrl**+scroll, and **Ctrl+plus**/**Ctrl+minus** zoom too.
 - **Moving between photos**: swipe on a touch screen or with two fingers on a touchpad and the photo follows, then springs to the next or previous one (or back, if you let go early). **Left**/**Right** and the header buttons use the same motion, and pressing them quickly glides through several photos. The photos on either side are loaded ahead of time. While zoomed in, dragging pans instead.
 - **Edited photos**: Photos edited in Immich (cropped or rotated) show the edited version. Download and drag-out still give the original file.
 - **RAW Previews**: By default, RAW files display using their fast embedded previews. The extractor first scans the file for the largest embedded JPEG (catching the full-resolution preview on cameras that store both a tiny thumb and a full-res one — e.g. Sony ARW); if the file contains no JPEG at all (Samsung DNG, OnePlus DNG, and other phone DNGs that store their preview as uncompressed TIFF strips), it falls back to libraw's bitmap thumbnail with container orientation applied. You can toggle **Full RAW Decoding** in settings to perform a full sensor demosaic instead.
@@ -310,7 +315,7 @@ Click any asset in the grid to open it in the lightbox.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
 - **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, the time zone, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date**. The date shows in the photo's own time zone, and the searchable **Time zone** row changes it; the date is saved as shown, in the zone you pick. Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
 - **Location**: photos with GPS coordinates show a small map under **Coordinates**, with the spot marked by a round photo badge; click it to open the [Map](#map) there. The copy button next to the coordinates copies them for pasting elsewhere, and the pen button sets or changes the location (see [Setting a Location](#setting-a-location)); on your photos without a location, **Coordinates** reads **Not set** and keeps the pen. As in Immich, **Edit Info…** and the pen only appear on photos you own.
-- Right-clicking the picture opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, **Set Location…**, and **Move to Trash**.
+- Right-clicking or long-pressing the picture, or pressing **Shift+F10** or the **Menu** key, opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, **Set Location…**, and **Move to Trash**.
 - **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text and show a **Copy All Text** button over the photo.
   - With a mouse, the pointer becomes a text cursor over a box. Click a box to select it, drag across boxes to select everything between them in reading order, Shift-click to extend the selection, and Ctrl-click to add or remove one box. Hover a box to read it. **Ctrl+A** selects all.
   - On a touch screen, tap a box to add or remove it; dragging and pinching still move and zoom the photo.
@@ -406,6 +411,8 @@ Three sections are shown:
 - **Shared with you** — albums shared by other users
 
 Click an album tile to open it in the grid view. The album is also added to the sidebar list for quick re-access.
+
+Right-click or long-press any album tile, or focus it and press **Shift+F10** or the **Menu** key, for its context menu. Your own albums offer **Share…**, **Create Share Link…**, **Rename…**, **Edit Description…**, **Download**, and **Delete Album…**; albums shared with you offer **Download** and **Leave Album…**.
 
 |                                               Selected Album (Dark)                                               |                                                         Album View (Sidebar Off)                                                          |
 | :---------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------: |
@@ -571,6 +578,9 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 | **Ctrl+1** … **Ctrl+9**       | Go to Photos, Explore, Map, People, Favorites, Archive, Trash, Albums, Sharing                                |
 | **Ctrl+A**                    | Select every photo loaded in the grid (in Photos, the months loaded so far)                                   |
 | **Esc**                       | Exit selection mode                                                                                           |
+| Arrow keys / **Home** / **End**| Move between photos in the grid (after clicking a photo or tabbing to the grid)                               |
+| **Enter** / **Space**         | Open / select or deselect the current photo in the grid                                                       |
+| **Shift+F10** / **Menu**      | Open the context menu (current photo in the grid, lightbox, focused album tile)                               |
 | **D** / **M** / **Y**         | Next day / month / year in Photos (newest first); with **Shift**, the previous one                            |
 | **Ctrl+F**                    | Search places (Map page and map beside photos)                                                                |
 | Arrow keys                    | Move the map (after clicking it or picking a searched place)                                                  |

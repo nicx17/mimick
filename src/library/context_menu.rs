@@ -112,18 +112,52 @@ pub(super) fn show_asset_context_menu(
         append_manage_buttons(&menu, &ui, &item, hooks);
     }
 
-    menu.popover.set_child(Some(&menu.content));
-    menu.popover.popup();
+    menu.popup();
+}
+
+/// Calls `open` on right-click and on touch long-press, which also swallows the tap.
+pub(super) fn connect_context_menu(
+    widget: &impl IsA<gtk::Widget>,
+    open: impl Fn(f64, f64) + 'static,
+) {
+    let open = Rc::new(open);
+    let click = gtk::GestureClick::builder()
+        .button(gtk::gdk::BUTTON_SECONDARY)
+        .build();
+    let on_click = open.clone();
+    click.connect_pressed(move |_, _, x, y| on_click(x, y));
+    widget.add_controller(click);
+
+    let press = gtk::GestureLongPress::builder().touch_only(true).build();
+    press.connect_pressed(move |gesture, x, y| {
+        gesture.set_state(gtk::EventSequenceState::Claimed);
+        open(x, y);
+    });
+    widget.add_controller(press);
+}
+
+/// Shift+F10 and the Menu key while focus is inside the widget it's added to.
+pub(super) fn menu_key(open: impl Fn() + 'static) -> gtk::ShortcutController {
+    let shortcut = gtk::Shortcut::builder()
+        .trigger(&gtk::ShortcutTrigger::parse_string("<Shift>F10|Menu").expect("valid shortcut"))
+        .action(&gtk::CallbackAction::new(move |_, _| {
+            open();
+            glib::Propagation::Stop
+        }))
+        .build();
+    let controller = gtk::ShortcutController::new();
+    controller.add_shortcut(shortcut);
+    controller
 }
 
 /// Popover content plus a helper for full-width buttons that close the menu first.
-struct Menu {
+pub(super) struct Menu {
     content: gtk::Box,
     popover: gtk::Popover,
 }
 
 impl Menu {
-    fn new(parent: &impl gtk::prelude::IsA<gtk::Widget>, x: f64, y: f64) -> Self {
+    pub(super) fn new(parent: &impl gtk::prelude::IsA<gtk::Widget>, x: f64, y: f64) -> Self {
         let popover = gtk::Popover::builder()
             .has_arrow(true)
             .autohide(true)
@@ -145,7 +179,19 @@ impl Menu {
         Self { content, popover }
     }
 
-    fn add(&self, label: &str, destructive: bool, on_click: impl Fn() + 'static) {
+    /// Scrollable, so GTK lets the compositor shrink a menu taller than the screen.
+    pub(super) fn popup(self) {
+        let scroller = gtk::ScrolledWindow::builder()
+            .child(&self.content)
+            .hscrollbar_policy(gtk::PolicyType::Never)
+            .propagate_natural_width(true)
+            .propagate_natural_height(true)
+            .build();
+        self.popover.set_child(Some(&scroller));
+        self.popover.popup();
+    }
+
+    pub(super) fn add(&self, label: &str, destructive: bool, on_click: impl Fn() + 'static) {
         let button = gtk::Button::builder()
             .label(label)
             .halign(gtk::Align::Fill)

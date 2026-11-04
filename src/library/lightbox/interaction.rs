@@ -19,7 +19,9 @@ use super::{
 use crate::library::actions::{TrashTarget, confirm_trash};
 use crate::library::archive::{archive_icon, archive_tooltip, set_archived};
 use crate::library::asset_edit::show_edit_dialog;
-use crate::library::context_menu::{AssetMenuHooks, show_asset_context_menu};
+use crate::library::context_menu::{
+    AssetMenuHooks, connect_context_menu, menu_key, show_asset_context_menu,
+};
 use crate::library::download::{open_local_with_default_app, start_download};
 use crate::library::favorites::{FavoriteHooks, heart_icon, heart_tooltip, toggle_favorite};
 use crate::library::trash_view;
@@ -150,7 +152,7 @@ impl Lightbox {
 
         self.connect_pan_and_pinch();
 
-        // Double-click on the picture: zoom in 2x toward the click position.
+        // Double-click or double-tap: zoom 2x toward the point, or back out when zoomed in.
         let double_click = gtk::GestureClick::new();
         double_click.set_button(gtk::gdk::BUTTON_PRIMARY);
         let lb = Rc::downgrade(self);
@@ -159,8 +161,12 @@ impl Lightbox {
                 && n_press == 2
                 && lb.ocr_box_under(x, y).is_none()
             {
-                lb.cursor_pos.set(Some((x, y)));
-                lb.set_zoom(lb.zoom_level.get() * 2.0);
+                if lb.zoom_level.get() > 1.0 {
+                    lb.zoom_reset();
+                } else {
+                    lb.cursor_pos.set(Some((x, y)));
+                    lb.set_zoom(2.0);
+                }
             }
         });
         self.picture.scrolled.add_controller(double_click);
@@ -254,25 +260,34 @@ impl Lightbox {
         });
         self.picture.scrolled.add_controller(motion);
 
-        // Right-click: open the standard asset context menu.
-        let right_click = gtk::GestureClick::new();
-        right_click.set_button(gtk::gdk::BUTTON_SECONDARY);
         let lb = Rc::downgrade(self);
-        right_click.connect_pressed(move |_, _, x, y| {
-            let Some(lb) = lb.upgrade() else {
-                return;
-            };
-            show_asset_context_menu(
-                lb.ui.clone(),
-                &lb.picture.scrolled,
-                lb.pos.get(),
-                x,
-                y,
-                lb.menu_hooks(),
-            );
+        connect_context_menu(&self.picture.scrolled, move |x, y| {
+            if let Some(lb) = lb.upgrade() {
+                lb.show_menu_at(x, y);
+            }
         });
-        self.picture.scrolled.add_controller(right_click);
+        let lb = Rc::downgrade(self);
+        self.header.page.add_controller(menu_key(move || {
+            if let Some(lb) = lb.upgrade() {
+                let scrolled = &lb.picture.scrolled;
+                lb.show_menu_at(
+                    f64::from(scrolled.width()) / 2.0,
+                    f64::from(scrolled.height()) / 2.0,
+                );
+            }
+        }));
         self.connect_swipe_tracker();
+    }
+
+    fn show_menu_at(self: &Rc<Self>, x: f64, y: f64) {
+        show_asset_context_menu(
+            self.ui.clone(),
+            &self.picture.scrolled,
+            self.pos.get(),
+            x,
+            y,
+            self.menu_hooks(),
+        );
     }
 
     /// Ctrl +/-/0 zoom, Left/Right navigate, I toggles details, Escape closes.

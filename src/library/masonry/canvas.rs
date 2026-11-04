@@ -31,6 +31,7 @@ use super::reveal::{REVEAL_MAX_BLUR, animations_enabled, reveal_progress};
 use super::schedule::{CancelFlag, LoadRequest, LoadScheduler, SETTLE_DELAY, is_fling};
 
 mod interaction;
+mod keyboard;
 mod timeline;
 
 mod imp {
@@ -125,6 +126,8 @@ mod imp {
         pub select_mode_changer: RefCell<Option<SelectModeChanger>>,
         /// Anchor position for Shift+Click range selection.
         pub last_selected: Cell<Option<u32>>,
+        /// Tile the arrow keys move from; ringed while focus is visible.
+        pub focused: Cell<Option<u32>>,
         pub permission_warned: Cell<bool>,
         /// Cached video badge icon paintable, resolved lazily from the icon theme.
         pub video_icon: OnceCell<gdk4::Paintable>,
@@ -211,6 +214,7 @@ mod imp {
 
             let sctx = self.snapshot_ctx(model, cache);
             let stats = self.paint_snapshot_rows(snapshot, &sctx, &rows, &viewport);
+            self.paint_focus_ring(snapshot, &rows);
             if self.timeline.borrow().is_some() {
                 self.paint_timeline_extras(snapshot, viewport.top, viewport.bottom, canvas_w);
                 self.request_visible_months(viewport.band_top, viewport.band_bottom);
