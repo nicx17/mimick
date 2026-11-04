@@ -71,13 +71,13 @@ impl ActivityFeed {
     fn connect_composer(self: &Rc<Self>) {
         let feed = Rc::downgrade(self);
         self.like_btn
-            .connect_clicked(move |_| with(&feed, |f| f.toggle_like()));
+            .connect_clicked(move |_| with(&feed, ActivityFeed::toggle_like));
         let feed = Rc::downgrade(self);
         self.send_btn
-            .connect_clicked(move |_| with(&feed, |f| f.send_comment()));
+            .connect_clicked(move |_| with(&feed, ActivityFeed::send_comment));
         let feed = Rc::downgrade(self);
         self.entry
-            .connect_activate(move |_| with(&feed, |f| f.send_comment()));
+            .connect_activate(move |_| with(&feed, ActivityFeed::send_comment));
         let send_btn = self.send_btn.clone();
         self.entry.connect_changed(move |entry| {
             send_btn.set_sensitive(!entry.text().trim().is_empty());
