@@ -99,3 +99,4 @@ strip = true # Strip debug symbols from the final binary
 
 [lints.clippy]
 cognitive_complexity = "warn"
+redundant_closure_for_method_calls = "warn"

@@ -402,7 +402,7 @@ fn mercator_y(lat: f64) -> f64 {
 
 fn language() -> &'static str {
     let names = glib::language_names();
-    pick_language(names.iter().map(|name| name.as_str()))
+    pick_language(names.iter().map(glib::GString::as_str))
 }
 
 /// The first system language Photon has names in, else English.

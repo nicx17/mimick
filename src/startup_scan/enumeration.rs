@@ -22,9 +22,7 @@ pub(super) fn enumerate_candidates(
     shared_state: &Arc<Mutex<AppState>>,
     global_xmp_enabled: bool,
 ) -> (Vec<ScanCandidate>, HashSet<String>, usize, usize) {
-    let skipped = AtomicUsize::new(0);
-    let errors = AtomicUsize::new(0);
-    let seen_paths = Mutex::new(HashSet::new());
+    let tally = ScanTally::default();
 
     let candidates: Vec<ScanCandidate> = watch_paths
         .par_iter()
@@ -35,31 +33,34 @@ pub(super) fn enumerate_candidates(
                 last_sync,
                 shared_state,
                 global_xmp_enabled,
-                &seen_paths,
-                &skipped,
-                &errors,
+                &tally,
             )
         })
         .collect();
 
     (
         candidates,
-        seen_paths.into_inner(),
-        skipped.into_inner(),
-        errors.into_inner(),
+        tally.seen_paths.into_inner(),
+        tally.skipped.into_inner(),
+        tally.errors.into_inner(),
     )
 }
 
-#[allow(clippy::too_many_arguments)]
+/// Counts shared by the parallel per-folder scans.
+#[derive(Default)]
+struct ScanTally {
+    seen_paths: Mutex<HashSet<String>>,
+    skipped: AtomicUsize,
+    errors: AtomicUsize,
+}
+
 fn enumerate_entry_candidates(
     entry: &WatchPathEntry,
     fallback_catchup_mode: &StartupCatchupMode,
     last_sync: f64,
     shared_state: &Arc<Mutex<AppState>>,
     global_xmp_enabled: bool,
-    seen_paths: &Mutex<HashSet<String>>,
-    skipped: &AtomicUsize,
-    errors: &AtomicUsize,
+    tally: &ScanTally,
 ) -> Vec<ScanCandidate> {
     if entry.sync_method() == FolderSyncMethod::DownloadOnly {
         return Vec::new();
@@ -79,9 +80,7 @@ fn enumerate_entry_candidates(
         catchup_mode: &catchup_mode,
         last_sync,
         sidecar_enabled,
-        seen_paths,
-        skipped,
-        errors,
+        tally,
     };
 
     let mut candidates = Vec::new();
@@ -98,9 +97,7 @@ struct ScanContext<'a> {
     catchup_mode: &'a StartupCatchupMode,
     last_sync: f64,
     sidecar_enabled: bool,
-    seen_paths: &'a Mutex<HashSet<String>>,
-    skipped: &'a AtomicUsize,
-    errors: &'a AtomicUsize,
+    tally: &'a ScanTally,
 }
 
 fn mark_missing_watch_path(root: &Path, watch_path: &str, shared_state: &Arc<Mutex<AppState>>) {
@@ -126,7 +123,7 @@ fn scan_candidate_directory(
     let read_dir = match std::fs::read_dir(dir) {
         Ok(iter) => iter,
         Err(err) => {
-            ctx.errors.fetch_add(1, Ordering::Relaxed);
+            ctx.tally.errors.fetch_add(1, Ordering::Relaxed);
             log::warn!("Startup scan could not read '{}': {}", dir.display(), err);
             return;
         }
@@ -145,7 +142,7 @@ fn process_candidate_file(
     let entry_fs = match child {
         Ok(entry_fs) => entry_fs,
         Err(err) => {
-            ctx.errors.fetch_add(1, Ordering::Relaxed);
+            ctx.tally.errors.fetch_add(1, Ordering::Relaxed);
             log::warn!("Startup scan directory entry error: {}", err);
             return;
         }
@@ -159,10 +156,10 @@ fn process_candidate_file(
         return;
     }
     if should_skip_for_catchup(ctx.catchup_mode, &entry_fs, ctx.last_sync) {
-        ctx.skipped.fetch_add(1, Ordering::Relaxed);
+        ctx.tally.skipped.fetch_add(1, Ordering::Relaxed);
     } else {
         let path_str = path.to_string_lossy().into_owned();
-        ctx.seen_paths.lock().insert(path_str.clone());
+        ctx.tally.seen_paths.lock().insert(path_str.clone());
         candidates.push(ScanCandidate {
             path: path_str,
             watch_path: ctx.watch_path.to_string(),

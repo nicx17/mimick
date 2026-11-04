@@ -314,7 +314,7 @@ mod tests {
         data.write_all(b"not an image").unwrap();
         let first = load_or_extract(cache_dir.path(), data.path());
         let count_after_first = std::fs::read_dir(cache_dir.path().join("exif"))
-            .map(|d| d.count())
+            .map(Iterator::count)
             .unwrap_or(0);
         let second = load_or_extract(cache_dir.path(), data.path());
         assert_eq!(first.is_some(), second.is_some());

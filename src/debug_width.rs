@@ -150,7 +150,7 @@ fn describe(widget: &gtk::Widget) -> String {
     }
     let classes = widget.css_classes();
     if !classes.is_empty() {
-        let joined: Vec<&str> = classes.iter().map(|class| class.as_str()).collect();
+        let joined: Vec<&str> = classes.iter().map(glib::GString::as_str).collect();
         text.push_str(&format!(".{}", joined.join(".")));
     }
     if let Some(label) = widget.downcast_ref::<gtk::Label>() {

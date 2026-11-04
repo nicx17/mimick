@@ -510,7 +510,7 @@ pub(super) fn connect_sidebar_handlers(ui: Rc<LibraryWindowUi>) {
             if ui.interaction.sidebar_suppressed.get() {
                 return;
             }
-            let Some(tooltip) = row.and_then(|row| row.tooltip_text()) else {
+            let Some(tooltip) = row.and_then(WidgetExt::tooltip_text) else {
                 return;
             };
             let (id, name) = tooltip

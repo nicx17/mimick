@@ -52,7 +52,7 @@ impl Lightbox {
         self.connect_ocr_mouse_selection();
         self.connect_ocr_taps();
         self.connect_ocr_hover();
-        self.on_click(&self.picture.ocr_copy, |lb| lb.copy_ocr_text());
+        self.on_click(&self.picture.ocr_copy, Self::copy_ocr_text);
     }
 
     fn connect_ocr_toggle(self: &Rc<Self>) {

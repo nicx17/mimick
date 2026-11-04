@@ -15,8 +15,8 @@ use libadwaita::prelude::*;
 
 use crate::api_client::{MetadataSearchFilters, Tag};
 use crate::library::search_filters::{
-    FilterWidgets, build_camera_group, build_date_group, build_flags_group, build_location_group,
-    build_tag_group, build_text_group,
+    FilterWidgets, FlagsGroup, build_camera_group, build_date_group, build_flags_group,
+    build_location_group, build_tag_group, build_text_group,
 };
 use crate::library::search_panel::{active_filter_count, build_side_panel, filters_label};
 
@@ -178,10 +178,18 @@ fn build_action_row() -> ActionRow {
 }
 
 /// The filter rows, and a column holding all their groups.
-#[allow(clippy::type_complexity)]
 fn build_filter_panel() -> (FilterWidgets, gtk::Box) {
     let (text_group, filename_row, description_row, ocr_row) = build_text_group();
-    let (flags_group, type_row, fav, motion, not_album, deleted, vis, rating) = build_flags_group();
+    let FlagsGroup {
+        group: flags_group,
+        type_row,
+        favorite: fav,
+        motion,
+        not_in_album: not_album,
+        deleted,
+        visibility: vis,
+        rating,
+    } = build_flags_group();
     let (date_group, taken_after, taken_before, created_after, created_before) = build_date_group();
     let (camera_group, make_row, model_row, lens_row) = build_camera_group();
     let (loc_group, country, state, city) = build_location_group();

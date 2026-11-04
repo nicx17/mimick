@@ -260,18 +260,32 @@ pub(crate) fn locate(rows: &[LaidRow], asset: u32) -> Option<(usize, usize)> {
 /// The tile one `step` away from `asset`; `None` past the first or last tile.
 pub(crate) fn step_from(rows: &[LaidRow], asset: u32, step: Step) -> Option<u32> {
     let (r, i) = locate(rows, asset)?;
-    let items = &rows[r].items;
-    let center = items[i].x + items[i].w / 2.0;
     let item = match step {
-        Step::First => rows.first()?.items.first(),
-        Step::Last => rows.last()?.items.last(),
-        Step::Left if i > 0 => items.get(i - 1),
-        Step::Left => rows.get(r.checked_sub(1)?)?.items.last(),
-        Step::Right => items.get(i + 1).or_else(|| rows.get(r + 1)?.items.first()),
-        Step::Up => nearest(rows.get(r.checked_sub(1)?)?, center),
-        Step::Down => nearest(rows.get(r + 1)?, center),
+        Step::First => rows.first().and_then(|row| row.items.first()),
+        Step::Last => rows.last().and_then(|row| row.items.last()),
+        Step::Left => step_back(rows, r, i),
+        Step::Right => step_forward(rows, r, i),
+        Step::Up => step_vertical(rows, r, i, r.checked_sub(1)),
+        Step::Down => step_vertical(rows, r, i, Some(r + 1)),
     };
     item.map(|it| it.asset_index)
+}
+
+fn step_back(rows: &[LaidRow], r: usize, i: usize) -> Option<&LaidItem> {
+    if i > 0 {
+        return rows[r].items.get(i - 1);
+    }
+    rows.get(r.checked_sub(1)?)?.items.last()
+}
+
+fn step_forward(rows: &[LaidRow], r: usize, i: usize) -> Option<&LaidItem> {
+    let next_row = || rows.get(r + 1)?.items.first();
+    rows[r].items.get(i + 1).or_else(next_row)
+}
+
+fn step_vertical(rows: &[LaidRow], r: usize, i: usize, target: Option<usize>) -> Option<&LaidItem> {
+    let it = &rows[r].items[i];
+    nearest(rows.get(target?)?, it.x + it.w / 2.0)
 }
 
 fn nearest(row: &LaidRow, x: f32) -> Option<&LaidItem> {

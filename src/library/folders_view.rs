@@ -204,7 +204,7 @@ mod tests {
     use super::*;
 
     fn paths(values: &[&str]) -> Vec<String> {
-        values.iter().map(|v| v.to_string()).collect()
+        values.iter().map(ToString::to_string).collect()
     }
 
     #[test]

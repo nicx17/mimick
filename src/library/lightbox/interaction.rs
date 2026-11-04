@@ -82,7 +82,7 @@ impl Lightbox {
                 open_local_with_default_app(path);
             }
         });
-        self.on_click(&self.video_badge_button, |lb| lb.toggle_video());
+        self.on_click(&self.video_badge_button, Self::toggle_video);
 
         let drag_source = gtk::DragSource::new();
         drag_source.set_actions(gtk::gdk::DragAction::COPY);
@@ -120,8 +120,8 @@ impl Lightbox {
             .connect_notify_local(Some("collapsed"), move |_, _| sync_nav_visibility());
         *self.collapse_handler.borrow_mut() = Some(handler);
 
-        self.on_click(&self.header.prev_btn, |lb| lb.goto_prev());
-        self.on_click(&self.header.next_btn, |lb| lb.goto_next());
+        self.on_click(&self.header.prev_btn, Self::goto_prev);
+        self.on_click(&self.header.next_btn, Self::goto_next);
 
         let lb = Rc::downgrade(self);
         self.header.page.connect_hidden(move |_| {
@@ -148,7 +148,7 @@ impl Lightbox {
     pub(super) fn connect_zoom_controls(self: &Rc<Self>) {
         self.on_click(&self.actions.zoom_in, |lb| lb.zoom_by(1.2));
         self.on_click(&self.actions.zoom_out, |lb| lb.zoom_by(1.0 / 1.2));
-        self.on_click(&self.actions.zoom_reset, |lb| lb.zoom_reset());
+        self.on_click(&self.actions.zoom_reset, Self::zoom_reset);
 
         self.connect_pan_and_pinch();
 
@@ -329,10 +329,10 @@ impl Lightbox {
             }
         });
 
-        self.on_click(&self.actions.trash, |lb| lb.confirm_trash_current());
-        self.on_click(&self.actions.favorite, |lb| lb.toggle_current_favorite());
-        self.on_click(&self.actions.archive, |lb| lb.toggle_current_archive());
-        self.on_click(&self.details.edit_btn, |lb| lb.edit_current());
+        self.on_click(&self.actions.trash, Self::confirm_trash_current);
+        self.on_click(&self.actions.favorite, Self::toggle_current_favorite);
+        self.on_click(&self.actions.archive, Self::toggle_current_archive);
+        self.on_click(&self.details.edit_btn, Self::edit_current);
         self.on_click(&self.details.album_btn, |lb| lb.add_current_to_album());
         let lb = Rc::downgrade(self);
         self.details.tags.bind(

@@ -78,28 +78,31 @@ impl MapStyle {
         self.names().1
     }
 
+    /// Id and label for each style, in `ALL` order.
+    const NAMES: [(&str, &str); Self::ALL.len()] = [
+        ("immich", "Immich"),
+        ("colorful", "Colorful"),
+        ("natural", "Natural"),
+        ("muted", "Muted"),
+        ("gray", "Gray"),
+        ("toner", "Toner"),
+        ("positrino", "Positrino"),
+        ("protocol", "Protocol"),
+        ("protostar", "Protostar"),
+        ("protozoa", "Protozoa"),
+        ("fnord", "Fnord"),
+        ("classic", "Classic"),
+        ("googol", "Googol"),
+        ("freedom", "Freedom"),
+        ("macbob", "Macbob"),
+        ("mactaylor", "Mactaylor"),
+        ("bingo", "Bingo"),
+        ("satellite", "Satellite"),
+        ("osm", "OpenStreetMap"),
+    ];
+
     fn names(self) -> (&'static str, &'static str) {
-        match self {
-            Self::Immich => ("immich", "Immich"),
-            Self::Colorful => ("colorful", "Colorful"),
-            Self::Natural => ("natural", "Natural"),
-            Self::Muted => ("muted", "Muted"),
-            Self::Gray => ("gray", "Gray"),
-            Self::Toner => ("toner", "Toner"),
-            Self::Positrino => ("positrino", "Positrino"),
-            Self::Protocol => ("protocol", "Protocol"),
-            Self::Protostar => ("protostar", "Protostar"),
-            Self::Protozoa => ("protozoa", "Protozoa"),
-            Self::Fnord => ("fnord", "Fnord"),
-            Self::Classic => ("classic", "Classic"),
-            Self::Googol => ("googol", "Googol"),
-            Self::Freedom => ("freedom", "Freedom"),
-            Self::Macbob => ("macbob", "Macbob"),
-            Self::Mactaylor => ("mactaylor", "Mactaylor"),
-            Self::Bingo => ("bingo", "Bingo"),
-            Self::Satellite => ("satellite", "Satellite"),
-            Self::OpenStreetMap => ("osm", "OpenStreetMap"),
-        }
+        Self::NAMES[self as usize]
     }
 
     /// Unknown or empty ids fall back to the server's style.
@@ -191,6 +194,14 @@ mod tests {
         assert!(!MapAppearance::System.is_dark(false));
         assert!(!MapAppearance::Light.is_dark(true));
         assert!(MapAppearance::Dark.is_dark(false));
+    }
+
+    #[test]
+    fn all_lists_styles_in_declaration_order() {
+        for (index, style) in MapStyle::ALL.into_iter().enumerate() {
+            assert_eq!(style as usize, index, "{style:?}");
+        }
+        assert_eq!(MapStyle::OpenStreetMap.names(), ("osm", "OpenStreetMap"));
     }
 
     #[test]
