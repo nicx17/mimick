@@ -8,7 +8,7 @@ use libadwaita::prelude::*;
 use crate::api_client::{AlbumUpdate, LibraryAlbum, SortOrder};
 
 use super::LibraryWindowUi;
-use super::album_assets::showing_album;
+use super::album_assets::{refresh_albums, showing_album};
 
 const ORDERS: [SortOrder; 2] = [SortOrder::Desc, SortOrder::Asc];
 
@@ -21,7 +21,7 @@ pub(super) fn present(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum) {
     let order = order_row(album.order);
     let activity = libadwaita::SwitchRow::builder()
         .title("Comments and Likes")
-        .subtitle("Let people in this album like and comment in the Immich apps")
+        .subtitle("Let people in this album like and comment")
         .active(album.is_activity_enabled)
         .build();
     let display = libadwaita::PreferencesGroup::builder()
@@ -98,6 +98,13 @@ fn after_order_saved(ui: &Rc<LibraryWindowUi>, album_id: &str, order: SortOrder)
     }
 }
 
+fn after_activity_saved(ui: &Rc<LibraryWindowUi>, album_id: &str) {
+    refresh_albums(ui);
+    if showing_album(ui, album_id) {
+        super::source_header::refresh(ui);
+    }
+}
+
 fn connect_activity(
     ui: &Rc<LibraryWindowUi>,
     dialog: &libadwaita::PreferencesDialog,
@@ -124,7 +131,10 @@ fn connect_activity(
         );
         glib::MainContext::default().spawn_local(async move {
             match ui.ctx.api_client.update_album(&album_id, &update).await {
-                Ok(()) => saved.set(active),
+                Ok(()) => {
+                    saved.set(active);
+                    after_activity_saved(&ui, &album_id);
+                }
                 Err(err) => {
                     row.set_active(saved.get());
                     dialog.add_toast(libadwaita::Toast::new(&format!("Couldn't save: {err}")));

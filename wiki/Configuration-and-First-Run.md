@@ -358,6 +358,7 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Browse a partner's photos | `partner.read`, plus the Library / Explore view permissions |
 | Show a partner's photos in Photos | `partner.update` |
 | Rename albums, edit descriptions, set covers, and change album options | `album.update` |
+| Likes and comments on shared albums | `activity.read`, `activity.statistics`; liking and commenting also need `activity.create`, and deleting `activity.delete` |
 | Counts and details in view headers | `asset.statistics`, `album.read`, `person.statistics` |
 | Hide pages for features turned off in your account | `userPreference.read` (without it, every page stays visible) |
 | **Sync Method** set to **Full** or **Download Only** (folder rules) | `asset.read`, `asset.download` |

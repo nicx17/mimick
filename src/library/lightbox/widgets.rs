@@ -8,7 +8,7 @@ use crate::library::LibraryWindowUi;
 use crate::library::asset_tags::TagSection;
 
 use super::details::truncate_filename;
-use super::{albums, ocr, people, rating};
+use super::{activity, albums, ocr, people, rating};
 use crate::library::archive::{archive_icon, archive_tooltip};
 use crate::library::favorites::{heart_icon, heart_tooltip};
 
@@ -105,6 +105,7 @@ pub(crate) struct DetailsPane {
     pub(super) people: people::PeopleSection,
     pub(super) tags: TagSection,
     pub(super) albums: albums::AlbumsSection,
+    pub(super) activity: activity::ActivitySection,
     pub(super) loading: gtk::Label,
     pub(super) exif: gtk::Box,
 }
@@ -339,7 +340,8 @@ pub(crate) fn build_details_pane() -> DetailsPane {
     let people = people::PeopleSection::new();
     let tags = TagSection::new();
     let albums = albums::AlbumsSection::new();
-    let sections: [&gtk::Widget; 7] = [
+    let activity = activity::ActivitySection::new();
+    let sections: [&gtk::Widget; 8] = [
         loading.upcast_ref(),
         description.upcast_ref(),
         rating.root.upcast_ref(),
@@ -347,6 +349,7 @@ pub(crate) fn build_details_pane() -> DetailsPane {
         exif.upcast_ref(),
         albums.root.upcast_ref(),
         tags.root.upcast_ref(),
+        activity.root.upcast_ref(),
     ];
     for section in sections {
         inner.append(section);
@@ -363,6 +366,7 @@ pub(crate) fn build_details_pane() -> DetailsPane {
         people,
         tags,
         albums,
+        activity,
         loading,
         exif,
     }

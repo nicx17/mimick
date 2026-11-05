@@ -14,6 +14,7 @@ use crate::library::asset_object::AssetObject;
 use super::video_player::VideoPlayer;
 use super::{LOCAL_ID_PREFIX, LibraryWindowUi};
 
+mod activity;
 mod albums;
 mod details;
 mod fullscreen;

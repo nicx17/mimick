@@ -16,9 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an **Appearance** choice to the map's style menu: follow the system style, or keep maps light or dark.
 - The map's attribution footer now links to its sources, such as OpenStreetMap's copyright page.
 - The About dialog now credits OpenStreetMap contributors, VersaTiles, Immich, and the libraries Mimick is built with.
+- Added likes and comments on shared albums. When **Comments and likes** is on in **Album Options**, the album's header shows a comment button with the number of likes and comments; it opens the album's activity, where you can like the album, comment, and delete your own likes and comments (album owners can delete anyone's). Photos opened from the album show their own likes and comments in an **Activity** section of the details pane.
+- Context menus now open with a long-press on touch screens, so phone users can reach them. In the photo grid, the lightbox, and on album tiles, **Shift+F10** or the **Menu** key opens them too (#293).
+- Added keyboard navigation to the photo grid: the arrow keys move between photos (**Home** and **End** jump to the first and last), a ring marks the current one, **Enter** opens it, and **Space** selects it.
+- Album tiles in the **Recent** row on the Albums page now have the same context menu as the other album tiles.
 
 ### Changed
 
+- Double-clicking or double-tapping a zoomed-in photo in the lightbox now zooms back out, so phones without a zoom-reset button can get back to the whole photo. Before, each double-click zoomed in further.
+- **Delete Album…** and **Leave Album…** in an album tile's context menu are now red, like **Move to Trash** in the photo menu.
 - The details pane now follows Immich's order: the description, rating, and people come first, then **Details** (date taken, dimensions, size; formerly **Image**), **Camera**, **Location**, **Appears In**, and **Tags**.
 - The details pane's summary no longer repeats the date as **Created** when **Details** already shows when the photo was taken.
 - Your photos without a description show **Add a description** in the details pane, which opens **Edit Info…**.
@@ -27,7 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Context menus too tall for the screen, such as a photo's menu on a phone, now scroll instead of running off the bottom.
 - Fixed switches not toggling when you clicked their knob. A click anywhere on a switch now toggles it.
+- Fixed a long tag stretching the details pane. Tags too long for the pane are now shortened with "…"; hover a tag to see its full name.
 - Fixed the Colorful, Natural, Muted, Gray, and Toner map styles falling back to OpenStreetMap after VersaTiles changed its hosted styles. The VersaTiles styles now ship with Mimick, so changes on VersaTiles' side can't break them; their tiles still come from VersaTiles.
 - A server map style with more than one tile source now shows its main source instead of falling back to OpenStreetMap.
 - The Flatpak now ships the full third-party license texts, including those of the bundled libjpeg-turbo, libwebp, and LibRaw.

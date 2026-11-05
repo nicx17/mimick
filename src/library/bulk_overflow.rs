@@ -30,7 +30,7 @@ pub(super) fn build(sources: &[gtk::Button]) -> gtk::MenuButton {
     }
     let sync = {
         let (menu, sources) = (menu.clone(), sources.to_vec());
-        move || menu.set_visible(sources.iter().any(|b| b.is_visible()))
+        move || menu.set_visible(sources.iter().any(WidgetExt::is_visible))
     };
     for source in sources {
         let sync = sync.clone();

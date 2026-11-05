@@ -415,16 +415,20 @@ fn cover_placeholder(icon: &str) -> gtk::Overlay {
 }
 
 pub(super) fn album_cover(ctx: &Arc<AppContext>, album: &LibraryAlbum) -> gtk::Overlay {
-    let Some(thumb_id) = album.thumbnail_asset_id.clone() else {
-        return cover_placeholder("folder-pictures-symbolic");
-    };
+    match album.thumbnail_asset_id.clone() {
+        Some(thumb_id) => asset_cover(ctx, thumb_id),
+        None => cover_placeholder("folder-pictures-symbolic"),
+    }
+}
+
+pub(super) fn asset_cover(ctx: &Arc<AppContext>, asset_id: String) -> gtk::Overlay {
     let frame = cover_frame();
     let picture = gtk::Picture::builder()
         .content_fit(gtk::ContentFit::Cover)
         .can_shrink(true)
         .build();
     frame.add_overlay(&picture);
-    spawn_thumbnail(ctx.clone(), thumb_id, picture);
+    spawn_thumbnail(ctx.clone(), asset_id, picture);
     frame
 }
 

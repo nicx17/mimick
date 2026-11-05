@@ -34,6 +34,10 @@ fn scrolled_content(canvas: &MasonryCanvas) -> (gtk::ScrolledWindow, gtk::Box) {
         .vexpand(true)
         .hexpand(true)
         .build();
+    // The canvas is as tall as the whole grid; scrolling it into view on focus jumps to the top.
+    if let Some(viewport) = scrolled.child().and_downcast::<gtk::Viewport>() {
+        viewport.set_scroll_to_focus(false);
+    }
     (scrolled, content)
 }
 

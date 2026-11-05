@@ -12,6 +12,8 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::{Mutex, Semaphore};
 
+mod activities;
+pub use activities::{Activity, ActivityKind, ActivityStatistics, NewActivity};
 mod albums;
 pub use albums::{BulkIdResult, BulkOutcome};
 mod download;

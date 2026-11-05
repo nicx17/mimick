@@ -238,6 +238,74 @@ pub(crate) fn item_at_x(row: &LaidRow, x: f32) -> Option<&LaidItem> {
     row.items.iter().find(|it| x >= it.x && x < it.x + it.w)
 }
 
+/// A keyboard move between tiles, in on-screen order.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum Step {
+    Left,
+    Right,
+    Up,
+    Down,
+    First,
+    Last,
+}
+
+/// Row and position within it of the tile showing `asset`.
+pub(crate) fn locate(rows: &[LaidRow], asset: u32) -> Option<(usize, usize)> {
+    rows.iter().enumerate().find_map(|(r, row)| {
+        let i = row.items.iter().position(|it| it.asset_index == asset)?;
+        Some((r, i))
+    })
+}
+
+/// The tile one `step` away from `asset`; `None` past the first or last tile.
+pub(crate) fn step_from(rows: &[LaidRow], asset: u32, step: Step) -> Option<u32> {
+    let (r, i) = locate(rows, asset)?;
+    let item = match step {
+        Step::First => rows.first().and_then(|row| row.items.first()),
+        Step::Last => rows.last().and_then(|row| row.items.last()),
+        Step::Left => step_back(rows, r, i),
+        Step::Right => step_forward(rows, r, i),
+        Step::Up => step_vertical(rows, r, i, r.checked_sub(1)),
+        Step::Down => step_vertical(rows, r, i, Some(r + 1)),
+    };
+    item.map(|it| it.asset_index)
+}
+
+fn step_back(rows: &[LaidRow], r: usize, i: usize) -> Option<&LaidItem> {
+    if i > 0 {
+        return rows[r].items.get(i - 1);
+    }
+    rows.get(r.checked_sub(1)?)?.items.last()
+}
+
+fn step_forward(rows: &[LaidRow], r: usize, i: usize) -> Option<&LaidItem> {
+    let next_row = || rows.get(r + 1)?.items.first();
+    rows[r].items.get(i + 1).or_else(next_row)
+}
+
+fn step_vertical(rows: &[LaidRow], r: usize, i: usize, target: Option<usize>) -> Option<&LaidItem> {
+    let it = &rows[r].items[i];
+    nearest(rows.get(target?)?, it.x + it.w / 2.0)
+}
+
+fn nearest(row: &LaidRow, x: f32) -> Option<&LaidItem> {
+    let distance = |it: &LaidItem| (it.x + it.w / 2.0 - x).abs();
+    row.items
+        .iter()
+        .min_by(|a, b| distance(a).total_cmp(&distance(b)))
+}
+
+/// How far to scroll so `y..y + h` fits in the view `top..top + height`.
+pub(crate) fn scroll_delta(top: f32, height: f32, y: f32, h: f32) -> f32 {
+    if y < top {
+        y - top
+    } else if y + h > top + height {
+        (y + h - top - height).min(y - top)
+    } else {
+        0.0
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -384,5 +452,60 @@ mod tests {
         assert_eq!(first_row_at_or_after(&rows, 150.0), 1);
         assert_eq!(first_row_at_or_after(&rows, 250.0), 2);
         assert_eq!(first_row_at_or_after(&rows, 500.0), 3);
+    }
+
+    /// Rows `[0 1 2] [3 4] [5]`: widths 100, 200, 100 then 150, 250 then 400.
+    fn nav_rows() -> Vec<LaidRow> {
+        let row = |y: f32, items: &[(u32, f32, f32)]| LaidRow {
+            y,
+            h: 100.0,
+            items: items
+                .iter()
+                .map(|&(asset_index, x, w)| LaidItem { asset_index, x, w })
+                .collect(),
+        };
+        vec![
+            row(
+                0.0,
+                &[(0, 0.0, 100.0), (1, 100.0, 200.0), (2, 300.0, 100.0)],
+            ),
+            row(100.0, &[(3, 0.0, 150.0), (4, 150.0, 250.0)]),
+            row(200.0, &[(5, 0.0, 400.0)]),
+        ]
+    }
+
+    #[test]
+    fn left_and_right_wrap_across_rows() {
+        let rows = nav_rows();
+        assert_eq!(step_from(&rows, 2, Step::Right), Some(3));
+        assert_eq!(step_from(&rows, 3, Step::Left), Some(2));
+        assert_eq!(step_from(&rows, 0, Step::Left), None);
+        assert_eq!(step_from(&rows, 5, Step::Right), None);
+    }
+
+    #[test]
+    fn up_and_down_pick_the_tile_nearest_horizontally() {
+        let rows = nav_rows();
+        assert_eq!(step_from(&rows, 2, Step::Down), Some(4));
+        assert_eq!(step_from(&rows, 0, Step::Down), Some(3));
+        assert_eq!(step_from(&rows, 4, Step::Up), Some(1));
+        assert_eq!(step_from(&rows, 0, Step::Up), None);
+        assert_eq!(step_from(&rows, 5, Step::Down), None);
+    }
+
+    #[test]
+    fn home_and_end_reach_the_ends() {
+        let rows = nav_rows();
+        assert_eq!(step_from(&rows, 4, Step::First), Some(0));
+        assert_eq!(step_from(&rows, 1, Step::Last), Some(5));
+        assert_eq!(step_from(&rows, 9, Step::First), None);
+    }
+
+    #[test]
+    fn scroll_delta_brings_the_row_into_view() {
+        assert_eq!(scroll_delta(100.0, 300.0, 150.0, 100.0), 0.0);
+        assert_eq!(scroll_delta(100.0, 300.0, 50.0, 100.0), -50.0);
+        assert_eq!(scroll_delta(100.0, 300.0, 350.0, 100.0), 50.0);
+        assert_eq!(scroll_delta(100.0, 300.0, 500.0, 400.0), 400.0);
     }
 }

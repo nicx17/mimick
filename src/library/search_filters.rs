@@ -67,17 +67,19 @@ fn combo_row(title: &str, items: &[&str]) -> libadwaita::ComboRow {
         .build()
 }
 
-#[allow(clippy::type_complexity)]
-pub(super) fn build_flags_group() -> (
-    libadwaita::PreferencesGroup,
-    libadwaita::ComboRow,
-    libadwaita::SwitchRow,
-    libadwaita::SwitchRow,
-    libadwaita::SwitchRow,
-    libadwaita::SwitchRow,
-    libadwaita::ComboRow,
-    libadwaita::ComboRow,
-) {
+/// The "Type and flags" group and its rows.
+pub(super) struct FlagsGroup {
+    pub group: libadwaita::PreferencesGroup,
+    pub type_row: libadwaita::ComboRow,
+    pub favorite: libadwaita::SwitchRow,
+    pub motion: libadwaita::SwitchRow,
+    pub not_in_album: libadwaita::SwitchRow,
+    pub deleted: libadwaita::SwitchRow,
+    pub visibility: libadwaita::ComboRow,
+    pub rating: libadwaita::ComboRow,
+}
+
+pub(super) fn build_flags_group() -> FlagsGroup {
     fn switch(t: &str) -> libadwaita::SwitchRow {
         libadwaita::SwitchRow::builder().title(t).build()
     }
@@ -102,9 +104,16 @@ pub(super) fn build_flags_group() -> (
     group.add(&deleted);
     group.add(&vis);
     group.add(&rating);
-    (
-        group, type_row, fav, motion, not_album, deleted, vis, rating,
-    )
+    FlagsGroup {
+        group,
+        type_row,
+        favorite: fav,
+        motion,
+        not_in_album: not_album,
+        deleted,
+        visibility: vis,
+        rating,
+    }
 }
 
 pub(super) fn build_date_group() -> (

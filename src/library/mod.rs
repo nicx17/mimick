@@ -52,6 +52,7 @@ mod thumbnail_loader;
 
 mod about_dialog;
 mod actions;
+mod album_activity;
 mod album_assets;
 mod album_delete;
 mod album_download;

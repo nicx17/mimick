@@ -128,6 +128,7 @@ impl TagSection {
             &gtk::Label::builder()
                 .use_markup(true)
                 .label(tag_markup(&tag.value))
+                .ellipsize(gtk::pango::EllipsizeMode::End)
                 .build(),
         );
         let name_btn = gtk::Button::builder()

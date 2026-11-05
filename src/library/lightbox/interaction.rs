@@ -19,7 +19,9 @@ use super::{
 use crate::library::actions::{TrashTarget, confirm_trash};
 use crate::library::archive::{archive_icon, archive_tooltip, set_archived};
 use crate::library::asset_edit::show_edit_dialog;
-use crate::library::context_menu::{AssetMenuHooks, show_asset_context_menu};
+use crate::library::context_menu::{
+    AssetMenuHooks, connect_context_menu, menu_key, show_asset_context_menu,
+};
 use crate::library::download::{open_local_with_default_app, start_download};
 use crate::library::favorites::{FavoriteHooks, heart_icon, heart_tooltip, toggle_favorite};
 use crate::library::trash_view;
@@ -80,7 +82,7 @@ impl Lightbox {
                 open_local_with_default_app(path);
             }
         });
-        self.on_click(&self.video_badge_button, |lb| lb.toggle_video());
+        self.on_click(&self.video_badge_button, Self::toggle_video);
 
         let drag_source = gtk::DragSource::new();
         drag_source.set_actions(gtk::gdk::DragAction::COPY);
@@ -118,8 +120,8 @@ impl Lightbox {
             .connect_notify_local(Some("collapsed"), move |_, _| sync_nav_visibility());
         *self.collapse_handler.borrow_mut() = Some(handler);
 
-        self.on_click(&self.header.prev_btn, |lb| lb.goto_prev());
-        self.on_click(&self.header.next_btn, |lb| lb.goto_next());
+        self.on_click(&self.header.prev_btn, Self::goto_prev);
+        self.on_click(&self.header.next_btn, Self::goto_next);
 
         let lb = Rc::downgrade(self);
         self.header.page.connect_hidden(move |_| {
@@ -146,11 +148,11 @@ impl Lightbox {
     pub(super) fn connect_zoom_controls(self: &Rc<Self>) {
         self.on_click(&self.actions.zoom_in, |lb| lb.zoom_by(1.2));
         self.on_click(&self.actions.zoom_out, |lb| lb.zoom_by(1.0 / 1.2));
-        self.on_click(&self.actions.zoom_reset, |lb| lb.zoom_reset());
+        self.on_click(&self.actions.zoom_reset, Self::zoom_reset);
 
         self.connect_pan_and_pinch();
 
-        // Double-click on the picture: zoom in 2x toward the click position.
+        // Double-click or double-tap: zoom 2x toward the point, or back out when zoomed in.
         let double_click = gtk::GestureClick::new();
         double_click.set_button(gtk::gdk::BUTTON_PRIMARY);
         let lb = Rc::downgrade(self);
@@ -159,8 +161,12 @@ impl Lightbox {
                 && n_press == 2
                 && lb.ocr_box_under(x, y).is_none()
             {
-                lb.cursor_pos.set(Some((x, y)));
-                lb.set_zoom(lb.zoom_level.get() * 2.0);
+                if lb.zoom_level.get() > 1.0 {
+                    lb.zoom_reset();
+                } else {
+                    lb.cursor_pos.set(Some((x, y)));
+                    lb.set_zoom(2.0);
+                }
             }
         });
         self.picture.scrolled.add_controller(double_click);
@@ -254,25 +260,34 @@ impl Lightbox {
         });
         self.picture.scrolled.add_controller(motion);
 
-        // Right-click: open the standard asset context menu.
-        let right_click = gtk::GestureClick::new();
-        right_click.set_button(gtk::gdk::BUTTON_SECONDARY);
         let lb = Rc::downgrade(self);
-        right_click.connect_pressed(move |_, _, x, y| {
-            let Some(lb) = lb.upgrade() else {
-                return;
-            };
-            show_asset_context_menu(
-                lb.ui.clone(),
-                &lb.picture.scrolled,
-                lb.pos.get(),
-                x,
-                y,
-                lb.menu_hooks(),
-            );
+        connect_context_menu(&self.picture.scrolled, move |x, y| {
+            if let Some(lb) = lb.upgrade() {
+                lb.show_menu_at(x, y);
+            }
         });
-        self.picture.scrolled.add_controller(right_click);
+        let lb = Rc::downgrade(self);
+        self.header.page.add_controller(menu_key(move || {
+            if let Some(lb) = lb.upgrade() {
+                let scrolled = &lb.picture.scrolled;
+                lb.show_menu_at(
+                    f64::from(scrolled.width()) / 2.0,
+                    f64::from(scrolled.height()) / 2.0,
+                );
+            }
+        }));
         self.connect_swipe_tracker();
+    }
+
+    fn show_menu_at(self: &Rc<Self>, x: f64, y: f64) {
+        show_asset_context_menu(
+            self.ui.clone(),
+            &self.picture.scrolled,
+            self.pos.get(),
+            x,
+            y,
+            self.menu_hooks(),
+        );
     }
 
     /// Ctrl +/-/0 zoom, Left/Right navigate, I toggles details, Escape closes.
@@ -314,10 +329,10 @@ impl Lightbox {
             }
         });
 
-        self.on_click(&self.actions.trash, |lb| lb.confirm_trash_current());
-        self.on_click(&self.actions.favorite, |lb| lb.toggle_current_favorite());
-        self.on_click(&self.actions.archive, |lb| lb.toggle_current_archive());
-        self.on_click(&self.details.edit_btn, |lb| lb.edit_current());
+        self.on_click(&self.actions.trash, Self::confirm_trash_current);
+        self.on_click(&self.actions.favorite, Self::toggle_current_favorite);
+        self.on_click(&self.actions.archive, Self::toggle_current_archive);
+        self.on_click(&self.details.edit_btn, Self::edit_current);
         self.on_click(&self.details.album_btn, |lb| lb.add_current_to_album());
         let lb = Rc::downgrade(self);
         self.details.tags.bind(

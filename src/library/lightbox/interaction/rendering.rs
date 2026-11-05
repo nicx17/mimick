@@ -18,8 +18,10 @@ use super::super::details::{
 use super::super::strip::Slot;
 use super::super::{AssetInfo, Lightbox, LoadResult, PictureLoad};
 use super::super::{apply_lightbox_zoom, lightbox_title_cap, rating};
-use crate::api_client::ThumbnailSize;
-use crate::library::{LOCAL_ID_PREFIX, load_texture_oriented, timeline, trash_view};
+use crate::api_client::{AssetDetails, ThumbnailSize};
+use crate::library::{
+    LOCAL_ID_PREFIX, album_activity, album_assets, load_texture_oriented, timeline, trash_view,
+};
 
 impl Lightbox {
     pub(in crate::library::lightbox) fn render(self: &Rc<Self>) {
@@ -99,6 +101,7 @@ impl Lightbox {
         self.details.people.clear();
         self.details.tags.clear();
         self.details.albums.clear();
+        self.details.activity.clear();
     }
 
     fn start_picture_load(self: &Rc<Self>, info: &AssetInfo) {
@@ -571,8 +574,11 @@ impl Lightbox {
 
     /// Fetch EXIF from the server; dropped if the user has moved to another asset.
     fn load_remote_details(self: &Rc<Self>, pos: u32, asset_id: String, mine: bool) {
-        if !asset_id.starts_with(LOCAL_ID_PREFIX) && !trash_view::is_trash_active(&self.ui) {
+        let on_server =
+            !asset_id.starts_with(LOCAL_ID_PREFIX) && !trash_view::is_trash_active(&self.ui);
+        if on_server {
             self.load_albums(pos, asset_id.clone());
+            self.show_activity(&asset_id);
         }
         let lb = self.clone();
         glib::MainContext::default().spawn_local(async move {
@@ -581,39 +587,57 @@ impl Lightbox {
                 return;
             }
             lb.details.loading.set_visible(false);
-            let Ok(details) = result else {
-                return;
-            };
-            let on_server =
-                !asset_id.starts_with(LOCAL_ID_PREFIX) && !trash_view::is_trash_active(&lb.ui);
-            let features = lb.ui.features.get();
-            if on_server && features.ratings {
-                let rating = details.exif_info.as_ref().and_then(|exif| exif.rating);
-                let rating = rating::stars_from_exif(rating);
-                lb.details.rating.show(&asset_id, rating, mine);
-            }
-            if mine && features.people {
-                let taken = details.local_date_time.as_deref();
-                lb.details.people.show(&lb.ui, &details.people, taken);
-            }
-            if on_server && features.tags {
-                lb.details.tags.show(&asset_id, details.tags);
-            }
-            let exif = details
-                .exif_info
-                .or_else(|| mine.then(crate::api_client::ExifInfo::default));
-            if let Some(exif) = exif {
-                let edit = mine.then(|| lb.set_location_button());
-                let add_description = mine.then(|| lb.add_description_row());
-                fill_description(&lb.details.description, &exif, add_description);
-                let location = fill_exif_box(&lb.details.exif, &exif, "Taken", edit);
-                lb.details
-                    .created
-                    .set_visible(!shows_taken_date(&exif, "Taken"));
-                lb.show_location_map(location, &exif);
-                lb.details.exif.set_visible(true);
+            if let Ok(details) = result {
+                lb.show_remote_details(&asset_id, details, mine, on_server);
             }
         });
+    }
+
+    fn show_remote_details(
+        self: &Rc<Self>,
+        asset_id: &str,
+        details: AssetDetails,
+        mine: bool,
+        on_server: bool,
+    ) {
+        let features = self.ui.features.get();
+        if on_server && features.ratings {
+            let rating = details.exif_info.as_ref().and_then(|exif| exif.rating);
+            let rating = rating::stars_from_exif(rating);
+            self.details.rating.show(asset_id, rating, mine);
+        }
+        if mine && features.people {
+            let taken = details.local_date_time.as_deref();
+            self.details.people.show(&self.ui, &details.people, taken);
+        }
+        if on_server && features.tags {
+            self.details.tags.show(asset_id, details.tags);
+        }
+        let exif = details
+            .exif_info
+            .or_else(|| mine.then(crate::api_client::ExifInfo::default));
+        if let Some(exif) = exif {
+            self.show_remote_exif(&exif, mine);
+        }
+    }
+
+    fn show_remote_exif(self: &Rc<Self>, exif: &crate::api_client::ExifInfo, mine: bool) {
+        let edit = mine.then(|| self.set_location_button());
+        let add_description = mine.then(|| self.add_description_row());
+        fill_description(&self.details.description, exif, add_description);
+        let location = fill_exif_box(&self.details.exif, exif, "Taken", edit);
+        self.details
+            .created
+            .set_visible(!shows_taken_date(exif, "Taken"));
+        self.show_location_map(location, exif);
+        self.details.exif.set_visible(true);
+    }
+
+    fn show_activity(&self, asset_id: &str) {
+        let album = album_assets::current_album(&self.ui).filter(album_activity::has_activity);
+        if let Some(album) = album {
+            self.details.activity.show(&self.ui, &album, asset_id);
+        }
     }
 
     fn load_albums(self: &Rc<Self>, pos: u32, asset_id: String) {

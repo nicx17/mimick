@@ -68,7 +68,7 @@ mod tests {
         atomic_write(&target, b"data").unwrap();
         let siblings: Vec<_> = fs::read_dir(dir.path())
             .unwrap()
-            .filter_map(|e| e.ok())
+            .filter_map(Result::ok)
             .collect();
         assert_eq!(siblings.len(), 1);
         assert_eq!(siblings[0].file_name().to_string_lossy(), "clean.json");
