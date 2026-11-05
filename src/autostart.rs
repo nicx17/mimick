@@ -14,6 +14,7 @@ use std::path::{Path, PathBuf};
 
 const AUTOSTART_DESKTOP_ID: &str = "dev.nicx.mimick.desktop";
 const APP_ID: &str = "dev.nicx.mimick";
+const NATIVE_COMMAND: &str = "mimick";
 const AUTOSTART_REASON: &str = "Reason for requesting background access: Mimick must run in the background to automatically sync media to Immich.";
 
 /// Configure or request autostart registration depending on container and integration style.
@@ -68,8 +69,7 @@ fn install_desktop_entry() -> Result<(), String> {
             .map_err(|err| format!("Failed to create autostart directory: {err}"))?;
     }
 
-    let executable = launcher_executable()?;
-    let escaped_exec = escape_desktop_exec_arg(&executable.to_string_lossy());
+    let escaped_exec = escape_desktop_exec_arg(&launcher_command(std::env::var_os("APPIMAGE")));
 
     let desktop_entry = format!(
         "[Desktop Entry]\nType=Application\nVersion=1.0\nName=Mimick\nComment=Unofficial Immich desktop client and auto-sync agent\nExec={escaped_exec}\nIcon=dev.nicx.mimick\nTerminal=false\nCategories=Utility;\nX-GNOME-Autostart-enabled=true\nStartupNotify=false\n"
@@ -81,21 +81,16 @@ fn install_desktop_entry() -> Result<(), String> {
     Ok(())
 }
 
-/// The path the autostart entry should launch.
+/// The command the autostart entry runs, given the value of `$APPIMAGE`.
 ///
-/// Inside an AppImage, `current_exe()` points into a temporary mount that changes on every
-/// launch, so the entry must point at the `.AppImage` file the runtime exports as `$APPIMAGE`.
-fn launcher_executable() -> Result<PathBuf, String> {
-    if let Some(path) = appimage_path(std::env::var_os("APPIMAGE")) {
-        return Ok(path);
-    }
-    std::env::current_exe()
-        .map_err(|err| format!("Failed to resolve the Mimick executable path: {err}"))
-}
-
-/// The AppImage file from the `$APPIMAGE` value, ignoring an unset or empty variable.
-fn appimage_path(value: Option<OsString>) -> Option<PathBuf> {
-    value.filter(|path| !path.is_empty()).map(PathBuf::from)
+/// From an AppImage it's the `.AppImage` file the runtime exports, since the binary itself runs
+/// from a temporary mount that changes on every launch. Otherwise it's `mimick` on `PATH`, like
+/// the app's own desktop file, rather than `current_exe()`, which Semgrep flags as untrusted.
+fn launcher_command(appimage: Option<OsString>) -> String {
+    appimage.filter(|path| !path.is_empty()).map_or_else(
+        || NATIVE_COMMAND.to_string(),
+        |path| path.to_string_lossy().into_owned(),
+    )
 }
 
 /// Remove autostart desktop shortcut entry if one exists.
@@ -173,22 +168,22 @@ fn escape_desktop_exec_arg(value: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{appimage_path, escape_desktop_exec_arg, flatpak_host_config_dir_from};
+    use super::{escape_desktop_exec_arg, flatpak_host_config_dir_from, launcher_command};
     use std::ffi::OsString;
     use std::path::Path;
 
     #[test]
-    fn appimage_path_uses_the_appimage_file() {
+    fn launcher_command_uses_the_appimage_file() {
         assert_eq!(
-            appimage_path(Some(OsString::from("/home/user/Apps/Mimick.AppImage"))).unwrap(),
-            Path::new("/home/user/Apps/Mimick.AppImage")
+            launcher_command(Some(OsString::from("/home/user/Apps/Mimick.AppImage"))),
+            "/home/user/Apps/Mimick.AppImage"
         );
     }
 
     #[test]
-    fn appimage_path_ignores_missing_or_empty_variable() {
-        assert_eq!(appimage_path(None), None);
-        assert_eq!(appimage_path(Some(OsString::new())), None);
+    fn launcher_command_falls_back_to_mimick_on_path() {
+        assert_eq!(launcher_command(None), "mimick");
+        assert_eq!(launcher_command(Some(OsString::new())), "mimick");
     }
 
     #[test]

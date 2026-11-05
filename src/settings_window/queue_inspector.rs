@@ -327,7 +327,7 @@ pub(super) fn show_about_dialog(parent: &impl gtk::prelude::IsA<gtk::Widget>) {
             "GStreamer https://gstreamer.freedesktop.org",
             "libheif https://github.com/strukturag/libheif",
             "LibRaw https://www.libraw.org",
-            "libjpeg-turbo https://libjpeg-turbo.org",
+            "libjpeg-turbo https://www.libjpeg-turbo.org",
             "libwebp https://chromium.googlesource.com/webm/libwebp",
             "OpenJPEG https://www.openjpeg.org",
         ],

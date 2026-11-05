@@ -78,7 +78,9 @@ See [Current App Highlights](https://github.com/nicx17/mimick/wiki/Home#current-
   </a>
 </div>
 
-Mimick is distributed on Flathub, which keeps it updated automatically:
+### Flathub (recommended)
+
+Flathub keeps Mimick updated automatically:
 
 ```bash
 flatpak install flathub dev.nicx.mimick
@@ -86,7 +88,24 @@ flatpak install flathub dev.nicx.mimick
 
 > **Note:** If you haven't set up Flathub yet, follow the guide for your distribution at [flathub.org/setup](https://flathub.org/setup).
 
-On Arch Linux you can also install a native build of the latest release from the AUR: `mimick`. Each [release](https://github.com/nicx17/mimick/releases) also includes an AppImage for x86_64 and aarch64 that runs without installing; see [Installation](https://github.com/nicx17/mimick/wiki/Installation#appimage).
+### Arch Linux (AUR)
+
+A native build of the latest release, installed with an AUR helper such as `yay` or `paru`:
+
+```bash
+yay -S mimick
+```
+
+### AppImage
+
+Each [release](https://github.com/nicx17/mimick/releases) includes an AppImage for x86_64 and aarch64 that runs without installing anything:
+
+```bash
+chmod +x Mimick-*.AppImage
+./Mimick-*.AppImage
+```
+
+See [Installation](https://github.com/nicx17/mimick/wiki/Installation) for details on each method.
 
 ## Getting Started
 
@@ -146,7 +165,7 @@ Pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for commit and
 - **Map data and styles:** © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) and [VersaTiles](https://versatiles.org), with satellite imagery from the [VersaTiles sources](https://versatiles.org/sources/).
 - **Place search:** [Photon](https://github.com/komoot/photon) by komoot, licensed under the [Apache License 2.0](https://github.com/komoot/photon/blob/master/LICENSE), searching OpenStreetMap data. Map searches are sent to the public server at [photon.komoot.io](https://photon.komoot.io).
 - **Special thanks:** [Immich](https://immich.app).
-- **Built with:** [GTK](https://www.gtk.org), [libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/), [libshumate](https://gitlab.gnome.org/GNOME/libshumate), [GStreamer](https://gstreamer.freedesktop.org), [libheif](https://github.com/strukturag/libheif), [LibRaw](https://www.libraw.org), [libjpeg-turbo](https://libjpeg-turbo.org), [libwebp](https://chromium.googlesource.com/webm/libwebp), and [OpenJPEG](https://www.openjpeg.org).
+- **Built with:** [GTK](https://www.gtk.org), [libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/), [libshumate](https://gitlab.gnome.org/GNOME/libshumate), [GStreamer](https://gstreamer.freedesktop.org), [libheif](https://github.com/strukturag/libheif), [LibRaw](https://www.libraw.org), [libjpeg-turbo](https://www.libjpeg-turbo.org), [libwebp](https://chromium.googlesource.com/webm/libwebp), and [OpenJPEG](https://www.openjpeg.org).
 
 Third-party license texts are in [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt).
 

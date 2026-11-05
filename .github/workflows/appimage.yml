@@ -1,13 +1,10 @@
 name: AppImage
 
-# Runs on pull requests that change the AppImage build, or by hand; both keep the AppImage as a
-# workflow artifact. release.yml calls it with the tag to attach it to that GitHub release.
+# Runs on every pull request, so a change that breaks the AppImage shows up before release.yml
+# publishes a release without one. Pull request and manual runs keep the AppImage as a workflow
+# artifact; release.yml calls this with the tag to attach it to that GitHub release.
 on:
-  # Limited to these paths: each run builds on two runners for 20-40 minutes.
   pull_request:
-    paths:
-      - packaging/appimage/**
-      - .github/workflows/appimage.yml
   workflow_dispatch:
   workflow_call:
     inputs:
@@ -17,6 +14,12 @@ on:
         default: ""
 
 permissions: read-all
+
+# Each run takes 20-40 minutes on two runners, so a new push to a pull request cancels its older
+# run. Release runs are never cancelled.
+concurrency:
+  group: appimage-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
