@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Context menus now open with a long-press on touch screens, so phone users can reach them. In the photo grid, the lightbox, and on album tiles, **Shift+F10** or the **Menu** key opens them too (#293).
 - Added keyboard navigation to the photo grid: the arrow keys move between photos (**Home** and **End** jump to the first and last), a ring marks the current one, **Enter** opens it, and **Space** selects it.
 - Album tiles in the **Recent** row on the Albums page now have the same context menu as the other album tiles.
+- Added an Arch Linux package on the AUR: `mimick` builds the latest release. Its build file is in `packaging/aur/` (#295).
+- Added AppImages for x86_64 and aarch64 to each GitHub release. Each bundles every library it needs, including glibc, so it runs on distributions too old for Mimick's GTK and libadwaita versions. **Run on Startup** points at the AppImage file itself (#295).
 
 ### Changed
 

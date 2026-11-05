@@ -23,6 +23,28 @@ flatpak install flathub dev.nicx.mimick
 
 *(Alternatively, you can install it graphically through your system's software center if it has Flathub integration, like GNOME Software or KDE Discover).*
 
+### Arch Linux (AUR)
+
+Arch users can install a native build from the AUR with an AUR helper such as `yay` or `paru`:
+
+```bash
+yay -S mimick
+```
+
+The native build runs as `mimick` (and `mimick --settings`) instead of `flatpak run`. For video playback beyond the basics, also install `gst-plugins-good` and `gst-libav`.
+
+### AppImage
+
+Each [GitHub release](https://github.com/nicx17/mimick/releases) includes an AppImage for 64-bit PCs (`Mimick-<version>-x86_64.AppImage`) and for 64-bit ARM devices such as phones (`Mimick-<version>-aarch64.AppImage`). It is a single file that runs on most distributions without installing anything. It carries its own copy of every library it needs, so it also works on distributions too old to have the GTK and libadwaita versions Mimick requires.
+
+```bash
+chmod +x Mimick-*.AppImage
+./Mimick-*.AppImage
+```
+
+- An AppImage doesn't add Mimick to your app launcher or to the file manager's **Open With** menu. Tools such as [Gear Lever](https://flathub.org/apps/it.mijorus.gearlever) or AppImageLauncher do that, and can update the AppImage when a new release comes out.
+- **Run on Startup** points at the AppImage file's current location. If you move or rename the file, turn the option off and on again.
+
 ## Running
 
 Run the app with:

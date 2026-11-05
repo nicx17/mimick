@@ -86,6 +86,8 @@ flatpak install flathub dev.nicx.mimick
 
 > **Note:** If you haven't set up Flathub yet, follow the guide for your distribution at [flathub.org/setup](https://flathub.org/setup).
 
+On Arch Linux you can also install a native build of the latest release from the AUR: `mimick`. Each [release](https://github.com/nicx17/mimick/releases) also includes an AppImage for x86_64 and aarch64 that runs without installing; see [Installation](https://github.com/nicx17/mimick/wiki/Installation#appimage).
+
 ## Getting Started
 
 The settings window opens the first time you launch Mimick.

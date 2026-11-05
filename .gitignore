@@ -76,3 +76,8 @@ scripts/sstool.py
 tests/fixtures/web_assets
 scripts/screenshots.py
 scripts/generate-map-styles.sh
+/packaging/aur/mimick/pkg
+/packaging/aur/mimick/src
+/packaging/aur/mimick/*.tar.gz
+/packaging/aur/mimick/*.pkg.tar.zst
+/AppDir

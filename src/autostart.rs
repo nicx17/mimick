@@ -1,13 +1,14 @@
 //! Handles autostart integration for both native installations and sandboxed Flatpak builds.
 //!
 //! Under Flatpak, uses the XDG Background portal to request autostart
-//! permission. On bare-metal installs, writes or removes a `.desktop`
+//! permission. On bare-metal installs and AppImages, writes or removes a `.desktop`
 //! file in `~/.config/autostart/`. The portal request is asynchronous
 //! and may be denied by the user.
 
 use ashpd::WindowIdentifier;
 use ashpd::desktop::background::Background;
 use gtk::prelude::*;
+use std::ffi::OsString;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -67,8 +68,7 @@ fn install_desktop_entry() -> Result<(), String> {
             .map_err(|err| format!("Failed to create autostart directory: {err}"))?;
     }
 
-    let executable = std::env::current_exe()
-        .map_err(|err| format!("Failed to resolve the Mimick executable path: {err}"))?;
+    let executable = launcher_executable()?;
     let escaped_exec = escape_desktop_exec_arg(&executable.to_string_lossy());
 
     let desktop_entry = format!(
@@ -79,6 +79,23 @@ fn install_desktop_entry() -> Result<(), String> {
         .map_err(|err| format!("Failed to write autostart entry: {err}"))?;
 
     Ok(())
+}
+
+/// The path the autostart entry should launch.
+///
+/// Inside an AppImage, `current_exe()` points into a temporary mount that changes on every
+/// launch, so the entry must point at the `.AppImage` file the runtime exports as `$APPIMAGE`.
+fn launcher_executable() -> Result<PathBuf, String> {
+    if let Some(path) = appimage_path(std::env::var_os("APPIMAGE")) {
+        return Ok(path);
+    }
+    std::env::current_exe()
+        .map_err(|err| format!("Failed to resolve the Mimick executable path: {err}"))
+}
+
+/// The AppImage file from the `$APPIMAGE` value, ignoring an unset or empty variable.
+fn appimage_path(value: Option<OsString>) -> Option<PathBuf> {
+    value.filter(|path| !path.is_empty()).map(PathBuf::from)
 }
 
 /// Remove autostart desktop shortcut entry if one exists.
@@ -156,8 +173,23 @@ fn escape_desktop_exec_arg(value: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{escape_desktop_exec_arg, flatpak_host_config_dir_from};
+    use super::{appimage_path, escape_desktop_exec_arg, flatpak_host_config_dir_from};
+    use std::ffi::OsString;
     use std::path::Path;
+
+    #[test]
+    fn appimage_path_uses_the_appimage_file() {
+        assert_eq!(
+            appimage_path(Some(OsString::from("/home/user/Apps/Mimick.AppImage"))).unwrap(),
+            Path::new("/home/user/Apps/Mimick.AppImage")
+        );
+    }
+
+    #[test]
+    fn appimage_path_ignores_missing_or_empty_variable() {
+        assert_eq!(appimage_path(None), None);
+        assert_eq!(appimage_path(Some(OsString::new())), None);
+    }
 
     #[test]
     fn test_escape_desktop_exec_arg() {
