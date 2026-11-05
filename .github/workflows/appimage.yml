@@ -1,8 +1,13 @@
 name: AppImage
 
-# Run by hand to test a build (the AppImage is kept as a workflow artifact), or called by
-# release.yml with the tag to attach it to that GitHub release.
+# Runs on pull requests that change the AppImage build, or by hand; both keep the AppImage as a
+# workflow artifact. release.yml calls it with the tag to attach it to that GitHub release.
 on:
+  # Limited to these paths: each run builds on two runners for 20-40 minutes.
+  pull_request:
+    paths:
+      - packaging/appimage/**
+      - .github/workflows/appimage.yml
   workflow_dispatch:
   workflow_call:
     inputs:
