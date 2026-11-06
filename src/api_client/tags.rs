@@ -31,10 +31,7 @@ fn check_bulk_results(results: &[BulkIdResult]) -> Result<(), String> {
 impl ImmichApiClient {
     /// All tags on the server, sorted by their full path.
     pub async fn fetch_tags(&self) -> Result<Vec<Tag>, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let resp = self
             .client
@@ -55,10 +52,7 @@ impl ImmichApiClient {
 
     /// Create a tag (and any missing parents for a `Parent/Child` path), or return it if it exists.
     pub async fn create_tag(&self, value: &str) -> Result<Tag, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let resp = self
             .client
@@ -134,10 +128,7 @@ impl ImmichApiClient {
         tag_id: &str,
         asset_id: &str,
     ) -> Result<(), String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let resp = self
             .client

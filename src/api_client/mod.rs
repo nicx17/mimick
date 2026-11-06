@@ -170,10 +170,7 @@ impl ImmichApiClient {
         path: &str,
         body: Option<serde_json::Value>,
     ) -> Result<reqwest::Response, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let mut request = self
             .client
             .request(method, format!("{}{}", base_url, path))
@@ -354,6 +351,13 @@ impl ImmichApiClient {
             return active.clone();
         }
         None
+    }
+
+    /// The active base URL, or a "No active connection" error for the user.
+    pub(super) async fn require_active_url(&self) -> Result<String, String> {
+        self.get_active_url()
+            .await
+            .ok_or_else(|| gettext("No active connection"))
     }
 }
 

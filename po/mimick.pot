@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 18:15+0530\n"
+"POT-Creation-Date: 2026-11-06 18:26+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,22 +30,7 @@ msgstr ""
 msgid "Failed to fetch albums"
 msgstr ""
 
-#: src/api_client/albums.rs:190 src/api_client/download.rs:45
-#: src/api_client/library.rs:109 src/api_client/library.rs:197
-#: src/api_client/library.rs:248 src/api_client/library.rs:319
-#: src/api_client/library.rs:360 src/api_client/library.rs:389
-#: src/api_client/library.rs:457 src/api_client/mod.rs:176
-#: src/api_client/search.rs:29 src/api_client/search.rs:63
-#: src/api_client/search.rs:115 src/api_client/search.rs:195
-#: src/api_client/search.rs:360 src/api_client/search/server_info.rs:26
-#: src/api_client/search/server_info.rs:76 src/api_client/shared_links.rs:192
-#: src/api_client/suggestions.rs:23 src/api_client/tags.rs:37
-#: src/api_client/tags.rs:61 src/api_client/tags.rs:140
-#: src/api_client/trash.rs:57
-msgid "No active connection"
-msgstr ""
-
-#: src/api_client/albums.rs:266 src/api_client/albums.rs:294
+#: src/api_client/albums.rs:263 src/api_client/albums.rs:291
 msgid "Cannot fetch albums to verify existence"
 msgstr ""
 
@@ -168,7 +153,7 @@ msgstr ""
 msgid "Check network quality and server responsiveness, then retry."
 msgstr ""
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:280
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:277
 msgid "Could not reach the Immich server"
 msgstr ""
 
@@ -227,16 +212,20 @@ msgid ""
 "Retry the request after checking network connectivity and server health."
 msgstr ""
 
-#: src/api_client/search.rs:317
+#: src/api_client/mod.rs:360
+msgid "No active connection"
+msgstr ""
+
+#: src/api_client/search.rs:287
 msgid "Immich can't count by file name or deleted photos"
 msgstr ""
 
-#: src/api_client/tags.rs:82
+#: src/api_client/tags.rs:76
 #, rust-format
 msgid "Immich did not return the tag \"{value}\""
 msgstr ""
 
-#: src/api_client/tags.rs:93
+#: src/api_client/tags.rs:87
 msgid "Renaming tags needs a newer version of Immich."
 msgstr ""
 
@@ -1050,12 +1039,12 @@ msgstr ""
 
 #: src/library/albums_view.rs:158 src/library/albums_view.rs:202
 #: src/library/bottom_nav.rs:13 src/library/navigation.rs:159
-#: src/library/shortcuts_dialog.rs:58 src/library/sidebar.rs:87
+#: src/library/shortcuts_dialog.rs:58 src/library/sidebar/rows.rs:61
 msgid "Albums"
 msgstr ""
 
 #: src/library/albums_view.rs:200 src/library/navigation.rs:160
-#: src/library/sidebar.rs:93
+#: src/library/sidebar/rows.rs:67
 msgid "Shared Albums"
 msgstr ""
 
@@ -1092,7 +1081,7 @@ msgid "Unarchive"
 msgstr ""
 
 #: src/library/archive.rs:26 src/library/search_filters.rs:108
-#: src/library/shortcuts_dialog.rs:56 src/library/sidebar.rs:129
+#: src/library/shortcuts_dialog.rs:56 src/library/sidebar/rows.rs:103
 #: src/library/source_header.rs:224
 msgid "Archive"
 msgstr ""
@@ -1177,7 +1166,7 @@ msgid "Add tag"
 msgstr ""
 
 #: src/library/asset_tags.rs:51 src/library/navigation.rs:163
-#: src/library/search_filters.rs:57 src/library/sidebar.rs:117
+#: src/library/search_filters.rs:57 src/library/sidebar/rows.rs:91
 msgid "Tags"
 msgstr ""
 
@@ -1214,24 +1203,24 @@ msgstr ""
 
 #: src/library/bottom_nav.rs:10 src/library/server_stats_dialog.rs:94
 #: src/library/server_stats_dialog.rs:126 src/library/shortcuts_dialog.rs:51
-#: src/library/sidebar.rs:57 src/library/source_header.rs:201
+#: src/library/sidebar/rows.rs:31 src/library/source_header.rs:201
 msgid "Photos"
 msgstr ""
 
 #: src/library/bottom_nav.rs:11 src/library/shortcuts_dialog.rs:52
-#: src/library/sidebar.rs:69 src/library/source_header.rs:222
+#: src/library/sidebar/rows.rs:43 src/library/source_header.rs:222
 msgid "Explore"
 msgstr ""
 
 #: src/library/bottom_nav.rs:12 src/library/navigation.rs:167
 #: src/library/shortcuts_dialog.rs:53 src/library/shortcuts_dialog.rs:194
-#: src/library/sidebar.rs:75
+#: src/library/sidebar/rows.rs:49
 msgid "Map"
 msgstr ""
 
 #: src/library/bottom_nav.rs:14 src/library/explore_view.rs:211
 #: src/library/lightbox/people.rs:25 src/library/navigation.rs:162
-#: src/library/shortcuts_dialog.rs:54 src/library/sidebar.rs:81
+#: src/library/shortcuts_dialog.rs:54 src/library/sidebar/rows.rs:55
 msgid "People"
 msgstr ""
 
@@ -1345,7 +1334,7 @@ msgid_plural "{n} videos"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/library/content_state.rs:125
+#: src/library/content_state.rs:125 src/library/sidebar.rs:36
 msgid "Statistics unavailable"
 msgstr ""
 
@@ -1372,7 +1361,7 @@ msgstr ""
 msgid "Connected through configured server"
 msgstr ""
 
-#: src/library/content_state.rs:141
+#: src/library/content_state.rs:141 src/library/sidebar.rs:35
 msgid "Offline"
 msgstr ""
 
@@ -1683,7 +1672,7 @@ msgid ""
 msgstr ""
 
 #: src/library/folders_view.rs:97 src/library/navigation.rs:164
-#: src/library/sidebar.rs:123
+#: src/library/sidebar/rows.rs:97
 msgid "Folders"
 msgstr ""
 
@@ -2209,18 +2198,18 @@ msgid "Drop files to upload"
 msgstr ""
 
 #: src/library/navigation.rs:161 src/library/shared_links_view.rs:33
-#: src/library/sidebar.rs:99
+#: src/library/sidebar/rows.rs:73
 msgid "Shared Links"
 msgstr ""
 
 #: src/library/navigation.rs:165 src/library/shortcuts_dialog.rs:59
-#: src/library/sidebar.rs:105
+#: src/library/sidebar/rows.rs:79
 msgid "Sharing"
 msgstr ""
 
 #: src/library/navigation.rs:166 src/library/search_panel.rs:77
 #: src/library/search_view.rs:165 src/library/shortcuts_dialog.rs:32
-#: src/library/sidebar.rs:63
+#: src/library/sidebar/rows.rs:37
 msgid "Search"
 msgstr ""
 
@@ -2835,12 +2824,12 @@ msgstr ""
 msgid "Or the Menu key; in the grid, the viewer, and on album tiles"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:55 src/library/sidebar.rs:111
+#: src/library/shortcuts_dialog.rs:55 src/library/sidebar/rows.rs:85
 #: src/library/source_header.rs:223
 msgid "Favorites"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:57 src/library/sidebar.rs:135
+#: src/library/shortcuts_dialog.rs:57 src/library/sidebar/rows.rs:109
 #: src/library/source_header.rs:225
 msgid "Trash"
 msgstr ""
@@ -3053,81 +3042,91 @@ msgstr ""
 msgid "Video"
 msgstr ""
 
-#: src/library/sidebar.rs:34 src/library/window_layout/responsive.rs:83
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:33
+#: src/settings_window/status.rs:46
+msgid "Connection"
+msgstr ""
+
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:23
+#: src/settings_window/status.rs:48
+msgid "Server"
+msgstr ""
+
+#: src/library/sidebar.rs:206
+msgid "Show recent albums"
+msgstr ""
+
+#: src/library/sidebar.rs:232
+msgid "All Albums"
+msgstr ""
+
+#: src/library/sidebar/rows.rs:8 src/library/window_layout/responsive.rs:83
 #: src/settings_window/library.rs:74 src/tray_icon.rs:62
 msgid "Library"
 msgstr ""
 
-#: src/library/sidebar.rs:46
+#: src/library/sidebar/rows.rs:20
 msgid "Albums & Sharing"
 msgstr ""
 
-#: src/library/sidebar.rs:49
+#: src/library/sidebar/rows.rs:23
 msgid "Browse"
 msgstr ""
 
-#: src/library/sidebar.rs:58
+#: src/library/sidebar/rows.rs:32
 msgid "Timeline of every photo and video"
 msgstr ""
 
-#: src/library/sidebar.rs:64
+#: src/library/sidebar/rows.rs:38
 msgid "Find photos, videos, and text"
 msgstr ""
 
-#: src/library/sidebar.rs:70
+#: src/library/sidebar/rows.rs:44
 msgid "People, places, and things"
 msgstr ""
 
-#: src/library/sidebar.rs:76
+#: src/library/sidebar/rows.rs:50
 msgid "Photos by where they were taken"
 msgstr ""
 
-#: src/library/sidebar.rs:82
+#: src/library/sidebar/rows.rs:56
 msgid "Faces Immich has recognized"
 msgstr ""
 
-#: src/library/sidebar.rs:88
+#: src/library/sidebar/rows.rs:62
 msgid "Recent, owned, and shared"
 msgstr ""
 
-#: src/library/sidebar.rs:94
+#: src/library/sidebar/rows.rs:68
 msgid "Shared with you and by you"
 msgstr ""
 
-#: src/library/sidebar.rs:100
+#: src/library/sidebar/rows.rs:74
 msgid "Public links you've created"
 msgstr ""
 
-#: src/library/sidebar.rs:106
+#: src/library/sidebar/rows.rs:80
 msgid "Partners who share libraries"
 msgstr ""
 
-#: src/library/sidebar.rs:112
+#: src/library/sidebar/rows.rs:86
 msgid "Photos and videos you've marked"
 msgstr ""
 
-#: src/library/sidebar.rs:118
+#: src/library/sidebar/rows.rs:92
 msgid "Browse and organize tags"
 msgstr ""
 
-#: src/library/sidebar.rs:124
+#: src/library/sidebar/rows.rs:98
 msgid "Browse by folder on the server"
 msgstr ""
 
-#: src/library/sidebar.rs:130
+#: src/library/sidebar/rows.rs:104
 msgid "Hidden from Photos"
 msgstr ""
 
-#: src/library/sidebar.rs:136
+#: src/library/sidebar/rows.rs:110
 msgid "Restore or permanently delete"
-msgstr ""
-
-#: src/library/sidebar.rs:324
-msgid "Show recent albums"
-msgstr ""
-
-#: src/library/sidebar.rs:350
-msgid "All Albums"
 msgstr ""
 
 #: src/library/source_header.rs:128 src/library/window_layout.rs:405
@@ -3906,20 +3905,12 @@ msgstr ""
 msgid "Folders can choose their own in Folder Rules."
 msgstr ""
 
-#: src/settings_window/connectivity.rs:23 src/settings_window/status.rs:48
-msgid "Server"
-msgstr ""
-
 #: src/settings_window/connectivity.rs:28
 msgid "Internal URL (LAN)"
 msgstr ""
 
 #: src/settings_window/connectivity.rs:30
 msgid "External URL (WAN)"
-msgstr ""
-
-#: src/settings_window/connectivity.rs:33 src/settings_window/status.rs:46
-msgid "Connection"
 msgstr ""
 
 #: src/settings_window/connectivity.rs:34

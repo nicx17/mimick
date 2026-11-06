@@ -23,10 +23,7 @@ struct SearchStatistics {
 impl ImmichApiClient {
     /// Fetch the list of recognized people faces from the server.
     pub async fn fetch_people(&self, include_hidden: bool) -> Result<Vec<Person>, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!(
             "{}/api/people?withHidden={}",
@@ -57,32 +54,11 @@ impl ImmichApiClient {
 
     /// Sectioned tile data (places + things) for the Explore landing.
     pub async fn fetch_explore(&self) -> Result<Vec<ExploreSection>, String> {
-        let base_url = self
-            .get_active_url()
+        self.send_json(reqwest::Method::GET, "/api/search/explore", None)
+            .await?
+            .json::<Vec<ExploreSection>>()
             .await
-            .ok_or_else(|| gettext("No active connection"))?;
-        let settings = self.settings_snapshot();
-        let url = format!("{}/api/search/explore", base_url);
-        match self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
-            .header("Accept", "application/json")
-            .timeout(Duration::from_secs(10))
-            .send()
-            .await
-        {
-            Ok(resp) if resp.status().is_success() => {
-                let sections = resp
-                    .json::<Vec<ExploreSection>>()
-                    .await
-                    .map_err(|err| err.to_string())?;
-                self.clear_issue().await;
-                Ok(sections)
-            }
-            Ok(resp) => Err(format!("HTTP {}", resp.status())),
-            Err(err) => Err(err.to_string()),
-        }
+            .map_err(|err| err.to_string())
     }
 
     /// Fetch all unique cities that have at least one asset with EXIF city data.
@@ -109,10 +85,7 @@ impl ImmichApiClient {
     /// Pages through `/api/search/metadata` collecting one representative asset
     /// per city. Caps at 500 pages to bound runtime on very large libraries.
     async fn walk_places(&self) -> Result<Vec<PlaceItem>, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/search/metadata", base_url);
 
@@ -189,10 +162,7 @@ impl ImmichApiClient {
             .acquire_owned()
             .await
             .map_err(|err| err.to_string())?;
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/people/{}/thumbnail", base_url, person_id);
         match self
@@ -354,10 +324,7 @@ impl ImmichApiClient {
         context: RequestContext,
         subject: Option<&str>,
     ) -> Result<(Vec<LibraryAsset>, bool), String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{}{}", base_url, endpoint);
 

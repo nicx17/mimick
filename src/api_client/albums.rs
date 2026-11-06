@@ -184,10 +184,7 @@ impl ImmichApiClient {
 
     /// Create a new album. Returns the new album ID.
     pub async fn create_album(&self, album_name: &str) -> Result<Option<String>, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let url = format!("{}/api/albums", base_url);
         let api_key = self.settings.read().api_key.clone();
 

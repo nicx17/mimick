@@ -65,16 +65,25 @@ pub fn format_local(moment: chrono::DateTime<chrono::FixedOffset>, format: &str)
         )
 }
 
-/// `share/locale` next to `bin/` (Flatpak, distro packages, `cargo run` into `target/`),
-/// falling back to the mounted AppImage, where the binary runs through sharun's loader.
+/// Where the Flatpak and distro packages install translations.
+const INSTALLED_LOCALE_DIRS: [&str; 2] = ["/app/share/locale", "/usr/share/locale"];
+
+/// `scripts/i18n.sh install target/share/locale` output, for testing with `cargo run`.
+const DEV_LOCALE_DIR: Option<&str> = if cfg!(debug_assertions) {
+    Some(concat!(env!("CARGO_MANIFEST_DIR"), "/target/share/locale"))
+} else {
+    None
+};
+
+/// The mounted AppImage's catalogs, then a dev build's, then the fixed install paths.
 fn locale_dir() -> Option<PathBuf> {
-    let beside_exe = std::env::current_exe()
-        .ok()
-        .and_then(|exe| Some(exe.parent()?.parent()?.join("share/locale")));
-    let in_appimage = std::env::var_os("APPDIR").map(|dir| PathBuf::from(dir).join("share/locale"));
-    [beside_exe, in_appimage]
+    let in_appimage = std::env::var_os("APPDIR")
+        .filter(|dir| !dir.is_empty())
+        .map(|dir| PathBuf::from(dir).join("share/locale"));
+    in_appimage
         .into_iter()
-        .flatten()
+        .chain(DEV_LOCALE_DIR.map(PathBuf::from))
+        .chain(INSTALLED_LOCALE_DIRS.map(PathBuf::from))
         .find(|dir| dir.is_dir())
 }
 

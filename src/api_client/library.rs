@@ -5,7 +5,6 @@
 //! concurrency), EXIF metadata, and original-file downloads. Asset
 //! deletion sends items to Immich trash rather than permanent removal.
 
-use gettextrs::gettext;
 use std::time::Duration;
 
 use super::errors::{RequestContext, classify_http_issue, classify_network_issue};
@@ -103,10 +102,7 @@ fn original_path(asset_id: &str, edited: bool) -> String {
 impl ImmichApiClient {
     /// Retrieve the complete list of albums from the Immich server for library display.
     pub async fn fetch_library_albums(&self) -> Result<Vec<LibraryAlbum>, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/albums", base_url);
 
@@ -191,10 +187,7 @@ impl ImmichApiClient {
             .acquire_owned()
             .await
             .map_err(|err| err.to_string())?;
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{base_url}{}", thumbnail_path(asset_id, size, edited));
         let result = self
@@ -242,10 +235,7 @@ impl ImmichApiClient {
         &self,
         asset_id: &str,
     ) -> Result<T, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/assets/{}", base_url, asset_id);
         match self
@@ -313,10 +303,7 @@ impl ImmichApiClient {
         output_path: &std::path::Path,
         progress: Option<TransferProgressCallback>,
     ) -> Result<(), String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{base_url}{path}");
 
@@ -354,39 +341,21 @@ impl ImmichApiClient {
 
     /// Fetch unique user ID of the logged-in API user.
     pub async fn fetch_current_user_id(&self) -> Result<String, String> {
-        let base_url = self
-            .get_active_url()
+        let json: serde_json::Value = self
+            .send_json(reqwest::Method::GET, "/api/users/me", None)
+            .await?
+            .json()
             .await
-            .ok_or_else(|| gettext("No active connection"))?;
-        let settings = self.settings_snapshot();
-        let url = format!("{}/api/users/me", base_url);
-        match self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
-            .header("Accept", "application/json")
-            .timeout(Duration::from_secs(10))
-            .send()
-            .await
-        {
-            Ok(resp) if resp.status().is_success() => {
-                let json: serde_json::Value = resp.json().await.map_err(|err| err.to_string())?;
-                json.get("id")
-                    .and_then(|v| v.as_str())
-                    .map(ToString::to_string)
-                    .ok_or_else(|| "Missing id in /users/me response".to_string())
-            }
-            Ok(resp) => Err(format!("HTTP {}", resp.status())),
-            Err(err) => Err(err.to_string()),
-        }
+            .map_err(|err| err.to_string())?;
+        json.get("id")
+            .and_then(|v| v.as_str())
+            .map(ToString::to_string)
+            .ok_or_else(|| "Missing id in /users/me response".to_string())
     }
 
     /// Update an asset's description, capture date, or favorite flag.
     pub async fn update_asset(&self, asset_id: &str, update: &AssetUpdate) -> Result<(), String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/assets/{}", base_url, asset_id);
         match self
@@ -451,10 +420,7 @@ impl ImmichApiClient {
         if asset_ids.is_empty() {
             return Ok(());
         }
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| gettext("No active connection"))?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/assets", base_url);
         let body = delete_request_body(asset_ids, force);
