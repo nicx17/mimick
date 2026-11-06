@@ -362,7 +362,7 @@ scale.mimick-video-seek {
 scale.mimick-video-seek > trough {
     min-height: 8px;
     border-radius: 4px;
-    background-color: alpha(white, 0.2);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 scale.mimick-video-seek > trough > highlight {
@@ -409,20 +409,20 @@ button.mimick-live-button:checked {
 
 .mimick-slideshow-controls separator {
     margin: 8px 4px;
-    background-color: alpha(white, 0.2);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* A hairline along the top edge, like a story's progress. */
 progressbar.mimick-slideshow-progress > trough {
     min-height: 3px;
     border-radius: 0;
-    background-color: alpha(white, 0.18);
+    background-color: rgba(255, 255, 255, 0.18);
 }
 
 progressbar.mimick-slideshow-progress > trough > progress {
     min-height: 3px;
     border-radius: 0;
-    background-color: alpha(white, 0.9);
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 /* ── Face and edit modes in the lightbox ───────────────────────── */
@@ -441,7 +441,7 @@ button.mimick-sheet-tile {
 .mimick-sheet-icon {
     padding: 12px;
     border-radius: 999px;
-    background-color: alpha(currentColor, 0.1);
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
 }
 
 button.mimick-sheet-destructive {
@@ -541,7 +541,7 @@ button.mimick-memory-card {
 
 .mimick-memory-card .mimick-memory-caption {
     padding: 18px 10px 8px;
-    background-image: linear-gradient(to bottom, transparent, alpha(black, 0.7));
+    background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7));
     color: white;
     font-weight: 700;
 }

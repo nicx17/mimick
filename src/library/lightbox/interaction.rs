@@ -9,84 +9,50 @@ use crate::api_client::Tag;
 use crate::library::asset_object::AssetObject;
 
 mod details_loading;
+mod layout;
+mod menus;
 mod navigation;
+mod neighbours;
 mod rendering;
+
 use super::fullscreen;
 use super::strip::Slot;
 use super::{
-    LOCAL_ID_PREFIX, LibraryWindowUi, Lightbox, apply_lightbox_zoom, build_action_bar,
-    build_details_pane, build_header, build_picture_area, build_split_view, build_unavailable_card,
-    build_video_badge, build_viewer,
+    LOCAL_ID_PREFIX, LibraryWindowUi, Lightbox, apply_lightbox_zoom, build_header,
+    build_picture_area,
 };
 use crate::library::actions::{TrashTarget, confirm_trash};
 use crate::library::archive::{archive_icon, archive_tooltip, set_archived};
 use crate::library::asset_edit::show_edit_dialog;
-use crate::library::context_menu::{
-    AssetMenuHooks, Menu, MenuTarget, connect_context_menu, item_menu, menu_key,
-};
+use crate::library::context_menu::{connect_context_menu, menu_key};
 use crate::library::download::{open_local_with_default_app, start_download};
 use crate::library::favorites::{FavoriteHooks, heart_icon, heart_tooltip, toggle_favorite};
 use crate::library::trash_view;
+use layout::{build_layers, lay_out};
+pub(super) use menus::is_swipe_up;
 
 impl Lightbox {
     /// Build the page's widget tree; signal handlers are connected by the `connect_*` methods.
     pub(super) fn new(ui: Rc<LibraryWindowUi>, position: u32, initial_filename: &str) -> Rc<Self> {
         let header = build_header(&ui, initial_filename);
         let picture = build_picture_area();
-        let unavailable = build_unavailable_card();
-        picture.overlay.add_overlay(&unavailable.overlay);
-        let video_badge_button = build_video_badge();
-        picture.overlay.add_overlay(&video_badge_button);
-        let live_layer = super::live::build_live_layer();
-        picture.overlay.add_overlay(&live_layer);
-        let live_button = super::live::build_live_button();
-        picture.overlay.add_overlay(&live_button);
-        let stack = super::stack::StackStrip::new();
-        let face_mode = super::faces::FaceMode::new();
-        picture.overlay.add_overlay(&face_mode.bar);
-        let edit_mode = super::edit::EditMode::new();
-        // Not overlays, so the photo shrinks to fit between them instead of being covered.
-        header.toolbar.add_top_bar(&edit_mode.header);
-        let slideshow = super::slideshow::Slideshow::new();
-        for overlay in slideshow.overlays() {
-            picture.overlay.add_overlay(&overlay);
-        }
-
-        let initial_full = ui.ctx.config.read().data.library_preview_full_resolution;
-        let actions = build_action_bar(initial_full);
-        // The full bar doesn't fit a 360 px window; Ctrl+0 still resets the zoom,
-        // and Edit Photo stays in the ⋯ menu.
-        for narrow_hidden in [
-            actions.zoom_reset.upcast_ref::<gtk::Widget>(),
-            actions.edit_slot.upcast_ref(),
-        ] {
-            ui.split
-                .bind_property("collapsed", narrow_hidden, "visible")
-                .invert_boolean()
-                .sync_create()
-                .build();
-        }
-        let details = build_details_pane();
-        let viewer = build_viewer(&picture, &actions);
-        viewer.insert_child_after(&stack.root, Some(&picture.overlay));
-        viewer.append(&edit_mode.panel);
-        let body = build_split_view(&ui, &viewer, &details, &header.details_btn);
-        header.toolbar.set_content(Some(&body));
+        let layers = build_layers(&picture);
+        let (actions, details, viewer) = lay_out(&ui, &header, &picture, &layers);
 
         Rc::new(Self {
             ui,
             header,
             picture,
-            unavailable,
-            video_badge_button,
-            live_button,
-            live_layer,
+            unavailable: layers.unavailable,
+            video_badge_button: layers.video_badge_button,
+            live_button: layers.live_button,
+            live_layer: layers.live_layer,
             motion: RefCell::new(None),
             member: RefCell::new(None),
-            stack,
-            face_mode,
-            edit_mode,
-            slideshow,
+            stack: layers.stack,
+            face_mode: layers.face_mode,
+            edit_mode: layers.edit_mode,
+            slideshow: layers.slideshow,
             actions,
             details,
             viewer,
@@ -327,63 +293,6 @@ impl Lightbox {
         self.on_click(&self.header.menu_btn, Self::show_menu_sheet);
     }
 
-    /// A fast swipe up on the photo opens the ⋯ sheet. It only looks at the swipe once it
-    /// ends and never claims the touch, so the sideways swipe, pinch, and long-press still work.
-    fn connect_swipe_up(self: &Rc<Self>) {
-        let swipe = gtk::GestureSwipe::builder().touch_only(true).build();
-        let lb = Rc::downgrade(self);
-        swipe.connect_swipe(move |_, vx, vy| {
-            if let Some(lb) = lb.upgrade()
-                && is_swipe_up(vx, vy)
-                && lb.photo_at_rest()
-            {
-                lb.show_menu_sheet();
-            }
-        });
-        self.picture.scrolled.add_controller(swipe);
-    }
-
-    /// Not zoomed, editing, tagging faces, or playing a slideshow, where swipes mean other things.
-    pub(super) fn photo_at_rest(&self) -> bool {
-        (self.zoom_level.get() - 1.0).abs() < 0.001
-            && !self.edit_mode.is_active()
-            && !self.face_mode.is_active()
-            && !self.slideshow.is_running()
-    }
-
-    fn show_menu_at(self: &Rc<Self>, x: f64, y: f64) {
-        self.show_menu_on(&self.picture.scrolled, x, y);
-    }
-
-    fn show_menu_on(self: &Rc<Self>, parent: &impl IsA<gtk::Widget>, x: f64, y: f64) {
-        if let Some(menu) = self.photo_menu(parent, x, y) {
-            menu.popup();
-        }
-    }
-
-    /// The ⋯ button's menu (also F10 and a swipe up): every action as an icon in a sheet.
-    pub(super) fn show_menu_sheet(self: &Rc<Self>) {
-        let button = &self.header.menu_btn;
-        if let Some(menu) = self.photo_menu(button, 0.0, 0.0) {
-            menu.present_sheet(button);
-        }
-    }
-
-    fn photo_menu(self: &Rc<Self>, parent: &impl IsA<gtk::Widget>, x: f64, y: f64) -> Option<Menu> {
-        let target = MenuTarget {
-            item: self.current_item()?,
-            position: self.pos.get(),
-        };
-        Some(item_menu(
-            self.ui.clone(),
-            parent,
-            target,
-            x,
-            y,
-            self.menu_hooks(),
-        ))
-    }
-
     /// Ctrl +/-/0 zoom, Left/Right navigate, I toggles details, Escape closes.
     pub(super) fn connect_keys(self: &Rc<Self>) {
         let key_controller = gtk::EventControllerKey::new();
@@ -475,22 +384,6 @@ impl Lightbox {
             .model
             .item(self.pos.get())
             .and_downcast::<AssetObject>()
-    }
-
-    /// Hooks for the right-click menu so trash/edit there update this lightbox.
-    fn menu_hooks(self: &Rc<Self>) -> AssetMenuHooks {
-        let lb_trashed = self.clone();
-        let lb_edited = self.clone();
-        let lb_fullscreen = Rc::downgrade(self);
-        AssetMenuHooks {
-            on_trashed: Rc::new(move || lb_trashed.after_trash()),
-            on_edited: Rc::new(move |date_changed| lb_edited.after_edit(date_changed)),
-            toggle_fullscreen: Some(Rc::new(move || {
-                if let Some(lb) = lb_fullscreen.upgrade() {
-                    lb.toggle_fullscreen();
-                }
-            })),
-        }
     }
 
     /// Delete key / trash button: move to trash, or delete permanently in the Trash view.
@@ -693,29 +586,5 @@ impl Lightbox {
         if let Some((content_width, _)) = content {
             self.sharpen_for_zoom(content_width);
         }
-    }
-}
-
-/// Swipe speed, in pixels per second, that counts as a deliberate swipe up.
-const SWIPE_UP_SPEED: f64 = 500.0;
-
-/// Fast, upward, and mostly vertical, so a sideways swipe to the next photo never counts.
-pub(super) fn is_swipe_up(vx: f64, vy: f64) -> bool {
-    vy < -SWIPE_UP_SPEED && vy.abs() > vx.abs() * 2.0
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn only_fast_upward_swipes_open_the_sheet() {
-        assert!(is_swipe_up(40.0, -900.0));
-        assert!(!is_swipe_up(0.0, 900.0), "downward");
-        assert!(!is_swipe_up(0.0, -200.0), "too slow");
-        assert!(
-            !is_swipe_up(-800.0, -700.0),
-            "mostly sideways, a photo change"
-        );
     }
 }

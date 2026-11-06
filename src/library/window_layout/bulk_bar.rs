@@ -19,34 +19,29 @@ struct BulkActions {
     trash: super::super::trash_view::TrashControls,
 }
 
+fn bar_button(icon: &str, tooltip: &str) -> gtk::Button {
+    gtk::Button::builder()
+        .icon_name(icon)
+        .tooltip_text(tooltip)
+        .build()
+}
+
 fn build_bulk_actions() -> BulkActions {
     let (delete, download, clear, share_link) = super::bulk_buttons();
-    let archive = gtk::Button::builder()
-        .icon_name("mimick-archive-symbolic")
-        .tooltip_text(gettext("Archive selected"))
-        .build();
-    let location = gtk::Button::builder()
-        .icon_name("mark-location-symbolic")
-        .tooltip_text(gettext("Set location for selected"))
-        .build();
-    let date = gtk::Button::builder()
-        .icon_name("x-office-calendar-symbolic")
-        .tooltip_text(gettext("Change date for selected"))
-        .build();
-    let add_to_album = gtk::Button::builder()
-        .icon_name("list-add-symbolic")
-        .tooltip_text(gettext("Add to album"))
-        .build();
-    let stack = gtk::Button::builder()
-        .icon_name("mimick-stack-symbolic")
-        .tooltip_text(gettext("Stack selected"))
-        .visible(false)
-        .build();
-    let remove_from_album = gtk::Button::builder()
-        .icon_name("list-remove-symbolic")
-        .tooltip_text(gettext("Remove from album"))
-        .visible(false)
-        .build();
+    let archive = bar_button("mimick-archive-symbolic", &gettext("Archive selected"));
+    let location = bar_button(
+        "mark-location-symbolic",
+        &gettext("Set location for selected"),
+    );
+    let date = bar_button(
+        "x-office-calendar-symbolic",
+        &gettext("Change date for selected"),
+    );
+    let add_to_album = bar_button("list-add-symbolic", &gettext("Add to album"));
+    let stack = bar_button("mimick-stack-symbolic", &gettext("Stack selected"));
+    stack.set_visible(false);
+    let remove_from_album = bar_button("list-remove-symbolic", &gettext("Remove from album"));
+    remove_from_album.set_visible(false);
     let trash = super::super::trash_view::build_trash_controls(vec![
         delete.clone(),
         download.clone(),

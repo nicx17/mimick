@@ -69,7 +69,7 @@ progress_block() {
     if [[ -z $listing ]]; then
         echo "> **No translations yet.** See [Translations](CONTRIBUTING.md#5-translations) to add your language."
     else
-        while IFS=$'\t' read -r pct name code; do
+        while IFS=$'\t' read -r pct name _; do
             labels+=("\"$name\"")
             percents+=("$((10#$pct))")
         done <<<"$listing"

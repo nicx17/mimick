@@ -29,7 +29,6 @@ use super::tiles::Tiles;
 const REFRESH_DELAY: Duration = Duration::from_millis(120);
 const FOCUS_ZOOM: f64 = 15.0;
 const FALLBACK_SIZE: (f64, f64) = (800.0, 600.0);
-const CACHED_LEVELS: usize = 5;
 
 /// Photos keep their marker across zoom levels; groups are rebuilt for each level.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -417,20 +416,10 @@ fn store_clusters(
         let Some(clusters) = computed.filter(|_| state.generation == generation) else {
             return;
         };
-        evict_far_levels(&mut state.clusters, level);
+        cluster::evict_far_levels(&mut state.clusters, level);
         state.clusters.insert(level, Arc::new(clusters));
     }
     refresh_markers(ui);
-}
-
-/// Keep the cache to a few zoom levels, dropping those farthest from `level` first.
-fn evict_far_levels(cache: &mut HashMap<u32, Arc<Vec<Cluster>>>, level: u32) {
-    while cache.len() >= CACHED_LEVELS {
-        let Some(farthest) = cache.keys().copied().max_by_key(|l| l.abs_diff(level)) else {
-            break;
-        };
-        cache.remove(&farthest);
-    }
 }
 
 fn clear_shown(view: &MapView) {
@@ -528,18 +517,6 @@ fn open_members(
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn the_cluster_cache_drops_the_farthest_levels() {
-        let mut cache: HashMap<u32, Arc<Vec<Cluster>>> = [2, 4, 5, 6, 7]
-            .into_iter()
-            .map(|l| (l, Arc::default()))
-            .collect();
-        evict_far_levels(&mut cache, 8);
-        let mut kept: Vec<u32> = cache.keys().copied().collect();
-        kept.sort_unstable();
-        assert_eq!(kept, [4, 5, 6, 7]);
-    }
 
     #[test]
     fn photos_keep_their_marker_across_zoom_levels() {

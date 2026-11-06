@@ -2,6 +2,8 @@ use crate::i18n::fill;
 use gettextrs::gettext;
 use gstreamer as gst;
 use gtk::prelude::*;
+use std::rc::Rc;
+use std::time::{Duration, Instant};
 
 pub(super) const SPEEDS: [f64; 8] = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
 pub(super) const NORMAL_SPEED: usize = 3;
@@ -282,6 +284,51 @@ fn volume_menu(volume: f64, muted: bool) -> (gtk::MenuButton, gtk::Scale, gtk::T
     );
     menu.set_icon_name(volume_icon(volume, muted));
     (menu, scale, mute)
+}
+
+const HIDE_DELAY: Duration = Duration::from_secs(3);
+
+/// The controls fade out while a video plays and nobody is using them.
+impl super::VideoPlayer {
+    pub(super) fn reveal_controls(&self) {
+        self.controls.revealer.set_reveal_child(true);
+        self.surface.set_cursor(None::<&gtk::gdk::Cursor>);
+    }
+
+    pub(super) fn bump_controls(self: &Rc<Self>) {
+        self.reveal_controls();
+        self.hide_at.set(Instant::now() + HIDE_DELAY);
+        if !self.hide_armed.replace(true) {
+            self.arm_hide(HIDE_DELAY);
+        }
+    }
+
+    fn arm_hide(self: &Rc<Self>, delay: Duration) {
+        let weak = Rc::downgrade(self);
+        glib::timeout_add_local_once(delay, move || {
+            let Some(p) = weak.upgrade() else {
+                return;
+            };
+            let remaining = p.hide_at.get().saturating_duration_since(Instant::now());
+            if !remaining.is_zero() {
+                p.arm_hide(remaining);
+                return;
+            }
+            p.hide_armed.set(false);
+            if p.is_playing() && !p.controls_in_use() {
+                p.controls.revealer.set_reveal_child(false);
+                p.surface.set_cursor_from_name(Some("none"));
+            }
+        });
+    }
+
+    fn controls_in_use(&self) -> bool {
+        let c = &self.controls;
+        c.hover.contains_pointer()
+            || c.volume_menu.is_active()
+            || c.tracks.is_active()
+            || c.speed.is_active()
+    }
 }
 
 #[cfg(test)]

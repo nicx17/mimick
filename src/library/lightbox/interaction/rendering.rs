@@ -14,7 +14,6 @@ use super::super::details::{
 use super::super::strip::Slot;
 use super::super::{AssetInfo, Lightbox, LoadResult, PictureLoad};
 use super::super::{apply_lightbox_zoom, lightbox_title_cap};
-use crate::api_client::ThumbnailSize;
 use crate::library::actions::is_mine;
 use crate::library::asset_object::AssetObject;
 use crate::library::download::{begin_download_session, finish_download_item, track_download_item};
@@ -41,24 +40,7 @@ impl Lightbox {
             .next_btn
             .set_sensitive(pos + 1 < self.ui.grid.model.n_items() || more_after);
 
-        let show_remote_actions = !info.is_local() && !info.is_video();
-        self.actions
-            .resolution_toggle
-            .set_visible(show_remote_actions);
-        self.actions.download.set_visible(show_remote_actions);
-        let on_server = !info.asset_id.starts_with(LOCAL_ID_PREFIX);
-        let in_trash = trash_view::is_trash_active(&self.ui);
-        self.actions.trash.set_visible(on_server && !in_trash);
-        self.actions.favorite.set_visible(on_server && !in_trash);
-        self.show_heart(info.favorite);
-        self.actions.archive.set_visible(on_server && !in_trash);
-        self.show_archive(info.archived);
-        let editable = on_server && !in_trash && is_mine(&self.ui, &item);
-        self.details.edit_btn.set_visible(editable);
-        self.actions.edit.set_visible(editable && !info.is_video());
-        self.details.album_btn.set_visible(on_server && !in_trash);
-        self.actions.zoom_group.set_visible(!info.is_video());
-        self.actions.open_with.set_visible(info.is_video());
+        let editable = self.sync_action_buttons(&info, &item);
 
         self.prepare_video(info.is_video());
         self.sync_live(&info);
@@ -76,6 +58,29 @@ impl Lightbox {
         } else {
             self.load_remote_details(pos, info.asset_id, editable);
         }
+    }
+
+    /// Shows the buttons that apply to this photo; returns whether it's yours to edit.
+    fn sync_action_buttons(&self, info: &AssetInfo, item: &AssetObject) -> bool {
+        let show_remote_actions = !info.is_local() && !info.is_video();
+        self.actions
+            .resolution_toggle
+            .set_visible(show_remote_actions);
+        self.actions.download.set_visible(show_remote_actions);
+        let on_server = !info.asset_id.starts_with(LOCAL_ID_PREFIX);
+        let in_trash = trash_view::is_trash_active(&self.ui);
+        self.actions.trash.set_visible(on_server && !in_trash);
+        self.actions.favorite.set_visible(on_server && !in_trash);
+        self.show_heart(info.favorite);
+        self.actions.archive.set_visible(on_server && !in_trash);
+        self.show_archive(info.archived);
+        let editable = on_server && !in_trash && is_mine(&self.ui, item);
+        self.details.edit_btn.set_visible(editable);
+        self.actions.edit.set_visible(editable && !info.is_video());
+        self.details.album_btn.set_visible(on_server && !in_trash);
+        self.actions.zoom_group.set_visible(!info.is_video());
+        self.actions.open_with.set_visible(info.is_video());
+        editable
     }
 
     /// Filename and sync summary; clears the previous asset's EXIF rows.
@@ -152,90 +157,6 @@ impl Lightbox {
         });
     }
 
-    pub(in crate::library::lightbox) fn fill_neighbours(&self) {
-        let pos = self.pos.get();
-        let next = pos
-            .checked_add(1)
-            .filter(|&next| next < self.ui.grid.model.n_items());
-        self.fill_slot(Slot::Prev, pos.checked_sub(1));
-        self.fill_slot(Slot::Next, next);
-        self.picture.strip.set_neighbours(pos > 0, next.is_some());
-    }
-
-    fn fill_slot(&self, slot: Slot, pos: Option<u32>) {
-        let info = pos
-            .and_then(|pos| self.ui.grid.model.item(pos))
-            .and_downcast::<AssetObject>()
-            .map(|item| AssetInfo::from_item(&item));
-        self.fill_slot_with(slot, info);
-    }
-
-    fn fill_slot_with(&self, slot: Slot, info: Option<AssetInfo>) {
-        let strip = &self.picture.strip;
-        let asset_id = info.as_ref().map_or("", |info| info.asset_id.as_str());
-        if strip.asset(slot) == asset_id {
-            return;
-        }
-        strip.set_asset(slot, asset_id);
-        let texture = info.as_ref().and_then(|info| self.instant_texture(info));
-        strip.picture(slot).set_paintable(texture.as_ref());
-    }
-
-    fn instant_texture(&self, info: &AssetInfo) -> Option<gdk4::Texture> {
-        let cache = &self.ui.ctx.thumbnail_cache;
-        let edited = info.edited && !info.is_video();
-        info.decoded_from_disk()
-            .then(|| cache.cached_screen(&info.asset_id, false, self.screen_edge()))
-            .flatten()
-            .or_else(|| cache.get_cached_preview(&info.asset_id, edited))
-            .or_else(|| cache.get_cached(&info.asset_id, ThumbnailSize::Thumbnail))
-    }
-
-    pub(in crate::library::lightbox) fn load_neighbours(&self) {
-        let pos = self.pos.get();
-        for (slot, neighbour) in [
-            (Slot::Prev, pos.checked_sub(1)),
-            (Slot::Next, pos.checked_add(1)),
-        ] {
-            let item = neighbour
-                .and_then(|pos| self.ui.grid.model.item(pos))
-                .and_downcast::<AssetObject>();
-            if let Some(info) = item.map(|item| AssetInfo::from_item(&item))
-                && self.picture.strip.asset(slot) == info.asset_id
-            {
-                self.load_neighbour(self.picture.strip.picture(slot), info);
-            }
-        }
-    }
-
-    fn load_neighbour(&self, picture: gtk::Picture, info: AssetInfo) {
-        let from_disk = info.decoded_from_disk().then(|| {
-            (
-                std::path::PathBuf::from(&info.local_path),
-                self.screen_edge(),
-            )
-        });
-        if from_disk.is_none() && info.asset_id.starts_with(LOCAL_ID_PREFIX) {
-            return;
-        }
-        let cache = self.ui.ctx.thumbnail_cache.clone();
-        let strip = self.picture.strip.clone();
-        glib::MainContext::default().spawn_local(async move {
-            let loaded = match from_disk {
-                Some((path, edge)) => cache.load_screen(&info.asset_id, false, path, edge).await,
-                None => {
-                    let edited = info.edited && !info.is_video();
-                    cache.load_preview(&info.asset_id, edited).await
-                }
-            };
-            if let Ok(texture) = loaded
-                && strip.neighbour_shows(&picture, &info.asset_id)
-            {
-                picture.set_paintable(Some(&texture));
-            }
-        });
-    }
-
     /// Badge, unavailable card, and recognised text stay put while photos slide, so they hide.
     pub(in crate::library::lightbox) fn show_overlays(&self, shown: bool) {
         let opacity = if shown { 1.0 } else { 0.0 };
@@ -246,7 +167,7 @@ impl Lightbox {
         self.picture.ocr.area.set_opacity(opacity);
     }
 
-    fn screen_edge(&self) -> u32 {
+    pub(super) fn screen_edge(&self) -> u32 {
         let monitor = self
             .ui
             .window

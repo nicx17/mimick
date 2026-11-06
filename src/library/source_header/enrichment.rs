@@ -56,20 +56,23 @@ pub(super) fn enrich(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
         | LibrarySource::AlbumUnified { id, .. } => enrich_album(ui, id.clone()),
         LibrarySource::Person { id, .. } => enrich_person(ui, id.clone()),
         LibrarySource::Tag { id, name } => enrich_tag(ui, id.clone(), name.clone()),
-        LibrarySource::MapArea { ids, .. } => {
-            *ui.header.count.borrow_mut() = Some(count_label(ids.0.len() as u64));
-            render_facts(&ui.header);
-            ui.header.actions.append(&full_grid_toggle(ui));
-            let ui_close = ui.clone();
-            add_action(
-                &ui.header,
-                "window-close-symbolic",
-                &gettext("Back to the map"),
-                move || super::super::navigation::close_map_area(&ui_close),
-            );
-        }
+        LibrarySource::MapArea { ids, .. } => enrich_map_area(ui, ids.0.len()),
         _ => {}
     }
+}
+
+/// The place's photo count, then the full-grid toggle and Back to the map.
+fn enrich_map_area(ui: &Rc<LibraryWindowUi>, count: usize) {
+    *ui.header.count.borrow_mut() = Some(count_label(count as u64));
+    render_facts(&ui.header);
+    ui.header.actions.append(&full_grid_toggle(ui));
+    let ui_close = ui.clone();
+    add_action(
+        &ui.header,
+        "window-close-symbolic",
+        &gettext("Back to the map"),
+        move || super::super::navigation::close_map_area(&ui_close),
+    );
 }
 
 /// Next to Back to the map: the place's photos beside the map, or filling the window.
