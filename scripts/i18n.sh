@@ -61,7 +61,7 @@ rows() {
 
 # A Mermaid bar chart GitHub draws in the README, or a note when there are no translations yet.
 progress_block() {
-    local total listing pct name code
+    local total listing pct name
     local -a labels=() percents=()
     read -r _ total < <(counts po/mimick.pot)
     listing=$(rows "$total")

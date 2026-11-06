@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 01:53+0530\n"
+"POT-Creation-Date: 2026-11-07 01:56+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -337,8 +337,8 @@ msgid "Build Image"
 msgstr ""
 
 #. Translators: strftime date, e.g. "9 Oct 2026".
-#: src/library/about_dialog.rs:78 src/library/header_format.rs:64
-#: src/library/header_format.rs:77
+#: src/library/about_dialog.rs:78 src/library/duplicates_view/cards.rs:217
+#: src/library/header_format.rs:64 src/library/header_format.rs:77
 msgid "%-d %b %Y"
 msgstr ""
 
@@ -1012,7 +1012,7 @@ msgstr ""
 msgid "Share…"
 msgstr ""
 
-#: src/library/albums_view.rs:43
+#: src/library/albums_view.rs:43 src/library/context_menu/manage.rs:42
 msgid "Create Share Link…"
 msgstr ""
 
@@ -1441,6 +1441,62 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+#: src/library/context_menu/manage.rs:66 src/library/lightbox/widgets.rs:418
+msgid "Add to Album…"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:74
+msgid "Set as Album Cover"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:90
+msgid "Remove from Album"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:112 src/library/lightbox/widgets.rs:416
+msgid "Edit Info…"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:131
+msgid "Edit Photo…"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:140 src/library/lightbox/people.rs:40
+msgid "Tag People…"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:151
+msgid "Set Location…"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:173
+msgid "Move to Trash"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:175 src/library/tags_view.rs:195
+msgid "Delete…"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:196 src/library/people_view.rs:284
+msgid "Remove from Favorites"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:198 src/library/people_view.rs:286
+msgid "Add to Favorites"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:248
+msgid "Restore"
+msgstr ""
+
+#: src/library/context_menu/manage.rs:258 src/library/trash_view.rs:207
+msgid "Delete Permanently"
+msgstr ""
+
+#: src/library/context_menu/menu.rs:62
+msgid "Photo Actions"
+msgstr ""
+
 #: src/library/controls.rs:340
 msgid "Most assets"
 msgstr ""
@@ -1641,6 +1697,20 @@ msgstr ""
 
 #: src/library/duplicates_view.rs:404
 msgid "Couldn't update the duplicates"
+msgstr ""
+
+#: src/library/duplicates_view/cards.rs:178
+msgid "Keep"
+msgstr ""
+
+#: src/library/duplicates_view/cards.rs:181 src/library/shortcuts_dialog.rs:57
+#: src/library/sidebar/rows.rs:110 src/library/source_header.rs:245
+msgid "Trash"
+msgstr ""
+
+#: src/library/duplicates_view/cards.rs:202
+#, rust-format
+msgid "{size}, largest"
 msgstr ""
 
 #: src/library/explore_view.rs:140
@@ -1880,6 +1950,26 @@ msgstr ""
 msgid "Saved. Immich is updating the photo."
 msgstr ""
 
+#: src/library/lightbox/edit/panel.rs:16 src/library/lightbox/widgets.rs:290
+msgid "Edit Photo"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:58
+msgid "Rotate Left"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:63
+msgid "Rotate Right"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:66
+msgid "Mirror"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:69
+msgid "Flip"
+msgstr ""
+
 #: src/library/lightbox/faces.rs:34
 msgid "Drag around a face to tag it"
 msgstr ""
@@ -2014,10 +2104,6 @@ msgstr ""
 msgid "Copy Selected Text"
 msgstr ""
 
-#: src/library/lightbox/people.rs:40
-msgid "Tag People…"
-msgstr ""
-
 #: src/library/lightbox/people.rs:46
 msgid "No one is tagged yet."
 msgstr ""
@@ -2084,6 +2170,34 @@ msgstr ""
 
 #: src/library/lightbox/slideshow.rs:422
 msgid "End of slideshow"
+msgstr ""
+
+#: src/library/lightbox/slideshow/options.rs:40
+msgid "Crossfade"
+msgstr ""
+
+#: src/library/lightbox/slideshow/options.rs:41
+msgid "Slide"
+msgstr ""
+
+#: src/library/lightbox/slideshow/options.rs:42
+msgid "None"
+msgstr ""
+
+#: src/library/lightbox/slideshow/settings.rs:19
+msgid "Shuffle"
+msgstr ""
+
+#: src/library/lightbox/slideshow/settings.rs:20
+msgid "Repeat"
+msgstr ""
+
+#: src/library/lightbox/slideshow/settings.rs:65
+msgid "Seconds per Photo"
+msgstr ""
+
+#: src/library/lightbox/slideshow/settings.rs:80
+msgid "Transition"
 msgstr ""
 
 #: src/library/lightbox/stack.rs:45
@@ -2161,10 +2275,6 @@ msgstr ""
 msgid "Toggle preview vs original full-resolution image"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:290
-msgid "Edit Photo"
-msgstr ""
-
 #: src/library/lightbox/widgets.rs:293
 msgid "Download asset"
 msgstr ""
@@ -2187,14 +2297,6 @@ msgstr ""
 
 #: src/library/lightbox/widgets.rs:340
 msgid "Reset zoom (Ctrl+0)"
-msgstr ""
-
-#: src/library/lightbox/widgets.rs:416
-msgid "Edit Info…"
-msgstr ""
-
-#: src/library/lightbox/widgets.rs:418
-msgid "Add to Album…"
 msgstr ""
 
 #: src/library/lightbox/widgets.rs:436
@@ -2523,14 +2625,6 @@ msgstr ""
 
 #: src/library/people_view.rs:281
 msgid "Hide"
-msgstr ""
-
-#: src/library/people_view.rs:284
-msgid "Remove from Favorites"
-msgstr ""
-
-#: src/library/people_view.rs:286
-msgid "Add to Favorites"
 msgstr ""
 
 #: src/library/people_view.rs:303
@@ -3128,11 +3222,6 @@ msgstr ""
 msgid "Favorites"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:57 src/library/sidebar/rows.rs:110
-#: src/library/source_header.rs:245
-msgid "Trash"
-msgstr ""
-
 #: src/library/shortcuts_dialog.rs:64
 msgid "Move between photos"
 msgstr ""
@@ -3686,10 +3775,6 @@ msgstr ""
 msgid "Change Color…"
 msgstr ""
 
-#: src/library/tags_view.rs:195
-msgid "Delete…"
-msgstr ""
-
 #: src/library/tags_view.rs:222
 #, rust-format
 msgid "The tag is created inside {parent}."
@@ -3838,10 +3923,6 @@ msgstr ""
 
 #: src/library/trash_view.rs:188
 msgid "This can't be undone. Local copies in your watch folders are kept."
-msgstr ""
-
-#: src/library/trash_view.rs:207
-msgid "Delete Permanently"
 msgstr ""
 
 #: src/library/trash_view.rs:217
