@@ -3,6 +3,8 @@
 //! Compares the set of assets in an Immich album against the files in
 //! a linked local folder to produce upload, download, and delete diffs.
 //! Executes the resolved diff actions with progress feedback.
+use crate::i18n::{fill, plural_n};
+use gettextrs::ngettext;
 
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
@@ -79,7 +81,10 @@ pub async fn execute_downloads(
         let route = state.active_server_route.clone();
         state.transfer.begin_group(
             TransferDirection::Download,
-            Some(format!("{} album item(s)", assets.len())),
+            Some(fill(
+                ngettext("{n} album item", "{n} album items", plural_n(assets.len())),
+                &[("n", &assets.len().to_string())],
+            )),
             route,
         );
     }

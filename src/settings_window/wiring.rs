@@ -1,5 +1,7 @@
 //! Settings window construction helpers and signal wiring.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -66,13 +68,13 @@ pub(super) fn build_window_shell(
     let status_page = add_page(
         &view_stack,
         "status",
-        "Status",
+        &gettext("Status"),
         "dialog-information-symbolic",
     );
     let settings_page = add_page(
         &view_stack,
         "settings",
-        "Settings",
+        &gettext("Settings"),
         "emblem-system-symbolic",
     );
     (window, status_page, settings_page)
@@ -90,11 +92,11 @@ fn build_header_bar(
         .build();
     let header_bar = adw::HeaderBar::builder().title_widget(&switcher).build();
     let menu = gtk::gio::Menu::new();
-    menu.append(Some("About Mimick"), Some("win.about"));
-    menu.append(Some("Quit Mimick"), Some("win.quit"));
+    menu.append(Some(&gettext("About Mimick")), Some("win.about"));
+    menu.append(Some(&gettext("Quit Mimick")), Some("win.quit"));
     let menu_btn = gtk::MenuButton::builder()
         .icon_name("open-menu-symbolic")
-        .tooltip_text("Main Menu")
+        .tooltip_text(gettext("Main Menu"))
         .menu_model(&menu)
         .build();
     header_bar.pack_end(&menu_btn);
@@ -141,21 +143,21 @@ fn add_page(stack: &adw::ViewStack, name: &str, title: &str, icon: &str) -> adw:
 /// First-run steps shown until an API key is configured.
 pub(super) fn add_welcome_group(settings_page: &adw::PreferencesPage) {
     let welcome_group = adw::PreferencesGroup::builder()
-        .title("Get Started")
-        .description("Three steps to start backing up to Immich.")
+        .title(gettext("Get Started"))
+        .description(gettext("Three steps to start backing up to Immich."))
         .build();
     let steps = [
         (
-            "1. Enter your server",
-            "Your Immich address under Server, below.",
+            &gettext("1. Enter your server"),
+            &gettext("Your Immich address under Server, below."),
         ),
         (
-            "2. Add an API key",
-            "Create one in Immich under Account Settings → API Keys. Open the guide for the permissions it needs.",
+            &gettext("2. Add an API key"),
+            &gettext("In Immich: Account Settings → API Keys. The guide lists the permissions."),
         ),
         (
-            "3. Choose a folder",
-            "Add a folder under Watch Folders, then Save and Connect.",
+            &gettext("3. Choose a folder"),
+            &gettext("Add a folder under Watch Folders, then Save and Connect."),
         ),
     ];
     for (index, (title, subtitle)) in steps.into_iter().enumerate() {
@@ -166,7 +168,7 @@ pub(super) fn add_welcome_group(settings_page: &adw::PreferencesPage) {
             .build();
         if index == 1 {
             let guide = Button::builder()
-                .label("Guide")
+                .label(gettext("Guide"))
                 .valign(gtk::Align::Center)
                 .build();
             guide.connect_clicked(|_| {
@@ -194,21 +196,21 @@ fn connection_summary(
 ) -> String {
     let other = |name: &str, on: bool, ok: bool| match (on, ok) {
         (false, _) => String::new(),
-        (true, true) => format!(" · {name} also works"),
-        (true, false) => format!(" · {name} unreachable"),
+        (true, true) => format!(
+            " · {}",
+            fill(gettext("{name} also works"), &[("name", name)])
+        ),
+        (true, false) => format!(
+            " · {}",
+            fill(gettext("{name} unreachable"), &[("name", name)])
+        ),
     };
     if internal_ok {
-        format!(
-            "Connected through LAN{}",
-            other("WAN", external_on, external_ok)
-        )
+        gettext("Connected through LAN") + &other("WAN", external_on, external_ok)
     } else if external_ok {
-        format!(
-            "Connected through WAN{}",
-            other("LAN", internal_on, internal_ok)
-        )
+        gettext("Connected through WAN") + &other("LAN", internal_on, internal_ok)
     } else {
-        "Couldn't reach Immich at either address".to_string()
+        gettext("Couldn't reach Immich at either address")
     }
 }
 
@@ -241,7 +243,7 @@ pub(super) fn connect_test_button(
             let external = enabled_url(&external_switch, &external_entry);
             let (internal_on, external_on) = (!internal.is_empty(), !external.is_empty());
             if let Some(row) = status_row.upgrade() {
-                row.set_subtitle("Testing…");
+                row.set_subtitle(&gettext("Testing…"));
             }
             let rx = spawn_ping(api_client.clone(), internal, external);
             let (status_row, btn) = (status_row.clone(), btn.clone());
@@ -335,10 +337,10 @@ pub(super) fn connect_action_buttons(
     export_btn: &Button,
 ) {
     let queue_manager = ctx.queue_manager.clone();
-    status.pause_btn.set_label(if queue_manager.is_paused() {
-        "Resume"
+    status.pause_btn.set_label(&if queue_manager.is_paused() {
+        gettext("Resume")
     } else {
-        "Pause"
+        gettext("Pause")
     });
     let qm = queue_manager.clone();
     status.queue_btn.connect_clicked(clone!(
@@ -355,8 +357,12 @@ pub(super) fn connect_action_buttons(
     });
     status.pause_btn.connect_clicked(move |btn| {
         let paused = !queue_manager.is_paused();
-        queue_manager.set_paused(paused, paused.then(|| "Paused by you".to_string()));
-        btn.set_label(if paused { "Resume" } else { "Pause" });
+        queue_manager.set_paused(paused, paused.then(|| gettext("Paused by you")));
+        btn.set_label(&if paused {
+            gettext("Resume")
+        } else {
+            gettext("Pause")
+        });
     });
     let sync_now_tx = ctx.sync_now_tx.clone();
     status.sync_now_btn.connect_clicked(move |_| {
@@ -397,8 +403,8 @@ pub(super) fn connect_url_switches(window: &adw::ApplicationWindow, conn: &Conne
                     switch.set_active(true);
                     show_alert(
                         &window,
-                        "Invalid Selection",
-                        "At least one URL (Internal or External) must be enabled.",
+                        &gettext("Invalid Selection"),
+                        &gettext("At least one URL (Internal or External) must be enabled."),
                     );
                 }
                 entry.set_sensitive(switch.is_active());

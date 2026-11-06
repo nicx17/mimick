@@ -4,6 +4,8 @@
 //! batch actions such as bulk download, bulk delete-to-trash, and
 //! bulk add-to-album for the library grid.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -32,7 +34,10 @@ pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::T
         Rc::new(move || {
             let n = selection_count(&selection);
             bulk_bar.set_reveal_child(select_toggle.is_active() && n > 0);
-            count_label.set_label(&format!("{} selected", n));
+            count_label.set_label(&fill(
+                ngettext("{n} selected", "{n} selected", plural_n(n)),
+                &[("n", &n.to_string())],
+            ));
         })
     };
 
@@ -199,9 +204,19 @@ fn owned_by(owner: &str, me: Option<&str>) -> bool {
 /// Dialog subtitle for a batch; photos other people own are left out of the change.
 fn batch_title(owned: usize, selected: usize) -> String {
     if owned == selected {
-        format!("{selected} selected")
+        fill(
+            ngettext("{n} selected", "{n} selected", plural_n(selected)),
+            &[("n", &selected.to_string())],
+        )
     } else {
-        format!("{owned} of {selected} selected, only yours change")
+        fill(
+            ngettext(
+                "{owned} of {n} selected, only yours change",
+                "{owned} of {n} selected, only yours change",
+                plural_n(selected),
+            ),
+            &[("owned", &owned.to_string()), ("n", &selected.to_string())],
+        )
     }
 }
 
@@ -238,8 +253,8 @@ pub(super) fn connect_bulk_location(ui: Rc<LibraryWindowUi>, button: &gtk::Butto
         if ids.is_empty() {
             show_alert_dialog(
                 &ui,
-                "Not Your Photos",
-                "Only the owner can change where a photo was taken, and the selected photos belong to other people.",
+                &gettext("Not Your Photos"),
+                &gettext("Only the owner can change where a photo was taken, and the selected photos belong to other people."),
             );
             return;
         }
@@ -262,8 +277,8 @@ pub(super) fn connect_bulk_date(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
         if ids.is_empty() {
             show_alert_dialog(
                 &ui,
-                "Not Your Photos",
-                "Only the owner can change when a photo was taken, and the selected photos belong to other people.",
+                &gettext("Not Your Photos"),
+                &gettext("Only the owner can change when a photo was taken, and the selected photos belong to other people."),
             );
             return;
         }
@@ -378,23 +393,49 @@ fn trash_dialog_text(
     trash: bool,
 ) -> (String, String) {
     let heading = match (targets, trash) {
-        ([single], true) => format!("Move “{}” to trash?", single.filename),
-        (_, true) => format!("Move {} items to trash?", targets.len()),
-        ([single], false) => format!("Delete “{}” permanently?", single.filename),
-        (_, false) => format!("Delete {} items permanently?", targets.len()),
+        ([single], true) => fill(
+            gettext("Move “{filename}” to trash?"),
+            &[("filename", &single.filename.to_string())],
+        ),
+        (_, true) => fill(
+            ngettext(
+                "Move {count} item to trash?",
+                "Move {count} items to trash?",
+                plural_n(targets.len()),
+            ),
+            &[("count", &targets.len().to_string())],
+        ),
+        ([single], false) => fill(
+            gettext("Delete “{filename}” permanently?"),
+            &[("filename", &single.filename.to_string())],
+        ),
+        (_, false) => fill(
+            ngettext(
+                "Delete {count} item permanently?",
+                "Delete {count} items permanently?",
+                plural_n(targets.len()),
+            ),
+            &[("count", &targets.len().to_string())],
+        ),
     };
     let mut body = if trash {
-        "Items can be restored from the Immich trash.".to_string()
+        gettext("Items can be restored from the Immich trash.")
     } else {
-        "The Immich trash is turned off, so this can't be undone.".to_string()
+        gettext("The Immich trash is turned off, so this can't be undone.")
     };
     if targets.iter().any(|t| t.has_local_copy) {
-        body.push_str(" Local copies in your watch folders are kept.");
+        body.push(' ');
+        body.push_str(&gettext("Local copies in your watch folders are kept."));
     }
     if skipped_local > 0 {
-        body.push_str(&format!(
-            "\n\n{} local-only item(s) are not on the server and will be skipped.",
-            skipped_local
+        body.push_str("\n\n");
+        body.push_str(&fill(
+            ngettext(
+                "{n} local-only item is not on the server and will be skipped.",
+                "{n} local-only items are not on the server and will be skipped.",
+                plural_n(skipped_local),
+            ),
+            &[("n", &skipped_local.to_string())],
         ));
     }
     (heading, body)
@@ -416,8 +457,15 @@ pub(super) fn confirm_trash(
         .heading(heading)
         .body(body)
         .build();
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("delete", if trash { "Move to trash" } else { "Delete" });
+    dialog.add_response("cancel", &gettext("Cancel"));
+    dialog.add_response(
+        "delete",
+        &if trash {
+            gettext("Move to trash")
+        } else {
+            gettext("Delete")
+        },
+    );
     dialog.set_response_appearance("delete", libadwaita::ResponseAppearance::Destructive);
     dialog.set_default_response(Some("cancel"));
     dialog.set_close_response("cancel");
@@ -439,8 +487,11 @@ pub(super) fn confirm_trash(
                     log::error!("Move to trash failed: {}", err);
                     super::context_menu::show_alert_dialog(
                         &ui,
-                        "Could Not Move to Trash",
-                        &format!("Immich rejected the request: {err}"),
+                        &gettext("Could Not Move to Trash"),
+                        &fill(
+                            gettext("Immich rejected the request: {err}"),
+                            &[("err", &err.to_string())],
+                        ),
                     );
                 }
             }
@@ -559,7 +610,7 @@ mod tests {
         let (heading, body) = trash_dialog_text(&targets, 2, true);
         assert_eq!(heading, "Move 2 items to trash?");
         assert!(body.contains("Local copies in your watch folders are kept."));
-        assert!(body.contains("2 local-only item(s)"));
+        assert!(body.contains("2 local-only items are not on the server"));
     }
 
     #[test]

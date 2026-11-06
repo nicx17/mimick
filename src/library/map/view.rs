@@ -1,5 +1,6 @@
 //! Map page: every geotagged asset, clustered by screen distance; a click lists the photos.
 
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -230,7 +231,7 @@ pub(super) fn open_visible(ui: &Rc<LibraryWindowUi>) -> bool {
     if members.is_empty() {
         return false;
     }
-    open_members(ui, &markers, &members, Some("This Area".to_string()));
+    open_members(ui, &markers, &members, Some(gettext("This Area")));
     true
 }
 
@@ -318,12 +319,12 @@ fn place_camera(view: &MapView) {
 
 fn show_status(view: &MapView, status: Status<'_>) {
     let (title, description) = match status {
-        Status::Loading => ("Loading Map…", String::new()),
+        Status::Loading => (&gettext("Loading Map…"), String::new()),
         Status::Empty => (
-            "No Photos With a Location",
-            "Photos with GPS data, or a location you set, appear here".to_string(),
+            &gettext("No Photos With a Location"),
+            gettext("Photos with GPS data, or a location you set, appear here"),
         ),
-        Status::Error(err) => ("Could Not Load the Map", err.to_string()),
+        Status::Error(err) => (&gettext("Could Not Load the Map"), err.to_string()),
         Status::Hidden => {
             view.status.set_visible(false);
             return;
@@ -510,7 +511,7 @@ fn open_members(
     let ids = members.iter().map(|&i| markers[i].id.clone()).collect();
     let label = label
         .or_else(|| cluster::area_label(markers, members))
-        .unwrap_or_else(|| "Map Area".to_string());
+        .unwrap_or_else(|| gettext("Map Area"));
     select(ui, members.first().copied());
     navigation::navigate_source(
         ui,

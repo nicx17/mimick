@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -110,7 +111,7 @@ fn mark_missing_watch_path(root: &Path, watch_path: &str, shared_state: &Arc<Mut
             .folder_statuses
             .entry(watch_path.to_string())
             .or_default();
-        status.last_error = Some("Permission lost or folder missing".to_string());
+        status.last_error = Some(gettext("Permission lost or folder missing"));
     }
 }
 

@@ -1,6 +1,8 @@
 //! Photos timeline: month counts, and one month's photos at a time.
 
+use crate::i18n::fill;
 use chrono::{Duration, Months, NaiveDate};
+use gettextrs::gettext;
 
 use super::{ImmichApiClient, LibraryAsset, MetadataSearchFilters, SortOrder};
 
@@ -69,8 +71,8 @@ impl ImmichApiClient {
 
     /// Photos taken in `month` (local time), newest first.
     pub async fn fetch_month_assets(&self, month: &str) -> Result<Vec<LibraryAsset>, String> {
-        let (taken_after, taken_before) =
-            month_query_range(month).ok_or_else(|| format!("Invalid month {month}"))?;
+        let (taken_after, taken_before) = month_query_range(month)
+            .ok_or_else(|| fill(gettext("Invalid month {month}"), &[("month", month)]))?;
         let filters = MetadataSearchFilters {
             visibility: Some("timeline".to_string()),
             order: Some(SortOrder::Desc),

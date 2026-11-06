@@ -1,5 +1,7 @@
 //! "Add to Album" picker: put the selected photos in one of your albums, or a new one.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 use std::sync::Arc;
@@ -30,7 +32,7 @@ pub(super) fn present(ui: &Rc<LibraryWindowUi>, asset_ids: Vec<String>, on_added
     choose(
         ui.window.upcast_ref(),
         ui.ctx.clone(),
-        "Add to Album",
+        gettext("Add to Album"),
         count,
         Rc::new(move |id, name| {
             add_and_report(&ui_add, id, name, asset_ids.clone(), on_added.clone());
@@ -41,7 +43,7 @@ pub(super) fn present(ui: &Rc<LibraryWindowUi>, asset_ids: Vec<String>, on_added
 pub(super) fn choose(
     parent: &gtk::Widget,
     ctx: Arc<AppContext>,
-    title: &'static str,
+    title: String,
     count: usize,
     on_chosen: OnChosen,
 ) {
@@ -55,7 +57,7 @@ pub(super) fn choose(
             "Album picker \"{title}\" opened with {} albums",
             albums.len()
         );
-        let picker = Picker::new(ctx, parent, on_chosen, albums, me, (title, count));
+        let picker = Picker::new(ctx, parent, on_chosen, albums, me, (&title, count));
         picker.render();
         let keep_alive = RefCell::new(Some(picker.clone()));
         picker.dialog.connect_closed(move |_| {
@@ -96,16 +98,33 @@ pub(super) fn pickable_albums<'a>(
 
 pub(super) fn added_message(outcome: BulkOutcome, album: &str) -> String {
     let mut message = match (outcome.done, outcome.duplicate) {
-        (0, 0) => return format!("Couldn't add to “{album}”"),
-        (0, _) => format!("Already in “{album}”"),
-        (done, 0) => format!("Added {} to “{album}”", count_label(done as u64)),
-        (done, duplicate) => format!(
-            "Added {} to “{album}” · {duplicate} already there",
-            count_label(done as u64)
+        (0, 0) => {
+            return fill(gettext("Couldn't add to “{album}”"), &[("album", album)]);
+        }
+        (0, _) => fill(gettext("Already in “{album}”"), &[("album", album)]),
+        (done, 0) => fill(
+            gettext("Added {items} to “{album}”"),
+            &[("items", &count_label(done as u64)), ("album", album)],
+        ),
+        (done, duplicate) => fill(
+            gettext("Added {items} to “{album}” · {duplicate} already there"),
+            &[
+                ("items", &count_label(done as u64)),
+                ("album", album),
+                ("duplicate", &duplicate.to_string()),
+            ],
         ),
     };
     if outcome.denied > 0 {
-        message.push_str(&format!(" · {} not allowed", outcome.denied));
+        message.push_str(" · ");
+        message.push_str(&fill(
+            ngettext(
+                "{n} not allowed",
+                "{n} not allowed",
+                plural_n(outcome.denied),
+            ),
+            &[("n", &outcome.denied.to_string())],
+        ));
     }
     message
 }
@@ -136,8 +155,11 @@ pub(super) fn add_and_report(
             }
             Err(err) => show_error_toast(
                 &ui,
-                "Couldn't add to the album",
-                &format!("Immich rejected the request: {err}"),
+                &gettext("Couldn't add to the album"),
+                &fill(
+                    gettext("Immich rejected the request: {err}"),
+                    &[("err", &err.to_string())],
+                ),
             ),
         }
     });
@@ -147,7 +169,9 @@ fn report_added(ui: &Rc<LibraryWindowUi>, outcome: BulkOutcome, album_id: String
     let message = added_message(outcome, &name);
     let toast = if outcome.done > 0 || outcome.duplicate > 0 {
         let ui = ui.clone();
-        toast_with_action(&message, "Open", move || open_album(&ui, &album_id, &name))
+        toast_with_action(&message, &gettext("Open"), move || {
+            open_album(&ui, &album_id, &name)
+        })
     } else {
         libadwaita::Toast::new(&message)
     };
@@ -160,13 +184,16 @@ fn create_then(ctx: Arc<AppContext>, parent: gtk::Widget, name: String, on_chose
             Ok(Some(id)) => on_chosen(id, name),
             Ok(None) => show_alert_on(
                 &parent,
-                "Could Not Create Album",
-                "Immich didn't return the new album.",
+                &gettext("Could Not Create Album"),
+                &gettext("Immich didn't return the new album."),
             ),
             Err(err) => show_alert_on(
                 &parent,
-                "Could Not Create Album",
-                &format!("Immich rejected the request: {err}"),
+                &gettext("Could Not Create Album"),
+                &fill(
+                    gettext("Immich rejected the request: {err}"),
+                    &[("err", &err.to_string())],
+                ),
             ),
         }
     });
@@ -194,7 +221,7 @@ impl Picker {
         (title, count): (&str, usize),
     ) -> Rc<Self> {
         let filter = gtk::SearchEntry::builder()
-            .placeholder_text("Filter albums")
+            .placeholder_text(gettext("Filter albums"))
             .hexpand(true)
             .build();
         let list = gtk::ListBox::builder()
@@ -261,8 +288,8 @@ impl Picker {
 
     fn new_album_row(self: &Rc<Self>, name: Option<&str>) -> libadwaita::ActionRow {
         let title = match name {
-            Some(name) => format!("New Album “{name}”"),
-            None => "New Album…".to_string(),
+            Some(name) => fill(gettext("New Album “{name}”"), &[("name", name)]),
+            None => gettext("New Album…"),
         };
         let row = libadwaita::ActionRow::builder()
             .title(title)
@@ -324,11 +351,11 @@ fn pick_new(picker: &Weak<Picker>, name: Option<String>) {
     prompt_text_on(
         &picker.parent,
         TextPrompt {
-            heading: "New Album",
-            body: "The selected items will be added to it.",
+            heading: &gettext("New Album"),
+            body: &gettext("The selected items will be added to it."),
             initial: "",
-            placeholder: "Album name",
-            accept: "Create",
+            placeholder: &gettext("Album name"),
+            accept: &gettext("Create"),
         },
         move |name| create_then(ctx.clone(), parent.clone(), name, on_chosen.clone()),
     );
@@ -383,7 +410,7 @@ fn picker_dialog(
 
 fn no_matches_row() -> gtk::ListBoxRow {
     let label = gtk::Label::builder()
-        .label("No matching albums")
+        .label(gettext("No matching albums"))
         .margin_top(12)
         .margin_bottom(12)
         .css_classes(["dim-label"])

@@ -1,6 +1,8 @@
 use crate::api_client::{Activity, ActivityKind, ActivityStatistics, LibraryAlbum, UserSummary};
+use crate::i18n::plural_n;
+use gettextrs::ngettext;
 
-use super::header_format::count_noun;
+use super::header_format::count_text;
 
 mod dialog;
 mod feed;
@@ -53,7 +55,13 @@ fn like_text(activity: &Activity) -> &'static str {
 fn stats_summary(stats: ActivityStatistics) -> String {
     format!(
         "{} · {}",
-        count_noun(stats.likes, "like", "likes"),
-        count_noun(stats.comments, "comment", "comments")
+        count_text(
+            stats.likes,
+            ngettext("{n} like", "{n} likes", plural_n(stats.likes))
+        ),
+        count_text(
+            stats.comments,
+            ngettext("{n} comment", "{n} comments", plural_n(stats.comments))
+        )
     )
 }

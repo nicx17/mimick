@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use glib::clone;
@@ -126,7 +127,7 @@ pub(crate) fn build_header(ui: &Rc<LibraryWindowUi>, initial_filename: &str) -> 
     let header = libadwaita::HeaderBar::builder()
         .show_back_button(false)
         .build();
-    let back_btn = icon_button("mimick-library-symbolic", "Back to library");
+    let back_btn = icon_button("mimick-library-symbolic", &gettext("Back to library"));
     back_btn.connect_clicked(clone!(
         #[strong]
         ui,
@@ -134,18 +135,18 @@ pub(crate) fn build_header(ui: &Rc<LibraryWindowUi>, initial_filename: &str) -> 
             ui.nav.pop();
         }
     ));
-    let prev_btn = icon_button("go-previous-symbolic", "Previous (Left)");
-    let next_btn = icon_button("go-next-symbolic", "Next (Right)");
+    let prev_btn = icon_button("go-previous-symbolic", &gettext("Previous (Left)"));
+    let next_btn = icon_button("go-next-symbolic", &gettext("Next (Right)"));
     let details_btn = gtk::ToggleButton::builder()
         .icon_name("dialog-information-symbolic")
-        .tooltip_text("Toggle details (I)")
+        .tooltip_text(gettext("Toggle details (I)"))
         .active(false)
         .build();
     header.pack_start(&back_btn);
     header.pack_start(&prev_btn);
     header.pack_start(&next_btn);
     header.pack_end(&details_btn);
-    let fullscreen_btn = icon_button("view-fullscreen-symbolic", "Fullscreen (F11)");
+    let fullscreen_btn = icon_button("view-fullscreen-symbolic", &gettext("Fullscreen (F11)"));
     header.pack_end(&fullscreen_btn);
     toolbar.add_top_bar(&header);
     page.set_child(Some(&toolbar));
@@ -203,7 +204,7 @@ pub(crate) fn build_picture_area() -> PictureArea {
 
 pub(crate) fn build_unavailable_card() -> UnavailableCard {
     let title = gtk::Label::builder()
-        .label("Preview unavailable")
+        .label(gettext("Preview unavailable"))
         .css_classes(["title-3"])
         .build();
     let filename = gtk::Label::builder()
@@ -213,7 +214,7 @@ pub(crate) fn build_unavailable_card() -> UnavailableCard {
         .build();
     let mime = gtk::Label::builder().css_classes(["dim-label"]).build();
     let open = gtk::Button::builder()
-        .label("Open in external app")
+        .label(gettext("Open in external app"))
         .css_classes(["suggested-action"])
         .build();
     let card = gtk::Box::builder()
@@ -247,7 +248,7 @@ pub(crate) fn build_video_badge() -> gtk::Button {
         .child(&icon)
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
-        .tooltip_text("Play video (Space)")
+        .tooltip_text(gettext("Play video (Space)"))
         .css_classes(vec!["circular".to_string(), "flat".to_string()])
         .visible(false)
         .build()
@@ -255,20 +256,24 @@ pub(crate) fn build_video_badge() -> gtk::Button {
 
 pub(crate) fn build_action_bar(initial_full: bool) -> ActionBar {
     let resolution_toggle = gtk::ToggleButton::builder()
-        .label(if initial_full { "Raw" } else { "Prev" })
-        .tooltip_text("Toggle preview vs original full-resolution image")
+        .label(if initial_full {
+            gettext("Raw")
+        } else {
+            gettext("Prev")
+        })
+        .tooltip_text(gettext("Toggle preview vs original full-resolution image"))
         .active(initial_full)
         .build();
     let ocr_toggle = gtk::ToggleButton::builder()
         .icon_name("insert-text-symbolic")
-        .tooltip_text("Show recognized text (T)")
+        .tooltip_text(gettext("Show recognized text (T)"))
         .visible(false)
         .build();
-    let download = icon_button("mimick-download-symbolic", "Download asset");
-    let open_with = icon_button("document-open-symbolic", "Open with…");
-    let trash = icon_button("user-trash-symbolic", "Move to trash (Delete)");
-    let favorite = icon_button(heart_icon(false), heart_tooltip(false));
-    let archive = icon_button(archive_icon(false), archive_tooltip(false));
+    let download = icon_button("mimick-download-symbolic", &gettext("Download asset"));
+    let open_with = icon_button("document-open-symbolic", &gettext("Open with…"));
+    let trash = icon_button("user-trash-symbolic", &gettext("Move to trash (Delete)"));
+    let favorite = icon_button(heart_icon(false), &heart_tooltip(false));
+    let archive = icon_button(archive_icon(false), &archive_tooltip(false));
     let (zoom_group, zoom_out, zoom_reset, zoom_in) = build_zoom_group();
     let bar = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
@@ -304,11 +309,11 @@ pub(crate) fn build_action_bar(initial_full: bool) -> ActionBar {
 }
 
 fn build_zoom_group() -> (gtk::Box, gtk::Button, gtk::Button, gtk::Button) {
-    let zoom_out = icon_button("zoom-out-symbolic", "Zoom out (Ctrl+-)");
-    let zoom_in = icon_button("zoom-in-symbolic", "Zoom in (Ctrl++)");
+    let zoom_out = icon_button("zoom-out-symbolic", &gettext("Zoom out (Ctrl+-)"));
+    let zoom_in = icon_button("zoom-in-symbolic", &gettext("Zoom in (Ctrl++)"));
     let zoom_reset = gtk::Button::builder()
         .label("100%")
-        .tooltip_text("Reset zoom (Ctrl+0)")
+        .tooltip_text(gettext("Reset zoom (Ctrl+0)"))
         .build();
     let group = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
@@ -384,8 +389,10 @@ fn build_detail_actions(
         .build();
     facts.append(&summary);
     facts.append(&created);
-    let edit_btn = gtk::Button::builder().label("Edit Info…").build();
-    let album_btn = gtk::Button::builder().label("Add to Album…").build();
+    let edit_btn = gtk::Button::builder().label(gettext("Edit Info…")).build();
+    let album_btn = gtk::Button::builder()
+        .label(gettext("Add to Album…"))
+        .build();
     let edit_row = libadwaita::WrapBox::builder()
         .child_spacing(6)
         .line_spacing(6)
@@ -402,7 +409,7 @@ fn build_detail_actions(
 fn build_exif_area() -> (gtk::Label, gtk::Box) {
     let loading = gtk::Label::builder()
         .xalign(0.0)
-        .label("Loading details…")
+        .label(gettext("Loading details…"))
         .css_classes(vec!["dim-label".to_string()])
         .build();
     let exif = gtk::Box::builder()

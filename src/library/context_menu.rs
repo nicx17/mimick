@@ -4,6 +4,7 @@
 //! an external app, edit info, and move to trash. Actions delegate to the
 //! shared library helpers.
 
+use gettextrs::gettext;
 use std::path::PathBuf;
 use std::rc::Rc;
 
@@ -92,19 +93,19 @@ pub(super) fn show_asset_context_menu(
 
     if is_image {
         let (ui, asset) = (ui.clone(), asset.clone());
-        menu.add("Copy", false, move || {
+        menu.add(&gettext("Copy"), false, move || {
             copy_asset_to_clipboard(ui.clone(), asset.clone())
         });
     }
     if asset.on_server() {
         let (ui, asset) = (ui.clone(), asset.clone());
-        menu.add("Download", false, move || {
+        menu.add(&gettext("Download"), false, move || {
             start_download(ui.clone(), asset.remote_id.clone(), asset.filename.clone())
         });
     }
     if asset.on_server() || !asset.local_path.is_empty() {
         let (ui, asset) = (ui.clone(), asset.clone());
-        menu.add("Open In", false, move || {
+        menu.add(&gettext("Open In"), false, move || {
             open_asset_in_default_app(ui.clone(), asset.clone())
         });
     }
@@ -229,7 +230,7 @@ fn append_manage_buttons(
     append_archive_button(menu, ui, item, &hooks);
     append_album_buttons(menu, ui, &remote_id, &hooks);
     let (ui_link, link_id) = (ui.clone(), remote_id.clone());
-    menu.add("Create Share Link…", false, move || {
+    menu.add(&gettext("Create Share Link…"), false, move || {
         super::shared_link_dialog::present(
             ui_link.clone(),
             super::shared_link_dialog::LinkDialogMode::Create(
@@ -247,19 +248,19 @@ fn append_manage_buttons(
 /// "Add to Album…"; inside an album also "Set as Album Cover" (owner) and "Remove from Album".
 fn append_album_buttons(menu: &Menu, ui: &Rc<LibraryWindowUi>, id: &str, hooks: &AssetMenuHooks) {
     let (ui_add, ids) = (ui.clone(), vec![id.to_string()]);
-    menu.add("Add to Album…", false, move || {
+    menu.add(&gettext("Add to Album…"), false, move || {
         super::album_picker::present(&ui_add, ids.clone(), Rc::new(|| {}))
     });
     if let Some(album) = super::album_assets::owned_current_album(ui) {
         let (ui_cover, asset_id) = (ui.clone(), id.to_string());
-        menu.add("Set as Album Cover", false, move || {
+        menu.add(&gettext("Set as Album Cover"), false, move || {
             super::album_assets::set_cover(&ui_cover, album.id.clone(), asset_id.clone())
         });
     }
     if super::album_assets::can_remove_here(ui) {
         let (ui_remove, ids, on_removed) =
             (ui.clone(), vec![id.to_string()], hooks.on_trashed.clone());
-        menu.add("Remove from Album", false, move || {
+        menu.add(&gettext("Remove from Album"), false, move || {
             super::album_assets::remove(&ui_remove, ids.clone(), on_removed.clone())
         });
     }
@@ -275,7 +276,7 @@ fn append_edit_buttons(
 ) {
     let (ui_edit, filename, edit_id) =
         (ui.clone(), item.property::<String>("filename"), id.clone());
-    menu.add("Edit Info…", false, move || {
+    menu.add(&gettext("Edit Info…"), false, move || {
         show_edit_dialog(
             ui_edit.clone(),
             edit_id.clone(),
@@ -288,7 +289,7 @@ fn append_edit_buttons(
 
 fn append_location_button(menu: &Menu, ui: &Rc<LibraryWindowUi>, item: &AssetObject, id: String) {
     let (ui, filename) = (ui.clone(), item.property::<String>("filename"));
-    menu.add("Set Location…", false, move || {
+    menu.add(&gettext("Set Location…"), false, move || {
         super::map::set_location_for_asset(ui.clone(), id.clone(), filename.clone(), Rc::new(|| {}))
     });
 }
@@ -301,10 +302,10 @@ fn append_trash_button(
 ) {
     // The popover is single-use, so the target is handed to the dialog on the first click.
     let target = std::cell::RefCell::new(Some(target));
-    let label = if ui.features.get().trash {
-        "Move to Trash"
+    let label = &if ui.features.get().trash {
+        gettext("Move to Trash")
     } else {
-        "Delete…"
+        gettext("Delete…")
     };
     let ui = ui.clone();
     menu.add(label, true, move || {
@@ -323,10 +324,10 @@ fn append_favorite_button(
     item: &AssetObject,
     hooks: &AssetMenuHooks,
 ) {
-    let label = if item.is_favorite() {
-        "Remove from Favorites"
+    let label = &if item.is_favorite() {
+        gettext("Remove from Favorites")
     } else {
-        "Add to Favorites"
+        gettext("Add to Favorites")
     };
     let (ui, item) = (ui.clone(), item.clone());
     let (on_edited, on_trashed) = (hooks.on_edited.clone(), hooks.on_trashed.clone());
@@ -349,7 +350,7 @@ fn append_archive_button(
     let archived = item.is_archived();
     let (ui, item) = (ui.clone(), item.clone());
     let (on_edited, on_trashed) = (hooks.on_edited.clone(), hooks.on_trashed.clone());
-    menu.add(archive_label(archived), false, move || {
+    menu.add(&archive_label(archived), false, move || {
         let (on_edited, on_trashed) = (on_edited.clone(), on_trashed.clone());
         set_archived(&ui, vec![item.clone()], !archived, move |removed| {
             if removed {
@@ -369,12 +370,12 @@ fn append_trash_mode_buttons(
     on_removed: Rc<dyn Fn()>,
 ) {
     let (ui_restore, id, on_restored) = (ui.clone(), remote_id.clone(), on_removed.clone());
-    menu.add("Restore", false, move || {
+    menu.add(&gettext("Restore"), false, move || {
         let on_restored = on_restored.clone();
         trash_view::restore(ui_restore.clone(), vec![id.clone()], move || on_restored());
     });
     let ui_delete = ui.clone();
-    menu.add("Delete Permanently", true, move || {
+    menu.add(&gettext("Delete Permanently"), true, move || {
         let on_removed = on_removed.clone();
         trash_view::confirm_delete_permanently(
             ui_delete.clone(),
@@ -389,15 +390,15 @@ fn copy_asset_to_clipboard(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {
         let path = match original_path(&ui, &asset).await {
             Ok(path) => path,
             Err(err) => {
-                show_error_toast(&ui, "Couldn't copy the photo", &err);
+                show_error_toast(&ui, &gettext("Couldn't copy the photo"), &err);
                 return;
             }
         };
         let Some(texture) = load_texture_oriented(&path).await else {
             show_error_toast(
                 &ui,
-                "Couldn't copy the photo",
-                "Could not decode the original image.",
+                &gettext("Couldn't copy the photo"),
+                &gettext("Could not decode the original image."),
             );
             return;
         };
@@ -411,7 +412,7 @@ fn open_asset_in_default_app(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {
     glib::MainContext::default().spawn_local(async move {
         match original_path(&ui, &asset).await {
             Ok(path) => open_local_with_default_app(&path.display().to_string()),
-            Err(err) => show_error_toast(&ui, "Couldn't open the file", &err),
+            Err(err) => show_error_toast(&ui, &gettext("Couldn't open the file"), &err),
         }
     });
 }
@@ -443,7 +444,7 @@ pub(super) async fn ensure_original_asset_path(
         asset_id
     };
     let cache_dir = crate::profile::cache_dir()
-        .ok_or_else(|| "Could not locate a cache directory.".to_string())?
+        .ok_or_else(|| gettext("Could not locate a cache directory."))?
         .join("open-in");
     let _ = tokio::fs::create_dir_all(&cache_dir).await;
     let safe_name =
@@ -471,12 +472,12 @@ pub(super) async fn ensure_original_asset_path(
 /// A failed quick action as a toast; "Details" opens the full message.
 pub(super) fn show_error_toast(ui: &LibraryWindowUi, title: &str, details: &str) {
     let (window, title_text, details) = (ui.window.clone(), title.to_string(), details.to_string());
-    let toast = super::dialogs::toast_with_action(title, "Details", move || {
+    let toast = super::dialogs::toast_with_action(title, &gettext("Details"), move || {
         let alert = libadwaita::AlertDialog::builder()
             .heading(&title_text)
             .body(&details)
             .build();
-        alert.add_response("ok", "OK");
+        alert.add_response("ok", &gettext("OK"));
         alert.present(Some(&window));
     });
     ui.toasts.add_toast(toast);
@@ -491,6 +492,6 @@ pub(super) fn show_alert_on(parent: &impl IsA<gtk::Widget>, heading: &str, body:
         .heading(heading)
         .body(body)
         .build();
-    alert.add_response("ok", "OK");
+    alert.add_response("ok", &gettext("OK"));
     alert.present(Some(parent));
 }

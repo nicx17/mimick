@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -36,7 +37,7 @@ pub(super) fn prompt_text_on(
         .activates_default(true)
         .build();
     dialog.set_extra_child(Some(&entry));
-    dialog.add_response("cancel", "Cancel");
+    dialog.add_response("cancel", &gettext("Cancel"));
     dialog.add_response("accept", prompt.accept);
     dialog.set_response_appearance("accept", libadwaita::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("accept"));
@@ -81,8 +82,8 @@ pub(super) fn prompt_multiline(
         .heading(heading)
         .extra_child(&frame)
         .build();
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("accept", "Save");
+    dialog.add_response("cancel", &gettext("Cancel"));
+    dialog.add_response("accept", &gettext("Save"));
     dialog.set_response_appearance("accept", libadwaita::ResponseAppearance::Suggested);
     dialog.set_close_response("cancel");
     dialog.connect_response(None, move |_, response| {
@@ -106,7 +107,7 @@ pub(super) fn confirm(
         .heading(heading)
         .body(body)
         .build();
-    dialog.add_response("cancel", "Cancel");
+    dialog.add_response("cancel", &gettext("Cancel"));
     dialog.add_response("accept", accept);
     dialog.set_response_appearance("accept", libadwaita::ResponseAppearance::Destructive);
     dialog.set_default_response(Some("cancel"));

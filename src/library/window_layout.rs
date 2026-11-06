@@ -4,6 +4,7 @@
 //! the responsive breakpoints. `build_library_window` in the parent module wires
 //! signal handlers onto the result.
 
+use gettextrs::gettext;
 use std::cell::Cell;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -116,7 +117,7 @@ impl WindowParts {
     pub(super) fn build(app: &libadwaita::Application, ctx: &Arc<AppContext>) -> Self {
         let window = libadwaita::ApplicationWindow::builder()
             .application(app)
-            .title("Mimick Library")
+            .title(gettext("Mimick Library"))
             .name("mimick-library-window")
             .default_width(1480)
             .default_height(780)
@@ -289,21 +290,21 @@ fn build_header() -> HeaderParts {
         .build();
     let sidebar_toggle = gtk::ToggleButton::builder()
         .icon_name("sidebar-show-symbolic")
-        .tooltip_text("Toggle sidebar (F9)")
+        .tooltip_text(gettext("Toggle sidebar (F9)"))
         .active(true)
         .css_classes(["mimick-pressable"])
         .build();
-    let back_button = pressable_button("go-previous-symbolic", "Back (Alt+Left)");
+    let back_button = pressable_button("go-previous-symbolic", &gettext("Back (Alt+Left)"));
     back_button.set_sensitive(false);
     let menu = gtk::gio::Menu::new();
-    menu.append(Some("Refresh"), Some("win.refresh"));
-    menu.append(Some("Queue Inspector"), Some("win.queue"));
-    menu.append(Some("Settings"), Some("win.settings"));
-    menu.append(Some("Keyboard Shortcuts"), Some("win.shortcuts"));
+    menu.append(Some(&gettext("Refresh")), Some("win.refresh"));
+    menu.append(Some(&gettext("Queue Inspector")), Some("win.queue"));
+    menu.append(Some(&gettext("Settings")), Some("win.settings"));
+    menu.append(Some(&gettext("Keyboard Shortcuts")), Some("win.shortcuts"));
     let menu_button = gtk::MenuButton::builder()
         .icon_name("open-menu-symbolic")
         .menu_model(&menu)
-        .tooltip_text("Menu")
+        .tooltip_text(gettext("Menu"))
         .css_classes(["mimick-pressable"])
         .build();
     header.pack_start(&sidebar_toggle);
@@ -311,7 +312,7 @@ fn build_header() -> HeaderParts {
     header.pack_end(&menu_button);
     let select_toggle = gtk::ToggleButton::builder()
         .icon_name("checkbox-symbolic")
-        .tooltip_text("Select assets (Esc to exit)")
+        .tooltip_text(gettext("Select assets (Esc to exit)"))
         .build();
     HeaderParts {
         header,
@@ -334,9 +335,13 @@ fn hbox(children: &[&gtk::Widget]) -> gtk::Box {
 
 fn build_controls() -> ControlsParts {
     let source_mode = gtk::DropDown::builder()
-        .model(&gtk::StringList::new(&["Remote", "Local", "Unified"]))
+        .model(&gtk::StringList::new(&[
+            &gettext("Remote"),
+            &gettext("Local"),
+            &gettext("Unified"),
+        ]))
         .selected(0)
-        .tooltip_text("Asset source")
+        .tooltip_text(gettext("Asset source"))
         .build();
     // Source mode (Remote/Local/Unified) is meaningful only inside a linked
     // album; `apply_source_ui_state` reveals it per source kind.
@@ -347,10 +352,14 @@ fn build_controls() -> ControlsParts {
         .child(&source_mode)
         .build();
     let sort_mode = gtk::DropDown::builder()
-        .model(&gtk::StringList::new(&["Newest", "Filename", "File Type"]))
+        .model(&gtk::StringList::new(&[
+            &gettext("Newest"),
+            &gettext("Filename"),
+            &gettext("File Type"),
+        ]))
         .selected(0)
         .build();
-    let upload_button = pressable_button("document-send-symbolic", "Upload to library");
+    let upload_button = pressable_button("document-send-symbolic", &gettext("Upload to library"));
     upload_button.add_css_class("suggested-action");
 
     let spacer = gtk::Box::builder().hexpand(true).build();
@@ -388,13 +397,13 @@ fn build_content_stack(
         .build();
     let empty_view = build_status_view(
         "image-x-generic-symbolic",
-        "Nothing to show",
-        "No assets match the current view",
+        &gettext("Nothing to show"),
+        &gettext("No assets match the current view"),
     );
     let error_view = build_status_view(
         "dialog-warning-symbolic",
-        "Library data unavailable",
-        "Could not load library assets",
+        &gettext("Library data unavailable"),
+        &gettext("Could not load library assets"),
     );
     let error_label = error_view
         .last_child()
@@ -435,19 +444,21 @@ fn build_transfer_indicator() -> TransferParts {
 
 fn build_album_link() -> AlbumLinkParts {
     let row = libadwaita::ActionRow::builder()
-        .title("No local folder linked")
-        .subtitle("Drop files in the linked folder to sync this album")
+        .title(gettext("No local folder linked"))
+        .subtitle(gettext(
+            "Drop files in the linked folder to sync this album",
+        ))
         .title_lines(1)
         .subtitle_lines(2)
         .build();
     let sync_button = gtk::Button::builder()
-        .label("Sync")
+        .label(gettext("Sync"))
         .valign(gtk::Align::Center)
         .css_classes(vec!["suggested-action".to_string()])
         .visible(false)
         .build();
     let link_button = gtk::Button::builder()
-        .label("Link")
+        .label(gettext("Link"))
         .valign(gtk::Align::Center)
         .build();
     row.add_suffix(&sync_button);
@@ -470,21 +481,21 @@ fn build_album_link() -> AlbumLinkParts {
 fn bulk_buttons() -> (gtk::Button, gtk::Button, gtk::Button, gtk::Button) {
     let delete = gtk::Button::builder()
         .icon_name("user-trash-symbolic")
-        .tooltip_text("Delete selected")
+        .tooltip_text(gettext("Delete selected"))
         .css_classes(vec!["destructive-action".to_string()])
         .build();
     let download = gtk::Button::builder()
         .icon_name("mimick-download-symbolic")
-        .tooltip_text("Download selected")
+        .tooltip_text(gettext("Download selected"))
         .build();
     let clear = gtk::Button::builder()
         .icon_name("edit-clear-symbolic")
-        .tooltip_text("Clear selection")
+        .tooltip_text(gettext("Clear selection"))
         .css_classes(vec!["flat".to_string()])
         .build();
     let share_link = gtk::Button::builder()
         .icon_name("mimick-share-symbolic")
-        .tooltip_text("Create share link for selected")
+        .tooltip_text(gettext("Create share link for selected"))
         .build();
     (delete, download, clear, share_link)
 }

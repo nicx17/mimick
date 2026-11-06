@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -28,7 +29,7 @@ impl Lightbox {
     pub(super) fn set_location_button(self: &Rc<Self>) -> gtk::Button {
         let button = gtk::Button::builder()
             .icon_name("document-edit-symbolic")
-            .tooltip_text("Set location")
+            .tooltip_text(gettext("Set location"))
             .valign(gtk::Align::Center)
             .css_classes(["flat"])
             .build();
@@ -62,7 +63,7 @@ pub(super) fn copy_coordinates_button(lat: f64, lon: f64) -> gtk::Button {
     let text = GeoPoint { lat, lon }.display();
     let button = gtk::Button::builder()
         .icon_name("edit-copy-symbolic")
-        .tooltip_text("Copy coordinates")
+        .tooltip_text(gettext("Copy coordinates"))
         .valign(gtk::Align::Center)
         .css_classes(["flat"])
         .build();

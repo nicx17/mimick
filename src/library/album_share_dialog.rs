@@ -3,6 +3,8 @@
 //! Every change goes straight to Immich, then the member list is refetched so the
 //! dialog always shows the server's state.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -32,13 +34,13 @@ struct ShareDialog {
 /// Open the sharing dialog for `album` (one of the user's own albums).
 pub(super) fn present(ui: Rc<LibraryWindowUi>, album: LibraryAlbum) {
     let members = libadwaita::PreferencesGroup::builder()
-        .title("Shared with")
+        .title(gettext("Shared with"))
         .build();
     let search = gtk::SearchEntry::builder()
-        .placeholder_text("Find people by name or email")
+        .placeholder_text(gettext("Find people by name or email"))
         .build();
     let people = libadwaita::PreferencesGroup::builder()
-        .title("Add people")
+        .title(gettext("Add people"))
         .header_suffix(&search)
         .build();
     let page = libadwaita::PreferencesPage::new();
@@ -47,7 +49,10 @@ pub(super) fn present(ui: Rc<LibraryWindowUi>, album: LibraryAlbum) {
     let toolbar = libadwaita::ToolbarView::builder().content(&page).build();
     toolbar.add_top_bar(&libadwaita::HeaderBar::new());
     let dialog = libadwaita::Dialog::builder()
-        .title(format!("Share “{}”", album.album_name))
+        .title(fill(
+            gettext("Share “{album_name}”"),
+            &[("album_name", &album.album_name.to_string())],
+        ))
         .content_width(480)
         .content_height(560)
         .child(&toolbar)
@@ -81,7 +86,7 @@ impl ShareDialog {
             let api = &share.ui.ctx.api_client;
             match api.fetch_album_detail(&share.album_id).await {
                 Ok(album) => *share.album.borrow_mut() = Some(album),
-                Err(err) => show_alert_dialog(&share.ui, "Could Not Load Album", &err),
+                Err(err) => show_alert_dialog(&share.ui, &gettext("Could Not Load Album"), &err),
             }
             match api.list_users().await {
                 Ok(users) => *share.all_users.borrow_mut() = users,
@@ -142,7 +147,7 @@ impl ShareDialog {
 
     /// Viewer / Editor dropdown that saves on change.
     fn role_dropdown(&self, user_id: &str, role: AlbumRole) -> gtk::DropDown {
-        let dropdown = gtk::DropDown::from_strings(&["Viewer", "Editor"]);
+        let dropdown = gtk::DropDown::from_strings(&[&gettext("Viewer"), &gettext("Editor")]);
         dropdown.set_valign(gtk::Align::Center);
         dropdown.set_selected(u32::from(role == AlbumRole::Editor));
         let (share, user_id) = (self.clone(), user_id.to_string());
@@ -153,9 +158,12 @@ impl ShareDialog {
                 AlbumRole::Viewer
             };
             let user_id = user_id.clone();
-            share.apply("Could Not Change Role", move |api, album_id| async move {
-                api.set_album_user_role(&album_id, &user_id, role).await
-            });
+            share.apply(
+                gettext("Could Not Change Role"),
+                move |api, album_id| async move {
+                    api.set_album_user_role(&album_id, &user_id, role).await
+                },
+            );
         });
         dropdown
     }
@@ -163,14 +171,14 @@ impl ShareDialog {
     fn remove_button(&self, user_id: &str) -> gtk::Button {
         let button = gtk::Button::builder()
             .icon_name("user-trash-symbolic")
-            .tooltip_text("Stop sharing with this person")
+            .tooltip_text(gettext("Stop sharing with this person"))
             .valign(gtk::Align::Center)
             .css_classes(["flat"])
             .build();
         let (share, user_id) = (self.clone(), user_id.to_string());
         button.connect_clicked(move |_| {
             let user_id = user_id.clone();
-            share.apply("Could Not Remove Person", move |api, album_id| async move {
+            share.apply(gettext("Could Not Remove Person"), move |api, album_id| async move {
                 api.remove_album_user(&album_id, &user_id).await
             });
         });
@@ -180,21 +188,22 @@ impl ShareDialog {
     /// Adds the person as a Viewer; their role can be raised afterwards.
     fn add_button(&self, user_id: &str) -> gtk::Button {
         let button = gtk::Button::builder()
-            .label("Add")
+            .label(gettext("Add"))
             .valign(gtk::Align::Center)
             .build();
         let (share, user_id) = (self.clone(), user_id.to_string());
         button.connect_clicked(move |_| {
             let members = vec![(user_id.clone(), AlbumRole::Viewer)];
-            share.apply("Could Not Share Album", move |api, album_id| async move {
-                api.add_album_users(&album_id, &members).await
-            });
+            share.apply(
+                gettext("Could Not Share Album"),
+                move |api, album_id| async move { api.add_album_users(&album_id, &members).await },
+            );
         });
         button
     }
 
     /// Run one sharing change, then reload; on failure show `error_heading` with the reason.
-    fn apply<F, Fut>(&self, error_heading: &'static str, change: F)
+    fn apply<F, Fut>(&self, error_heading: String, change: F)
     where
         F: FnOnce(std::sync::Arc<crate::api_client::ImmichApiClient>, String) -> Fut + 'static,
         Fut: std::future::Future<Output = Result<(), String>>,
@@ -203,7 +212,7 @@ impl ShareDialog {
         glib::MainContext::default().spawn_local(async move {
             let api = share.ui.ctx.api_client.clone();
             if let Err(err) = change(api, share.album_id.clone()).await {
-                show_alert_dialog(&share.ui, error_heading, &err);
+                show_alert_dialog(&share.ui, &error_heading, &err);
             }
             share.load();
         });

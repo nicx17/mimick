@@ -186,9 +186,7 @@ impl ImmichApiClient {
         if !configured.trim().is_empty() {
             return Ok(configured);
         }
-        self.get_active_url()
-            .await
-            .ok_or_else(|| "No active connection".to_string())
+        self.require_active_url().await
     }
 }
 

@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::cell::Cell;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
@@ -72,9 +73,9 @@ impl Lightbox {
             self.viewer.remove_css_class("mimick-fullscreen");
         }
         let (icon, tooltip) = if fullscreen {
-            ("view-restore-symbolic", "Exit fullscreen (F11)")
+            ("view-restore-symbolic", &gettext("Exit fullscreen (F11)"))
         } else {
-            ("view-fullscreen-symbolic", "Fullscreen (F11)")
+            ("view-fullscreen-symbolic", &gettext("Fullscreen (F11)"))
         };
         self.header.fullscreen_btn.set_icon_name(icon);
         self.header.fullscreen_btn.set_tooltip_text(Some(tooltip));

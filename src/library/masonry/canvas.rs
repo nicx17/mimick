@@ -1,5 +1,6 @@
 //! Justified-row masonry layout for the photos grid.
 
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gtk::glib;
@@ -490,10 +491,10 @@ fn warn_missing_permission(widget: &MasonryCanvas) {
         .and_downcast::<libadwaita::ApplicationWindow>()
     {
         let dialog = libadwaita::AlertDialog::builder()
-            .heading("Missing API Permissions")
-            .body("Your API key is missing permissions required to view thumbnails. Please ensure the key has 'asset.view' enabled.")
+            .heading(gettext("Missing API Permissions"))
+            .body(gettext("Your API key is missing permissions required to view thumbnails. Please ensure the key has 'asset.view' enabled."))
             .build();
-        dialog.add_response("ok", "OK");
+        dialog.add_response("ok", &gettext("OK"));
         dialog.present(Some(&window));
     }
 }
@@ -526,7 +527,7 @@ fn apply_masonry_load_result(
         }
         Err(e) => {
             imp.failed.borrow_mut().insert(asset_id.to_string());
-            if e.contains("HTTP 401") || e.contains("HTTP 403") {
+            if e.contains("HTTP 401") || e.contains(&gettext("HTTP 403")) {
                 warn_missing_permission(widget);
             }
             log::warn!("masonry load ERR id={} err={}", asset_id, e);

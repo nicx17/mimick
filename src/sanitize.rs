@@ -4,6 +4,8 @@
 //! * Directory traversal in filenames originating from Immich API responses
 //! * Non-HTTP(S) URL schemes in user-provided server addresses
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::path::Path;
 
 /// Strip a filename to its final component and reject traversal attempts.
@@ -42,10 +44,11 @@ pub fn safe_filename(name: &str) -> Option<String> {
 pub fn validate_http_url(raw: &str) -> Result<url::Url, String> {
     let trimmed = raw.trim();
     if trimmed.is_empty() {
-        return Err("URL is empty".into());
+        return Err(gettext("URL is empty"));
     }
 
-    let parsed = url::Url::parse(trimmed).map_err(|e| format!("Invalid URL: {}", e))?;
+    let parsed = url::Url::parse(trimmed)
+        .map_err(|e| fill(gettext("Invalid URL: {err}"), &[("err", &e.to_string())]))?;
 
     match parsed.scheme() {
         "http" | "https" => Ok(parsed),

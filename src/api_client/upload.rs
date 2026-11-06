@@ -4,6 +4,7 @@
 //! After a successful upload, the asset is assigned to the target album and a
 //! timezone fixup is scheduled.
 
+use gettextrs::gettext;
 use std::path::Path;
 use std::time::Duration;
 
@@ -297,17 +298,15 @@ impl ImmichApiClient {
                 }
                 self.set_issue(ApiIssue {
                     summary: if missing {
-                        "A queued file is no longer available"
+                        gettext("A queued file is no longer available")
                     } else {
-                        "Mimick could not read a queued file"
-                    }
-                    .to_string(),
+                        gettext("Mimick could not read a queued file")
+                    },
                     guidance: if missing {
-                        "Check that the watched folder still exists and that the file was not moved or deleted before upload."
+                        gettext("Check that the watched folder still exists and that the file was not moved or deleted before upload.")
                     } else {
-                        "Verify folder permissions and make sure the file is still accessible to the app."
-                    }
-                    .to_string(),
+                        gettext("Verify folder permissions and make sure the file is still accessible to the app.")
+                    },
                 })
                 .await;
                 None
@@ -320,9 +319,8 @@ impl ImmichApiClient {
             Err(e) => {
                 log::error!("Failed to open {}: {}", file_path, e);
                 self.set_issue(ApiIssue {
-                    summary: "Mimick could not open a queued file".to_string(),
-                    guidance: "The file may be locked, deleted, or outside the app's allowed folder access."
-                        .to_string(),
+                    summary: gettext("Mimick could not open a queued file"),
+                    guidance: gettext("The file may be locked, deleted, or outside the app's allowed folder access."),
                 })
                 .await;
                 None
@@ -335,9 +333,8 @@ impl ImmichApiClient {
             None => {
                 log::error!("No active connection. Skipping upload: {}", file_path);
                 self.set_issue(ApiIssue {
-                    summary: "No active server connection".to_string(),
-                    guidance: "Test the server connection in Settings and confirm at least one Immich URL is reachable."
-                        .to_string(),
+                    summary: gettext("No active server connection"),
+                    guidance: gettext("Test the server connection in Settings and confirm at least one Immich URL is reachable."),
                 })
                 .await;
                 None
@@ -391,15 +388,16 @@ impl ImmichApiClient {
 
 fn file_too_large_issue() -> ApiIssue {
     ApiIssue {
-        summary: "Immich rejected a file as too large".to_string(),
-        guidance: "Reduce the file size, raise the server's upload limits, or use a folder rule to skip oversized files."
-            .to_string(),
+        summary: gettext("Immich rejected a file as too large"),
+        guidance: gettext(
+            "Reduce the file size, raise the server's upload limits, or use a folder rule to skip oversized files.",
+        ),
     }
 }
 
 fn upload_auth_issue() -> ApiIssue {
     ApiIssue {
-        summary: "Immich rejected the API key".to_string(),
+        summary: gettext("Immich rejected the API key"),
         guidance: "Update the API key in Settings and ensure it has the Asset upload + update and Album read/create/albumAsset.create permissions."
             .to_string(),
     }
@@ -407,8 +405,9 @@ fn upload_auth_issue() -> ApiIssue {
 
 fn temporary_server_issue() -> ApiIssue {
     ApiIssue {
-        summary: "Immich is temporarily unavailable".to_string(),
-        guidance: "Wait a moment and retry. If it keeps happening, check the server logs and reverse proxy."
-            .to_string(),
+        summary: gettext("Immich is temporarily unavailable"),
+        guidance: gettext(
+            "Wait a moment and retry. If it keeps happening, check the server logs and reverse proxy.",
+        ),
     }
 }

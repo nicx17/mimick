@@ -4,6 +4,8 @@
 //! Immich album for bidirectional synchronization. Handles link state
 //! persistence and triggers the initial diff when a new link is created.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::rc::Rc;
 
 use glib::clone;
@@ -37,21 +39,25 @@ pub(super) fn refresh_album_link_row(ui: &LibraryWindowUi, source: &LibrarySourc
     let entries = ui.ctx.live_watch_paths.lock().clone();
     match crate::config::watch_entry_for_album(name, &entries) {
         Some(entry) => {
-            ui.album_link.row.set_title("Linked folder");
+            ui.album_link.row.set_title(&gettext("Linked folder"));
             ui.album_link
                 .row
                 .set_subtitle(&crate::watch_path_display::display_watch_path_inline(
                     entry.path(),
                 ));
-            ui.album_link.link_button.set_label("Unlink");
+            ui.album_link.link_button.set_label(&gettext("Unlink"));
             ui.album_link.sync_button.set_visible(true);
         }
         None => {
-            ui.album_link.row.set_title("No local folder linked");
             ui.album_link
                 .row
-                .set_subtitle("Drop files in the linked folder to sync this album");
-            ui.album_link.link_button.set_label("Link folder\u{2026}");
+                .set_title(&gettext("No local folder linked"));
+            ui.album_link.row.set_subtitle(&gettext(
+                "Drop files in the linked folder to sync this album",
+            ));
+            ui.album_link
+                .link_button
+                .set_label(&gettext("Link folder\u{2026}"));
             ui.album_link.sync_button.set_visible(false);
         }
     }
@@ -163,11 +169,8 @@ fn present_sync_dialog(
 /// album trash, local trash (in that order).
 fn build_sync_dialog(diff: &AlbumDiff) -> (libadwaita::AlertDialog, [gtk::CheckButton; 4]) {
     let dialog = libadwaita::AlertDialog::builder()
-        .heading("Sync album")
-        .body(format!(
-            "Pick which directions to apply.{}",
-            unmatched_note(diff.remote_unhashed)
-        ))
+        .heading(gettext("Sync album"))
+        .body(gettext("Pick which directions to apply.") + &unmatched_note(diff.remote_unhashed))
         .build();
     let body_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
@@ -176,28 +179,56 @@ fn build_sync_dialog(diff: &AlbumDiff) -> (libadwaita::AlertDialog, [gtk::CheckB
     let checks = [
         direction_check(
             &body_box,
-            "Upload {} item(s) to album",
+            &count_phrase(
+                ngettext(
+                    "Upload {n} item to album",
+                    "Upload {n} items to album",
+                    plural_n(diff.to_upload.len()),
+                ),
+                diff.to_upload.len(),
+            ),
             diff.to_upload.len(),
         ),
         direction_check(
             &body_box,
-            "Download {} item(s) to folder",
+            &count_phrase(
+                ngettext(
+                    "Download {n} item to folder",
+                    "Download {n} items to folder",
+                    plural_n(diff.to_download.len()),
+                ),
+                diff.to_download.len(),
+            ),
             diff.to_download.len(),
         ),
         direction_check(
             &body_box,
-            "Move {} album item(s) to trash",
+            &count_phrase(
+                ngettext(
+                    "Move {n} album item to trash",
+                    "Move {n} album items to trash",
+                    plural_n(diff.to_delete_remote.len()),
+                ),
+                diff.to_delete_remote.len(),
+            ),
             diff.to_delete_remote.len(),
         ),
         direction_check(
             &body_box,
-            "Move {} local item(s) to trash",
+            &count_phrase(
+                ngettext(
+                    "Move {n} local item to trash",
+                    "Move {n} local items to trash",
+                    plural_n(diff.to_delete_local.len()),
+                ),
+                diff.to_delete_local.len(),
+            ),
             diff.to_delete_local.len(),
         ),
     ];
     dialog.set_extra_child(Some(&body_box));
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("apply", "Apply");
+    dialog.add_response("cancel", &gettext("Cancel"));
+    dialog.add_response("apply", &gettext("Apply"));
     dialog.set_response_appearance("apply", libadwaita::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("apply"));
     dialog.set_close_response("cancel");
@@ -210,9 +241,13 @@ fn show_in_sync(ui: &LibraryWindowUi, remote_unhashed: usize) {
 }
 
 /// Checkbox for one sync direction, pre-checked and shown only when it has work to do.
+fn count_phrase(template: String, count: usize) -> String {
+    fill(template, &[("n", &count.to_string())])
+}
+
 fn direction_check(body_box: &gtk::Box, label: &str, count: usize) -> gtk::CheckButton {
     let check = gtk::CheckButton::builder()
-        .label(label.replace("{}", &count.to_string()))
+        .label(label)
         .active(count > 0)
         .sensitive(count > 0)
         .build();
@@ -253,21 +288,30 @@ fn filtered_diff(diff: &AlbumDiff, choices: SyncChoices) -> AlbumDiff {
 
 fn in_sync_message(remote_unhashed: usize) -> String {
     if remote_unhashed > 0 {
-        format!(
-            "Already in sync. ({} remote item(s) couldn't be matched — missing checksum.)",
-            remote_unhashed
+        count_phrase(
+            ngettext(
+                "Already in sync. ({n} remote item couldn't be matched — missing checksum.)",
+                "Already in sync. ({n} remote items couldn't be matched — missing checksum.)",
+                plural_n(remote_unhashed),
+            ),
+            remote_unhashed,
         )
     } else {
-        "Already in sync.".to_string()
+        gettext("Already in sync.")
     }
 }
 
 fn unmatched_note(remote_unhashed: usize) -> String {
     if remote_unhashed > 0 {
-        format!(
-            "\n\n{} remote item(s) couldn't be matched (missing checksum).",
-            remote_unhashed
-        )
+        let note = count_phrase(
+            ngettext(
+                "{n} remote item couldn't be matched (missing checksum).",
+                "{n} remote items couldn't be matched (missing checksum).",
+                plural_n(remote_unhashed),
+            ),
+            remote_unhashed,
+        );
+        format!("\n\n{note}")
     } else {
         String::new()
     }
@@ -383,7 +427,10 @@ fn handle_album_link_click(ui: Rc<LibraryWindowUi>) {
     }
 
     let dialog = gtk::FileDialog::builder()
-        .title(format!("Link folder for album '{}'", album_name))
+        .title(fill(
+            gettext("Link folder for album '{album_name}'"),
+            &[("album_name", &album_name.to_string())],
+        ))
         .build();
     let ui_for_pick = ui.clone();
     let album_name_for_pick = album_name.clone();
@@ -506,8 +553,8 @@ mod tests {
     #[test]
     fn messages_mention_unmatched_items_only_when_present() {
         assert_eq!(in_sync_message(0), "Already in sync.");
-        assert!(in_sync_message(2).contains("2 remote item(s)"));
+        assert!(in_sync_message(2).contains("2 remote items"));
         assert_eq!(unmatched_note(0), "");
-        assert!(unmatched_note(1).contains("1 remote item(s)"));
+        assert!(unmatched_note(1).contains("1 remote item couldn't"));
     }
 }

@@ -5,6 +5,8 @@
 //! `MasonryCanvas`, `LibraryAssetModel`, `AssetObject`, `ThumbnailCache`,
 //! and `spawn_enqueue` infrastructure.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::cell::Cell;
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -39,7 +41,7 @@ pub fn build_staging_window(
 
     let window = libadwaita::ApplicationWindow::builder()
         .application(app)
-        .title("Mimick - Upload")
+        .title(gettext("Mimick - Upload"))
         .name("mimick-staging-window")
         .default_width(960)
         .default_height(640)
@@ -138,18 +140,18 @@ fn build_staging_header() -> (libadwaita::HeaderBar, gtk::Button, gtk::Button, g
         .show_end_title_buttons(true)
         .build();
     let upload_btn = gtk::Button::builder()
-        .label("Upload")
-        .tooltip_text("Upload selected files to library")
+        .label(gettext("Upload"))
+        .tooltip_text(gettext("Upload selected files to library"))
         .css_classes(["suggested-action", "mimick-pressable"])
         .build();
     let album_btn = gtk::Button::builder()
-        .label("Album")
-        .tooltip_text("Upload selected files to an album")
+        .label(gettext("Album"))
+        .tooltip_text(gettext("Upload selected files to an album"))
         .css_classes(["mimick-pressable"])
         .build();
     let select_btn = gtk::Button::builder()
         .icon_name("edit-select-all-symbolic")
-        .tooltip_text("Select all / Deselect all")
+        .tooltip_text(gettext("Select all / Deselect all"))
         .css_classes(["mimick-pressable"])
         .build();
     header.pack_start(&upload_btn);
@@ -188,13 +190,13 @@ fn connect_select_all(
         if all_selected.get() {
             sel.unselect_all();
             btn.set_icon_name("edit-select-all-symbolic");
-            btn.set_tooltip_text(Some("Select all"));
+            btn.set_tooltip_text(Some(&gettext("Select all")));
             all_selected.set(false);
             lbl.set_text(&status_text(0, n));
         } else {
             sel.select_all();
             btn.set_icon_name("edit-clear-all-symbolic");
-            btn.set_tooltip_text(Some("Deselect all"));
+            btn.set_tooltip_text(Some(&gettext("Deselect all")));
             all_selected.set(true);
             lbl.set_text(&status_text(n, n));
         }
@@ -214,9 +216,22 @@ fn connect_selection_tracking(selection: &gtk::MultiSelection, status_label: &gt
 /// Format the status bar text for selected/total counts.
 fn status_text(selected: u32, total: u32) -> String {
     if selected == 0 {
-        format!("{} file(s) staged", total)
+        fill(
+            ngettext("{n} file staged", "{n} files staged", plural_n(total)),
+            &[("n", &total.to_string())],
+        )
     } else {
-        format!("{} of {} selected", selected, total)
+        fill(
+            ngettext(
+                "{selected} of {n} selected",
+                "{selected} of {n} selected",
+                plural_n(total),
+            ),
+            &[
+                ("selected", &selected.to_string()),
+                ("n", &total.to_string()),
+            ],
+        )
     }
 }
 

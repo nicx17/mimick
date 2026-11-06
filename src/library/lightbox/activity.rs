@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -18,7 +19,7 @@ impl ActivitySection {
     pub(super) fn new() -> Self {
         let holder = libadwaita::Bin::new();
         let root = libadwaita::PreferencesGroup::builder()
-            .title("Activity")
+            .title(gettext("Activity"))
             .visible(false)
             .build();
         root.add(&holder);

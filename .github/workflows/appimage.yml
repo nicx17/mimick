@@ -1,0 +1,87 @@
+name: AppImage
+
+# Runs on every pull request, so a change that breaks the AppImage shows up before release.yml
+# publishes a release without one. Pull request and manual runs keep the AppImage as a workflow
+# artifact; release.yml calls this with the tag to attach it to that GitHub release.
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      release-tag:
+        description: Release to attach the AppImage to; empty keeps it as an artifact only
+        type: string
+        default: ""
+
+permissions: read-all
+
+# Each run takes 20-40 minutes on two runners, so a new push to a pull request cancels its older
+# run. Release runs are never cancelled.
+concurrency:
+  group: appimage-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NODE_OPTIONS: "--no-deprecation"
+
+jobs:
+  build:
+    name: Build AppImage (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      # One architecture failing shouldn't cancel the other's build.
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-26.04
+          - arch: aarch64
+            runner: ubuntu-26.04-arm
+    # Rolling Arch (Arch Linux ARM on aarch64), the only base with GTK 4.24 and libadwaita 1.10.
+    # The AppImage bundles glibc, so the container's new glibc doesn't limit where it runs.
+    container: ghcr.io/pkgforge-dev/archlinux:latest
+    timeout-minutes: 90
+    # This job runs downloaded build scripts, so it only gets a read-only token.
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build the AppImage
+        env:
+          # get-debloated-pkgs queries api.github.com; unauthenticated, shared runners hit the
+          # 60-an-hour rate limit.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash packaging/appimage/build.sh
+
+      - name: Upload the AppImage
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: Mimick-AppImage-${{ matrix.arch }}
+          path: |
+            dist/*.AppImage
+            dist/*.AppImage.zsync
+          if-no-files-found: error
+
+  publish:
+    name: Attach to release
+    needs: build
+    if: inputs.release-tag != ''
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write
+    steps:
+      - name: Download the AppImages
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: Mimick-AppImage-*
+          merge-multiple: true
+          path: dist
+
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ inputs.release-tag }}
+        run: gh release upload "$RELEASE_TAG" dist/* --repo "$GITHUB_REPOSITORY" --clobber

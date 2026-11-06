@@ -1,3 +1,5 @@
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -18,7 +20,10 @@ pub(super) fn build_album_sidebar_row(
     ui: &Rc<LibraryWindowUi>,
     album: &crate::api_client::LibraryAlbum,
 ) -> gtk::ListBoxRow {
-    let subtitle = format!("{} asset(s)", album.asset_count);
+    let subtitle = fill(
+        ngettext("{n} asset", "{n} assets", plural_n(album.asset_count)),
+        &[("n", &album.asset_count.to_string())],
+    );
     let row: gtk::ListBoxRow = libadwaita::ActionRow::builder()
         .title(&album.album_name)
         .subtitle(&subtitle)
@@ -104,25 +109,37 @@ pub(super) fn update_footer(ui: &LibraryWindowUi, route: Option<String>) {
             .status
             .stats
             .as_ref()
-            .map(|stats| format!("{} photos, {} videos", stats.images, stats.videos))
-            .unwrap_or_else(|| "Statistics unavailable".to_string());
+            .map(|stats| {
+                format!(
+                    "{}, {}",
+                    fill(
+                        ngettext("{n} photo", "{n} photos", plural_n(stats.images)),
+                        &[("n", &stats.images.to_string())]
+                    ),
+                    fill(
+                        ngettext("{n} video", "{n} videos", plural_n(stats.videos)),
+                        &[("n", &stats.videos.to_string())]
+                    )
+                )
+            })
+            .unwrap_or_else(|| gettext("Statistics unavailable"));
         let about = state
             .status
             .about
             .as_ref()
-            .map(|about| format!("Immich {}", about.version))
-            .unwrap_or_else(|| "Version unavailable".to_string());
+            .map(|about| fill(gettext("Immich {version}"), &[("version", &about.version)]))
+            .unwrap_or_else(|| gettext("Version unavailable"));
         (stats, about)
     };
     let route_subtitle = route
         .as_deref()
         .map(|route| match route {
-            "LAN" => "Connected through LAN",
-            "WAN" => "Connected through WAN",
-            _ => "Connected through configured server",
+            "LAN" => gettext("Connected through LAN"),
+            "WAN" => gettext("Connected through WAN"),
+            _ => gettext("Connected through configured server"),
         })
-        .unwrap_or("Offline");
-    ui.sidebar.connection_row.set_subtitle(route_subtitle);
+        .unwrap_or_else(|| gettext("Offline"));
+    ui.sidebar.connection_row.set_subtitle(&route_subtitle);
     ui.sidebar
         .server_row
         .set_subtitle(&format!("{stats_text} | {about_text}"));
@@ -150,14 +167,14 @@ pub(super) fn update_transfer_ui(ui: &LibraryWindowUi) {
         TransferDirection::Download => "mimick-download-symbolic",
     };
     ui.transfer.icon.set_icon_name(Some(icon_name));
-    let detail = transfer
-        .active_item_label
-        .as_deref()
-        .unwrap_or(match transfer.direction {
-            TransferDirection::Upload => "queued asset",
-            TransferDirection::Download => "selected asset",
-        });
-    ui.transfer.indicator.set_tooltip_text(Some(detail));
+    let detail = transfer.active_item_label.as_deref().map_or_else(
+        || match transfer.direction {
+            TransferDirection::Upload => gettext("queued asset"),
+            TransferDirection::Download => gettext("selected asset"),
+        },
+        ToString::to_string,
+    );
+    ui.transfer.indicator.set_tooltip_text(Some(&detail));
     match transfer.total_bytes {
         Some(total) if total > 0 => {
             let fraction = (transfer.current_bytes as f64 / total as f64).clamp(0.0, 1.0);
@@ -190,11 +207,11 @@ pub(super) fn build_loading_view() -> gtk::Box {
         .css_classes(["mimick-loader-icon"])
         .build();
     let title = gtk::Label::builder()
-        .label("Loading…")
+        .label(gettext("Loading…"))
         .css_classes(vec!["mimick-empty-title".to_string()])
         .build();
     let subtitle = gtk::Label::builder()
-        .label("Fetching library data from the Immich server")
+        .label(gettext("Fetching library data from the Immich server"))
         .wrap(true)
         .wrap_mode(gtk::pango::WrapMode::WordChar)
         .justify(gtk::Justification::Center)
@@ -341,9 +358,9 @@ pub(super) async fn merge_album_unified_page(
 /// Helper to show a permissions error dialog for library views.
 pub(super) fn show_library_permission_error(window: &libadwaita::ApplicationWindow) {
     let dialog = libadwaita::AlertDialog::builder()
-        .heading("Missing API Permissions")
-        .body("Your API key is missing permissions required for the Library view. Please ensure the key has 'asset.read', 'asset.view', 'asset.download', and 'person.read' enabled.")
+        .heading(gettext("Missing API Permissions"))
+        .body(gettext("Your API key is missing permissions required for the Library view. Please ensure the key has 'asset.read', 'asset.view', 'asset.download', and 'person.read' enabled."))
         .build();
-    dialog.add_response("close", "Close");
+    dialog.add_response("close", &gettext("Close"));
     dialog.present(Some(window));
 }

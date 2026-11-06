@@ -1,5 +1,6 @@
 //! Responsive split views, breakpoints, and navigation shell.
 
+use gettextrs::gettext;
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -79,7 +80,7 @@ pub(super) fn build_nav(
     let nav = libadwaita::NavigationView::new();
     let root_page = libadwaita::NavigationPage::builder()
         .child(&toolbar)
-        .title("Library")
+        .title(gettext("Library"))
         .can_pop(false)
         .build();
     nav.add(&root_page);
@@ -148,12 +149,12 @@ pub(super) fn add_desktop_breakpoint(
     desktop_bp.add_setter(
         &content.album_link.sync_button,
         "label",
-        Some(&"Sync…".to_value()),
+        Some(&gettext("Sync…").to_value()),
     );
     desktop_bp.add_setter(
         &content.album_link.link_button,
         "label",
-        Some(&"Link folder…".to_value()),
+        Some(&gettext("Link folder…").to_value()),
     );
     window.add_breakpoint(desktop_bp);
     // Tablet width: reserved for chrome tweaks below typical desktop widths.

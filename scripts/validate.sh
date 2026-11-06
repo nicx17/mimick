@@ -30,6 +30,13 @@ else
     failed+=("lizard")
 fi
 
+step "Checking the translation template..."
+if scripts/i18n.sh check; then
+    echo "po/mimick.pot is up to date."
+else
+    failed+=("translations")
+fi
+
 step "Running tests..."
 cargo test --locked
 

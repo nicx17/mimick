@@ -1,5 +1,6 @@
 //! Phone-width "More actions" menu that mirrors the selection bar's secondary buttons.
 
+use gettextrs::gettext;
 use gtk::prelude::*;
 
 use super::header_format::capitalize;
@@ -21,7 +22,7 @@ pub(super) fn build(sources: &[gtk::Button]) -> gtk::MenuButton {
     let popover = gtk::Popover::builder().child(&content).build();
     let menu = gtk::MenuButton::builder()
         .icon_name("view-more-symbolic")
-        .tooltip_text("More actions")
+        .tooltip_text(gettext("More actions"))
         .direction(gtk::ArrowType::Up)
         .popover(&popover)
         .build();

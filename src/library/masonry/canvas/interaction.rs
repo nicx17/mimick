@@ -1,3 +1,5 @@
+use crate::i18n::{fill, plural_n};
+use gettextrs::ngettext;
 use std::collections::HashSet;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -255,7 +257,10 @@ fn selected_count(canvas: &MasonryCanvas) -> u32 {
 /// Build a badge paintable showing the drag count.
 fn build_drag_badge(count: u32) -> gtk::WidgetPaintable {
     let label = gtk::Label::builder()
-        .label(format!("{count} files"))
+        .label(fill(
+            ngettext("{n} file", "{n} files", plural_n(count)),
+            &[("n", &count.to_string())],
+        ))
         .css_classes(["mimick-drag-badge"])
         .build();
     let container = gtk::Box::builder()

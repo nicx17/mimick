@@ -1,6 +1,8 @@
 //! "Delete Album": the album goes, its photos stay, and folders that would bring it back
 //! (sync re-creates missing albums by name) are detached first.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::path::Path;
 use std::rc::Rc;
 
@@ -23,18 +25,15 @@ pub(super) fn confirm_delete(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum) {
     glib::MainContext::default().spawn_local(async move {
         let folders = folders_for(&ui, &album).await;
         if !folders.is_empty() && uploads_running(&ui) {
-            let body = format!(
-                "Mimick is still uploading. Delete “{}” when uploads finish, so they don't create it again.",
-                album.album_name
-            );
-            show_alert_dialog(&ui, "Uploads in Progress", &body);
+            let body = fill(gettext("Mimick is still uploading. Delete “{album_name}” when uploads finish, so they don't create it again."), &[("album_name", &album.album_name.to_string())]);
+            show_alert_dialog(&ui, &gettext("Uploads in Progress"), &body);
             return;
         }
         if !folders.is_empty() && settings_open(&ui) {
             show_alert_dialog(
                 &ui,
-                "Close Settings First",
-                "Deleting this album changes your watch folders, and saving the open Settings window would undo that. Close Settings, then delete the album.",
+                &gettext("Close Settings First"),
+                &gettext("Deleting this album changes your watch folders, and saving the open Settings window would undo that. Close Settings, then delete the album."),
             );
             return;
         }
@@ -43,16 +42,23 @@ pub(super) fn confirm_delete(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum) {
 }
 
 pub(super) fn delete_body(members: usize, has_shared_link: bool) -> String {
-    let mut lines = vec!["Its photos stay in your library.".to_string()];
+    let mut lines = vec![gettext("Its photos stay in your library.")];
     match members {
         0 => {}
-        1 => lines.push("It's also removed for the person it's shared with.".to_string()),
-        n => lines.push(format!(
-            "It's also removed for the {n} people it's shared with."
+        1 => lines.push(gettext(
+            "It's also removed for the person it's shared with.",
+        )),
+        n => lines.push(fill(
+            ngettext(
+                "It's also removed for the {n} person it's shared with.",
+                "It's also removed for the {n} people it's shared with.",
+                plural_n(n),
+            ),
+            &[("n", &n.to_string())],
         )),
     }
     if has_shared_link {
-        lines.push("Its shared links stop working.".to_string());
+        lines.push(gettext("Its shared links stop working."));
     }
     lines.join(" ")
 }
@@ -107,12 +113,15 @@ fn uploads_running(ui: &LibraryWindowUi) -> bool {
 fn present(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, folders: AlbumFolders) {
     let members = album.album_users.len().saturating_sub(1);
     let dialog = libadwaita::AlertDialog::builder()
-        .heading(format!("Delete “{}”?", album.album_name))
+        .heading(fill(
+            gettext("Delete “{album_name}”?"),
+            &[("album_name", &album.album_name.to_string())],
+        ))
         .body(delete_body(members, album.has_shared_link))
         .build();
     let keep = folder_choices(&dialog, &folders);
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("delete", "Delete Album");
+    dialog.add_response("cancel", &gettext("Cancel"));
+    dialog.add_response("delete", &gettext("Delete Album"));
     dialog.set_response_appearance("delete", libadwaita::ResponseAppearance::Destructive);
     dialog.set_default_response(Some("cancel"));
     dialog.set_close_response("cancel");
@@ -141,14 +150,14 @@ fn folder_choices(
         .build();
     let mut keep = None;
     if !folders.linked.is_empty() {
-        content.append(&caption("These folders sync with this album:"));
+        content.append(&caption(&gettext("These folders sync with this album:")));
         content.append(&folder_list(&folders.linked));
         let keep_button = gtk::CheckButton::builder()
-            .label("Keep backing them up to your library")
+            .label(gettext("Keep backing them up to your library"))
             .active(true)
             .build();
         let stop_button = gtk::CheckButton::builder()
-            .label("Stop watching these folders")
+            .label(gettext("Stop watching these folders"))
             .group(&keep_button)
             .build();
         content.append(&keep_button);
@@ -157,7 +166,7 @@ fn folder_choices(
     }
     if !folders.named_after.is_empty() {
         content.append(&caption(
-            "So the album doesn't come back, photos in these folders go to your library instead of an album named after the folder:",
+            &gettext("So the album doesn't come back, photos in these folders go to your library instead of an album named after the folder:"),
         ));
         content.append(&folder_list(&folders.named_after));
     }
@@ -205,8 +214,11 @@ fn delete(
     let ui = ui.clone();
     glib::MainContext::default().spawn_local(async move {
         if let Err(err) = ui.ctx.api_client.delete_album(&album.id).await {
-            let body = format!("Immich rejected the request: {err}");
-            show_alert_dialog(&ui, "Could Not Delete Album", &body);
+            let body = fill(
+                gettext("Immich rejected the request: {err}"),
+                &[("err", &err.to_string())],
+            );
+            show_alert_dialog(&ui, &gettext("Could Not Delete Album"), &body);
             return;
         }
         detach_folders(&ui, &folders, keep_watching);
@@ -240,7 +252,10 @@ fn detach_folders(ui: &LibraryWindowUi, folders: &AlbumFolders, keep_watching: b
 }
 
 fn after_delete(ui: &Rc<LibraryWindowUi>, album: &LibraryAlbum) {
-    let message = format!("Deleted “{}”", album.album_name);
+    let message = fill(
+        gettext("Deleted “{album_name}”"),
+        &[("album_name", &album.album_name.to_string())],
+    );
     ui.toasts.add_toast(libadwaita::Toast::new(&message));
     refresh_albums(ui);
     if showing_album(ui, &album.id) {

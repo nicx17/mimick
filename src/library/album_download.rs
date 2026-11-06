@@ -1,5 +1,7 @@
 //! Download a whole album as one zip, or as numbered parts when Immich splits it.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
@@ -15,7 +17,7 @@ use super::download::{
 
 pub(super) fn archive_file_name(album_name: &str, index: usize, count: usize) -> String {
     let base = crate::sanitize::safe_filename(&album_name.replace('/', "-"))
-        .unwrap_or_else(|| "Album".to_string());
+        .unwrap_or_else(|| gettext("Album"));
     if count <= 1 {
         format!("{base}.zip")
     } else {
@@ -28,12 +30,18 @@ pub(super) fn download_album(ui: Rc<LibraryWindowUi>, album_id: String, album_na
         let info = match ui.ctx.api_client.album_download_info(&album_id).await {
             Ok(info) => info,
             Err(err) => {
-                let body = format!("Immich couldn't prepare the album: {err}");
-                return show_alert_dialog(&ui, "Download Failed", &body);
+                let body = fill(
+                    gettext("Immich couldn't prepare the album: {err}"),
+                    &[("err", &err.to_string())],
+                );
+                return show_alert_dialog(&ui, &gettext("Download Failed"), &body);
             }
         };
         if info.archives.is_empty() {
-            let message = format!("“{album_name}” has nothing to download");
+            let message = fill(
+                gettext("“{album}” has nothing to download"),
+                &[("album", &album_name)],
+            );
             ui.toasts.add_toast(libadwaita::Toast::new(&message));
             return;
         }
@@ -43,7 +51,7 @@ pub(super) fn download_album(ui: Rc<LibraryWindowUi>, album_id: String, album_na
         begin_download_session(&ui.ctx, format!("{album_name}.zip"));
         match save_archives(&ui, (&album_id, &album_name), &info.archives, &dir).await {
             Ok(saved) => report_saved(&ui, &saved, &dir),
-            Err(err) => show_alert_dialog(&ui, "Download Failed", &err),
+            Err(err) => show_alert_dialog(&ui, &gettext("Download Failed"), &err),
         }
     });
 }
@@ -78,17 +86,31 @@ async fn save_archives(
 
 fn report_saved(ui: &LibraryWindowUi, saved: &[PathBuf], dir: &Path) {
     let message = match saved {
-        [one] => format!(
-            "Saved {}",
-            one.file_name().unwrap_or_default().to_string_lossy()
+        [one] => fill(
+            gettext("Saved {file_name}"),
+            &[(
+                "file_name",
+                one.file_name()
+                    .unwrap_or_default()
+                    .to_string_lossy()
+                    .as_ref(),
+            )],
         ),
-        many => format!("Saved {} zip files", many.len()),
+        many => fill(
+            ngettext(
+                "Saved {count} zip file",
+                "Saved {count} zip files",
+                plural_n(many.len()),
+            ),
+            &[("count", &many.len().to_string())],
+        ),
     };
     let dir = dir.display().to_string();
-    ui.toasts
-        .add_toast(toast_with_action(&message, "Open Folder", move || {
-            open_local_with_default_app(&dir)
-        }));
+    ui.toasts.add_toast(toast_with_action(
+        &message,
+        &gettext("Open Folder"),
+        move || open_local_with_default_app(&dir),
+    ));
 }
 
 #[cfg(test)]

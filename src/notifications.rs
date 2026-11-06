@@ -4,6 +4,8 @@
 //! the call is silently ignored. No notification is fired more than once per
 //! concept per session -- callers are responsible for the guard logic.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 /// Global kill-switch for desktop notifications, controlled by the user-facing
@@ -23,24 +25,37 @@ pub fn send_sync_summary(succeeded: usize, failed: usize) {
     if succeeded == 0 && failed == 0 {
         return;
     }
-    let title = "Sync complete".to_string();
+    let title = gettext("Sync complete");
     let processed = succeeded.saturating_add(failed);
-    let body = if failed == 0 {
-        format!("All {} file(s) processed. Idle.", processed)
-    } else {
-        format!(
-            "All {} file(s) processed. Idle. {} failed and will be retried.",
-            processed, failed
-        )
-    };
+    let mut body = fill(
+        ngettext(
+            "All {n} file processed. Idle.",
+            "All {n} files processed. Idle.",
+            plural_n(processed),
+        ),
+        &[("n", &processed.to_string())],
+    );
+    if failed > 0 {
+        body.push(' ');
+        body.push_str(&fill(
+            ngettext(
+                "{n} failed and will be retried.",
+                "{n} failed and will be retried.",
+                plural_n(failed),
+            ),
+            &[("n", &failed.to_string())],
+        ));
+    }
     send_gio(&title, &body, "sync-complete");
 }
 
 /// Fired once per session when consecutive uploads all fail due to connectivity issues.
 pub fn send_connectivity_lost() {
     send_gio(
-        "Mimick: Connection lost",
-        "Could not reach the Immich server. Uploads will resume automatically when connectivity is restored.",
+        &gettext("Mimick: Connection lost"),
+        &gettext(
+            "Could not reach the Immich server. Uploads will resume automatically when connectivity is restored.",
+        ),
         "connectivity-lost",
     );
 }

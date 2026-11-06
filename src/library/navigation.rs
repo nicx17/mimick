@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -155,15 +156,15 @@ fn page_title(page: &LibraryPage) -> String {
             .to_string()
     };
     match page {
-        LibraryPage::Albums { shared_only: false } => "Albums".to_string(),
-        LibraryPage::Albums { shared_only: true } => "Shared Albums".to_string(),
-        LibraryPage::SharedLinks => "Shared Links".to_string(),
-        LibraryPage::People => "People".to_string(),
-        LibraryPage::Tags { path } => leaf(path, "Tags"),
-        LibraryPage::Folders { path } => leaf(path, "Folders"),
-        LibraryPage::Sharing => "Sharing".to_string(),
-        LibraryPage::Search => "Search".to_string(),
-        LibraryPage::Map => "Map".to_string(),
+        LibraryPage::Albums { shared_only: false } => gettext("Albums"),
+        LibraryPage::Albums { shared_only: true } => gettext("Shared Albums"),
+        LibraryPage::SharedLinks => gettext("Shared Links"),
+        LibraryPage::People => gettext("People"),
+        LibraryPage::Tags { path } => leaf(path, &gettext("Tags")),
+        LibraryPage::Folders { path } => leaf(path, &gettext("Folders")),
+        LibraryPage::Sharing => gettext("Sharing"),
+        LibraryPage::Search => gettext("Search"),
+        LibraryPage::Map => gettext("Map"),
     }
 }
 

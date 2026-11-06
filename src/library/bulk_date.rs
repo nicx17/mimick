@@ -1,5 +1,7 @@
 //! "Change Date and Time" for a selection: set one moment for all, or shift each one.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::rc::Rc;
 
 use chrono::Local;
@@ -11,7 +13,7 @@ use crate::api_client::DateChange;
 use super::LibraryWindowUi;
 use super::asset_edit::{DATE_FORMAT, DateField};
 use super::context_menu::show_alert_dialog;
-use super::header_format::{count_label, count_noun};
+use super::header_format::{count_label, count_text};
 use super::time_zones::{self, offset_seconds, offset_text, zone_labels, zone_row, zoned_rfc3339};
 
 const MINUTES_PER_DAY: i64 = 24 * 60;
@@ -22,20 +24,29 @@ pub(super) fn shift_minutes(days: i64, hours: i64, minutes: i64) -> i64 {
 
 pub(super) fn shift_summary(minutes: i64) -> String {
     if minutes == 0 {
-        return "No change".to_string();
+        return gettext("No change");
     }
     let total = minutes.unsigned_abs();
+    let (days, hours, mins) = (
+        total / MINUTES_PER_DAY as u64,
+        total % MINUTES_PER_DAY as u64 / 60,
+        total % 60,
+    );
     let parts: Vec<String> = [
-        (total / MINUTES_PER_DAY as u64, "day", "days"),
-        (total % MINUTES_PER_DAY as u64 / 60, "hour", "hours"),
-        (total % 60, "minute", "minutes"),
+        (days, ngettext("{n} day", "{n} days", plural_n(days))),
+        (hours, ngettext("{n} hour", "{n} hours", plural_n(hours))),
+        (mins, ngettext("{n} minute", "{n} minutes", plural_n(mins))),
     ]
     .into_iter()
-    .filter(|(n, _, _)| *n > 0)
-    .map(|(n, one, many)| count_noun(n, one, many))
+    .filter(|(n, _)| *n > 0)
+    .map(|(n, template)| count_text(n, template))
     .collect();
-    let direction = if minutes > 0 { "Later" } else { "Earlier" };
-    format!("{direction} by {}", parts.join(", "))
+    let amount = parts.join(", ");
+    if minutes > 0 {
+        fill(gettext("Later by {amount}"), &[("amount", &amount)])
+    } else {
+        fill(gettext("Earlier by {amount}"), &[("amount", &amount)])
+    }
 }
 
 pub(super) fn present(
@@ -75,7 +86,10 @@ fn apply(
         match ui.ctx.api_client.set_assets_date(&ids, &change).await {
             Ok(()) => {
                 dialog.close();
-                let message = format!("Changed the date of {}", count_label(ids.len() as u64));
+                let message = fill(
+                    gettext("Changed the date of {items}"),
+                    &[("items", &count_label(ids.len() as u64))],
+                );
                 ui.toasts.add_toast(libadwaita::Toast::new(&message));
                 on_done();
                 super::refresh_library_after_mutation(ui.clone(), true);
@@ -84,8 +98,11 @@ fn apply(
                 save.set_sensitive(true);
                 show_alert_dialog(
                     &ui,
-                    "Could Not Change Date",
-                    &format!("Immich rejected the change: {err}"),
+                    &gettext("Could Not Change Date"),
+                    &fill(
+                        gettext("Immich rejected the change: {err}"),
+                        &[("err", &err.to_string())],
+                    ),
                 );
             }
         }
@@ -131,16 +148,16 @@ impl DateForm {
             date: DateField::new(&now),
             set_zone,
             preview: dim_label(""),
-            days: shift_row("Days", 36500.0),
-            hours: shift_row("Hours", 23.0),
-            minutes: shift_row("Minutes", 59.0),
+            days: shift_row(&gettext("Days"), 36500.0),
+            hours: shift_row(&gettext("Hours"), 23.0),
+            minutes: shift_row(&gettext("Minutes"), 59.0),
             summary: dim_label(""),
             shift_zone,
         }
     }
 
     fn set_page(&self) -> gtk::Box {
-        self.date.row.set_title("Date and time");
+        self.date.row.set_title(&gettext("Date and time"));
         let group = libadwaita::PreferencesGroup::new();
         group.add(&self.date.row);
         group.add(&self.set_zone);
@@ -209,7 +226,13 @@ impl DateForm {
             .set_zone_name()
             .and_then(|zone| offset_seconds(zone, &date))
         {
-            Some(offset) => format!("Saved as {date} UTC{}", offset_text(offset)),
+            Some(offset) => fill(
+                gettext("Saved as {date} UTC{offset}"),
+                &[
+                    ("date", &date.to_string()),
+                    ("offset", &offset_text(offset)),
+                ],
+            ),
             None => String::new(),
         }
     }
@@ -248,7 +271,7 @@ fn mode_toggles() -> libadwaita::ToggleGroup {
         .homogeneous(true)
         .halign(gtk::Align::Center)
         .build();
-    for (name, label) in [("set", "Set"), ("shift", "Shift")] {
+    for (name, label) in [("set", &gettext("Set")), ("shift", &gettext("Shift"))] {
         group.add(
             libadwaita::Toggle::builder()
                 .name(name)
@@ -290,16 +313,16 @@ fn page(children: &[&gtk::Widget]) -> gtk::Box {
 
 /// Cancel and Save in the header, the mode switch and both pages below.
 fn dialog_shell(form: &DateForm, subtitle: &str) -> (libadwaita::Dialog, gtk::Button) {
-    let cancel = gtk::Button::builder().label("Cancel").build();
+    let cancel = gtk::Button::builder().label(gettext("Cancel")).build();
     let save = gtk::Button::builder()
-        .label("Save")
+        .label(gettext("Save"))
         .css_classes(["suggested-action"])
         .build();
     let header = libadwaita::HeaderBar::builder()
         .show_start_title_buttons(false)
         .show_end_title_buttons(false)
         .title_widget(&libadwaita::WindowTitle::new(
-            "Change Date and Time",
+            &gettext("Change Date and Time"),
             subtitle,
         ))
         .build();
@@ -319,7 +342,7 @@ fn dialog_shell(form: &DateForm, subtitle: &str) -> (libadwaita::Dialog, gtk::Bu
     let toolbar = libadwaita::ToolbarView::builder().content(&content).build();
     toolbar.add_top_bar(&header);
     let dialog = libadwaita::Dialog::builder()
-        .title("Change Date and Time")
+        .title(gettext("Change Date and Time"))
         .content_width(420)
         .child(&toolbar)
         .default_widget(&save)

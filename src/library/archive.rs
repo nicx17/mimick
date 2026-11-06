@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -18,15 +19,19 @@ pub(super) fn archive_icon(archived: bool) -> &'static str {
     }
 }
 
-pub(super) fn archive_label(archived: bool) -> &'static str {
-    if archived { "Unarchive" } else { "Archive" }
+pub(super) fn archive_label(archived: bool) -> String {
+    if archived {
+        gettext("Unarchive")
+    } else {
+        gettext("Archive")
+    }
 }
 
-pub(super) fn archive_tooltip(archived: bool) -> &'static str {
+pub(super) fn archive_tooltip(archived: bool) -> String {
     if archived {
-        "Unarchive (A)"
+        gettext("Unarchive (A)")
     } else {
-        "Archive (A)"
+        gettext("Archive (A)")
     }
 }
 
@@ -53,10 +58,10 @@ pub(super) fn set_archived(
             .set_assets_visibility(&ids, visibility)
             .await
         {
-            let heading = if archived {
-                "Could Not Archive"
+            let heading = &if archived {
+                gettext("Could Not Archive")
             } else {
-                "Could Not Unarchive"
+                gettext("Could Not Unarchive")
             };
             show_alert_dialog(&ui, heading, &err);
             return;
@@ -79,10 +84,10 @@ pub(super) fn set_archived(
 pub(super) fn sync_bulk_button(button: &gtk::Button, source: &LibrarySource) {
     let in_archive = matches!(source, LibrarySource::Archive);
     button.set_icon_name(archive_icon(in_archive));
-    button.set_tooltip_text(Some(if in_archive {
-        "Unarchive selected"
+    button.set_tooltip_text(Some(&if in_archive {
+        gettext("Unarchive selected")
     } else {
-        "Archive selected"
+        gettext("Archive selected")
     }));
 }
 

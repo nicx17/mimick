@@ -1,5 +1,6 @@
 //! The search field over the Map page: pick a place and the map flies there.
 
+use gettextrs::gettext;
 use std::cell::{Cell, OnceCell, RefCell};
 use std::rc::Rc;
 
@@ -30,7 +31,7 @@ pub struct MapSearch {
 
 pub fn build(viewport: &shumate::Viewport) -> MapSearch {
     let entry = gtk::SearchEntry::builder()
-        .placeholder_text("Search places")
+        .placeholder_text(gettext("Search places"))
         .search_delay(SEARCH_DELAY_MS)
         .css_classes(["mimick-map-search"])
         .build();
@@ -209,7 +210,7 @@ impl MapSearch {
 
 fn no_places_row() -> libadwaita::ActionRow {
     libadwaita::ActionRow::builder()
-        .title("No places found")
+        .title(gettext("No places found"))
         .activatable(false)
         .build()
 }

@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 mod controls;
 mod pipeline;
 mod tracks;
@@ -208,9 +209,9 @@ impl VideoPlayer {
 
     pub(super) fn set_fullscreen(&self, fullscreen: bool) {
         let (icon, tooltip) = if fullscreen {
-            ("view-restore-symbolic", "Exit fullscreen (F11)")
+            ("view-restore-symbolic", &gettext("Exit fullscreen (F11)"))
         } else {
-            ("view-fullscreen-symbolic", "Fullscreen (F11)")
+            ("view-fullscreen-symbolic", &gettext("Fullscreen (F11)"))
         };
         self.controls.fullscreen.set_icon_name(icon);
         self.controls.fullscreen.set_tooltip_text(Some(tooltip));
@@ -283,9 +284,9 @@ impl VideoPlayer {
         self.surface.set_visible(active);
         self.badge.set_visible(self.available.get() && !active);
         let (icon, tooltip) = if playing {
-            ("media-playback-pause-symbolic", "Pause (Space)")
+            ("media-playback-pause-symbolic", &gettext("Pause (Space)"))
         } else {
-            ("media-playback-start-symbolic", "Play (Space)")
+            ("media-playback-start-symbolic", &gettext("Play (Space)"))
         };
         c.play.set_icon_name(icon);
         c.play.set_tooltip_text(Some(tooltip));

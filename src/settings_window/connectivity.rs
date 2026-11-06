@@ -1,4 +1,5 @@
 use adw::prelude::*;
+use gettextrs::gettext;
 use gtk::{Button, Entry, PasswordEntry, Switch};
 use libadwaita as adw;
 
@@ -19,23 +20,27 @@ pub fn build_connectivity_group(
     window: &adw::ApplicationWindow,
 ) -> ConnectivityWidgets {
     let conn_group = adw::PreferencesGroup::builder()
-        .title("Server")
-        .description("Where your Immich server is and the key Mimick signs in with.")
+        .title(gettext("Server"))
         .build();
     settings_page.add(&conn_group);
 
     let (internal_row, internal_switch, internal_entry) =
-        add_url_row(&conn_group, "Internal URL (LAN)", "http://...");
+        add_url_row(&conn_group, &gettext("Internal URL (LAN)"), "http://...");
     let (external_row, external_switch, external_entry) =
-        add_url_row(&conn_group, "External URL (WAN)", "https://...");
+        add_url_row(&conn_group, &gettext("External URL (WAN)"), "https://...");
     let api_key_entry = add_api_key_row(&conn_group);
     let status_row = adw::ActionRow::builder()
-        .title("Connection")
-        .subtitle("Not tested yet")
+        .title(gettext("Connection"))
+        .subtitle(gettext("Not tested yet"))
         .build();
     conn_group.add(&status_row);
-    let test_btn = add_group_button(&conn_group, "Test Connection", None, 12);
-    let save_btn = add_group_button(&conn_group, "Save and Connect", Some("suggested-action"), 6);
+    let test_btn = add_group_button(&conn_group, &gettext("Test Connection"), None, 12);
+    let save_btn = add_group_button(
+        &conn_group,
+        &gettext("Save and Connect"),
+        Some("suggested-action"),
+        6,
+    );
 
     add_connectivity_breakpoint(
         window,
@@ -76,7 +81,7 @@ fn add_url_row(
 }
 
 fn add_api_key_row(group: &adw::PreferencesGroup) -> PasswordEntry {
-    let row = adw::ActionRow::builder().title("API Key").build();
+    let row = adw::ActionRow::builder().title(gettext("API Key")).build();
     let entry = PasswordEntry::builder()
         .valign(gtk::Align::Center)
         .width_request(140)
@@ -124,8 +129,8 @@ fn add_connectivity_breakpoint(
     let breakpoint = adw::Breakpoint::new(
         adw::BreakpointCondition::parse("max-width: 500sp").expect("valid breakpoint condition"),
     );
-    breakpoint.add_setter(internal_row, "title", Some(&"LAN URL".to_value()));
-    breakpoint.add_setter(external_row, "title", Some(&"WAN URL".to_value()));
+    breakpoint.add_setter(internal_row, "title", Some(&gettext("LAN URL").to_value()));
+    breakpoint.add_setter(external_row, "title", Some(&gettext("WAN URL").to_value()));
     breakpoint.add_setter(internal_entry, "width-request", Some(&140i32.to_value()));
     breakpoint.add_setter(external_entry, "width-request", Some(&140i32.to_value()));
     breakpoint.add_setter(api_key_entry, "width-request", Some(&140i32.to_value()));

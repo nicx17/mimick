@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use crate::api_client::{AlbumUpdate, LibraryAlbum};
@@ -17,19 +18,19 @@ pub(super) fn album_menu_items(
     let (ui_delete, album_delete) = (ui.clone(), album.clone());
     vec![
         (
-            "Rename…".to_string(),
+            gettext("Rename…"),
             Box::new(move || rename(&ui_rename, &album_rename)),
         ),
         (
-            "Edit Description…".to_string(),
+            gettext("Edit Description…"),
             Box::new(move || edit_description(&ui_describe, &album_describe)),
         ),
         (
-            "Options…".to_string(),
+            gettext("Options…"),
             Box::new(move || super::album_options::present(&ui_options, album_options.clone())),
         ),
         (
-            "Delete Album…".to_string(),
+            gettext("Delete Album…"),
             Box::new(move || super::album_delete::confirm_delete(&ui_delete, album_delete.clone())),
         ),
     ]
@@ -40,11 +41,11 @@ pub(super) fn rename(ui: &Rc<LibraryWindowUi>, album: &LibraryAlbum) {
     prompt_text(
         ui,
         TextPrompt {
-            heading: "Rename Album",
-            body: "Folders linked to this album stay linked.",
+            heading: &gettext("Rename Album"),
+            body: &gettext("Folders linked to this album stay linked."),
             initial: &album.album_name,
-            placeholder: "Album name",
-            accept: "Rename",
+            placeholder: &gettext("Album name"),
+            accept: &gettext("Rename"),
         },
         move |name| {
             let update = AlbumUpdate {
@@ -70,7 +71,12 @@ pub(super) fn edit_description(ui: &Rc<LibraryWindowUi>, album: &LibraryAlbum) {
             super::source_header::refresh(ui)
         });
     });
-    prompt_multiline(ui, "Album Description", &album.description, on_save);
+    prompt_multiline(
+        ui,
+        &gettext("Album Description"),
+        &album.description,
+        on_save,
+    );
 }
 
 fn save(
@@ -82,7 +88,7 @@ fn save(
     glib::MainContext::default().spawn_local(async move {
         match ui.ctx.api_client.update_album(&album_id, &update).await {
             Ok(()) => after(&ui),
-            Err(err) => show_error_toast(&ui, "Couldn't update the album", &err),
+            Err(err) => show_error_toast(&ui, &gettext("Couldn't update the album"), &err),
         }
     });
 }

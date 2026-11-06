@@ -1,5 +1,6 @@
 //! Selection toolbar construction for the library window.
 
+use gettextrs::gettext;
 use gtk::prelude::*;
 
 use super::{BulkParts, hbox};
@@ -21,23 +22,23 @@ fn build_bulk_actions() -> BulkActions {
     let (delete, download, clear, share_link) = super::bulk_buttons();
     let archive = gtk::Button::builder()
         .icon_name("mimick-archive-symbolic")
-        .tooltip_text("Archive selected")
+        .tooltip_text(gettext("Archive selected"))
         .build();
     let location = gtk::Button::builder()
         .icon_name("mark-location-symbolic")
-        .tooltip_text("Set location for selected")
+        .tooltip_text(gettext("Set location for selected"))
         .build();
     let date = gtk::Button::builder()
         .icon_name("x-office-calendar-symbolic")
-        .tooltip_text("Change date for selected")
+        .tooltip_text(gettext("Change date for selected"))
         .build();
     let add_to_album = gtk::Button::builder()
         .icon_name("list-add-symbolic")
-        .tooltip_text("Add to album")
+        .tooltip_text(gettext("Add to album"))
         .build();
     let remove_from_album = gtk::Button::builder()
         .icon_name("list-remove-symbolic")
-        .tooltip_text("Remove from album")
+        .tooltip_text(gettext("Remove from album"))
         .visible(false)
         .build();
     let trash = super::super::trash_view::build_trash_controls(vec![

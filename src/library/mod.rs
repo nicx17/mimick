@@ -5,6 +5,7 @@
 //! explore dashboard, album grids, lightbox, sidebar, and thumbnail
 //! caching independently.
 
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::sync::Arc;
@@ -360,7 +361,7 @@ fn build_drop_overlay(content: gtk::Box) -> (gtk::Overlay, gtk::Revealer) {
         .halign(gtk::Align::Center)
         .build();
     let drop_label = gtk::Label::builder()
-        .label("Drop files to upload")
+        .label(gettext("Drop files to upload"))
         .halign(gtk::Align::Center)
         .build();
     // Inner box centers the icon+label; outer box provides the full-window tint.

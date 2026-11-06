@@ -6,6 +6,7 @@
 //! redundant network requests across sessions. In-flight deduplication
 //! ensures concurrent requests for the same asset coalesce into one load.
 
+use gettextrs::gettext;
 use parking_lot::Mutex;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
@@ -63,8 +64,8 @@ async fn await_inflight(mut rx: InflightRx) -> Result<Texture, String> {
         Ok(()) => rx
             .borrow()
             .clone()
-            .unwrap_or_else(|| Err("Thumbnail load cancelled".to_string())),
-        Err(_) => Err("Thumbnail load cancelled".to_string()),
+            .unwrap_or_else(|| Err(gettext("Thumbnail load cancelled"))),
+        Err(_) => Err(gettext("Thumbnail load cancelled")),
     }
 }
 
@@ -447,7 +448,7 @@ impl ThumbnailCache {
                 self.memory.lock().insert(key, texture.clone());
                 Ok(texture)
             }
-            Ok(None) => Err("No decoder could read the file".to_string()),
+            Ok(None) => Err(gettext("No decoder could read the file")),
             Err(err) => Err(err.to_string()),
         };
         guard.publish(result.clone());
@@ -673,7 +674,7 @@ fn memory_budget(limit_mb: u32, total_ram: usize) -> usize {
 fn read_meminfo_total_bytes() -> Option<usize> {
     let text = std::fs::read_to_string("/proc/meminfo").ok()?;
     for line in text.lines() {
-        if let Some(rest) = line.strip_prefix("MemTotal:") {
+        if let Some(rest) = line.strip_prefix(&gettext("MemTotal:")) {
             let kb: usize = rest.split_whitespace().next()?.parse().ok()?;
             return Some(kb.saturating_mul(1024));
         }

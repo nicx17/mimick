@@ -1,5 +1,7 @@
 //! Tags: list, create, and apply/remove tags on assets.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::time::Duration;
 
 use super::{ImmichApiClient, Tag};
@@ -29,10 +31,7 @@ fn check_bulk_results(results: &[BulkIdResult]) -> Result<(), String> {
 impl ImmichApiClient {
     /// All tags on the server, sorted by their full path.
     pub async fn fetch_tags(&self) -> Result<Vec<Tag>, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| "No active connection".to_string())?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let resp = self
             .client
@@ -53,10 +52,7 @@ impl ImmichApiClient {
 
     /// Create a tag (and any missing parents for a `Parent/Child` path), or return it if it exists.
     pub async fn create_tag(&self, value: &str) -> Result<Tag, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| "No active connection".to_string())?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let resp = self
             .client
@@ -75,7 +71,12 @@ impl ImmichApiClient {
         // The response includes created parents too; pick the requested leaf.
         tags.into_iter()
             .find(|tag| tag.value == value)
-            .ok_or_else(|| format!("Immich did not return the tag \"{value}\""))
+            .ok_or_else(|| {
+                fill(
+                    gettext("Immich did not return the tag \"{value}\""),
+                    &[("value", value)],
+                )
+            })
     }
 
     pub async fn rename_tag(&self, tag_id: &str, name: &str) -> Result<(), String> {
@@ -83,7 +84,7 @@ impl ImmichApiClient {
             .update_tag(tag_id, serde_json::json!({ "name": name }))
             .await?;
         if tag.name != name {
-            return Err("Renaming tags needs a newer version of Immich.".to_string());
+            return Err(gettext("Renaming tags needs a newer version of Immich."));
         }
         Ok(())
     }
@@ -127,10 +128,7 @@ impl ImmichApiClient {
         tag_id: &str,
         asset_id: &str,
     ) -> Result<(), String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| "No active connection".to_string())?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let resp = self
             .client

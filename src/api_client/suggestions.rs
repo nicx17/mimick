@@ -16,10 +16,7 @@ impl ImmichApiClient {
         &self,
         suggestion_type: &str,
     ) -> Result<Vec<String>, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| "No active connection".to_string())?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!(
             "{}/api/search/suggestions?type={}",

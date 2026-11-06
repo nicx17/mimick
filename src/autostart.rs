@@ -1,19 +1,22 @@
 //! Handles autostart integration for both native installations and sandboxed Flatpak builds.
 //!
 //! Under Flatpak, uses the XDG Background portal to request autostart
-//! permission. On bare-metal installs, writes or removes a `.desktop`
+//! permission. On bare-metal installs and AppImages, writes or removes a `.desktop`
 //! file in `~/.config/autostart/`. The portal request is asynchronous
 //! and may be denied by the user.
 
+use crate::i18n::fill;
 use ashpd::WindowIdentifier;
 use ashpd::desktop::background::Background;
+use gettextrs::gettext;
 use gtk::prelude::*;
+use std::ffi::OsString;
 use std::fs;
 use std::path::{Path, PathBuf};
 
 const AUTOSTART_DESKTOP_ID: &str = "dev.nicx.mimick.desktop";
 const APP_ID: &str = "dev.nicx.mimick";
-const AUTOSTART_REASON: &str = "Reason for requesting background access: Mimick must run in the background to automatically sync media to Immich.";
+const NATIVE_COMMAND: &str = "mimick";
 
 /// Configure or request autostart registration depending on container and integration style.
 pub async fn apply(window: &impl IsA<gtk::Window>, enable: bool) -> Result<bool, String> {
@@ -43,14 +46,17 @@ async fn request_background_portal(
 
     let response = Background::request()
         .identifier(identifier)
-        .reason(AUTOSTART_REASON)
+        .reason(
+            gettext("Reason for requesting background access: Mimick must run in the background to automatically sync media to Immich.")
+                .as_str(),
+        )
         .auto_start(enable)
         .dbus_activatable(false)
         .send()
         .await
-        .map_err(|err| format!("Failed to contact the background portal: {err}"))?
+        .map_err(|err| fill(gettext("Failed to contact the background portal: {err}"), &[("err", &err.to_string())]))?
         .response()
-        .map_err(|err| format!("The desktop rejected the autostart request: {err}"))?;
+        .map_err(|err| fill(gettext("The desktop rejected the autostart request: {err}"), &[("err", &err.to_string())]))?;
 
     if enable {
         Ok(response.auto_start() && response.run_in_background())
@@ -63,30 +69,52 @@ async fn request_background_portal(
 fn install_desktop_entry() -> Result<(), String> {
     let entry_path = default_autostart_entry_path()?;
     if let Some(parent) = entry_path.parent() {
-        fs::create_dir_all(parent)
-            .map_err(|err| format!("Failed to create autostart directory: {err}"))?;
+        fs::create_dir_all(parent).map_err(|err| {
+            fill(
+                gettext("Failed to create autostart directory: {err}"),
+                &[("err", &err.to_string())],
+            )
+        })?;
     }
 
-    let executable = std::env::current_exe()
-        .map_err(|err| format!("Failed to resolve the Mimick executable path: {err}"))?;
-    let escaped_exec = escape_desktop_exec_arg(&executable.to_string_lossy());
+    let escaped_exec = escape_desktop_exec_arg(&launcher_command(std::env::var_os("APPIMAGE")));
 
     let desktop_entry = format!(
         "[Desktop Entry]\nType=Application\nVersion=1.0\nName=Mimick\nComment=Unofficial Immich desktop client and auto-sync agent\nExec={escaped_exec}\nIcon=dev.nicx.mimick\nTerminal=false\nCategories=Utility;\nX-GNOME-Autostart-enabled=true\nStartupNotify=false\n"
     );
 
-    fs::write(&entry_path, desktop_entry)
-        .map_err(|err| format!("Failed to write autostart entry: {err}"))?;
+    fs::write(&entry_path, desktop_entry).map_err(|err| {
+        fill(
+            gettext("Failed to write autostart entry: {err}"),
+            &[("err", &err.to_string())],
+        )
+    })?;
 
     Ok(())
+}
+
+/// The command the autostart entry runs, given the value of `$APPIMAGE`.
+///
+/// From an AppImage it's the `.AppImage` file the runtime exports, since the binary itself runs
+/// from a temporary mount that changes on every launch. Otherwise it's `mimick` on `PATH`, like
+/// the app's own desktop file, rather than `current_exe()`, which Semgrep flags as untrusted.
+fn launcher_command(appimage: Option<OsString>) -> String {
+    appimage.filter(|path| !path.is_empty()).map_or_else(
+        || NATIVE_COMMAND.to_string(),
+        |path| path.to_string_lossy().into_owned(),
+    )
 }
 
 /// Remove autostart desktop shortcut entry if one exists.
 fn remove_desktop_entry() -> Result<(), String> {
     for entry_path in autostart_entry_paths()? {
         if entry_path.exists() {
-            fs::remove_file(&entry_path)
-                .map_err(|err| format!("Failed to remove autostart entry: {err}"))?;
+            fs::remove_file(&entry_path).map_err(|err| {
+                fill(
+                    gettext("Failed to remove autostart entry: {err}"),
+                    &[("err", &err.to_string())],
+                )
+            })?;
         }
     }
     Ok(())
@@ -94,15 +122,15 @@ fn remove_desktop_entry() -> Result<(), String> {
 
 /// Retrieve default system autostart configuration shortcut folder path.
 fn default_autostart_entry_path() -> Result<PathBuf, String> {
-    let config_dir = dirs::config_dir()
-        .ok_or_else(|| "Could not locate the user config directory.".to_string())?;
+    let config_dir =
+        dirs::config_dir().ok_or_else(|| gettext("Could not locate the user config directory."))?;
     Ok(config_dir.join("autostart").join(AUTOSTART_DESKTOP_ID))
 }
 
 /// Retrieve possible system autostart shortcut path list (sandboxed and unsandboxed).
 fn autostart_entry_paths() -> Result<Vec<PathBuf>, String> {
-    let config_dir = dirs::config_dir()
-        .ok_or_else(|| "Could not locate the user config directory.".to_string())?;
+    let config_dir =
+        dirs::config_dir().ok_or_else(|| gettext("Could not locate the user config directory."))?;
     let mut paths = vec![config_dir.join("autostart").join(AUTOSTART_DESKTOP_ID)];
 
     if let Some(host_config_dir) = flatpak_host_config_dir_from(&config_dir) {
@@ -156,8 +184,23 @@ fn escape_desktop_exec_arg(value: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{escape_desktop_exec_arg, flatpak_host_config_dir_from};
+    use super::{escape_desktop_exec_arg, flatpak_host_config_dir_from, launcher_command};
+    use std::ffi::OsString;
     use std::path::Path;
+
+    #[test]
+    fn launcher_command_uses_the_appimage_file() {
+        assert_eq!(
+            launcher_command(Some(OsString::from("/home/user/Apps/Mimick.AppImage"))),
+            "/home/user/Apps/Mimick.AppImage"
+        );
+    }
+
+    #[test]
+    fn launcher_command_falls_back_to_mimick_on_path() {
+        assert_eq!(launcher_command(None), "mimick");
+        assert_eq!(launcher_command(Some(OsString::new())), "mimick");
+    }
 
     #[test]
     fn test_escape_desktop_exec_arg() {

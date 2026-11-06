@@ -1,5 +1,7 @@
 //! Place search for the Map page and Set Location: Photon first, Immich's own places when it can't answer.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::f64::consts::PI;
@@ -166,7 +168,10 @@ impl PlaceSearch {
             PhotonReply::Places(places) => Ok(places.into_iter().filter_map(from_photon).collect()),
             PhotonReply::RetryAfter(wait) => {
                 self.paused_until.set(Some(Instant::now() + wait));
-                Err(format!("Photon asked to wait {} s", wait.as_secs()))
+                Err(fill(
+                    gettext("Photon asked to wait {seconds} s"),
+                    &[("seconds", &wait.as_secs().to_string())],
+                ))
             }
         }
     }
@@ -259,7 +264,7 @@ impl SearchFooter {
     pub fn searching(&self) {
         self.spinner.set_visible(true);
         self.spinner.start();
-        self.label.set_text("Searching…");
+        self.label.set_text(&gettext("Searching…"));
     }
 
     pub fn answered(&self, source: Source) {
@@ -327,7 +332,7 @@ fn photon_detail(properties: &PhotonProperties, name: &str) -> String {
 
 fn kind_label(kind: &str, osm_value: Option<&str>, named: bool) -> String {
     if kind == "house" && !named {
-        return "Address".to_string();
+        return gettext("Address");
     }
     let broad = matches!(kind, "street" | "county" | "state" | "country");
     let specific = osm_value.filter(|value| !broad && *value != "administrative");

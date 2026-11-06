@@ -1,3 +1,6 @@
+use crate::i18n::fill;
+use crate::i18n::gettext_noop;
+use gettextrs::gettext;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
@@ -140,7 +143,7 @@ pub(super) fn fill_description(
         (None, None) => return,
     };
     let note_group = libadwaita::PreferencesGroup::builder()
-        .title("Description")
+        .title(gettext("Description"))
         .build();
     note_group.add(&row);
     container.append(&note_group);
@@ -149,14 +152,14 @@ pub(super) fn fill_description(
 
 fn build_camera_group(exif: &crate::api_client::ExifInfo) -> Option<libadwaita::PreferencesGroup> {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Camera")
+        .title(gettext("Camera"))
         .build();
     let mut rows = 0u32;
     if let Some(c) = format_camera(exif) {
         group.add(&accent_row(
             "camera-photo-symbolic",
             "mimick-accent-camera",
-            "Body",
+            &gettext("Body"),
             &c,
         ));
         rows += 1;
@@ -167,7 +170,7 @@ fn build_camera_group(exif: &crate::api_client::ExifInfo) -> Option<libadwaita::
         group.add(&accent_row(
             "view-fullscreen-symbolic",
             "mimick-accent-camera",
-            "Lens",
+            &gettext("Lens"),
             l,
         ));
         rows += 1;
@@ -176,7 +179,7 @@ fn build_camera_group(exif: &crate::api_client::ExifInfo) -> Option<libadwaita::
         group.add(&accent_row(
             "weather-clear-symbolic",
             "mimick-accent-camera",
-            "Exposure",
+            &gettext("Exposure"),
             &exposure,
         ));
         rows += 1;
@@ -198,7 +201,7 @@ fn build_image_group(
     taken_label: &str,
 ) -> Option<libadwaita::PreferencesGroup> {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Details")
+        .title(gettext("Details"))
         .build();
     let mut rows = 0u32;
     if let Some(dt) = &exif.date_time_original
@@ -207,7 +210,7 @@ fn build_image_group(
         group.add(&accent_row(
             "x-office-calendar-symbolic",
             "mimick-accent-image",
-            taken_label,
+            &gettext(taken_label),
             &format_datetime_display(dt),
         ));
         rows += 1;
@@ -216,7 +219,7 @@ fn build_image_group(
         group.add(&accent_row(
             "view-grid-symbolic",
             "mimick-accent-image",
-            "Dimensions",
+            &gettext("Dimensions"),
             &format!("{w} × {h}"),
         ));
         rows += 1;
@@ -225,7 +228,7 @@ fn build_image_group(
         group.add(&accent_row(
             "drive-harddisk-symbolic",
             "mimick-accent-image",
-            "Size",
+            &gettext("Size"),
             &format_bytes(size),
         ));
         rows += 1;
@@ -238,14 +241,14 @@ fn build_location_group(
     edit: Option<gtk::Button>,
 ) -> Option<libadwaita::PreferencesGroup> {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Location")
+        .title(gettext("Location"))
         .build();
     let mut rows = 0u32;
     if let Some(loc) = format_location(exif) {
         group.add(&accent_row(
             "mark-location-symbolic",
             "mimick-accent-location",
-            "Place",
+            &gettext("Place"),
             &loc,
         ));
         rows += 1;
@@ -253,13 +256,13 @@ fn build_location_group(
     let coords = exif.latitude.zip(exif.longitude);
     if coords.is_some() || edit.is_some() {
         let value = coords.map_or_else(
-            || "Not set".to_string(),
+            || gettext("Not set"),
             |(lat, lon)| format!("{lat:.5}, {lon:.5}"),
         );
         let row = accent_row(
             "find-location-symbolic",
             "mimick-accent-location",
-            "Coordinates",
+            &gettext("Coordinates"),
             &value,
         );
         if let Some((lat, lon)) = coords {
@@ -321,7 +324,7 @@ fn format_exposure(exif: &crate::api_client::ExifInfo) -> Option<String> {
         parts.push(et.trim().to_string());
     }
     if let Some(iso) = exif.iso {
-        parts.push(format!("ISO {iso}"));
+        parts.push(fill(gettext("ISO {iso}"), &[("iso", &iso.to_string())]));
     }
     if let Some(focal) = exif.focal_length {
         parts.push(format!("{focal:.0}mm"));
@@ -350,13 +353,22 @@ fn format_bytes(n: u64) -> String {
     const KIB: f64 = 1024.0;
     let n_f = n as f64;
     if n_f >= KIB * KIB * KIB {
-        format!("{:.2} GB", n_f / (KIB * KIB * KIB))
+        fill(
+            gettext("{size} GB"),
+            &[("size", &format!("{:.2}", n_f / (KIB * KIB * KIB)))],
+        )
     } else if n_f >= KIB * KIB {
-        format!("{:.2} MB", n_f / (KIB * KIB))
+        fill(
+            gettext("{size} MB"),
+            &[("size", &format!("{:.2}", n_f / (KIB * KIB)))],
+        )
     } else if n_f >= KIB {
-        format!("{:.1} KB", n_f / KIB)
+        fill(
+            gettext("{size} KB"),
+            &[("size", &format!("{:.1}", n_f / KIB))],
+        )
     } else {
-        format!("{} B", n)
+        fill(gettext("{size} B"), &[("size", &n.to_string())])
     }
 }
 
@@ -435,9 +447,9 @@ pub(super) fn local_details_exif(probe: &LocalProbe) -> Option<(ExifInfo, &'stat
     let used_mtime_fallback = info.date_time_original.is_none();
     let taken_label = if used_mtime_fallback {
         info.date_time_original = probe.mtime_iso.clone();
-        "Modified"
+        gettext_noop("Modified")
     } else {
-        "Taken"
+        gettext_noop("Taken")
     };
     Some((exif_from_local(&info, probe.file_size), taken_label))
 }

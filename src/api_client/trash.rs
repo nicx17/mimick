@@ -50,10 +50,7 @@ impl ImmichApiClient {
         path: &str,
         body: Option<serde_json::Value>,
     ) -> Result<u64, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| "No active connection".to_string())?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let mut request = self
             .client

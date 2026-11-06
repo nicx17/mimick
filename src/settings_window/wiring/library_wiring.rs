@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::cell::Cell;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -96,7 +97,7 @@ fn connect_clear_cache(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
             if let Err(err) = result
                 && let Some(window) = btn.root().and_downcast::<gtk::Window>()
             {
-                show_alert(&window, "Could Not Clear Cache", &err);
+                show_alert(&window, &gettext("Could Not Clear Cache"), &err);
             }
             refresh_cache_usage(&row);
         });

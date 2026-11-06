@@ -4,6 +4,8 @@
 //! the asset. "Add Tag" opens a picker of existing tags that can also create a new
 //! one (Immich creates any missing parents for nested `Parent/Child` tags).
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -41,12 +43,12 @@ impl TagSection {
     pub(super) fn new() -> Self {
         let add_btn = gtk::MenuButton::builder()
             .icon_name("list-add-symbolic")
-            .tooltip_text("Add tag")
+            .tooltip_text(gettext("Add tag"))
             .valign(gtk::Align::Center)
             .css_classes(["flat", "circular"])
             .build();
         let root = libadwaita::PreferencesGroup::builder()
-            .title("Tags")
+            .title(gettext("Tags"))
             .header_suffix(&add_btn)
             .visible(false)
             .build();
@@ -58,7 +60,7 @@ impl TagSection {
             .homogeneous(false)
             .build();
         let empty_label = gtk::Label::builder()
-            .label("No tags yet")
+            .label(gettext("No tags yet"))
             .xalign(0.0)
             .css_classes(["dim-label"])
             .build();
@@ -133,7 +135,10 @@ impl TagSection {
         );
         let name_btn = gtk::Button::builder()
             .child(&content)
-            .tooltip_text(format!("Show photos tagged “{}”", tag.value))
+            .tooltip_text(fill(
+                gettext("Show photos tagged “{value}”"),
+                &[("value", &tag.value.to_string())],
+            ))
             .css_classes(["flat", "mimick-tag-name"])
             .build();
         let section = self.clone();
@@ -141,7 +146,10 @@ impl TagSection {
         name_btn.connect_clicked(move |_| section.search(clicked.clone()));
         let remove_btn = gtk::Button::builder()
             .icon_name("window-close-symbolic")
-            .tooltip_text(format!("Remove “{}”", tag.value))
+            .tooltip_text(fill(
+                gettext("Remove “{value}”"),
+                &[("value", &tag.value.to_string())],
+            ))
             .css_classes(["flat", "mimick-tag-remove"])
             .build();
         let section = self.clone();
@@ -178,7 +186,7 @@ impl TagSection {
                     section.rebuild_chips();
                 }
                 Ok(()) => {}
-                Err(err) => show_error_toast(&ui, "Couldn't remove the tag", &err),
+                Err(err) => show_error_toast(&ui, &gettext("Couldn't remove the tag"), &err),
             }
         });
     }
@@ -208,7 +216,7 @@ impl TagSection {
                     section.show(&asset_id, tags);
                 }
                 Ok(_) => {}
-                Err(err) => show_error_toast(&ui, "Couldn't add the tag", &err),
+                Err(err) => show_error_toast(&ui, &gettext("Couldn't add the tag"), &err),
             }
         });
     }
@@ -216,7 +224,7 @@ impl TagSection {
     /// Popover with a search entry over the server's tags, refreshed each time it opens.
     fn build_picker(&self) -> gtk::Popover {
         let entry = gtk::SearchEntry::builder()
-            .placeholder_text("Find or create a tag")
+            .placeholder_text(gettext("Find or create a tag"))
             .build();
         let list = gtk::ListBox::builder()
             .selection_mode(gtk::SelectionMode::None)
@@ -294,9 +302,13 @@ impl Picker {
                 .iter()
                 .any(|t| t.value.eq_ignore_ascii_case(&query))
         {
-            self.append_row(&format!("Create “{query}”"), move |picker| {
-                picker.choose(query.clone(), None)
-            });
+            self.append_row(
+                &fill(
+                    gettext("Create “{query}”"),
+                    &[("query", &query.to_string())],
+                ),
+                move |picker| picker.choose(query.clone(), None),
+            );
         }
     }
 

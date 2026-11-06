@@ -1,3 +1,5 @@
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -72,16 +74,25 @@ pub(crate) fn format_relative_date(iso: &str) -> String {
     let diff = now_secs - ts;
 
     if diff < 60 {
-        "Just now".to_string()
+        gettext("Just now")
     } else if diff < 3600 {
         let m = diff / 60;
-        format!("{m} min ago")
+        fill(
+            ngettext("{n} min ago", "{n} min ago", plural_n(m)),
+            &[("n", &m.to_string())],
+        )
     } else if diff < 86400 {
         let h = diff / 3600;
-        format!("{h}h ago")
+        fill(
+            ngettext("{n}h ago", "{n}h ago", plural_n(h)),
+            &[("n", &h.to_string())],
+        )
     } else if diff < 86400 * 7 {
         let d = diff / 86400;
-        format!("{d}d ago")
+        fill(
+            ngettext("{n}d ago", "{n}d ago", plural_n(d)),
+            &[("n", &d.to_string())],
+        )
     } else {
         format!("{year:04}-{month:02}-{day:02}")
     }
@@ -102,9 +113,9 @@ pub(crate) fn person_tile(
         .build();
     let label = gtk::Label::builder()
         .label(if person.name.is_empty() {
-            "Unnamed"
+            gettext("Unnamed")
         } else {
-            &person.name
+            person.name.clone()
         })
         .ellipsize(gtk::pango::EllipsizeMode::End)
         .max_width_chars(12)
@@ -124,7 +135,7 @@ pub(crate) fn person_tile(
 
     let id = person.id.clone();
     let name = if person.name.is_empty() {
-        "Unnamed".to_string()
+        gettext("Unnamed")
     } else {
         person.name.clone()
     };

@@ -42,6 +42,27 @@ Open an Issue on GitHub. Include:
 * Unit tests live in the same source file as the code under `#[cfg(test)] mod tests { ... }`.
 * GUI code in `settings_window.rs` is intentionally not unit tested — focus on the pure-logic modules.
 
+### 5. Translations
+
+Mimick uses gettext (#220). Strings without a translation show in English.
+
+**Translating:**
+
+1. Copy `po/mimick.pot` to `po/<lang>.po` (for example `po/fr.po`), or run `msginit --locale=<lang> --input=po/mimick.pot --output-file=po/<lang>.po`.
+2. Fill in each `msgstr` with Poedit, GNOME Translation Editor, or a text editor. The file also holds the app menu entry and the software center listing; in the `Keywords` entry, keep the `;` between words.
+3. Add the language code to `po/LINGUAS`.
+4. Check it: `scripts/i18n.sh install target/share/locale`, then `LANGUAGE=<lang> MIMICK_PROFILE=dev cargo run`. The profile starts a separate instance, so an already running Mimick doesn't take over the launch.
+
+**Adding strings in code:** run `scripts/i18n.sh pot` afterwards (needs gettext 0.24 or newer) to refresh `po/mimick.pot` and the `.po` files. CI fails when the template is missing a string.
+
+* Wrap user-facing text in `gettextrs::gettext("…")`. Log messages and the diagnostics bundle stay in English.
+* Name placeholders and fill them with `crate::i18n::fill(gettext("Merge into {name}?"), &[("name", &name)])`; `format!` can't take a translated string.
+* Counts use `ngettext("{n} photo", "{n} photos", plural_n(count))`. Never build plurals with `if n == 1` or "(s)".
+* Strings in a `const` use `gettext_noop("…")` and go through `gettext` where they are shown. Keep comparing and storing the English value; only display the translation.
+* Dates use `crate::i18n::format_day` or `format_local` with a translatable strftime pattern, so month names follow the locale.
+* Add a `// Translators:` comment above a string that needs context.
+* The `.desktop` file and metainfo are translated too. Give each new `<release>` a `<description translate="no">` so release notes stay out of the template.
+
 ## Development Environment Setup
 
 ```bash

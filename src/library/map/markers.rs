@@ -1,6 +1,8 @@
 //! Marker widgets for the Map page: count bubbles, photo thumbnails, the "you are here" dot,
 //! and the searched place's pin.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::sync::Arc;
 
 use gtk::prelude::*;
@@ -87,7 +89,7 @@ pub fn place_tooltip(button: &gtk::Button, markers: Arc<Vec<MapMarker>>, members
 pub fn here(point: GeoPoint) -> shumate::Marker {
     let dot = gtk::Box::builder()
         .css_classes(["mimick-map-here"])
-        .tooltip_text("You are here")
+        .tooltip_text(gettext("You are here"))
         .build();
     let marker = shumate::Marker::builder().child(&dot).build();
     marker.set_location(point.lat, point.lon);
@@ -110,10 +112,19 @@ pub fn searched(point: GeoPoint, name: &str) -> shumate::Marker {
 }
 
 fn marker_tooltip(count: usize, place: Option<&str>) -> String {
-    let noun = if count == 1 { "photo" } else { "photos" };
     match place {
-        Some(place) => format!("{count} {noun} in {place}"),
-        None => format!("{count} {noun}"),
+        Some(place) => fill(
+            ngettext(
+                "{n} photo in {place}",
+                "{n} photos in {place}",
+                plural_n(count),
+            ),
+            &[("n", &count.to_string()), ("place", place)],
+        ),
+        None => fill(
+            ngettext("{n} photo", "{n} photos", plural_n(count)),
+            &[("n", &count.to_string())],
+        ),
     }
 }
 

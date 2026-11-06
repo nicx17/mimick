@@ -4,6 +4,7 @@
 //! back to their original human-readable folder names. Regular paths
 //! are shortened to their final component for compact UI display.
 
+use gettextrs::gettext;
 use std::path::Path;
 
 /// Converts a stored watch path into a user-friendly label for display in the UI and logs.
@@ -14,7 +15,7 @@ pub fn display_watch_path(path: &str) -> String {
             .and_then(std::ffi::OsStr::to_str)
             .filter(|name| !name.is_empty())
             .map(ToString::to_string)
-            .unwrap_or_else(|| "Selected Folder".to_string())
+            .unwrap_or_else(|| gettext("Selected Folder"))
     } else {
         path.to_string()
     }

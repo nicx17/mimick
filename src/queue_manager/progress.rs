@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
@@ -313,7 +315,10 @@ fn record_upload_success(
     s.record_event(
         task.path.clone(),
         "completed",
-        Some(format!("Finished in {:.2}s", elapsed)),
+        Some(fill(
+            gettext("Finished in {elapsed}s"),
+            &[("elapsed", &format!("{:.2}", elapsed))],
+        )),
         attempts,
     );
     if let Some(target) = sync_target {
@@ -347,15 +352,19 @@ fn record_upload_failure(
     s.active_server_route = active_route;
     let error_text = latest_issue
         .map(|issue| issue.summary.clone())
-        .unwrap_or_else(|| format!("Upload failed for {}", task.path));
+        .unwrap_or_else(|| {
+            fill(
+                gettext("Upload failed for {path}"),
+                &[("path", &task.path.to_string())],
+            )
+        });
     s.last_error = Some(error_text.clone());
     s.last_error_guidance = latest_issue
         .map(|issue| issue.guidance.clone())
         .or_else(|| {
-            Some(
-                "Review the latest server and permission settings, then retry the failed item."
-                    .to_string(),
-            )
+            Some(gettext(
+                "Review the latest server and permission settings, then retry the failed item.",
+            ))
         });
     let status = s
         .folder_statuses
@@ -367,7 +376,7 @@ fn record_upload_failure(
     s.record_event(
         task.path.clone(),
         "failed",
-        Some("Queued for retry".to_string()),
+        Some(gettext("Queued for retry")),
         attempts,
     );
 }

@@ -38,10 +38,7 @@ impl ImmichApiClient {
         output: &Path,
         progress: Option<TransferProgressCallback>,
     ) -> Result<(), String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| "No active connection".to_string())?;
+        let base_url = self.require_active_url().await?;
         let resp = self
             .client
             .post(format!("{base_url}/api/download/archive"))

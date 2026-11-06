@@ -19,10 +19,7 @@ impl ImmichApiClient {
     /// Admin-only endpoint; non-admin sessions will receive an HTTP 403 and an
     /// `Err` is returned. Caller should fall back to per-user asset counts.
     pub async fn fetch_server_statistics(&self) -> Result<ServerStatistics, String> {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| "No active connection".to_string())?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/server/statistics", base_url);
 
@@ -69,10 +66,7 @@ impl ImmichApiClient {
     where
         T: serde::de::DeserializeOwned,
     {
-        let base_url = self
-            .get_active_url()
-            .await
-            .ok_or_else(|| "No active connection".to_string())?;
+        let base_url = self.require_active_url().await?;
         let settings = self.settings_snapshot();
         let url = format!("{base_url}{endpoint}");
         let response = self

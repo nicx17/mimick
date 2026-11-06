@@ -3,6 +3,7 @@
 //! The heart flips immediately (item, library state, grid badge) and Immich is
 //! updated in the background; if Immich refuses, the change is rolled back.
 
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -24,11 +25,11 @@ pub(super) fn heart_icon(favorite: bool) -> &'static str {
     }
 }
 
-pub(super) fn heart_tooltip(favorite: bool) -> &'static str {
+pub(super) fn heart_tooltip(favorite: bool) -> String {
     if favorite {
-        "Remove from favorites (F)"
+        gettext("Remove from favorites (F)")
     } else {
-        "Add to favorites (F)"
+        gettext("Add to favorites (F)")
     }
 }
 
@@ -59,7 +60,7 @@ pub(super) fn toggle_favorite(ui: &Rc<LibraryWindowUi>, item: &AssetObject, hook
         if let Err(err) = ui.ctx.api_client.update_asset(&asset_id, &update).await {
             show_favorite(&ui, &item, &asset_id, !favorite);
             (hooks.on_change)(!favorite);
-            show_error_toast(&ui, "Couldn't update the favorite", &err);
+            show_error_toast(&ui, &gettext("Couldn't update the favorite"), &err);
             return;
         }
         if !favorite && drop_from_favorites_view(&ui, &asset_id) {

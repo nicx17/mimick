@@ -1,5 +1,6 @@
 //! Buttons over the Map page: zoom, rotation, photos on screen, your location, and map style.
 
+use gettextrs::gettext;
 use std::f64::consts::TAU;
 use std::rc::Rc;
 
@@ -34,16 +35,19 @@ pub struct MapControls {
 
 pub fn build(viewport: &shumate::Viewport) -> MapControls {
     let (zoom_in, zoom_out) = (
-        control("zoom-in-symbolic", "Zoom in"),
-        control("zoom-out-symbolic", "Zoom out"),
+        control("zoom-in-symbolic", &gettext("Zoom in")),
+        control("zoom-out-symbolic", &gettext("Zoom out")),
     );
     let (rotate_left, rotate_right) = (
-        control("object-rotate-left-symbolic", "Rotate left"),
-        control("object-rotate-right-symbolic", "Rotate right"),
+        control("object-rotate-left-symbolic", &gettext("Rotate left")),
+        control("object-rotate-right-symbolic", &gettext("Rotate right")),
     );
     let (area, locate) = (
-        control("image-x-generic-symbolic", "Show photos in this area"),
-        control("find-location-symbolic", "Show my location"),
+        control(
+            "image-x-generic-symbolic",
+            &gettext("Show photos in this area"),
+        ),
+        control("find-location-symbolic", &gettext("Show my location")),
     );
     let north = north_button(viewport);
     let north_card = card(&[north.upcast_ref()]);
@@ -82,7 +86,7 @@ pub fn build(viewport: &shumate::Viewport) -> MapControls {
 fn style_button() -> gtk::MenuButton {
     gtk::MenuButton::builder()
         .icon_name("mimick-layers-symbolic")
-        .tooltip_text("Map style")
+        .tooltip_text(gettext("Map style"))
         .menu_model(&style_menu())
         .css_classes(["flat", "mimick-map-control"])
         .build()
@@ -108,7 +112,7 @@ fn control(icon: &str, tooltip: &str) -> gtk::Button {
 fn north_button(viewport: &shumate::Viewport) -> gtk::Button {
     gtk::Button::builder()
         .child(&shumate::Compass::new(Some(viewport)))
-        .tooltip_text("Point north")
+        .tooltip_text(gettext("Point north"))
         .css_classes(["flat", "mimick-map-control"])
         .build()
 }
@@ -130,13 +134,16 @@ fn style_menu() -> gio::Menu {
     let menu = gio::Menu::new();
     menu.append_section(None, &style_items(&[MapStyle::Immich]));
     let palettes = style_items(&MapStyle::PALETTES);
-    palettes.append_submenu(Some("More Styles"), &style_items(&MapStyle::LOOKALIKES));
+    palettes.append_submenu(
+        Some(&gettext("More Styles")),
+        &style_items(&MapStyle::LOOKALIKES),
+    );
     menu.append_section(None, &palettes);
     menu.append_section(
         None,
         &style_items(&[MapStyle::Satellite, MapStyle::OpenStreetMap]),
     );
-    menu.append_section(Some("Appearance"), &appearance_items());
+    menu.append_section(Some(&gettext("Appearance")), &appearance_items());
     menu
 }
 
@@ -144,7 +151,7 @@ fn appearance_items() -> gio::Menu {
     let items = gio::Menu::new();
     for appearance in MapAppearance::ALL {
         let action = format!("map.appearance::{}", appearance.id());
-        items.append(Some(appearance.label()), Some(&action));
+        items.append(Some(&appearance.label()), Some(&action));
     }
     items
 }
@@ -153,7 +160,7 @@ fn style_items(styles: &[MapStyle]) -> gio::Menu {
     let items = gio::Menu::new();
     for style in styles {
         let action = format!("map.style::{}", style.id());
-        items.append(Some(style.label()), Some(&action));
+        items.append(Some(&style.label()), Some(&action));
     }
     items
 }
@@ -252,7 +259,7 @@ pub fn sync_north(ui: &LibraryWindowUi) {
 
 fn show_area(ui: &Rc<LibraryWindowUi>) {
     if !view::open_visible(ui) {
-        toast(ui, "No photos in this area");
+        toast(ui, &gettext("No photos in this area"));
     }
 }
 
@@ -263,7 +270,7 @@ fn locate_me(ui: &Rc<LibraryWindowUi>) {
     glib::MainContext::default().spawn_local(async move {
         match locate::current_position(&ui.window).await {
             Ok(point) => view::show_here(&ui, point),
-            Err(err) => show_error_toast(&ui, "Your location isn't available", &err),
+            Err(err) => show_error_toast(&ui, &gettext("Your location isn't available"), &err),
         }
         button.set_sensitive(true);
     });

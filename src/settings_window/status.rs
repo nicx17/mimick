@@ -2,6 +2,7 @@
 //! each watched folder's state, and the server connection.
 
 use adw::prelude::*;
+use gettextrs::gettext;
 use gtk::{Button, ProgressBar};
 use libadwaita as adw;
 
@@ -32,7 +33,7 @@ pub fn build_status_group(status_page: &adw::PreferencesPage) -> StatusWidgets {
     status_page.add(&attention_group);
 
     let folders_group = adw::PreferencesGroup::builder()
-        .title("Watched Folders")
+        .title(gettext("Watched Folders"))
         .build();
     let folders_list = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -41,9 +42,11 @@ pub fn build_status_group(status_page: &adw::PreferencesPage) -> StatusWidgets {
     folders_group.add(&folders_list);
     status_page.add(&folders_group);
 
-    let connection_group = adw::PreferencesGroup::builder().title("Connection").build();
-    let route_row = action_row("Server", "Checking…");
-    let last_sync_row = action_row("Last Upload", "Nothing uploaded yet");
+    let connection_group = adw::PreferencesGroup::builder()
+        .title(gettext("Connection"))
+        .build();
+    let route_row = action_row(&gettext("Server"), &gettext("Checking…"));
+    let last_sync_row = action_row(&gettext("Last Upload"), &gettext("Nothing uploaded yet"));
     connection_group.add(&route_row);
     connection_group.add(&last_sync_row);
     status_page.add(&connection_group);
@@ -110,7 +113,7 @@ impl Hero {
             .css_classes(["dim-label"])
             .build();
         let title = gtk::Label::builder()
-            .label("Up to Date")
+            .label(gettext("Up to Date"))
             .wrap(true)
             .justify(gtk::Justification::Center)
             .css_classes(["title-2"])
@@ -134,9 +137,9 @@ impl Hero {
 
     fn build_actions() -> (Button, Button, Button) {
         (
-            pill("Sync Now", true),
-            pill("Pause", false),
-            pill("Queue…", false),
+            pill(&gettext("Sync Now"), true),
+            pill(&gettext("Pause"), false),
+            pill(&gettext("Queue…"), false),
         )
     }
 
@@ -197,16 +200,16 @@ fn attention_group() -> (
     adw::ActionRow,
 ) {
     let group = adw::PreferencesGroup::builder()
-        .title("Needs Attention")
+        .title(gettext("Needs Attention"))
         .visible(false)
         .build();
     let failed_row = adw::ActionRow::builder()
-        .title("Failed uploads")
+        .title(gettext("Failed uploads"))
         .visible(false)
         .build();
     failed_row.add_prefix(&gtk::Image::from_icon_name("dialog-warning-symbolic"));
     let retry_btn = Button::builder()
-        .label("Retry")
+        .label(gettext("Retry"))
         .valign(gtk::Align::Center)
         .build();
     failed_row.add_suffix(&retry_btn);

@@ -3,6 +3,8 @@
 //! Only fields the user actually changed are sent to Immich, so an untouched
 //! date never gets rewritten with a lossy local-time round trip.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -126,7 +128,7 @@ pub(super) fn show_edit_dialog(
                 let original = EditValues::from_details(&details).in_photo_zone(&details);
                 present_edit_dialog(ui, asset_id, &filename, original, on_saved);
             }
-            Err(err) => show_alert_dialog(&ui, "Could Not Load Info", &err),
+            Err(err) => show_alert_dialog(&ui, &gettext("Could Not Load Info"), &err),
         }
     });
 }
@@ -151,12 +153,12 @@ impl DateField {
     pub(super) fn new(original: &str) -> Self {
         let text = Rc::new(RefCell::new(original.to_string()));
         let row = libadwaita::ActionRow::builder()
-            .title("Date taken")
+            .title(gettext("Date taken"))
             .subtitle(date_picker::display_date(original))
             .build();
         let button = gtk::MenuButton::builder()
             .icon_name("x-office-calendar-symbolic")
-            .tooltip_text("Pick date and time")
+            .tooltip_text(gettext("Pick date and time"))
             .valign(gtk::Align::Center)
             .css_classes(["flat"])
             .build();
@@ -177,7 +179,7 @@ fn favorite_row(favorite: bool) -> (libadwaita::ActionRow, gtk::ToggleButton) {
         .build();
     button.connect_toggled(|button| button.set_icon_name(heart_icon(button.is_active())));
     let row = libadwaita::ActionRow::builder()
-        .title("Favorite")
+        .title(gettext("Favorite"))
         .activatable_widget(&button)
         .build();
     row.add_suffix(&button);
@@ -187,7 +189,7 @@ fn favorite_row(favorite: bool) -> (libadwaita::ActionRow, gtk::ToggleButton) {
 impl EditForm {
     fn new(original: &EditValues, filename: &str) -> Self {
         let description_row = libadwaita::EntryRow::builder()
-            .title("Description")
+            .title(gettext("Description"))
             .text(&original.description)
             .build();
         let date = DateField::new(&original.date_text);
@@ -248,9 +250,9 @@ fn photo_zone_row(original: &EditValues) -> (Vec<String>, libadwaita::ComboRow) 
 
 /// Dialog with Cancel/Save in the header bar around `form`; returns the dialog and both buttons.
 fn dialog_shell(form: &EditForm) -> (libadwaita::Dialog, gtk::Button, gtk::Button) {
-    let cancel_btn = gtk::Button::builder().label("Cancel").build();
+    let cancel_btn = gtk::Button::builder().label(gettext("Cancel")).build();
     let save_btn = gtk::Button::builder()
-        .label("Save")
+        .label(gettext("Save"))
         .css_classes(["suggested-action"])
         .build();
     let header = libadwaita::HeaderBar::builder()
@@ -270,7 +272,7 @@ fn dialog_shell(form: &EditForm) -> (libadwaita::Dialog, gtk::Button, gtk::Butto
     let toolbar = libadwaita::ToolbarView::builder().content(&content).build();
     toolbar.add_top_bar(&header);
     let dialog = libadwaita::Dialog::builder()
-        .title("Edit Info")
+        .title(gettext("Edit Info"))
         .content_width(440)
         .child(&toolbar)
         .build();
@@ -344,8 +346,11 @@ fn save_update(
                 save_btn.set_sensitive(true);
                 show_alert_dialog(
                     &ui,
-                    "Could Not Save Info",
-                    &format!("Immich rejected the update: {err}"),
+                    &gettext("Could Not Save Info"),
+                    &fill(
+                        gettext("Immich rejected the update: {err}"),
+                        &[("err", &err.to_string())],
+                    ),
                 );
             }
         }

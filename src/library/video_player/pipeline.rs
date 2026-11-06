@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::sync::Arc;
 
 use gstreamer as gst;
@@ -39,7 +40,9 @@ pub(super) fn frame_duration(numer: i32, denom: i32) -> Option<gst::ClockTime> {
 fn video_sink() -> Result<(gst::Element, gtk::gdk::Paintable), String> {
     let gtk_sink = gst::ElementFactory::make("gtk4paintablesink")
         .build()
-        .map_err(|_| "The GStreamer GTK 4 video sink (gst-plugin-gtk4) is not installed.")?;
+        .map_err(|_| {
+            gettext("The GStreamer GTK 4 video sink (gst-plugin-gtk4) is not installed.")
+        })?;
     let paintable = gtk_sink.property::<gtk::gdk::Paintable>("paintable");
     if !paintable.has_property("gl-context")
         || paintable

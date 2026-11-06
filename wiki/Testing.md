@@ -47,7 +47,7 @@ Tests in Rust are written in the same module as the logic they test, inside `#[c
 | Source File | Test Location | Description |
 | :--- | :--- | :--- |
 | `src/api_client/` | `api_client/tests.rs` | Tests upload-check response parsing, album resolution helpers, and endpoint URL selection. |
-| `src/autostart.rs` | `mod tests` | Tests desktop-exec escaping and Flatpak host config path mapping. |
+| `src/autostart.rs` | `mod tests` | Tests desktop-exec escaping, Flatpak host config path mapping, and the launch command (the AppImage file, or `mimick` on `PATH`). |
 | `src/config.rs` | `mod tests` | Tests JSON serde behavior, folder-rule matching, hidden-path filtering, extension normalization, and best-match watch-path selection. |
 | `src/diagnostics.rs` | `mod tests` | Tests support-summary generation and diagnostics bundle export contents. |
 | `src/library/local_source.rs` | `mod tests` | Tests synthetic ID generation, case-insensitive filename filtering, and query matching. |

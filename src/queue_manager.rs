@@ -6,10 +6,12 @@
 //! battery power, quiet hours) are active, and resumes when conditions clear.
 
 use crate::api_client::{ImmichApiClient, TransferProgressCallback};
+use crate::i18n::fill;
 use crate::runtime_env;
 use crate::state_manager::{AppState, TransferDirection};
 use crate::sync_index::ShardedSyncIndex;
 use chrono::Timelike;
+use gettextrs::gettext;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -234,9 +236,12 @@ impl QueueManager {
         s.record_event(
             task.path.clone(),
             "pending",
-            task.album_name
-                .clone()
-                .map(|name| format!("Target album: {}", name)),
+            task.album_name.clone().map(|name| {
+                fill(
+                    gettext("Target album: {name}"),
+                    &[("name", &name.to_string())],
+                )
+            }),
             attempts,
         );
     }
@@ -318,7 +323,7 @@ impl QueueManager {
             state.record_event(
                 task.path.clone(),
                 "cleared",
-                Some("Removed from retry queue".to_string()),
+                Some(gettext("Removed from retry queue")),
                 attempts,
             );
         }
@@ -331,7 +336,7 @@ impl QueueManager {
             let mut retries = self.retry_list.lock();
             std::mem::take(&mut *retries)
         };
-        self.requeue_failed(tasks, "Manual retry".to_string()).await
+        self.requeue_failed(tasks, gettext("Manual retry")).await
     }
 
     pub async fn retry_failed_path(&self, path: &str) -> bool {
@@ -342,7 +347,7 @@ impl QueueManager {
         };
 
         if let Some(task) = task {
-            self.requeue_failed(vec![task], "Manual retry".to_string())
+            self.requeue_failed(vec![task], gettext("Manual retry"))
                 .await
                 > 0
         } else {
@@ -473,14 +478,14 @@ async fn wait_until_allowed(
                     state
                         .pause_reason
                         .clone()
-                        .unwrap_or_else(|| "Paused by user".to_string()),
+                        .unwrap_or_else(|| gettext("Paused by user")),
                 )
             } else if policy.pause_on_metered_network && runtime_env::is_metered_connection() {
-                Some("Deferred on metered network".to_string())
+                Some(gettext("Deferred on metered network"))
             } else if policy.pause_on_battery_power && runtime_env::is_on_battery_power() {
-                Some("Deferred while on battery power".to_string())
+                Some(gettext("Deferred while on battery power"))
             } else if is_quiet_hour(policy.quiet_hours_start, policy.quiet_hours_end) {
-                Some("Deferred during quiet hours".to_string())
+                Some(gettext("Deferred during quiet hours"))
             } else {
                 None
             }

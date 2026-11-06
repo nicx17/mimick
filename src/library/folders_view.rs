@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashSet};
 use std::rc::Rc;
@@ -57,8 +59,11 @@ fn reload(ui: Rc<LibraryWindowUi>) {
             }
             Err(err) => show_alert_dialog(
                 &ui,
-                "Could Not Load Folders",
-                &format!("{err}\n\nYour API key needs the 'folder.read' permission."),
+                &gettext("Could Not Load Folders"),
+                &fill(
+                    gettext("{err}\n\nYour API key needs the '{permission}' permission."),
+                    &[("err", &err.to_string()), ("permission", "folder.read")],
+                ),
             ),
         }
     });
@@ -89,7 +94,7 @@ fn render(ui: &Rc<LibraryWindowUi>) {
     let ui_crumb = ui.clone();
     render_breadcrumbs(
         &view.page,
-        "Folders",
+        &gettext("Folders"),
         path.as_deref(),
         Rc::new(move |target| open_path(&ui_crumb, target)),
     );
@@ -108,19 +113,22 @@ fn render(ui: &Rc<LibraryWindowUi>) {
             subfolders(&folders, Some(child)).len(),
         ));
     }
-    let empty = (
-        "No Folders",
-        "Folders appear once Immich has photos from them.",
+    let (title, body) = (
+        gettext("No Folders"),
+        gettext("Folders appear once Immich has photos from them."),
     );
     show_empty_state(
         &view.page,
-        (view.page.list.first_child().is_none()).then_some(empty),
+        (view.page.list.first_child().is_none()).then_some((title.as_str(), body.as_str())),
     );
 }
 
 fn photos_row(ui: &Rc<LibraryWindowUi>, path: &str) -> libadwaita::ActionRow {
     let row = libadwaita::ActionRow::builder()
-        .title(format!("Photos in {}", leaf_name(path)))
+        .title(fill(
+            gettext("Photos in {folder}"),
+            &[("folder", leaf_name(path))],
+        ))
         .use_markup(false)
         .title_lines(1)
         .activatable(true)
@@ -142,7 +150,7 @@ fn folder_row(ui: &Rc<LibraryWindowUi>, path: &str, children: usize) -> libadwai
     row.add_prefix(&gtk::Image::from_icon_name("folder-symbolic"));
     let (ui, path) = (ui.clone(), path.to_string());
     if children == 0 {
-        row.set_tooltip_text(Some("Show photos"));
+        row.set_tooltip_text(Some(&gettext("Show photos")));
         row.connect_activated(move |_| open_photos(&ui, &path));
     } else {
         row.set_subtitle(&match children {

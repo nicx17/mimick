@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -19,7 +20,7 @@ pub(in crate::library) fn header_button(
     content.append(&count);
     let button = gtk::Button::builder()
         .child(&content)
-        .tooltip_text("Likes and comments")
+        .tooltip_text(gettext("Likes and comments"))
         .valign(gtk::Align::Center)
         .css_classes(["flat"])
         .build();
@@ -72,7 +73,10 @@ fn present(ui: &Rc<LibraryWindowUi>, album: &LibraryAlbum, on_change: Box<dyn Fn
         .connect_upper_notify(|adj| adj.set_value(adj.upper()));
     let toolbar = libadwaita::ToolbarView::new();
     let header = libadwaita::HeaderBar::builder()
-        .title_widget(&libadwaita::WindowTitle::new("Activity", &album.album_name))
+        .title_widget(&libadwaita::WindowTitle::new(
+            &gettext("Activity"),
+            &album.album_name,
+        ))
         .build();
     toolbar.add_top_bar(&header);
     toolbar.set_content(Some(&scroller));

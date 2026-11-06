@@ -36,7 +36,7 @@ jobs:
         # Full upgrade first, then install — Arch disallows partial upgrades.
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm --needed gtk4 libadwaita glib2 pkgconf base-devel libsecret git libheif libshumate cmake nasm clang
+          pacman -S --noconfirm --needed gtk4 libadwaita glib2 pkgconf base-devel libsecret git libheif libshumate cmake nasm clang gettext
 
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -55,6 +55,11 @@ jobs:
 
       - name: Run clippy
         run: cargo clippy --locked --all-targets --all-features -- -D warnings
+
+      - name: Check translation template
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          scripts/i18n.sh check
 
       - name: Run tests
         run: cargo test --locked

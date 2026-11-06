@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -60,12 +62,12 @@ pub(super) fn build_people_view() -> PeopleView {
 
 fn build_toolbar() -> (gtk::Box, gtk::SearchEntry, gtk::ToggleButton) {
     let search = gtk::SearchEntry::builder()
-        .placeholder_text("Search people")
+        .placeholder_text(gettext("Search people"))
         .hexpand(true)
         .build();
     let show_hidden = gtk::ToggleButton::builder()
         .icon_name("view-reveal-symbolic")
-        .tooltip_text("Show hidden people")
+        .tooltip_text(gettext("Show hidden people"))
         .build();
     let toolbar = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
@@ -104,10 +106,10 @@ pub(super) fn connect_people_view(ui: Rc<LibraryWindowUi>) {
         } else {
             "view-reveal-symbolic"
         });
-        button.set_tooltip_text(Some(if button.is_active() {
-            "Hide hidden people"
+        button.set_tooltip_text(Some(&if button.is_active() {
+            gettext("Hide hidden people")
         } else {
-            "Show hidden people"
+            gettext("Show hidden people")
         }));
         render(&ui_hidden);
     });
@@ -127,8 +129,11 @@ pub(super) fn reload(ui: Rc<LibraryWindowUi>) {
             }
             Err(err) => show_alert_dialog(
                 &ui,
-                "Could Not Load People",
-                &format!("{err}\n\nYour API key needs the 'person.read' permission."),
+                &gettext("Could Not Load People"),
+                &fill(
+                    gettext("{err}\n\nYour API key needs the '{permission}' permission."),
+                    &[("err", &err.to_string()), ("permission", "person.read")],
+                ),
             ),
         }
     });
@@ -147,11 +152,14 @@ fn render(ui: &Rc<LibraryWindowUi>) {
     }
     let (title, description) = if people.is_empty() {
         (
-            "No People",
-            "People appear here once Immich has recognized faces in your photos.",
+            &gettext("No People"),
+            &gettext("People appear here once Immich has recognized faces in your photos."),
         )
     } else {
-        ("No Matches", "No one matches your search.")
+        (
+            &gettext("No Matches"),
+            &gettext("No one matches your search."),
+        )
     };
     view.empty.set_title(title);
     view.empty.set_description(Some(description));
@@ -179,7 +187,7 @@ fn tile_avatar(ui: &LibraryWindowUi, person: &Person) -> gtk::Overlay {
             .icon_name("mimick-heart-filled-symbolic")
             .halign(gtk::Align::End)
             .valign(gtk::Align::End)
-            .tooltip_text("Favorite")
+            .tooltip_text(gettext("Favorite"))
             .css_classes(["mimick-person-favorite"])
             .build();
         overlay.add_overlay(&badge);
@@ -187,11 +195,11 @@ fn tile_avatar(ui: &LibraryWindowUi, person: &Person) -> gtk::Overlay {
     overlay
 }
 
-pub(super) fn display_name(person: &Person) -> &str {
+pub(super) fn display_name(person: &Person) -> std::borrow::Cow<'_, str> {
     if person.name.is_empty() {
-        "Unnamed"
+        gettext("Unnamed").into()
     } else {
-        &person.name
+        person.name.as_str().into()
     }
 }
 
@@ -222,7 +230,10 @@ fn person_tile(ui: &Rc<LibraryWindowUi>, person: &Person) -> gtk::Overlay {
     inner.append(&label);
     let open = gtk::Button::builder()
         .child(&inner)
-        .tooltip_text(format!("Show photos of {}", display_name(person)))
+        .tooltip_text(fill(
+            gettext("Show photos of {name}"),
+            &[("name", &display_name(person))],
+        ))
         .css_classes(["flat"])
         .build();
     if person.is_hidden {
@@ -244,7 +255,7 @@ fn person_tile(ui: &Rc<LibraryWindowUi>, person: &Person) -> gtk::Overlay {
     });
     let menu = gtk::MenuButton::builder()
         .icon_name("view-more-symbolic")
-        .tooltip_text("More")
+        .tooltip_text(gettext("More"))
         .halign(gtk::Align::End)
         .valign(gtk::Align::Start)
         .css_classes(["circular", "osd"])
@@ -259,16 +270,20 @@ pub(super) fn person_menu_items(
     ui: &Rc<LibraryWindowUi>,
     person: &Person,
 ) -> Vec<(String, Box<dyn Fn()>)> {
-    let rename_label = if person.name.is_empty() {
-        "Add Name…"
+    let rename_label = &if person.name.is_empty() {
+        gettext("Add Name…")
     } else {
-        "Rename…"
+        gettext("Rename…")
     };
-    let hide_label = if person.is_hidden { "Unhide" } else { "Hide" };
-    let favorite_label = if person.is_favorite {
-        "Remove from Favorites"
+    let hide_label = &if person.is_hidden {
+        gettext("Unhide")
     } else {
-        "Add to Favorites"
+        gettext("Hide")
+    };
+    let favorite_label = &if person.is_favorite {
+        gettext("Remove from Favorites")
+    } else {
+        gettext("Add to Favorites")
     };
     let (ui_favorite, p_favorite) = (ui.clone(), person.clone());
     let (ui_rename, p_rename) = (ui.clone(), person.clone());
@@ -285,7 +300,7 @@ pub(super) fn person_menu_items(
             Box::new(move || set_favorite(&ui_favorite, &p_favorite, !p_favorite.is_favorite)),
         ),
         (
-            "Set Birthday…".to_string(),
+            gettext("Set Birthday…"),
             Box::new(move || edit_birthday(&ui_birthday, &p_birthday)),
         ),
         (
@@ -299,7 +314,7 @@ pub(super) fn person_menu_items(
             }),
         ),
         (
-            "Merge People…".to_string(),
+            gettext("Merge People…"),
             Box::new(move || super::person_merge_dialog::present(&ui_merge, &p_merge)),
         ),
     ]
@@ -309,7 +324,7 @@ fn save(ui: &Rc<LibraryWindowUi>, person_id: &str, update: PersonUpdate) {
     let (ui, person_id) = (ui.clone(), person_id.to_string());
     glib::MainContext::default().spawn_local(async move {
         if let Err(err) = ui.ctx.api_client.update_person(&person_id, &update).await {
-            show_alert_dialog(&ui, "Could Not Update Person", &err);
+            show_alert_dialog(&ui, &gettext("Could Not Update Person"), &err);
             return;
         }
         if let Some(person) = ui
@@ -355,15 +370,15 @@ fn rename(ui: &Rc<LibraryWindowUi>, person: &Person) {
     prompt_text(
         ui,
         TextPrompt {
-            heading: if person.name.is_empty() {
-                "Add Name"
+            heading: &if person.name.is_empty() {
+                gettext("Add Name")
             } else {
-                "Rename Person"
+                gettext("Rename Person")
             },
-            body: "This name is used in search and on the People page.",
+            body: &gettext("This name is used in search and on the People page."),
             initial: &person.name,
-            placeholder: "Name",
-            accept: "Save",
+            placeholder: &gettext("Name"),
+            accept: &gettext("Save"),
         },
         move |name| {
             let update = PersonUpdate {
@@ -383,19 +398,19 @@ fn edit_birthday(ui: &Rc<LibraryWindowUi>, person: &Person) {
         calendar.set_day(day);
     }
     let dialog = libadwaita::AlertDialog::builder()
-        .heading("Set Birthday")
-        .body(format!(
-            "Immich shows {}'s age on photos.",
-            display_name(person)
+        .heading(gettext("Set Birthday"))
+        .body(fill(
+            gettext("Immich shows {name}'s age on photos."),
+            &[("name", &display_name(person))],
         ))
         .extra_child(&calendar)
         .build();
-    dialog.add_response("cancel", "Cancel");
+    dialog.add_response("cancel", &gettext("Cancel"));
     if person.birth_date.is_some() {
-        dialog.add_response("clear", "Remove");
+        dialog.add_response("clear", &gettext("Remove"));
         dialog.set_response_appearance("clear", libadwaita::ResponseAppearance::Destructive);
     }
-    dialog.add_response("save", "Save");
+    dialog.add_response("save", &gettext("Save"));
     dialog.set_response_appearance("save", libadwaita::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("save"));
     dialog.set_close_response("cancel");

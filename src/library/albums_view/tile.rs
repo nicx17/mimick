@@ -1,4 +1,6 @@
 //! Album cover tile and thumbnail loading.
+use crate::i18n::{fill, plural_n};
+use gettextrs::ngettext;
 
 use std::sync::Arc;
 
@@ -69,10 +71,9 @@ fn build_album_metadata(album: &LibraryAlbum) -> gtk::Box {
         .css_classes(vec!["caption-heading".to_string()])
         .build();
     let count_label = gtk::Label::builder()
-        .label(format!(
-            "{} item{}",
-            album.asset_count,
-            if album.asset_count == 1 { "" } else { "s" }
+        .label(fill(
+            ngettext("{n} item", "{n} items", plural_n(album.asset_count)),
+            &[("n", &album.asset_count.to_string())],
         ))
         .xalign(1.0)
         .css_classes(vec!["caption".to_string(), "dim-label".to_string()])

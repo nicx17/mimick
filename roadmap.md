@@ -93,6 +93,9 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - Likes and comments on shared albums, in the album and the lightbox
 - Context menus open with a long-press on touch screens
 - Keyboard navigation in the photo grid
+- Arch Linux package on the AUR (`mimick`)
+- AppImages for x86_64 and aarch64 attached to each release
+- Translatable interface, ready for translations (#220)
 
 ---
 
@@ -131,8 +134,8 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 ### Platform & Packaging
 
 - [ ] **Flatpak manifest hardening** — Keep improving portal-first packaging and release reliability for the hosted Flatpak repo.
-- [ ] **Arch AUR submission** — Publish PKGBUILD to AUR as `mimick`.
-- [ ] **ARM64 AppImage** — Cross-compile and package for Raspberry Pi / ARM desktops.
+- [x] **Arch AUR submission** — Published to the AUR as `mimick`.
+- [x] **ARM64 AppImage** — Built on an ARM runner alongside the x86_64 AppImage, for Raspberry Pi, ARM desktops, and phones.
 
 ### Longer-Term Product Ideas
 

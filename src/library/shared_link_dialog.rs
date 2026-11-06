@@ -1,5 +1,9 @@
 //! Create or edit a shared link: description, expiry, password, and what visitors may do.
 
+use crate::i18n::fill;
+use crate::i18n::format_local;
+use crate::i18n::gettext_noop;
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use chrono::{DateTime, Duration, Utc};
@@ -13,18 +17,23 @@ use super::context_menu::{show_alert_dialog, show_error_toast};
 
 /// Expiry presets after the optional "Keep current" entry.
 const EXPIRY_PRESETS: [(&str, Option<i64>); 5] = [
-    ("Never", None),
-    ("1 hour", Some(1)),
-    ("1 day", Some(24)),
-    ("7 days", Some(24 * 7)),
-    ("30 days", Some(24 * 30)),
+    (gettext_noop("Never"), None),
+    (gettext_noop("1 hour"), Some(1)),
+    (gettext_noop("1 day"), Some(24)),
+    (gettext_noop("7 days"), Some(24 * 7)),
+    (gettext_noop("30 days"), Some(24 * 30)),
 ];
 
 /// Labels for the expiry dropdown; editing a link that expires adds "Keep current" first.
 fn expiry_labels(current: Option<&str>) -> Vec<String> {
-    let keep = current.map(|at| format!("Keep current ({})", format_expiry(at)));
+    let keep = current.map(|at| {
+        fill(
+            gettext("Keep current ({date})"),
+            &[("date", &format_expiry(at))],
+        )
+    });
     keep.into_iter()
-        .chain(EXPIRY_PRESETS.iter().map(|(label, _)| label.to_string()))
+        .chain(EXPIRY_PRESETS.iter().map(|(label, _)| gettext(*label)))
         .collect()
 }
 
@@ -44,11 +53,8 @@ fn expiry_for_choice(index: u32, current: Option<&str>, now: DateTime<Utc>) -> O
 /// Local short date for an expiry timestamp ("9 Oct 2026, 14:30").
 pub(super) fn format_expiry(at: &str) -> String {
     DateTime::parse_from_rfc3339(at)
-        .map(|dt| {
-            dt.with_timezone(&chrono::Local)
-                .format("%-d %b %Y, %H:%M")
-                .to_string()
-        })
+        // Translators: strftime date and time, e.g. "9 Oct 2026, 14:30".
+        .map(|dt| format_local(dt, &gettext("%-d %b %Y, %H:%M")))
         .unwrap_or_else(|_| at.to_string())
 }
 
@@ -97,7 +103,7 @@ impl LinkForm {
         let label_refs: Vec<&str> = labels.iter().map(String::as_str).collect();
         let form = Self {
             description: libadwaita::EntryRow::builder()
-                .title("Description")
+                .title(gettext("Description"))
                 .text(
                     existing
                         .and_then(|l| l.description.clone())
@@ -105,29 +111,29 @@ impl LinkForm {
                 )
                 .build(),
             expiry: libadwaita::ComboRow::builder()
-                .title("Expires")
+                .title(gettext("Expires"))
                 .model(&gtk::StringList::new(&label_refs))
                 .build(),
             password: libadwaita::PasswordEntryRow::builder()
                 .title(if existing.is_some_and(|l| l.password.is_some()) {
-                    "Password (leave empty to keep)"
+                    gettext("Password (leave empty to keep)")
                 } else {
-                    "Password (optional)"
+                    gettext("Password (optional)")
                 })
                 .build(),
             allow_download: switch(
-                "Allow downloads",
-                "Visitors can download originals",
+                &gettext("Allow downloads"),
+                &gettext("Visitors can download originals"),
                 existing.is_none_or(|l| l.allow_download),
             ),
             allow_upload: switch(
-                "Allow uploads",
-                "Visitors can add photos to the album",
+                &gettext("Allow uploads"),
+                &gettext("Visitors can add photos to the album"),
                 existing.is_some_and(|l| l.allow_upload),
             ),
             show_metadata: switch(
-                "Show metadata",
-                "Visitors can see EXIF details and location",
+                &gettext("Show metadata"),
+                &gettext("Visitors can see EXIF details and location"),
                 existing.is_none_or(|l| l.show_metadata),
             ),
             current_expiry,
@@ -168,8 +174,8 @@ impl LinkForm {
 pub(super) fn present(ui: Rc<LibraryWindowUi>, mode: LinkDialogMode, on_saved: Rc<dyn Fn()>) {
     let form = Rc::new(LinkForm::new(&mode));
     let title = match &mode {
-        LinkDialogMode::Create(_) => "Create Share Link",
-        LinkDialogMode::Edit(_) => "Edit Share Link",
+        LinkDialogMode::Create(_) => &gettext("Create Share Link"),
+        LinkDialogMode::Edit(_) => &gettext("Edit Share Link"),
     };
     let (dialog, save_btn) = dialog_shell(title, &form.group());
     let mode = Rc::new(mode);
@@ -193,7 +199,7 @@ fn dialog_shell(
     group: &libadwaita::PreferencesGroup,
 ) -> (libadwaita::Dialog, gtk::Button) {
     let save_btn = gtk::Button::builder()
-        .label("Save")
+        .label(gettext("Save"))
         .css_classes(["suggested-action"])
         .build();
     let header = libadwaita::HeaderBar::new();
@@ -228,13 +234,13 @@ fn save(
             Ok(link) => {
                 dialog.close();
                 if matches!(mode.as_ref(), LinkDialogMode::Create(_)) {
-                    copy_link_url(&ui, &link, "Share link created and copied").await;
+                    copy_link_url(&ui, &link, &gettext("Share link created and copied")).await;
                 }
                 on_saved();
             }
             Err(err) => {
                 save_btn.set_sensitive(true);
-                show_alert_dialog(&ui, "Could Not Save Share Link", &err);
+                show_alert_dialog(&ui, &gettext("Could Not Save Share Link"), &err);
             }
         }
     });
@@ -244,7 +250,7 @@ fn save(
 pub(super) async fn copy_link_url(ui: &LibraryWindowUi, link: &SharedLink, message: &str) {
     match copy_to_clipboard(ui, link).await {
         Ok(_) => ui.toasts.add_toast(libadwaita::Toast::new(message)),
-        Err(err) => show_error_toast(ui, "Couldn't copy the link", &err),
+        Err(err) => show_error_toast(ui, &gettext("Couldn't copy the link"), &err),
     }
 }
 
