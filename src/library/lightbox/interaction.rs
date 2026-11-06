@@ -8,6 +8,7 @@ use libadwaita::prelude::*;
 use crate::api_client::Tag;
 use crate::library::asset_object::AssetObject;
 
+mod details_loading;
 mod navigation;
 mod rendering;
 use super::fullscreen;

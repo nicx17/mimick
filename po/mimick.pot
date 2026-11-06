@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 18:26+0530\n"
+"POT-Creation-Date: 2026-11-06 18:30+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1807,31 +1807,31 @@ msgstr ""
 msgid "Fullscreen (F11)"
 msgstr ""
 
-#: src/library/lightbox/interaction.rs:328 src/library/lightbox/widgets.rs:260
+#: src/library/lightbox/interaction.rs:329 src/library/lightbox/widgets.rs:260
 msgid "Raw"
 msgstr ""
 
-#: src/library/lightbox/interaction.rs:330 src/library/lightbox/widgets.rs:262
+#: src/library/lightbox/interaction.rs:331 src/library/lightbox/widgets.rs:262
 msgid "Prev"
 msgstr ""
 
-#: src/library/lightbox/interaction.rs:425
+#: src/library/lightbox/interaction.rs:426
 msgid "Add a description"
 msgstr ""
 
-#: src/library/lightbox/interaction/rendering.rs:84
+#: src/library/lightbox/interaction/rendering.rs:80
 msgid "On Immich and locally"
 msgstr ""
 
-#: src/library/lightbox/interaction/rendering.rs:85
+#: src/library/lightbox/interaction/rendering.rs:81
 msgid "Local only"
 msgstr ""
 
-#: src/library/lightbox/interaction/rendering.rs:86
+#: src/library/lightbox/interaction/rendering.rs:82
 msgid "On Immich only"
 msgstr ""
 
-#: src/library/lightbox/interaction/rendering.rs:92
+#: src/library/lightbox/interaction/rendering.rs:88
 #, rust-format
 msgid "Created: {date}"
 msgstr ""
