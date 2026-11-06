@@ -20,11 +20,20 @@ impl Lightbox {
         let player = VideoPlayer::new(&self.video_badge_button, volume, muted, self.video_hooks())?;
         self.picture.overlay.add_overlay(player.surface());
         self.picture.overlay.add_overlay(player.controls());
+        // The video sits above the photo's scroller, so it handles the photo swipes itself.
         let swipe = gtk::GestureSwipe::new();
         swipe.set_touch_only(false);
         let lb = Rc::downgrade(self);
-        swipe.connect_swipe(move |_, vx, _| {
-            if let Some(lb) = lb.upgrade() {
+        swipe.connect_swipe(move |swipe, vx, vy| {
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
+            let touch = swipe
+                .device()
+                .is_some_and(|device| device.source() == gtk::gdk::InputSource::Touchscreen);
+            if touch && super::interaction::is_swipe_up(vx, vy) && lb.photo_at_rest() {
+                lb.show_menu_sheet();
+            } else {
                 lb.handle_swipe(vx);
             }
         });

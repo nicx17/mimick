@@ -62,6 +62,8 @@ pub struct MapView {
     pub(super) mode: Cell<Mode>,
     /// The sidebar was hidden to make room for the photos and comes back with the map alone.
     pub(super) sidebar_restore: Cell<bool>,
+    /// A place's photos fill the window, with the map hidden.
+    pub(super) photos_full: Cell<bool>,
     pub(super) minimap: RefCell<Option<Minimap>>,
     loading: Cell<bool>,
     state: RefCell<ViewState>,
@@ -129,6 +131,7 @@ pub fn build_map_view() -> MapView {
         populated: Cell::new(false),
         mode: Cell::default(),
         sidebar_restore: Cell::new(false),
+        photos_full: Cell::new(false),
         minimap: RefCell::default(),
         loading: Cell::new(false),
         state: RefCell::default(),

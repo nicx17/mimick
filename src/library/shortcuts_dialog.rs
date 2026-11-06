@@ -108,6 +108,10 @@ const LIGHTBOX: &[Shortcut] = &[
     key(gettext_noop("Previous asset"), "Left"),
     key(gettext_noop("Next asset"), "Right"),
     key(gettext_noop("Toggle details"), "i"),
+    key(
+        gettext_noop("Show or hide all actions for the photo"),
+        "F10",
+    ),
     key(gettext_noop("Toggle favorite"), "f"),
     key(gettext_noop("Archive or unarchive"), "a"),
     hint(

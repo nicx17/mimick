@@ -59,6 +59,7 @@ pub(super) fn enrich(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
         LibrarySource::MapArea { ids, .. } => {
             *ui.header.count.borrow_mut() = Some(count_label(ids.0.len() as u64));
             render_facts(&ui.header);
+            ui.header.actions.append(&full_grid_toggle(ui));
             let ui_close = ui.clone();
             add_action(
                 &ui.header,
@@ -69,6 +70,22 @@ pub(super) fn enrich(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
         }
         _ => {}
     }
+}
+
+/// Next to Back to the map: the place's photos beside the map, or filling the window.
+fn full_grid_toggle(ui: &Rc<LibraryWindowUi>) -> gtk::ToggleButton {
+    let toggle = gtk::ToggleButton::builder()
+        .icon_name("view-grid-symbolic")
+        .tooltip_text(gettext("Full Grid"))
+        .active(crate::library::map::photos_full(ui))
+        .valign(gtk::Align::Center)
+        .css_classes(["flat"])
+        .build();
+    let ui = ui.clone();
+    toggle.connect_toggled(move |toggle| {
+        crate::library::map::set_photos_full(&ui, toggle.is_active());
+    });
+    toggle
 }
 
 fn generation(ui: &LibraryWindowUi) -> u64 {

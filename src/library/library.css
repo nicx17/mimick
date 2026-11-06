@@ -353,6 +353,42 @@ picture.mimick-video-surface {
     border-radius: 12px;
 }
 
+/* A thick seek bar filled in the accent color; the padding keeps it easy to hit. */
+scale.mimick-video-seek {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+scale.mimick-video-seek > trough {
+    min-height: 8px;
+    border-radius: 4px;
+    background-color: alpha(white, 0.2);
+}
+
+scale.mimick-video-seek > trough > highlight {
+    min-height: 8px;
+    border-radius: 4px;
+    background-color: @accent_bg_color;
+}
+
+/* The knob shows only while it's in use. */
+scale.mimick-video-seek > trough > slider {
+    min-width: 16px;
+    min-height: 16px;
+    margin: -4px;
+    border: none;
+    box-shadow: none;
+    background-color: @accent_bg_color;
+    opacity: 0;
+    transition: opacity 120ms ease-out;
+}
+
+scale.mimick-video-seek:hover > trough > slider,
+scale.mimick-video-seek > trough > slider:active,
+scale.mimick-video-seek:focus-visible > trough > slider {
+    opacity: 1;
+}
+
 /* ── Live photos and slideshow ─────────────────────────────────── */
 
 button.mimick-live-button {
@@ -396,6 +432,22 @@ progressbar.mimick-slideshow-progress > trough > progress {
     border-radius: 999px;
 }
 
+/* The lightbox's ⋯ sheet: each action is an icon in a round well over its name. */
+button.mimick-sheet-tile {
+    min-width: 64px;
+    padding: 6px 0;
+}
+
+.mimick-sheet-icon {
+    padding: 12px;
+    border-radius: 999px;
+    background-color: alpha(currentColor, 0.1);
+}
+
+button.mimick-sheet-destructive {
+    color: @destructive_color;
+}
+
 /* Crop shapes: compact pills, the chosen one in the accent color. */
 button.mimick-edit-chip {
     padding: 4px 14px;
@@ -423,8 +475,7 @@ button.mimick-edit-revert {
 /* ── Stacks ────────────────────────────────────────────────────── */
 
 .mimick-stack-strip {
-    padding: 4px 6px 4px 10px;
-    border-radius: 14px;
+    padding: 0 4px;
 }
 
 button.mimick-stack-thumb {

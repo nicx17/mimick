@@ -204,6 +204,7 @@ fn seek_scale() -> gtk::Scale {
         .draw_value(false)
         .hexpand(true)
         .focus_on_click(false)
+        .css_classes(["mimick-video-seek"])
         .build();
     seek.set_range(0.0, 1.0);
     seek

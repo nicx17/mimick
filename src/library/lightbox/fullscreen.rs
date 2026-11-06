@@ -63,6 +63,7 @@ impl Lightbox {
         self.actions
             .bar
             .set_visible(!fullscreen && !self.edit_mode.is_active());
+        self.sync_stack_visible();
         super::set_viewer_margins(&self.viewer, fullscreen);
         if fullscreen {
             self.viewer.add_css_class("mimick-fullscreen");

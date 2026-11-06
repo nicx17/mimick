@@ -58,6 +58,7 @@ pub(crate) fn connect_library_rows(
             c.publish_grid_style();
         });
     connect_grid_fit_row(ctx, library);
+    connect_map_full_grid_row(ctx, &library.map_full_grid_row);
     connect_date_headings_row(ctx, &library.date_headings_row);
     connect_raw_rows(ctx, library);
     connect_disk_cache_row(ctx, &library.disk_cache_row);
@@ -115,6 +116,17 @@ fn connect_grid_fit_row(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
             std::mem::replace(&mut d.library_grid_fit_tiles, active) != active
         });
         ctx.publish_grid_style();
+    });
+}
+
+fn connect_map_full_grid_row(ctx: &Arc<AppContext>, row: &adw::SwitchRow) {
+    row.set_active(ctx.config.read().data.library_map_full_grid);
+    let ctx = ctx.clone();
+    row.connect_active_notify(move |row| {
+        let active = row.is_active();
+        save_flag(&ctx, |d| {
+            std::mem::replace(&mut d.library_map_full_grid, active) != active
+        });
     });
 }
 

@@ -73,6 +73,7 @@ impl Lightbox {
             Key::f | Key::F => self.toggle_current_favorite(),
             Key::a | Key::A => self.toggle_current_archive(),
             Key::s | Key::S => self.start_slideshow(None),
+            Key::F10 => self.show_menu_sheet(),
             Key::Escape if self.ui.window.is_fullscreen() => self.ui.window.unfullscreen(),
             Key::Escape => {
                 self.ui.nav.pop();

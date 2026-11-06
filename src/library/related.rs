@@ -15,15 +15,21 @@ pub(super) fn append_related_buttons(menu: &Menu, ui: &Rc<LibraryWindowUi>, item
     let location = super::navigation::current(ui);
     if ui.features.get().smart_search && !is_similar_to(&location, &item.id()) {
         let (ui, id, filename) = (ui.clone(), item.id(), item.filename());
-        menu.add(&gettext("View Similar Photos"), false, move || {
-            view_similar(&ui, id.clone(), filename.clone())
-        });
+        menu.add_with_icon(
+            "system-search-symbolic",
+            &gettext("View Similar Photos"),
+            false,
+            move || view_similar(&ui, id.clone(), filename.clone()),
+        );
     }
     if can_view_in_timeline(ui, item, &location) {
         let (ui, id, month) = (ui.clone(), item.id(), month_of(item));
-        menu.add(&gettext("View in Timeline"), false, move || {
-            view_in_timeline(&ui, id.clone(), month.clone())
-        });
+        menu.add_with_icon(
+            "x-office-calendar-symbolic",
+            &gettext("View in Timeline"),
+            false,
+            move || view_in_timeline(&ui, id.clone(), month.clone()),
+        );
     }
 }
 

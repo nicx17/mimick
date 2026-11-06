@@ -76,6 +76,9 @@ pub struct ConfigData {
     /// Decode Preview and Full Size grid thumbnails at their tile's size.
     #[serde(default = "default_true")]
     pub library_grid_fit_tiles: bool,
+    /// Open a map place's photos as a full grid instead of beside the map.
+    #[serde(default)]
+    pub library_map_full_grid: bool,
     /// Total on-disk cache cap in megabytes across all subcaches
     /// (thumbnails, raw_decode, exif, video, preview, open-in).
     /// Pruning runs once at startup. Defaults to 2000 MB.
@@ -158,6 +161,7 @@ impl Default for ConfigData {
             library_preview_full_resolution: false,
             library_grid_quality: default_grid_quality(),
             library_grid_fit_tiles: true,
+            library_map_full_grid: false,
             cache_disk_cap_mb: default_cache_disk_cap_mb(),
             cache_memory_cap_mb: default_cache_memory_cap_mb(),
             raw_decode_cache_enabled: false,

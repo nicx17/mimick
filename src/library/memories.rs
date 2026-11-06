@@ -199,27 +199,28 @@ fn play_when_loaded(ui: &Rc<LibraryWindowUi>) {
     let handler = Rc::new(RefCell::new(None::<glib::SignalHandlerId>));
     let (weak, handler_ref) = (Rc::downgrade(ui), handler.clone());
     let id = ui.grid.model.connect_items_changed(move |model, _, _, _| {
-        let Some(ui) = weak.upgrade() else {
-            return;
-        };
-        let current = ui.ctx.library_state.lock().generation == generation;
-        if current && model.n_items() == 0 {
+        if model.n_items() == 0 {
             return;
         }
         if let Some(id) = handler_ref.borrow_mut().take() {
             model.disconnect(id);
         }
-        if current {
-            let seconds = ui.features.get().memory_seconds;
-            // Deferred: opening the lightbox reads the model this signal is changing.
-            glib::idle_add_local_once(move || {
+        let Some(ui) = weak.upgrade() else {
+            return;
+        };
+        // Deferred: the loader emits this while holding `library_state`, which isn't
+        // re-entrant, and opening the lightbox reads the model this signal is changing.
+        glib::idle_add_local_once(move || {
+            let current = ui.ctx.library_state.lock().generation == generation;
+            if current {
+                let seconds = ui.features.get().memory_seconds;
                 super::lightbox::start_slideshow_at(
                     &ui,
                     0,
                     Some(super::lightbox::SlideshowOptions::story(seconds)),
                 );
-            });
-        }
+            }
+        });
     });
     handler.replace(Some(id));
 }
@@ -271,9 +272,12 @@ pub(super) fn append_remove_button(
         return;
     };
     let (ui, asset_id) = (ui.clone(), asset_id.to_string());
-    menu.add(&gettext("Remove from Memory"), false, move || {
-        remove(&ui, id.clone(), asset_id.clone(), on_removed.clone())
-    });
+    menu.add_with_icon(
+        "list-remove-symbolic",
+        &gettext("Remove from Memory"),
+        false,
+        move || remove(&ui, id.clone(), asset_id.clone(), on_removed.clone()),
+    );
 }
 
 fn remove(ui: &Rc<LibraryWindowUi>, memory_id: String, asset_id: String, on_removed: Rc<dyn Fn()>) {

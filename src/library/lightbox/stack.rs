@@ -1,4 +1,4 @@
-//! A stack's photos as a strip along the bottom of the lightbox, with the stack's actions.
+//! A stack's photos as a strip under the lightbox photo, with the stack's actions.
 
 use crate::i18n::{fill, plural_n};
 use gettextrs::{gettext, ngettext};
@@ -11,12 +11,15 @@ use super::Lightbox;
 use crate::api_client::Stack;
 use crate::library::actions::is_mine;
 use crate::library::asset_object::AssetObject;
-use crate::library::context_menu::{Menu, show_error_toast};
+use crate::library::context_menu::{Menu, connect_context_menu, menu_key, show_error_toast};
 
 const THUMB_SIZE: i32 = 44;
+const THUMB_SPACING: i32 = 4;
 
 pub(super) struct StackStrip {
-    pub(super) root: gtk::Revealer,
+    /// A row of its own under the photo, so it never covers it.
+    pub(super) root: gtk::Box,
+    scroller: gtk::ScrolledWindow,
     thumbs: gtk::Box,
     actions: gtk::Button,
     loaded: RefCell<Option<Stack>>,
@@ -24,11 +27,17 @@ pub(super) struct StackStrip {
 
 impl StackStrip {
     pub(super) fn new() -> Self {
-        let thumbs = gtk::Box::builder().spacing(4).build();
+        let thumbs = gtk::Box::builder().spacing(THUMB_SPACING).build();
+        // Capped to the thumbnails' size, since each picture asks for its whole image's size;
+        // the width cap is set per stack in `fill_stack`.
+        // `External`, not `Never`: with `Never`, GTK ignores the height cap.
         let scroller = gtk::ScrolledWindow::builder()
-            .hscrollbar_policy(gtk::PolicyType::External)
-            .vscrollbar_policy(gtk::PolicyType::Never)
+            .hscrollbar_policy(gtk::PolicyType::Automatic)
+            .vscrollbar_policy(gtk::PolicyType::External)
             .propagate_natural_width(true)
+            .propagate_natural_height(true)
+            .min_content_height(THUMB_SIZE)
+            .max_content_height(THUMB_SIZE)
             .child(&thumbs)
             .build();
         let actions = gtk::Button::builder()
@@ -37,24 +46,18 @@ impl StackStrip {
             .valign(gtk::Align::Center)
             .css_classes(["flat", "circular"])
             .build();
-        let panel = gtk::Box::builder()
+        let root = gtk::Box::builder()
             .spacing(6)
-            .css_classes(["osd", "mimick-stack-strip"])
-            .build();
-        panel.append(&gtk::Image::from_icon_name("mimick-stack-symbolic"));
-        panel.append(&scroller);
-        panel.append(&actions);
-        let root = gtk::Revealer::builder()
-            .transition_type(gtk::RevealerTransitionType::Crossfade)
             .halign(gtk::Align::Center)
-            .valign(gtk::Align::End)
-            .margin_bottom(12)
-            .margin_start(12)
-            .margin_end(12)
-            .child(&panel)
+            .visible(false)
+            .css_classes(["mimick-stack-strip"])
             .build();
+        root.append(&gtk::Image::from_icon_name("mimick-stack-symbolic"));
+        root.append(&scroller);
+        root.append(&actions);
         Self {
             root,
+            scroller,
             thumbs,
             actions,
             loaded: RefCell::default(),
@@ -62,7 +65,7 @@ impl StackStrip {
     }
 
     fn hide(&self) {
-        self.root.set_reveal_child(false);
+        self.root.set_visible(false);
         self.loaded.take();
         while let Some(child) = self.thumbs.first_child() {
             self.thumbs.remove(&child);
@@ -75,9 +78,19 @@ impl Lightbox {
         let lb = Rc::downgrade(self);
         self.stack.actions.connect_clicked(move |button| {
             if let Some(lb) = lb.upgrade() {
-                lb.show_stack_menu(button);
+                let shown = lb.current_item().map(|item| item.id()).unwrap_or_default();
+                let (x, y) = centre(button);
+                lb.show_stack_menu(button, &shown, x, y);
             }
         });
+    }
+
+    /// Under a stacked photo, except while editing or in fullscreen.
+    pub(super) fn sync_stack_visible(&self) {
+        let shown = self.stack.loaded.borrow().is_some()
+            && !self.edit_mode.is_active()
+            && !self.ui.window.is_fullscreen();
+        self.stack.root.set_visible(shown);
     }
 
     /// Drops the loaded stack, so the next render fetches it again.
@@ -132,9 +145,12 @@ impl Lightbox {
         for asset in &stack.assets {
             self.stack.thumbs.append(&self.stack_thumb(&asset.id));
         }
+        let count = i32::try_from(stack.assets.len()).unwrap_or(0);
+        let width = count.saturating_mul(THUMB_SIZE + THUMB_SPACING) - THUMB_SPACING;
+        self.stack.scroller.set_max_content_width(width);
         *self.stack.loaded.borrow_mut() = Some(stack);
         self.mark_shown_member();
-        self.stack.root.set_reveal_child(true);
+        self.sync_stack_visible();
     }
 
     fn stack_thumb(self: &Rc<Self>, asset_id: &str) -> gtk::Button {
@@ -161,7 +177,31 @@ impl Lightbox {
                 lb.show_stack_member(&id);
             }
         });
+        self.connect_thumb_menu(&button, asset_id);
         button
+    }
+
+    /// Right-click, long-press, or the Menu key on a thumbnail acts on that photo directly.
+    fn connect_thumb_menu(self: &Rc<Self>, button: &gtk::Button, asset_id: &str) {
+        let (lb, id) = (Rc::downgrade(self), asset_id.to_string());
+        let open = Rc::new(move |thumb: &gtk::Button, x: f64, y: f64| {
+            if let Some(lb) = lb.upgrade() {
+                lb.show_stack_menu(thumb, &id, x, y);
+            }
+        });
+        let (on_press, thumb) = (open.clone(), button.downgrade());
+        connect_context_menu(button, move |x, y| {
+            if let Some(thumb) = thumb.upgrade() {
+                on_press(&thumb, x, y);
+            }
+        });
+        let thumb = button.downgrade();
+        button.add_controller(menu_key(move || {
+            if let Some(thumb) = thumb.upgrade() {
+                let (x, y) = centre(&thumb);
+                open(&thumb, x, y);
+            }
+        }));
     }
 
     /// Shows a member in place of the cover; picking the cover goes back to the grid item.
@@ -213,25 +253,24 @@ impl Lightbox {
         self.stack.actions.set_visible(owned);
     }
 
-    fn show_stack_menu(self: &Rc<Self>, button: &gtk::Button) {
+    /// Your stack's actions for `asset_id`: make it the cover or take it out, or unstack them all.
+    fn show_stack_menu(self: &Rc<Self>, parent: &gtk::Button, asset_id: &str, x: f64, y: f64) {
         let Some(stack) = self.stack.loaded.borrow().clone() else {
             return;
         };
-        let shown = self
+        if !self
             .current_item()
-            .map(|item| item.id())
-            .unwrap_or_default();
-        let menu = Menu::new(
-            button,
-            f64::from(button.width()) / 2.0,
-            f64::from(button.height()) / 2.0,
-        );
-        if shown != stack.primary_asset_id {
-            let (lb, stack_id, id) = (self.clone(), stack.id.clone(), shown.clone());
+            .is_some_and(|item| is_mine(&self.ui, &item))
+        {
+            return;
+        }
+        let menu = Menu::new(parent, x, y);
+        if asset_id != stack.primary_asset_id {
+            let (lb, stack_id, id) = (self.clone(), stack.id.clone(), asset_id.to_string());
             menu.add(&gettext("Set as Stack Cover"), false, move || {
                 lb.change_stack(StackChange::Cover(stack_id.clone(), id.clone()))
             });
-            let (lb, stack_id, id) = (self.clone(), stack.id.clone(), shown);
+            let (lb, stack_id, id) = (self.clone(), stack.id.clone(), asset_id.to_string());
             menu.add(&gettext("Remove from Stack"), false, move || {
                 lb.change_stack(StackChange::Remove(stack_id.clone(), id.clone()))
             });
@@ -286,6 +325,14 @@ impl Lightbox {
     }
 }
 
+/// The middle of `widget`, where a menu opened from the keyboard points.
+fn centre(widget: &impl IsA<gtk::Widget>) -> (f64, f64) {
+    (
+        f64::from(widget.width()) / 2.0,
+        f64::from(widget.height()) / 2.0,
+    )
+}
+
 enum StackChange {
     Cover(String, String),
     Remove(String, String),
@@ -303,19 +350,24 @@ pub(in crate::library) fn append_unstack_button(
         return;
     }
     let ui = ui.clone();
-    menu.add(&gettext("Unstack"), false, move || {
-        let (ui, stack_id) = (ui.clone(), stack_id.clone());
-        glib::MainContext::default().spawn_local(async move {
-            match ui.ctx.api_client.delete_stack(&stack_id).await {
-                Ok(()) => {
-                    ui.toasts
-                        .add_toast(libadwaita::Toast::new(&gettext("Unstacked")));
-                    crate::library::refresh_library_after_mutation(ui.clone(), true);
+    menu.add_with_icon(
+        "mimick-stack-symbolic",
+        &gettext("Unstack"),
+        false,
+        move || {
+            let (ui, stack_id) = (ui.clone(), stack_id.clone());
+            glib::MainContext::default().spawn_local(async move {
+                match ui.ctx.api_client.delete_stack(&stack_id).await {
+                    Ok(()) => {
+                        ui.toasts
+                            .add_toast(libadwaita::Toast::new(&gettext("Unstacked")));
+                        crate::library::refresh_library_after_mutation(ui.clone(), true);
+                    }
+                    Err(err) => show_error_toast(&ui, &gettext("Couldn't change the stack"), &err),
                 }
-                Err(err) => show_error_toast(&ui, &gettext("Couldn't change the stack"), &err),
-            }
-        });
-    });
+            });
+        },
+    );
 }
 
 /// Stacks the selected photos under the first one, then regroups the grid.

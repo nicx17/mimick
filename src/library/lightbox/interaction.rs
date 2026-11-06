@@ -22,7 +22,7 @@ use crate::library::actions::{TrashTarget, confirm_trash};
 use crate::library::archive::{archive_icon, archive_tooltip, set_archived};
 use crate::library::asset_edit::show_edit_dialog;
 use crate::library::context_menu::{
-    AssetMenuHooks, MenuTarget, connect_context_menu, menu_key, show_item_context_menu,
+    AssetMenuHooks, Menu, MenuTarget, connect_context_menu, item_menu, menu_key,
 };
 use crate::library::download::{open_local_with_default_app, start_download};
 use crate::library::favorites::{FavoriteHooks, heart_icon, heart_tooltip, toggle_favorite};
@@ -42,7 +42,6 @@ impl Lightbox {
         let live_button = super::live::build_live_button();
         picture.overlay.add_overlay(&live_button);
         let stack = super::stack::StackStrip::new();
-        picture.overlay.add_overlay(&stack.root);
         let face_mode = super::faces::FaceMode::new();
         picture.overlay.add_overlay(&face_mode.bar);
         let edit_mode = super::edit::EditMode::new();
@@ -69,6 +68,7 @@ impl Lightbox {
         }
         let details = build_details_pane();
         let viewer = build_viewer(&picture, &actions);
+        viewer.insert_child_after(&stack.root, Some(&picture.overlay));
         viewer.append(&edit_mode.panel);
         let body = build_split_view(&ui, &viewer, &details, &header.details_btn);
         header.toolbar.set_content(Some(&body));
@@ -119,8 +119,15 @@ impl Lightbox {
         let drag_source = gtk::DragSource::new();
         drag_source.set_actions(gtk::gdk::DragAction::COPY);
         let lb = Rc::downgrade(self);
-        drag_source.connect_prepare(move |_source, _x, _y| {
-            // A drag while tagging faces or cropping draws on the photo instead.
+        drag_source.connect_prepare(move |source, _x, _y| {
+            // A finger drag pans, swipes, or opens the sheet; files are dragged out with a
+            // mouse or pen. A drag while tagging faces or cropping draws on the photo instead.
+            if source
+                .device()
+                .is_some_and(|device| device.source() == gtk::gdk::InputSource::Touchscreen)
+            {
+                return None;
+            }
             let lb = lb
                 .upgrade()
                 .filter(|lb| !lb.face_mode.is_active() && !lb.edit_mode.is_active())?;
@@ -238,7 +245,10 @@ impl Lightbox {
         // coordinate frame with drag (see drag comment below).
         let pinch = gtk::GestureZoom::new();
         let lb = Rc::downgrade(self);
-        pinch.connect_begin(move |_, _| {
+        pinch.connect_begin(move |pinch, _| {
+            // Two fingers only zoom (and pan, which is grouped with it): claiming them cancels
+            // the sideways photo swipe, the swipe up, and the long-press on those touches.
+            pinch.set_state(gtk::EventSequenceState::Claimed);
             if let Some(lb) = lb.upgrade() {
                 lb.pinch_start.set(lb.zoom_level.get());
             }
@@ -313,14 +323,32 @@ impl Lightbox {
             }
         }));
         self.connect_swipe_tracker();
-        self.on_click(&self.header.menu_btn, |lb| {
-            let button = &lb.header.menu_btn;
-            lb.show_menu_on(
-                button,
-                f64::from(button.width()) / 2.0,
-                f64::from(button.height()),
-            );
+        self.connect_swipe_up();
+        self.on_click(&self.header.menu_btn, Self::show_menu_sheet);
+    }
+
+    /// A fast swipe up on the photo opens the ⋯ sheet. It only looks at the swipe once it
+    /// ends and never claims the touch, so the sideways swipe, pinch, and long-press still work.
+    fn connect_swipe_up(self: &Rc<Self>) {
+        let swipe = gtk::GestureSwipe::builder().touch_only(true).build();
+        let lb = Rc::downgrade(self);
+        swipe.connect_swipe(move |_, vx, vy| {
+            if let Some(lb) = lb.upgrade()
+                && is_swipe_up(vx, vy)
+                && lb.photo_at_rest()
+            {
+                lb.show_menu_sheet();
+            }
         });
+        self.picture.scrolled.add_controller(swipe);
+    }
+
+    /// Not zoomed, editing, tagging faces, or playing a slideshow, where swipes mean other things.
+    pub(super) fn photo_at_rest(&self) -> bool {
+        (self.zoom_level.get() - 1.0).abs() < 0.001
+            && !self.edit_mode.is_active()
+            && !self.face_mode.is_active()
+            && !self.slideshow.is_running()
     }
 
     fn show_menu_at(self: &Rc<Self>, x: f64, y: f64) {
@@ -328,14 +356,32 @@ impl Lightbox {
     }
 
     fn show_menu_on(self: &Rc<Self>, parent: &impl IsA<gtk::Widget>, x: f64, y: f64) {
-        let Some(item) = self.current_item() else {
-            return;
-        };
+        if let Some(menu) = self.photo_menu(parent, x, y) {
+            menu.popup();
+        }
+    }
+
+    /// The ⋯ button's menu (also F10 and a swipe up): every action as an icon in a sheet.
+    pub(super) fn show_menu_sheet(self: &Rc<Self>) {
+        let button = &self.header.menu_btn;
+        if let Some(menu) = self.photo_menu(button, 0.0, 0.0) {
+            menu.present_sheet(button);
+        }
+    }
+
+    fn photo_menu(self: &Rc<Self>, parent: &impl IsA<gtk::Widget>, x: f64, y: f64) -> Option<Menu> {
         let target = MenuTarget {
-            item,
+            item: self.current_item()?,
             position: self.pos.get(),
         };
-        show_item_context_menu(self.ui.clone(), parent, target, x, y, self.menu_hooks());
+        Some(item_menu(
+            self.ui.clone(),
+            parent,
+            target,
+            x,
+            y,
+            self.menu_hooks(),
+        ))
     }
 
     /// Ctrl +/-/0 zoom, Left/Right navigate, I toggles details, Escape closes.
@@ -647,5 +693,29 @@ impl Lightbox {
         if let Some((content_width, _)) = content {
             self.sharpen_for_zoom(content_width);
         }
+    }
+}
+
+/// Swipe speed, in pixels per second, that counts as a deliberate swipe up.
+const SWIPE_UP_SPEED: f64 = 500.0;
+
+/// Fast, upward, and mostly vertical, so a sideways swipe to the next photo never counts.
+pub(super) fn is_swipe_up(vx: f64, vy: f64) -> bool {
+    vy < -SWIPE_UP_SPEED && vy.abs() > vx.abs() * 2.0
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn only_fast_upward_swipes_open_the_sheet() {
+        assert!(is_swipe_up(40.0, -900.0));
+        assert!(!is_swipe_up(0.0, 900.0), "downward");
+        assert!(!is_swipe_up(0.0, -200.0), "too slow");
+        assert!(
+            !is_swipe_up(-800.0, -700.0),
+            "mostly sideways, a photo change"
+        );
     }
 }

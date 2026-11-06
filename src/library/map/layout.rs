@@ -26,17 +26,50 @@ fn mode_for(location: &Location) -> Mode {
 /// Show or hide the map and the photo grid for the location just opened.
 pub fn sync(ui: &Rc<LibraryWindowUi>, location: &Location) {
     let mode = mode_for(location);
+    let full = photos_full(ui);
     let previous = ui.map.mode.replace(mode);
-    ui.map.root.set_visible(mode != Mode::Off);
-    ui.content_stack.set_visible(mode != Mode::MapOnly);
-    ui.controls_row.set_visible(mode == Mode::Off);
-    if mode != Mode::Off {
-        super::view::show(ui);
-    }
+    ui.map.photos_full.set(full);
+    show_halves(ui, mode);
     match (previous == Mode::WithPhotos, mode == Mode::WithPhotos) {
         (false, true) => open_panel(ui),
         (true, false) => close_panel(ui),
         _ => {}
+    }
+}
+
+/// Whether a place's photos fill the window: kept while moving between places, else the
+/// setting's choice. The header asks before `sync` runs, so both use this.
+pub fn photos_full(ui: &LibraryWindowUi) -> bool {
+    if ui.map.mode.get() == Mode::WithPhotos {
+        ui.map.photos_full.get()
+    } else {
+        ui.ctx.config.read().data.library_map_full_grid
+    }
+}
+
+/// Switches the open place's photos between beside the map and filling the window.
+pub fn set_photos_full(ui: &Rc<LibraryWindowUi>, full: bool) {
+    if ui.map.mode.get() != Mode::WithPhotos || ui.map.photos_full.replace(full) == full {
+        return;
+    }
+    show_halves(ui, Mode::WithPhotos);
+    if !full {
+        place_divider(&ui.map.split);
+    }
+}
+
+/// The map shows on the Map page and beside a place's photos, unless they fill the window.
+fn show_halves(ui: &Rc<LibraryWindowUi>, mode: Mode) {
+    let map_shown = match mode {
+        Mode::Off => false,
+        Mode::MapOnly => true,
+        Mode::WithPhotos => !ui.map.photos_full.get(),
+    };
+    ui.map.root.set_visible(map_shown);
+    ui.content_stack.set_visible(mode != Mode::MapOnly);
+    ui.controls_row.set_visible(mode == Mode::Off);
+    if map_shown {
+        super::view::show(ui);
     }
 }
 
