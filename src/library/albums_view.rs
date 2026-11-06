@@ -4,6 +4,8 @@
 //! in a responsive flow layout. Selecting a tile navigates the main
 //! grid to that album's contents.
 
+use crate::i18n::gettext_noop;
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::sync::Arc;
@@ -37,17 +39,20 @@ pub enum AlbumAction {
 }
 
 const OWN_ALBUM_ACTIONS: &[(&str, AlbumAction)] = &[
-    ("Share…", AlbumAction::Share),
-    ("Create Share Link…", AlbumAction::CreateLink),
-    ("Rename…", AlbumAction::Rename),
-    ("Edit Description…", AlbumAction::EditDescription),
-    ("Download", AlbumAction::Download),
-    ("Delete Album…", AlbumAction::Delete),
+    (gettext_noop("Share…"), AlbumAction::Share),
+    (gettext_noop("Create Share Link…"), AlbumAction::CreateLink),
+    (gettext_noop("Rename…"), AlbumAction::Rename),
+    (
+        gettext_noop("Edit Description…"),
+        AlbumAction::EditDescription,
+    ),
+    (gettext_noop("Download"), AlbumAction::Download),
+    (gettext_noop("Delete Album…"), AlbumAction::Delete),
 ];
 
 const SHARED_ALBUM_ACTIONS: &[(&str, AlbumAction)] = &[
-    ("Download", AlbumAction::Download),
-    ("Leave Album…", AlbumAction::Leave),
+    (gettext_noop("Download"), AlbumAction::Download),
+    (gettext_noop("Leave Album…"), AlbumAction::Leave),
 ];
 
 type TileMenu = (AlbumShare, &'static [(&'static str, AlbumAction)]);
@@ -104,9 +109,9 @@ pub fn build_albums_view() -> AlbumsViewParts {
     let (header_row, title, filter_entry, create_button) = build_header();
     outer.append(&header_row);
 
-    let (recent_section, _, recent_grid) = build_section("Recent");
-    let (owned_section, owned_title, owned_grid) = build_section("Your albums");
-    let (shared_section, _, shared_grid) = build_section("Shared with you");
+    let (recent_section, _, recent_grid) = build_section(&gettext("Recent"));
+    let (owned_section, owned_title, owned_grid) = build_section(&gettext("Your albums"));
+    let (shared_section, _, shared_grid) = build_section(&gettext("Shared with you"));
     outer.append(&recent_section);
     outer.append(&owned_section);
     outer.append(&shared_section);
@@ -150,17 +155,17 @@ fn build_header() -> (gtk::Box, gtk::Label, gtk::SearchEntry, gtk::Button) {
         .spacing(8)
         .build();
     let title = gtk::Label::builder()
-        .label("Albums")
+        .label(gettext("Albums"))
         .xalign(0.0)
         .hexpand(true)
         .css_classes(vec!["title-1".to_string()])
         .build();
     let create_button = gtk::Button::builder()
-        .label("Create album")
+        .label(gettext("Create album"))
         .css_classes(vec!["suggested-action".to_string()])
         .build();
     let filter_entry = gtk::SearchEntry::builder()
-        .placeholder_text("Filter albums")
+        .placeholder_text(gettext("Filter albums"))
         .hexpand(true)
         .max_width_chars(20)
         .build();
@@ -191,15 +196,15 @@ pub fn populate_albums(
 /// Switch between the full Albums page and the Shared Albums page, then re-render.
 pub fn set_shared_only(parts: &AlbumsViewParts, shared_only: bool) {
     parts.shared_only.set(shared_only);
-    parts.title.set_label(if shared_only {
-        "Shared Albums"
+    parts.title.set_label(&if shared_only {
+        gettext("Shared Albums")
     } else {
-        "Albums"
+        gettext("Albums")
     });
-    parts.owned_title.set_label(if shared_only {
-        "Shared by you"
+    parts.owned_title.set_label(&if shared_only {
+        gettext("Shared by you")
     } else {
-        "Your albums"
+        gettext("Your albums")
     });
     parts.create_button.set_visible(!shared_only);
     render_albums(parts);
@@ -331,13 +336,13 @@ fn build_empty_state() -> libadwaita::StatusPage {
 fn show_empty_state(parts: &AlbumsViewParts, visible: bool, user_unknown: bool) {
     let (title, description) = if user_unknown {
         (
-            "Couldn't Tell Which Albums Are Yours",
-            "Your API key needs the 'user.read' permission.",
+            &gettext("Couldn't Tell Which Albums Are Yours"),
+            &gettext("Your API key needs the 'user.read' permission."),
         )
     } else {
         (
-            "No Shared Albums",
-            "Share one of your albums, or ask someone to share one with you.",
+            &gettext("No Shared Albums"),
+            &gettext("Share one of your albums, or ask someone to share one with you."),
         )
     };
     parts.empty.set_title(title);
@@ -413,7 +418,9 @@ fn show_tile_menu(
     for &(label, action) in actions {
         let destructive = matches!(action, AlbumAction::Delete | AlbumAction::Leave);
         let (share, album) = (share.clone(), album.clone());
-        menu.add(label, destructive, move || share(album.clone(), action));
+        menu.add(&gettext(label), destructive, move || {
+            share(album.clone(), action)
+        });
     }
     menu.popup();
 }

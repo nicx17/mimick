@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added 11 more map styles from VersaTiles under **More Styles** in the map's style menu: Positrino, Protocol, Protostar, Protozoa, Fnord, Classic, Googol, Freedom, Macbob, Mactaylor, and Bingo.
+- Messages that said "file(s)" or "item(s)" now use the right singular or plural, such as "1 file" and "3 files".
 - Added a **Satellite** map style with imagery from VersaTiles and place names on top. Sharp aerial photos cover about 35 European countries; elsewhere the imagery is sharp to about town level, and zooming in further enlarges it instead of leaving blank squares.
 - Added place search to the Map page: type a place, street, or address and the map flies there and drops a red pin, zoomed to fit what you found. Results come from [Photon](https://photon.komoot.io) (OpenStreetMap data), ranked by how close they are to where the map is looking and named in your system language when Photon has it (English, German, or French). If Photon can't be reached, Immich's own place search answers instead. The **Set Location** dialog uses the same search. **Ctrl+F** jumps to the Map page's search field.
 - Added keyboard shortcuts: **Ctrl+K** opens Search, **Ctrl+1** to **Ctrl+9** go to the sidebar pages, **Ctrl+A** selects every loaded photo, and **D**, **M**, and **Y** step Photos to the next day, month, or year (**Shift** for the previous one). On the map, **+** and **−** zoom, **[** and **]** turn it, **N** points north, and **Ctrl+L** shows your location. In the viewer, **1** to **5** rate (**0** clears), **E** opens Edit Info, and **Shift+D** downloads. All are listed under **Keyboard Shortcuts** (**Ctrl+?**).
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added keyboard navigation to the photo grid: the arrow keys move between photos (**Home** and **End** jump to the first and last), a ring marks the current one, **Enter** opens it, and **Space** selects it.
 - Album tiles in the **Recent** row on the Albums page now have the same context menu as the other album tiles.
 - Added an Arch Linux package on the AUR: `mimick` builds the latest release. Its build file is in `packaging/aur/` (#295).
+- Mimick can now be translated. Its text, counts, and dates follow your system language, and dates use your locale's month and day names. The app menu entry and software center listing can be translated too. No translations ship yet; see **Translations** in `CONTRIBUTING.md` to add a language (#220).
 - Added AppImages for x86_64 and aarch64 to each GitHub release. Each bundles every library it needs, including glibc, so it runs on distributions too old for Mimick's GTK and libadwaita versions. **Run on Startup** points at the AppImage file itself (#295).
 
 ### Changed

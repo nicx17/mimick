@@ -5,6 +5,7 @@
 //! concurrency), EXIF metadata, and original-file downloads. Asset
 //! deletion sends items to Immich trash rather than permanent removal.
 
+use gettextrs::gettext;
 use std::time::Duration;
 
 use super::errors::{RequestContext, classify_http_issue, classify_network_issue};
@@ -105,7 +106,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/albums", base_url);
 
@@ -193,7 +194,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{base_url}{}", thumbnail_path(asset_id, size, edited));
         let result = self
@@ -244,7 +245,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/assets/{}", base_url, asset_id);
         match self
@@ -315,7 +316,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{base_url}{path}");
 
@@ -356,7 +357,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/users/me", base_url);
         match self
@@ -385,7 +386,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/assets/{}", base_url, asset_id);
         match self
@@ -453,7 +454,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/assets", base_url);
         let body = delete_request_body(asset_ids, force);

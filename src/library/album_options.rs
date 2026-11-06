@@ -1,5 +1,7 @@
 //! "Album Options": display order and comments and likes, saved as soon as they change.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -14,22 +16,22 @@ const ORDERS: [SortOrder; 2] = [SortOrder::Desc, SortOrder::Asc];
 
 pub(super) fn present(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum) {
     let dialog = libadwaita::PreferencesDialog::builder()
-        .title("Album Options")
+        .title(gettext("Album Options"))
         .content_width(420)
         .content_height(360)
         .build();
     let order = order_row(album.order);
     let activity = libadwaita::SwitchRow::builder()
-        .title("Comments and Likes")
-        .subtitle("Let people in this album like and comment")
+        .title(gettext("Comments and Likes"))
+        .subtitle(gettext("Let people in this album like and comment"))
         .active(album.is_activity_enabled)
         .build();
     let display = libadwaita::PreferencesGroup::builder()
-        .title("Display")
+        .title(gettext("Display"))
         .build();
     display.add(&order);
     let social = libadwaita::PreferencesGroup::builder()
-        .title("Activity")
+        .title(gettext("Activity"))
         .build();
     social.add(&activity);
     let page = libadwaita::PreferencesPage::new();
@@ -43,8 +45,11 @@ pub(super) fn present(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum) {
 
 fn order_row(order: Option<SortOrder>) -> libadwaita::ComboRow {
     let row = libadwaita::ComboRow::builder()
-        .title("Display Order")
-        .model(&gtk::StringList::new(&["Newest First", "Oldest First"]))
+        .title(gettext("Display Order"))
+        .model(&gtk::StringList::new(&[
+            &gettext("Newest First"),
+            &gettext("Oldest First"),
+        ]))
         .build();
     row.set_selected(u32::from(order == Some(SortOrder::Asc)));
     row
@@ -83,7 +88,10 @@ fn connect_order(
                 }
                 Err(err) => {
                     row.set_selected(saved.get());
-                    dialog.add_toast(libadwaita::Toast::new(&format!("Couldn't save: {err}")));
+                    dialog.add_toast(libadwaita::Toast::new(&fill(
+                        gettext("Couldn't save: {err}"),
+                        &[("err", &err.to_string())],
+                    )));
                 }
             }
         });
@@ -137,7 +145,10 @@ fn connect_activity(
                 }
                 Err(err) => {
                     row.set_active(saved.get());
-                    dialog.add_toast(libadwaita::Toast::new(&format!("Couldn't save: {err}")));
+                    dialog.add_toast(libadwaita::Toast::new(&fill(
+                        gettext("Couldn't save: {err}"),
+                        &[("err", &err.to_string())],
+                    )));
                 }
             }
         });

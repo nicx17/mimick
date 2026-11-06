@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!--
+  Copyright (C) 2015-2024 Matthias Klumpp <matthias@tenstral.net>
+  Copyright (C) 2019 Takao Fujiwara <takao.fujiwara1@gmail.com>
+
+  SPDX-License-Identifier: FSFAP
+-->
+<its:rules xmlns:its="http://www.w3.org/2005/11/its"
+           xmlns:mi="https://specifications.freedesktop.org/metainfo/1.0"
+           version="2.0">
+
+  <!-- MetaInfo files should not have an XML namespace, but the spec permits
+       one, so every rule must also match the namespaced variant -->
+
+  <its:translateRule selector="/component | /mi:component" translate="no"/>
+  <its:translateRule selector="/component/name |
+                               /component/summary |
+                               /component/description |
+                               /component/developer_name |
+                               /component/developer/name |
+                               /component/name_variant_suffix |
+                               /component/keywords/keyword |
+                               /component/screenshots/screenshot/caption |
+                               /component/releases/release/description |
+                               /component/agreement/agreement_section/name |
+                               /component/agreement/agreement_section/description |
+                               /mi:component/mi:name |
+                               /mi:component/mi:summary |
+                               /mi:component/mi:description |
+                               /mi:component/mi:developer_name |
+                               /mi:component/mi:developer/mi:name |
+                               /mi:component/mi:name_variant_suffix |
+                               /mi:component/mi:keywords/mi:keyword |
+                               /mi:component/mi:screenshots/mi:screenshot/mi:caption |
+                               /mi:component/mi:releases/mi:release/mi:description |
+                               /mi:component/mi:agreement/mi:agreement_section/mi:name |
+                               /mi:component/mi:agreement/mi:agreement_section/mi:description"
+                     translate="yes"/>
+
+  <!-- Release metadata -->
+  <its:translateRule selector="/releases | /mi:releases" translate="no"/>
+  <its:translateRule selector="/releases/release/description |
+                               /mi:releases/mi:release/mi:description"
+                     translate="yes"/>
+
+  <its:withinTextRule withinText="yes" selector="//description//em |
+                                                 //description//code |
+                                                 //mi:description//mi:em |
+                                                 //mi:description//mi:code"/>
+
+  <!-- Anything explicitly marked as untranslatable will not be translated. We allow this for all elements,
+       except for elements within a description, which can only be excluded as a whole. -->
+  <its:translateRule selector="//*[@translate = 'no'][not(ancestor::description or ancestor::mi:description)]"
+                     translate="no"/>
+
+</its:rules>

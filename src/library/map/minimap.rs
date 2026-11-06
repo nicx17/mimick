@@ -1,5 +1,6 @@
 //! Small map with a pin in the details pane's location section, reused from photo to photo.
 
+use gettextrs::gettext;
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -56,7 +57,7 @@ fn build(ui: &Rc<LibraryWindowUi>, point: GeoPoint) -> Minimap {
     let point = Rc::new(Cell::new(point));
     let button = gtk::Button::builder()
         .child(&Square::new(&map))
-        .tooltip_text("Show on map")
+        .tooltip_text(gettext("Show on map"))
         .margin_top(8)
         .overflow(gtk::Overflow::Hidden)
         .css_classes(["flat", "mimick-minimap"])
@@ -95,7 +96,7 @@ pub fn pin(point: GeoPoint) -> shumate::Marker {
         .halign(gtk::Align::Center)
         .build();
     let badge = gtk::Box::builder()
-        .tooltip_text("Photo location")
+        .tooltip_text(gettext("Photo location"))
         .css_classes(["mimick-map-pin"])
         .build();
     badge.append(&icon);

@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
@@ -323,7 +324,11 @@ impl Lightbox {
 
         let lb = Rc::downgrade(self);
         self.actions.resolution_toggle.connect_toggled(move |btn| {
-            btn.set_label(if btn.is_active() { "Raw" } else { "Prev" });
+            btn.set_label(&if btn.is_active() {
+                gettext("Raw")
+            } else {
+                gettext("Prev")
+            });
             if let Some(lb) = lb.upgrade() {
                 lb.render();
             }
@@ -417,7 +422,7 @@ impl Lightbox {
     /// Stands in for an empty description on the user's own photos and opens Edit Info.
     fn add_description_row(self: &Rc<Self>) -> libadwaita::ActionRow {
         let row = libadwaita::ActionRow::builder()
-            .title("Add a description")
+            .title(gettext("Add a description"))
             .activatable(true)
             .css_classes(["dim-label"])
             .build();
@@ -465,7 +470,7 @@ impl Lightbox {
         self.actions.favorite.set_icon_name(heart_icon(favorite));
         self.actions
             .favorite
-            .set_tooltip_text(Some(heart_tooltip(favorite)));
+            .set_tooltip_text(Some(&heart_tooltip(favorite)));
     }
 
     fn toggle_current_archive(self: &Rc<Self>) {
@@ -487,7 +492,7 @@ impl Lightbox {
         self.actions.archive.set_icon_name(archive_icon(archived));
         self.actions
             .archive
-            .set_tooltip_text(Some(archive_tooltip(archived)));
+            .set_tooltip_text(Some(&archive_tooltip(archived)));
     }
 
     fn after_edit(self: &Rc<Self>, date_changed: bool) {

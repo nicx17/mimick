@@ -1,6 +1,8 @@
 //! The search filters side panel: a titled, scrolling column of filter groups with
 //! Reset and Search, plus the active-filter count shown on the Filters button.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use gtk::prelude::*;
 
 use crate::api_client::MetadataSearchFilters;
@@ -43,14 +45,14 @@ pub(super) fn build_side_panel(filter_box: &gtk::Box) -> SidePanel {
 
 fn panel_header() -> (gtk::Box, gtk::Button) {
     let title = gtk::Label::builder()
-        .label("Filters")
+        .label(gettext("Filters"))
         .xalign(0.0)
         .hexpand(true)
         .css_classes(["title-4"])
         .build();
     let close = gtk::Button::builder()
         .icon_name("window-close-symbolic")
-        .tooltip_text("Close filters")
+        .tooltip_text(gettext("Close filters"))
         .css_classes(["flat", "circular"])
         .build();
     let header = gtk::Box::builder()
@@ -67,12 +69,12 @@ fn panel_header() -> (gtk::Box, gtk::Button) {
 
 fn panel_footer() -> (gtk::Box, gtk::Button, gtk::Button) {
     let clear = gtk::Button::builder()
-        .label("Reset")
-        .tooltip_text("Clear every filter, keeping the search text")
+        .label(gettext("Reset"))
+        .tooltip_text(gettext("Clear every filter, keeping the search text"))
         .hexpand(true)
         .build();
     let search = gtk::Button::builder()
-        .label("Search")
+        .label(gettext("Search"))
         .hexpand(true)
         .css_classes(["suggested-action"])
         .build();
@@ -100,9 +102,12 @@ pub fn active_filter_count(filters: &MetadataSearchFilters) -> usize {
 
 pub fn filters_label(count: usize) -> String {
     if count == 0 {
-        "Filters".to_string()
+        gettext("Filters")
     } else {
-        format!("Filters · {count}")
+        fill(
+            gettext("Filters · {count}"),
+            &[("count", &count.to_string())],
+        )
     }
 }
 

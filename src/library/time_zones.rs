@@ -1,6 +1,7 @@
 //! IANA time zones for the date dialogs, read from the system's tzdata.
 
 use chrono::{Datelike, FixedOffset, NaiveDateTime, TimeZone, Timelike};
+use gettextrs::gettext;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
@@ -78,7 +79,7 @@ pub(super) fn zone_row<'a>(
 ) -> libadwaita::ComboRow {
     let model = gtk::StringList::new(&labels.collect::<Vec<_>>());
     let row = libadwaita::ComboRow::builder()
-        .title("Time zone")
+        .title(gettext("Time zone"))
         .model(&model)
         .enable_search(true)
         .search_match_mode(gtk::StringFilterMatchMode::Substring)

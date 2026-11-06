@@ -1,4 +1,7 @@
+use crate::i18n::format_day;
+use crate::i18n::{fill, plural_n};
 use chrono::{DateTime, Datelike, NaiveDate};
+use gettextrs::{gettext, ngettext};
 
 use crate::api_client::LibraryAlbum;
 
@@ -22,16 +25,13 @@ fn group_thousands(n: u64) -> String {
     out
 }
 
-pub(super) fn count_noun(n: u64, singular: &str, plural: &str) -> String {
-    format!(
-        "{} {}",
-        group_thousands(n),
-        if n == 1 { singular } else { plural }
-    )
+/// Fills `{n}` in an `ngettext` result with the count, grouped by thousands.
+pub(super) fn count_text(n: u64, template: String) -> String {
+    fill(template, &[("n", &group_thousands(n))])
 }
 
 pub(super) fn count_label(n: u64) -> String {
-    count_noun(n, "item", "items")
+    count_text(n, ngettext("{n} item", "{n} items", plural_n(n)))
 }
 
 fn parse_day(value: &str) -> Option<NaiveDate> {
@@ -54,8 +54,15 @@ pub(super) fn person_details(birth_date: Option<&str>, today: NaiveDate) -> Vec<
         return Vec::new();
     };
     vec![
-        format!("Age {}", age_on(birth, today)),
-        format!("Born {}", birth.format("%-d %b %Y")),
+        fill(
+            gettext("Age {age}"),
+            &[("age", &age_on(birth, today).to_string())],
+        ),
+        fill(
+            gettext("Born {date}"),
+            // Translators: strftime date, e.g. "9 Oct 2026".
+            &[("date", &format_day(birth, &gettext("%-d %b %Y")))],
+        ),
     ]
 }
 
@@ -67,13 +74,15 @@ fn format_date_range(start: Option<&str>, end: Option<&str>) -> Option<String> {
         (Some(day), None) | (None, Some(day)) => (day, day),
         (None, None) => return None,
     };
-    let full = |day: NaiveDate| day.format("%-d %b %Y").to_string();
+    let full = |day: NaiveDate| format_day(day, &gettext("%-d %b %Y"));
     Some(if start == end {
         full(start)
     } else if start.year() == end.year() && start.month() == end.month() {
         format!("{}–{}", start.format("%-d"), full(end))
     } else if start.year() == end.year() {
-        format!("{} – {}", start.format("%-d %b"), full(end))
+        // Translators: strftime day and month that start a date range, e.g. "30 Dec".
+        let start = format_day(start, &gettext("%-d %b"));
+        format!("{start} – {}", full(end))
     } else {
         format!("{} – {}", full(start), full(end))
     })
@@ -92,8 +101,14 @@ pub(super) fn album_details(album: &LibraryAlbum, me: &str) -> Vec<String> {
     if owns_album(album, me) {
         match album.album_users.len().saturating_sub(1) {
             0 => {}
-            1 => details.push("Shared with 1 person".to_string()),
-            n => details.push(format!("Shared with {n} people")),
+            n => details.push(fill(
+                ngettext(
+                    "Shared with {n} person",
+                    "Shared with {n} people",
+                    plural_n(n),
+                ),
+                &[("n", &n.to_string())],
+            )),
         }
         return details;
     }
@@ -104,7 +119,7 @@ pub(super) fn album_details(album: &LibraryAlbum, me: &str) -> Vec<String> {
         .map(|member| member.user.name.as_str())
         .unwrap_or_default();
     if !owner.is_empty() {
-        details.push(format!("Shared by {owner}"));
+        details.push(fill(gettext("Shared by {owner}"), &[("owner", owner)]));
     }
     details
 }
@@ -158,7 +173,10 @@ mod tests {
     fn counts_group_thousands_and_pluralize() {
         assert_eq!(count_label(1), "1 item");
         assert_eq!(count_label(1234567), "1,234,567 items");
-        assert_eq!(count_noun(0, "photo", "photos"), "0 photos");
+        assert_eq!(
+            count_text(0, ngettext("{n} photo", "{n} photos", 0)),
+            "0 photos"
+        );
     }
 
     #[test]

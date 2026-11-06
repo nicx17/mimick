@@ -1,5 +1,7 @@
 //! Photo actions tied to an album: what is open, removing from it, its cover, leaving it.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -73,14 +75,28 @@ pub(super) fn sync_bulk_remove(ui: &LibraryWindowUi) {
 
 pub(super) fn removed_message(outcome: BulkOutcome, album: &str) -> String {
     if outcome.done == 0 {
-        return format!("Only the owner can remove these from “{album}”");
+        return fill(
+            gettext("Only the owner can remove these from “{album}”"),
+            &[("album", album)],
+        );
     }
-    let mut message = format!(
-        "Removed {} from “{album}”",
-        count_label(outcome.done as u64)
+    let mut message = fill(
+        gettext("Removed {items} from “{album}”"),
+        &[
+            ("items", &count_label(outcome.done as u64)),
+            ("album", album),
+        ],
     );
     if outcome.denied > 0 {
-        message.push_str(&format!(" · {} belong to someone else", outcome.denied));
+        message.push_str(" · ");
+        message.push_str(&fill(
+            ngettext(
+                "{n} belongs to someone else",
+                "{n} belong to someone else",
+                plural_n(outcome.denied),
+            ),
+            &[("n", &outcome.denied.to_string())],
+        ));
     }
     message
 }
@@ -104,8 +120,11 @@ pub(super) fn remove(ui: &Rc<LibraryWindowUi>, asset_ids: Vec<String>, on_remove
             Ok(results) => after_remove(&ui, &album, &results, &on_removed),
             Err(err) => show_error_toast(
                 &ui,
-                "Couldn't remove from the album",
-                &format!("Immich rejected the request: {err}"),
+                &gettext("Couldn't remove from the album"),
+                &fill(
+                    gettext("Immich rejected the request: {err}"),
+                    &[("err", &err.to_string())],
+                ),
             ),
         }
     });
@@ -133,7 +152,7 @@ fn after_remove(
     on_removed();
     let (ui_undo, id, name) = (ui.clone(), album.id.clone(), album.album_name.clone());
     ui.toasts
-        .add_toast(toast_with_action(&message, "Undo", move || {
+        .add_toast(toast_with_action(&message, &gettext("Undo"), move || {
             super::album_picker::add_and_report(
                 &ui_undo,
                 id.clone(),
@@ -161,22 +180,25 @@ pub(super) fn set_cover(ui: &Rc<LibraryWindowUi>, album_id: String, asset_id: St
         match ui.ctx.api_client.update_album(&album_id, &update).await {
             Ok(()) => {
                 ui.toasts
-                    .add_toast(libadwaita::Toast::new("Album cover updated"));
+                    .add_toast(libadwaita::Toast::new(&gettext("Album cover updated")));
                 refresh_albums(&ui);
             }
-            Err(err) => show_error_toast(&ui, "Couldn't update the album", &err),
+            Err(err) => show_error_toast(&ui, &gettext("Couldn't update the album"), &err),
         }
     });
 }
 
 pub(super) fn confirm_leave(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum) {
     let ui_leave = ui.clone();
-    let heading = format!("Leave “{}”?", album.album_name);
+    let heading = fill(
+        gettext("Leave “{album_name}”?"),
+        &[("album_name", &album.album_name.to_string())],
+    );
     super::dialogs::confirm(
         ui,
         &heading,
-        "You'll stop seeing its photos unless the owner shares it with you again.",
-        "Leave",
+        &gettext("You'll stop seeing its photos unless the owner shares it with you again."),
+        &gettext("Leave"),
         move || leave(&ui_leave, album.clone()),
     );
 }
@@ -186,7 +208,10 @@ fn leave(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum) {
     glib::MainContext::default().spawn_local(async move {
         match ui.ctx.api_client.leave_album(&album.id).await {
             Ok(()) => {
-                let message = format!("Left “{}”", album.album_name);
+                let message = fill(
+                    gettext("Left “{album_name}”"),
+                    &[("album_name", &album.album_name.to_string())],
+                );
                 ui.toasts.add_toast(libadwaita::Toast::new(&message));
                 refresh_albums(&ui);
                 if showing_album(&ui, &album.id) {
@@ -196,8 +221,11 @@ fn leave(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum) {
             }
             Err(err) => show_error_toast(
                 &ui,
-                "Couldn't leave the album",
-                &format!("Immich rejected the request: {err}"),
+                &gettext("Couldn't leave the album"),
+                &fill(
+                    gettext("Immich rejected the request: {err}"),
+                    &[("err", &err.to_string())],
+                ),
             ),
         }
     });

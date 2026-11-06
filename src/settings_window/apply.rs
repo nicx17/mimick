@@ -1,5 +1,6 @@
 //! Saving settings: validate, write config, then push the changes into the running app.
 
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -102,7 +103,7 @@ fn apply_settings(
         ConnectionValues::from_config(&state.ctx.config.read())
     };
     if include_connectivity && let Err((heading, err)) = validate_connection(&conn) {
-        show_alert(&form.window, heading, &err);
+        show_alert(&form.window, &heading, &err);
         state.in_flight.set(false);
         return;
     }
@@ -149,12 +150,12 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
 
     state.in_flight.set(false);
     if let Some(notice) = key_file_notice {
-        show_alert(&form.window, "API Key Stored in a File", &notice);
+        show_alert(&form.window, &gettext("API Key Stored in a File"), &notice);
     } else if request.show_success_ack {
         show_alert(
             &form.window,
-            "Settings Saved",
-            "Mimick saved the updated settings successfully.",
+            &gettext("Settings Saved"),
+            &gettext("Mimick saved the updated settings successfully."),
         );
     }
 }
@@ -168,10 +169,10 @@ async fn update_autostart(form: &SettingsForm, request: &ApplyRequest) -> bool {
     let failure = match autostart::apply(&form.window, wanted).await {
         Ok(granted) if granted == wanted => return true,
         Ok(_) => (
-            "Startup Permission Needed",
-            "Mimick was not allowed to start automatically at login.".to_string(),
+            &gettext("Startup Permission Needed"),
+            gettext("Mimick was not allowed to start automatically at login."),
         ),
-        Err(err) => ("Could Not Update Startup Setting", err),
+        Err(err) => (&gettext("Could Not Update Startup Setting"), err),
     };
     form.startup_row.set_active(request.previous_startup);
     show_alert(&form.window, failure.0, &failure.1);
@@ -202,7 +203,7 @@ fn write_config(
             Ok(ApiKeyStorage::File(path)) => key_file_notice = Some(api_key_file_notice(&path)),
             Ok(ApiKeyStorage::Keyring) => {}
             Err(detail) => {
-                show_alert(&form.window, "Could Not Save API Key", &detail);
+                show_alert(&form.window, &gettext("Could Not Save API Key"), &detail);
                 return None;
             }
         }
@@ -210,8 +211,8 @@ fn write_config(
     if !config.save() {
         show_alert(
             &form.window,
-            "Could Not Save Settings",
-            "Mimick could not write the updated configuration to disk.",
+            &gettext("Could Not Save Settings"),
+            &gettext("Mimick could not write the updated configuration to disk."),
         );
         return None;
     }

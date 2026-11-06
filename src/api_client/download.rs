@@ -1,5 +1,6 @@
 //! Album downloads: how Immich splits an album into zip archives, and streaming each one.
 
+use gettextrs::gettext;
 use std::path::Path;
 use std::time::Duration;
 
@@ -41,7 +42,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let resp = self
             .client
             .post(format!("{base_url}/api/download/archive"))

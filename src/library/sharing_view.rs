@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -24,20 +26,20 @@ pub(super) struct SharingView {
 pub(super) fn build_sharing_view() -> SharingView {
     let add = gtk::Button::builder()
         .icon_name("list-add-symbolic")
-        .tooltip_text("Add partner")
+        .tooltip_text(gettext("Add partner"))
         .valign(gtk::Align::Center)
         .css_classes(["flat"])
         .build();
     let shared_by = libadwaita::PreferencesGroup::builder()
-        .title("You Share With")
-        .description("Partners can see all your photos and videos.")
+        .title(gettext("You Share With"))
+        .description(gettext("Partners can see all your photos and videos."))
         .header_suffix(&add)
         .build();
     let shared_with = libadwaita::PreferencesGroup::builder()
-        .title("Sharing With You")
-        .description(
+        .title(gettext("Sharing With You"))
+        .description(gettext(
             "People who added you as a partner. Switch one on to see their photos in Photos.",
-        )
+        ))
         .build();
     let content = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
@@ -89,8 +91,11 @@ fn reload(ui: Rc<LibraryWindowUi>) {
             (Ok(shared_by), Ok(shared_with)) => render(&ui, shared_by, &shared_with),
             (Err(err), _) | (_, Err(err)) => show_alert_dialog(
                 &ui,
-                "Could Not Load Partners",
-                &format!("{err}\n\nYour API key needs the 'partner.read' permission."),
+                &gettext("Could Not Load Partners"),
+                &fill(
+                    gettext("{err}\n\nYour API key needs the '{permission}' permission."),
+                    &[("err", &err.to_string()), ("permission", "partner.read")],
+                ),
             ),
         }
     });
@@ -109,7 +114,7 @@ fn render(ui: &Rc<LibraryWindowUi>, shared_by: Vec<Partner>, shared_with: &[Part
         rows.push((view.shared_by.clone(), row.upcast()));
     }
     if shared_by.is_empty() {
-        let row = placeholder_row("Use + to share your library with someone.");
+        let row = placeholder_row(&gettext("Use + to share your library with someone."));
         view.shared_by.add(&row);
         rows.push((view.shared_by.clone(), row.upcast()));
     }
@@ -119,7 +124,7 @@ fn render(ui: &Rc<LibraryWindowUi>, shared_by: Vec<Partner>, shared_with: &[Part
         rows.push((view.shared_with.clone(), row.upcast()));
     }
     if shared_with.is_empty() {
-        let row = placeholder_row("No one is sharing with you.");
+        let row = placeholder_row(&gettext("No one is sharing with you."));
         view.shared_with.add(&row);
         rows.push((view.shared_with.clone(), row.upcast()));
     }
@@ -161,7 +166,7 @@ fn shared_with_row(ui: &Rc<LibraryWindowUi>, partner: &Partner) -> libadwaita::A
 fn timeline_switch(ui: &Rc<LibraryWindowUi>, partner: &Partner) -> gtk::Switch {
     let switch = gtk::Switch::builder()
         .active(partner.in_timeline)
-        .tooltip_text("Show in Photos")
+        .tooltip_text(gettext("Show in Photos"))
         .valign(gtk::Align::Center)
         .build();
     let (ui, id) = (ui.clone(), partner.user.id.clone());
@@ -171,8 +176,11 @@ fn timeline_switch(ui: &Rc<LibraryWindowUi>, partner: &Partner) -> gtk::Switch {
             if let Err(err) = ui.ctx.api_client.set_partner_in_timeline(&id, show).await {
                 show_alert_dialog(
                     &ui,
-                    "Could Not Change Partner",
-                    &format!("{err}\n\nYour API key needs the 'partner.update' permission."),
+                    &gettext("Could Not Change Partner"),
+                    &fill(
+                        gettext("{err}\n\nYour API key needs the '{permission}' permission."),
+                        &[("err", &err.to_string()), ("permission", "partner.update")],
+                    ),
                 );
                 reload(ui);
             }
@@ -192,7 +200,7 @@ fn placeholder_row(text: &str) -> libadwaita::ActionRow {
 fn remove_button(ui: &Rc<LibraryWindowUi>, partner: &UserSummary) -> gtk::Button {
     let button = gtk::Button::builder()
         .icon_name("user-trash-symbolic")
-        .tooltip_text("Stop sharing")
+        .tooltip_text(gettext("Stop sharing"))
         .valign(gtk::Align::Center)
         .css_classes(["flat"])
         .build();
@@ -202,16 +210,26 @@ fn remove_button(ui: &Rc<LibraryWindowUi>, partner: &UserSummary) -> gtk::Button
         let (ui_remove, id) = (ui.clone(), partner.id.clone());
         confirm(
             &ui,
-            &format!("Stop sharing with {name}?"),
-            "They'll no longer see your photos and videos.",
-            "Stop Sharing",
-            move || change(&ui_remove, "Could Not Remove Partner", false, id.clone()),
+            &fill(
+                gettext("Stop sharing with {name}?"),
+                &[("name", &name.to_string())],
+            ),
+            &gettext("They'll no longer see your photos and videos."),
+            &gettext("Stop Sharing"),
+            move || {
+                change(
+                    &ui_remove,
+                    gettext("Could Not Remove Partner"),
+                    false,
+                    id.clone(),
+                )
+            },
         );
     });
     button
 }
 
-fn change(ui: &Rc<LibraryWindowUi>, heading: &'static str, add: bool, user_id: String) {
+fn change(ui: &Rc<LibraryWindowUi>, heading: String, add: bool, user_id: String) {
     let ui = ui.clone();
     glib::MainContext::default().spawn_local(async move {
         let api = &ui.ctx.api_client;
@@ -222,7 +240,7 @@ fn change(ui: &Rc<LibraryWindowUi>, heading: &'static str, add: bool, user_id: S
         };
         match result {
             Ok(()) => reload(ui),
-            Err(err) => show_alert_dialog(&ui, heading, &err),
+            Err(err) => show_alert_dialog(&ui, &heading, &err),
         }
     });
 }
@@ -250,7 +268,7 @@ fn present_add_dialog(ui: &Rc<LibraryWindowUi>) {
 impl AddPartnerDialog {
     fn build(ui: &Rc<LibraryWindowUi>) -> Self {
         let search = gtk::SearchEntry::builder()
-            .placeholder_text("Find people by name or email")
+            .placeholder_text(gettext("Find people by name or email"))
             .build();
         let list = gtk::ListBox::builder()
             .selection_mode(gtk::SelectionMode::None)
@@ -258,7 +276,7 @@ impl AddPartnerDialog {
             .valign(gtk::Align::Start)
             .build();
         let status = gtk::Label::builder()
-            .label("Loading people…")
+            .label(gettext("Loading people…"))
             .wrap(true)
             .css_classes(["dim-label"])
             .build();
@@ -299,10 +317,10 @@ impl AddPartnerDialog {
             self.list.append(&add_row(&self.ui, &self.dialog, user));
         }
         self.status.set_visible(candidates.is_empty());
-        self.status.set_label(if users.is_empty() {
-            "No other people found. Listing people needs the 'user.read' permission."
+        self.status.set_label(&if users.is_empty() {
+            gettext("No other people found. Listing people needs the 'user.read' permission.")
         } else {
-            "No one matches your search."
+            gettext("No one matches your search.")
         });
         self.list.set_visible(!candidates.is_empty());
     }
@@ -333,7 +351,7 @@ fn dialog_with_body(body: &gtk::Box) -> libadwaita::Dialog {
     toolbar.add_top_bar(&libadwaita::HeaderBar::new());
     toolbar.set_content(Some(&scroller));
     libadwaita::Dialog::builder()
-        .title("Add Partner")
+        .title(gettext("Add Partner"))
         .content_width(420)
         .content_height(520)
         .child(&toolbar)
@@ -347,7 +365,7 @@ fn add_row(
 ) -> libadwaita::ActionRow {
     let row = partner_row(user);
     let add = gtk::Button::builder()
-        .label("Add")
+        .label(gettext("Add"))
         .valign(gtk::Align::Center)
         .build();
     row.add_suffix(&add);
@@ -356,18 +374,18 @@ fn add_row(
         let name = display_name(&user.name, &user.email);
         let (ui_add, dialog, id) = (ui.clone(), dialog.clone(), user.id.clone());
         let share = libadwaita::AlertDialog::builder()
-            .heading(format!("Share your library with {name}?"))
-            .body("They'll be able to see all your photos and videos. You can stop sharing at any time.")
+            .heading(fill(gettext("Share your library with {name}?"), &[("name", &name.to_string())]))
+            .body(gettext("They'll be able to see all your photos and videos. You can stop sharing at any time."))
             .build();
-        share.add_response("cancel", "Cancel");
-        share.add_response("share", "Share");
+        share.add_response("cancel", &gettext("Cancel"));
+        share.add_response("share", &gettext("Share"));
         share.set_response_appearance("share", libadwaita::ResponseAppearance::Suggested);
         share.set_default_response(Some("share"));
         share.set_close_response("cancel");
         share.connect_response(None, move |_, response| {
             if response == "share" {
                 dialog.close();
-                change(&ui_add, "Could Not Add Partner", true, id.clone());
+                change(&ui_add, gettext("Could Not Add Partner"), true, id.clone());
             }
         });
         share.present(Some(&ui.window));

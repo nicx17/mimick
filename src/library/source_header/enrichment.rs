@@ -1,5 +1,7 @@
 //! Load source-specific facts and actions for the library header.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::future::Future;
 use std::rc::Rc;
 
@@ -41,10 +43,8 @@ pub(super) fn enrich(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
             },
         ),
         LibrarySource::AdvancedSearch { filters } => count_matching(ui, (**filters).clone()),
-        LibrarySource::Thing { .. } => set_details(&ui.header, vec!["Things".to_string()]),
-        LibrarySource::SmartSearch { .. } => {
-            set_details(&ui.header, vec!["Smart search".to_string()])
-        }
+        LibrarySource::Thing { .. } => set_details(&ui.header, vec![gettext("Things")]),
+        LibrarySource::SmartSearch { .. } => set_details(&ui.header, vec![gettext("Smart search")]),
         LibrarySource::Folder { path } => {
             set_details(&ui.header, vec![path.clone()]);
         }
@@ -60,7 +60,7 @@ pub(super) fn enrich(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
             add_action(
                 &ui.header,
                 "window-close-symbolic",
-                "Back to the map",
+                &gettext("Back to the map"),
                 move || super::super::navigation::close_map_area(&ui_close),
             );
         }
@@ -129,21 +129,26 @@ fn show_album(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, me: &str) {
             super::super::album_edit::album_menu_items(ui, &album),
         );
         let (ui_share, share_album) = (ui.clone(), album.clone());
-        add_action(header, "mimick-share-symbolic", "Share album", move || {
-            super::super::album_share_dialog::present(ui_share.clone(), share_album.clone())
-        });
+        add_action(
+            header,
+            "mimick-share-symbolic",
+            &gettext("Share album"),
+            move || {
+                super::super::album_share_dialog::present(ui_share.clone(), share_album.clone())
+            },
+        );
     } else if !me.is_empty() {
         let (ui_leave, leave_album) = (ui.clone(), album.clone());
         let leave: Box<dyn Fn()> = Box::new(move || {
             super::super::album_assets::confirm_leave(&ui_leave, leave_album.clone())
         });
-        add_menu(header, vec![("Leave Album…".to_string(), leave)]);
+        add_menu(header, vec![(gettext("Leave Album…"), leave)]);
     }
     let (ui_zip, zip_id, zip_name) = (ui.clone(), album.id.clone(), album.album_name.clone());
     add_action(
         header,
         "mimick-download-symbolic",
-        "Download album",
+        &gettext("Download album"),
         move || {
             super::super::album_download::download_album(
                 ui_zip.clone(),
@@ -156,7 +161,7 @@ fn show_album(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, me: &str) {
     add_action(
         header,
         "insert-link-symbolic",
-        "Create share link",
+        &gettext("Create share link"),
         move || {
             super::super::shared_link_dialog::present(
                 ui_link.clone(),
@@ -172,7 +177,7 @@ fn show_album(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, me: &str) {
 fn add_menu(header: &SourceHeader, items: Vec<(String, Box<dyn Fn()>)>) {
     let menu = gtk::MenuButton::builder()
         .icon_name("view-more-symbolic")
-        .tooltip_text("More")
+        .tooltip_text(gettext("More"))
         .valign(gtk::Align::Center)
         .css_classes(["flat"])
         .build();
@@ -187,7 +192,7 @@ fn enrich_person(ui: &Rc<LibraryWindowUi>, person_id: String) {
         Some(Box::new(move |ui: &Rc<LibraryWindowUi>| {
             let header = &ui.header;
             let name = if person.name.is_empty() {
-                "Unnamed".to_string()
+                gettext("Unnamed")
             } else {
                 person.name.clone()
             };
@@ -196,12 +201,12 @@ fn enrich_person(ui: &Rc<LibraryWindowUi>, person_id: String) {
             let today = chrono::Local::now().date_naive();
             let mut details = person_details(person.birth_date.as_deref(), today);
             if person.is_hidden {
-                details.push("Hidden".to_string());
+                details.push(gettext("Hidden"));
             }
             set_details(header, details);
             let menu = gtk::MenuButton::builder()
                 .icon_name("view-more-symbolic")
-                .tooltip_text("More")
+                .tooltip_text(gettext("More"))
                 .valign(gtk::Align::Center)
                 .css_classes(["flat"])
                 .build();
@@ -217,10 +222,10 @@ fn enrich_person(ui: &Rc<LibraryWindowUi>, person_id: String) {
 
 fn add_favorite_toggle(ui: &Rc<LibraryWindowUi>, person: &crate::api_client::Person) {
     let favorite = person.is_favorite;
-    let tooltip = if favorite {
-        "Remove from favorites"
+    let tooltip = &if favorite {
+        gettext("Remove from favorites")
     } else {
-        "Add to favorites"
+        gettext("Add to favorites")
     };
     let (ui_toggle, person) = (ui.clone(), person.clone());
     add_action(
@@ -234,7 +239,10 @@ fn add_favorite_toggle(ui: &Rc<LibraryWindowUi>, person: &crate::api_client::Per
 fn enrich_tag(ui: &Rc<LibraryWindowUi>, tag_id: String, value: String) {
     let mut details = Vec::new();
     if let Some(parent) = parent_path(&value) {
-        details.push(format!("In {}", parent.replace('/', " / ")));
+        details.push(fill(
+            gettext("In {path}"),
+            &[("path", &parent.replace('/', " / ").to_string())],
+        ));
     }
     set_details(&ui.header, details);
     count_matching(
@@ -253,7 +261,7 @@ fn enrich_tag(ui: &Rc<LibraryWindowUi>, tag_id: String, value: String) {
             set_leading(ui, Leading::TagColor(tag.color.clone()));
             let menu = gtk::MenuButton::builder()
                 .icon_name("view-more-symbolic")
-                .tooltip_text("More")
+                .tooltip_text(gettext("More"))
                 .valign(gtk::Align::Center)
                 .css_classes(["flat"])
                 .build();

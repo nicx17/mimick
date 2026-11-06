@@ -4,6 +4,8 @@
 //! Pulls `/api/server/statistics` (admin) plus `/api/assets/statistics` (per-user)
 //! and `/api/server/about` to render a single summary view.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -18,11 +20,11 @@ use crate::app_context::AppContext;
 /// the server version, and displays them in a modal dialog.
 pub fn present(ctx: Arc<AppContext>, parent: &libadwaita::ApplicationWindow) {
     let dialog = libadwaita::AlertDialog::builder()
-        .heading("Server statistics")
+        .heading(gettext("Server statistics"))
         .body("")
         .content_width(280)
         .build();
-    dialog.add_response("close", "Close");
+    dialog.add_response("close", &gettext("Close"));
     dialog.set_close_response("close");
     dialog.set_default_response(Some("close"));
 
@@ -37,7 +39,7 @@ pub fn present(ctx: Arc<AppContext>, parent: &libadwaita::ApplicationWindow) {
         .halign(gtk::Align::Center)
         .build();
     let spinner = gtk::Spinner::builder().spinning(true).build();
-    let loading_label = gtk::Label::new(Some("Loading\u{2026}"));
+    let loading_label = gtk::Label::new(Some(&gettext("Loading\u{2026}")));
     loading.append(&spinner);
     loading.append(&loading_label);
     content.append(&loading);
@@ -75,7 +77,7 @@ pub fn present(ctx: Arc<AppContext>, parent: &libadwaita::ApplicationWindow) {
 
 fn append_version_badge(content: &gtk::Box, version: &str) {
     let badge_label = gtk::Label::builder()
-        .label(format!("Immich {}", version))
+        .label(fill(gettext("Immich {version}"), &[("version", version)]))
         .css_classes(vec!["caption".to_string()])
         .build();
     let badge = gtk::Box::builder()
@@ -88,15 +90,27 @@ fn append_version_badge(content: &gtk::Box, version: &str) {
 
 fn append_server_statistics(content: &gtk::Box, stats: &crate::api_client::ServerStatistics) {
     let cards = stat_card_row(&[
-        ("Photos", format_number(stats.photos), "photo-card"),
-        ("Videos", format_number(stats.videos), "video-card"),
-        ("Storage", format_size(stats.usage), "storage-card"),
+        (
+            &gettext("Photos"),
+            format_number(stats.photos),
+            "photo-card",
+        ),
+        (
+            &gettext("Videos"),
+            format_number(stats.videos),
+            "video-card",
+        ),
+        (
+            &gettext("Storage"),
+            format_size(stats.usage),
+            "storage-card",
+        ),
     ]);
     content.append(&cards);
 
     if !stats.usage_by_user.is_empty() {
         let user_group = libadwaita::PreferencesGroup::builder()
-            .title("By user")
+            .title(gettext("By user"))
             .build();
         for user in &stats.usage_by_user {
             let row = user_row(user);
@@ -108,14 +122,28 @@ fn append_server_statistics(content: &gtk::Box, stats: &crate::api_client::Serve
 
 fn append_asset_statistics(content: &gtk::Box, asset_stats: &crate::api_client::ServerStats) {
     let cards = stat_card_row(&[
-        ("Photos", format_number(asset_stats.images), "photo-card"),
-        ("Videos", format_number(asset_stats.videos), "video-card"),
-        ("Total", format_number(asset_stats.total), "storage-card"),
+        (
+            &gettext("Photos"),
+            format_number(asset_stats.images),
+            "photo-card",
+        ),
+        (
+            &gettext("Videos"),
+            format_number(asset_stats.videos),
+            "video-card",
+        ),
+        (
+            &gettext("Total"),
+            format_number(asset_stats.total),
+            "storage-card",
+        ),
     ]);
     content.append(&cards);
 
     let note = gtk::Label::builder()
-        .label("Server-wide statistics require administrator access.")
+        .label(gettext(
+            "Server-wide statistics require administrator access.",
+        ))
         .css_classes(vec!["dim-label".to_string(), "caption".to_string()])
         .wrap(true)
         .halign(gtk::Align::Center)
@@ -124,18 +152,21 @@ fn append_asset_statistics(content: &gtk::Box, asset_stats: &crate::api_client::
 }
 
 fn append_error_ui(content: &gtk::Box, asset_err: &str, server_err: &str) {
-    let is_permission_error = (asset_err.contains("HTTP 401") || asset_err.contains("HTTP 403"))
-        || (server_err.contains("HTTP 401") || server_err.contains("HTTP 403"));
+    let is_permission_error = (asset_err.contains("HTTP 401")
+        || asset_err.contains(&gettext("HTTP 403")))
+        || (server_err.contains("HTTP 401") || server_err.contains(&gettext("HTTP 403")));
 
     let (title, subtitle) = if is_permission_error {
         (
-            "Missing API Permissions",
-            "Your API key must include the 'server.about', 'server.versionCheck', 'server.statistics', and 'asset.statistics' permissions to view stats.",
+            &gettext("Missing API Permissions"),
+            &gettext(
+                "Your API key must include the 'server.about', 'server.versionCheck', 'server.statistics', and 'asset.statistics' permissions to view stats.",
+            ),
         )
     } else {
         (
-            "Unable to load statistics",
-            "Check your connection and try again.",
+            &gettext("Unable to load statistics"),
+            &gettext("Check your connection and try again."),
         )
     };
 
@@ -191,9 +222,15 @@ fn user_row(user: &crate::api_client::UsageByUser) -> libadwaita::ActionRow {
     let row = libadwaita::ActionRow::builder()
         .title(&user.user_name)
         .subtitle(format!(
-            "{} photos \u{b7} {} videos \u{b7} {}",
-            format_number(user.photos),
-            format_number(user.videos),
+            "{} \u{b7} {} \u{b7} {}",
+            fill(
+                ngettext("{n} photo", "{n} photos", plural_n(user.photos)),
+                &[("n", &format_number(user.photos))],
+            ),
+            fill(
+                ngettext("{n} video", "{n} videos", plural_n(user.videos)),
+                &[("n", &format_number(user.videos))],
+            ),
             format_size(user.usage),
         ))
         .subtitle_lines(2)
@@ -206,10 +243,12 @@ fn user_row(user: &crate::api_client::UsageByUser) -> libadwaita::ActionRow {
         let bar = gtk::ProgressBar::builder()
             .fraction(fraction)
             .valign(gtk::Align::Center)
-            .tooltip_text(format!(
-                "{} of {}",
-                format_size(user.usage),
-                format_size(quota)
+            .tooltip_text(fill(
+                gettext("{used} of {quota}"),
+                &[
+                    ("used", &format_size(user.usage)),
+                    ("quota", &format_size(quota)),
+                ],
             ))
             .css_classes(vec!["mimick-quota-bar".to_string()])
             .build();

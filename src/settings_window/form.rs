@@ -3,6 +3,7 @@
 //! Signal handlers keep only a weak form (`SettingsFormWeak`) so the window's
 //! widgets aren't kept alive by closures attached to themselves.
 
+use gettextrs::gettext;
 use gtk::prelude::*;
 use libadwaita as adw;
 use libadwaita::prelude::*;
@@ -112,8 +113,8 @@ impl ConnectionValues {
 }
 
 /// Reject non-HTTP(S) URL schemes before persisting; returns the alert heading and message.
-pub(super) fn validate_connection(conn: &ConnectionValues) -> Result<(), (&'static str, String)> {
-    let check = |enabled: bool, url: &str, heading: &'static str| {
+pub(super) fn validate_connection(conn: &ConnectionValues) -> Result<(), (String, String)> {
+    let check = |enabled: bool, url: &str, heading: String| {
         if enabled && !url.trim().is_empty() {
             crate::sanitize::validate_http_url(url).map_err(|err| (heading, err))?;
         }
@@ -122,12 +123,12 @@ pub(super) fn validate_connection(conn: &ConnectionValues) -> Result<(), (&'stat
     check(
         conn.internal_url_enabled,
         &conn.internal_url,
-        "Invalid Internal URL",
+        gettext("Invalid Internal URL"),
     )?;
     check(
         conn.external_url_enabled,
         &conn.external_url,
-        "Invalid External URL",
+        gettext("Invalid External URL"),
     )
 }
 

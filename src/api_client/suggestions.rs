@@ -3,6 +3,7 @@
 //! Wraps `GET /search/suggestions` which returns known values for
 //! country, state, city, camera make, model, and lens model fields.
 
+use gettextrs::gettext;
 use std::time::Duration;
 
 use super::ImmichApiClient;
@@ -19,7 +20,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!(
             "{}/api/search/suggestions?type={}",

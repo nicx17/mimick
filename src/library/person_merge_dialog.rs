@@ -1,3 +1,5 @@
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::cell::RefCell;
 use std::collections::HashSet;
 use std::rc::Rc;
@@ -26,7 +28,7 @@ pub(super) fn present(ui: &Rc<LibraryWindowUi>, target: &Person) {
                 *ui.people.people.borrow_mut() = people;
                 present_list(&ui, &target);
             }
-            Err(err) => show_alert_dialog(&ui, "Could Not Load People", &err),
+            Err(err) => show_alert_dialog(&ui, &gettext("Could Not Load People"), &err),
         }
     });
 }
@@ -42,7 +44,7 @@ fn present_list(ui: &Rc<LibraryWindowUi>, target: &Person) {
         .collect();
     let selected: Selection = Rc::default();
     let merge = gtk::Button::builder()
-        .label("Merge")
+        .label(gettext("Merge"))
         .sensitive(false)
         .css_classes(["destructive-action"])
         .build();
@@ -62,7 +64,7 @@ fn present_list(ui: &Rc<LibraryWindowUi>, target: &Person) {
 
 fn filtering_search(list: &gtk::ListBox, people: &[Person]) -> gtk::SearchEntry {
     let search = gtk::SearchEntry::builder()
-        .placeholder_text("Search people")
+        .placeholder_text(gettext("Search people"))
         .build();
     let query = Rc::new(RefCell::new(String::new()));
     let names: Vec<String> = people.iter().map(|p| p.name.to_lowercase()).collect();
@@ -90,9 +92,7 @@ fn build_dialog(
 ) -> libadwaita::Dialog {
     let name = display_name(target);
     let note = gtk::Label::builder()
-        .label(format!(
-            "Pick the people who are really {name}. Their faces move to {name} and they're removed. This can't be undone."
-        ))
+        .label(fill(gettext("Pick the people who are really {name}. Their faces move to {name} and they're removed. This can't be undone."), &[("name", name.as_ref())]))
         .wrap(true)
         .xalign(0.0)
         .css_classes(["dim-label"])
@@ -120,7 +120,10 @@ fn build_dialog(
     toolbar.add_top_bar(&header);
     toolbar.set_content(Some(&scroller));
     libadwaita::Dialog::builder()
-        .title(format!("Merge Into {name}"))
+        .title(fill(
+            gettext("Merge Into {name}"),
+            &[("name", name.as_ref())],
+        ))
         .content_width(420)
         .content_height(560)
         .child(&toolbar)
@@ -137,15 +140,26 @@ fn connect_merge(
     let (ui, dialog, target) = (ui.clone(), dialog.clone(), target.clone());
     merge.connect_clicked(move |_| {
         let ids: Vec<String> = selected.borrow().iter().cloned().collect();
-        let heading = match ids.len() {
-            1 => format!("Merge 1 person into {}?", display_name(&target)),
-            n => format!("Merge {n} people into {}?", display_name(&target)),
-        };
+        let n = ids.len();
+        let heading = fill(
+            ngettext(
+                "Merge {count} person into {name}?",
+                "Merge {count} people into {name}?",
+                plural_n(n),
+            ),
+            &[("count", &n.to_string()), ("name", &display_name(&target))],
+        );
         let (ui_merge, dialog, target_id) = (ui.clone(), dialog.clone(), target.id.clone());
-        confirm(&ui, &heading, "This can't be undone.", "Merge", move || {
-            dialog.close();
-            merge_people(ui_merge.clone(), target_id.clone(), ids.clone());
-        });
+        confirm(
+            &ui,
+            &heading,
+            &gettext("This can't be undone."),
+            &gettext("Merge"),
+            move || {
+                dialog.close();
+                merge_people(ui_merge.clone(), target_id.clone(), ids.clone());
+            },
+        );
     });
 }
 
@@ -185,7 +199,7 @@ fn merge_people(ui: Rc<LibraryWindowUi>, target_id: String, ids: Vec<String>) {
                 super::source_header::refresh(&ui);
                 super::people_view::reload(ui);
             }
-            Err(err) => show_alert_dialog(&ui, "Could Not Merge People", &err),
+            Err(err) => show_alert_dialog(&ui, &gettext("Could Not Merge People"), &err),
         }
     });
 }

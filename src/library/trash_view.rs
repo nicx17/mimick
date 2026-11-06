@@ -4,6 +4,8 @@
 //! module adds the "Restore All" / "Empty Trash" bar above the grid and swaps the
 //! selection bar's actions for "Restore" / "Delete Permanently" while it's active.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -30,7 +32,7 @@ pub(super) struct TrashControls {
 /// Bar above the grid in the Trash: the retention note with Restore All and Empty Trash.
 fn build_trash_bar(restore_all: &gtk::Button, empty: &gtk::Button) -> gtk::Revealer {
     let note = gtk::Label::builder()
-        .label("Immich permanently deletes trashed items after its retention period (30 days by default).")
+        .label(gettext("Immich permanently deletes trashed items after its retention period (30 days by default)."))
         .xalign(0.0)
         .hexpand(true)
         .wrap(true)
@@ -61,20 +63,20 @@ fn build_trash_bar(restore_all: &gtk::Button, empty: &gtk::Button) -> gtk::Revea
 }
 
 pub(super) fn build_trash_controls(live_only: Vec<gtk::Button>) -> TrashControls {
-    let restore_all = gtk::Button::builder().label("Restore All").build();
+    let restore_all = gtk::Button::builder().label(gettext("Restore All")).build();
     let empty = gtk::Button::builder()
-        .label("Empty Trash")
+        .label(gettext("Empty Trash"))
         .css_classes(["destructive-action"])
         .build();
     let bar = build_trash_bar(&restore_all, &empty);
     let restore_selected = gtk::Button::builder()
         .icon_name("edit-undo-symbolic")
-        .tooltip_text("Restore selected")
+        .tooltip_text(gettext("Restore selected"))
         .visible(false)
         .build();
     let delete_selected = gtk::Button::builder()
         .icon_name("edit-delete-symbolic")
-        .tooltip_text("Delete selected permanently")
+        .tooltip_text(gettext("Delete selected permanently"))
         .css_classes(["destructive-action"])
         .visible(false)
         .build();
@@ -162,7 +164,7 @@ pub(super) fn restore(ui: Rc<LibraryWindowUi>, ids: Vec<String>, on_done: impl F
                 remove_assets_from_grid(&ui, &ids);
                 on_done();
             }
-            Err(err) => show_alert_dialog(&ui, "Could Not Restore", &err),
+            Err(err) => show_alert_dialog(&ui, &gettext("Could Not Restore"), &err),
         }
     });
 }
@@ -170,13 +172,20 @@ pub(super) fn restore(ui: Rc<LibraryWindowUi>, ids: Vec<String>, on_done: impl F
 /// Heading and body for the permanent-delete confirmation.
 fn permanent_delete_text(count: usize) -> (String, String) {
     let heading = if count == 1 {
-        "Delete this item permanently?".to_string()
+        gettext("Delete this item permanently?")
     } else {
-        format!("Delete {count} items permanently?")
+        fill(
+            ngettext(
+                "Delete {count} item permanently?",
+                "Delete {count} items permanently?",
+                plural_n(count),
+            ),
+            &[("count", &count.to_string())],
+        )
     };
     (
         heading,
-        "This can't be undone. Local copies in your watch folders are kept.".to_string(),
+        gettext("This can't be undone. Local copies in your watch folders are kept."),
     )
 }
 
@@ -191,26 +200,32 @@ pub(super) fn confirm_delete_permanently(
     }
     let (heading, body) = permanent_delete_text(ids.len());
     let on_done = Rc::new(on_done);
-    confirm_destructive(&ui, &heading, &body, "Delete Permanently", move |ui| {
-        let ids = ids.clone();
-        let on_done = on_done.clone();
-        glib::MainContext::default().spawn_local(async move {
-            match ui.ctx.api_client.delete_assets_permanently(&ids).await {
-                Ok(()) => {
-                    remove_assets_from_grid(&ui, &ids);
-                    on_done();
+    confirm_destructive(
+        &ui,
+        &heading,
+        &body,
+        &gettext("Delete Permanently"),
+        move |ui| {
+            let ids = ids.clone();
+            let on_done = on_done.clone();
+            glib::MainContext::default().spawn_local(async move {
+                match ui.ctx.api_client.delete_assets_permanently(&ids).await {
+                    Ok(()) => {
+                        remove_assets_from_grid(&ui, &ids);
+                        on_done();
+                    }
+                    Err(err) => show_alert_dialog(&ui, &gettext("Could Not Delete"), &err),
                 }
-                Err(err) => show_alert_dialog(&ui, "Could Not Delete", &err),
-            }
-        });
-    });
+            });
+        },
+    );
 }
 
 fn restore_all(ui: Rc<LibraryWindowUi>) {
     glib::MainContext::default().spawn_local(async move {
         match ui.ctx.api_client.restore_all_trash().await {
             Ok(_) => super::refresh_library_after_mutation(ui.clone(), true),
-            Err(err) => show_alert_dialog(&ui, "Could Not Restore", &err),
+            Err(err) => show_alert_dialog(&ui, &gettext("Could Not Restore"), &err),
         }
     });
 }
@@ -218,14 +233,14 @@ fn restore_all(ui: Rc<LibraryWindowUi>) {
 fn confirm_empty_trash(ui: Rc<LibraryWindowUi>) {
     confirm_destructive(
         &ui,
-        "Empty the trash?",
-        "Everything in the Immich trash is deleted permanently. This can't be undone.",
-        "Empty Trash",
+        &gettext("Empty the trash?"),
+        &gettext("Everything in the Immich trash is deleted permanently. This can't be undone."),
+        &gettext("Empty Trash"),
         |ui| {
             glib::MainContext::default().spawn_local(async move {
                 match ui.ctx.api_client.empty_trash().await {
                     Ok(_) => super::refresh_library_after_mutation(ui.clone(), true),
-                    Err(err) => show_alert_dialog(&ui, "Could Not Empty Trash", &err),
+                    Err(err) => show_alert_dialog(&ui, &gettext("Could Not Empty Trash"), &err),
                 }
             });
         },
@@ -244,7 +259,7 @@ fn confirm_destructive(
         .heading(heading)
         .body(body)
         .build();
-    dialog.add_response("cancel", "Cancel");
+    dialog.add_response("cancel", &gettext("Cancel"));
     dialog.add_response("confirm", action_label);
     dialog.set_response_appearance("confirm", libadwaita::ResponseAppearance::Destructive);
     dialog.set_default_response(Some("cancel"));

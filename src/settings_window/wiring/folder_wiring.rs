@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -34,7 +35,7 @@ pub(crate) fn connect_download_folder(
         move |_| {
             let (ctx, row, clear) = (c.clone(), row.clone(), clear.clone());
             let dialog = FileDialog::builder()
-                .title("Choose Download Folder")
+                .title(gettext("Choose Download Folder"))
                 .build();
             dialog.select_folder(Some(&window), gtk::gio::Cancellable::NONE, move |res| {
                 let Some(path) = res.ok().and_then(|f| f.path()) else {
@@ -54,7 +55,7 @@ pub(crate) fn connect_download_folder(
         #[weak(rename_to = row)]
         library.download_folder_row,
         move |btn| {
-            row.set_subtitle("Ask each time");
+            row.set_subtitle(&gettext("Ask each time"));
             btn.set_visible(false);
             let mut cfg = c.config.write();
             cfg.data.download_target_path = None;
@@ -87,8 +88,8 @@ pub(crate) fn fetch_albums_for_picker(window: &adw::ApplicationWindow, state: &A
 /// Empty "Watch Folders" section, added early so it sits right after Server.
 pub(crate) fn folders_group(settings_page: &adw::PreferencesPage) -> adw::PreferencesGroup {
     let folders_group = adw::PreferencesGroup::builder()
-        .title("Watch Folders")
-        .description("Folders Mimick backs up. Expand one to pick its album and rules.")
+        .title(gettext("Watch Folders"))
+        .description(gettext("Expand a folder to pick its album and rules."))
         .build();
     settings_page.add(&folders_group);
     folders_group
@@ -110,7 +111,7 @@ pub(crate) fn add_folders_group(
         .build();
     folders_group.add(&folders_list);
     let add_folder_btn = Button::builder()
-        .label("Add Folder…")
+        .label(gettext("Add Folder…"))
         .margin_top(12)
         .build();
     folders_group.add(&add_folder_btn);
@@ -147,7 +148,9 @@ fn pick_new_folder(
     catchup: crate::config::StartupCatchupMode,
     on_changed: Rc<dyn Fn()>,
 ) {
-    let dialog = FileDialog::builder().title("Select Watch Folder").build();
+    let dialog = FileDialog::builder()
+        .title(gettext("Select Watch Folder"))
+        .build();
     let (list, state) = (folders_list.clone(), state.clone());
     dialog.select_folder(Some(window), gtk::gio::Cancellable::NONE, move |res| {
         let Some(path) = res.ok().and_then(|file| file.path()) else {

@@ -4,6 +4,8 @@
 //! Places (city tiles), Things (tag tiles). Tile clicks invoke
 //! caller-provided closures so dispatch lives in `mod.rs`.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::sync::Arc;
@@ -134,12 +136,13 @@ struct ExploreSectionWidgets {
 
 fn build_sections(outer: &gtk::Box) -> ExploreSectionWidgets {
     let (people_section, people_row, people_spinner, people_filter_button) = build_people_section();
-    let (recents_section, recents_grid, recents_spinner) = build_tile_section("Recently Added");
-    let (places_section, places_grid, places_spinner) = build_tile_section("Places");
-    let (things_section, things_grid, things_spinner) = build_tile_section("Things");
+    let (recents_section, recents_grid, recents_spinner) =
+        build_tile_section(&gettext("Recently Added"));
+    let (places_section, places_grid, places_spinner) = build_tile_section(&gettext("Places"));
+    let (things_section, things_grid, things_spinner) = build_tile_section(&gettext("Things"));
 
     let filter_entry = gtk::SearchEntry::builder()
-        .placeholder_text("Filter people and places")
+        .placeholder_text(gettext("Filter people and places"))
         .hexpand(true)
         .max_width_chars(20)
         .build();
@@ -205,7 +208,7 @@ fn build_people_section() -> (gtk::Box, gtk::Box, gtk::Spinner, gtk::MenuButton)
         .orientation(gtk::Orientation::Horizontal)
         .spacing(8)
         .build();
-    let title = heading("People");
+    let title = heading(&gettext("People"));
     title.set_hexpand(true);
     header.append(&title);
     let spinner = gtk::Spinner::builder()
@@ -215,7 +218,7 @@ fn build_people_section() -> (gtk::Box, gtk::Box, gtk::Spinner, gtk::MenuButton)
     header.append(&spinner);
     let filter_button = gtk::MenuButton::builder()
         .icon_name("view-more-symbolic")
-        .tooltip_text("Filter people")
+        .tooltip_text(gettext("Filter people"))
         .css_classes(["flat"])
         .valign(gtk::Align::Center)
         .build();
@@ -516,12 +519,15 @@ fn append_see_more_button<F: Fn() + 'static>(grid: &gtk::FlowBox, remaining: usi
     append_action_button(
         grid,
         "view-more-symbolic",
-        &format!("See {remaining} more"),
+        &fill(
+            gettext("See {remaining} more"),
+            &[("remaining", &remaining.to_string())],
+        ),
         on_expand,
     );
 }
 
 /// Append a card-sized "Show Less" tile to collapse an expanded section.
 fn append_show_less_button<F: Fn() + 'static>(grid: &gtk::FlowBox, on_collapse: F) {
-    append_action_button(grid, "go-up-symbolic", "Show Less", on_collapse);
+    append_action_button(grid, "go-up-symbolic", &gettext("Show Less"), on_collapse);
 }

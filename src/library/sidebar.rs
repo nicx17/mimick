@@ -4,6 +4,8 @@
 //! entries (All Assets, Explore, Local, Timeline), and the folder-scoped
 //! album list. Handles selection changes to drive the main grid view source.
 
+use crate::i18n::gettext_noop;
+use gettextrs::gettext;
 use std::cell::RefCell;
 
 use gtk::prelude::*;
@@ -29,7 +31,7 @@ pub struct SidebarParts {
 const GROUPS: [(&str, &[&str]); 4] = [
     ("", &["search"]),
     (
-        "Library",
+        gettext_noop("Library"),
         &[
             "photos",
             "explore",
@@ -41,10 +43,10 @@ const GROUPS: [(&str, &[&str]); 4] = [
         ],
     ),
     (
-        "Albums & Sharing",
+        gettext_noop("Albums & Sharing"),
         &["albums", "shared-albums", "shared-links", "sharing"],
     ),
-    ("Browse", &["tags", "folders"]),
+    (gettext_noop("Browse"), &["tags", "folders"]),
 ];
 
 /// Fixed sidebar destinations: title, subtitle, icon, and the key the sidebar handler matches.
@@ -52,86 +54,86 @@ type FixedRow = (&'static str, &'static str, &'static str, &'static str);
 
 const FIXED_ROWS: [FixedRow; 14] = [
     fixed_row(
-        "Photos",
-        "Timeline of every photo and video",
+        gettext_noop("Photos"),
+        gettext_noop("Timeline of every photo and video"),
         "image-x-generic-symbolic",
         "photos",
     ),
     fixed_row(
-        "Search",
-        "Find photos, videos, and text",
+        gettext_noop("Search"),
+        gettext_noop("Find photos, videos, and text"),
         "system-search-symbolic",
         "search",
     ),
     fixed_row(
-        "Explore",
-        "People, places, and things",
+        gettext_noop("Explore"),
+        gettext_noop("People, places, and things"),
         "view-grid-symbolic",
         "explore",
     ),
     fixed_row(
-        "Map",
-        "Photos by where they were taken",
+        gettext_noop("Map"),
+        gettext_noop("Photos by where they were taken"),
         "mark-location-symbolic",
         "map",
     ),
     fixed_row(
-        "People",
-        "Faces Immich has recognized",
+        gettext_noop("People"),
+        gettext_noop("Faces Immich has recognized"),
         "avatar-default-symbolic",
         "people",
     ),
     fixed_row(
-        "Albums",
-        "Recent, owned, and shared",
+        gettext_noop("Albums"),
+        gettext_noop("Recent, owned, and shared"),
         "folder-pictures-symbolic",
         "albums",
     ),
     fixed_row(
-        "Shared Albums",
-        "Shared with you and by you",
+        gettext_noop("Shared Albums"),
+        gettext_noop("Shared with you and by you"),
         "folder-publicshare-symbolic",
         "shared-albums",
     ),
     fixed_row(
-        "Shared Links",
-        "Public links you've created",
+        gettext_noop("Shared Links"),
+        gettext_noop("Public links you've created"),
         "mimick-share-symbolic",
         "shared-links",
     ),
     fixed_row(
-        "Sharing",
-        "Partners who share libraries",
+        gettext_noop("Sharing"),
+        gettext_noop("Partners who share libraries"),
         "system-users-symbolic",
         "sharing",
     ),
     fixed_row(
-        "Favorites",
-        "Photos and videos you've marked",
+        gettext_noop("Favorites"),
+        gettext_noop("Photos and videos you've marked"),
         "mimick-heart-filled-symbolic",
         "favorites",
     ),
     fixed_row(
-        "Tags",
-        "Browse and organize tags",
+        gettext_noop("Tags"),
+        gettext_noop("Browse and organize tags"),
         "mimick-tag-symbolic",
         "tags",
     ),
     fixed_row(
-        "Folders",
-        "Browse by folder on the server",
+        gettext_noop("Folders"),
+        gettext_noop("Browse by folder on the server"),
         "folder-symbolic",
         "folders",
     ),
     fixed_row(
-        "Archive",
-        "Hidden from Photos",
+        gettext_noop("Archive"),
+        gettext_noop("Hidden from Photos"),
         "mimick-archive-symbolic",
         "archive",
     ),
     fixed_row(
-        "Trash",
-        "Restore or permanently delete",
+        gettext_noop("Trash"),
+        gettext_noop("Restore or permanently delete"),
         "user-trash-symbolic",
         "trash",
     ),
@@ -242,10 +244,10 @@ fn build_groups(
         if heading.is_empty() {
             list.add_css_class("mimick-sidebar-search");
         } else {
-            container.append(&section_heading(heading));
+            container.append(&section_heading(&gettext(heading)));
         }
         for &(title, subtitle, icon, key) in FIXED_ROWS.iter().filter(|row| keys.contains(&row.3)) {
-            let row = action_row(title, subtitle, icon, key);
+            let row = action_row(&gettext(title), &gettext(subtitle), icon, key);
             list.append(&row);
             if key == "albums" {
                 row.add_suffix(recent_expander);
@@ -319,7 +321,7 @@ pub fn unselect_fixed(parts: &SidebarParts) {
 fn build_recent_expander(rows: Vec<libadwaita::ActionRow>) -> gtk::ToggleButton {
     let expander = gtk::ToggleButton::builder()
         .icon_name("pan-end-symbolic")
-        .tooltip_text("Show recent albums")
+        .tooltip_text(gettext("Show recent albums"))
         .valign(gtk::Align::Center)
         .css_classes(["flat", "circular"])
         .visible(false)
@@ -345,7 +347,7 @@ fn build_recent_expander(rows: Vec<libadwaita::ActionRow>) -> gtk::ToggleButton 
 
 fn build_all_albums() -> (gtk::Expander, gtk::ListBox) {
     let header = gtk::Label::builder()
-        .label("All Albums")
+        .label(gettext("All Albums"))
         .xalign(0.0)
         .css_classes(vec!["heading".to_string(), "dim-label".to_string()])
         .build();

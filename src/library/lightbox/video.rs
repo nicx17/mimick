@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -51,7 +52,7 @@ impl Lightbox {
             }),
             error: Box::new(move |message| {
                 if let Some(lb) = error.upgrade() {
-                    show_error_toast(&lb.ui, "Playback failed", &message);
+                    show_error_toast(&lb.ui, &gettext("Playback failed"), &message);
                 }
             }),
         }
@@ -73,7 +74,7 @@ impl Lightbox {
     pub(super) fn toggle_video(self: &Rc<Self>) {
         match self.video_player() {
             Ok(player) => player.toggle_play(),
-            Err(err) => show_error_toast(&self.ui, "Playback isn't available", &err),
+            Err(err) => show_error_toast(&self.ui, &gettext("Playback isn't available"), &err),
         }
     }
 
@@ -94,7 +95,7 @@ impl Lightbox {
             };
             match source {
                 Ok(source) => player.load(source),
-                Err(err) => show_error_toast(&lb.ui, "Playback failed", &err),
+                Err(err) => show_error_toast(&lb.ui, &gettext("Playback failed"), &err),
             }
         });
     }
@@ -107,7 +108,7 @@ impl Lightbox {
             });
         }
         if info.is_local() {
-            return Err("The video file is no longer on disk.".into());
+            return Err(gettext("The video file is no longer on disk."));
         }
         let (uri, api_key) = self
             .ui
@@ -115,7 +116,7 @@ impl Lightbox {
             .api_client
             .video_playback_source(&info.asset_id)
             .await
-            .ok_or_else(|| "Not connected to the Immich server.".to_string())?;
+            .ok_or_else(|| gettext("Not connected to the Immich server."))?;
         Ok(VideoSource {
             uri,
             api_key: Some(api_key),

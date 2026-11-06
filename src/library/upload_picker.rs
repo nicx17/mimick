@@ -5,6 +5,7 @@
 //! button in the library window invokes [`pick_and_upload`]; the same flow is
 //! used for both library and album scopes — the caller resolves the album.
 
+use gettextrs::gettext;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -26,9 +27,9 @@ pub fn pick_and_upload(
 ) {
     let dialog = gtk::FileDialog::builder()
         .title(if album.is_some() {
-            "Upload to album"
+            gettext("Upload to album")
         } else {
-            "Upload to library"
+            gettext("Upload to library")
         })
         .modal(true)
         .build();

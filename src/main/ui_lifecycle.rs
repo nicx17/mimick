@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use gtk::prelude::*;
 use libadwaita as adw;
 use parking_lot::Mutex;
@@ -52,7 +53,7 @@ fn handle_ui_flags(app: &adw::Application, flags: &UiFlags) -> glib::ControlFlow
             .expect("App context should be initialized before pause handling")
             .queue_manager;
         let paused = !qm.is_paused();
-        qm.set_paused(paused, paused.then(|| "Paused by user".to_string()));
+        qm.set_paused(paused, paused.then(|| gettext("Paused by user")));
     }
 
     if consume_flag(&flags.sync_now) {

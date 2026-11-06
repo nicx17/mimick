@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use glib::clone;
@@ -22,16 +24,16 @@ pub(super) fn connect_albums_create(ui: Rc<LibraryWindowUi>) {
 /// Show a popup modal dialog prompting the user to name and create a new album.
 pub(super) fn prompt_create_album(ui: Rc<LibraryWindowUi>) {
     let dialog = libadwaita::AlertDialog::builder()
-        .heading("Create album")
-        .body("Choose a name for the new album.")
+        .heading(gettext("Create album"))
+        .body(gettext("Choose a name for the new album."))
         .build();
     let entry = gtk::Entry::builder()
-        .placeholder_text("Album name")
+        .placeholder_text(gettext("Album name"))
         .activates_default(true)
         .build();
     dialog.set_extra_child(Some(&entry));
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("create", "Create");
+    dialog.add_response("cancel", &gettext("Cancel"));
+    dialog.add_response("create", &gettext("Create"));
     dialog.set_response_appearance("create", libadwaita::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("create"));
     dialog.set_close_response("cancel");
@@ -81,8 +83,10 @@ pub(super) fn refresh_albums_view(ui: Rc<LibraryWindowUi>) {
             Err(err) => {
                 log::warn!("Albums fetch failed: {}", err);
                 if !ui.albums.populated.get() && on_albums_page(&ui) {
-                    ui.error_label
-                        .set_label(&format!("Could not load albums: {}", err));
+                    ui.error_label.set_label(&fill(
+                        gettext("Could not load albums: {err}"),
+                        &[("err", &err.to_string())],
+                    ));
                     ui.content_stack.set_visible_child_name("error");
                 }
             }

@@ -1,4 +1,5 @@
 use adw::prelude::*;
+use gettextrs::gettext;
 use libadwaita as adw;
 
 pub struct BehaviorWidgets {
@@ -49,31 +50,31 @@ struct UploadWidgets {
 
 fn build_uploads_group(settings_page: &adw::PreferencesPage) -> UploadWidgets {
     let uploads = adw::PreferencesGroup::builder()
-        .title("Uploads")
-        .description("How and when your watched folders are backed up.")
+        .title(gettext("Uploads"))
+        .description(gettext("How and when your watched folders are backed up."))
         .build();
     settings_page.add(&uploads);
     let concurrency_row = add_spin(
         &uploads,
-        "Parallel Uploads",
-        "How many files upload at once. Higher is faster but uses more bandwidth.",
+        &gettext("Parallel Uploads"),
+        &gettext("Higher is faster but uses more bandwidth."),
         gtk::Adjustment::new(3.0, 1.0, 10.0, 1.0, 1.0, 0.0),
     );
     let xmp_sidecar_row = add_switch(
         &uploads,
-        "Upload XMP Sidecars",
-        "Send .xmp edit files along with their photos.",
+        &gettext("Upload XMP Sidecars"),
+        &gettext("Send .xmp edit files along with their photos."),
     );
     let catchup_row = add_catchup_row(&uploads);
     let metered_row = add_switch(
         &uploads,
-        "Pause on Metered Networks",
-        "Wait for an unmetered connection, such as home Wi-Fi.",
+        &gettext("Pause on Metered Networks"),
+        &gettext("Wait for an unmetered connection, such as home Wi-Fi."),
     );
     let battery_row = add_switch(
         &uploads,
-        "Pause on Battery",
-        "Wait until the computer is plugged in.",
+        &gettext("Pause on Battery"),
+        &gettext("Wait until the computer is plugged in."),
     );
     let (quiet_hours_row, quiet_start_row, quiet_end_row) = add_quiet_hours_rows(&uploads);
     UploadWidgets {
@@ -96,23 +97,29 @@ struct AppWidgets {
 }
 
 fn build_app_group(settings_page: &adw::PreferencesPage) -> AppWidgets {
-    let app = adw::PreferencesGroup::builder().title("App").build();
+    let app = adw::PreferencesGroup::builder()
+        .title(gettext("App"))
+        .build();
     settings_page.add(&app);
-    let startup_row = add_switch(&app, "Run on Startup", "Start Mimick when you log in.");
+    let startup_row = add_switch(
+        &app,
+        &gettext("Run on Startup"),
+        &gettext("Start Mimick when you log in."),
+    );
     let background_sync_row = add_switch(
         &app,
-        "Background Sync",
-        "Keep watching folders after you close this window.",
+        &gettext("Background Sync"),
+        &gettext("Keep watching folders after you close this window."),
     );
     let notifications_row = add_switch(
         &app,
-        "Notifications",
-        "Tell me when uploads finish or something goes wrong.",
+        &gettext("Notifications"),
+        &gettext("Tell me when uploads finish or something goes wrong."),
     );
     let library_view_row = add_switch(
         &app,
-        "Library View",
-        "Browse your Immich photos in Mimick. The tray menu updates after a restart.",
+        &gettext("Library View"),
+        &gettext("The tray menu updates after a restart."),
     );
     AppWidgets {
         startup: startup_row,
@@ -127,11 +134,11 @@ fn add_quiet_hours_rows(
 ) -> (adw::SwitchRow, adw::SpinRow, adw::SpinRow) {
     let toggle = add_switch(
         group,
-        "Quiet Hours",
-        "Don't upload during these hours each day.",
+        &gettext("Quiet Hours"),
+        &gettext("Don't upload during these hours each day."),
     );
-    let start = clock_row(group, "From", 22.0);
-    let end = clock_row(group, "Until", 7.0);
+    let start = clock_row(group, &gettext("From"), 22.0);
+    let end = clock_row(group, &gettext("Until"), 7.0);
     (toggle, start, end)
 }
 
@@ -170,14 +177,21 @@ fn add_switch(group: &adw::PreferencesGroup, title: &str, subtitle: &str) -> adw
     row
 }
 
-pub(super) const CATCHUP_LABELS: [&str; 3] =
-    ["All Files", "Changed in the Last 7 Days", "New Files Only"];
+pub(super) fn catchup_labels() -> [String; 3] {
+    [
+        gettext("All Files"),
+        gettext("Changed in the Last 7 Days"),
+        gettext("New Files Only"),
+    ]
+}
 
 fn add_catchup_row(group: &adw::PreferencesGroup) -> adw::ComboRow {
     let row = adw::ComboRow::builder()
-        .title("When Mimick Starts, Check")
-        .subtitle("Folders can choose their own in Folder Rules.")
-        .model(&gtk::StringList::new(&CATCHUP_LABELS))
+        .title(gettext("When Mimick Starts, Check"))
+        .subtitle(gettext("Folders can choose their own in Folder Rules."))
+        .model(&gtk::StringList::new(
+            &catchup_labels().each_ref().map(String::as_str),
+        ))
         .build();
     group.add(&row);
     row

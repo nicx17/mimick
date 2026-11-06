@@ -4,6 +4,8 @@
 //! updating the progress bar and transfer rate display. Video files can
 //! be handed off to an app the user picks after download.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::Arc;
@@ -145,8 +147,17 @@ pub(super) fn start_download(ui: Rc<LibraryWindowUi>, asset_id: String, filename
                 return;
             }
             match do_download(&ui, &asset_id, &output_path).await {
-                Ok(()) => toast_saved(&ui, &format!("Saved {safe_name}"), &target_dir),
-                Err(err) => super::context_menu::show_error_toast(&ui, "Download failed", &err),
+                Ok(()) => toast_saved(
+                    &ui,
+                    &fill(
+                        gettext("Saved {safe_name}"),
+                        &[("safe_name", &safe_name.to_string())],
+                    ),
+                    &target_dir,
+                ),
+                Err(err) => {
+                    super::context_menu::show_error_toast(&ui, &gettext("Download failed"), &err)
+                }
             }
         }
     ));
@@ -160,7 +171,13 @@ enum ConflictAction {
 }
 
 pub(super) fn start_download_group(ui: Rc<LibraryWindowUi>, downloads: Vec<(String, String)>) {
-    begin_download_session(&ui.ctx, format!("{} items", downloads.len()));
+    begin_download_session(
+        &ui.ctx,
+        fill(
+            ngettext("{n} item", "{n} items", plural_n(downloads.len())),
+            &[("n", &downloads.len().to_string())],
+        ),
+    );
     glib::MainContext::default().spawn_local(clone!(
         #[strong]
         ui,
@@ -238,18 +255,27 @@ fn show_batch_summary(
 /// One line for a finished batch, e.g. "Downloaded 12 items · 2 skipped".
 fn batch_summary(succeeded: u32, failed: u32, skipped: u32) -> String {
     let mut parts = vec![if succeeded == 0 {
-        "Nothing downloaded".to_string()
+        gettext("Nothing downloaded")
     } else {
-        format!(
-            "Downloaded {}",
-            super::header_format::count_label(succeeded.into())
+        fill(
+            gettext("Downloaded {items}"),
+            &[(
+                "items",
+                &super::header_format::count_label(succeeded.into()),
+            )],
         )
     }];
     if skipped > 0 {
-        parts.push(format!("{skipped} skipped"));
+        parts.push(fill(
+            ngettext("{n} skipped", "{n} skipped", plural_n(skipped)),
+            &[("n", &skipped.to_string())],
+        ));
     }
     if failed > 0 {
-        parts.push(format!("{failed} failed"));
+        parts.push(fill(
+            ngettext("{n} failed", "{n} failed", plural_n(failed)),
+            &[("n", &failed.to_string())],
+        ));
     }
     parts.join(" · ")
 }
@@ -258,7 +284,7 @@ fn toast_saved(ui: &LibraryWindowUi, message: &str, dir: &Path) {
     let dir = dir.display().to_string();
     ui.toasts.add_toast(super::dialogs::toast_with_action(
         message,
-        "Open Folder",
+        &gettext("Open Folder"),
         move || open_local_with_default_app(&dir),
     ));
 }
@@ -292,11 +318,14 @@ async fn show_overwrite_dialog(ui: &LibraryWindowUi, filename: &str) -> bool {
     let (tx, rx) = tokio::sync::oneshot::channel();
     let tx = std::cell::Cell::new(Some(tx));
     let dialog = libadwaita::AlertDialog::builder()
-        .heading("File already exists")
-        .body(format!("\"{}\" already exists. Overwrite?", filename))
+        .heading(gettext("File already exists"))
+        .body(fill(
+            gettext("\"{name}\" already exists. Overwrite?"),
+            &[("name", filename)],
+        ))
         .build();
-    dialog.add_response("skip", "Skip");
-    dialog.add_response("overwrite", "Overwrite");
+    dialog.add_response("skip", &gettext("Skip"));
+    dialog.add_response("overwrite", &gettext("Overwrite"));
     dialog.set_response_appearance("overwrite", libadwaita::ResponseAppearance::Destructive);
     dialog.connect_response(None, move |_, response| {
         if let Some(tx) = tx.take() {
@@ -314,19 +343,19 @@ async fn show_batch_conflict_dialog(
     let (tx, rx) = tokio::sync::oneshot::channel::<(ConflictAction, bool)>();
     let tx = std::cell::Cell::new(Some(tx));
     let dialog = libadwaita::AlertDialog::builder()
-        .heading("File already exists")
-        .body(format!(
-            "\"{}\" already exists in the download folder.",
-            filename
+        .heading(gettext("File already exists"))
+        .body(fill(
+            gettext("\"{name}\" already exists in the download folder."),
+            &[("name", filename)],
         ))
         .build();
     let apply_all = gtk::CheckButton::builder()
-        .label("Apply to all remaining conflicts")
+        .label(gettext("Apply to all remaining conflicts"))
         .build();
     dialog.set_extra_child(Some(&apply_all));
-    dialog.add_response("skip", "Skip");
-    dialog.add_response("rename", "Rename");
-    dialog.add_response("overwrite", "Overwrite");
+    dialog.add_response("skip", &gettext("Skip"));
+    dialog.add_response("rename", &gettext("Rename"));
+    dialog.add_response("overwrite", &gettext("Overwrite"));
     dialog.set_response_appearance("overwrite", libadwaita::ResponseAppearance::Destructive);
     dialog.set_default_response(Some("rename"));
     dialog.connect_response(
@@ -377,7 +406,7 @@ pub(super) async fn ensure_download_target(ui: &LibraryWindowUi) -> Option<PathB
 
     let (tx, rx) = tokio::sync::oneshot::channel();
     let dialog = gtk::FileDialog::builder()
-        .title("Choose Download Folder")
+        .title(gettext("Choose Download Folder"))
         .build();
     dialog.select_folder(Some(&ui.window), gtk::gio::Cancellable::NONE, move |res| {
         let _ = tx.send(
@@ -391,11 +420,14 @@ pub(super) async fn ensure_download_target(ui: &LibraryWindowUi) -> Option<PathB
     let (save_tx, save_rx) = tokio::sync::oneshot::channel::<bool>();
     let save_tx = std::cell::Cell::new(Some(save_tx));
     let confirm = libadwaita::AlertDialog::builder()
-        .heading("Save as default?")
-        .body(format!("Always download to {}?", path.display()))
+        .heading(gettext("Save as default?"))
+        .body(fill(
+            gettext("Always download to {path}?"),
+            &[("path", &path.display().to_string())],
+        ))
         .build();
-    confirm.add_response("once", "Just Once");
-    confirm.add_response("always", "Always");
+    confirm.add_response("once", &gettext("Just Once"));
+    confirm.add_response("always", &gettext("Always"));
     confirm.set_default_response(Some("always"));
     confirm.connect_response(None, move |dlg, response| {
         if let Some(tx) = save_tx.take() {

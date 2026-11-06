@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -79,16 +81,16 @@ impl Lightbox {
     fn show_summary(&self, info: &AssetInfo) {
         self.details.filename.set_label(&info.filename);
         let sync_label = match info.sync_state {
-            2 => "On Immich and locally",
-            1 => "Local only",
-            _ => "On Immich only",
+            2 => &gettext("On Immich and locally"),
+            1 => &gettext("Local only"),
+            _ => &gettext("On Immich only"),
         };
         self.details
             .summary
             .set_label(&format!("{} · {}", info.mime, sync_label));
-        self.details.created.set_label(&format!(
-            "Created: {}",
-            format_datetime_display(&info.created)
+        self.details.created.set_label(&fill(
+            gettext("Created: {date}"),
+            &[("date", &format_datetime_display(&info.created))],
         ));
         self.details.created.set_visible(true);
         for section in [&self.details.exif, &self.details.description] {

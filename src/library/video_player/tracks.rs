@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gst_play::prelude::*;
@@ -30,7 +31,7 @@ impl VideoPlayer {
             .iter()
             .position(|t| Some(t.index()) == current)
             .unwrap_or(0);
-        let checks = track_section(content, "Audio", &labels, active);
+        let checks = track_section(content, &gettext("Audio"), &labels, active);
         for (check, track) in checks.iter().zip(audio) {
             let index = track.index();
             check.connect_toggled(self.on_picked(move |p| {
@@ -45,7 +46,7 @@ impl VideoPlayer {
         if subtitles.is_empty() {
             return;
         }
-        let labels: Vec<String> = std::iter::once("Off".to_string())
+        let labels: Vec<String> = std::iter::once(gettext("Off"))
             .chain(
                 subtitles
                     .iter()
@@ -53,7 +54,7 @@ impl VideoPlayer {
                     .map(|(n, t)| track_label(n, t.language().as_deref())),
             )
             .collect();
-        let checks = track_section(content, "Subtitles", &labels, 0);
+        let checks = track_section(content, &gettext("Subtitles"), &labels, 0);
         checks[0].connect_toggled(self.on_picked(|p| p.play.set_subtitle_track_enabled(false)));
         for (check, track) in checks[1..].iter().zip(subtitles) {
             let index = track.index();

@@ -40,7 +40,7 @@ install_dependencies() {
     pacman-key --init
     pacman -Syy --noconfirm archlinux-keyring
     pacman -Syu --needed --noconfirm \
-        base-devel clang cmake curl dbus git nasm patchelf pkgconf rust strace wget \
+        base-devel clang cmake curl dbus gettext git nasm patchelf pkgconf rust strace wget \
         xorg-server-xvfb zsync gtk-update-icon-cache \
         adwaita-icon-theme glib-networking gtk4 libadwaita libheif libshumate openssl \
         gstreamer gst-libav gst-plugin-gtk4 gst-plugins-bad-libs gst-plugins-base gst-plugins-good
@@ -55,12 +55,13 @@ install_dependencies() {
 # Adwaita icons for the standard symbolic icons, which hosts without GNOME may not have.
 add_app_data() {
     local icons="$APPDIR/share/icons"
-    install -Dm644 setup/metainfo/dev.nicx.mimick.metainfo.xml -t "$APPDIR/share/metainfo/"
+    scripts/i18n.sh merge setup/metainfo/dev.nicx.mimick.metainfo.xml "$APPDIR/share/metainfo/dev.nicx.mimick.metainfo.xml"
     install -Dm644 src/assets/256x256/apps/dev.nicx.mimick.png -t "$icons/hicolor/256x256/apps/"
     install -Dm644 src/assets/512x512/apps/dev.nicx.mimick.png -t "$icons/hicolor/512x512/apps/"
     install -Dm644 src/assets/scalable/apps/dev.nicx.mimick.svg -t "$icons/hicolor/scalable/apps/"
     install -Dm644 src/assets/symbolic/apps/dev.nicx.mimick-symbolic.svg -t "$icons/hicolor/symbolic/apps/"
     install -Dm644 THIRD_PARTY_LICENSES.txt LICENSE -t "$APPDIR/share/licenses/mimick/"
+    scripts/i18n.sh install "$APPDIR/share/locale"
 
     # Cursors are 12 of the theme's 15 MB, and the host's cursor theme is used anyway.
     if [ ! -d "$icons/Adwaita" ]; then
@@ -104,7 +105,8 @@ export OUTPATH="$PWD/dist"
 export OUTNAME="Mimick-$VERSION-$ARCH.AppImage"
 # Lets AppImage updaters (Gear Lever, AppImageUpdate) fetch the newest release's .zsync.
 export UPINFO="gh-releases-zsync|nicx17|mimick|latest|Mimick-*$ARCH.AppImage.zsync"
-export DESKTOP="$PWD/setup/dev.nicx.mimick.desktop"
+scripts/i18n.sh merge setup/dev.nicx.mimick.desktop "$tools/dev.nicx.mimick.desktop"
+export DESKTOP="$tools/dev.nicx.mimick.desktop"
 export ICON="$PWD/src/assets/scalable/apps/dev.nicx.mimick.svg"
 # quick-sharun runs the app to record what it dlopens; give the settings window time to draw.
 export STRACE_TIME=10

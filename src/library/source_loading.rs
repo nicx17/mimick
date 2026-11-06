@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -47,9 +49,11 @@ pub(super) fn apply_source_ui_state(ui: &LibraryWindowUi, source: &LibrarySource
     archive::sync_bulk_button(&ui.bulk.archive, source);
 
     if in_album {
-        ui.upload_button.set_tooltip_text(Some("Upload to album"));
+        ui.upload_button
+            .set_tooltip_text(Some(&gettext("Upload to album")));
     } else {
-        ui.upload_button.set_tooltip_text(Some("Upload to library"));
+        ui.upload_button
+            .set_tooltip_text(Some(&gettext("Upload to library")));
     }
 
     // Keep source dropdown visually consistent with the active source so
@@ -89,8 +93,10 @@ pub(super) fn load_albums(ui: Rc<LibraryWindowUi>) {
                     // user is actively waiting on something.
                     log::warn!("Albums sidebar refresh failed: {}", err);
                     if ui.content_stack.visible_child_name().as_deref() == Some("loading") {
-                        ui.error_label
-                            .set_label(&format!("Could not load albums: {}", err));
+                        ui.error_label.set_label(&fill(
+                            gettext("Could not load albums: {err}"),
+                            &[("err", &err.to_string())],
+                        ));
                         ui.content_stack.set_visible_child_name("error");
                     }
                 }
@@ -163,7 +169,7 @@ pub(super) fn unwrap_or_report_permission<T: Default>(
     result: Result<T, String>,
 ) -> T {
     if let Err(e) = &result
-        && (e.contains("HTTP 401") || e.contains("HTTP 403"))
+        && (e.contains("HTTP 401") || e.contains(&gettext("HTTP 403")))
     {
         show_library_permission_error(&ui.window);
     }
@@ -486,7 +492,10 @@ pub(super) fn apply_page_result(
                 state.generation == generation
             };
             if current && !append && !navigation::on_page(ui) {
-                let message = format!("Could not load library assets: {err}");
+                let message = fill(
+                    gettext("Could not load library assets: {err}"),
+                    &[("err", &err.to_string())],
+                );
                 source_header::set_status(ui, "error", Some(&message));
                 ui.content_stack.set_visible_child_name("grid");
             }

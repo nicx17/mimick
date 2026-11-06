@@ -1,3 +1,5 @@
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -31,7 +33,7 @@ pub(super) fn build_tags_view() -> TagsView {
     let page = build_tree_page("mimick-tag-symbolic");
     let new_tag = gtk::Button::builder()
         .icon_name("list-add-symbolic")
-        .tooltip_text("New tag")
+        .tooltip_text(gettext("New tag"))
         .build();
     page.toolbar.append(&new_tag);
     TagsView {
@@ -65,8 +67,11 @@ fn reload(ui: Rc<LibraryWindowUi>) {
             }
             Err(err) => show_alert_dialog(
                 &ui,
-                "Could Not Load Tags",
-                &format!("{err}\n\nYour API key needs the 'tag.read' permission."),
+                &gettext("Could Not Load Tags"),
+                &fill(
+                    gettext("{err}\n\nYour API key needs the '{permission}' permission."),
+                    &[("err", &err.to_string()), ("permission", "tag.read")],
+                ),
             ),
         }
     });
@@ -88,7 +93,7 @@ fn render(ui: &Rc<LibraryWindowUi>) {
     let ui_crumb = ui.clone();
     render_breadcrumbs(
         &view.page,
-        "All Tags",
+        &gettext("All Tags"),
         path.as_deref(),
         Rc::new(move |target| open_path(&ui_crumb, target)),
     );
@@ -100,14 +105,24 @@ fn render(ui: &Rc<LibraryWindowUi>) {
             .list
             .append(&tag_row(ui, tag, child_count(&tags, &tag.value)));
     }
-    let empty = match &path {
+    let (title, body) = match &path {
         None => (
-            "No Tags",
-            "Create a tag with the + button, or tag photos from the lightbox details pane.",
+            gettext("No Tags"),
+            gettext(
+                "Create a tag with the + button, or tag photos from the lightbox details pane.",
+            ),
         ),
-        Some(_) => ("No Tags Inside", "Use the + button to add one here."),
+        Some(_) => (
+            gettext("No Tags Inside"),
+            gettext("Use the + button to add one here."),
+        ),
     };
-    show_empty_state(&view.page, children.is_empty().then_some(empty));
+    show_empty_state(
+        &view.page,
+        children
+            .is_empty()
+            .then_some((title.as_str(), body.as_str())),
+    );
 }
 
 fn tag_row(ui: &Rc<LibraryWindowUi>, tag: &Tag, children: usize) -> libadwaita::ActionRow {
@@ -116,18 +131,21 @@ fn tag_row(ui: &Rc<LibraryWindowUi>, tag: &Tag, children: usize) -> libadwaita::
         .use_markup(false)
         .title_lines(1)
         .activatable(true)
-        .tooltip_text(format!("Show photos tagged {}", tag.value))
+        .tooltip_text(fill(
+            gettext("Show photos tagged {value}"),
+            &[("value", &tag.value.to_string())],
+        ))
         .build();
     if children > 0 {
-        row.set_subtitle(&match children {
-            1 => "1 tag inside".to_string(),
-            n => format!("{n} tags inside"),
-        });
+        row.set_subtitle(&fill(
+            ngettext("{n} tag inside", "{n} tags inside", plural_n(children)),
+            &[("n", &children.to_string())],
+        ));
     }
     row.add_prefix(&color_dot(tag.color.as_deref(), 12));
     let menu = gtk::MenuButton::builder()
         .icon_name("view-more-symbolic")
-        .tooltip_text("More")
+        .tooltip_text(gettext("More"))
         .valign(gtk::Align::Center)
         .css_classes(["flat"])
         .build();
@@ -136,7 +154,10 @@ fn tag_row(ui: &Rc<LibraryWindowUi>, tag: &Tag, children: usize) -> libadwaita::
     if children > 0 {
         let browse = gtk::Button::builder()
             .icon_name("go-next-symbolic")
-            .tooltip_text(format!("Open {}", tag.name))
+            .tooltip_text(fill(
+                gettext("Open {name}"),
+                &[("name", &tag.name.to_string())],
+            ))
             .valign(gtk::Align::Center)
             .css_classes(["flat"])
             .build();
@@ -163,15 +184,15 @@ pub(super) fn tag_menu_items(ui: &Rc<LibraryWindowUi>, tag: &Tag) -> Vec<(String
     let (ui_delete, t_delete) = (ui.clone(), tag.clone());
     vec![
         (
-            "Rename…".to_string(),
+            gettext("Rename…"),
             Box::new(move || rename_tag(&ui_rename, &t_rename)),
         ),
         (
-            "Change Color…".to_string(),
+            gettext("Change Color…"),
             Box::new(move || pick_color(&ui_color, &t_color)),
         ),
         (
-            "Delete…".to_string(),
+            gettext("Delete…"),
             Box::new(move || delete_tag(&ui_delete, &t_delete)),
         ),
     ]
@@ -179,7 +200,7 @@ pub(super) fn tag_menu_items(ui: &Rc<LibraryWindowUi>, tag: &Tag) -> Vec<(String
 
 fn run(
     ui: &Rc<LibraryWindowUi>,
-    heading: &'static str,
+    heading: String,
     task: impl Future<Output = Result<(), String>> + 'static,
 ) {
     let ui = ui.clone();
@@ -189,7 +210,7 @@ fn run(
                 super::source_header::refresh(&ui);
                 reload(ui);
             }
-            Err(err) => show_alert_dialog(&ui, heading, &err),
+            Err(err) => show_alert_dialog(&ui, &heading, &err),
         }
     });
 }
@@ -197,18 +218,21 @@ fn run(
 fn create_tag(ui: &Rc<LibraryWindowUi>) {
     let parent = ui.tags.path.borrow().clone();
     let body = match &parent {
-        Some(parent) => format!("The tag is created inside {parent}."),
+        Some(parent) => fill(
+            gettext("The tag is created inside {parent}."),
+            &[("parent", &parent.to_string())],
+        ),
         None => "Use “Parent/Child” to create a tag inside another.".to_string(),
     };
     let ui_create = ui.clone();
     prompt_text(
         ui,
         TextPrompt {
-            heading: "New Tag",
+            heading: &gettext("New Tag"),
             body: &body,
             initial: "",
-            placeholder: "Tag name",
-            accept: "Create",
+            placeholder: &gettext("Tag name"),
+            accept: &gettext("Create"),
         },
         move |name| {
             let value = match &parent {
@@ -216,7 +240,7 @@ fn create_tag(ui: &Rc<LibraryWindowUi>) {
                 None => name,
             };
             let api = ui_create.ctx.api_client.clone();
-            run(&ui_create, "Could Not Create Tag", async move {
+            run(&ui_create, gettext("Could Not Create Tag"), async move {
                 api.create_tag(&value).await.map(|_| ())
             });
         },
@@ -228,23 +252,23 @@ fn rename_tag(ui: &Rc<LibraryWindowUi>, tag: &Tag) {
     prompt_text(
         ui,
         TextPrompt {
-            heading: "Rename Tag",
-            body: "Photos keep the tag under its new name.",
+            heading: &gettext("Rename Tag"),
+            body: &gettext("Photos keep the tag under its new name."),
             initial: &tag.name,
-            placeholder: "Tag name",
-            accept: "Rename",
+            placeholder: &gettext("Tag name"),
+            accept: &gettext("Rename"),
         },
         move |name| {
             if name.contains('/') {
                 show_error_toast(
                     &ui_rename,
-                    "Couldn't rename the tag",
+                    &gettext("Couldn't rename the tag"),
                     "Tag names can't contain “/”.",
                 );
                 return;
             }
             let (api, tag_id) = (ui_rename.ctx.api_client.clone(), tag_id.clone());
-            run(&ui_rename, "Could Not Rename Tag", async move {
+            run(&ui_rename, gettext("Could Not Rename Tag"), async move {
                 api.rename_tag(&tag_id, &name).await
             });
         },
@@ -255,13 +279,16 @@ fn delete_tag(ui: &Rc<LibraryWindowUi>, tag: &Tag) {
     let (ui_delete, tag_id) = (ui.clone(), tag.id.clone());
     confirm(
         ui,
-        &format!("Delete “{}”?", tag.name),
-        "The tag is removed from every photo. This can't be undone.",
-        "Delete",
+        &fill(
+            gettext("Delete “{name}”?"),
+            &[("name", &tag.name.to_string())],
+        ),
+        &gettext("The tag is removed from every photo. This can't be undone."),
+        &gettext("Delete"),
         move || {
             let (api, tag_id) = (ui_delete.ctx.api_client.clone(), tag_id.clone());
             let ui_after = ui_delete.clone();
-            run(&ui_delete, "Could Not Delete Tag", async move {
+            run(&ui_delete, gettext("Could Not Delete Tag"), async move {
                 api.delete_tag(&tag_id).await?;
                 let viewing = matches!(
                     super::navigation::current(&ui_after),
@@ -288,11 +315,14 @@ fn pick_color(ui: &Rc<LibraryWindowUi>, tag: &Tag) {
     body.append(&swatches);
     body.append(&custom_color_row(tag, &chosen, buttons));
     let dialog = libadwaita::AlertDialog::builder()
-        .heading(format!("Color for “{}”", tag.name))
+        .heading(fill(
+            gettext("Color for “{name}”"),
+            &[("name", &tag.name.to_string())],
+        ))
         .extra_child(&body)
         .build();
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("save", "Save");
+    dialog.add_response("cancel", &gettext("Cancel"));
+    dialog.add_response("save", &gettext("Save"));
     dialog.set_response_appearance("save", libadwaita::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("save"));
     dialog.set_close_response("cancel");
@@ -303,7 +333,7 @@ fn pick_color(ui: &Rc<LibraryWindowUi>, tag: &Tag) {
             return;
         }
         let (api, tag_id) = (ui_save.ctx.api_client.clone(), tag_id.clone());
-        run(&ui_save, "Could Not Change Color", async move {
+        run(&ui_save, gettext("Could Not Change Color"), async move {
             api.set_tag_color(&tag_id, &color).await
         });
     });
@@ -357,7 +387,7 @@ fn custom_color_row(
     let custom = gtk::ColorDialogButton::builder()
         .dialog(&gtk::ColorDialog::builder().with_alpha(false).build())
         .halign(gtk::Align::Center)
-        .tooltip_text("Custom color")
+        .tooltip_text(gettext("Custom color"))
         .build();
     if let Some(rgba) = tag
         .color
@@ -378,7 +408,7 @@ fn custom_color_row(
         .spacing(8)
         .halign(gtk::Align::Center)
         .build();
-    row.append(&gtk::Label::new(Some("Custom")));
+    row.append(&gtk::Label::new(Some(&gettext("Custom"))));
     row.append(&custom);
     row
 }

@@ -1,5 +1,7 @@
 //! "Appears In": the albums holding the photo, each opening that album.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use libadwaita::prelude::*;
@@ -24,7 +26,7 @@ impl AlbumsSection {
             .css_classes(["boxed-list"])
             .build();
         let group = libadwaita::PreferencesGroup::builder()
-            .title("Appears In")
+            .title(gettext("Appears In"))
             .build();
         group.add(&list);
         let root = gtk::Revealer::builder()
@@ -59,7 +61,10 @@ fn album_row(ui: &Rc<LibraryWindowUi>, album: &LibraryAlbum) -> libadwaita::Acti
         .use_markup(false)
         .title_lines(1)
         .activatable(true)
-        .tooltip_text(format!("Open “{}”", album.album_name))
+        .tooltip_text(fill(
+            gettext("Open “{album_name}”"),
+            &[("album_name", &album.album_name.to_string())],
+        ))
         .build();
     row.add_prefix(&album_cover(&ui.ctx, album));
     row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));

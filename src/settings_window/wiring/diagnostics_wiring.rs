@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::sync::Arc;
 
 use glib::clone;
@@ -11,7 +13,7 @@ use crate::settings_window::show_alert;
 
 pub(super) fn choose_diagnostics_folder(window: &adw::ApplicationWindow, ctx: Arc<AppContext>) {
     let dialog = FileDialog::builder()
-        .title("Choose Diagnostics Export Folder")
+        .title(gettext("Choose Diagnostics Export Folder"))
         .build();
     dialog.select_folder(
         Some(window),
@@ -42,24 +44,33 @@ fn export_diagnostics(window: &adw::ApplicationWindow, ctx: &AppContext, path: s
             .await;
             let (heading, body) = match export_result {
                 Ok(Ok(bundle_dir)) => (
-                    "Diagnostics Exported",
-                    format!(
-                        "Saved diagnostics bundle to {}",
-                        crate::watch_path_display::display_watch_path_inline(
-                            &bundle_dir.parent().unwrap_or(&bundle_dir).to_string_lossy()
-                        )
+                    gettext("Diagnostics Exported"),
+                    fill(
+                        gettext("Saved diagnostics bundle to {path}"),
+                        &[(
+                            "path",
+                            &crate::watch_path_display::display_watch_path_inline(
+                                &bundle_dir.parent().unwrap_or(&bundle_dir).to_string_lossy(),
+                            ),
+                        )],
                     ),
                 ),
                 Ok(Err(err)) => (
-                    "Diagnostics Export Failed",
-                    format!("Could not write diagnostics bundle: {}", err),
+                    gettext("Diagnostics Export Failed"),
+                    fill(
+                        gettext("Could not write diagnostics bundle: {err}"),
+                        &[("err", &err.to_string())],
+                    ),
                 ),
                 Err(err) => (
-                    "Diagnostics Export Failed",
-                    format!("Diagnostics task could not complete: {}", err),
+                    gettext("Diagnostics Export Failed"),
+                    fill(
+                        gettext("Diagnostics task could not complete: {err}"),
+                        &[("err", &err.to_string())],
+                    ),
                 ),
             };
-            show_alert(&window, heading, &body);
+            show_alert(&window, &heading, &body);
         }
     ));
 }

@@ -1,5 +1,6 @@
 //! Calendar and time controls used by the asset information editor.
 
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -74,7 +75,7 @@ pub(super) fn date_popover(
 ) -> gtk::Popover {
     let picker = DatePicker::new(date_parts(&text.borrow()).unwrap_or_else(now_parts));
     let apply = gtk::Button::builder()
-        .label("Set Date")
+        .label(gettext("Set Date"))
         .css_classes(["suggested-action"])
         .build();
     let content = gtk::Box::builder()
@@ -133,7 +134,7 @@ pub(super) fn compose_date_text(
 
 pub(super) fn display_date(text: &str) -> String {
     if text.trim().is_empty() {
-        "Not set".to_string()
+        gettext("Not set")
     } else {
         text.to_string()
     }

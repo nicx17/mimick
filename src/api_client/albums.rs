@@ -4,6 +4,7 @@
 //! `add_asset_to_album` methods that the upload and library flows
 //! depend on. Album metadata is cached in-memory after the first fetch.
 
+use gettextrs::gettext;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::Duration;
@@ -62,9 +63,8 @@ impl ImmichApiClient {
             None => {
                 log::warn!("Cannot fetch albums: no active URL.");
                 self.set_issue(ApiIssue {
-                    summary: "Album list is unavailable".to_string(),
-                    guidance: "Reconnect to the Immich server before refreshing albums."
-                        .to_string(),
+                    summary: gettext("Album list is unavailable"),
+                    guidance: gettext("Reconnect to the Immich server before refreshing albums."),
                 })
                 .await;
                 return;
@@ -173,7 +173,7 @@ impl ImmichApiClient {
             self.fetch_all_albums().await;
         }
         if !*self.albums_fetched.lock().await {
-            return Err("Failed to fetch albums".to_string());
+            return Err(gettext("Failed to fetch albums"));
         }
         let cache = self.album_cache.lock().await;
         Ok(cache
@@ -187,7 +187,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let url = format!("{}/api/albums", base_url);
         let api_key = self.settings.read().api_key.clone();
 
@@ -263,7 +263,7 @@ impl ImmichApiClient {
             }
         }
         if !*self.albums_fetched.lock().await {
-            return Err("Cannot fetch albums to verify existence".to_string());
+            return Err(gettext("Cannot fetch albums to verify existence"));
         }
 
         let create_lock = {
@@ -291,7 +291,7 @@ impl ImmichApiClient {
             self.fetch_all_albums().await;
         }
         if !*self.albums_fetched.lock().await {
-            return Err("Cannot fetch albums to verify existence".to_string());
+            return Err(gettext("Cannot fetch albums to verify existence"));
         }
 
         let cache = self.album_cache.lock().await;

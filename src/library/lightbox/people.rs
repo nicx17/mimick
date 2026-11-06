@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::{gettext, ngettext};
 use std::rc::Rc;
 
 use chrono::{DateTime, Datelike, NaiveDate};
@@ -20,7 +22,7 @@ pub(super) struct PeopleSection {
 impl PeopleSection {
     pub(super) fn new() -> Self {
         let root = libadwaita::PreferencesGroup::builder()
-            .title("People")
+            .title(gettext("People"))
             .visible(false)
             .build();
         let faces = gtk::FlowBox::builder()
@@ -89,7 +91,10 @@ fn person_button(ui: &Rc<LibraryWindowUi>, person: &Person, age: Option<&str>) -
     }
     let button = gtk::Button::builder()
         .child(&content)
-        .tooltip_text(format!("Show photos of {name}"))
+        .tooltip_text(fill(
+            gettext("Show photos of {name}"),
+            &[("name", &name.to_string())],
+        ))
         .css_classes(["flat"])
         .build();
     let (ui, id) = (ui.clone(), person.id.clone());
@@ -109,9 +114,12 @@ fn age_text(birth_date: &str, taken: &str) -> Option<String> {
     let taken = DateTime::parse_from_rfc3339(taken).ok()?.naive_utc().date();
     let months = full_months(birth, taken)?;
     Some(match months {
-        0..=11 => format!("Age {}", month_count(months)),
-        13..=23 => format!("Age 1 year, {}", month_count(months - 12)),
-        _ => format!("Age {}", months / 12),
+        0..=11 => fill(gettext("Age {months}"), &[("months", &month_count(months))]),
+        13..=23 => fill(
+            gettext("Age 1 year, {months}"),
+            &[("months", &month_count(months - 12))],
+        ),
+        _ => fill(gettext("Age {age}"), &[("age", &(months / 12).to_string())]),
     })
 }
 
@@ -123,10 +131,10 @@ fn full_months(from: NaiveDate, to: NaiveDate) -> Option<u32> {
 }
 
 fn month_count(months: u32) -> String {
-    match months {
-        1 => "1 month".to_string(),
-        n => format!("{n} months"),
-    }
+    fill(
+        ngettext("{n} month", "{n} months", months),
+        &[("n", &months.to_string())],
+    )
 }
 
 #[cfg(test)]

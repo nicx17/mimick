@@ -1,5 +1,7 @@
 //! "Set Location" dialog: search a place, click the map, or type or paste coordinates.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
@@ -47,7 +49,7 @@ pub fn set_location_for_asset(
     glib::MainContext::default().spawn_local(async move {
         let details = match ui.ctx.api_client.fetch_asset_details(&asset_id).await {
             Ok(details) => details,
-            Err(err) => return show_alert_dialog(&ui, "Could Not Load Info", &err),
+            Err(err) => return show_alert_dialog(&ui, &gettext("Could Not Load Info"), &err),
         };
         let initial = details
             .exif_info
@@ -63,7 +65,7 @@ pub fn set_location_for_asset(
 
 pub fn set_location(ui: Rc<LibraryWindowUi>, target: LocationTarget, on_saved: Rc<dyn Fn()>) {
     let save = gtk::Button::builder()
-        .label("Save")
+        .label(gettext("Save"))
         .sensitive(false)
         .css_classes(["suggested-action"])
         .build();
@@ -91,18 +93,21 @@ pub fn set_location(ui: Rc<LibraryWindowUi>, target: LocationTarget, on_saved: R
 }
 
 fn dialog_shell(subtitle: &str, content: &gtk::Box, save: &gtk::Button) -> libadwaita::Dialog {
-    let cancel = gtk::Button::builder().label("Cancel").build();
+    let cancel = gtk::Button::builder().label(gettext("Cancel")).build();
     let header = libadwaita::HeaderBar::builder()
         .show_start_title_buttons(false)
         .show_end_title_buttons(false)
-        .title_widget(&libadwaita::WindowTitle::new("Set Location", subtitle))
+        .title_widget(&libadwaita::WindowTitle::new(
+            &gettext("Set Location"),
+            subtitle,
+        ))
         .build();
     header.pack_start(&cancel);
     header.pack_end(save);
     let toolbar = libadwaita::ToolbarView::builder().content(content).build();
     toolbar.add_top_bar(&header);
     let dialog = libadwaita::Dialog::builder()
-        .title("Set Location")
+        .title(gettext("Set Location"))
         .content_width(560)
         .content_height(DIALOG_HEIGHT)
         .child(&toolbar)
@@ -140,8 +145,11 @@ impl SaveRequest {
                     self.button.set_sensitive(true);
                     show_alert_dialog(
                         &self.ui,
-                        "Could Not Set Location",
-                        &format!("Immich rejected the update: {err}"),
+                        &gettext("Could Not Set Location"),
+                        &fill(
+                            gettext("Immich rejected the update: {err}"),
+                            &[("err", &err.to_string())],
+                        ),
                     );
                 }
             }
@@ -171,7 +179,7 @@ struct Picker {
 impl Picker {
     fn new(save: gtk::Button) -> Rc<Self> {
         let search = gtk::SearchEntry::builder()
-            .placeholder_text("Search places")
+            .placeholder_text(gettext("Search places"))
             .search_delay(SEARCH_DELAY_MS)
             .build();
         let (results, results_scroller) = results_list();
@@ -419,11 +427,11 @@ fn picker_map() -> (shumate::SimpleMap, shumate::MarkerLayer) {
 
 fn coords_row() -> (libadwaita::EntryRow, gtk::Button) {
     let coords = libadwaita::EntryRow::builder()
-        .title("Latitude, Longitude")
+        .title(gettext("Latitude, Longitude"))
         .build();
     let paste = gtk::Button::builder()
         .icon_name("edit-paste-symbolic")
-        .tooltip_text("Paste coordinates")
+        .tooltip_text(gettext("Paste coordinates"))
         .valign(gtk::Align::Center)
         .css_classes(["flat"])
         .build();

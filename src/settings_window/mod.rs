@@ -5,7 +5,9 @@
 //! Changes are validated and persisted to the JSON config file on save.
 
 use crate::config::{FolderRules, WatchPathEntry};
+use crate::i18n::{fill, plural_n};
 use adw::prelude::*;
+use gettextrs::{gettext, ngettext};
 use gtk::prelude::*;
 use libadwaita as adw;
 use std::cell::Cell;
@@ -35,7 +37,7 @@ pub use queue_inspector::show_queue_inspector;
 struct FolderRowData {
     /// Absolute local file path.
     path: String,
-    /// Picker label: an album name, `DEFAULT_ALBUM_LABEL`, or `LIBRARY_ALBUM_LABEL`.
+    /// Picker label: an album name, `default_album_label()`, or `library_album_label()`.
     album_name: Rc<RefCell<String>>,
     /// Whether this folder explicitly uploads directly to the library.
     uploads_to_library: Rc<Cell<bool>>,
@@ -45,8 +47,13 @@ struct FolderRowData {
     action_row: adw::ExpanderRow,
 }
 
-const DEFAULT_ALBUM_LABEL: &str = "Default (Folder Name)";
-const LIBRARY_ALBUM_LABEL: &str = "Library (No Album)";
+fn default_album_label() -> String {
+    gettext("Default (Folder Name)")
+}
+
+fn library_album_label() -> String {
+    gettext("Library (No Album)")
+}
 
 /// Display a standard Libadwaita modal alert message dialog to the user.
 fn show_alert(parent: &impl gtk::prelude::IsA<gtk::Widget>, heading: &str, body: &str) {
@@ -54,7 +61,7 @@ fn show_alert(parent: &impl gtk::prelude::IsA<gtk::Widget>, heading: &str, body:
         .heading(heading)
         .body(body)
         .build();
-    dialog.add_response("ok", "OK");
+    dialog.add_response("ok", &gettext("OK"));
     dialog.present(Some(parent));
 }
 
@@ -68,7 +75,7 @@ fn watch_path_entry(
     albums: &HashMap<String, String>,
 ) -> WatchPathEntry {
     let has_rules = rules != FolderRules::default();
-    let is_default = album_name.is_empty() || album_name == DEFAULT_ALBUM_LABEL;
+    let is_default = album_name.is_empty() || album_name == default_album_label();
     let resolved_album_name = if uploads_to_library {
         None
     } else if is_default {
@@ -114,18 +121,23 @@ fn watch_path_entry(
 
 /// Alert text shown when the API key had to be stored in the fallback file.
 fn api_key_file_notice(path: &Path) -> String {
-    format!(
-        "Settings were saved, but the system keyring is unavailable, so the API key \
-         was stored in {}.\n\nThe file is readable only by your user account but is \
-         not encrypted.\n\nSee: https://github.com/nicx17/mimick/wiki/Keyring-Setup",
-        path.display()
+    fill(
+        gettext(
+            "Settings were saved, but the system keyring is unavailable, so the API key \
+             was stored in {path}.\n\nThe file is readable only by your user account but is \
+             not encrypted.\n\nSee: {url}",
+        ),
+        &[
+            ("path", &path.display().to_string()),
+            ("url", "https://github.com/nicx17/mimick/wiki/Keyring-Setup"),
+        ],
     )
 }
 
 /// Format a Unix timestamp representing the last sync time into a relative display string.
 fn format_sync_age(timestamp: Option<f64>) -> String {
     let Some(timestamp) = timestamp else {
-        return "No successful sync yet".to_string();
+        return gettext("No successful sync yet");
     };
 
     let now = std::time::SystemTime::now()
@@ -134,19 +146,23 @@ fn format_sync_age(timestamp: Option<f64>) -> String {
         .as_secs_f64();
     let elapsed = (now - timestamp).max(0.0);
 
-    let ago = |n: f64, unit: &str| {
-        let n = n.floor() as u64;
-        format!("{n} {unit}{} ago", if n == 1 { "" } else { "s" })
-    };
     if elapsed < 60.0 {
-        "Less than a minute ago".to_string()
-    } else if elapsed < 3600.0 {
-        ago(elapsed / 60.0, "minute")
-    } else if elapsed < 86_400.0 {
-        ago(elapsed / 3600.0, "hour")
-    } else {
-        ago(elapsed / 86_400.0, "day")
+        return gettext("Less than a minute ago");
     }
+    let (n, text) = if elapsed < 3600.0 {
+        let n = (elapsed / 60.0) as u64;
+        (
+            n,
+            ngettext("{n} minute ago", "{n} minutes ago", plural_n(n)),
+        )
+    } else if elapsed < 86_400.0 {
+        let n = (elapsed / 3600.0) as u64;
+        (n, ngettext("{n} hour ago", "{n} hours ago", plural_n(n)))
+    } else {
+        let n = (elapsed / 86_400.0) as u64;
+        (n, ngettext("{n} day ago", "{n} days ago", plural_n(n)))
+    };
+    fill(text, &[("n", &n.to_string())])
 }
 
 /// Construct and present the settings window as a top-level window.
@@ -210,7 +226,7 @@ pub fn build_settings_window_with_parent(
 
 #[cfg(test)]
 mod tests {
-    use super::{DEFAULT_ALBUM_LABEL, LIBRARY_ALBUM_LABEL, format_sync_age, watch_path_entry};
+    use super::{default_album_label, format_sync_age, library_album_label, watch_path_entry};
     use crate::config::{FolderRules, FolderSyncMethod, WatchPathEntry};
     use std::collections::HashMap;
     use std::time::{SystemTime, UNIX_EPOCH};
@@ -231,7 +247,7 @@ mod tests {
         };
         let entry = watch_path_entry(
             "/home/user/Camera".into(),
-            LIBRARY_ALBUM_LABEL,
+            &library_album_label(),
             true,
             rules,
             &albums(),
@@ -246,7 +262,7 @@ mod tests {
     fn test_watch_path_entry_default_uses_folder_name_album() {
         let entry = watch_path_entry(
             "/home/user/Camera".into(),
-            DEFAULT_ALBUM_LABEL,
+            &default_album_label(),
             false,
             FolderRules::default(),
             &albums(),
@@ -280,7 +296,7 @@ mod tests {
     fn test_watch_path_entry_unnamed_folder_never_becomes_library_target() {
         let simple = watch_path_entry(
             "/".into(),
-            DEFAULT_ALBUM_LABEL,
+            &default_album_label(),
             false,
             FolderRules::default(),
             &albums(),
@@ -289,7 +305,7 @@ mod tests {
 
         let with_rules = watch_path_entry(
             "/".into(),
-            DEFAULT_ALBUM_LABEL,
+            &default_album_label(),
             false,
             FolderRules {
                 ignore_hidden: true,

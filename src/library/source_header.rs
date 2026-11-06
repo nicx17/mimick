@@ -1,3 +1,5 @@
+use crate::i18n::plural_n;
+use gettextrs::{gettext, ngettext};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -6,7 +8,7 @@ use gtk::prelude::*;
 use super::LibraryWindowUi;
 use super::asset_tags::color_dot;
 use super::explore_view::spawn_person_thumbnail;
-use super::header_format::{capitalize, count_label, count_noun};
+use super::header_format::{capitalize, count_label, count_text};
 use super::state::{LibrarySource, Location};
 use super::tree_page::leaf_name;
 
@@ -123,8 +125,8 @@ fn build_header_top() -> HeaderTop {
 fn build_status_stack() -> (gtk::Stack, gtk::Label) {
     let error_view = super::build_status_view(
         "dialog-warning-symbolic",
-        "Library data unavailable",
-        "Could not load library assets",
+        &gettext("Library data unavailable"),
+        &gettext("Could not load library assets"),
     );
     let status_error = error_view
         .last_child()
@@ -139,8 +141,8 @@ fn build_status_stack() -> (gtk::Stack, gtk::Label) {
     status.add_named(
         &super::build_status_view(
             "image-x-generic-symbolic",
-            "Nothing Here",
-            "There are no photos or videos to show.",
+            &gettext("Nothing Here"),
+            &gettext("There are no photos or videos to show."),
         ),
         Some("empty"),
     );
@@ -186,14 +188,17 @@ fn basics(ui: &LibraryWindowUi, source: &LibrarySource) -> (Leading, String) {
         LibrarySource::AllAssets | LibrarySource::Unified => {
             if let Some(stats) = ui.ctx.library_state.lock().status.stats.clone() {
                 *ui.header.details.borrow_mut() = vec![
-                    count_noun(stats.images, "photo", "photos"),
-                    count_noun(stats.videos, "video", "videos"),
+                    count_text(
+                        stats.images,
+                        ngettext("{n} photo", "{n} photos", plural_n(stats.images)),
+                    ),
+                    count_text(
+                        stats.videos,
+                        ngettext("{n} video", "{n} videos", plural_n(stats.videos)),
+                    ),
                 ];
             }
-            (
-                Leading::Icon("image-x-generic-symbolic"),
-                "Photos".to_string(),
-            )
+            (Leading::Icon("image-x-generic-symbolic"), gettext("Photos"))
         }
         LibrarySource::Person { id, name } => (
             Leading::Person {
@@ -213,19 +218,19 @@ fn basics(ui: &LibraryWindowUi, source: &LibrarySource) -> (Leading, String) {
 /// Icon and title for library places: local files, collections, albums, partners, folders.
 fn library_icon(source: &LibrarySource) -> Option<(&'static str, String)> {
     let (icon, title) = match source {
-        LibrarySource::LocalAll => ("mimick-computer-symbolic", "On This Computer"),
-        LibrarySource::Explore => ("view-grid-symbolic", "Explore"),
-        LibrarySource::Favorites => ("mimick-heart-filled-symbolic", "Favorites"),
-        LibrarySource::Archive => ("mimick-archive-symbolic", "Archive"),
-        LibrarySource::Trash => ("user-trash-symbolic", "Trash"),
+        LibrarySource::LocalAll => ("mimick-computer-symbolic", gettext("On This Computer")),
+        LibrarySource::Explore => ("view-grid-symbolic", gettext("Explore")),
+        LibrarySource::Favorites => ("mimick-heart-filled-symbolic", gettext("Favorites")),
+        LibrarySource::Archive => ("mimick-archive-symbolic", gettext("Archive")),
+        LibrarySource::Trash => ("user-trash-symbolic", gettext("Trash")),
         LibrarySource::Album { name, .. }
         | LibrarySource::AlbumLocal { name, .. }
-        | LibrarySource::AlbumUnified { name, .. } => ("folder-pictures-symbolic", name.as_str()),
-        LibrarySource::Partner { name, .. } => ("system-users-symbolic", name.as_str()),
-        LibrarySource::Folder { path } => ("folder-symbolic", leaf_name(path)),
+        | LibrarySource::AlbumUnified { name, .. } => ("folder-pictures-symbolic", name.clone()),
+        LibrarySource::Partner { name, .. } => ("system-users-symbolic", name.clone()),
+        LibrarySource::Folder { path } => ("folder-symbolic", leaf_name(path).to_string()),
         _ => return None,
     };
-    Some((icon, title.to_string()))
+    Some((icon, title))
 }
 
 /// Icon and title for places and searches.
@@ -239,7 +244,7 @@ fn found_icon(source: &LibrarySource) -> (&'static str, String) {
         | LibrarySource::OcrSearch { query }
         | LibrarySource::LocalSearch { query }
         | LibrarySource::UnifiedSearch { query } => ("system-search-symbolic", query.clone()),
-        _ => ("system-search-symbolic", "Search Results".to_string()),
+        _ => ("system-search-symbolic", gettext("Search Results")),
     }
 }
 

@@ -1,6 +1,9 @@
 //! "About" dialog for the connected Immich server: component versions, source and
 //! build links, and the server's upgrade history (mirrors the Immich web About panel).
 
+use crate::i18n::fill;
+use crate::i18n::format_local;
+use gettextrs::gettext;
 use std::sync::Arc;
 
 use gtk::prelude::*;
@@ -12,16 +15,16 @@ use crate::app_context::AppContext;
 /// One name/value cell; `url` turns the value into a link.
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct AboutRow {
-    label: &'static str,
+    label: String,
     value: String,
     url: Option<String>,
 }
 
 /// Cells in display order (two per grid row), skipping anything the server didn't report.
 fn about_rows(about: &ServerAbout) -> Vec<AboutRow> {
-    let row = |label, value: Option<&String>, url: Option<&String>| {
+    let row = |label: &str, value: Option<&String>, url: Option<&String>| {
         value.filter(|v| !v.is_empty()).map(|v| AboutRow {
-            label,
+            label: label.to_string(),
             value: v.clone(),
             url: url.cloned(),
         })
@@ -34,18 +37,22 @@ fn about_rows(about: &ServerAbout) -> Vec<AboutRow> {
         row("ImageMagick", about.imagemagick.as_ref(), None),
         row("FFmpeg", about.ffmpeg.as_ref(), None),
         row(
-            "Repository",
+            &gettext("Repository"),
             about.repository.as_ref(),
             about.repository_url.as_ref(),
         ),
         row(
-            "Source",
+            &gettext("Source"),
             source_label(about).as_ref(),
             about.source_url.as_ref(),
         ),
-        row("Build", about.build.as_ref(), about.build_url.as_ref()),
         row(
-            "Build Image",
+            &gettext("Build"),
+            about.build.as_ref(),
+            about.build_url.as_ref(),
+        ),
+        row(
+            &gettext("Build Image"),
             about.build_image.as_ref(),
             about.build_image_url.as_ref(),
         ),
@@ -67,13 +74,13 @@ fn source_label(about: &ServerAbout) -> Option<String> {
 /// "Installed 3.3.1 on 9 Oct 2026", in the local timezone.
 fn history_line(entry: &VersionHistoryEntry) -> String {
     let date = chrono::DateTime::parse_from_rfc3339(&entry.created_at)
-        .map(|dt| {
-            dt.with_timezone(&chrono::Local)
-                .format("%-d %b %Y")
-                .to_string()
-        })
+        // Translators: strftime date, e.g. "9 Oct 2026".
+        .map(|dt| format_local(dt, &gettext("%-d %b %Y")))
         .unwrap_or_else(|_| entry.created_at.clone());
-    format!("Installed {} on {}", entry.version, date)
+    fill(
+        gettext("Installed {version} on {date}"),
+        &[("version", &entry.version), ("date", &date)],
+    )
 }
 
 /// Fetch server details and present the About dialog over `parent`.
@@ -124,7 +131,7 @@ fn build_dialog(content: &gtk::Box) -> libadwaita::Dialog {
     );
     title.append(
         &gtk::Label::builder()
-            .label("About")
+            .label(gettext("About"))
             .css_classes(["title-2"])
             .build(),
     );
@@ -139,7 +146,7 @@ fn build_dialog(content: &gtk::Box) -> libadwaita::Dialog {
     let toolbar = libadwaita::ToolbarView::builder().content(&scroll).build();
     toolbar.add_top_bar(&header);
     libadwaita::Dialog::builder()
-        .title("About")
+        .title(gettext("About"))
         .content_width(640)
         // Fixed height: the dialog is sized before the details load, so its natural height
         // would only fit the spinner. Smaller windows still shrink it to fit.
@@ -171,7 +178,7 @@ fn about_cell(row: &AboutRow) -> gtk::Box {
         .build();
     cell.append(
         &gtk::Label::builder()
-            .label(row.label)
+            .label(&row.label)
             .xalign(0.0)
             .css_classes(["heading", "accent"])
             .build(),
@@ -203,7 +210,7 @@ fn history_section(history: &[VersionHistoryEntry]) -> gtk::Box {
         .build();
     section.append(
         &gtk::Label::builder()
-            .label("Version History")
+            .label(gettext("Version History"))
             .xalign(0.0)
             .css_classes(["heading", "accent"])
             .build(),
@@ -223,10 +230,8 @@ fn history_section(history: &[VersionHistoryEntry]) -> gtk::Box {
 fn error_page(err: &str) -> libadwaita::StatusPage {
     libadwaita::StatusPage::builder()
         .icon_name("dialog-warning-symbolic")
-        .title("Server details unavailable")
-        .description(format!(
-            "Your API key needs the 'server.about' and 'server.versionCheck' permissions.\n\n{err}"
-        ))
+        .title(gettext("Server details unavailable"))
+        .description(fill(gettext("Your API key needs the 'server.about' and 'server.versionCheck' permissions.\n\n{err}"), &[("err", err)]))
         .build()
 }
 
@@ -250,7 +255,8 @@ mod tests {
 
     #[test]
     fn about_rows_skip_missing_fields_and_keep_order() {
-        let labels: Vec<&str> = about_rows(&about()).iter().map(|r| r.label).collect();
+        let rows = about_rows(&about());
+        let labels: Vec<&str> = rows.iter().map(|r| r.label.as_str()).collect();
         assert_eq!(
             labels,
             ["Immich", "ExifTool", "Node.js", "Repository", "Source"]

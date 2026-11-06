@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
@@ -25,11 +26,11 @@ pub(super) struct RulesTarget {
 /// "Folder Rules" sub-row whose button opens the rules dialog.
 pub(super) fn add_rules_row(expander_row: &adw::ExpanderRow, target: RulesTarget) {
     let rules_btn = Button::builder()
-        .label("Rules")
-        .tooltip_text("Edit folder rules")
+        .label(gettext("Rules"))
+        .tooltip_text(gettext("Edit folder rules"))
         .valign(gtk::Align::Center)
         .build();
-    expander_row.add_row(&suffix_row("Folder Rules", &rules_btn));
+    expander_row.add_row(&suffix_row(&gettext("Folder Rules"), &rules_btn));
     rules_btn.connect_clicked(clone!(
         #[weak]
         expander_row,
@@ -79,7 +80,7 @@ fn rules_dialog_shell(
     let dialog = adw::Window::builder()
         .transient_for(parent)
         .modal(true)
-        .title("Folder Rules")
+        .title(gettext("Folder Rules"))
         .default_width(420)
         .default_height(680)
         .width_request(360)
@@ -116,9 +117,9 @@ fn append_save_cancel(content: &Box) -> (Button, Button) {
         .spacing(8)
         .halign(gtk::Align::End)
         .build();
-    let cancel_btn = Button::builder().label("Cancel").build();
+    let cancel_btn = Button::builder().label(gettext("Cancel")).build();
     let save_btn = Button::builder()
-        .label("Save")
+        .label(gettext("Save"))
         .css_classes(vec!["suggested-action".to_string()])
         .build();
     actions.append(&cancel_btn);
@@ -166,11 +167,10 @@ fn entry_row(title: &str, text: &str) -> adw::EntryRow {
 }
 
 /// What each sync method does, shown under the Sync Method row.
-pub(super) fn sync_method_description(index: u32) -> &'static str {
+pub(super) fn sync_method_description(index: u32) -> String {
     match index {
-        0 => "Uploads new photos from this folder and downloads new album photos into it.",
-        2 => "Downloads new album photos into this folder. Nothing is uploaded.",
-        _ => "Uploads new photos from this folder. Nothing is downloaded.",
+        0 => gettext("Uploads new photos and downloads new album photos."),
+        _ => String::new(),
     }
 }
 
@@ -181,15 +181,21 @@ impl RulesForm {
         let (max_size_entry, extensions_entry) = limit_entries(current);
         let form = Self {
             sync_method: combo_row(
-                "Sync Method",
-                sync_method_description(sync_method_index(&current.sync_method)),
-                &["Full Sync", "Upload Only", "Download Only"],
+                &gettext("Sync Method"),
+                &sync_method_description(sync_method_index(&current.sync_method)),
+                &[
+                    &gettext("Full Sync"),
+                    &gettext("Upload Only"),
+                    &gettext("Download Only"),
+                ],
                 sync_method_index(&current.sync_method),
             ),
             startup_scan: combo_row(
-                "When Mimick Starts, Check",
-                "Which files in this folder are checked at startup.",
-                &crate::settings_window::behavior::CATCHUP_LABELS,
+                &gettext("When Mimick Starts, Check"),
+                &gettext("Which files in this folder are checked at startup."),
+                &crate::settings_window::behavior::catchup_labels()
+                    .each_ref()
+                    .map(String::as_str),
                 catchup_index(&current.startup_catchup_mode.clone().unwrap_or(fallback)),
             ),
             delete_folder_to_album,
@@ -203,18 +209,19 @@ impl RulesForm {
             form.restrict_to_library();
         } else {
             form.sync_method.connect_selected_notify(|row| {
-                row.set_subtitle(sync_method_description(row.selected()));
+                row.set_subtitle(&sync_method_description(row.selected()));
             });
         }
         form
     }
 
     fn restrict_to_library(&self) {
-        self.sync_method
-            .set_subtitle("Library uploads can only upload from this folder.");
+        self.sync_method.set_subtitle(&gettext(
+            "Library uploads can only upload from this folder.",
+        ));
         self.sync_method.set_sensitive(false);
         self.delete_folder_to_album
-            .set_subtitle("Not available for library uploads.");
+            .set_subtitle(&gettext("Not available for library uploads."));
         self.delete_folder_to_album.set_active(false);
         self.delete_folder_to_album.set_sensitive(false);
     }
@@ -228,21 +235,21 @@ impl RulesForm {
             content.append(&group);
         };
         section(
-            "Sync",
+            &gettext("Sync"),
             &[
                 self.sync_method.upcast_ref(),
                 self.startup_scan.upcast_ref(),
             ],
         );
         section(
-            "Deletions",
+            &gettext("Deletions"),
             &[
                 self.delete_folder_to_album.upcast_ref(),
                 self.delete_album_to_folder.upcast_ref(),
             ],
         );
         section(
-            "Files",
+            &gettext("Files"),
             &[
                 self.ignore_hidden.upcast_ref(),
                 self.include_xmp.upcast_ref(),
@@ -270,15 +277,15 @@ impl RulesForm {
 
 fn deletion_rows(current: &FolderRules) -> (adw::SwitchRow, adw::SwitchRow) {
     let folder_to_album = switch_row(
-        "Delete from Immich Too",
-        "When you delete a photo from this folder, move its copy in Immich to the trash. It can be restored from the Immich trash.",
+        &gettext("Delete from Immich Too"),
+        &gettext("Moves the Immich copy to the Immich trash."),
         3,
         current.delete_folder_to_album,
     );
     // Forced off and insensitive until the Flatpak Trash portal fix lands upstream.
     let album_to_folder = switch_row(
-        "Delete from This Folder Too",
-        "Not available yet: waiting on a fix to the Flatpak trash portal.",
+        &gettext("Delete from This Folder Too"),
+        &gettext("Waiting on a Flatpak trash portal fix."),
         4,
         false,
     );
@@ -288,14 +295,14 @@ fn deletion_rows(current: &FolderRules) -> (adw::SwitchRow, adw::SwitchRow) {
 
 fn filter_rows(current: &FolderRules) -> (adw::SwitchRow, adw::SwitchRow) {
     let ignore_hidden = switch_row(
-        "Skip Hidden Files",
-        "Ignore files and folders starting with a dot, such as .thumbnails.",
+        &gettext("Skip Hidden Files"),
+        &gettext("Names starting with a dot, like .thumbnails"),
         3,
         current.ignore_hidden,
     );
     let include_xmp = switch_row(
-        "Upload XMP Sidecars",
-        "Send .xmp edit files along with their photos.",
+        &gettext("Upload XMP Sidecars"),
+        &gettext("Send .xmp edit files along with their photos."),
         2,
         current.include_xmp_sidecar.unwrap_or(true),
     );
@@ -310,9 +317,12 @@ fn limit_entries(current: &FolderRules) -> (adw::EntryRow, adw::EntryRow) {
         .map(|value| value.to_string())
         .unwrap_or_default();
     (
-        entry_row("Largest File in MB (empty for no limit)", &max_size),
         entry_row(
-            "Only These Types, e.g. jpg, png, mp4 (empty for all)",
+            &gettext("Largest File in MB (empty for no limit)"),
+            &max_size,
+        ),
+        entry_row(
+            &gettext("Only These Types, e.g. jpg, png, mp4 (empty for all)"),
             &current.allowed_extensions.join(", "),
         ),
     )

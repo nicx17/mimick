@@ -10,7 +10,7 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <developer id="dev.nicx">
-    <name>Nick Cardoso</name>
+    <name translate="no">Nick Cardoso</name>
   </developer>
   <description>
     <p
@@ -103,23 +103,23 @@
   </categories>
 
   <keywords>
-    <keyword>immich</keyword>
-    <keyword>sync</keyword>
-    <keyword>backup</keyword>
-    <keyword>photos</keyword>
-    <keyword>gallery</keyword>
-    <keyword>immich client</keyword>
-    <keyword>photo backup</keyword>
-    <keyword>photo sync</keyword>
-    <keyword>videos</keyword>
-    <keyword>pictures</keyword>
-    <keyword>upload</keyword>
-    <keyword>self-hosted</keyword>
+    <keyword translate="no">immich</keyword>
+    <keyword translate="no">sync</keyword>
+    <keyword translate="no">backup</keyword>
+    <keyword translate="no">photos</keyword>
+    <keyword translate="no">gallery</keyword>
+    <keyword translate="no">immich client</keyword>
+    <keyword translate="no">photo backup</keyword>
+    <keyword translate="no">photo sync</keyword>
+    <keyword translate="no">videos</keyword>
+    <keyword translate="no">pictures</keyword>
+    <keyword translate="no">upload</keyword>
+    <keyword translate="no">self-hosted</keyword>
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
     <release version="9.12.0" date="2026-11-02">
-      <description>
+      <description translate="no">
         <p>The library now matches much more of Immich's web app: its timeline, video playback, map, and album and photo editing.</p>
         <ul>
           <li>Photos is now a timeline like Immich's web app, with date headings and a year and month scrubber.</li>
@@ -145,7 +145,7 @@
       </description>
     </release>
     <release version="9.11.0" date="2026-10-17">
-      <description>
+      <description translate="no">
         <ul>
           <li>New library pages for Favorites, Archive, Trash, Shared Albums, Shared Links, People, Tags, Folders, and partner Sharing.</li>
           <li>Move photos to the trash, then restore them, delete them for good, or empty the trash.</li>
@@ -168,7 +168,7 @@
       </description>
     </release>
     <release version="9.10.0" date="2026-10-01">
-      <description>
+      <description translate="no">
         <ul>
           <li>Added a Places filter on the Explore page.</li>
           <li>Configurable thumbnail borders. set width (0-50px) and color, with uniform edges on all sides.</li>
@@ -178,7 +178,7 @@
       </description>
     </release>
     <release version="9.9.0" date="2026-08-08">
-      <description>
+      <description translate="no">
         <ul>
           <li>Drag and drop files into the app to upload them.</li>
           <li>Drag files directly onto albums to upload them there.</li>
@@ -189,7 +189,7 @@
       </description>
     </release>
     <release version="9.8.0" date="2026-07-08">
-      <description>
+      <description translate="no">
         <p>This release updates Mimick for the Immich v3 API. Immich v3.0.0 or later is now required.</p>
         <ul>
           <li>Updated upload flow for Immich v3 API compatibility.</li>
@@ -198,7 +198,7 @@
       </description>
     </release>
     <release version="9.7.0" date="2026-06-16">
-      <description>
+      <description translate="no">
         <ul>
           <li>New masonry layout for the Photos view — images now keep their natural aspect ratios instead of a fixed tile grid.</li>
           <li>Download folder prompt now appears each time until you choose to save a default. You can manage the saved folder from Settings.</li>
@@ -216,7 +216,7 @@
       </description>
     </release>
     <release version="9.6.1" date="2026-05-31">
-      <description>
+      <description translate="no">
         <ul>
           <li>Lightbox drag-to-pan is now smooth when you are zoomed in.</li>
           <li
@@ -225,7 +225,7 @@
       </description>
     </release>
     <release version="9.6.0" date="2026-05-25">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Face visibility filters in Explore let you show or hide unnamed and hidden people from the People row.</li>
@@ -257,13 +257,13 @@
       </description>
     </release>
     <release version="9.5.4" date="2026-05-17">
-      <description>
+      <description translate="no">
         <p
                 >Each watch folder can now be set to one of three sync methods: Full (upload and download), Upload Only, or Download Only.Deletion mirroring is also available per folder, letting local file removals propagate to the remote album. Startup catch-up mode can now be configured independently on each folder.</p>
       </description>
     </release>
     <release version="9.5.3" date="2026-05-11">
-      <description>
+      <description translate="no">
         <p
                 >This major update brings significant enhancements to the library viewing experience, including new lightbox image zoom capabilities, smooth slide animations, and dedicated back navigation. The Explore page has also been upgraded to show all of your geotagged locations, and asset timestamps now accurately reflect your local timezone.</p>
         <p
@@ -271,7 +271,7 @@
       </description>
     </release>
     <release version="9.5.2" date="2026-05-07">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Added right-click context menu on grid assets with download, open-with, and delete actions gated by asset type and source.</li>
@@ -301,7 +301,7 @@
       </description>
     </release>
     <release version="9.5.1" date="2026-05-04">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Fixed startup view being forced to Settings when background sync is disabled; the correct default window now opens.</li>
@@ -319,7 +319,7 @@
       </description>
     </release>
     <release version="9.5.0" date="2026-05-03">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Added a built-in Library View to browse, search, and manage Immich assets directly in the app.</li>
@@ -333,7 +333,7 @@
       </description>
     </release>
     <release version="9.4.2" date="2026-04-28">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Revised background sync logic: the application now correctly exits when closed if background sync is disabled, and prompts for configuration on startup.</li>
@@ -343,7 +343,7 @@
       </description>
     </release>
     <release version="9.4.1" date="2026-04-25">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Stream startup scan candidates into the upload queue to reduce memory churn.</li>
@@ -359,7 +359,7 @@
       </description>
     </release>
     <release version="9.4.0" date="2026-04-23">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Settings: Live auto-apply for most preferences (workers, quiet hours, folder rules, per-folder album selection, watch-folders). Connectivity fields (API key and server URLs) are now applied only when explicitly saved from the Connectivity section.</li>
@@ -375,7 +375,7 @@
       </description>
     </release>
     <release version="9.3.0" date="2026-04-14">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Added a notification toggle to let users enable or disable app notifications.</li>
@@ -403,7 +403,7 @@
       </description>
     </release>
     <release version="9.2.0" date="2026-04-14">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Migrated desktop notifications from the `notify-send` system command to native `gio::Notification`, fixing the issue where notifications would silently fail inside the Flatpak sandbox.</li>
@@ -421,7 +421,7 @@
       </description>
     </release>
     <release version="9.1.1" date="2026-04-10">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Fixed an internal GTK focus assertion error in the folder rules configuration dialog.</li>
@@ -435,7 +435,7 @@
       </description>
     </release>
     <release version="9.1.0" date="2026-04-08">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Expanded supported media formats to match the latest Immich server compatibility list, including AVIF, BMP, HEIF, JPEG 2000, JPEG XL, PSD, SVG, 3GPP, AVI, FLV, M4V, Matroska (MKV), MP2T, MXF, and more.</li>
@@ -447,7 +447,7 @@
       </description>
     </release>
     <release version="9.0.0" date="2026-03-29">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Fixed an Immich asset timestamp regression where newly uploaded files could land at the wrong timeline time or lose their intended timezone after server-side metadata processing.</li>
@@ -464,7 +464,7 @@
       </description>
     </release>
     <release version="8.0.0" date="2026-03-25">
-      <description>
+      <description translate="no">
         <ul>
           <li>Added a mobile-responsive UI refactor using <code
                         >adw::PreferencesWindow</code> and adaptive <code
@@ -483,7 +483,7 @@
       </description>
     </release>
     <release version="7.0.0" date="2026-03-22">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Added queue inspection, retry controls, pause and resume actions, manual sync, diagnostics export, and per-folder upload rules.</li>
@@ -495,7 +495,7 @@
       </description>
     </release>
     <release version="6.0.0" date="2026-03-15">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Added a startup catch-up scan and a persistent local sync index so previously missed media can be queued on launch without reprocessing unchanged files.</li>
@@ -507,7 +507,7 @@
       </description>
     </release>
     <release version="5.0.1" date="2026-03-14">
-      <description>
+      <description translate="no">
         <ul>
           <li>Added signed <code
                         >.flatpakrepo</code> and checksum assets to GitHub releases.</li>
@@ -517,7 +517,7 @@
       </description>
     </release>
     <release version="5.0.0" date="2026-03-14">
-      <description>
+      <description translate="no">
         <ul>
           <li
                     >Added Run on Startup support for both Flatpak and native installs.</li>
@@ -529,7 +529,7 @@
       </description>
     </release>
     <release version="4.0.0" date="2026-03-14">
-      <description>
+      <description translate="no">
         <p
                 >Complete rewrite in Rust + GTK4 + Libadwaita. Replaces the Python/PySide6 implementation with a lean, memory-safe daemon. Binary size drops from ~80MB to ~2MB. Concurrent upload workers, in-memory shared state, persistent file logging, and tray via StatusNotifierItem.</p>
       </description>

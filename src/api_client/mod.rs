@@ -5,6 +5,7 @@
 //! by domain: `albums`, `library`, `search`, `upload`, and `errors`.
 //! All HTTP requests share a single `reqwest::Client` connection pool.
 
+use gettextrs::gettext;
 use parking_lot::RwLock;
 use reqwest::Client;
 use std::collections::HashMap;
@@ -172,7 +173,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let mut request = self
             .client
             .request(method, format!("{}{}", base_url, path))
@@ -276,7 +277,7 @@ impl ImmichApiClient {
             log::debug!("Server still unreachable.");
         }
         self.set_issue(ApiIssue {
-            summary: "Could not reach the Immich server".to_string(),
+            summary: gettext("Could not reach the Immich server"),
             guidance: "Check the LAN/WAN URLs, confirm the server is running, and verify your network connection."
                 .to_string(),
         })

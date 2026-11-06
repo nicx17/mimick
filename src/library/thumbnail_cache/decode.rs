@@ -1,8 +1,10 @@
 //! Decode local and remote image data into thumbnail textures.
 
 use crate::api_client::ThumbnailSize;
+use crate::i18n::fill;
 use gdk4::Texture;
 use gdk4::prelude::TextureExt;
+use gettextrs::gettext;
 use glib::Bytes;
 
 /// Decode a local file to a 256x256 thumbnail pixbuf, routing through video,
@@ -90,7 +92,7 @@ fn scale_pixbuf_to_thumbnail(
     let th = ((h as f64 * scale).round() as i32).max(1);
     pixbuf
         .scale_simple(tw, th, gtk::gdk_pixbuf::InterpType::Bilinear)
-        .ok_or_else(|| "Failed to scale video thumbnail".to_string())
+        .ok_or_else(|| gettext("Failed to scale video thumbnail"))
 }
 
 /// Decodes an image file through the application's custom texture pipeline and
@@ -105,7 +107,12 @@ fn custom_decode_to_thumbnail(path: &std::path::Path) -> Result<gtk::gdk_pixbuf:
     } else {
         crate::library::load_texture_blocking(path)
     }
-    .ok_or_else(|| format!("No decoder succeeded for {}", path.display()))?;
+    .ok_or_else(|| {
+        fill(
+            gettext("No decoder succeeded for {path}"),
+            &[("path", &path.display().to_string())],
+        )
+    })?;
     let mut downloader = gdk4::TextureDownloader::new(&full_texture);
     downloader.set_format(gdk4::MemoryFormat::R8g8b8a8);
     let (bytes, stride) = downloader.download_bytes();
@@ -125,7 +132,7 @@ fn custom_decode_to_thumbnail(path: &std::path::Path) -> Result<gtk::gdk_pixbuf:
     let th = ((h as f64 * scale).round() as i32).max(1);
     full_pixbuf
         .scale_simple(tw, th, gtk::gdk_pixbuf::InterpType::Bilinear)
-        .ok_or_else(|| "Failed to scale pixbuf".to_string())
+        .ok_or_else(|| gettext("Failed to scale pixbuf"))
 }
 
 pub(super) fn pixbuf_png_bytes(pixbuf: &gtk::gdk_pixbuf::Pixbuf) -> Result<Vec<u8>, String> {

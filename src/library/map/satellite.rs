@@ -1,5 +1,7 @@
 //! VersaTiles satellite imagery, enlarging the nearest coarser tile where sharp imagery runs out.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::collections::HashSet;
 use std::ops::RangeInclusive;
 use std::sync::Arc;
@@ -26,7 +28,7 @@ pub fn source(api: &Arc<ImmichApiClient>) -> shumate::MapSource {
     shumate::RasterRenderer::builder()
         .data_source(&SatelliteData::new(api))
         .id(SOURCE_ID)
-        .name("Satellite")
+        .name(gettext("Satellite"))
         .license(CREDIT)
         .max_zoom_level(MAX_ZOOM)
         .tile_size(TILE_SIZE)
@@ -148,7 +150,10 @@ mod imp {
                     .tile_png(x, y, zoom_level, None)
                     .await?
                     .ok_or_else(|| {
-                        glib::Error::new(gio::IOErrorEnum::NotFound, "No satellite imagery here")
+                        glib::Error::new(
+                            gio::IOErrorEnum::NotFound,
+                            &gettextrs::gettext("No satellite imagery here"),
+                        )
                     })
             })
         }
@@ -229,7 +234,10 @@ impl SatelliteData {
         let depths = depths_to_try(id, &self.imp().missing.borrow());
         for depth in depths {
             if cancellable.is_some_and(CancellableExt::is_cancelled) {
-                return Err(glib::Error::new(gio::IOErrorEnum::Cancelled, "Cancelled"));
+                return Err(glib::Error::new(
+                    gio::IOErrorEnum::Cancelled,
+                    &gettext("Cancelled"),
+                ));
             }
             let Some(ancestor) = id.ancestor(depth) else {
                 break;
@@ -265,7 +273,10 @@ impl SatelliteData {
             Ok(TileFetch::RetryAfter(_)) | Err(_) if stale.is_some() => Ok(stale),
             Ok(TileFetch::RetryAfter(wait)) => Err(tile_error(
                 id,
-                &format!("VersaTiles asked to wait {} s", wait.as_secs()),
+                &fill(
+                    gettext("VersaTiles asked to wait {seconds} s"),
+                    &[("seconds", &wait.as_secs().to_string())],
+                ),
             )),
             Err(err) => Err(tile_error(id, &err)),
         }

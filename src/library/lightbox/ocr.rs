@@ -1,5 +1,6 @@
 //! Recognized-text (OCR) overlay in the lightbox: loading boxes, mouse and touch selection, and copying.
 
+use gettextrs::gettext;
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -16,7 +17,7 @@ pub(super) use layer::OcrLayer;
 /// Floating button over the photo that copies the selection, or all text when nothing is selected.
 pub(super) fn copy_button() -> gtk::Button {
     gtk::Button::builder()
-        .label("Copy All Text")
+        .label(gettext("Copy All Text"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::End)
         .margin_bottom(12)
@@ -58,10 +59,10 @@ impl Lightbox {
     fn connect_ocr_toggle(self: &Rc<Self>) {
         let lb = Rc::downgrade(self);
         self.actions.ocr_toggle.connect_toggled(move |btn| {
-            btn.set_tooltip_text(Some(if btn.is_active() {
-                "Hide recognized text (T)"
+            btn.set_tooltip_text(Some(&if btn.is_active() {
+                gettext("Hide recognized text (T)")
             } else {
-                "Show recognized text (T)"
+                gettext("Show recognized text (T)")
             }));
             let Some(lb) = lb.upgrade() else {
                 return;
@@ -220,7 +221,7 @@ impl Lightbox {
             return;
         };
         self.picture.scrolled.clipboard().set_text(&text);
-        self.picture.ocr_copy.set_label("Copied");
+        self.picture.ocr_copy.set_label(&gettext("Copied"));
         let lb = self.clone();
         glib::timeout_add_local_once(std::time::Duration::from_millis(1500), move || {
             lb.sync_ocr_controls()
@@ -250,10 +251,10 @@ impl Lightbox {
         self.actions.ocr_toggle.set_visible(has_boxes);
         ocr.area.set_visible(shown);
         self.picture.ocr_copy.set_visible(shown);
-        self.picture.ocr_copy.set_label(if ocr.has_selection() {
-            "Copy Selected Text"
+        self.picture.ocr_copy.set_label(&if ocr.has_selection() {
+            gettext("Copy Selected Text")
         } else {
-            "Copy All Text"
+            gettext("Copy All Text")
         });
         if !shown {
             ocr.set_hovered(None);

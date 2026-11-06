@@ -9,6 +9,7 @@ pkgbase = mimick
 	makedepends = cargo
 	makedepends = clang
 	makedepends = cmake
+	makedepends = gettext
 	makedepends = nasm
 	depends = gdk-pixbuf2
 	depends = glib2

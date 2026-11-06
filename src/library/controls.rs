@@ -4,6 +4,7 @@
 //! the search entry, sort-mode dropdown, view-source toggle, timeline
 //! scrubber, and sidebar collapse button.
 
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use glib::clone;
@@ -302,7 +303,9 @@ fn connect_sort_controls(ui: &Rc<LibraryWindowUi>) {
         ui,
         move |stack| {
             let view = stack.visible_child_name();
-            let model = gtk::StringList::new(sort_labels_for_view(view.as_deref()));
+            let labels = sort_labels_for_view(view.as_deref());
+            let model =
+                gtk::StringList::new(&labels.iter().map(String::as_str).collect::<Vec<_>>());
             if view.as_deref() == Some("grid") && ui.interaction.album_sort_applied.get() {
                 let mode = ui.ctx.library_state.lock().sort_mode.clone();
                 ui.interaction.sort_suppressed.set(true);
@@ -331,14 +334,17 @@ fn connect_sort_controls(ui: &Rc<LibraryWindowUi>) {
     ));
 }
 
-const GRID_SORT_LABELS: [&str; 4] = ["Newest", "Oldest", "Filename", "File Type"];
-
 /// Sort options for the visible content view.
-fn sort_labels_for_view(view: Option<&str>) -> &'static [&'static str] {
+fn sort_labels_for_view(view: Option<&str>) -> Vec<String> {
     match view {
-        Some("albums") => &["Newest", "Name", "Most assets"],
-        Some("explore") => &["Default"],
-        _ => &GRID_SORT_LABELS,
+        Some("albums") => vec![gettext("Newest"), gettext("Name"), gettext("Most assets")],
+        Some("explore") => vec![gettext("Default")],
+        _ => vec![
+            gettext("Newest"),
+            gettext("Oldest"),
+            gettext("Filename"),
+            gettext("File Type"),
+        ],
     }
 }
 
@@ -513,9 +519,10 @@ pub(super) fn connect_sidebar_handlers(ui: Rc<LibraryWindowUi>) {
             let Some(tooltip) = row.and_then(WidgetExt::tooltip_text) else {
                 return;
             };
+            let fallback = gettext("Album");
             let (id, name) = tooltip
                 .split_once(':')
-                .unwrap_or((tooltip.as_str(), "Album"));
+                .unwrap_or((tooltip.as_str(), fallback.as_str()));
             navigation::navigate_source(
                 &ui,
                 LibrarySource::Album {

@@ -4,6 +4,7 @@
 //! explore tab and search bar. Supports CLIP-based smart search, OCR text
 //! matching, and structured metadata filters with pagination.
 
+use gettextrs::gettext;
 use std::time::Duration;
 
 mod server_info;
@@ -25,7 +26,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!(
             "{}/api/people?withHidden={}",
@@ -59,7 +60,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/search/explore", base_url);
         match self
@@ -111,7 +112,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/search/metadata", base_url);
 
@@ -191,7 +192,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/people/{}/thumbnail", base_url, person_id);
         match self
@@ -313,7 +314,7 @@ impl ImmichApiClient {
 
     pub async fn search_statistics(&self, filters: &MetadataSearchFilters) -> Result<u64, String> {
         if !statistics_can_count(filters) {
-            return Err("Immich can't count by file name or deleted photos".to_string());
+            return Err(gettext("Immich can't count by file name or deleted photos"));
         }
         let body = serde_json::to_value(filters).map_err(|err| err.to_string())?;
         let resp = self
@@ -356,7 +357,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}{}", base_url, endpoint);
 

@@ -1,5 +1,7 @@
 //! Album selection dialog and upload result handling for staged files.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -23,7 +25,7 @@ pub(crate) fn show_album_picker(
     album_picker::choose(
         parent.upcast_ref(),
         ctx,
-        "Upload to Album",
+        gettext("Upload to Album"),
         count,
         Rc::new(move |id, name| {
             let parent = parent_result.clone();
@@ -45,26 +47,41 @@ pub(super) fn show_upload_result(
 ) {
     let (heading, body) = if skipped == 0 {
         (
-            "Upload Queued",
-            format!(
-                "{} file(s) queued for upload. Progress is visible in the queue inspector.",
-                queued
+            &gettext("Upload Queued"),
+            fill(
+                ngettext(
+                    "{n} file queued for upload. Progress is visible in the queue inspector.",
+                    "{n} files queued for upload. Progress is visible in the queue inspector.",
+                    plural_n(queued),
+                ),
+                &[("n", &queued.to_string())],
             ),
         )
     } else if queued == 0 {
         (
-            "Upload Failed",
-            format!(
-                "All {} file(s) failed to enqueue. Check the logs for details.",
-                skipped
+            &gettext("Upload Failed"),
+            fill(
+                ngettext(
+                    "{n} file failed to enqueue. Check the logs for details.",
+                    "All {n} files failed to enqueue. Check the logs for details.",
+                    plural_n(skipped),
+                ),
+                &[("n", &skipped.to_string())],
             ),
         )
     } else {
         (
-            "Upload Partially Queued",
-            format!(
-                "{} file(s) queued, {} skipped (hash or path errors).",
-                queued, skipped
+            &gettext("Upload Partially Queued"),
+            fill(
+                ngettext(
+                    "{n} file queued, {skipped} skipped (hash or path errors).",
+                    "{n} files queued, {skipped} skipped (hash or path errors).",
+                    plural_n(queued),
+                ),
+                &[
+                    ("n", &queued.to_string()),
+                    ("skipped", &skipped.to_string()),
+                ],
             ),
         )
     };

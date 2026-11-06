@@ -33,6 +33,7 @@ mod cache_manager;
 mod config;
 mod debug_width;
 mod diagnostics;
+mod i18n;
 mod library;
 mod logging;
 mod media_kinds;
@@ -95,6 +96,7 @@ struct UiFlags {
 #[tokio::main]
 async fn main() {
     let _logger = init_logging();
+    i18n::init();
 
     gtk::gio::resources_register_include!("mimick.gresource")
         .expect("Failed to register bundled GResource");

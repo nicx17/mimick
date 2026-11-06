@@ -1,3 +1,5 @@
+use crate::i18n::gettext_noop;
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -5,11 +7,11 @@ use gtk::prelude::*;
 use super::LibraryWindowUi;
 
 const ITEMS: [(&str, &str, &str); 5] = [
-    ("photos", "Photos", "image-x-generic-symbolic"),
-    ("explore", "Explore", "view-grid-symbolic"),
-    ("map", "Map", "mark-location-symbolic"),
-    ("albums", "Albums", "folder-pictures-symbolic"),
-    ("people", "People", "avatar-default-symbolic"),
+    ("photos", gettext_noop("Photos"), "image-x-generic-symbolic"),
+    ("explore", gettext_noop("Explore"), "view-grid-symbolic"),
+    ("map", gettext_noop("Map"), "mark-location-symbolic"),
+    ("albums", gettext_noop("Albums"), "folder-pictures-symbolic"),
+    ("people", gettext_noop("People"), "avatar-default-symbolic"),
 ];
 
 pub(super) struct BottomNav {
@@ -29,7 +31,7 @@ pub(super) fn build_bottom_nav() -> BottomNav {
         .build();
     let buttons: Vec<(String, gtk::ToggleButton)> = ITEMS
         .iter()
-        .map(|(key, label, icon)| (key.to_string(), nav_button(label, icon)))
+        .map(|(key, label, icon)| (key.to_string(), nav_button(&gettext(*label), icon)))
         .collect();
     for (_, button) in &buttons {
         row.append(button);

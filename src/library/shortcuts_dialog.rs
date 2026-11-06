@@ -1,3 +1,5 @@
+use crate::i18n::gettext_noop;
+use gettextrs::gettext;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
@@ -24,156 +26,185 @@ const fn hint(title: &'static str, accelerator: &'static str, subtitle: &'static
 }
 
 const GENERAL: &[Shortcut] = &[
-    key("Show keyboard shortcuts", "<Control>question"),
-    key("Toggle sidebar", "F9"),
-    key("Refresh", "F5"),
-    key("Search", "<Control>k"),
-    hint("Go back", "<Alt>Left", "Or the mouse back button"),
-    hint("Go forward", "<Alt>Right", "Or the mouse forward button"),
+    key(gettext_noop("Show keyboard shortcuts"), "<Control>question"),
+    key(gettext_noop("Toggle sidebar"), "F9"),
+    key(gettext_noop("Refresh"), "F5"),
+    key(gettext_noop("Search"), "<Control>k"),
     hint(
-        "Open context menu",
+        gettext_noop("Go back"),
+        "<Alt>Left",
+        gettext_noop("Or the mouse back button"),
+    ),
+    hint(
+        gettext_noop("Go forward"),
+        "<Alt>Right",
+        gettext_noop("Or the mouse forward button"),
+    ),
+    hint(
+        gettext_noop("Open context menu"),
         "<Shift>F10",
-        "Or the Menu key; in the grid, the viewer, and on album tiles",
+        gettext_noop("Or the Menu key; in the grid, the viewer, and on album tiles"),
     ),
 ];
 
 const GO_TO: &[Shortcut] = &[
-    key("Photos", "<Control>1"),
-    key("Explore", "<Control>2"),
-    key("Map", "<Control>3"),
-    key("People", "<Control>4"),
-    key("Favorites", "<Control>5"),
-    key("Archive", "<Control>6"),
-    key("Trash", "<Control>7"),
-    key("Albums", "<Control>8"),
-    key("Sharing", "<Control>9"),
+    key(gettext_noop("Photos"), "<Control>1"),
+    key(gettext_noop("Explore"), "<Control>2"),
+    key(gettext_noop("Map"), "<Control>3"),
+    key(gettext_noop("People"), "<Control>4"),
+    key(gettext_noop("Favorites"), "<Control>5"),
+    key(gettext_noop("Archive"), "<Control>6"),
+    key(gettext_noop("Trash"), "<Control>7"),
+    key(gettext_noop("Albums"), "<Control>8"),
+    key(gettext_noop("Sharing"), "<Control>9"),
 ];
 
 const GRID: &[Shortcut] = &[
     hint(
-        "Move between photos",
+        gettext_noop("Move between photos"),
         "Up Down Left Right",
-        "After clicking a photo or tabbing to the grid",
+        gettext_noop("After clicking a photo or tabbing to the grid"),
     ),
-    key("First or last photo", "Home End"),
-    key("Open photo", "Return"),
-    key("Select or deselect photo", "space"),
+    key(gettext_noop("First or last photo"), "Home End"),
+    key(gettext_noop("Open photo"), "Return"),
+    key(gettext_noop("Select or deselect photo"), "space"),
 ];
 
 const SELECTION: &[Shortcut] = &[
     hint(
-        "Select assets",
+        gettext_noop("Select assets"),
         "Control_L",
-        "Hold and click to add or remove assets",
+        gettext_noop("Hold and click to add or remove assets"),
     ),
     hint(
-        "Select a range",
+        gettext_noop("Select a range"),
         "Shift_L",
-        "Hold and click; add Ctrl to extend the selection",
+        gettext_noop("Hold and click; add Ctrl to extend the selection"),
     ),
     hint(
-        "Move selection to trash",
+        gettext_noop("Move selection to trash"),
         "Delete",
-        "Deletes permanently in the Trash view",
+        gettext_noop("Deletes permanently in the Trash view"),
     ),
-    hint("Select all", "<Control>a", "Every photo loaded in the grid"),
-    key("Exit selection mode", "Escape"),
+    hint(
+        gettext_noop("Select all"),
+        "<Control>a",
+        gettext_noop("Every photo loaded in the grid"),
+    ),
+    key(gettext_noop("Exit selection mode"), "Escape"),
 ];
 
 const TIMELINE: &[Shortcut] = &[
     hint(
-        "Next or previous day",
+        gettext_noop("Next or previous day"),
         "d <Shift>d",
-        "In Photos, sorted newest first",
+        gettext_noop("In Photos, sorted newest first"),
     ),
-    key("Next or previous month", "m <Shift>m"),
-    key("Next or previous year", "y <Shift>y"),
+    key(gettext_noop("Next or previous month"), "m <Shift>m"),
+    key(gettext_noop("Next or previous year"), "y <Shift>y"),
 ];
 
 const LIGHTBOX: &[Shortcut] = &[
-    key("Previous asset", "Left"),
-    key("Next asset", "Right"),
-    key("Toggle details", "i"),
-    key("Toggle favorite", "f"),
-    key("Archive or unarchive", "a"),
-    hint("Rate", "1 2 3 4 5", "0 clears the rating"),
-    key("Edit info", "e"),
-    key("Download", "<Shift>d"),
+    key(gettext_noop("Previous asset"), "Left"),
+    key(gettext_noop("Next asset"), "Right"),
+    key(gettext_noop("Toggle details"), "i"),
+    key(gettext_noop("Toggle favorite"), "f"),
+    key(gettext_noop("Archive or unarchive"), "a"),
     hint(
-        "Show or hide recognized text",
+        gettext_noop("Rate"),
+        "1 2 3 4 5",
+        gettext_noop("0 clears the rating"),
+    ),
+    key(gettext_noop("Edit info"), "e"),
+    key(gettext_noop("Download"), "<Shift>d"),
+    hint(
+        gettext_noop("Show or hide recognized text"),
         "t",
-        "Only when Immich found text in the photo",
+        gettext_noop("Only when Immich found text in the photo"),
     ),
     hint(
-        "Select all recognized text",
+        gettext_noop("Select all recognized text"),
         "<Control>a",
-        "Drag across text to select it; Ctrl-click adds or removes a box",
+        gettext_noop("Drag across text to select it; Ctrl-click adds or removes a box"),
     ),
     hint(
-        "Copy recognized text",
+        gettext_noop("Copy recognized text"),
         "<Control>c",
-        "Copies the selection, or all text when nothing is selected",
+        gettext_noop("Copies the selection, or all text when nothing is selected"),
     ),
-    key("Move to trash", "Delete"),
-    hint("Zoom in", "<Control>plus", "Or hold Ctrl and scroll"),
-    key("Zoom out", "<Control>minus"),
-    key("Reset zoom", "<Control>0"),
+    key(gettext_noop("Move to trash"), "Delete"),
     hint(
-        "Toggle fullscreen",
-        "F11",
-        "Or the header button; double-click a video; Esc exits",
+        gettext_noop("Zoom in"),
+        "<Control>plus",
+        gettext_noop("Or hold Ctrl and scroll"),
     ),
-    key("Close", "Escape"),
+    key(gettext_noop("Zoom out"), "<Control>minus"),
+    key(gettext_noop("Reset zoom"), "<Control>0"),
+    hint(
+        gettext_noop("Toggle fullscreen"),
+        "F11",
+        gettext_noop("Or the header button; double-click a video; Esc exits"),
+    ),
+    key(gettext_noop("Close"), "Escape"),
 ];
 
 const VIDEO: &[Shortcut] = &[
-    key("Play or pause", "space"),
-    key("Back 10 seconds", "j"),
-    key("Forward 10 seconds", "l"),
-    hint("Previous frame", "comma", "Pauses playback"),
-    hint("Next frame", "period", "Pauses playback"),
-    key("Mute or unmute", "m"),
+    key(gettext_noop("Play or pause"), "space"),
+    key(gettext_noop("Back 10 seconds"), "j"),
+    key(gettext_noop("Forward 10 seconds"), "l"),
+    hint(
+        gettext_noop("Previous frame"),
+        "comma",
+        gettext_noop("Pauses playback"),
+    ),
+    hint(
+        gettext_noop("Next frame"),
+        "period",
+        gettext_noop("Pauses playback"),
+    ),
+    key(gettext_noop("Mute or unmute"), "m"),
 ];
 
 const MAP: &[Shortcut] = &[
-    key("Search places", "<Control>f"),
-    key("Zoom in", "plus"),
-    key("Zoom out", "minus"),
-    key("Rotate left", "bracketleft"),
-    key("Rotate right", "bracketright"),
-    key("Point north", "n"),
-    key("Show my location", "<Control>l"),
+    key(gettext_noop("Search places"), "<Control>f"),
+    key(gettext_noop("Zoom in"), "plus"),
+    key(gettext_noop("Zoom out"), "minus"),
+    key(gettext_noop("Rotate left"), "bracketleft"),
+    key(gettext_noop("Rotate right"), "bracketright"),
+    key(gettext_noop("Point north"), "n"),
+    key(gettext_noop("Show my location"), "<Control>l"),
     hint(
-        "Clear the search",
+        gettext_noop("Clear the search"),
         "Escape",
-        "While typing in the search field",
+        gettext_noop("While typing in the search field"),
     ),
     hint(
-        "Move the map",
+        gettext_noop("Move the map"),
         "Up Down Left Right",
-        "After clicking the map",
+        gettext_noop("After clicking the map"),
     ),
 ];
 
 const SECTIONS: &[(&str, &[Shortcut])] = &[
-    ("General", GENERAL),
-    ("Go To", GO_TO),
-    ("Grid", GRID),
-    ("Selection", SELECTION),
-    ("Timeline", TIMELINE),
-    ("Map", MAP),
-    ("Viewer", LIGHTBOX),
-    ("Video", VIDEO),
+    (gettext_noop("General"), GENERAL),
+    (gettext_noop("Go To"), GO_TO),
+    (gettext_noop("Grid"), GRID),
+    (gettext_noop("Selection"), SELECTION),
+    (gettext_noop("Timeline"), TIMELINE),
+    (gettext_noop("Map"), MAP),
+    (gettext_noop("Viewer"), LIGHTBOX),
+    (gettext_noop("Video"), VIDEO),
 ];
 
 pub(super) fn present(parent: &impl IsA<gtk::Widget>) {
     let dialog = libadwaita::ShortcutsDialog::new();
     for (title, shortcuts) in SECTIONS {
-        let section = libadwaita::ShortcutsSection::new(Some(title));
+        let section = libadwaita::ShortcutsSection::new(Some(&gettext(*title)));
         for shortcut in *shortcuts {
-            let item = libadwaita::ShortcutsItem::new(shortcut.title, shortcut.accelerator);
+            let item =
+                libadwaita::ShortcutsItem::new(&gettext(shortcut.title), shortcut.accelerator);
             if !shortcut.subtitle.is_empty() {
-                item.set_subtitle(shortcut.subtitle);
+                item.set_subtitle(&gettext(shortcut.subtitle));
             }
             section.add(item);
         }

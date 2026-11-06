@@ -1,5 +1,7 @@
 //! The computer's position from the XDG Location portal, which asks the user for consent.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::time::Duration;
 
 use ashpd::WindowIdentifier;
@@ -14,7 +16,7 @@ const LOCATE_TIMEOUT: Duration = Duration::from_secs(20);
 pub async fn current_position(window: &impl IsA<gtk::Window>) -> Result<GeoPoint, String> {
     tokio::time::timeout(LOCATE_TIMEOUT, request(window))
         .await
-        .map_err(|_| "The location service did not answer in time.".to_string())?
+        .map_err(|_| gettext("The location service did not answer in time."))?
 }
 
 async fn request(window: &impl IsA<gtk::Window>) -> Result<GeoPoint, String> {
@@ -36,14 +38,22 @@ async fn request(window: &impl IsA<gtk::Window>) -> Result<GeoPoint, String> {
         .await
         .map_err(unavailable)?
         .response()
-        .map_err(|err| format!("Location access was not allowed ({err})."))?;
+        .map_err(|err| {
+            fill(
+                gettext("Location access was not allowed ({err})."),
+                &[("err", &err.to_string())],
+            )
+        })?;
     let location = updates.next().await;
     let _ = session.close().await;
-    let location = location.ok_or("The location service stopped before finding you.")?;
+    let location = location.ok_or(&gettext("The location service stopped before finding you."))?;
     GeoPoint::new(location.latitude(), location.longitude())
-        .ok_or_else(|| "The location service returned an invalid position.".to_string())
+        .ok_or_else(|| gettext("The location service returned an invalid position."))
 }
 
 fn unavailable(err: ashpd::Error) -> String {
-    format!("Location services are unavailable ({err}). Check that they are turned on.")
+    fill(
+        gettext("Location services are unavailable ({err}). Check that they are turned on."),
+        &[("err", &err.to_string())],
+    )
 }

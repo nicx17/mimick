@@ -5,6 +5,7 @@
 //! sends a signal over a `tokio::sync::watch` channel that the GTK main
 //! loop polls to trigger the corresponding window or operation.
 
+use gettextrs::gettext;
 use ksni::TrayMethods;
 use ksni::menu::{MenuItem, StandardItem};
 use tokio::sync::watch;
@@ -37,7 +38,7 @@ impl ksni::Tray for MimickTray {
     }
 
     fn title(&self) -> String {
-        "Mimick Sync".into()
+        gettext("Mimick Sync")
     }
 
     fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
@@ -58,7 +59,7 @@ impl ksni::Tray for MimickTray {
 
 fn library_item() -> MenuItem<MimickTray> {
     StandardItem {
-        label: "Library".into(),
+        label: gettext("Library"),
         activate: Box::new(|tray: &mut MimickTray| {
             let _ = tray.library_tx.send(true);
         }),
@@ -69,7 +70,7 @@ fn library_item() -> MenuItem<MimickTray> {
 
 fn settings_item() -> MenuItem<MimickTray> {
     StandardItem {
-        label: "Settings".into(),
+        label: gettext("Settings"),
         activate: Box::new(|tray: &mut MimickTray| {
             let _ = tray.settings_tx.send(true);
         }),
@@ -80,7 +81,7 @@ fn settings_item() -> MenuItem<MimickTray> {
 
 fn pause_item() -> MenuItem<MimickTray> {
     StandardItem {
-        label: "Pause / Resume".into(),
+        label: gettext("Pause / Resume"),
         activate: Box::new(|tray: &mut MimickTray| {
             let _ = tray.pause_tx.send(true);
         }),
@@ -91,7 +92,7 @@ fn pause_item() -> MenuItem<MimickTray> {
 
 fn sync_now_item() -> MenuItem<MimickTray> {
     StandardItem {
-        label: "Sync Now".into(),
+        label: gettext("Sync Now"),
         activate: Box::new(|tray: &mut MimickTray| {
             let _ = tray.sync_now_tx.send(true);
         }),
@@ -102,7 +103,7 @@ fn sync_now_item() -> MenuItem<MimickTray> {
 
 fn quit_item() -> MenuItem<MimickTray> {
     StandardItem {
-        label: "Quit".into(),
+        label: gettext("Quit"),
         activate: Box::new(|tray: &mut MimickTray| {
             let _ = tray.quit_tx.send(true);
         }),

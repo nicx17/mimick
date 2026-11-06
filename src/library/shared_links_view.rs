@@ -1,5 +1,7 @@
 //! "Shared Links" page: every public link the user has made, with copy, edit, and delete.
 
+use crate::i18n::fill;
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::Duration;
@@ -28,8 +30,8 @@ pub(super) struct SharedLinksView {
 
 pub(super) fn build_shared_links_view() -> SharedLinksView {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Shared Links")
-        .description("Anyone with a link can view what it shares.")
+        .title(gettext("Shared Links"))
+        .description(gettext("Anyone with a link can view what it shares."))
         .build();
     let list = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -38,10 +40,10 @@ pub(super) fn build_shared_links_view() -> SharedLinksView {
     group.add(&list);
     let empty = libadwaita::StatusPage::builder()
         .icon_name("mimick-share-symbolic")
-        .title("No Shared Links")
-        .description(
+        .title(gettext("No Shared Links"))
+        .description(gettext(
             "Create one from an album's or a photo's right-click menu, or from a selection.",
-        )
+        ))
         .visible(false)
         .build();
     let content = gtk::Box::builder()
@@ -95,8 +97,11 @@ fn reload(ui: Rc<LibraryWindowUi>) {
             Ok(links) => render(&ui, links),
             Err(err) => show_alert_dialog(
                 &ui,
-                "Could Not Load Shared Links",
-                &format!("{err}\n\nYour API key needs the 'sharedLink.read' permission."),
+                &gettext("Could Not Load Shared Links"),
+                &fill(
+                    gettext("{err}\n\nYour API key needs the '{permission}' permission."),
+                    &[("err", &err.to_string()), ("permission", "sharedLink.read")],
+                ),
             ),
         }
     });
@@ -210,14 +215,14 @@ fn text_label(text: &str, classes: &[&str]) -> gtk::Label {
 }
 
 fn copy_button(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::Button {
-    let button = icon_button(COPY_ICON, "Copy link");
+    let button = icon_button(COPY_ICON, &gettext("Copy link"));
     let (ui, link) = (ui.clone(), link.clone());
     button.connect_clicked(move |button| {
         let (ui, link, button) = (ui.clone(), link.clone(), button.clone());
         glib::MainContext::default().spawn_local(async move {
             match copy_to_clipboard(&ui, &link).await {
                 Ok(_) => show_copied(&button),
-                Err(err) => show_error_toast(&ui, "Couldn't copy the link", &err),
+                Err(err) => show_error_toast(&ui, &gettext("Couldn't copy the link"), &err),
             }
         });
     });
@@ -237,7 +242,7 @@ fn show_copied(button: &gtk::Button) {
 }
 
 fn delete_button(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::Button {
-    let button = icon_button("user-trash-symbolic", "Delete link");
+    let button = icon_button("user-trash-symbolic", &gettext("Delete link"));
     button.add_css_class("error");
     let (ui, link_id) = (ui.clone(), link.id.clone());
     button.connect_clicked(move |_| confirm_delete(ui.clone(), link_id.clone()));
@@ -255,11 +260,13 @@ fn icon_button(icon: &str, tooltip: &str) -> gtk::Button {
 
 fn confirm_delete(ui: Rc<LibraryWindowUi>, link_id: String) {
     let dialog = libadwaita::AlertDialog::builder()
-        .heading("Delete this link?")
-        .body("Anyone using it will lose access. This can't be undone.")
+        .heading(gettext("Delete this link?"))
+        .body(gettext(
+            "Anyone using it will lose access. This can't be undone.",
+        ))
         .build();
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("delete", "Delete");
+    dialog.add_response("cancel", &gettext("Cancel"));
+    dialog.add_response("delete", &gettext("Delete"));
     dialog.set_response_appearance("delete", libadwaita::ResponseAppearance::Destructive);
     dialog.set_close_response("cancel");
     let ui_for_choice = ui.clone();
@@ -271,7 +278,7 @@ fn confirm_delete(ui: Rc<LibraryWindowUi>, link_id: String) {
         glib::MainContext::default().spawn_local(async move {
             match ui.ctx.api_client.delete_shared_link(&link_id).await {
                 Ok(()) => reload(ui),
-                Err(err) => show_alert_dialog(&ui, "Could Not Delete Link", &err),
+                Err(err) => show_alert_dialog(&ui, &gettext("Could Not Delete Link"), &err),
             }
         });
     });
@@ -282,7 +289,7 @@ fn confirm_delete(ui: Rc<LibraryWindowUi>, link_id: String) {
 fn link_title(link: &SharedLink) -> String {
     match &link.album {
         Some(album) => album.album_name.clone(),
-        None => "Individual share".to_string(),
+        None => gettext("Individual share"),
     }
 }
 
@@ -302,20 +309,20 @@ fn is_expired(link: &SharedLink, now: DateTime<Utc>) -> bool {
 
 fn expiry_text(link: &SharedLink, now: DateTime<Utc>) -> String {
     if is_expired(link, now) {
-        return "Expired".to_string();
+        return gettext("Expired");
     }
     match link.expires_at.as_deref() {
-        Some(at) => format!("Expires {}", format_expiry(at)),
-        None => "Never expires".to_string(),
+        Some(at) => fill(gettext("Expires {date}"), &[("date", &format_expiry(at))]),
+        None => gettext("Never expires"),
     }
 }
 
 fn link_capabilities(link: &SharedLink) -> String {
     [
-        (link.allow_upload, "Upload"),
-        (link.allow_download, "Download"),
-        (link.show_metadata, "Exif"),
-        (link.password.is_some(), "Password"),
+        (link.allow_upload, gettext("Upload")),
+        (link.allow_download, gettext("Download")),
+        (link.show_metadata, gettext("Exif")),
+        (link.password.is_some(), gettext("Password")),
     ]
     .into_iter()
     .filter_map(|(enabled, name)| enabled.then_some(name))

@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 use gstreamer as gst;
 use gtk::prelude::*;
 
@@ -28,16 +30,22 @@ impl Controls {
     pub(super) fn new(volume: f64, muted: bool) -> Self {
         let (speed, speeds) = speed_menu();
         let (volume_menu, volume_scale, mute) = volume_menu(volume, muted);
-        let tracks = menu_button("Audio and subtitles", &gtk::Popover::new());
+        let tracks = menu_button(&gettext("Audio and subtitles"), &gtk::Popover::new());
         tracks.set_icon_name("media-view-subtitles-symbolic");
         tracks.set_visible(false);
         let controls = Self {
             revealer: controls_revealer(),
             hover: gtk::EventControllerMotion::new(),
-            play: control_button("media-playback-start-symbolic", "Play (Space)"),
-            stop: control_button("media-playback-stop-symbolic", "Stop"),
-            back: control_button("media-seek-backward-symbolic", "Back 10 seconds (J)"),
-            forward: control_button("media-seek-forward-symbolic", "Forward 10 seconds (L)"),
+            play: control_button("media-playback-start-symbolic", &gettext("Play (Space)")),
+            stop: control_button("media-playback-stop-symbolic", &gettext("Stop")),
+            back: control_button(
+                "media-seek-backward-symbolic",
+                &gettext("Back 10 seconds (J)"),
+            ),
+            forward: control_button(
+                "media-seek-forward-symbolic",
+                &gettext("Forward 10 seconds (L)"),
+            ),
             seek: seek_scale(),
             elapsed: time_label(),
             total: time_label(),
@@ -48,7 +56,7 @@ impl Controls {
             volume_menu,
             volume: volume_scale,
             mute,
-            fullscreen: control_button("view-fullscreen-symbolic", "Fullscreen (F11)"),
+            fullscreen: control_button("view-fullscreen-symbolic", &gettext("Fullscreen (F11)")),
         };
         controls.assemble();
         controls
@@ -135,8 +143,11 @@ pub(super) fn speed_label(rate: f64) -> String {
 
 pub(super) fn track_label(n: usize, language: Option<&str>) -> String {
     match language {
-        Some(lang) if !lang.is_empty() => format!("Track {} ({})", n + 1, lang),
-        _ => format!("Track {}", n + 1),
+        Some(lang) if !lang.is_empty() => fill(
+            gettext("Track {n} ({lang})"),
+            &[("n", &(n + 1).to_string()), ("lang", lang)],
+        ),
+        _ => fill(gettext("Track {n}"), &[("n", &(n + 1).to_string())]),
     }
 }
 
@@ -181,7 +192,7 @@ fn menu_button(tooltip: &str, popover: &gtk::Popover) -> gtk::MenuButton {
 fn repeat_toggle() -> gtk::ToggleButton {
     gtk::ToggleButton::builder()
         .icon_name("media-playlist-repeat-symbolic")
-        .tooltip_text("Loop")
+        .tooltip_text(gettext("Loop"))
         .focus_on_click(false)
         .css_classes(["flat"])
         .build()
@@ -244,7 +255,7 @@ fn speed_menu() -> (gtk::MenuButton, Vec<gtk::CheckButton>) {
         content.append(check);
     }
     let menu = menu_button(
-        "Playback speed",
+        &gettext("Playback speed"),
         &gtk::Popover::builder().child(&content).build(),
     );
     menu.set_label(&labels[NORMAL_SPEED]);
@@ -258,13 +269,16 @@ fn volume_menu(volume: f64, muted: bool) -> (gtk::MenuButton, gtk::Scale, gtk::T
     scale.set_width_request(140);
     let mute = gtk::ToggleButton::builder()
         .icon_name("audio-volume-muted-symbolic")
-        .tooltip_text("Mute (M)")
+        .tooltip_text(gettext("Mute (M)"))
         .active(muted)
         .build();
     let content = row(6);
     content.append(&mute);
     content.append(&scale);
-    let menu = menu_button("Volume", &gtk::Popover::builder().child(&content).build());
+    let menu = menu_button(
+        &gettext("Volume"),
+        &gtk::Popover::builder().child(&content).build(),
+    );
     menu.set_icon_name(volume_icon(volume, muted));
     (menu, scale, mute)
 }

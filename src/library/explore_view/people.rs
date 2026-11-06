@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -115,11 +116,11 @@ fn build_people_filter_popover(
     };
 
     let unnamed_check = gtk::CheckButton::builder()
-        .label("Show unnamed")
+        .label(gettext("Show unnamed"))
         .active(show_unnamed)
         .build();
     let hidden_check = gtk::CheckButton::builder()
-        .label("Show hidden")
+        .label(gettext("Show hidden"))
         .active(show_hidden)
         .build();
     body.append(&unnamed_check);

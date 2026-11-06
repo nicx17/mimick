@@ -5,6 +5,8 @@
 //! health dashboard display these to help users self-diagnose problems.
 
 use super::ApiIssue;
+use crate::i18n::fill;
+use gettextrs::gettext;
 
 /// Identifies the operational context in which an Immich request was made.
 #[derive(Debug, Clone, Copy)]
@@ -30,10 +32,7 @@ pub(super) fn classify_http_issue(
 ) -> ApiIssue {
     known_status_issue(context, status).unwrap_or_else(|| ApiIssue {
         summary: failure_summary(context, subject),
-        guidance: format!(
-            "The server responded with HTTP {}. Check the server logs and retry after confirming the current configuration.",
-            status
-        ),
+        guidance: fill(gettext("The server responded with HTTP {status}. Check the server logs and retry after confirming the current configuration."), &[("status", &status.to_string())]),
     })
 }
 
@@ -41,8 +40,10 @@ pub(super) fn classify_http_issue(
 fn known_status_issue(context: RequestContext, status: u16) -> Option<ApiIssue> {
     let (summary, guidance) = match status {
         401 | 403 => (
-            "Immich rejected the API key",
-            "Update the API key in Settings and confirm it still has the required Asset and Album permissions (see README for the full list).",
+            &gettext("Immich rejected the API key"),
+            &gettext(
+                "Update the API key in Settings and confirm it still has the required Asset and Album permissions (see README for the full list).",
+            ),
         ),
         404 if matches!(
             context,
@@ -50,21 +51,27 @@ fn known_status_issue(context: RequestContext, status: u16) -> Option<ApiIssue> 
         ) =>
         {
             (
-                "An album reference is no longer valid",
-                "Refresh the album list or choose a different album before retrying.",
+                &gettext("An album reference is no longer valid"),
+                &gettext("Refresh the album list or choose a different album before retrying."),
             )
         }
         413 => (
-            "Immich rejected a file as too large",
-            "Reduce the file size, raise the server upload limit, or skip oversized files with folder rules.",
+            &gettext("Immich rejected a file as too large"),
+            &gettext(
+                "Reduce the file size, raise the server upload limit, or skip oversized files with folder rules.",
+            ),
         ),
         429 => (
-            "Immich rate-limited the request",
-            "Wait a moment and retry. If this happens often, lower upload concurrency or check reverse proxy limits.",
+            &gettext("Immich rate-limited the request"),
+            &gettext(
+                "Wait a moment and retry. If this happens often, lower upload concurrency or check reverse proxy limits.",
+            ),
         ),
         502..=504 => (
-            "Immich is temporarily unavailable",
-            "Wait a moment and retry. If it keeps happening, inspect the server and reverse proxy logs.",
+            &gettext("Immich is temporarily unavailable"),
+            &gettext(
+                "Wait a moment and retry. If it keeps happening, inspect the server and reverse proxy logs.",
+            ),
         ),
         _ => return None,
     };
@@ -78,30 +85,32 @@ fn known_status_issue(context: RequestContext, status: u16) -> Option<ApiIssue> 
 fn failure_summary(context: RequestContext, subject: Option<&str>) -> String {
     match context {
         RequestContext::Upload => {
-            format!(
-                "Immich could not accept {}",
-                subject.unwrap_or("the upload")
+            let subject = subject.map_or_else(|| gettext("the upload"), ToString::to_string);
+            fill(
+                gettext("Immich could not accept {subject}"),
+                &[("subject", &subject)],
             )
         }
-        RequestContext::AlbumCreate => format!(
-            "Immich could not create album '{}'",
-            subject.unwrap_or("Unnamed")
-        ),
-        RequestContext::Albums => "Immich could not load the album list".to_string(),
+        RequestContext::AlbumCreate => {
+            let album = subject.map_or_else(|| gettext("Unnamed"), ToString::to_string);
+            fill(
+                gettext("Immich could not create album '{album}'"),
+                &[("album", &album)],
+            )
+        }
+        RequestContext::Albums => gettext("Immich could not load the album list"),
         RequestContext::AlbumAssign => {
-            "Immich could not add the asset to the selected album".to_string()
+            gettext("Immich could not add the asset to the selected album")
         }
-        RequestContext::ThumbnailFetch => "Immich could not load a library thumbnail".to_string(),
-        RequestContext::AssetList => "Immich could not load library assets".to_string(),
-        RequestContext::SmartSearch => "Immich could not run the smart library search".to_string(),
+        RequestContext::ThumbnailFetch => gettext("Immich could not load a library thumbnail"),
+        RequestContext::AssetList => gettext("Immich could not load library assets"),
+        RequestContext::SmartSearch => gettext("Immich could not run the smart library search"),
         RequestContext::MetadataSearch => {
-            "Immich could not run the metadata library search".to_string()
+            gettext("Immich could not run the metadata library search")
         }
-        RequestContext::AssetDownload => "Immich could not download the selected asset".to_string(),
-        RequestContext::ServerStats => "Immich could not load library statistics".to_string(),
-        RequestContext::ServerAbout => {
-            "Immich could not load server version information".to_string()
-        }
+        RequestContext::AssetDownload => gettext("Immich could not download the selected asset"),
+        RequestContext::ServerStats => gettext("Immich could not load library statistics"),
+        RequestContext::ServerAbout => gettext("Immich could not load server version information"),
     }
 }
 
@@ -109,50 +118,52 @@ fn failure_summary(context: RequestContext, subject: Option<&str>) -> String {
 pub(super) fn classify_network_issue(context: RequestContext, error: &reqwest::Error) -> ApiIssue {
     if error.is_timeout() {
         ApiIssue {
-            summary: "The Immich request timed out".to_string(),
-            guidance: "Check network quality and server responsiveness, then retry.".to_string(),
+            summary: gettext("The Immich request timed out"),
+            guidance: gettext("Check network quality and server responsiveness, then retry."),
         }
     } else if error.is_connect() {
         ApiIssue {
-            summary: "Could not reach the Immich server".to_string(),
-            guidance: "Check the configured URLs, your network connection, and whether the server is online."
-                .to_string(),
+            summary: gettext("Could not reach the Immich server"),
+            guidance: gettext(
+                "Check the configured URLs, your network connection, and whether the server is online.",
+            ),
         }
     } else {
         ApiIssue {
             summary: match context {
-                RequestContext::Upload => "The upload request failed before completion".to_string(),
-                RequestContext::Albums => "The album request failed before completion".to_string(),
+                RequestContext::Upload => gettext("The upload request failed before completion"),
+                RequestContext::Albums => gettext("The album request failed before completion"),
                 RequestContext::AlbumCreate => {
-                    "The album creation request failed before completion".to_string()
+                    gettext("The album creation request failed before completion")
                 }
                 RequestContext::AlbumAssign => {
-                    "The album assignment request failed before completion".to_string()
+                    gettext("The album assignment request failed before completion")
                 }
                 RequestContext::ThumbnailFetch => {
-                    "The thumbnail request failed before completion".to_string()
+                    gettext("The thumbnail request failed before completion")
                 }
                 RequestContext::AssetList => {
-                    "The library asset request failed before completion".to_string()
+                    gettext("The library asset request failed before completion")
                 }
                 RequestContext::SmartSearch => {
-                    "The smart search request failed before completion".to_string()
+                    gettext("The smart search request failed before completion")
                 }
                 RequestContext::MetadataSearch => {
-                    "The metadata search request failed before completion".to_string()
+                    gettext("The metadata search request failed before completion")
                 }
                 RequestContext::AssetDownload => {
-                    "The asset download request failed before completion".to_string()
+                    gettext("The asset download request failed before completion")
                 }
                 RequestContext::ServerStats => {
-                    "The library statistics request failed before completion".to_string()
+                    gettext("The library statistics request failed before completion")
                 }
                 RequestContext::ServerAbout => {
-                    "The server version request failed before completion".to_string()
+                    gettext("The server version request failed before completion")
                 }
             },
-            guidance: "Retry the request after checking network connectivity and server health."
-                .to_string(),
+            guidance: gettext(
+                "Retry the request after checking network connectivity and server health.",
+            ),
         }
     }
 }

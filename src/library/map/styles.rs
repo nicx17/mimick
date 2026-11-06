@@ -1,5 +1,8 @@
 //! Map styles to pick from: the server's own, bundled VersaTiles themes, satellite imagery, or OpenStreetMap.
 
+use crate::i18n::gettext_noop;
+use gettextrs::gettext;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MapStyle {
     Immich,
@@ -74,17 +77,17 @@ impl MapStyle {
         self.names().0
     }
 
-    pub fn label(self) -> &'static str {
-        self.names().1
+    pub fn label(self) -> String {
+        gettext(self.names().1)
     }
 
     /// Id and label for each style, in `ALL` order.
     const NAMES: [(&str, &str); Self::ALL.len()] = [
         ("immich", "Immich"),
-        ("colorful", "Colorful"),
-        ("natural", "Natural"),
-        ("muted", "Muted"),
-        ("gray", "Gray"),
+        ("colorful", gettext_noop("Colorful")),
+        ("natural", gettext_noop("Natural")),
+        ("muted", gettext_noop("Muted")),
+        ("gray", gettext_noop("Gray")),
         ("toner", "Toner"),
         ("positrino", "Positrino"),
         ("protocol", "Protocol"),
@@ -97,7 +100,7 @@ impl MapStyle {
         ("macbob", "Macbob"),
         ("mactaylor", "Mactaylor"),
         ("bingo", "Bingo"),
-        ("satellite", "Satellite"),
+        ("satellite", gettext_noop("Satellite")),
         ("osm", "OpenStreetMap"),
     ];
 
@@ -155,11 +158,11 @@ impl MapAppearance {
         }
     }
 
-    pub fn label(self) -> &'static str {
+    pub fn label(self) -> String {
         match self {
-            Self::System => "Follow System",
-            Self::Light => "Light",
-            Self::Dark => "Dark",
+            Self::System => gettext("Follow System"),
+            Self::Light => gettext("Light"),
+            Self::Dark => gettext("Dark"),
         }
     }
 

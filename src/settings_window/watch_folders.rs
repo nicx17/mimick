@@ -4,6 +4,7 @@
 //! target album and a rules button. The rules dialog exposes sync method,
 //! extension and size filters, deletion policy, and hidden-file settings.
 
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
@@ -16,7 +17,7 @@ use libadwaita as adw;
 use crate::config::{FolderRules, StartupCatchupMode};
 use crate::watch_path_display::{display_watch_path, watch_path_subtitle};
 
-use super::{DEFAULT_ALBUM_LABEL, FolderRowData, LIBRARY_ALBUM_LABEL, WatchPathEntry};
+use super::{FolderRowData, WatchPathEntry, default_album_label, library_album_label};
 
 mod album_picker;
 mod rules_dialog;
@@ -119,7 +120,7 @@ fn add_target_row(
         on_changed,
     };
     row.action_row
-        .add_row(&suffix_row("Upload Target", &picker.button));
+        .add_row(&suffix_row(&gettext("Upload Target"), &picker.button));
     album_picker::connect_picker_button(&row.action_row, albums_ref, picker);
 }
 
@@ -130,12 +131,13 @@ pub(super) fn initial_subtitle(base_subtitle: &str) -> String {
 
 pub(super) fn initial_target_label(entry: &WatchPathEntry) -> String {
     if entry.uploads_to_library() {
-        LIBRARY_ALBUM_LABEL.to_string()
+        library_album_label()
     } else {
+        // Older configs store the English label itself to mean "name albums after folders".
         entry
             .album_name()
-            .unwrap_or(DEFAULT_ALBUM_LABEL)
-            .to_string()
+            .filter(|name| *name != "Default (Folder Name)")
+            .map_or_else(default_album_label, ToString::to_string)
     }
 }
 
@@ -151,7 +153,7 @@ fn picker_button(label: &str) -> Button {
     let button = Button::builder()
         .label(label)
         .valign(gtk::Align::Center)
-        .tooltip_text("Select a library or album upload target")
+        .tooltip_text(gettext("Select a library or album upload target"))
         .build();
     if let Some(label) = button.child().and_downcast::<gtk::Label>() {
         label.set_ellipsize(gtk::pango::EllipsizeMode::End);
@@ -187,7 +189,7 @@ fn add_remove_row(
         .valign(gtk::Align::Center)
         .css_classes(vec!["destructive-action".to_string()])
         .build();
-    expander_row.add_row(&suffix_row("Remove Folder", &remove_btn));
+    expander_row.add_row(&suffix_row(&gettext("Remove Folder"), &remove_btn));
     let list = list.clone();
     let tracked_rows = tracked_rows.clone();
     let path = path.to_string();

@@ -1,5 +1,6 @@
 //! Server-level statistics, about information, and version history.
 
+use gettextrs::gettext;
 use std::time::Duration;
 
 use super::super::errors::{RequestContext, classify_http_issue, classify_network_issue};
@@ -22,7 +23,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{}/api/server/statistics", base_url);
 
@@ -72,7 +73,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let url = format!("{base_url}{endpoint}");
         let response = self

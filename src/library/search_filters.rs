@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use libadwaita::prelude::*;
 
 pub struct FilterWidgets {
@@ -33,16 +34,16 @@ pub(super) fn build_text_group() -> (
     libadwaita::EntryRow,
 ) {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Text")
+        .title(gettext("Text"))
         .build();
     let filename = libadwaita::EntryRow::builder()
-        .title("Filename contains")
+        .title(gettext("Filename contains"))
         .build();
     let desc = libadwaita::EntryRow::builder()
-        .title("Description contains")
+        .title(gettext("Description contains"))
         .build();
     let ocr = libadwaita::EntryRow::builder()
-        .title("OCR text contains")
+        .title(gettext("OCR text contains"))
         .build();
     group.add(&filename);
     group.add(&desc);
@@ -53,9 +54,9 @@ pub(super) fn build_text_group() -> (
 /// "Tags" group; the tag list is filled from the server by `set_available_tags`.
 pub(super) fn build_tag_group() -> (libadwaita::PreferencesGroup, libadwaita::ComboRow) {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Tags")
+        .title(gettext("Tags"))
         .build();
-    let tag_row = combo_row("Tag", &["Any"]);
+    let tag_row = combo_row(&gettext("Tag"), &[&gettext("Any")]);
     group.add(&tag_row);
     (group, tag_row)
 }
@@ -85,18 +86,34 @@ pub(super) fn build_flags_group() -> FlagsGroup {
     }
 
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Type and flags")
+        .title(gettext("Type and flags"))
         .build();
-    let type_row = combo_row("Asset type", &["Any", "Image only", "Video only"]);
-    let fav = switch("Favourites only");
-    let motion = switch("Motion photos only");
-    let not_album = switch("Not in any album");
-    let deleted = switch("Include deleted");
-    let vis = combo_row(
-        "Visibility",
-        &["Any", "Timeline", "Archive", "Hidden", "Locked"],
+    let type_row = combo_row(
+        &gettext("Asset type"),
+        &[
+            &gettext("Any"),
+            &gettext("Image only"),
+            &gettext("Video only"),
+        ],
     );
-    let rating = combo_row("Minimum rating", &["Any", "1+", "2+", "3+", "4+", "5"]);
+    let fav = switch(&gettext("Favourites only"));
+    let motion = switch(&gettext("Motion photos only"));
+    let not_album = switch(&gettext("Not in any album"));
+    let deleted = switch(&gettext("Include deleted"));
+    let vis = combo_row(
+        &gettext("Visibility"),
+        &[
+            &gettext("Any"),
+            &gettext("Timeline"),
+            &gettext("Archive"),
+            &gettext("Hidden"),
+            &gettext("Locked"),
+        ],
+    );
+    let rating = combo_row(
+        &gettext("Minimum rating"),
+        &[&gettext("Any"), "1+", "2+", "3+", "4+", "5"],
+    );
     group.add(&type_row);
     group.add(&fav);
     group.add(&motion);
@@ -124,18 +141,20 @@ pub(super) fn build_date_group() -> (
     libadwaita::EntryRow,
 ) {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Date range")
+        .title(gettext("Date range"))
         .description("e.g. 2024-01-15")
         .build();
-    let taken_after = libadwaita::EntryRow::builder().title("Taken after").build();
+    let taken_after = libadwaita::EntryRow::builder()
+        .title(gettext("Taken after"))
+        .build();
     let taken_before = libadwaita::EntryRow::builder()
-        .title("Taken before")
+        .title(gettext("Taken before"))
         .build();
     let created_after = libadwaita::EntryRow::builder()
-        .title("Created after")
+        .title(gettext("Created after"))
         .build();
     let created_before = libadwaita::EntryRow::builder()
-        .title("Created before")
+        .title(gettext("Created before"))
         .build();
     group.add(&taken_after);
     group.add(&taken_before);
@@ -157,11 +176,17 @@ pub(super) fn build_camera_group() -> (
     libadwaita::EntryRow,
 ) {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Camera")
+        .title(gettext("Camera"))
         .build();
-    let make = libadwaita::EntryRow::builder().title("Make").build();
-    let model = libadwaita::EntryRow::builder().title("Model").build();
-    let lens = libadwaita::EntryRow::builder().title("Lens model").build();
+    let make = libadwaita::EntryRow::builder()
+        .title(gettext("Make"))
+        .build();
+    let model = libadwaita::EntryRow::builder()
+        .title(gettext("Model"))
+        .build();
+    let lens = libadwaita::EntryRow::builder()
+        .title(gettext("Lens model"))
+        .build();
     group.add(&make);
     group.add(&model);
     group.add(&lens);
@@ -175,13 +200,17 @@ pub(super) fn build_location_group() -> (
     libadwaita::EntryRow,
 ) {
     let group = libadwaita::PreferencesGroup::builder()
-        .title("Location")
+        .title(gettext("Location"))
         .build();
-    let country = libadwaita::EntryRow::builder().title("Country").build();
+    let country = libadwaita::EntryRow::builder()
+        .title(gettext("Country"))
+        .build();
     let state = libadwaita::EntryRow::builder()
-        .title("State / region")
+        .title(gettext("State / region"))
         .build();
-    let city = libadwaita::EntryRow::builder().title("City").build();
+    let city = libadwaita::EntryRow::builder()
+        .title(gettext("City"))
+        .build();
     group.add(&country);
     group.add(&state);
     group.add(&city);

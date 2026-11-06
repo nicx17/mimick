@@ -6,6 +6,7 @@
 //! the "search bar disappears" problem while keeping a single grid
 //! renderer.
 
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -110,15 +111,15 @@ fn build_search_bar() -> (gtk::Box, gtk::DropDown, gtk::SearchEntry) {
         .model(&mode_model)
         .selected(0)
         .hexpand(true)
-        .tooltip_text(
+        .tooltip_text(gettext(
             "Smart: CLIP-based semantic search.\n\
              Filename: matches against file names.\n\
              OCR: matches text inside images.",
-        )
+        ))
         .build();
 
     let search_entry = gtk::SearchEntry::builder()
-        .placeholder_text("Describe what you're looking for\u{2026}")
+        .placeholder_text(gettext("Describe what you're looking for\u{2026}"))
         .build();
 
     let search_bar = gtk::Box::builder().spacing(6).build();
@@ -152,16 +153,16 @@ fn build_action_row() -> ActionRow {
     toggle_content.append(&filters_label);
     let toggle_button = gtk::ToggleButton::builder()
         .child(&toggle_content)
-        .tooltip_text("Show search filters")
+        .tooltip_text(gettext("Show search filters"))
         .css_classes(["flat"])
         .build();
 
     let clear_button = gtk::Button::builder()
-        .label("Clear")
+        .label(gettext("Clear"))
         .css_classes(vec!["flat".to_string()])
         .build();
     let search_button = gtk::Button::builder()
-        .label("Search")
+        .label(gettext("Search"))
         .css_classes(vec!["suggested-action".to_string()])
         .build();
 
@@ -313,9 +314,9 @@ fn connect_mode_placeholder(
         search_entry,
         move |dd| {
             let ph = match current_mode(&modes, dd) {
-                1 => "Search filenames",
-                2 => "Find words shown inside images",
-                _ => "Describe what you're looking for\u{2026}",
+                1 => &gettext("Search filenames"),
+                2 => &gettext("Find words shown inside images"),
+                _ => &gettext("Describe what you're looking for\u{2026}"),
             };
             search_entry.set_placeholder_text(Some(ph));
         }
@@ -441,7 +442,8 @@ fn selected_tag_id(view: &SearchViewParts) -> Option<String> {
 /// Fill the Tag dropdown from the server's tags, keeping the current choice if it still exists.
 pub fn set_available_tags(view: &SearchViewParts, tags: &[Tag]) {
     let previous = selected_tag_id(view);
-    let labels: Vec<&str> = std::iter::once("Any")
+    let any = gettext("Any");
+    let labels: Vec<&str> = std::iter::once(any.as_str())
         .chain(tags.iter().map(|tag| tag.value.as_str()))
         .collect();
     *view.filters.tag_ids.borrow_mut() = tags.iter().map(|tag| tag.id.clone()).collect();

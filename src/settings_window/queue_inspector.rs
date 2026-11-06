@@ -5,6 +5,7 @@
 //! attempts, statuses, and error details. The dialog refreshes live via
 //! a periodic timer so background state changes are always visible.
 
+use gettextrs::gettext;
 use std::path::Path;
 use std::sync::Arc;
 
@@ -31,8 +32,16 @@ pub fn show_queue_inspector(
     let bp = adw::Breakpoint::new(
         adw::BreakpointCondition::parse("max-width: 500sp").expect("valid breakpoint condition"),
     );
-    bp.add_setter(&parts.retry_all_btn, "label", Some(&"Retry All".to_value()));
-    bp.add_setter(&parts.clear_failed_btn, "label", Some(&"Clear".to_value()));
+    bp.add_setter(
+        &parts.retry_all_btn,
+        "label",
+        Some(&gettext("Retry All").to_value()),
+    );
+    bp.add_setter(
+        &parts.clear_failed_btn,
+        "label",
+        Some(&gettext("Clear").to_value()),
+    );
     parts.dialog.add_breakpoint(bp);
     parts.dialog.present();
 }
@@ -49,7 +58,7 @@ fn build_inspector(parent: &impl gtk::prelude::IsA<gtk::Window>) -> InspectorPar
     let dialog = adw::Window::builder()
         .transient_for(parent)
         .modal(true)
-        .title("Queue Inspector")
+        .title(gettext("Queue Inspector"))
         .default_width(900)
         .default_height(680)
         .width_request(360)
@@ -74,11 +83,11 @@ fn build_inspector(parent: &impl gtk::prelude::IsA<gtk::Window>) -> InspectorPar
 
     let (retry_all_btn, clear_failed_btn) = append_action_buttons(&content);
     let failed_group = adw::PreferencesGroup::builder()
-        .title("Failed Retry Queue")
+        .title(gettext("Failed Retry Queue"))
         .build();
     content.append(&failed_group);
     let events_group = adw::PreferencesGroup::builder()
-        .title("Recent Queue Activity")
+        .title(gettext("Recent Queue Activity"))
         .build();
     content.append(&events_group);
     let events_list = ListBox::builder()
@@ -102,8 +111,10 @@ fn append_action_buttons(content: &Box) -> (Button, Button) {
         .spacing(8)
         .halign(gtk::Align::End)
         .build();
-    let retry_all_btn = Button::builder().label("Retry All Failed").build();
-    let clear_failed_btn = Button::builder().label("Clear Failed Queue").build();
+    let retry_all_btn = Button::builder().label(gettext("Retry All Failed")).build();
+    let clear_failed_btn = Button::builder()
+        .label(gettext("Clear Failed Queue"))
+        .build();
     actions.append(&retry_all_btn);
     actions.append(&clear_failed_btn);
     content.append(&actions);
@@ -219,8 +230,8 @@ fn rebuild_failed_rows(
     if tasks.is_empty() {
         group.add(
             &adw::ActionRow::builder()
-                .title("No failed items")
-                .subtitle("The retry queue is currently empty.")
+                .title(gettext("No failed items"))
+                .subtitle(gettext("The retry queue is currently empty."))
                 .build(),
         );
         return;
@@ -238,13 +249,13 @@ fn rebuild_failed_rows(
             .title_lines(0)
             .subtitle_lines(3)
             .build();
-        let retry_btn = Button::builder().label("Retry").build();
+        let retry_btn = Button::builder().label(gettext("Retry")).build();
         let task_path = task.path.clone();
         let qm = queue_manager.clone();
         let group_ref = group.clone();
         retry_btn.connect_clicked(move |btn| {
             btn.set_sensitive(false);
-            btn.set_label("Retrying\u{2026}");
+            btn.set_label(&gettext("Retrying\u{2026}"));
             let qm = qm.clone();
             let path = task_path.clone();
             let group_ref = group_ref.clone();
@@ -302,11 +313,11 @@ pub(super) fn show_about_dialog(parent: &impl gtk::prelude::IsA<gtk::Widget>) {
         .build();
 
     about.add_credit_section(
-        Some("Icon Design"),
+        Some(&gettext("Icon Design")),
         &["Round Icons https://unsplash.com/illustrations/a-white-and-orange-flower-on-a-white-background-IkQ_WrJzZOM"],
     );
     about.add_acknowledgement_section(
-        Some("Map Data and Styles"),
+        Some(&gettext("Map Data and Styles")),
         &[
             "OpenStreetMap contributors https://www.openstreetmap.org/copyright",
             "VersaTiles https://versatiles.org",
@@ -314,12 +325,15 @@ pub(super) fn show_about_dialog(parent: &impl gtk::prelude::IsA<gtk::Widget>) {
         ],
     );
     about.add_acknowledgement_section(
-        Some("Place Search"),
+        Some(&gettext("Place Search")),
         &["Photon by komoot, Apache License 2.0 https://github.com/komoot/photon"],
     );
-    about.add_acknowledgement_section(Some("Special Thanks"), &["Immich https://immich.app"]);
     about.add_acknowledgement_section(
-        Some("Built With"),
+        Some(&gettext("Special Thanks")),
+        &["Immich https://immich.app"],
+    );
+    about.add_acknowledgement_section(
+        Some(&gettext("Built With")),
         &[
             "GTK https://www.gtk.org",
             "libadwaita https://gnome.pages.gitlab.gnome.org/libadwaita/",
@@ -336,7 +350,7 @@ pub(super) fn show_about_dialog(parent: &impl gtk::prelude::IsA<gtk::Widget>) {
     let third_party =
         glib::markup_escape_text(include_str!("../../THIRD_PARTY_LICENSES_SUMMARY.txt"));
     about.add_legal_section(
-        "Third-party Licenses",
+        &gettext("Third-party Licenses"),
         None,
         gtk::License::Custom,
         Some(&third_party),

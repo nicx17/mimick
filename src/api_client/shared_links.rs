@@ -1,6 +1,7 @@
 //! Shared links: public URLs for an album or a set of assets.
 
 use super::ImmichApiClient;
+use gettextrs::gettext;
 
 /// A shared link as returned by `GET /api/shared-links`.
 #[derive(Debug, Clone, serde::Deserialize, PartialEq)]
@@ -188,7 +189,7 @@ impl ImmichApiClient {
         }
         self.get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())
+            .ok_or_else(|| gettext("No active connection"))
     }
 }
 

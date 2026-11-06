@@ -1,5 +1,6 @@
 //! Trash: list trashed assets, restore them, or empty the trash.
 
+use gettextrs::gettext;
 use std::time::Duration;
 
 use super::{ImmichApiClient, MetadataSearchFilters};
@@ -53,7 +54,7 @@ impl ImmichApiClient {
         let base_url = self
             .get_active_url()
             .await
-            .ok_or_else(|| "No active connection".to_string())?;
+            .ok_or_else(|| gettext("No active connection"))?;
         let settings = self.settings_snapshot();
         let mut request = self
             .client

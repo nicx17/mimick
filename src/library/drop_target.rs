@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -78,7 +79,7 @@ fn handle_drop(ui: &LibraryWindowUi, value: &gtk::glib::Value) -> bool {
 }
 
 pub(super) fn show_unsupported_drop_toast(ui: &LibraryWindowUi) {
-    let toast = libadwaita::Toast::new("No supported media files in drop");
+    let toast = libadwaita::Toast::new(&gettext("No supported media files in drop"));
     if let Some(overlay) = ui
         .window
         .content()

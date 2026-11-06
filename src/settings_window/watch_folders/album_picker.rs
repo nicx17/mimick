@@ -1,3 +1,5 @@
+use crate::i18n::fill;
+use gettextrs::gettext;
 #[cfg(test)]
 use std::cell::Cell;
 use std::cell::RefCell;
@@ -12,7 +14,7 @@ use libadwaita as adw;
 #[cfg(test)]
 use crate::config::{FolderRules, FolderSyncMethod, StartupCatchupMode};
 
-use crate::settings_window::{DEFAULT_ALBUM_LABEL, LIBRARY_ALBUM_LABEL};
+use crate::settings_window::{default_album_label, library_album_label};
 
 #[cfg(test)]
 use super::rules_dialog::{
@@ -83,17 +85,15 @@ enum PickerChoice {
 impl PickerChoice {
     fn title(&self) -> String {
         match self {
-            Self::Create(name) => format!("Create new: \"{name}\""),
+            Self::Create(name) => fill(gettext("Create new: \"{name}\""), &[("name", name)]),
             other => other.stored_label(),
         }
     }
 
-    fn subtitle(&self) -> Option<&'static str> {
+    fn subtitle(&self) -> Option<String> {
         match self {
-            Self::Library => Some(
-                "Uploads directly to the library; album sync and deletion mirroring are disabled",
-            ),
-            Self::DefaultFolderName => Some("Creates album dynamically per-folder"),
+            Self::Library => Some(gettext("No album sync or deletion mirroring")),
+            Self::DefaultFolderName => Some(gettext("Creates album dynamically per-folder")),
             _ => None,
         }
     }
@@ -101,8 +101,8 @@ impl PickerChoice {
     /// What the folder row stores and shows on its button.
     fn stored_label(&self) -> String {
         match self {
-            Self::Library => LIBRARY_ALBUM_LABEL.to_string(),
-            Self::DefaultFolderName => DEFAULT_ALBUM_LABEL.to_string(),
+            Self::Library => library_album_label(),
+            Self::DefaultFolderName => default_album_label(),
             Self::Create(name) | Self::Album(name) => name.clone(),
         }
     }
@@ -115,21 +115,22 @@ fn picker_choices(query: &str, albums: &[(String, String)]) -> Vec<PickerChoice>
     let q = typed.to_lowercase();
     let matches = |label: &str| q.is_empty() || label.to_lowercase().contains(&q);
     let mut choices = Vec::new();
-    if matches(LIBRARY_ALBUM_LABEL) {
+    if matches(&library_album_label()) {
         choices.push(PickerChoice::Library);
     }
-    if matches(DEFAULT_ALBUM_LABEL) {
+    if matches(&default_album_label()) {
         choices.push(PickerChoice::DefaultFolderName);
     }
     if !q.is_empty() {
         choices.push(PickerChoice::Create(typed.to_string()));
     }
+    let default_label = default_album_label();
     choices.extend(
         albums
             .iter()
             .map(|(name, _)| name)
             // The default label is listed above; skip it if an album shares the name.
-            .filter(|name| name.as_str() != DEFAULT_ALBUM_LABEL && matches(name))
+            .filter(|name| **name != default_label && matches(name))
             .map(|name| PickerChoice::Album(name.clone())),
     );
     choices
@@ -167,7 +168,7 @@ fn fill_picker_rows(
             .activatable(true)
             .build();
         if let Some(subtitle) = choice.subtitle() {
-            row.set_subtitle(subtitle);
+            row.set_subtitle(&subtitle);
         }
         let (choice, target, dialog) = (choice.clone(), target.clone(), dialog.clone());
         row.connect_activated(move |_| {
@@ -184,7 +185,7 @@ fn picker_dialog_shell(
     let dialog = adw::Window::builder()
         .transient_for(parent)
         .modal(true)
-        .title("Select Upload Target")
+        .title(gettext("Select Upload Target"))
         .default_width(400)
         .default_height(500)
         .width_request(360)
@@ -223,8 +224,8 @@ mod tests {
     #[test]
     fn every_sync_method_explains_itself() {
         assert!(sync_method_description(0).contains("downloads"));
-        assert!(sync_method_description(1).starts_with("Uploads new photos"));
-        assert!(sync_method_description(2).starts_with("Downloads"));
+        assert!(sync_method_description(1).is_empty());
+        assert!(sync_method_description(2).is_empty());
     }
 
     fn albums(names: &[&str]) -> Vec<(String, String)> {
@@ -236,7 +237,7 @@ mod tests {
 
     #[test]
     fn picker_lists_library_default_then_albums_without_query() {
-        let choices = picker_choices("", &albums(&["Trips", DEFAULT_ALBUM_LABEL]));
+        let choices = picker_choices("", &albums(&["Trips", &default_album_label()]));
         assert_eq!(
             choices,
             vec![
@@ -261,7 +262,7 @@ mod tests {
 
     #[test]
     fn picker_choice_labels() {
-        assert_eq!(PickerChoice::Library.stored_label(), LIBRARY_ALBUM_LABEL);
+        assert_eq!(PickerChoice::Library.stored_label(), library_album_label());
         assert_eq!(
             PickerChoice::Create("New".into()).title(),
             "Create new: \"New\""
@@ -318,14 +319,21 @@ mod tests {
                 ..FolderRules::default()
             },
         };
-        assert_eq!(initial_target_label(&library), LIBRARY_ALBUM_LABEL);
+        assert_eq!(initial_target_label(&library), library_album_label());
         assert_eq!(
             initial_rules(&library).sync_method,
             FolderSyncMethod::UploadOnly
         );
 
         let simple = WatchPathEntry::Simple("/home/user/Camera".into());
-        assert_eq!(initial_target_label(&simple), DEFAULT_ALBUM_LABEL);
+        assert_eq!(initial_target_label(&simple), default_album_label());
+        let stored_default = WatchPathEntry::WithConfig {
+            path: "/photos".into(),
+            album_id: None,
+            album_name: Some("Default (Folder Name)".into()),
+            rules: FolderRules::default(),
+        };
+        assert_eq!(initial_target_label(&stored_default), default_album_label());
     }
 
     fn target_with(rules: FolderRules) -> UploadTargetState {

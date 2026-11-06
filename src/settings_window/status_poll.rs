@@ -1,5 +1,7 @@
 //! Status page refresh: polls in-memory app state and updates the dashboard rows.
 
+use crate::i18n::{fill, plural_n};
+use gettextrs::{gettext, ngettext};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -95,8 +97,11 @@ impl StatusWidgets {
             self.progress_bar
                 .set_fraction(headline.progress.unwrap_or(0.0));
         }
-        self.pause_btn
-            .set_label(if s.paused { "Resume" } else { "Pause" });
+        self.pause_btn.set_label(&if s.paused {
+            gettext("Resume")
+        } else {
+            gettext("Pause")
+        });
         self.failed_row.set_visible(s.failed > 0);
         self.failed_row.set_title(&failed_title(s.failed));
         self.error_row.set_visible(s.last_error.is_some());
@@ -107,17 +112,17 @@ impl StatusWidgets {
         self.attention_group
             .set_visible(s.failed > 0 || s.last_error.is_some());
         self.route_row
-            .set_subtitle(route_subtitle(s.route.as_deref()));
+            .set_subtitle(&route_subtitle(s.route.as_deref()));
         self.last_sync_row
             .set_subtitle(&format_sync_age(s.last_successful_sync_at));
     }
 }
 
 fn failed_title(failed: usize) -> String {
-    match failed {
-        1 => "1 upload failed".to_string(),
-        n => format!("{n} uploads failed"),
-    }
+    fill(
+        ngettext("{n} upload failed", "{n} uploads failed", plural_n(failed)),
+        &[("n", &failed.to_string())],
+    )
 }
 
 /// One row per watched folder, or a hint to add one.
@@ -126,8 +131,8 @@ fn rebuild_folder_rows(list: &gtk::ListBox, paths: &[String]) {
     if paths.is_empty() {
         list.append(
             &libadwaita::ActionRow::builder()
-                .title("No folders yet")
-                .subtitle("Add one under Settings → Watch Folders.")
+                .title(gettext("No folders yet"))
+                .subtitle(gettext("Add one under Settings → Watch Folders."))
                 .build(),
         );
         return;
@@ -156,12 +161,12 @@ fn update_folder_rows(list: &gtk::ListBox, lines: &[String]) {
     }
 }
 
-fn route_subtitle(route: Option<&str>) -> &'static str {
+fn route_subtitle(route: Option<&str>) -> String {
     match route {
-        Some("LAN") => "Connected through LAN",
-        Some("WAN") => "Connected through WAN",
-        Some(_) => "Connected through configured server",
-        None => "Waiting for a successful connection check",
+        Some("LAN") => gettext("Connected through LAN"),
+        Some("WAN") => gettext("Connected through WAN"),
+        Some(_) => gettext("Connected through configured server"),
+        None => gettext("Waiting for a successful connection check"),
     }
 }
 
@@ -179,7 +184,7 @@ fn status_headline(s: &StatusSnapshot) -> Option<Headline> {
     if s.status == "paused" || s.paused {
         return Some(Headline {
             icon: "media-playback-pause-symbolic",
-            title: "Paused".into(),
+            title: gettext("Paused"),
             subtitle: s.pause_reason.clone().unwrap_or_default(),
             progress: None,
         });
@@ -187,17 +192,20 @@ fn status_headline(s: &StatusSnapshot) -> Option<Headline> {
     match s.status.as_str() {
         "idle" if s.failed > 0 => Some(Headline {
             icon: "network-offline-symbolic",
-            title: "Waiting for Immich".into(),
-            subtitle: "Failed uploads retry when the server is reachable.".into(),
+            title: gettext("Waiting for Immich"),
+            subtitle: gettext("Failed uploads retry when the server is reachable."),
             progress: None,
         }),
         "idle" => Some(Headline {
             icon: "mimick-check-circle-symbolic",
-            title: "Up to Date".into(),
+            title: gettext("Up to Date"),
             subtitle: match s.last_successful_sync_at {
-                Some(_) => format!(
-                    "Last upload {}",
-                    format_sync_age(s.last_successful_sync_at).to_lowercase()
+                Some(_) => fill(
+                    gettext("Last upload {when}"),
+                    &[(
+                        "when",
+                        &lowercase_first(&format_sync_age(s.last_successful_sync_at)),
+                    )],
                 ),
                 None => String::new(),
             },
@@ -205,7 +213,13 @@ fn status_headline(s: &StatusSnapshot) -> Option<Headline> {
         }),
         "uploading" => Some(Headline {
             icon: "mimick-upload-symbolic",
-            title: format!("Uploading {} of {}", s.processed, s.total),
+            title: fill(
+                gettext("Uploading {done} of {total}"),
+                &[
+                    ("done", &s.processed.to_string()),
+                    ("total", &s.total.to_string()),
+                ],
+            ),
             subtitle: std::path::Path::new(&s.current_file)
                 .file_name()
                 .map(|n| n.to_string_lossy().into_owned())
@@ -216,22 +230,39 @@ fn status_headline(s: &StatusSnapshot) -> Option<Headline> {
     }
 }
 
+/// Lowercases only the first letter, so a phrase can sit mid-sentence without breaking German nouns.
+fn lowercase_first(text: &str) -> String {
+    let mut chars = text.chars();
+    chars
+        .next()
+        .map(|first| first.to_lowercase().collect::<String>() + chars.as_str())
+        .unwrap_or_default()
+}
+
 /// One folder's status line: its error, or pending count and last sync time.
 fn folder_status_line(status: Option<&FolderSyncStatus>) -> String {
     let Some(status) = status else {
-        return "Up to date".to_string();
+        return gettext("Up to date");
     };
     if let Some(err) = &status.last_error {
-        return format!("Problem: {err}");
+        return fill(gettext("Problem: {err}"), &[("err", err)]);
     }
     let mut line = match status.pending_count {
-        0 => "Up to date".to_string(),
-        n => format!("{n} waiting to upload"),
+        0 => gettext("Up to date"),
+        n => fill(
+            ngettext(
+                "{n} waiting to upload",
+                "{n} waiting to upload",
+                plural_n(n),
+            ),
+            &[("n", &n.to_string())],
+        ),
     };
     if let Some(t) = status.last_sync_at {
-        line.push_str(&format!(
-            " · last upload {}",
-            format_sync_age(Some(t)).to_lowercase()
+        line.push_str(" · ");
+        line.push_str(&fill(
+            gettext("last upload {when}"),
+            &[("when", &lowercase_first(&format_sync_age(Some(t))))],
         ));
     }
     line

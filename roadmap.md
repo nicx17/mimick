@@ -95,6 +95,7 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - Keyboard navigation in the photo grid
 - Arch Linux package on the AUR (`mimick`)
 - AppImages for x86_64 and aarch64 attached to each release
+- Translatable interface, ready for translations (#220)
 
 ---
 

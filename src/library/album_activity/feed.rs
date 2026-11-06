@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
@@ -38,11 +39,11 @@ impl ActivityFeed {
         on_change: Box<dyn Fn()>,
     ) -> Rc<Self> {
         let (list, placeholder) = build_list();
-        let like_btn = round_button("mimick-heart-outline-symbolic", "Like");
-        let send_btn = round_button("mail-send-symbolic", "Send");
+        let like_btn = round_button("mimick-heart-outline-symbolic", &gettext("Like"));
+        let send_btn = round_button("mail-send-symbolic", &gettext("Send"));
         send_btn.set_sensitive(false);
         let entry = gtk::Entry::builder()
-            .placeholder_text("Add a comment…")
+            .placeholder_text(gettext("Add a comment…"))
             .hexpand(true)
             .build();
         let composer = gtk::Box::builder().spacing(6).sensitive(false).build();
@@ -104,7 +105,7 @@ impl ActivityFeed {
                 Err(err) => {
                     log::warn!("Could not load album activity: {err}");
                     feed.placeholder
-                        .set_label("Couldn't load likes and comments");
+                        .set_label(&gettext("Couldn't load likes and comments"));
                 }
             }
         });
@@ -112,14 +113,18 @@ impl ActivityFeed {
 
     fn render(self: &Rc<Self>) {
         self.list.remove_all();
-        self.placeholder.set_label("No likes or comments yet");
+        self.placeholder
+            .set_label(&gettext("No likes or comments yet"));
         for activity in self.activities.borrow().iter() {
             self.list.append(&self.row(activity));
         }
         let liked = self.my_like_id().is_some();
         self.like_btn.set_icon_name(heart_icon(liked));
-        self.like_btn
-            .set_tooltip_text(Some(if liked { "Unlike" } else { "Like" }));
+        self.like_btn.set_tooltip_text(Some(&if liked {
+            gettext("Unlike")
+        } else {
+            gettext("Like")
+        }));
     }
 
     fn my_like_id(&self) -> Option<String> {
@@ -158,7 +163,7 @@ impl ActivityFeed {
             feed.like_btn.set_sensitive(true);
             match result {
                 Ok(added) => feed.apply(existing.as_deref(), added),
-                Err(err) => show_error_toast(&feed.ui, "Couldn't update the like", &err),
+                Err(err) => show_error_toast(&feed.ui, &gettext("Couldn't update the like"), &err),
             }
         });
     }
@@ -183,7 +188,7 @@ impl ActivityFeed {
                     feed.entry.set_text("");
                     feed.apply(None, Some(added));
                 }
-                Err(err) => show_error_toast(&feed.ui, "Couldn't post the comment", &err),
+                Err(err) => show_error_toast(&feed.ui, &gettext("Couldn't post the comment"), &err),
             }
             feed.entry.grab_focus();
         });
@@ -194,7 +199,7 @@ impl ActivityFeed {
         glib::MainContext::default().spawn_local(async move {
             match feed.ui.ctx.api_client.delete_activity(&activity_id).await {
                 Ok(()) => feed.apply(Some(&activity_id), None),
-                Err(err) => show_error_toast(&feed.ui, "Couldn't delete", &err),
+                Err(err) => show_error_toast(&feed.ui, &gettext("Couldn't delete"), &err),
             }
         });
     }
@@ -237,7 +242,7 @@ impl ActivityFeed {
     }
 
     fn delete_button(self: &Rc<Self>, activity: &Activity) -> gtk::Button {
-        let button = round_button("user-trash-symbolic", "Delete");
+        let button = round_button("user-trash-symbolic", &gettext("Delete"));
         let (feed, id) = (Rc::downgrade(self), activity.id.clone());
         button.connect_clicked(move |_| with(&feed, |f| f.delete(id.clone())));
         button
@@ -252,7 +257,7 @@ fn with(feed: &Weak<ActivityFeed>, action: impl FnOnce(&Rc<ActivityFeed>)) {
 
 fn build_list() -> (gtk::ListBox, gtk::Label) {
     let placeholder = gtk::Label::builder()
-        .label("Loading…")
+        .label(gettext("Loading…"))
         .wrap(true)
         .margin_top(12)
         .margin_bottom(12)

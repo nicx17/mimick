@@ -1,3 +1,5 @@
+use crate::i18n::format_day;
+use gettextrs::gettext;
 use std::ops::Range;
 
 use chrono::{Datelike, NaiveDate};
@@ -9,19 +11,23 @@ pub fn local_day(local_date_time: &str) -> Option<NaiveDate> {
 
 pub fn day_heading(day: NaiveDate, today: NaiveDate) -> String {
     let format = if day.year() == today.year() {
-        "%a, %b %-d"
+        // Translators: strftime day heading in the photo timeline, e.g. "Fri, Oct 9".
+        gettext("%a, %b %-d")
     } else {
-        "%a, %b %-d, %Y"
+        // Translators: strftime day heading for another year, e.g. "Fri, Oct 9, 2025".
+        gettext("%a, %b %-d, %Y")
     };
-    day.format(format).to_string()
+    format_day(day, &format)
 }
 
 pub fn month_heading(month_key: &str) -> Option<String> {
-    Some(local_day(month_key)?.format("%B %Y").to_string())
+    // Translators: strftime month heading, e.g. "October 2026"; %OB is the standalone month name.
+    Some(format_day(local_day(month_key)?, &gettext("%B %Y")))
 }
 
 pub fn month_short(month_key: &str) -> Option<String> {
-    Some(local_day(month_key)?.format("%b %Y").to_string())
+    // Translators: strftime short month, e.g. "Oct 2026".
+    Some(format_day(local_day(month_key)?, &gettext("%b %Y")))
 }
 
 pub fn month_year(month_key: &str) -> Option<i32> {

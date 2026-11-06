@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Duration;
@@ -24,12 +25,12 @@ pub(super) struct RatingSection {
 impl RatingSection {
     pub(super) fn new() -> Self {
         let clear_btn = gtk::Button::builder()
-            .label("Clear")
+            .label(gettext("Clear"))
             .valign(gtk::Align::Center)
             .css_classes(["flat"])
             .build();
         let root = libadwaita::PreferencesGroup::builder()
-            .title("Rating")
+            .title(gettext("Rating"))
             .header_suffix(&clear_btn)
             .visible(false)
             .build();
@@ -124,7 +125,7 @@ impl RatingSection {
                 section.rating.set(previous);
                 section.refresh();
             }
-            show_error_toast(&ui, "Couldn't save the rating", &err);
+            show_error_toast(&ui, &gettext("Couldn't save the rating"), &err);
         });
     }
 
