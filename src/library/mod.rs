@@ -71,15 +71,21 @@ mod controls;
 mod dialogs;
 mod download;
 mod drop_target;
+mod duplicates_view;
 mod features;
 mod folders_view;
 mod header_format;
 mod lightbox;
 mod map;
+mod memories;
 mod nav_history;
 mod navigation;
 mod people_view;
 mod person_merge_dialog;
+mod person_picker;
+mod photo_canvas;
+mod photo_editor;
+mod related;
 pub mod search_filters;
 mod search_panel;
 pub mod search_view;
@@ -158,8 +164,10 @@ struct LibraryWindowUi {
     tags: tags_view::TagsView,
     folders: folders_view::FoldersView,
     sharing: sharing_view::SharingView,
+    duplicates: duplicates_view::DuplicatesView,
     map: map::MapView,
     header: source_header::SourceHeader,
+    memories: memories::MemoriesRow,
     bottom_nav: bottom_nav::BottomNav,
     features: Cell<crate::api_client::LibraryFeatures>,
     content_stack: gtk::Stack,
@@ -191,6 +199,8 @@ struct WindowInteractionState {
     last_seen_upload_batch: Cell<u64>,
     timeline: RefCell<Option<Rc<timeline::Timeline>>>,
     lightbox: RefCell<Option<Rc<lightbox::Lightbox>>>,
+    /// Photo for the next Photos timeline to scroll to: asset id and its `YYYY-MM`.
+    timeline_reveal: RefCell<Option<(String, String)>>,
 }
 
 /// Build and display the main library window application layout.
@@ -248,6 +258,7 @@ fn connect_window_controls(ui: &Rc<LibraryWindowUi>, controls: WindowControls) {
     );
     actions::connect_bulk_share_link(ui.clone(), &controls.bulk_share_link);
     actions::connect_bulk_archive(ui.clone());
+    actions::connect_bulk_stack(ui.clone());
     actions::connect_bulk_location(ui.clone(), &controls.bulk_location);
     actions::connect_bulk_date(ui.clone(), &controls.bulk_date);
     actions::connect_bulk_add_to_album(ui.clone());
@@ -256,6 +267,7 @@ fn connect_window_controls(ui: &Rc<LibraryWindowUi>, controls: WindowControls) {
     people_view::connect_people_view(ui.clone());
     tags_view::connect_tags_view(ui.clone());
     sharing_view::connect_sharing_view(ui.clone());
+    duplicates_view::connect_duplicates_view(ui.clone());
     shared_links_view::connect_shared_links_view(ui.clone());
     map::connect_map_view(ui);
     timeline::connect(ui);

@@ -359,6 +359,12 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Show a partner's photos in Photos | `partner.update` |
 | Rename albums, edit descriptions, set covers, and change album options | `album.update` |
 | Likes and comments on shared albums | `activity.read`, `activity.statistics`; liking and commenting also need `activity.create`, and deleting `activity.delete` |
+| Memories above Photos | `memory.read`; marking a memory seen needs `memory.update`, and removing photos from one `memoryAsset.delete` |
+| Stacks (view, make, change cover, unstack) | `stack.read`; changing stacks also needs `stack.create`, `stack.update`, and `stack.delete` |
+| Edit Photo (crop, rotate, flip, revert) | `asset.edit.get`, `asset.edit.create`, `asset.edit.delete` |
+| Tag People (change, remove, or draw faces; cover photos) | `face.read`, `face.create`, `face.update`, `face.delete`; naming someone new needs `person.create`, and cover photos `person.update` |
+| Duplicates page | `duplicate.read`, `duplicate.delete` |
+| View Similar Photos | `asset.read` |
 | Counts and details in view headers | `asset.statistics`, `album.read`, `person.statistics` |
 | Hide pages for features turned off in your account | `userPreference.read` (without it, every page stays visible) |
 | **Sync Method** set to **Full** or **Download Only** (folder rules) | `asset.read`, `asset.download` |

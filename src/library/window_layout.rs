@@ -72,6 +72,7 @@ pub(super) struct BulkParts {
     pub add_to_album: gtk::Button,
     pub remove_from_album: gtk::Button,
     pub(super) archive: gtk::Button,
+    pub(super) stack: gtk::Button,
     secondary: gtk::Box,
     overflow_box: gtk::Box,
     pub(super) trash: TrashControls,
@@ -88,8 +89,10 @@ pub(super) struct ContentParts {
     tags: super::tags_view::TagsView,
     folders: super::folders_view::FoldersView,
     sharing: super::sharing_view::SharingView,
+    duplicates: super::duplicates_view::DuplicatesView,
     map: super::map::MapView,
     header: super::source_header::SourceHeader,
+    memories: super::memories::MemoriesRow,
     bottom_nav: super::bottom_nav::BottomNav,
     search_view: SearchViewParts,
     filters_split: libadwaita::OverlaySplitView,
@@ -176,6 +179,8 @@ impl ContentParts {
         stack.add_named(&folders.page.root, Some("folders"));
         let sharing = super::sharing_view::build_sharing_view();
         stack.add_named(&sharing.root, Some("sharing"));
+        let duplicates = super::duplicates_view::build_duplicates_view();
+        stack.add_named(&duplicates.root, Some("duplicates"));
         let map = super::map::build_map_view();
         map.split.set_end_child(Some(&stack));
         let search_view = build_search_view();
@@ -183,6 +188,8 @@ impl ContentParts {
         let header = super::source_header::build_source_header();
         let album_link = build_album_link();
         let bulk = bulk_bar::build_bulk_bar();
+        let memories = super::memories::build();
+        header.extra.append(&memories.root);
         header.extra.append(&album_link.listbox);
         header.extra.append(&bulk.trash.bar);
         grid.content.prepend(&header.status);
@@ -197,8 +204,10 @@ impl ContentParts {
             tags,
             folders,
             sharing,
+            duplicates,
             map,
             header,
+            memories,
             bottom_nav: super::bottom_nav::build_bottom_nav(),
             search_view,
             filters_split,
@@ -249,8 +258,10 @@ impl LibraryWindowUi {
             tags: content.tags,
             folders: content.folders,
             sharing: content.sharing,
+            duplicates: content.duplicates,
             map: content.map,
             header: content.header,
+            memories: content.memories,
             bottom_nav: content.bottom_nav,
             features: Cell::default(),
             content_stack: content.stack,

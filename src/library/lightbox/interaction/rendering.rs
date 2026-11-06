@@ -24,7 +24,7 @@ use crate::library::{LOCAL_ID_PREFIX, load_texture_oriented, timeline, trash_vie
 impl Lightbox {
     pub(in crate::library::lightbox) fn render(self: &Rc<Self>) {
         let pos = self.pos.get();
-        let Some(item) = self.ui.grid.model.item(pos).and_downcast::<AssetObject>() else {
+        let Some(item) = self.current_item() else {
             return;
         };
         let info = AssetInfo::from_item(&item);
@@ -55,15 +55,20 @@ impl Lightbox {
         self.show_archive(info.archived);
         let editable = on_server && !in_trash && is_mine(&self.ui, &item);
         self.details.edit_btn.set_visible(editable);
+        self.actions.edit.set_visible(editable && !info.is_video());
         self.details.album_btn.set_visible(on_server && !in_trash);
         self.actions.zoom_group.set_visible(!info.is_video());
         self.actions.open_with.set_visible(info.is_video());
 
         self.prepare_video(info.is_video());
+        self.sync_live(&info);
+        self.on_slide_shown();
         self.picture.ocr.clear();
         self.sync_ocr_controls();
-        self.fill_slot(Slot::Current, Some(pos));
+        self.fill_slot_with(Slot::Current, Some(AssetInfo::from_item(&item)));
         self.start_picture_load(&info);
+        // After the load bumps `load_gen`, or the stack arrives looking stale and is dropped.
+        self.sync_stack();
         self.fill_neighbours();
         self.details.loading.set_visible(true);
         if info.is_local() && !info.is_video() {
@@ -106,7 +111,9 @@ impl Lightbox {
         let target = self.picture.strip.picture(Slot::Current);
         self.zoom_level.set(1.0);
         apply_lightbox_zoom(&target, &self.picture.scrolled, 1.0);
-        self.picture.strip.set_swipe_enabled(true);
+        self.picture
+            .strip
+            .set_swipe_enabled(!self.face_mode.is_active());
         self.actions.zoom_reset.set_label("100%");
         self.load_into_picture(PictureLoad {
             target,
@@ -156,11 +163,15 @@ impl Lightbox {
     }
 
     fn fill_slot(&self, slot: Slot, pos: Option<u32>) {
-        let strip = &self.picture.strip;
         let info = pos
             .and_then(|pos| self.ui.grid.model.item(pos))
             .and_downcast::<AssetObject>()
             .map(|item| AssetInfo::from_item(&item));
+        self.fill_slot_with(slot, info);
+    }
+
+    fn fill_slot_with(&self, slot: Slot, info: Option<AssetInfo>) {
+        let strip = &self.picture.strip;
         let asset_id = info.as_ref().map_or("", |info| info.asset_id.as_str());
         if strip.asset(slot) == asset_id {
             return;
@@ -180,7 +191,7 @@ impl Lightbox {
             .or_else(|| cache.get_cached(&info.asset_id, ThumbnailSize::Thumbnail))
     }
 
-    fn load_neighbours(&self) {
+    pub(in crate::library::lightbox) fn load_neighbours(&self) {
         let pos = self.pos.get();
         for (slot, neighbour) in [
             (Slot::Prev, pos.checked_sub(1)),
@@ -229,6 +240,8 @@ impl Lightbox {
     pub(in crate::library::lightbox) fn show_overlays(&self, shown: bool) {
         let opacity = if shown { 1.0 } else { 0.0 };
         self.video_badge_button.set_opacity(opacity);
+        self.live_button.set_opacity(opacity);
+        self.stack.root.set_opacity(opacity);
         self.unavailable.overlay.set_opacity(opacity);
         self.picture.ocr.area.set_opacity(opacity);
     }
@@ -328,8 +341,9 @@ impl Lightbox {
     /// Reveal the spinner after `delay_ms` unless the returned flag is set first.
     fn arm_loader_spinner(&self, delay_ms: u64) -> Rc<Cell<bool>> {
         let loader_for_arm = self.picture.loader.clone();
-        // Set once the load finishes so the delayed spinner never appears.
-        let cancel_loader = Rc::new(Cell::new(false));
+        // Set once the load finishes so the delayed spinner never appears. A slideshow never
+        // shows it: the photo it steps to is already on screen, sharpening in place.
+        let cancel_loader = Rc::new(Cell::new(self.slideshow.is_running()));
         let cancel_for_arm = cancel_loader.clone();
         glib::timeout_add_local(std::time::Duration::from_millis(delay_ms), move || {
             if !cancel_for_arm.get() {

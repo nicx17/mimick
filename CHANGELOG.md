@@ -24,8 +24,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added an Arch Linux package on the AUR: `mimick` builds the latest release. Its build file is in `packaging/aur/` (#295).
 - Mimick can now be translated. Its text, counts, and dates follow your system language, and dates use your locale's month and day names. The app menu entry and software center listing can be translated too. No translations ship yet; see **Translations** in `CONTRIBUTING.md` to add a language (#220).
 - Added AppImages for x86_64 and aarch64 to each GitHub release. Each bundles every library it needs, including glibc, so it runs on distributions too old for Mimick's GTK and libadwaita versions. **Run on Startup** points at the AppImage file itself (#295).
+- Added live and motion photos: the viewer shows a **Live** button on them that plays the short clip over the photo on a loop (**Space** too). Grid tiles of live photos show a small live icon (#300).
+- Added **Memories**: a row of cards above Photos for "On this day" and birthday memories. A card opens the memory's photos as a slideshow that moves at the pace set in your Immich settings, and marks it seen. **Remove from Memory** in the photo menu takes a photo out. The row follows the **Memories** setting in Immich (#301).
+- Added **stacks**: bursts and RAW+JPEG pairs that Immich groups show as one tile in Photos, with a count badge. In the viewer, a strip of the stack's photos lets you look at each one, and its menu sets the cover, removes a photo, or unstacks. Select two or more photos and choose **Stack** to make a stack; **Unstack** is in a stacked tile's menu (#302).
+- Added **Edit Photo…** for your own photos, right on the photo in the viewer: crop (free or 1:1, 4:3, 3:2, 16:9, or the photo's own shape), rotate, and flip without changing the original, and revert to undo it all. Immich keeps the edits and renders the result. On wide windows a crop button under the photo opens it too (#303).
+- Added **Tag People…** for your own photos, also opened by the pen in the viewer's **People** section. It shows the face boxes on the photo in the viewer: tap one to change who it is, remove a wrong face, or use it as that person's cover photo, or drag around a face Immich missed to tag it. You can pick someone or type a new name (#304).
+- Added a **Duplicates** page under **Utilities** in the sidebar. It shows the photos Immich found more than once, one group at a time and side by side as large as the window allows, with resolution, size (the largest file marked), and date; tap a photo to keep or trash it, or mark the group as not duplicates. It appears when duplicate detection is on in Immich (#305).
+- Added slideshows: **Play Slideshow** in an album's, search's, or Photos' header, **Slideshow** in the photo menu, or **S** in the viewer. It plays fullscreen with a progress line and controls that hide until you move the pointer or tap; its settings set the seconds per photo, crossfade or slide, shuffle, and repeat. **Space** pauses and **Esc** ends it (#306).
+- Added **View Similar Photos** to the photo menu, which uses smart search to find photos that look like it (#307).
+- Added **View in Timeline** to the photo menu outside Photos: it opens Photos at the photo's month and highlights it (#308).
+- The viewer's header has a **More** button that opens the photo menu, so its actions are one tap away on touch screens.
+- The README shows how far each translation has come; `scripts/i18n.sh progress` updates it.
 
 ### Changed
+
+- The viewer's **Fullscreen** button moved into its **⋯** menu (**F11** still works), so the header fits narrow windows with large text or minimize and maximize buttons.
+- Recognized text in the viewer can now be selected a few characters at a time: drag across it with the mouse to select just what you sweep over, even across lines, double-click to pick a word, and **Shift**-click to extend. A single click still selects the whole line, and taps on touch screens still pick whole lines.
 
 - Double-clicking or double-tapping a zoomed-in photo in the lightbox now zooms back out, so phones without a zoom-reset button can get back to the whole photo. Before, each double-click zoomed in further.
 - **Delete Album…** and **Leave Album…** in an album tile's context menu are now red, like **Move to Trash** in the photo menu.
@@ -37,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Space** plays and pauses a video again after you pick a speed, audio track, or volume; it used to reopen that menu.
 - Context menus too tall for the screen, such as a photo's menu on a phone, now scroll instead of running off the bottom.
 - Fixed switches not toggling when you clicked their knob. A click anywhere on a switch now toggles it.
 - Fixed a long tag stretching the details pane. Tags too long for the pane are now shortened with "…"; hover a tag to see its full name.

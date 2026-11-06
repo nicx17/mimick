@@ -17,12 +17,17 @@ use super::{LOCAL_ID_PREFIX, LibraryWindowUi};
 mod activity;
 mod albums;
 mod details;
+mod edit;
+mod faces;
 mod fullscreen;
 mod interaction;
+mod live;
 mod location;
 mod ocr;
 mod people;
 mod rating;
+mod slideshow;
+mod stack;
 mod strip;
 mod video;
 mod widgets;
@@ -109,6 +114,7 @@ struct AssetInfo {
     favorite: bool,
     archived: bool,
     edited: bool,
+    live_video_id: String,
 }
 
 impl AssetInfo {
@@ -123,6 +129,7 @@ impl AssetInfo {
             favorite: item.is_favorite(),
             archived: item.is_archived(),
             edited: item.is_edited(),
+            live_video_id: item.live_video_id(),
         }
     }
 
@@ -147,6 +154,15 @@ pub(super) struct Lightbox {
     picture: PictureArea,
     unavailable: UnavailableCard,
     video_badge_button: gtk::Button,
+    live_button: gtk::ToggleButton,
+    live_layer: gtk::Box,
+    motion: RefCell<Option<Rc<super::video_player::MotionPlayer>>>,
+    /// A stack member picked in the stack strip, shown in place of the grid item.
+    member: RefCell<Option<AssetObject>>,
+    stack: stack::StackStrip,
+    face_mode: faces::FaceMode,
+    edit_mode: edit::EditMode,
+    slideshow: slideshow::Slideshow,
     actions: ActionBar,
     details: DetailsPane,
     viewer: gtk::Box,
@@ -189,6 +205,11 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
     lightbox.connect_keys();
     lightbox.connect_actions();
     lightbox.connect_fullscreen();
+    lightbox.connect_live();
+    lightbox.connect_slideshow();
+    lightbox.connect_stack();
+    lightbox.connect_faces();
+    lightbox.connect_edit_mode();
     lightbox.render();
     lightbox.ui.nav.push(&lightbox.header.page);
     let slot = &lightbox.ui.interaction.lightbox;
@@ -197,6 +218,54 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
         previous.release();
     }
     log::debug!("Lightbox opened at position {position}");
+}
+
+pub(super) use slideshow::SlideshowOptions;
+pub(super) use stack::{append_unstack_button, stack_selected};
+
+/// Starts a slideshow at `position`, opening the lightbox there unless it's already open.
+pub(super) fn start_slideshow_at(
+    ui: &Rc<LibraryWindowUi>,
+    position: u32,
+    options: Option<SlideshowOptions>,
+) {
+    if ui.interaction.lightbox.borrow().is_none() {
+        open_lightbox(ui.clone(), position);
+    }
+    let lightbox = ui.interaction.lightbox.borrow().clone();
+    if let Some(lightbox) = lightbox {
+        lightbox.start_slideshow(options);
+    }
+}
+
+/// Face mode for `item`, opening the lightbox on it first when it isn't open.
+pub(super) fn tag_people(ui: &Rc<LibraryWindowUi>, item: &AssetObject) {
+    open_on(ui, item, Lightbox::enter_face_mode);
+}
+
+/// Edit mode for `item`, opening the lightbox on it first when it isn't open.
+pub(super) fn edit_photo(ui: &Rc<LibraryWindowUi>, item: &AssetObject) {
+    open_on(ui, item, Lightbox::enter_edit_mode);
+}
+
+fn open_on(ui: &Rc<LibraryWindowUi>, item: &AssetObject, start: fn(&Rc<Lightbox>)) {
+    if ui.interaction.lightbox.borrow().is_none() {
+        let model = &ui.grid.model;
+        let found = (0..model.n_items()).find(|&pos| {
+            model
+                .item(pos)
+                .and_downcast::<AssetObject>()
+                .is_some_and(|candidate| candidate == *item)
+        });
+        let Some(position) = found else {
+            return;
+        };
+        open_lightbox(ui.clone(), position);
+    }
+    let lightbox = ui.interaction.lightbox.borrow().clone();
+    if let Some(lightbox) = lightbox {
+        start(&lightbox);
+    }
 }
 
 pub(super) fn close_lightbox(ui: &LibraryWindowUi) {
@@ -208,11 +277,13 @@ pub(super) fn close_lightbox(ui: &LibraryWindowUi) {
 
 impl Lightbox {
     fn release(&self) {
+        self.stop_slideshow();
         self.close_fullscreen();
         if let Some(handler) = self.collapse_handler.take() {
             self.ui.split.disconnect(handler);
         }
         self.close_video();
+        self.close_live();
         self.picture.strip.stop();
         for picture in self.picture.strip.pictures() {
             picture.set_paintable(None::<&gtk::gdk::Paintable>);

@@ -207,6 +207,12 @@ fn new_tail<'a>(
     head_matches.then(|| &assets[shown..])
 }
 
+/// One grid object for `asset`, linked to its local copy like the grid's own items.
+pub fn object_for(ctx: &AppContext, asset: &LibraryAsset) -> AssetObject {
+    let mut objects = build_asset_objects(std::slice::from_ref(asset), ctx);
+    objects.remove(0)
+}
+
 fn build_asset_objects(assets: &[LibraryAsset], ctx: &AppContext) -> Vec<AssetObject> {
     use super::LOCAL_ID_PREFIX;
 
@@ -271,6 +277,13 @@ fn remote_asset_object(asset: &LibraryAsset, ctx: &AppContext) -> AssetObject {
     });
     if let Some(path) = local_match {
         object.set_property("local-path", path);
+    }
+    if let Some(video) = &asset.live_photo_video_id {
+        object.set_live_video_id(video.as_str());
+    }
+    if let Some(stack) = &asset.stack {
+        object.set_stack_id(stack.id.as_str());
+        object.set_stack_count(stack.asset_count);
     }
     object
 }

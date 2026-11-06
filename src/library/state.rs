@@ -82,6 +82,16 @@ pub enum LibrarySource {
     Thing {
         query: String,
     },
+    /// One of Immich's memories ("1 year ago"), from the row above Photos.
+    Memory {
+        id: String,
+        title: String,
+    },
+    /// Smart search with one photo as the query ("View Similar Photos").
+    Similar {
+        asset_id: String,
+        filename: String,
+    },
     /// Assets under one cluster on the Map page, fetched by ID.
     MapArea {
         ids: AssetIds,
@@ -119,6 +129,7 @@ pub enum LibraryPage {
     Sharing,
     Search,
     Map,
+    Duplicates,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -436,6 +447,8 @@ mod tests {
             is_edited: false,
             owner_id: String::new(),
             local_date_time: None,
+            live_photo_video_id: None,
+            stack: None,
         }
     }
 

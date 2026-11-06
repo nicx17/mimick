@@ -13,6 +13,7 @@ mod layer;
 mod state;
 
 pub(super) use layer::OcrLayer;
+use state::Caret;
 
 /// Floating button over the photo that copies the selection, or all text when nothing is selected.
 pub(super) fn copy_button() -> gtk::Button {
@@ -93,12 +94,14 @@ impl Lightbox {
         true
     }
 
-    /// Mouse presses on a box select text instead of panning, swiping or dragging the photo out.
+    /// Mouse presses on a box select text instead of panning, swiping or dragging the photo out:
+    /// a click takes the line, a drag the characters swept over, a double-click one word.
     fn connect_ocr_mouse_selection(self: &Rc<Self>) {
         let drag = gtk::GestureDrag::new();
         drag.set_button(gtk::gdk::BUTTON_PRIMARY);
         drag.set_propagation_phase(gtk::PropagationPhase::Capture);
         let start = Rc::new(Cell::new(None::<(f64, f64)>));
+        let last_press = Rc::new(Cell::new(None::<(i64, Caret)>));
         let begin = start.clone();
         let lb = Rc::downgrade(self);
         drag.connect_drag_begin(move |gesture, x, y| {
@@ -106,18 +109,15 @@ impl Lightbox {
             let Some(lb) = lb.upgrade() else {
                 return;
             };
-            let Some(idx) = (!is_touch(gesture))
-                .then(|| lb.ocr_box_under(x, y))
+            let Some(caret) = (!is_touch(gesture))
+                .then(|| lb.ocr_caret_under(x, y))
                 .flatten()
             else {
                 gesture.set_state(gtk::EventSequenceState::Denied);
                 return;
             };
             gesture.set_state(gtk::EventSequenceState::Claimed);
-            let mods = gesture.current_event_state();
-            let shift = mods.contains(gtk::gdk::ModifierType::SHIFT_MASK);
-            let ctrl = mods.contains(gtk::gdk::ModifierType::CONTROL_MASK);
-            if lb.picture.ocr.press(idx, shift, ctrl) {
+            if lb.ocr_press(gesture, caret, &last_press) {
                 begin.set(Some((x, y)));
             }
             lb.sync_ocr_controls();
@@ -127,12 +127,38 @@ impl Lightbox {
             let (Some((x, y)), Some(lb)) = (start.get(), lb.upgrade()) else {
                 return;
             };
-            if let Some(idx) = lb.ocr_box_under(x + dx, y + dy) {
-                lb.picture.ocr.extend_to(idx);
+            if let Some(caret) = lb.ocr_caret_under(x + dx, y + dy) {
+                lb.picture.ocr.drag_to(caret);
                 lb.sync_ocr_controls();
             }
         });
         self.picture.scrolled.add_controller(drag);
+    }
+
+    /// A second press on the same box soon after the first picks the word there;
+    /// otherwise the press selects as `press_at` says. Returns whether a drag should follow.
+    fn ocr_press(
+        &self,
+        gesture: &gtk::GestureDrag,
+        caret: Caret,
+        last_press: &Cell<Option<(i64, Caret)>>,
+    ) -> bool {
+        let now = glib::monotonic_time();
+        let window_us = gtk::Settings::default()
+            .map_or(400, |settings| settings.gtk_double_click_time())
+            .max(1);
+        let double = last_press.take().is_some_and(|(at, prev)| {
+            prev.idx == caret.idx && now - at <= i64::from(window_us) * 1000
+        });
+        if double {
+            self.picture.ocr.select_word(caret);
+            return false;
+        }
+        last_press.set(Some((now, caret)));
+        let mods = gesture.current_event_state();
+        let shift = mods.contains(gtk::gdk::ModifierType::SHIFT_MASK);
+        let ctrl = mods.contains(gtk::gdk::ModifierType::CONTROL_MASK);
+        self.picture.ocr.press_at(caret, shift, ctrl)
     }
 
     /// Touch taps toggle boxes; drags are left to panning, pinching and swiping.
@@ -228,8 +254,13 @@ impl Lightbox {
         });
     }
 
-    /// Box under a point in picture-scroller coordinates, while the text is shown.
-    pub(super) fn ocr_box_under(&self, x: f64, y: f64) -> Option<usize> {
+    /// Caret under a point in picture-scroller coordinates, while the text is shown.
+    fn ocr_caret_under(&self, x: f64, y: f64) -> Option<Caret> {
+        let point = self.ocr_layer_point(x, y)?;
+        self.picture.ocr.caret_at(point)
+    }
+
+    fn ocr_layer_point(&self, x: f64, y: f64) -> Option<(f64, f64)> {
         let layer = &self.picture.ocr.area;
         if !layer.is_visible() {
             return None;
@@ -238,9 +269,13 @@ impl Lightbox {
             .picture
             .scrolled
             .compute_point(layer, &gtk::graphene::Point::new(x as f32, y as f32))?;
-        self.picture
-            .ocr
-            .box_at((f64::from(point.x()), f64::from(point.y())))
+        Some((f64::from(point.x()), f64::from(point.y())))
+    }
+
+    /// Box under a point in picture-scroller coordinates, while the text is shown.
+    pub(super) fn ocr_box_under(&self, x: f64, y: f64) -> Option<usize> {
+        let point = self.ocr_layer_point(x, y)?;
+        self.picture.ocr.box_at(point)
     }
 
     /// Shows the toggle, layer and copy button to match the current photo's boxes.

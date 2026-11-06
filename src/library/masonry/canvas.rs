@@ -129,11 +129,17 @@ mod imp {
         pub last_selected: Cell<Option<u32>>,
         /// Tile the arrow keys move from; ringed while focus is visible.
         pub focused: Cell<Option<u32>>,
+        /// Tile to scroll into the middle of the view once a layout includes it.
+        pub pending_reveal: Cell<Option<u32>>,
         pub permission_warned: Cell<bool>,
         /// Cached video badge icon paintable, resolved lazily from the icon theme.
         pub video_icon: OnceCell<gdk4::Paintable>,
         /// Cached favorite heart icon, painted on favorited tiles.
         pub heart_icon: OnceCell<gdk4::Paintable>,
+        /// Cached live photo icon, painted in the corner of live photos.
+        pub live_icon: OnceCell<gdk4::Paintable>,
+        /// Cached stack icon, painted beside a stack's photo count.
+        pub stack_icon: OnceCell<gdk4::Paintable>,
         /// Cached checkbox icon (selected state).
         pub check_icon: OnceCell<gdk4::Paintable>,
         /// Cached checkbox icon (unselected state).
@@ -223,6 +229,15 @@ mod imp {
             let wanted = self.wanted_loads(&sctx, &rows, &viewport);
             drop(rows);
             self.finish_snapshot(cache, &viewport, &stats, wanted);
+            if self.pending_reveal.get().is_some() {
+                // Scrolling inside snapshot would fight the frame being drawn.
+                let canvas = widget.downgrade();
+                glib::idle_add_local_once(move || {
+                    if let Some(canvas) = canvas.upgrade() {
+                        canvas.try_reveal();
+                    }
+                });
+            }
         }
     }
 

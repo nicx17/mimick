@@ -31,6 +31,8 @@ pub(super) struct AssetMenuHooks {
     pub on_trashed: Rc<dyn Fn()>,
     /// Receives whether the capture date changed.
     pub on_edited: Rc<dyn Fn(bool)>,
+    /// Only the lightbox offers Fullscreen.
+    pub toggle_fullscreen: Option<Rc<dyn Fn()>>,
 }
 
 impl AssetMenuHooks {
@@ -45,6 +47,7 @@ impl AssetMenuHooks {
                     super::refresh_library_after_mutation(ui.clone(), true);
                 }
             }),
+            toggle_fullscreen: None,
         }
     }
 }
@@ -73,6 +76,12 @@ impl MenuAsset {
     }
 }
 
+/// The photo a menu acts on, and the grid position slideshows start from.
+pub(super) struct MenuTarget {
+    pub item: AssetObject,
+    pub position: u32,
+}
+
 pub(super) fn show_asset_context_menu(
     ui: Rc<LibraryWindowUi>,
     parent: &impl gtk::prelude::IsA<gtk::Widget>,
@@ -84,6 +93,18 @@ pub(super) fn show_asset_context_menu(
     let Some(item) = ui.grid.model.item(position).and_downcast::<AssetObject>() else {
         return;
     };
+    show_item_context_menu(ui, parent, MenuTarget { item, position }, x, y, hooks);
+}
+
+pub(super) fn show_item_context_menu(
+    ui: Rc<LibraryWindowUi>,
+    parent: &impl gtk::prelude::IsA<gtk::Widget>,
+    target: MenuTarget,
+    x: f64,
+    y: f64,
+    hooks: AssetMenuHooks,
+) {
+    let MenuTarget { item, position } = target;
     let asset = MenuAsset::from_item(&item);
     let is_image = item
         .property::<String>("asset-type")
@@ -109,11 +130,38 @@ pub(super) fn show_asset_context_menu(
             open_asset_in_default_app(ui.clone(), asset.clone())
         });
     }
+    append_viewing_buttons(&menu, &ui, position, &hooks);
+    if asset.on_server() && !trash_view::is_trash_active(&ui) {
+        super::related::append_related_buttons(&menu, &ui, &item);
+    }
     if asset.on_server() {
         append_manage_buttons(&menu, &ui, &item, hooks);
     }
 
     menu.popup();
+}
+
+/// Slideshow from this photo, and Fullscreen when the menu belongs to the lightbox.
+fn append_viewing_buttons(
+    menu: &Menu,
+    ui: &Rc<LibraryWindowUi>,
+    position: u32,
+    hooks: &AssetMenuHooks,
+) {
+    if !trash_view::is_trash_active(ui) {
+        let ui = ui.clone();
+        menu.add(&gettext("Slideshow"), false, move || {
+            super::lightbox::start_slideshow_at(&ui, position, None)
+        });
+    }
+    if let Some(toggle) = hooks.toggle_fullscreen.clone() {
+        let label = if ui.window.is_fullscreen() {
+            gettext("Leave Fullscreen")
+        } else {
+            gettext("Fullscreen")
+        };
+        menu.add(&label, false, move || toggle());
+    }
 }
 
 /// Calls `open` on right-click and on touch long-press, which also swallows the tap.
@@ -192,6 +240,27 @@ impl Menu {
         self.popover.popup();
     }
 
+    /// Runs `f` when the menu closes, however it was dismissed.
+    pub(super) fn on_closed(&self, f: impl Fn() + 'static) {
+        self.popover.connect_closed(move |_| f());
+    }
+
+    /// A bold line above the buttons naming what the menu acts on.
+    pub(super) fn heading(&self, text: &str) {
+        let label = gtk::Label::builder()
+            .label(text)
+            .xalign(0.0)
+            .ellipsize(gtk::pango::EllipsizeMode::End)
+            .max_width_chars(28)
+            .margin_start(6)
+            .margin_end(6)
+            .margin_top(2)
+            .margin_bottom(2)
+            .css_classes(["heading"])
+            .build();
+        self.content.append(&label);
+    }
+
     pub(super) fn add(&self, label: &str, destructive: bool, on_click: impl Fn() + 'static) {
         let button = gtk::Button::builder()
             .label(label)
@@ -229,6 +298,7 @@ fn append_manage_buttons(
     append_favorite_button(menu, ui, item, &hooks);
     append_archive_button(menu, ui, item, &hooks);
     append_album_buttons(menu, ui, &remote_id, &hooks);
+    super::memories::append_remove_button(menu, ui, &remote_id, hooks.on_trashed.clone());
     let (ui_link, link_id) = (ui.clone(), remote_id.clone());
     menu.add(&gettext("Create Share Link…"), false, move || {
         super::shared_link_dialog::present(
@@ -239,6 +309,7 @@ fn append_manage_buttons(
             Rc::new(|| {}),
         )
     });
+    super::lightbox::append_unstack_button(menu, ui, item);
     if super::actions::is_mine(ui, item) {
         append_edit_buttons(menu, ui, item, remote_id, hooks.on_edited);
     }
@@ -276,15 +347,31 @@ fn append_edit_buttons(
 ) {
     let (ui_edit, filename, edit_id) =
         (ui.clone(), item.property::<String>("filename"), id.clone());
+    let on_info_edited = on_edited.clone();
     menu.add(&gettext("Edit Info…"), false, move || {
         show_edit_dialog(
             ui_edit.clone(),
             edit_id.clone(),
             filename.clone(),
-            on_edited.clone(),
+            on_info_edited.clone(),
         )
     });
-    append_location_button(menu, ui, item, id);
+    append_location_button(menu, ui, item, id.clone());
+    let is_image = item
+        .property::<String>("asset-type")
+        .eq_ignore_ascii_case("IMAGE");
+    if is_image {
+        let (ui, item) = (ui.clone(), item.clone());
+        menu.add(&gettext("Edit Photo…"), false, move || {
+            super::lightbox::edit_photo(&ui, &item)
+        });
+    }
+    if is_image && ui.features.get().people {
+        let (ui, item) = (ui.clone(), item.clone());
+        menu.add(&gettext("Tag People…"), false, move || {
+            super::lightbox::tag_people(&ui, &item)
+        });
+    }
 }
 
 fn append_location_button(menu: &Menu, ui: &Rc<LibraryWindowUi>, item: &AssetObject, id: String) {

@@ -45,6 +45,9 @@ pub(super) fn enrich(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
         LibrarySource::AdvancedSearch { filters } => count_matching(ui, (**filters).clone()),
         LibrarySource::Thing { .. } => set_details(&ui.header, vec![gettext("Things")]),
         LibrarySource::SmartSearch { .. } => set_details(&ui.header, vec![gettext("Smart search")]),
+        LibrarySource::Similar { .. } => {
+            set_details(&ui.header, vec![gettext("Most similar first")])
+        }
         LibrarySource::Folder { path } => {
             set_details(&ui.header, vec![path.clone()]);
         }

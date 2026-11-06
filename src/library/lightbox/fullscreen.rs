@@ -1,4 +1,3 @@
-use gettextrs::gettext;
 use std::cell::Cell;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
@@ -36,12 +35,6 @@ impl Lightbox {
             }
         });
         *self.fullscreen_handler.borrow_mut() = Some(handler);
-        let lb = Rc::downgrade(self);
-        self.header.fullscreen_btn.connect_clicked(move |_| {
-            if let Some(lb) = lb.upgrade() {
-                lb.toggle_fullscreen();
-            }
-        });
         self.header.bar.add_controller(self.chrome.hover.clone());
         self.connect_chrome_reveal();
     }
@@ -61,10 +54,15 @@ impl Lightbox {
     }
 
     fn apply_fullscreen(&self, fullscreen: bool) {
+        if !fullscreen {
+            self.stop_slideshow();
+        }
         let toolbar = &self.header.toolbar;
         toolbar.set_extend_content_to_top_edge(fullscreen);
         toolbar.set_reveal_top_bars(!fullscreen);
-        self.actions.bar.set_visible(!fullscreen);
+        self.actions
+            .bar
+            .set_visible(!fullscreen && !self.edit_mode.is_active());
         super::set_viewer_margins(&self.viewer, fullscreen);
         if fullscreen {
             self.viewer.add_css_class("mimick-fullscreen");
@@ -72,13 +70,6 @@ impl Lightbox {
         } else {
             self.viewer.remove_css_class("mimick-fullscreen");
         }
-        let (icon, tooltip) = if fullscreen {
-            ("view-restore-symbolic", &gettext("Exit fullscreen (F11)"))
-        } else {
-            ("view-fullscreen-symbolic", &gettext("Fullscreen (F11)"))
-        };
-        self.header.fullscreen_btn.set_icon_name(icon);
-        self.header.fullscreen_btn.set_tooltip_text(Some(tooltip));
         if let Some(player) = self.video.borrow().as_ref() {
             player.set_fullscreen(fullscreen);
         }

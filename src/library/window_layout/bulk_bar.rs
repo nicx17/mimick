@@ -15,6 +15,7 @@ struct BulkActions {
     add_to_album: gtk::Button,
     remove_from_album: gtk::Button,
     archive: gtk::Button,
+    stack: gtk::Button,
     trash: super::super::trash_view::TrashControls,
 }
 
@@ -35,6 +36,11 @@ fn build_bulk_actions() -> BulkActions {
     let add_to_album = gtk::Button::builder()
         .icon_name("list-add-symbolic")
         .tooltip_text(gettext("Add to album"))
+        .build();
+    let stack = gtk::Button::builder()
+        .icon_name("mimick-stack-symbolic")
+        .tooltip_text(gettext("Stack selected"))
+        .visible(false)
         .build();
     let remove_from_album = gtk::Button::builder()
         .icon_name("list-remove-symbolic")
@@ -60,6 +66,7 @@ fn build_bulk_actions() -> BulkActions {
         add_to_album,
         remove_from_album,
         archive,
+        stack,
         trash,
     }
 }
@@ -84,6 +91,7 @@ pub(super) fn build_bulk_bar() -> BulkParts {
         add_to_album: actions.add_to_album,
         remove_from_album: actions.remove_from_album,
         archive: actions.archive,
+        stack: actions.stack,
         secondary,
         overflow_box,
         trash: actions.trash,
@@ -99,6 +107,7 @@ fn assemble_bulk_bar(
         actions.archive.clone(),
         actions.location.clone(),
         actions.date.clone(),
+        actions.stack.clone(),
         actions.remove_from_album.clone(),
     ];
     let secondary = hbox(&[]);

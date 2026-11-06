@@ -1,26 +1,53 @@
-//! Selection state for the OCR boxes of one photo.
+//! Selection state for the OCR boxes of one photo: whole boxes, or a run of characters.
 
 use std::collections::BTreeSet;
 
-use super::geometry::{contain_rect, quad_contains, quad_in_area, reading_order};
+use super::geometry::{contain_rect, fraction_along, quad_contains, quad_in_area, reading_order};
 use crate::api_client::OcrBox;
+
+/// A position between two characters: box index (reading order) and character offset.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) struct Caret {
+    pub idx: usize,
+    pub offset: usize,
+}
 
 /// Boxes in reading order, plus what is selected and hovered; indices refer to that order.
 #[derive(Debug, Default)]
 pub(super) struct OcrState {
     boxes: Vec<OcrBox>,
+    /// Per box, where each character boundary falls across it, from 0 to 1.
+    stops: Vec<Vec<f64>>,
     image: (f64, f64),
+    /// Whole boxes picked by clicking, tapping, or Select All.
     selected: BTreeSet<usize>,
-    /// Box a Shift-click or drag extends from.
+    /// Characters from one caret to another, picked by dragging; replaces `selected`.
+    range: Option<(Caret, Caret)>,
+    /// Box a Shift-click extends from.
     anchor: Option<usize>,
+    /// Where the current mouse drag started.
+    drag_from: Option<Caret>,
     hovered: Option<usize>,
 }
 
 impl OcrState {
-    /// `image` is the displayed texture's size, used to place the normalized boxes.
+    /// `image` is the displayed texture's size; characters are spaced evenly.
+    #[cfg(test)]
     pub(super) fn new(boxes: Vec<OcrBox>, image: (f64, f64)) -> Self {
+        Self::measured(boxes, image, even_stops)
+    }
+
+    /// Like `new`, with `measure` giving each text's character boundaries from 0 to 1.
+    pub(super) fn measured(
+        boxes: Vec<OcrBox>,
+        image: (f64, f64),
+        measure: impl Fn(&str) -> Vec<f64>,
+    ) -> Self {
+        let boxes = reading_order(boxes);
+        let stops = boxes.iter().map(|b| measure(&b.text)).collect();
         Self {
-            boxes: reading_order(boxes),
+            boxes,
+            stops,
             image,
             ..Self::default()
         }
@@ -32,10 +59,6 @@ impl OcrState {
 
     pub(super) fn image(&self) -> (f64, f64) {
         self.image
-    }
-
-    pub(super) fn is_selected(&self, idx: usize) -> bool {
-        self.selected.contains(&idx)
     }
 
     pub(super) fn hovered(&self) -> Option<usize> {
@@ -57,22 +80,79 @@ impl OcrState {
             .rposition(|ocr_box| quad_contains(&quad_in_area(rect, ocr_box.corners()), p))
     }
 
-    /// Mouse press on a box; returns whether dragging should extend the selection.
-    pub(super) fn press(&mut self, idx: usize, shift: bool, ctrl: bool) -> bool {
+    /// The caret nearest `p` inside the box under it.
+    pub(super) fn caret_at(&self, area: (f64, f64), p: (f64, f64)) -> Option<Caret> {
+        let idx = self.box_at(area, p)?;
+        let rect = contain_rect(area, self.image)?;
+        let quad = quad_in_area(rect, self.boxes[idx].corners());
+        let along = fraction_along(&quad, p);
+        Some(Caret {
+            idx,
+            offset: nearest_stop(&self.stops[idx], along),
+        })
+    }
+
+    /// Character boundaries across box `idx`, from 0 to 1.
+    pub(super) fn stops(&self, idx: usize) -> &[f64] {
+        self.stops.get(idx).map_or(&[], Vec::as_slice)
+    }
+
+    /// Mouse press at `caret`; returns whether a drag from here should select characters.
+    pub(super) fn press_at(&mut self, caret: Caret, shift: bool, ctrl: bool) -> bool {
         if ctrl {
-            self.click(idx, true);
+            self.click(caret.idx, true);
             return false;
         }
         if shift {
-            self.extend_to(idx);
+            let from = self.range_start().unwrap_or(caret);
+            self.range = Some((from, caret));
+            self.drag_from = Some(from);
         } else {
-            self.click(idx, false);
+            self.click(caret.idx, false);
+            self.drag_from = Some(caret);
         }
         true
     }
 
+    /// Where a Shift-click extends from: the current range's start, else the last clicked box.
+    fn range_start(&self) -> Option<Caret> {
+        self.range
+            .map(|(from, _)| from)
+            .or_else(|| self.anchor.map(|idx| Caret { idx, offset: 0 }))
+    }
+
+    /// Mouse drag reached `caret`: select the characters between it and where the drag began.
+    pub(super) fn drag_to(&mut self, caret: Caret) {
+        if let Some(from) = self.drag_from
+            && from != caret
+        {
+            self.range = Some((from, caret));
+        }
+    }
+
+    /// Double-click: the word around `caret`.
+    pub(super) fn select_word(&mut self, caret: Caret) {
+        let Some(text) = self.boxes.get(caret.idx).map(|b| b.text.as_str()) else {
+            return;
+        };
+        let (start, end) = word_around(text, caret.offset);
+        self.selected.clear();
+        self.range = Some((
+            Caret {
+                idx: caret.idx,
+                offset: start,
+            },
+            Caret {
+                idx: caret.idx,
+                offset: end,
+            },
+        ));
+        self.anchor = Some(caret.idx);
+    }
+
     /// Selects only `idx`, or toggles it when `extend` is set.
     pub(super) fn click(&mut self, idx: usize, extend: bool) {
+        self.range = None;
         if extend {
             if !self.selected.remove(&idx) {
                 self.selected.insert(idx);
@@ -83,48 +163,101 @@ impl OcrState {
         self.anchor = Some(idx);
     }
 
-    /// Selects every box between the anchor and `idx`.
-    pub(super) fn extend_to(&mut self, idx: usize) {
-        let anchor = *self.anchor.get_or_insert(idx);
-        self.selected = (anchor.min(idx)..=anchor.max(idx)).collect();
-    }
-
     pub(super) fn select_all(&mut self) {
+        self.range = None;
         self.selected = (0..self.boxes.len()).collect();
     }
 
     pub(super) fn clear_selection(&mut self) {
         self.selected.clear();
+        self.range = None;
         self.anchor = None;
+        self.drag_from = None;
     }
 
     pub(super) fn has_selection(&self) -> bool {
-        !self.selected.is_empty()
+        (0..self.boxes.len()).any(|idx| self.span(idx).is_some())
     }
 
-    /// Selected boxes' text, one per line in reading order.
+    /// Selected characters of box `idx` as `(start, end)` offsets; `None` when none are.
+    pub(super) fn span(&self, idx: usize) -> Option<(usize, usize)> {
+        let len = self.boxes.get(idx)?.text.chars().count();
+        let (start, end) = match self.range {
+            Some((a, b)) => {
+                let (from, to) = (a.min(b), a.max(b));
+                if idx < from.idx || idx > to.idx {
+                    return None;
+                }
+                let start = if idx == from.idx { from.offset } else { 0 };
+                let end = if idx == to.idx { to.offset } else { len };
+                (start.min(len), end.min(len))
+            }
+            None if self.selected.contains(&idx) => (0, len),
+            None => return None,
+        };
+        (start < end).then_some((start, end))
+    }
+
+    /// Selected text, one box per line in reading order.
     pub(super) fn selected_text(&self) -> Option<String> {
-        self.join_text(self.selected.iter().copied())
+        let lines: Vec<String> = (0..self.boxes.len())
+            .filter_map(|idx| {
+                let (start, end) = self.span(idx)?;
+                let text = &self.boxes[idx].text;
+                Some(text.chars().skip(start).take(end - start).collect())
+            })
+            .collect();
+        (!lines.is_empty()).then(|| lines.join("\n"))
     }
 
     /// Every box's text, one per line in reading order.
     pub(super) fn all_text(&self) -> Option<String> {
-        self.join_text(0..self.boxes.len())
-    }
-
-    fn join_text(&self, indices: impl Iterator<Item = usize>) -> Option<String> {
-        let lines: Vec<&str> = indices
-            .filter_map(|idx| self.boxes.get(idx))
-            .map(|ocr_box| ocr_box.text.as_str())
-            .collect();
+        let lines: Vec<&str> = self.boxes.iter().map(|b| b.text.as_str()).collect();
         (!lines.is_empty()).then(|| lines.join("\n"))
     }
+}
+
+/// Boundaries for evenly wide characters, the fallback when text can't be measured.
+pub(super) fn even_stops(text: &str) -> Vec<f64> {
+    let n = text.chars().count().max(1);
+    (0..=n).map(|i| i as f64 / n as f64).collect()
+}
+
+/// Offset of the boundary closest to `along`.
+fn nearest_stop(stops: &[f64], along: f64) -> usize {
+    stops
+        .iter()
+        .enumerate()
+        .min_by(|(_, a), (_, b)| (*a - along).abs().total_cmp(&(*b - along).abs()))
+        .map_or(0, |(offset, _)| offset)
+}
+
+/// Character offsets of the word containing `offset`; whitespace ends a word.
+fn word_around(text: &str, offset: usize) -> (usize, usize) {
+    let chars: Vec<char> = text.chars().collect();
+    let at = offset.min(chars.len().saturating_sub(1));
+    if chars.get(at).is_none_or(|c| c.is_whitespace()) {
+        return (0, chars.len());
+    }
+    let start = chars[..at]
+        .iter()
+        .rposition(|c| c.is_whitespace())
+        .map_or(0, |i| i + 1);
+    let end = chars[at..]
+        .iter()
+        .position(|c| c.is_whitespace())
+        .map_or(chars.len(), |i| at + i);
+    (start, end)
 }
 
 #[cfg(test)]
 mod tests {
     use super::super::geometry::ob;
     use super::*;
+
+    fn caret(idx: usize, offset: usize) -> Caret {
+        Caret { idx, offset }
+    }
 
     #[test]
     fn click_replaces_selection_and_extend_toggles() {
@@ -165,33 +298,64 @@ mod tests {
         assert_eq!(state.box_at((0.0, 0.0), (0.0, 0.0)), None);
     }
 
-    fn four_rows() -> OcrState {
+    fn lines() -> OcrState {
         OcrState::new(
             vec![
-                ob("a", 0.0, 0.0),
-                ob("b", 0.0, 0.25),
-                ob("c", 0.0, 0.5),
-                ob("d", 0.0, 0.75),
+                ob("hello world", 0.0, 0.0),
+                ob("second line", 0.0, 0.25),
+                ob("third", 0.0, 0.5),
             ],
             (100.0, 100.0),
         )
     }
 
     #[test]
-    fn extend_to_selects_the_range_from_the_last_click() {
-        let mut state = four_rows();
-        state.click(1, false);
-        state.extend_to(3);
-        assert_eq!(state.selected_text().as_deref(), Some("b\nc\nd"));
-        state.extend_to(0);
-        assert_eq!(state.selected_text().as_deref(), Some("a\nb"));
+    fn a_click_picks_the_whole_box_and_a_drag_picks_characters() {
+        let mut state = lines();
+        assert!(state.press_at(caret(0, 6), false, false));
+        assert_eq!(state.selected_text().as_deref(), Some("hello world"));
+        state.drag_to(caret(0, 11));
+        assert_eq!(state.selected_text().as_deref(), Some("world"));
+        state.drag_to(caret(0, 2));
+        assert_eq!(state.selected_text().as_deref(), Some("llo "));
     }
 
     #[test]
-    fn extend_to_without_a_click_selects_one_box() {
-        let mut state = four_rows();
-        state.extend_to(2);
-        assert_eq!(state.selected_text().as_deref(), Some("c"));
+    fn a_drag_across_boxes_takes_the_tail_middle_and_head() {
+        let mut state = lines();
+        state.press_at(caret(0, 6), false, false);
+        state.drag_to(caret(2, 3));
+        assert_eq!(
+            state.selected_text().as_deref(),
+            Some("world\nsecond line\nthi")
+        );
+    }
+
+    #[test]
+    fn shift_extends_and_ctrl_toggles_whole_boxes() {
+        let mut state = lines();
+        state.press_at(caret(1, 0), false, false);
+        assert!(state.press_at(caret(1, 6), true, false));
+        assert_eq!(state.selected_text().as_deref(), Some("second"));
+        assert!(!state.press_at(caret(2, 1), false, true));
+        assert_eq!(state.selected_text().as_deref(), Some("second line\nthird"));
+    }
+
+    #[test]
+    fn double_click_selects_a_word() {
+        let mut state = lines();
+        state.select_word(caret(1, 9));
+        assert_eq!(state.selected_text().as_deref(), Some("line"));
+        assert_eq!(word_around("a b", 1), (0, 3));
+    }
+
+    #[test]
+    fn carets_land_between_characters() {
+        let state = OcrState::new(vec![ob("abcd", 0.0, 0.0)], (100.0, 100.0));
+        // The box spans x 0–25 of a 100 px photo: a quarter across it is after "a".
+        let at = state.caret_at((100.0, 100.0), (6.5, 3.0));
+        assert_eq!(at, Some(caret(0, 1)));
+        assert_eq!(nearest_stop(&even_stops("abcd"), 1.0), 4);
     }
 
     #[test]
@@ -206,23 +370,15 @@ mod tests {
     }
 
     #[test]
-    fn has_selection_follows_clicks_and_clearing() {
-        let mut state = four_rows();
+    fn has_selection_follows_clicks_ranges_and_clearing() {
+        let mut state = lines();
         assert!(!state.has_selection());
         state.click(2, false);
         assert!(state.has_selection());
         state.clear_selection();
         assert!(!state.has_selection());
-    }
-
-    #[test]
-    fn press_selects_extends_or_toggles_and_reports_drag() {
-        let mut state = four_rows();
-        assert!(state.press(1, false, false));
-        assert_eq!(state.selected_text().as_deref(), Some("b"));
-        assert!(state.press(3, true, false));
-        assert_eq!(state.selected_text().as_deref(), Some("b\nc\nd"));
-        assert!(!state.press(0, false, true));
-        assert_eq!(state.selected_text().as_deref(), Some("a\nb\nc\nd"));
+        state.press_at(caret(0, 3), false, false);
+        state.drag_to(caret(0, 3));
+        assert!(state.has_selection());
     }
 }

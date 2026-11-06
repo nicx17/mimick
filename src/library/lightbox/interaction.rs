@@ -22,7 +22,7 @@ use crate::library::actions::{TrashTarget, confirm_trash};
 use crate::library::archive::{archive_icon, archive_tooltip, set_archived};
 use crate::library::asset_edit::show_edit_dialog;
 use crate::library::context_menu::{
-    AssetMenuHooks, connect_context_menu, menu_key, show_asset_context_menu,
+    AssetMenuHooks, MenuTarget, connect_context_menu, menu_key, show_item_context_menu,
 };
 use crate::library::download::{open_local_with_default_app, start_download};
 use crate::library::favorites::{FavoriteHooks, heart_icon, heart_tooltip, toggle_favorite};
@@ -37,17 +37,39 @@ impl Lightbox {
         picture.overlay.add_overlay(&unavailable.overlay);
         let video_badge_button = build_video_badge();
         picture.overlay.add_overlay(&video_badge_button);
+        let live_layer = super::live::build_live_layer();
+        picture.overlay.add_overlay(&live_layer);
+        let live_button = super::live::build_live_button();
+        picture.overlay.add_overlay(&live_button);
+        let stack = super::stack::StackStrip::new();
+        picture.overlay.add_overlay(&stack.root);
+        let face_mode = super::faces::FaceMode::new();
+        picture.overlay.add_overlay(&face_mode.bar);
+        let edit_mode = super::edit::EditMode::new();
+        // Not overlays, so the photo shrinks to fit between them instead of being covered.
+        header.toolbar.add_top_bar(&edit_mode.header);
+        let slideshow = super::slideshow::Slideshow::new();
+        for overlay in slideshow.overlays() {
+            picture.overlay.add_overlay(&overlay);
+        }
 
         let initial_full = ui.ctx.config.read().data.library_preview_full_resolution;
         let actions = build_action_bar(initial_full);
-        // The full bar doesn't fit a 360 px window; Ctrl+0 still resets the zoom.
-        ui.split
-            .bind_property("collapsed", &actions.zoom_reset, "visible")
-            .invert_boolean()
-            .sync_create()
-            .build();
+        // The full bar doesn't fit a 360 px window; Ctrl+0 still resets the zoom,
+        // and Edit Photo stays in the ⋯ menu.
+        for narrow_hidden in [
+            actions.zoom_reset.upcast_ref::<gtk::Widget>(),
+            actions.edit_slot.upcast_ref(),
+        ] {
+            ui.split
+                .bind_property("collapsed", narrow_hidden, "visible")
+                .invert_boolean()
+                .sync_create()
+                .build();
+        }
         let details = build_details_pane();
         let viewer = build_viewer(&picture, &actions);
+        viewer.append(&edit_mode.panel);
         let body = build_split_view(&ui, &viewer, &details, &header.details_btn);
         header.toolbar.set_content(Some(&body));
 
@@ -57,6 +79,14 @@ impl Lightbox {
             picture,
             unavailable,
             video_badge_button,
+            live_button,
+            live_layer,
+            motion: RefCell::new(None),
+            member: RefCell::new(None),
+            stack,
+            face_mode,
+            edit_mode,
+            slideshow,
             actions,
             details,
             viewer,
@@ -90,7 +120,11 @@ impl Lightbox {
         drag_source.set_actions(gtk::gdk::DragAction::COPY);
         let lb = Rc::downgrade(self);
         drag_source.connect_prepare(move |_source, _x, _y| {
-            let path = lb.upgrade()?.drag_path.borrow().clone()?;
+            // A drag while tagging faces or cropping draws on the photo instead.
+            let lb = lb
+                .upgrade()
+                .filter(|lb| !lb.face_mode.is_active() && !lb.edit_mode.is_active())?;
+            let path = lb.drag_path.borrow().clone()?;
             if !path.exists() {
                 return None;
             }
@@ -279,17 +313,29 @@ impl Lightbox {
             }
         }));
         self.connect_swipe_tracker();
+        self.on_click(&self.header.menu_btn, |lb| {
+            let button = &lb.header.menu_btn;
+            lb.show_menu_on(
+                button,
+                f64::from(button.width()) / 2.0,
+                f64::from(button.height()),
+            );
+        });
     }
 
     fn show_menu_at(self: &Rc<Self>, x: f64, y: f64) {
-        show_asset_context_menu(
-            self.ui.clone(),
-            &self.picture.scrolled,
-            self.pos.get(),
-            x,
-            y,
-            self.menu_hooks(),
-        );
+        self.show_menu_on(&self.picture.scrolled, x, y);
+    }
+
+    fn show_menu_on(self: &Rc<Self>, parent: &impl IsA<gtk::Widget>, x: f64, y: f64) {
+        let Some(item) = self.current_item() else {
+            return;
+        };
+        let target = MenuTarget {
+            item,
+            position: self.pos.get(),
+        };
+        show_item_context_menu(self.ui.clone(), parent, target, x, y, self.menu_hooks());
     }
 
     /// Ctrl +/-/0 zoom, Left/Right navigate, I toggles details, Escape closes.
@@ -306,13 +352,7 @@ impl Lightbox {
     /// Download button and the preview/original resolution toggle.
     pub(super) fn connect_actions(self: &Rc<Self>) {
         self.on_click(&self.actions.download, |lb| {
-            let Some(item) = lb
-                .ui
-                .grid
-                .model
-                .item(lb.pos.get())
-                .and_downcast::<AssetObject>()
-            else {
+            let Some(item) = lb.current_item() else {
                 return;
             };
             let asset_id = item.property::<String>("id");
@@ -335,11 +375,13 @@ impl Lightbox {
             }
         });
 
+        self.on_click(&self.actions.edit, Self::enter_edit_mode);
         self.on_click(&self.actions.trash, Self::confirm_trash_current);
         self.on_click(&self.actions.favorite, Self::toggle_current_favorite);
         self.on_click(&self.actions.archive, Self::toggle_current_archive);
         self.on_click(&self.details.edit_btn, Self::edit_current);
         self.on_click(&self.details.album_btn, |lb| lb.add_current_to_album());
+        self.on_click(&self.details.people.edit, Self::tag_people);
         let lb = Rc::downgrade(self);
         self.details.tags.bind(
             self.ui.clone(),
@@ -358,6 +400,11 @@ impl Lightbox {
         crate::library::search_by_tag(self.ui.clone(), tag);
     }
 
+    /// Face mode for the photo on screen.
+    fn tag_people(self: &Rc<Self>) {
+        self.enter_face_mode();
+    }
+
     fn add_current_to_album(&self) {
         let Some(target) = self
             .current_item()
@@ -370,7 +417,13 @@ impl Lightbox {
         crate::library::album_picker::present(&self.ui, ids, Rc::new(|| {}));
     }
 
+    /// The photo on screen: a stack member picked in the strip, else the grid item.
     pub(super) fn current_item(&self) -> Option<AssetObject> {
+        self.member.borrow().clone().or_else(|| self.grid_item())
+    }
+
+    /// The grid item at the lightbox position, which is a stack's cover when stacked.
+    pub(super) fn grid_item(&self) -> Option<AssetObject> {
         self.ui
             .grid
             .model
@@ -382,9 +435,15 @@ impl Lightbox {
     fn menu_hooks(self: &Rc<Self>) -> AssetMenuHooks {
         let lb_trashed = self.clone();
         let lb_edited = self.clone();
+        let lb_fullscreen = Rc::downgrade(self);
         AssetMenuHooks {
             on_trashed: Rc::new(move || lb_trashed.after_trash()),
             on_edited: Rc::new(move |date_changed| lb_edited.after_edit(date_changed)),
+            toggle_fullscreen: Some(Rc::new(move || {
+                if let Some(lb) = lb_fullscreen.upgrade() {
+                    lb.toggle_fullscreen();
+                }
+            })),
         }
     }
 
@@ -409,6 +468,10 @@ impl Lightbox {
     /// The trashed item is already gone from the grid model, so the same index now
     /// holds the next photo; step back at the end and close once nothing is left.
     fn after_trash(self: &Rc<Self>) {
+        // A trashed stack member isn't a grid item: show the cover again and reload the strip.
+        if self.member.take().is_some() {
+            self.forget_stack();
+        }
         let n = self.ui.grid.model.n_items();
         if n == 0 {
             self.ui.nav.pop();
@@ -518,7 +581,7 @@ impl Lightbox {
         }
     }
 
-    fn active_picture(&self) -> gtk::Picture {
+    pub(in crate::library::lightbox) fn active_picture(&self) -> gtk::Picture {
         self.picture.strip.picture(Slot::Current)
     }
 
@@ -532,6 +595,10 @@ impl Lightbox {
 
     /// Zoom to `z` (clamped to 1–10×), keeping the focal point under the cursor.
     fn set_zoom(self: &Rc<Self>, z: f64) {
+        // Zooming would swap in a sharper decode of the unedited photo under the crop box.
+        if self.edit_mode.is_active() {
+            return;
+        }
         let z_new = z.clamp(1.0, 10.0);
         let z_old = self.zoom_level.get();
         let zoom_label = format!("{}%", (z_new * 100.0).round() as i32);
@@ -557,9 +624,12 @@ impl Lightbox {
         let target_scroll_y = (vadj.value() + fy) * ratio - fy;
 
         self.zoom_level.set(z_new);
-        self.picture
-            .strip
-            .set_swipe_enabled((z_new - 1.0).abs() < 0.001);
+        if (z_new - 1.0).abs() > 0.001 {
+            self.stop_live();
+        }
+        // Swiping stays off while face mode owns drags on the photo.
+        let swipe = (z_new - 1.0).abs() < 0.001 && !self.face_mode.is_active();
+        self.picture.strip.set_swipe_enabled(swipe);
         let content = apply_lightbox_zoom(&self.active_picture(), scrolled, z_new);
         self.actions.zoom_reset.set_label(&zoom_label);
 

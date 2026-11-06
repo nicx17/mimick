@@ -1,7 +1,10 @@
 use gettextrs::gettext;
 mod controls;
+mod motion;
 mod pipeline;
 mod tracks;
+
+pub(super) use motion::MotionPlayer;
 
 use std::cell::Cell;
 use std::rc::{Rc, Weak};
@@ -385,6 +388,17 @@ impl VideoPlayer {
             .connect_clicked(self.on_click(|p| (p.hooks.fullscreen)()));
         for check in &c.speeds {
             check.connect_toggled(self.on_picked(|p| p.apply_speed()));
+        }
+        // A closed menu leaves focus on its button, where Space would reopen it.
+        for menu in [&c.speed, &c.tracks, &c.volume_menu] {
+            let play = c.play.downgrade();
+            menu.connect_active_notify(move |menu| {
+                if !menu.is_active()
+                    && let Some(play) = play.upgrade()
+                {
+                    play.grab_focus();
+                }
+            });
         }
         let weak = Rc::downgrade(self);
         c.seek.connect_change_value(move |_, _, value| {

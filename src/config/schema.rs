@@ -123,6 +123,17 @@ pub struct ConfigData {
     pub library_map_appearance: String,
     #[serde(default)]
     pub library_date_headings: DateHeadings,
+    /// Seconds each photo stays up in a slideshow.
+    #[serde(default = "default_slideshow_interval")]
+    pub slideshow_interval_secs: u32,
+    #[serde(default)]
+    pub slideshow_shuffle: bool,
+    /// Start over from the first photo after the last one.
+    #[serde(default)]
+    pub slideshow_repeat: bool,
+    /// `crossfade`, `slide`, or `none`; empty means crossfade.
+    #[serde(default)]
+    pub slideshow_transition: String,
 }
 
 impl Default for ConfigData {
@@ -161,6 +172,10 @@ impl Default for ConfigData {
             library_map_style: String::new(),
             library_map_appearance: String::new(),
             library_date_headings: DateHeadings::default(),
+            slideshow_interval_secs: default_slideshow_interval(),
+            slideshow_shuffle: false,
+            slideshow_repeat: false,
+            slideshow_transition: String::new(),
         }
     }
 }
@@ -194,4 +209,8 @@ fn default_grid_border_color() -> String {
 
 fn default_video_volume() -> f64 {
     1.0
+}
+
+fn default_slideshow_interval() -> u32 {
+    5
 }

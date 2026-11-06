@@ -311,6 +311,35 @@ fn selected_server_ids(ui: &Rc<LibraryWindowUi>) -> Vec<String> {
         .collect()
 }
 
+/// "Stack selected": two or more of your own photos, anywhere but the Trash.
+pub(super) fn connect_bulk_stack(ui: Rc<LibraryWindowUi>) {
+    let sync = {
+        let ui = ui.clone();
+        move || {
+            let owned = owned_selection_ids(&ui).len();
+            let trash = super::trash_view::is_trash_active(&ui);
+            ui.bulk.stack.set_visible(owned >= 2 && !trash);
+        }
+    };
+    let on_change = sync.clone();
+    ui.grid
+        .selection
+        .connect_selection_changed(move |_, _, _| on_change());
+    sync();
+    ui.bulk.stack.clone().connect_clicked(move |_| {
+        super::lightbox::stack_selected(&ui, owned_selection_ids(&ui));
+    });
+}
+
+/// Selected photos you own on the server, in grid order; the first becomes a new stack's cover.
+fn owned_selection_ids(ui: &Rc<LibraryWindowUi>) -> Vec<String> {
+    selected_items(ui)
+        .iter()
+        .filter(|item| is_mine(ui, item))
+        .filter_map(|item| TrashTarget::from_item(item).map(|t| t.remote_id().to_string()))
+        .collect()
+}
+
 pub(super) fn connect_bulk_archive(ui: Rc<LibraryWindowUi>) {
     ui.bulk.archive.clone().connect_clicked(move |_| {
         let archived = !matches!(

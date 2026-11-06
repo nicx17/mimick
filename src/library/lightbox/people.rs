@@ -16,7 +16,10 @@ const AVATAR_SIZE: i32 = 56;
 
 pub(super) struct PeopleSection {
     pub root: libadwaita::PreferencesGroup,
+    /// Opens the face editor; shown on the user's own photos.
+    pub edit: gtk::Button,
     faces: gtk::FlowBox,
+    untagged: gtk::Label,
 }
 
 impl PeopleSection {
@@ -32,8 +35,26 @@ impl PeopleSection {
             .max_children_per_line(6)
             .homogeneous(true)
             .build();
+        let edit = gtk::Button::builder()
+            .icon_name("document-edit-symbolic")
+            .tooltip_text(gettext("Tag People…"))
+            .valign(gtk::Align::Center)
+            .css_classes(["flat"])
+            .build();
+        root.set_header_suffix(Some(&edit));
+        let untagged = gtk::Label::builder()
+            .label(gettext("No one is tagged yet."))
+            .xalign(0.0)
+            .css_classes(["dim-label"])
+            .build();
         root.add(&faces);
-        Self { root, faces }
+        root.add(&untagged);
+        Self {
+            root,
+            edit,
+            faces,
+            untagged,
+        }
     }
 
     pub(super) fn clear(&self) {
@@ -41,7 +62,14 @@ impl PeopleSection {
         self.faces.remove_all();
     }
 
-    pub(super) fn show(&self, ui: &Rc<LibraryWindowUi>, people: &[Person], taken: Option<&str>) {
+    /// `editable` keeps the section, with its edit button, even when no one is tagged.
+    pub(super) fn show(
+        &self,
+        ui: &Rc<LibraryWindowUi>,
+        people: &[Person],
+        taken: Option<&str>,
+        editable: bool,
+    ) {
         self.faces.remove_all();
         let visible: Vec<&Person> = people.iter().filter(|p| !p.is_hidden).collect();
         for person in &visible {
@@ -57,7 +85,10 @@ impl PeopleSection {
                 .build();
             self.faces.insert(&slot, -1);
         }
-        self.root.set_visible(!visible.is_empty());
+        self.faces.set_visible(!visible.is_empty());
+        self.untagged.set_visible(visible.is_empty());
+        self.edit.set_visible(editable);
+        self.root.set_visible(editable || !visible.is_empty());
     }
 }
 
