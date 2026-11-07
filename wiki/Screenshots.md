@@ -90,11 +90,11 @@ Mimick asks first, and copies in your watch folders stay where they are.
 
 Open a photo or video to see it full size, read its details, and act on it.
 
-### Viewer
+### Photo viewer
 
 A photo fitted to the window, with zoom controls in the corner.
 
-![Viewer](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/viewer.png)
+![Photo viewer](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/viewer.png)
 
 ### Details pane
 
@@ -224,11 +224,11 @@ Select the words Immich read in a photo and copy them.
 
 ![Copy text from a photo](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/ocr-text-selection.png)
 
-### Filters
+### Search filters
 
 Narrow results by file name, description, OCR text, type, favourites, and more.
 
-![Filters](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-filters.png)
+![Search filters](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-filters.png)
 
 ### Tags and dates
 
@@ -236,11 +236,11 @@ Filter by tag, or by when a photo was taken or added.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-filters-dates-phone.png" width="360" alt="Tags and dates" />
 
-### Camera and location
+### Camera and location filters
 
 Filter by camera make, model, and lens, or by country, region, and city.
 
-<img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-filters-camera-location-phone.png" width="360" alt="Camera and location" />
+<img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-filters-camera-location-phone.png" width="360" alt="Camera and location filters" />
 
 ## Albums & sharing
 
@@ -310,11 +310,11 @@ Share your whole library with a partner and choose whose libraries appear in Pho
 
 Name the faces Immich found and keep the people list tidy.
 
-### People
+### People list
 
 Everyone Immich has recognized, with search and a menu for each person.
 
-![People](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/people-page.png)
+![People list](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/people-page.png)
 
 ### Merge people
 
@@ -384,97 +384,97 @@ Zoom right in to see the photos taken on one street.
 
 Below 600 pixels wide a bottom bar replaces the sidebar, and every screen works down to 360 pixels with touch.
 
-### Photos
+### Phone: Photos
 
 The bottom bar replaces the sidebar on narrow screens.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos-phone.png" width="280" alt="Photos on a phone" />
 
-### Search
+### Phone: Search
 
 Smart search with filters, one tap away.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-phone.png" width="280" alt="Search on a phone" />
 
-### Map
+### Phone: Map
 
 Photos in an area slide up under the map.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/map-photos-in-area-phone.png" width="280" alt="Map on a phone" />
 
-### Favorites
+### Phone: Favorites
 
 Everything you've marked with a heart.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/favorites-phone.png" width="280" alt="Favorites on a phone" />
 
-### Archive
+### Phone: Archive
 
 Photos hidden from the timeline.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/archive-phone.png" width="280" alt="Archive on a phone" />
 
-### Shared albums
+### Phone: Shared albums
 
 Albums shared with you and by you.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/shared-albums-phone.png" width="280" alt="Shared albums on a phone" />
 
-### Album menu
+### Phone: Album menu
 
 Rename, edit the description, change options, or delete.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album-menu-phone.png" width="280" alt="Album menu on a phone" />
 
-### Create a share link
+### Phone: Create a share link
 
 Set an expiry and password, and choose what visitors can do.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/create-share-link-phone.png" width="280" alt="Create a share link on a phone" />
 
-### Photo actions
+### Phone: Photo actions
 
 The same actions as on the desktop, sized for touch.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/viewer-actions-phone.png" width="280" alt="Photo actions on a phone" />
 
-### Slideshow
+### Phone: Slideshow
 
 Play, pause, and step through photos full screen.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/slideshow-phone.png" width="280" alt="Slideshow on a phone" />
 
-### Set location
+### Phone: Set location
 
 Search for a place by name.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/set-location-search-phone.png" width="280" alt="Set location on a phone" />
 
-### Set location on the map
+### Phone: Set location on the map
 
 Or move the pin and check the coordinates.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/set-location-map-phone.png" width="280" alt="Set location on the map on a phone" />
 
-### Crop
+### Phone: Crop
 
 The editor fits a phone screen too.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/editor-crop-phone.png" width="280" alt="Crop on a phone" />
 
-### Adjust
+### Phone: Adjust
 
 Slide to change exposure, contrast, and more.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/editor-adjust-phone.png" width="280" alt="Adjust on a phone" />
 
-### Filters
+### Phone: Filters
 
 Swipe through the filters.
 
 <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/editor-filters-phone.png" width="280" alt="Filters on a phone" />
 
-### Redact
+### Phone: Redact
 
 Draw boxes over anything you don't want to share.
 
