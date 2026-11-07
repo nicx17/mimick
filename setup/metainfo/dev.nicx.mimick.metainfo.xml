@@ -34,42 +34,42 @@
   <screenshots>
     <screenshot type="default">
       <image
-            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos_page_view_sidebar_on.png</image>
+            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos-timeline.png</image>
       <caption xml:lang="en">Library View - Photos page with sidebar</caption>
     </screenshot>
     <screenshot>
       <image
-            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/explore_page_view_showing_people_places_sidebar_on.png</image>
+            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/explore-page.png</image>
       <caption xml:lang="en">Explore page showing People, Places, and Things</caption>
     </screenshot>
     <screenshot>
       <image
-            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/selected_album_view_dark.png</image>
+            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album-view-dark.png</image>
       <caption xml:lang="en">Selected album view in dark mode</caption>
     </screenshot>
     <screenshot>
       <image
-            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_on.png</image>
+            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox-details-on.png</image>
       <caption xml:lang="en">Lightbox viewer with details pane</caption>
     </screenshot>
     <screenshot>
       <image
-            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search_view_with_thequickbrownfox_searched_ocr_mode.png</image>
+            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-ocr-results.png</image>
       <caption xml:lang="en">OCR search for text inside images</caption>
     </screenshot>
     <screenshot>
       <image
-            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/library_view_showing_sync_album_dialog_upload_download_apply_cancel.png</image>
+            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album-sync-dialog.png</image>
       <caption xml:lang="en">Album sync dialog with upload and download actions</caption>
     </screenshot>
     <screenshot>
       <image
-            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_showing_connnectivity_config_details.png</image>
-      <caption xml:lang="en">Settings - Connectivity configuration</caption>
+            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings-server-and-watch-folders.png</image>
+      <caption xml:lang="en">Settings - Server connection and watch folders</caption>
     </screenshot>
     <screenshot>
       <image
-            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/status_pane_sync_status_health_dashboard_actions.png</image>
+            >https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/status-page.png</image>
       <caption xml:lang="en">Status page with sync health dashboard</caption>
     </screenshot>
   </screenshots>
