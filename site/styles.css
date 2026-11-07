@@ -1141,7 +1141,7 @@ html:has(.screenshots-page) {
 }
 
 .shot-grid.is-tall {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
 }
 
 /* Three across on most screens, four on wide ones so a whole phone stays in view. */
@@ -1210,8 +1210,8 @@ html:has(.screenshots-page) {
     aspect-ratio: 3 / 4;
 }
 
-/* Only from here does the tall grid always have two columns to span. */
-@media (min-width: 760px) {
+/* Two 380px columns, the gap, page padding, and a scrollbar fit from here on. */
+@media (min-width: 860px) {
     .shot-grid.is-tall .shot-card:not(.is-portrait) {
         grid-column: span 2;
     }
