@@ -1,8 +1,8 @@
 # Maintainer: Nick <nickcardosoo123 at gmail dot com>
 
 pkgname=mimick
-pkgver=9.12.0
-pkgrel=2
+pkgver=9.13.0
+pkgrel=1
 pkgdesc='Unofficial Immich desktop client that backs up and browses your photos'
 arch=('x86_64' 'aarch64')
 url='https://mimick.nicx.dev'
@@ -37,7 +37,7 @@ optdepends=(
 )
 options=('!lto' '!debug')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/nicx17/mimick/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('1d2338197d0ba1b654339a8992d4ef921a20d8a744a01597248972c989ab1395')
+sha256sums=('acca00ef5ce7a3b9c5570e4f91584b0c7fbe6b9d2f185a4d5e36ae93295d29af')
 
 prepare() {
   cd "$pkgname-$pkgver"

@@ -82,6 +82,10 @@ jobs:
           merge-multiple: true
           path: dist
 
+      - name: Write checksums
+        working-directory: dist
+        run: sha256sum -- * > SHA256SUMS.txt
+
       - name: Upload to the release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
