@@ -138,6 +138,24 @@ impl SizedLruCache {
         self.evict_to_budget();
     }
 
+    /// Drops every entry for `asset_id`; all its keys end in `:{asset_id}`.
+    fn remove_asset(&mut self, asset_id: &str) {
+        let suffix = format!(":{asset_id}");
+        let keys: Vec<String> = self
+            .inner
+            .iter()
+            .filter(|(key, _)| key.ends_with(&suffix))
+            .map(|(key, _)| key.clone())
+            .collect();
+        for key in keys {
+            if let Some(texture) = self.inner.pop(&key) {
+                self.current_bytes = self
+                    .current_bytes
+                    .saturating_sub(estimate_texture_bytes(&texture));
+            }
+        }
+    }
+
     fn set_max_bytes(&mut self, max_bytes: usize) {
         self.max_bytes = max_bytes;
         self.evict_to_budget();
@@ -548,6 +566,21 @@ impl ThumbnailCache {
             std::fs::remove_dir_all(&self.cache_dir).map_err(|err| err.to_string())?;
         }
         Ok(())
+    }
+
+    /// Forgets an asset's thumbnails and previews, in memory and on disk, after Immich re-renders it.
+    pub fn forget(&self, asset_id: &str) {
+        self.memory.lock().remove_asset(asset_id);
+        let sizes = [
+            ThumbnailSize::Thumbnail,
+            ThumbnailSize::Preview,
+            ThumbnailSize::Fullsize,
+        ];
+        for size in sizes {
+            for edited in [false, true] {
+                let _ = std::fs::remove_file(self.cache_file(asset_id, size, edited));
+            }
+        }
     }
 
     pub fn set_memory_limit(&self, limit_mb: u32) {

@@ -3,6 +3,7 @@
 use std::cmp::Reverse;
 use std::collections::{HashMap, HashSet};
 use std::f64::consts::PI;
+use std::sync::Arc;
 
 use crate::api_client::MapMarker;
 
@@ -275,9 +276,33 @@ pub fn fit(markers: &[MapMarker], width: f64, height: f64) -> Option<(f64, f64, 
     Some(((south + north) / 2.0, (west + east) / 2.0, zoom))
 }
 
+const CACHED_LEVELS: usize = 5;
+
+/// Keep the cache to a few zoom levels, dropping those farthest from `level` first.
+pub fn evict_far_levels(cache: &mut HashMap<u32, Arc<Vec<Cluster>>>, level: u32) {
+    while cache.len() >= CACHED_LEVELS {
+        let Some(farthest) = cache.keys().copied().max_by_key(|l| l.abs_diff(level)) else {
+            break;
+        };
+        cache.remove(&farthest);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_cluster_cache_drops_the_farthest_levels() {
+        let mut cache: HashMap<u32, Arc<Vec<Cluster>>> = [2, 4, 5, 6, 7]
+            .into_iter()
+            .map(|l| (l, Arc::default()))
+            .collect();
+        evict_far_levels(&mut cache, 8);
+        let mut kept: Vec<u32> = cache.keys().copied().collect();
+        kept.sort_unstable();
+        assert_eq!(kept, [4, 5, 6, 7]);
+    }
 
     fn marker(id: &str, lat: f64, lon: f64, city: Option<&str>) -> MapMarker {
         MapMarker {

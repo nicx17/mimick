@@ -129,6 +129,34 @@ fn test_clear_removes_memory_and_disk() {
     assert!(!cache.cache_dir.exists());
 }
 
+#[test]
+fn forget_drops_only_that_asset() {
+    let cache = cache(1024 * 1024);
+    std::fs::create_dir_all(&cache.cache_dir).unwrap();
+    let edited_file = cache.cache_file("4", ThumbnailSize::Preview, true);
+    std::fs::write(&edited_file, PNG_BYTES).unwrap();
+    for key in [
+        "thumbnail:4",
+        "preview-edited:4",
+        "screen@1920:4",
+        "thumbnail:44",
+    ] {
+        cache.memory.lock().insert(key.into(), texture_from_png());
+    }
+
+    cache.forget("4");
+
+    let keys: Vec<String> = cache
+        .memory
+        .lock()
+        .inner
+        .iter()
+        .map(|(key, _)| key.clone())
+        .collect();
+    assert_eq!(keys, ["thumbnail:44"]);
+    assert!(!edited_file.exists());
+}
+
 #[tokio::test]
 async fn test_load_local_raw_thumbnail() {
     let cache = cache(1024 * 1024 * 10);

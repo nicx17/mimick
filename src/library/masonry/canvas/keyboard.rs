@@ -44,6 +44,39 @@ impl MasonryCanvas {
         self.connect_state_flags_changed(|canvas, _| canvas.queue_draw());
     }
 
+    /// Scroll tile `pos` to the middle of the view and ring it, once a layout includes it.
+    pub fn reveal_tile(&self, pos: u32) {
+        let imp = self.imp();
+        imp.focused.set(Some(pos));
+        imp.pending_reveal.set(Some(pos));
+        self.grab_focus();
+        if let Some(window) = self.root().and_downcast::<gtk::Window>() {
+            window.set_focus_visible(true);
+        }
+        self.try_reveal();
+        self.queue_draw();
+    }
+
+    /// Finishes a pending `reveal_tile`; false while its row isn't laid out yet.
+    pub(super) fn try_reveal(&self) -> bool {
+        let imp = self.imp();
+        let Some(pos) = imp.pending_reveal.get() else {
+            return true;
+        };
+        let middle = {
+            let rows = imp.rows.borrow();
+            locate(&rows, pos).map(|(r, _)| rows[r].y + rows[r].h / 2.0)
+        };
+        let (Some(middle), Some(adj)) = (middle, imp.find_vadjustment()) else {
+            return false;
+        };
+        imp.pending_reveal.set(None);
+        let (top, height) = imp.viewport();
+        adj.set_value(adj.value() + f64::from(middle - height / 2.0 - top));
+        self.queue_draw();
+        true
+    }
+
     /// Remember a clicked tile so arrow keys continue from it.
     pub(super) fn focus_clicked(&self, pos: u32) {
         self.imp().focused.set(Some(pos));

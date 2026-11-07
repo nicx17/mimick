@@ -2,7 +2,7 @@
 
 use crate::i18n::gettext_noop;
 
-pub(super) const GROUPS: [(&str, &[&str]); 4] = [
+pub(super) const GROUPS: [(&str, &[&str]); 5] = [
     ("", &["search"]),
     (
         gettext_noop("Library"),
@@ -21,12 +21,13 @@ pub(super) const GROUPS: [(&str, &[&str]); 4] = [
         &["albums", "shared-albums", "shared-links", "sharing"],
     ),
     (gettext_noop("Browse"), &["tags", "folders"]),
+    (gettext_noop("Utilities"), &["duplicates"]),
 ];
 
 /// Fixed sidebar destinations: title, subtitle, icon, and the key the sidebar handler matches.
 pub(super) type FixedRow = (&'static str, &'static str, &'static str, &'static str);
 
-pub(super) const FIXED_ROWS: [FixedRow; 14] = [
+pub(super) const FIXED_ROWS: [FixedRow; 15] = [
     fixed_row(
         gettext_noop("Photos"),
         gettext_noop("Timeline of every photo and video"),
@@ -110,6 +111,12 @@ pub(super) const FIXED_ROWS: [FixedRow; 14] = [
         gettext_noop("Restore or permanently delete"),
         "user-trash-symbolic",
         "trash",
+    ),
+    fixed_row(
+        gettext_noop("Duplicates"),
+        gettext_noop("Photos Immich found more than once"),
+        "edit-copy-symbolic",
+        "duplicates",
     ),
 ];
 

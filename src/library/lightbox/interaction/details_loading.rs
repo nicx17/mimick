@@ -77,7 +77,9 @@ impl Lightbox {
         }
         if mine && features.people {
             let taken = details.local_date_time.as_deref();
-            self.details.people.show(&self.ui, &details.people, taken);
+            self.details
+                .people
+                .show(&self.ui, &details.people, taken, true);
         }
         if on_server && features.tags {
             self.details.tags.show(asset_id, details.tags);

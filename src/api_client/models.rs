@@ -143,12 +143,27 @@ pub struct LibraryAsset {
     pub owner_id: String,
     #[serde(rename = "localDateTime", default)]
     pub local_date_time: Option<String>,
+    /// Asset id of the motion clip when this is a live or motion photo.
+    #[serde(rename = "livePhotoVideoId", default)]
+    pub live_photo_video_id: Option<String>,
+    /// The stack this photo is the cover of; search results leave it empty.
+    #[serde(default)]
+    pub stack: Option<AssetStack>,
 }
 
 impl LibraryAsset {
     pub fn is_archived(&self) -> bool {
         self.visibility == "archive"
     }
+}
+
+/// A stack's id and size, as Immich reports it on the stack's cover photo.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AssetStack {
+    pub id: String,
+    pub primary_asset_id: String,
+    pub asset_count: u32,
 }
 
 /// Immich returns asset checksums as base64-encoded SHA1, while Mimick computes

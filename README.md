@@ -39,6 +39,7 @@ Mimick is an unofficial Immich desktop client for Linux. It syncs your photo and
 - [![Getting Started](https://img.shields.io/badge/Getting_Started-8A2BE2?style=flat-square)](#getting-started)
 - [![Documentation](https://img.shields.io/badge/Documentation-444444?style=flat-square)](#documentation)
 - [![Building from Source](https://img.shields.io/badge/Building_from_Source-B8860B?style=flat-square)](#building-from-source)
+- [![Translations](https://img.shields.io/badge/Translations-B072F0?style=flat-square)](#translations)
 - [![Credits](https://img.shields.io/badge/Credits-0E7490?style=flat-square)](#credits)
 - [![License](https://img.shields.io/badge/License-green?style=flat-square)](#license)
 
@@ -154,6 +155,14 @@ cargo run -- --settings      # native build, opens the settings window
 flatpak-builder --user --install --force-clean build-dir dev.nicx.mimick.local.yml
 flatpak run dev.nicx.mimick  # local Flatpak build
 ```
+
+## Translations
+
+<!-- translations:start -->
+> **No translations yet.** See [Translations](CONTRIBUTING.md#5-translations) to add your language.
+<!-- translations:end -->
+
+Mimick uses gettext, so anyone can add a language: see [Translations](CONTRIBUTING.md#5-translations) in the contributing guide. `scripts/i18n.sh progress` redraws the chart above from the files in `po/`.
 
 ## Contributing
 

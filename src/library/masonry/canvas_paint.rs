@@ -236,6 +236,74 @@ impl MasonryCanvas {
             if asset.is_favorite() {
                 self.paint_favorite_badge(snapshot, it.x + it.w, row.y + row.h, row.h);
             }
+            let live = !asset.live_video_id().is_empty();
+            let stacked = asset.stack_count() > 1;
+            if live || stacked {
+                let corner = (it.x + it.w, row.y);
+                self.paint_corner_badges(snapshot, corner, row.h, live, asset.stack_count());
+            }
+        }
+
+        /// Top-right corner: the live photo icon, and left of it a stack's photo count.
+        fn paint_corner_badges(
+            &self,
+            snapshot: &gtk::Snapshot,
+            (right, top): (f32, f32),
+            cell_h: f32,
+            live: bool,
+            stack_count: u32,
+        ) {
+            let size = (cell_h * 0.12).clamp(14.0, 20.0);
+            let margin = (size * 0.4).max(6.0);
+            let mut x = right - margin;
+            if live {
+                let icon = self
+                    .live_icon
+                    .get_or_init(|| resolve_symbolic_icon(&self.obj(), "mimick-live-symbolic"));
+                x -= size;
+                paint_white_symbolic(snapshot, icon, x, top + margin, size);
+                x -= size * 0.4;
+            }
+            if stack_count > 1 {
+                self.paint_stack_pill(snapshot, (x, top + margin), size, stack_count);
+            }
+        }
+
+        /// Dark pill ending at `right` holding the stack icon and the count.
+        fn paint_stack_pill(
+            &self,
+            snapshot: &gtk::Snapshot,
+            (right, top): (f32, f32),
+            size: f32,
+            count: u32,
+        ) {
+            let layout = self.obj().create_pango_layout(Some(&count.to_string()));
+            let mut font = gtk::pango::FontDescription::new();
+            font.set_weight(gtk::pango::Weight::Bold);
+            font.set_absolute_size(f64::from(size * 0.72) * f64::from(gtk::pango::SCALE));
+            layout.set_font_description(Some(&font));
+            let (_, logical) = layout.pixel_extents();
+            let icon_size = size * 0.8;
+            let pad = size * 0.3;
+            let width = pad + icon_size + pad * 0.6 + logical.width() as f32 + pad;
+            let height = size + pad;
+            let pill = Rect::new(right - width, top - pad * 0.5, width, height);
+            let radius = Size::new(height * 0.5, height * 0.5);
+            snapshot.push_rounded_clip(&RoundedRect::new(pill, radius, radius, radius, radius));
+            snapshot.append_color(&gdk4::RGBA::new(0.0, 0.0, 0.0, 0.55), &pill);
+            snapshot.pop();
+            let icon = self
+                .stack_icon
+                .get_or_init(|| resolve_symbolic_icon(&self.obj(), "mimick-stack-symbolic"));
+            let icon_y = pill.y() + (height - icon_size) * 0.5;
+            paint_white_symbolic(snapshot, icon, pill.x() + pad, icon_y, icon_size);
+            snapshot.save();
+            snapshot.translate(&gtk::graphene::Point::new(
+                pill.x() + pad + icon_size + pad * 0.6,
+                pill.y() + (height - logical.height() as f32) * 0.5,
+            ));
+            snapshot.append_layout(&layout, &gdk4::RGBA::new(1.0, 1.0, 1.0, 0.95));
+            snapshot.restore();
         }
 
         /// Paint the video play-icon badge centred on the cell.
@@ -388,4 +456,24 @@ impl MasonryCanvas {
             snapshot.pop();
             snapshot.pop();
         }
+}
+
+/// A symbolic icon in white over a one-pixel dark shadow, legible on any photo.
+fn paint_white_symbolic(snapshot: &gtk::Snapshot, icon: &gdk4::Paintable, x: f32, y: f32, size: f32) {
+    let Some(symbolic) = icon.dynamic_cast_ref::<gtk::SymbolicPaintable>() else {
+        return;
+    };
+    let shadow = gdk4::RGBA::new(0.0, 0.0, 0.0, 0.45);
+    let white = gdk4::RGBA::new(1.0, 1.0, 1.0, 0.95);
+    for (offset, color) in [(1.0, shadow), (0.0, white)] {
+        snapshot.save();
+        snapshot.translate(&gtk::graphene::Point::new(x + offset, y + offset));
+        symbolic.snapshot_symbolic(
+            snapshot.upcast_ref::<gdk4::Snapshot>(),
+            f64::from(size),
+            f64::from(size),
+            &[color],
+        );
+        snapshot.restore();
+    }
 }

@@ -1,5 +1,6 @@
 use crate::i18n::fill;
 use gettextrs::{gettext, ngettext};
+use std::cell::RefCell;
 use std::rc::Rc;
 
 use chrono::{DateTime, Datelike, NaiveDate};
@@ -8,15 +9,36 @@ use libadwaita::prelude::*;
 
 use crate::api_client::Person;
 use crate::library::LibraryWindowUi;
+use crate::library::context_menu::{connect_context_menu, menu_key};
 use crate::library::navigation;
 use crate::library::people_view::{avatar, display_name};
 use crate::library::state::LibrarySource;
 
 const AVATAR_SIZE: i32 = 56;
+/// Rings a person whose face is pointed at on the photo.
+const MARKED: &str = "mimick-person-marked";
+
+/// Gets the person's id while pointed at or focused, `None` once left.
+type PointHook = Box<dyn Fn(Option<&str>)>;
+/// Gets the person and their tile, with a point on it to open a menu at.
+type MenuHook = Box<dyn Fn(&Person, &gtk::Button, f64, f64)>;
+
+/// What the lightbox does when a person is pointed at, focused, or asked for their menu.
+pub(super) struct PeopleHooks {
+    pub(super) point: PointHook,
+    /// Right-click, long-press, or the Menu key on a person.
+    pub(super) menu: MenuHook,
+}
 
 pub(super) struct PeopleSection {
     pub root: libadwaita::PreferencesGroup,
+    /// Opens the face editor; shown on the user's own photos.
+    pub edit: gtk::Button,
     faces: gtk::FlowBox,
+    untagged: gtk::Label,
+    /// Each shown person's id and tile, to ring the one pointed at on the photo.
+    tiles: RefCell<Vec<(String, gtk::Button)>>,
+    hooks: RefCell<Option<Rc<PeopleHooks>>>,
 }
 
 impl PeopleSection {
@@ -32,17 +54,60 @@ impl PeopleSection {
             .max_children_per_line(6)
             .homogeneous(true)
             .build();
+        let edit = gtk::Button::builder()
+            .icon_name("document-edit-symbolic")
+            .tooltip_text(gettext("Tag People…"))
+            .valign(gtk::Align::Center)
+            .css_classes(["flat"])
+            .build();
+        root.set_header_suffix(Some(&edit));
+        let untagged = gtk::Label::builder()
+            .label(gettext("No one is tagged yet."))
+            .xalign(0.0)
+            .css_classes(["dim-label"])
+            .build();
         root.add(&faces);
-        Self { root, faces }
+        root.add(&untagged);
+        Self {
+            root,
+            edit,
+            faces,
+            untagged,
+            tiles: RefCell::default(),
+            hooks: RefCell::default(),
+        }
+    }
+
+    pub(super) fn bind(&self, hooks: PeopleHooks) {
+        self.hooks.replace(Some(Rc::new(hooks)));
     }
 
     pub(super) fn clear(&self) {
         self.root.set_visible(false);
         self.faces.remove_all();
+        self.tiles.borrow_mut().clear();
     }
 
-    pub(super) fn show(&self, ui: &Rc<LibraryWindowUi>, people: &[Person], taken: Option<&str>) {
-        self.faces.remove_all();
+    /// Rings `person`'s tile, and only theirs; `None` rings no one.
+    pub(super) fn mark(&self, person: Option<&str>) {
+        for (id, tile) in self.tiles.borrow().iter() {
+            if person == Some(id.as_str()) {
+                tile.add_css_class(MARKED);
+            } else {
+                tile.remove_css_class(MARKED);
+            }
+        }
+    }
+
+    /// `editable` keeps the section, with its edit button, even when no one is tagged.
+    pub(super) fn show(
+        &self,
+        ui: &Rc<LibraryWindowUi>,
+        people: &[Person],
+        taken: Option<&str>,
+        editable: bool,
+    ) {
+        self.clear();
         let visible: Vec<&Person> = people.iter().filter(|p| !p.is_hidden).collect();
         for person in &visible {
             let age = person
@@ -50,15 +115,70 @@ impl PeopleSection {
                 .as_deref()
                 .zip(taken)
                 .and_then(|(birth, taken)| age_text(birth, taken));
+            let tile = person_button(ui, person, age.as_deref());
+            self.connect_tile(&tile, person, editable);
+            self.tiles
+                .borrow_mut()
+                .push((person.id.clone(), tile.clone()));
             let slot = gtk::FlowBoxChild::builder()
-                .child(&person_button(ui, person, age.as_deref()))
+                .child(&tile)
                 .focusable(false)
                 .css_classes(["mimick-person-slot"])
                 .build();
             self.faces.insert(&slot, -1);
         }
-        self.root.set_visible(!visible.is_empty());
+        self.faces.set_visible(!visible.is_empty());
+        self.untagged.set_visible(visible.is_empty());
+        self.edit.set_visible(editable);
+        self.root.set_visible(editable || !visible.is_empty());
     }
+
+    /// Pointing at or focusing a tile reports its person; on your photos it has a menu too.
+    fn connect_tile(&self, tile: &gtk::Button, person: &Person, editable: bool) {
+        let Some(hooks) = self.hooks.borrow().clone() else {
+            return;
+        };
+        connect_pointing(tile, &hooks, &person.id);
+        if editable {
+            connect_tile_menu(tile, hooks, person);
+        }
+    }
+}
+
+/// Hover and keyboard focus both say which person is meant; leaving either clears it.
+fn connect_pointing(tile: &gtk::Button, hooks: &Rc<PeopleHooks>, id: &str) {
+    let motion = gtk::EventControllerMotion::new();
+    let focus = gtk::EventControllerFocus::new();
+    let (on_hover, on_focus) = (hooks.clone(), hooks.clone());
+    let (hover_id, focus_id) = (id.to_string(), id.to_string());
+    motion.connect_enter(move |_, _, _| (on_hover.point)(Some(&hover_id)));
+    focus.connect_enter(move |_| (on_focus.point)(Some(&focus_id)));
+    let (off_hover, off_focus) = (hooks.clone(), hooks.clone());
+    motion.connect_leave(move |_| (off_hover.point)(None));
+    focus.connect_leave(move |_| (off_focus.point)(None));
+    tile.add_controller(motion);
+    tile.add_controller(focus);
+}
+
+/// Right-click, long-press, and Shift+F10 or the Menu key open the person's menu.
+fn connect_tile_menu(tile: &gtk::Button, hooks: Rc<PeopleHooks>, person: &Person) {
+    let person = person.clone();
+    let open = Rc::new(move |tile: &gtk::Button, x: f64, y: f64| {
+        (hooks.menu)(&person, tile, x, y);
+    });
+    let (on_press, pressed) = (open.clone(), tile.downgrade());
+    connect_context_menu(tile, move |x, y| {
+        if let Some(tile) = pressed.upgrade() {
+            on_press(&tile, x, y);
+        }
+    });
+    let keyed = tile.downgrade();
+    tile.add_controller(menu_key(move || {
+        if let Some(tile) = keyed.upgrade() {
+            let (w, h) = (tile.width(), tile.height());
+            open(&tile, f64::from(w) / 2.0, f64::from(h) / 2.0);
+        }
+    }));
 }
 
 fn person_button(ui: &Rc<LibraryWindowUi>, person: &Person, age: Option<&str>) -> gtk::Button {

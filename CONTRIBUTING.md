@@ -52,6 +52,7 @@ Mimick uses gettext (#220). Strings without a translation show in English.
 2. Fill in each `msgstr` with Poedit, GNOME Translation Editor, or a text editor. The file also holds the app menu entry and the software center listing; in the `Keywords` entry, keep the `;` between words.
 3. Add the language code to `po/LINGUAS`.
 4. Check it: `scripts/i18n.sh install target/share/locale`, then `LANGUAGE=<lang> MIMICK_PROFILE=dev cargo run`. The profile starts a separate instance, so an already running Mimick doesn't take over the launch.
+5. Run `scripts/i18n.sh progress` to update the progress chart in the README. CI fails when it is out of date.
 
 **Adding strings in code:** run `scripts/i18n.sh pot` afterwards (needs gettext 0.24 or newer) to refresh `po/mimick.pot` and the `.po` files. CI fails when the template is missing a string.
 

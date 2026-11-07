@@ -278,6 +278,8 @@ pub(super) fn local_to_library_asset(local: LocalAsset) -> LibraryAsset {
         is_edited: false,
         owner_id: String::new(),
         local_date_time: None,
+        live_photo_video_id: None,
+        stack: None,
     }
 }
 

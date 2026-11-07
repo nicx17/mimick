@@ -1,4 +1,7 @@
+use gettextrs::gettext;
 use gtk::prelude::*;
+use gtk::subclass::prelude::*;
+use libadwaita::prelude::*;
 
 use super::{
     AssetObject, CancelFlag, GridQuality, LaidItem, LaidRow, LibraryAssetModel, LoadRequest,
@@ -121,3 +124,21 @@ pub(super) async fn load_masonry_asset(
     }
 }
 
+/// Explain a thumbnail permission error once per grid.
+pub(super) fn warn_missing_permission(widget: &MasonryCanvas) {
+    let imp = widget.imp();
+    if imp.permission_warned.replace(true) {
+        return;
+    }
+    if let Some(window) = widget
+        .root()
+        .and_downcast::<libadwaita::ApplicationWindow>()
+    {
+        let dialog = libadwaita::AlertDialog::builder()
+            .heading(gettext("Missing API Permissions"))
+            .body(gettext("Your API key is missing permissions required to view thumbnails. Please ensure the key has 'asset.view' enabled."))
+            .build();
+        dialog.add_response("ok", &gettext("OK"));
+        dialog.present(Some(&window));
+    }
+}

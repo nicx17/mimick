@@ -6,7 +6,6 @@ use std::rc::Rc;
 use gtk::glib;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
-use libadwaita::prelude::*;
 
 use super::grid_view::AssetContextMenuHandler;
 use crate::api_client::ThumbnailSize;
@@ -129,11 +128,17 @@ mod imp {
         pub last_selected: Cell<Option<u32>>,
         /// Tile the arrow keys move from; ringed while focus is visible.
         pub focused: Cell<Option<u32>>,
+        /// Tile to scroll into the middle of the view once a layout includes it.
+        pub pending_reveal: Cell<Option<u32>>,
         pub permission_warned: Cell<bool>,
         /// Cached video badge icon paintable, resolved lazily from the icon theme.
         pub video_icon: OnceCell<gdk4::Paintable>,
         /// Cached favorite heart icon, painted on favorited tiles.
         pub heart_icon: OnceCell<gdk4::Paintable>,
+        /// Cached live photo icon, painted in the corner of live photos.
+        pub live_icon: OnceCell<gdk4::Paintable>,
+        /// Cached stack icon, painted beside a stack's photo count.
+        pub stack_icon: OnceCell<gdk4::Paintable>,
         /// Cached checkbox icon (selected state).
         pub check_icon: OnceCell<gdk4::Paintable>,
         /// Cached checkbox icon (unselected state).
@@ -223,6 +228,15 @@ mod imp {
             let wanted = self.wanted_loads(&sctx, &rows, &viewport);
             drop(rows);
             self.finish_snapshot(cache, &viewport, &stats, wanted);
+            if self.pending_reveal.get().is_some() {
+                // Scrolling inside snapshot would fight the frame being drawn.
+                let canvas = widget.downgrade();
+                glib::idle_add_local_once(move || {
+                    if let Some(canvas) = canvas.upgrade() {
+                        canvas.try_reveal();
+                    }
+                });
+            }
         }
     }
 
@@ -461,7 +475,7 @@ mod helpers {
 use helpers::{
     accent_bg_color, bucket_for_asset, cached_texture, load_masonry_asset, load_target_for,
     placeholder_color, resolve_symbolic_icon, resolve_video_icon, rows_between, scrolled_child,
-    tile_fit,
+    tile_fit, warn_missing_permission,
 };
 
 glib::wrapper! {
@@ -477,25 +491,6 @@ impl imp::SnapshotStats {
             imp::PaintResult::Miss => self.misses += 1,
         }
         self.painted += 1;
-    }
-}
-
-/// Explain a thumbnail permission error once per grid.
-fn warn_missing_permission(widget: &MasonryCanvas) {
-    let imp = widget.imp();
-    if imp.permission_warned.replace(true) {
-        return;
-    }
-    if let Some(window) = widget
-        .root()
-        .and_downcast::<libadwaita::ApplicationWindow>()
-    {
-        let dialog = libadwaita::AlertDialog::builder()
-            .heading(gettext("Missing API Permissions"))
-            .body(gettext("Your API key is missing permissions required to view thumbnails. Please ensure the key has 'asset.view' enabled."))
-            .build();
-        dialog.add_response("ok", &gettext("OK"));
-        dialog.present(Some(&window));
     }
 }
 

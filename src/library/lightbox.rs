@@ -17,12 +17,18 @@ use super::{LOCAL_ID_PREFIX, LibraryWindowUi};
 mod activity;
 mod albums;
 mod details;
+mod edit;
+mod face_people;
+mod faces;
 mod fullscreen;
 mod interaction;
+mod live;
 mod location;
 mod ocr;
 mod people;
 mod rating;
+mod slideshow;
+mod stack;
 mod strip;
 mod video;
 mod widgets;
@@ -47,21 +53,50 @@ fn apply_lightbox_zoom(
         picture.set_size_request(-1, -1);
         return None;
     };
-    let nw = paintable.intrinsic_width().max(1) as f64;
-    let nh = paintable.intrinsic_height().max(1) as f64;
-    let viewer_w = viewer.width().max(1) as f64;
-    let viewer_h = viewer.height().max(1) as f64;
-    let texture_aspect = nw / nh;
-    let viewer_aspect = viewer_w / viewer_h;
-    let (fit_w, fit_h) = if viewer_aspect > texture_aspect {
-        (viewer_h * texture_aspect, viewer_h)
-    } else {
-        (viewer_w, viewer_w / texture_aspect)
-    };
+    let (fit_w, fit_h) = fit_size(
+        paintable.intrinsic_width(),
+        paintable.intrinsic_height(),
+        viewer,
+    );
     let cw = fit_w * zoom;
     let ch = fit_h * zoom;
     picture.set_size_request(cw as i32, ch as i32);
     Some((cw, ch))
+}
+
+/// Size of a `width`×`height` image fitted inside `viewer` (`ContentFit::Contain`).
+fn fit_size(width: i32, height: i32, viewer: &gtk::ScrolledWindow) -> (f64, f64) {
+    fit_within(
+        (f64::from(width.max(1)), f64::from(height.max(1))),
+        (
+            f64::from(viewer.width().max(1)),
+            f64::from(viewer.height().max(1)),
+        ),
+    )
+}
+
+fn fit_within((width, height): (f64, f64), (viewer_w, viewer_h): (f64, f64)) -> (f64, f64) {
+    let aspect = width / height;
+    if viewer_w / viewer_h > aspect {
+        (viewer_h * aspect, viewer_h)
+    } else {
+        (viewer_w, viewer_w / aspect)
+    }
+}
+
+/// Deepest zoom as a multiple of the photo's real pixels.
+const MAX_REAL_ZOOM: f64 = 20.0;
+/// Deepest zoom as a multiple of the fitted size, for photos smaller than the viewer.
+const MAX_FIT_ZOOM: f64 = 10.0;
+
+/// Zoom cap relative to fit, for a fitted photo shown at `fit_scale` of its real pixels.
+fn max_zoom(fit_scale: f64) -> f64 {
+    (MAX_REAL_ZOOM / fit_scale).max(MAX_FIT_ZOOM)
+}
+
+/// Zoom button label: the shown size as a percentage of the photo's real pixels.
+fn zoom_label(zoom: f64, fit_scale: f64) -> String {
+    format!("{}%", (zoom * fit_scale * 100.0).round() as i32)
 }
 
 /// One request to load an asset into the inactive picture.
@@ -109,6 +144,7 @@ struct AssetInfo {
     favorite: bool,
     archived: bool,
     edited: bool,
+    live_video_id: String,
 }
 
 impl AssetInfo {
@@ -123,6 +159,7 @@ impl AssetInfo {
             favorite: item.is_favorite(),
             archived: item.is_archived(),
             edited: item.is_edited(),
+            live_video_id: item.live_video_id(),
         }
     }
 
@@ -147,6 +184,17 @@ pub(super) struct Lightbox {
     picture: PictureArea,
     unavailable: UnavailableCard,
     video_badge_button: gtk::Button,
+    live_button: gtk::ToggleButton,
+    live_layer: gtk::Box,
+    motion: RefCell<Option<Rc<super::video_player::MotionPlayer>>>,
+    /// A stack member picked in the stack strip, shown in place of the grid item.
+    member: RefCell<Option<AssetObject>>,
+    stack: stack::StackStrip,
+    /// The shown photo's faces, for face mode and for naming the one pointed at.
+    faces: faces::PhotoFaces,
+    face_mode: faces::FaceMode,
+    edit_mode: edit::EditMode,
+    slideshow: slideshow::Slideshow,
     actions: ActionBar,
     details: DetailsPane,
     viewer: gtk::Box,
@@ -189,6 +237,12 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
     lightbox.connect_keys();
     lightbox.connect_actions();
     lightbox.connect_fullscreen();
+    lightbox.connect_live();
+    lightbox.connect_slideshow();
+    lightbox.connect_stack();
+    lightbox.connect_faces();
+    lightbox.connect_face_highlights();
+    lightbox.connect_edit_mode();
     lightbox.render();
     lightbox.ui.nav.push(&lightbox.header.page);
     let slot = &lightbox.ui.interaction.lightbox;
@@ -197,6 +251,54 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
         previous.release();
     }
     log::debug!("Lightbox opened at position {position}");
+}
+
+pub(super) use slideshow::SlideshowOptions;
+pub(super) use stack::{append_unstack_button, stack_selected};
+
+/// Starts a slideshow at `position`, opening the lightbox there unless it's already open.
+pub(super) fn start_slideshow_at(
+    ui: &Rc<LibraryWindowUi>,
+    position: u32,
+    options: Option<SlideshowOptions>,
+) {
+    if ui.interaction.lightbox.borrow().is_none() {
+        open_lightbox(ui.clone(), position);
+    }
+    let lightbox = ui.interaction.lightbox.borrow().clone();
+    if let Some(lightbox) = lightbox {
+        lightbox.start_slideshow(options);
+    }
+}
+
+/// Face mode for `item`, opening the lightbox on it first when it isn't open.
+pub(super) fn tag_people(ui: &Rc<LibraryWindowUi>, item: &AssetObject) {
+    open_on(ui, item, Lightbox::enter_face_mode);
+}
+
+/// Edit mode for `item`, opening the lightbox on it first when it isn't open.
+pub(super) fn edit_photo(ui: &Rc<LibraryWindowUi>, item: &AssetObject) {
+    open_on(ui, item, Lightbox::enter_edit_mode);
+}
+
+fn open_on(ui: &Rc<LibraryWindowUi>, item: &AssetObject, start: fn(&Rc<Lightbox>)) {
+    if ui.interaction.lightbox.borrow().is_none() {
+        let model = &ui.grid.model;
+        let found = (0..model.n_items()).find(|&pos| {
+            model
+                .item(pos)
+                .and_downcast::<AssetObject>()
+                .is_some_and(|candidate| candidate == *item)
+        });
+        let Some(position) = found else {
+            return;
+        };
+        open_lightbox(ui.clone(), position);
+    }
+    let lightbox = ui.interaction.lightbox.borrow().clone();
+    if let Some(lightbox) = lightbox {
+        start(&lightbox);
+    }
 }
 
 pub(super) fn close_lightbox(ui: &LibraryWindowUi) {
@@ -208,11 +310,13 @@ pub(super) fn close_lightbox(ui: &LibraryWindowUi) {
 
 impl Lightbox {
     fn release(&self) {
+        self.stop_slideshow();
         self.close_fullscreen();
         if let Some(handler) = self.collapse_handler.take() {
             self.ui.split.disconnect(handler);
         }
         self.close_video();
+        self.close_live();
         self.picture.strip.stop();
         for picture in self.picture.strip.pictures() {
             picture.set_paintable(None::<&gtk::gdk::Paintable>);
@@ -243,7 +347,34 @@ impl Drop for Lightbox {
 
 #[cfg(test)]
 mod tests {
-    use super::{edited_original_cache_path, original_preview_cache_path};
+    use super::{
+        MAX_FIT_ZOOM, edited_original_cache_path, fit_within, max_zoom,
+        original_preview_cache_path, zoom_label,
+    };
+
+    #[test]
+    fn fit_within_keeps_aspect_and_touches_one_edge() {
+        assert_eq!(fit_within((4000.0, 3000.0), (800.0, 800.0)), (800.0, 600.0));
+        assert_eq!(fit_within((3000.0, 4000.0), (800.0, 800.0)), (600.0, 800.0));
+        assert_eq!(fit_within((100.0, 50.0), (1000.0, 1000.0)), (1000.0, 500.0));
+    }
+
+    #[test]
+    fn zoom_label_counts_real_pixels() {
+        // A 12000 px photo fitted to 1200 px shows a tenth of its pixels.
+        assert_eq!(zoom_label(1.0, 0.1), "10%");
+        assert_eq!(zoom_label(10.0, 0.1), "100%");
+        // A photo smaller than the viewer is upscaled to fit.
+        assert_eq!(zoom_label(1.0, 2.0), "200%");
+    }
+
+    #[test]
+    fn max_zoom_reaches_past_real_pixels() {
+        // High-res: 20x real pixels needs 200x fit when fit shows a tenth.
+        assert!((max_zoom(0.1) - 200.0).abs() < 1e-9);
+        // Small photos keep the 10x-fit reach.
+        assert!((max_zoom(4.0) - MAX_FIT_ZOOM).abs() < 1e-9);
+    }
 
     #[test]
     fn edited_original_cache_path_never_reuses_the_original() {

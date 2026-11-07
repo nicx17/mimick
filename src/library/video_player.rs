@@ -1,7 +1,10 @@
 use gettextrs::gettext;
 mod controls;
+mod motion;
 mod pipeline;
 mod tracks;
+
+pub(super) use motion::MotionPlayer;
 
 use std::cell::Cell;
 use std::rc::{Rc, Weak};
@@ -19,7 +22,6 @@ use pipeline::frame_duration;
 
 const SKIP: gst::ClockTime = gst::ClockTime::from_seconds(10);
 const DEFAULT_FRAME: gst::ClockTime = gst::ClockTime::from_nseconds(33_333_333);
-const HIDE_DELAY: Duration = Duration::from_secs(3);
 const SEEK_SETTLE: Duration = Duration::from_millis(400);
 
 pub(super) struct VideoSource {
@@ -386,6 +388,17 @@ impl VideoPlayer {
         for check in &c.speeds {
             check.connect_toggled(self.on_picked(|p| p.apply_speed()));
         }
+        // A closed menu leaves focus on its button, where Space would reopen it.
+        for menu in [&c.speed, &c.tracks, &c.volume_menu] {
+            let play = c.play.downgrade();
+            menu.connect_active_notify(move |menu| {
+                if !menu.is_active()
+                    && let Some(play) = play.upgrade()
+                {
+                    play.grab_focus();
+                }
+            });
+        }
         let weak = Rc::downgrade(self);
         c.seek.connect_change_value(move |_, _, value| {
             if let Some(p) = weak.upgrade() {
@@ -474,46 +487,6 @@ impl VideoPlayer {
         self.controls
             .volume_menu
             .set_icon_name(volume_icon(self.volume(), self.muted()));
-    }
-
-    fn reveal_controls(&self) {
-        self.controls.revealer.set_reveal_child(true);
-        self.surface.set_cursor(None::<&gtk::gdk::Cursor>);
-    }
-
-    fn bump_controls(self: &Rc<Self>) {
-        self.reveal_controls();
-        self.hide_at.set(Instant::now() + HIDE_DELAY);
-        if !self.hide_armed.replace(true) {
-            self.arm_hide(HIDE_DELAY);
-        }
-    }
-
-    fn arm_hide(self: &Rc<Self>, delay: Duration) {
-        let weak = Rc::downgrade(self);
-        glib::timeout_add_local_once(delay, move || {
-            let Some(p) = weak.upgrade() else {
-                return;
-            };
-            let remaining = p.hide_at.get().saturating_duration_since(Instant::now());
-            if !remaining.is_zero() {
-                p.arm_hide(remaining);
-                return;
-            }
-            p.hide_armed.set(false);
-            if p.is_playing() && !p.controls_in_use() {
-                p.controls.revealer.set_reveal_child(false);
-                p.surface.set_cursor_from_name(Some("none"));
-            }
-        });
-    }
-
-    fn controls_in_use(&self) -> bool {
-        let c = &self.controls;
-        c.hover.contains_pointer()
-            || c.volume_menu.is_active()
-            || c.tracks.is_active()
-            || c.speed.is_active()
     }
 }
 

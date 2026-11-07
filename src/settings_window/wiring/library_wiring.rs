@@ -41,23 +41,9 @@ pub(crate) fn connect_library_rows(
             std::mem::replace(&mut d.library_preview_full_resolution, active) != active
         });
     });
-    library.grid_quality_row.set_selected(grid_quality_index(
-        &ctx.config.read().data.library_grid_quality,
-    ));
-    let (c, fit_row) = (ctx.clone(), library.grid_fit_row.clone());
-    library
-        .grid_quality_row
-        .connect_selected_notify(move |row| {
-            let value = grid_quality_value(row.selected());
-            fit_row.set_sensitive(value != "thumbnail");
-            save_flag(&c, |d| {
-                let changed = d.library_grid_quality != value;
-                d.library_grid_quality = value.to_string();
-                changed
-            });
-            c.publish_grid_style();
-        });
+    connect_grid_quality_row(ctx, library);
     connect_grid_fit_row(ctx, library);
+    connect_map_full_grid_row(ctx, &library.map_full_grid_row);
     connect_date_headings_row(ctx, &library.date_headings_row);
     connect_raw_rows(ctx, library);
     connect_disk_cache_row(ctx, &library.disk_cache_row);
@@ -104,6 +90,26 @@ fn connect_clear_cache(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
     });
 }
 
+/// Thumbnail Quality; Fit Thumbnails to Tiles does nothing for plain thumbnails.
+fn connect_grid_quality_row(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
+    library.grid_quality_row.set_selected(grid_quality_index(
+        &ctx.config.read().data.library_grid_quality,
+    ));
+    let (c, fit_row) = (ctx.clone(), library.grid_fit_row.clone());
+    library
+        .grid_quality_row
+        .connect_selected_notify(move |row| {
+            let value = grid_quality_value(row.selected());
+            fit_row.set_sensitive(value != "thumbnail");
+            save_flag(&c, |d| {
+                let changed = d.library_grid_quality != value;
+                d.library_grid_quality = value.to_string();
+                changed
+            });
+            c.publish_grid_style();
+        });
+}
+
 fn connect_grid_fit_row(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
     let row = &library.grid_fit_row;
     row.set_active(ctx.config.read().data.library_grid_fit_tiles);
@@ -115,6 +121,17 @@ fn connect_grid_fit_row(ctx: &Arc<AppContext>, library: &LibraryWidgets) {
             std::mem::replace(&mut d.library_grid_fit_tiles, active) != active
         });
         ctx.publish_grid_style();
+    });
+}
+
+fn connect_map_full_grid_row(ctx: &Arc<AppContext>, row: &adw::SwitchRow) {
+    row.set_active(ctx.config.read().data.library_map_full_grid);
+    let ctx = ctx.clone();
+    row.connect_active_notify(move |row| {
+        let active = row.is_active();
+        save_flag(&ctx, |d| {
+            std::mem::replace(&mut d.library_map_full_grid, active) != active
+        });
     });
 }
 

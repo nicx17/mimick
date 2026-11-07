@@ -96,6 +96,17 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - Arch Linux package on the AUR (`mimick`)
 - AppImages for x86_64 and aarch64 attached to each release
 - Translatable interface, ready for translations (#220)
+- Live and motion photos play in the lightbox
+- Memories above Photos, opening as a slideshow
+- Stacks for bursts and RAW+JPEG pairs, with a stack strip in the lightbox
+- Slideshows with crossfade, shuffle, and repeat
+- Edit Photo: crop, rotate, flip, and straighten; adjust light and colour, filters, and redaction, saved as a stacked copy
+- Tag People: name, move, remove, or draw faces; point at a face to see who it is
+- Duplicates page to review and resolve look-alike photos
+- View Similar Photos and View in Timeline in the photo menu
+- Select recognized text down to a word or a few characters
+- Translation progress chart in the README
+- Lightbox zoom shown in real pixels, reaching 2000% for high-resolution photos
 
 ---
 

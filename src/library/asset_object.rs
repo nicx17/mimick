@@ -78,6 +78,18 @@ mod imp {
         owner_id: RefCell<String>,
         #[property(get, set)]
         local_date_time: RefCell<String>,
+
+        /// Asset id of a live photo's motion clip; empty for stills and videos.
+        #[property(get, set)]
+        live_video_id: RefCell<String>,
+
+        /// Stack this tile is the cover of; empty when it isn't stacked.
+        #[property(get, set)]
+        stack_id: RefCell<String>,
+
+        /// Photos in the stack, the cover included; 0 when not stacked.
+        #[property(get, set)]
+        stack_count: Cell<u32>,
     }
 
     #[glib::object_subclass]

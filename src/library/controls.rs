@@ -416,7 +416,7 @@ fn album_order(ui: &LibraryWindowUi, source: &LibrarySource) -> Option<Option<So
 }
 
 /// Set the sort without reloading, and show it if the grid's options are in the dropdown.
-fn show_sort_mode(ui: &LibraryWindowUi, mode: LibrarySortMode) {
+pub(super) fn show_sort_mode(ui: &LibraryWindowUi, mode: LibrarySortMode) {
     let index = grid_sort_index(&mode);
     ui.ctx.library_state.lock().apply_sort(mode);
     if ui.content_stack.visible_child_name().as_deref() == Some("grid") {

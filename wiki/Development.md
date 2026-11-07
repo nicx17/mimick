@@ -164,6 +164,12 @@ For local Flatpak work:
 flatpak-builder --user --install --force-clean build-dir dev.nicx.mimick.local.yml
 ```
 
+The local manifest is set up for quick rebuilds:
+
+- Cargo's build output lives in `.flatpak-builder/ccache/mimick-target`, which flatpak-builder mounts into every build, so after the first build only Mimick itself and anything changed are compiled again. Delete that folder to start from scratch, or to free its few gigabytes.
+- It builds without link-time optimisation and with 16 codegen units, which takes a fraction of the time for a slightly larger binary. `dev.nicx.mimick.yml`, which Flathub builds, keeps the full release settings from `Cargo.toml`.
+- `tests`, `docs`, `site`, `wiki`, and `flatpak-venv` aren't copied into the build.
+
 Run the staged Flatpak without installing:
 
 ```bash

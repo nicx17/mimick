@@ -177,10 +177,30 @@ pub(super) fn show(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
     render_facts(header);
     set_description(header, None);
     clear_actions(header);
+    if !matches!(source, LibrarySource::Trash | LibrarySource::Explore) {
+        let ui_play = ui.clone();
+        add_action(
+            header,
+            "mimick-slideshow-symbolic",
+            &gettext("Play Slideshow"),
+            move || play_slideshow(&ui_play),
+        );
+    }
     let (leading, title) = basics(ui, source);
     set_leading(ui, leading);
     set_title(ui, &title);
     enrich(ui, source);
+    super::memories::sync(ui, source);
+}
+
+/// From the first photo shown; the grid may still be loading its first page.
+fn play_slideshow(ui: &Rc<LibraryWindowUi>) {
+    if ui.grid.model.n_items() == 0 {
+        ui.toasts
+            .add_toast(libadwaita::Toast::new(&gettext("Nothing to show yet")));
+        return;
+    }
+    super::lightbox::start_slideshow_at(ui, 0, None);
 }
 
 fn basics(ui: &LibraryWindowUi, source: &LibrarySource) -> (Leading, String) {
@@ -228,6 +248,7 @@ fn library_icon(source: &LibrarySource) -> Option<(&'static str, String)> {
         | LibrarySource::AlbumUnified { name, .. } => ("folder-pictures-symbolic", name.clone()),
         LibrarySource::Partner { name, .. } => ("system-users-symbolic", name.clone()),
         LibrarySource::Folder { path } => ("folder-symbolic", leaf_name(path).to_string()),
+        LibrarySource::Memory { title, .. } => ("mimick-slideshow-symbolic", title.clone()),
         _ => return None,
     };
     Some((icon, title))
@@ -239,6 +260,10 @@ fn found_icon(source: &LibrarySource) -> (&'static str, String) {
         LibrarySource::Place { city } => ("mark-location-symbolic", city.clone()),
         LibrarySource::MapArea { label, .. } => ("mark-location-symbolic", label.clone()),
         LibrarySource::Thing { query } => ("system-search-symbolic", capitalize(query)),
+        LibrarySource::Similar { filename, .. } => (
+            "system-search-symbolic",
+            crate::i18n::fill(gettext("Similar to {name}"), &[("name", filename)]),
+        ),
         LibrarySource::SmartSearch { query }
         | LibrarySource::MetadataSearch { query }
         | LibrarySource::OcrSearch { query }

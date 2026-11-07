@@ -15,22 +15,26 @@ use crate::library::asset_object::AssetObject;
 
 use super::LOCAL_ID_PREFIX;
 use super::LibraryWindowUi;
-use super::actions::{TrashTarget, confirm_trash};
-use super::archive::{archive_label, set_archived};
-use super::asset_edit::show_edit_dialog;
 use super::download::{
     begin_download_session, finish_download_item, open_local_with_default_app, start_download,
     track_download_item,
 };
-use super::favorites::{FavoriteHooks, toggle_favorite};
 use super::load_texture_oriented;
 use super::trash_view;
+
+mod manage;
+mod menu;
+
+use manage::append_manage_buttons;
+pub(super) use menu::Menu;
 
 /// What the view that opened the menu does after its asset is trashed or edited.
 pub(super) struct AssetMenuHooks {
     pub on_trashed: Rc<dyn Fn()>,
     /// Receives whether the capture date changed.
     pub on_edited: Rc<dyn Fn(bool)>,
+    /// Only the lightbox offers Fullscreen.
+    pub toggle_fullscreen: Option<Rc<dyn Fn()>>,
 }
 
 impl AssetMenuHooks {
@@ -45,6 +49,7 @@ impl AssetMenuHooks {
                     super::refresh_library_after_mutation(ui.clone(), true);
                 }
             }),
+            toggle_fullscreen: None,
         }
     }
 }
@@ -73,6 +78,12 @@ impl MenuAsset {
     }
 }
 
+/// The photo a menu acts on, and the grid position slideshows start from.
+pub(super) struct MenuTarget {
+    pub item: AssetObject,
+    pub position: u32,
+}
+
 pub(super) fn show_asset_context_menu(
     ui: Rc<LibraryWindowUi>,
     parent: &impl gtk::prelude::IsA<gtk::Widget>,
@@ -84,6 +95,30 @@ pub(super) fn show_asset_context_menu(
     let Some(item) = ui.grid.model.item(position).and_downcast::<AssetObject>() else {
         return;
     };
+    show_item_context_menu(ui, parent, MenuTarget { item, position }, x, y, hooks);
+}
+
+pub(super) fn show_item_context_menu(
+    ui: Rc<LibraryWindowUi>,
+    parent: &impl gtk::prelude::IsA<gtk::Widget>,
+    target: MenuTarget,
+    x: f64,
+    y: f64,
+    hooks: AssetMenuHooks,
+) {
+    item_menu(ui, parent, target, x, y, hooks).popup();
+}
+
+/// The photo's menu, ready to pop up at (`x`, `y`) on `parent` or to present as a sheet.
+pub(super) fn item_menu(
+    ui: Rc<LibraryWindowUi>,
+    parent: &impl gtk::prelude::IsA<gtk::Widget>,
+    target: MenuTarget,
+    x: f64,
+    y: f64,
+    hooks: AssetMenuHooks,
+) -> Menu {
+    let MenuTarget { item, position } = target;
     let asset = MenuAsset::from_item(&item);
     let is_image = item
         .property::<String>("asset-type")
@@ -93,27 +128,62 @@ pub(super) fn show_asset_context_menu(
 
     if is_image {
         let (ui, asset) = (ui.clone(), asset.clone());
-        menu.add(&gettext("Copy"), false, move || {
+        menu.add_with_icon("edit-copy-symbolic", &gettext("Copy"), false, move || {
             copy_asset_to_clipboard(ui.clone(), asset.clone())
         });
     }
     if asset.on_server() {
         let (ui, asset) = (ui.clone(), asset.clone());
-        menu.add(&gettext("Download"), false, move || {
-            start_download(ui.clone(), asset.remote_id.clone(), asset.filename.clone())
-        });
+        menu.add_with_icon(
+            "mimick-download-symbolic",
+            &gettext("Download"),
+            false,
+            move || start_download(ui.clone(), asset.remote_id.clone(), asset.filename.clone()),
+        );
     }
     if asset.on_server() || !asset.local_path.is_empty() {
         let (ui, asset) = (ui.clone(), asset.clone());
-        menu.add(&gettext("Open In"), false, move || {
-            open_asset_in_default_app(ui.clone(), asset.clone())
-        });
+        menu.add_with_icon(
+            "document-open-symbolic",
+            &gettext("Open In"),
+            false,
+            move || open_asset_in_default_app(ui.clone(), asset.clone()),
+        );
+    }
+    append_viewing_buttons(&menu, &ui, position, &hooks);
+    if asset.on_server() && !trash_view::is_trash_active(&ui) {
+        super::related::append_related_buttons(&menu, &ui, &item);
     }
     if asset.on_server() {
         append_manage_buttons(&menu, &ui, &item, hooks);
     }
+    menu
+}
 
-    menu.popup();
+/// Slideshow from this photo, and Fullscreen when the menu belongs to the lightbox.
+fn append_viewing_buttons(
+    menu: &Menu,
+    ui: &Rc<LibraryWindowUi>,
+    position: u32,
+    hooks: &AssetMenuHooks,
+) {
+    if !trash_view::is_trash_active(ui) {
+        let ui = ui.clone();
+        menu.add_with_icon(
+            "mimick-slideshow-symbolic",
+            &gettext("Slideshow"),
+            false,
+            move || super::lightbox::start_slideshow_at(&ui, position, None),
+        );
+    }
+    if let Some(toggle) = hooks.toggle_fullscreen.clone() {
+        let (icon, label) = if ui.window.is_fullscreen() {
+            ("view-restore-symbolic", gettext("Leave Fullscreen"))
+        } else {
+            ("view-fullscreen-symbolic", gettext("Fullscreen"))
+        };
+        menu.add_with_icon(icon, &label, false, move || toggle());
+    }
 }
 
 /// Calls `open` on right-click and on touch long-press, which also swallows the tap.
@@ -149,240 +219,6 @@ pub(super) fn menu_key(open: impl Fn() + 'static) -> gtk::ShortcutController {
     let controller = gtk::ShortcutController::new();
     controller.add_shortcut(shortcut);
     controller
-}
-
-/// Popover content plus a helper for full-width buttons that close the menu first.
-pub(super) struct Menu {
-    content: gtk::Box,
-    popover: gtk::Popover,
-}
-
-impl Menu {
-    pub(super) fn new(parent: &impl gtk::prelude::IsA<gtk::Widget>, x: f64, y: f64) -> Self {
-        let popover = gtk::Popover::builder()
-            .has_arrow(true)
-            .autohide(true)
-            .build();
-        popover.set_parent(parent);
-        popover.connect_closed(|popover| {
-            let popover = popover.clone();
-            glib::idle_add_local_once(move || popover.unparent());
-        });
-        popover.set_pointing_to(Some(&gtk::gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
-        let content = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .spacing(4)
-            .margin_top(6)
-            .margin_bottom(6)
-            .margin_start(6)
-            .margin_end(6)
-            .build();
-        Self { content, popover }
-    }
-
-    /// Scrollable, so GTK lets the compositor shrink a menu taller than the screen.
-    pub(super) fn popup(self) {
-        let scroller = gtk::ScrolledWindow::builder()
-            .child(&self.content)
-            .hscrollbar_policy(gtk::PolicyType::Never)
-            .propagate_natural_width(true)
-            .propagate_natural_height(true)
-            .build();
-        self.popover.set_child(Some(&scroller));
-        self.popover.popup();
-    }
-
-    pub(super) fn add(&self, label: &str, destructive: bool, on_click: impl Fn() + 'static) {
-        let button = gtk::Button::builder()
-            .label(label)
-            .halign(gtk::Align::Fill)
-            .build();
-        if destructive {
-            button.add_css_class("destructive-action");
-        }
-        let popover = self.popover.clone();
-        button.connect_clicked(move |_| {
-            popover.popdown();
-            on_click();
-        });
-        self.content.append(&button);
-    }
-}
-
-/// "Edit Info…" and "Move to Trash" for assets that exist on the server;
-/// "Restore" and "Delete Permanently" instead while the Trash view is open.
-fn append_manage_buttons(
-    menu: &Menu,
-    ui: &Rc<LibraryWindowUi>,
-    item: &AssetObject,
-    hooks: AssetMenuHooks,
-) {
-    let Some(target) = TrashTarget::from_item(item) else {
-        return;
-    };
-    let remote_id = target.remote_id().to_string();
-    if trash_view::is_trash_active(ui) {
-        append_trash_mode_buttons(menu, ui, remote_id, hooks.on_trashed);
-        return;
-    }
-
-    append_favorite_button(menu, ui, item, &hooks);
-    append_archive_button(menu, ui, item, &hooks);
-    append_album_buttons(menu, ui, &remote_id, &hooks);
-    let (ui_link, link_id) = (ui.clone(), remote_id.clone());
-    menu.add(&gettext("Create Share Link…"), false, move || {
-        super::shared_link_dialog::present(
-            ui_link.clone(),
-            super::shared_link_dialog::LinkDialogMode::Create(
-                crate::api_client::SharedLinkTarget::Assets(vec![link_id.clone()]),
-            ),
-            Rc::new(|| {}),
-        )
-    });
-    if super::actions::is_mine(ui, item) {
-        append_edit_buttons(menu, ui, item, remote_id, hooks.on_edited);
-    }
-    append_trash_button(menu, ui, target, hooks.on_trashed);
-}
-
-/// "Add to Album…"; inside an album also "Set as Album Cover" (owner) and "Remove from Album".
-fn append_album_buttons(menu: &Menu, ui: &Rc<LibraryWindowUi>, id: &str, hooks: &AssetMenuHooks) {
-    let (ui_add, ids) = (ui.clone(), vec![id.to_string()]);
-    menu.add(&gettext("Add to Album…"), false, move || {
-        super::album_picker::present(&ui_add, ids.clone(), Rc::new(|| {}))
-    });
-    if let Some(album) = super::album_assets::owned_current_album(ui) {
-        let (ui_cover, asset_id) = (ui.clone(), id.to_string());
-        menu.add(&gettext("Set as Album Cover"), false, move || {
-            super::album_assets::set_cover(&ui_cover, album.id.clone(), asset_id.clone())
-        });
-    }
-    if super::album_assets::can_remove_here(ui) {
-        let (ui_remove, ids, on_removed) =
-            (ui.clone(), vec![id.to_string()], hooks.on_trashed.clone());
-        menu.add(&gettext("Remove from Album"), false, move || {
-            super::album_assets::remove(&ui_remove, ids.clone(), on_removed.clone())
-        });
-    }
-}
-
-/// "Edit Info…" and "Set Location…", offered only on the user's own assets as in Immich.
-fn append_edit_buttons(
-    menu: &Menu,
-    ui: &Rc<LibraryWindowUi>,
-    item: &AssetObject,
-    id: String,
-    on_edited: Rc<dyn Fn(bool)>,
-) {
-    let (ui_edit, filename, edit_id) =
-        (ui.clone(), item.property::<String>("filename"), id.clone());
-    menu.add(&gettext("Edit Info…"), false, move || {
-        show_edit_dialog(
-            ui_edit.clone(),
-            edit_id.clone(),
-            filename.clone(),
-            on_edited.clone(),
-        )
-    });
-    append_location_button(menu, ui, item, id);
-}
-
-fn append_location_button(menu: &Menu, ui: &Rc<LibraryWindowUi>, item: &AssetObject, id: String) {
-    let (ui, filename) = (ui.clone(), item.property::<String>("filename"));
-    menu.add(&gettext("Set Location…"), false, move || {
-        super::map::set_location_for_asset(ui.clone(), id.clone(), filename.clone(), Rc::new(|| {}))
-    });
-}
-
-fn append_trash_button(
-    menu: &Menu,
-    ui: &Rc<LibraryWindowUi>,
-    target: TrashTarget,
-    on_trashed: Rc<dyn Fn()>,
-) {
-    // The popover is single-use, so the target is handed to the dialog on the first click.
-    let target = std::cell::RefCell::new(Some(target));
-    let label = &if ui.features.get().trash {
-        gettext("Move to Trash")
-    } else {
-        gettext("Delete…")
-    };
-    let ui = ui.clone();
-    menu.add(label, true, move || {
-        if let Some(target) = target.borrow_mut().take() {
-            let on_trashed = on_trashed.clone();
-            confirm_trash(ui.clone(), vec![target], 0, move || on_trashed());
-        }
-    });
-}
-
-/// "Add to / Remove from Favorites". The opening view is told through `on_edited` so a
-/// lightbox can refresh its heart, and through `on_trashed` when the Favorites view drops it.
-fn append_favorite_button(
-    menu: &Menu,
-    ui: &Rc<LibraryWindowUi>,
-    item: &AssetObject,
-    hooks: &AssetMenuHooks,
-) {
-    let label = &if item.is_favorite() {
-        gettext("Remove from Favorites")
-    } else {
-        gettext("Add to Favorites")
-    };
-    let (ui, item) = (ui.clone(), item.clone());
-    let (on_edited, on_trashed) = (hooks.on_edited.clone(), hooks.on_trashed.clone());
-    menu.add(label, false, move || {
-        let on_edited = on_edited.clone();
-        let hooks = FavoriteHooks {
-            on_change: Rc::new(move |_| on_edited(false)),
-            on_removed: on_trashed.clone(),
-        };
-        toggle_favorite(&ui, &item, hooks);
-    });
-}
-
-fn append_archive_button(
-    menu: &Menu,
-    ui: &Rc<LibraryWindowUi>,
-    item: &AssetObject,
-    hooks: &AssetMenuHooks,
-) {
-    let archived = item.is_archived();
-    let (ui, item) = (ui.clone(), item.clone());
-    let (on_edited, on_trashed) = (hooks.on_edited.clone(), hooks.on_trashed.clone());
-    menu.add(&archive_label(archived), false, move || {
-        let (on_edited, on_trashed) = (on_edited.clone(), on_trashed.clone());
-        set_archived(&ui, vec![item.clone()], !archived, move |removed| {
-            if removed {
-                on_trashed()
-            } else {
-                on_edited(false)
-            }
-        });
-    });
-}
-
-/// Trash view: put the asset back, or delete it for good after confirmation.
-fn append_trash_mode_buttons(
-    menu: &Menu,
-    ui: &Rc<LibraryWindowUi>,
-    remote_id: String,
-    on_removed: Rc<dyn Fn()>,
-) {
-    let (ui_restore, id, on_restored) = (ui.clone(), remote_id.clone(), on_removed.clone());
-    menu.add(&gettext("Restore"), false, move || {
-        let on_restored = on_restored.clone();
-        trash_view::restore(ui_restore.clone(), vec![id.clone()], move || on_restored());
-    });
-    let ui_delete = ui.clone();
-    menu.add(&gettext("Delete Permanently"), true, move || {
-        let on_removed = on_removed.clone();
-        trash_view::confirm_delete_permanently(
-            ui_delete.clone(),
-            vec![remote_id.clone()],
-            move || on_removed(),
-        );
-    });
 }
 
 fn copy_asset_to_clipboard(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {

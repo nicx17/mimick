@@ -49,6 +49,30 @@ pub(super) fn quad_contains(quad: &[(f64, f64); 4], p: (f64, f64)) -> bool {
     !(positive && negative)
 }
 
+/// How far across a box (top-left, top-right, bottom-right, bottom-left) `p` lies, from 0 to 1.
+pub(super) fn fraction_along(quad: &[(f64, f64); 4], p: (f64, f64)) -> f64 {
+    let mid = |a: (f64, f64), b: (f64, f64)| ((a.0 + b.0) / 2.0, (a.1 + b.1) / 2.0);
+    let (left, right) = (mid(quad[0], quad[3]), mid(quad[1], quad[2]));
+    let (vx, vy) = (right.0 - left.0, right.1 - left.1);
+    let length = vx * vx + vy * vy;
+    if length <= f64::EPSILON {
+        return 0.0;
+    }
+    (((p.0 - left.0) * vx + (p.1 - left.1) * vy) / length).clamp(0.0, 1.0)
+}
+
+/// The part of a box between fractions `from` and `to` of the way across it.
+pub(super) fn slice_quad(quad: &[(f64, f64); 4], from: f64, to: f64) -> [(f64, f64); 4] {
+    let lerp =
+        |a: (f64, f64), b: (f64, f64), t: f64| (a.0 + (b.0 - a.0) * t, a.1 + (b.1 - a.1) * t);
+    [
+        lerp(quad[0], quad[1], from),
+        lerp(quad[0], quad[1], to),
+        lerp(quad[3], quad[2], to),
+        lerp(quad[3], quad[2], from),
+    ]
+}
+
 /// Rows top to bottom, then left to right; rows are grouped first so the sort stays a total order.
 pub(super) fn reading_order(mut boxes: Vec<OcrBox>) -> Vec<OcrBox> {
     boxes.sort_by(|a, b| a.y1.total_cmp(&b.y1));
@@ -86,6 +110,18 @@ pub(super) fn ob(text: &str, x: f64, y: f64) -> OcrBox {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fractions_run_left_to_right_even_on_slanted_boxes() {
+        let slanted = [(0.0, 0.0), (100.0, 20.0), (100.0, 40.0), (0.0, 20.0)];
+        assert_eq!(fraction_along(&slanted, (0.0, 10.0)), 0.0);
+        assert_eq!(fraction_along(&slanted, (50.0, 20.0)), 0.5);
+        assert_eq!(fraction_along(&slanted, (500.0, 0.0)), 1.0);
+        assert_eq!(
+            slice_quad(&slanted, 0.5, 1.0),
+            [(50.0, 10.0), (100.0, 20.0), (100.0, 40.0), (50.0, 30.0)]
+        );
+    }
 
     #[test]
     fn contain_rect_letterboxes_wide_image() {
