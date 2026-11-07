@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 16:32+0530\n"
+"POT-Creation-Date: 2026-11-08 02:19+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2172,15 +2172,15 @@ msgstr ""
 msgid "Unknown Person"
 msgstr ""
 
-#: src/library/lightbox/interaction.rs:325 src/library/lightbox/widgets.rs:295
+#: src/library/lightbox/interaction.rs:339 src/library/lightbox/widgets.rs:295
 msgid "Raw"
 msgstr ""
 
-#: src/library/lightbox/interaction.rs:327 src/library/lightbox/widgets.rs:297
+#: src/library/lightbox/interaction.rs:341 src/library/lightbox/widgets.rs:297
 msgid "Prev"
 msgstr ""
 
-#: src/library/lightbox/interaction.rs:429
+#: src/library/lightbox/interaction.rs:443
 msgid "Add a description"
 msgstr ""
 
@@ -5347,7 +5347,7 @@ msgid "Album sync dialog with upload and download actions"
 msgstr ""
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:68
-msgid "Settings - Connectivity configuration"
+msgid "Settings - Server connection and watch folders"
 msgstr ""
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:73

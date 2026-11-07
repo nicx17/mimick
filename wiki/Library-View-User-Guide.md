@@ -11,9 +11,9 @@ The library view is an optional in-app browser for your Immich server's assets, 
 
 The library window now opens instead of the settings window. Settings remain accessible from **Settings** in the header bar's main menu.
 
-|                                                     Photos (Light)                                                     |                                                       Photos (Dark)                                                        |
-| :--------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: |
-| ![Photos light](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos_page_view_sidebar_on.png) | ![Photos dark](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos_page_view_dark_sidebar_on.png) |
+|                                               Photos (Light)                                               |                                                Photos (Phone)                                                |
+| :--------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
+| ![Photos light](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos-timeline.png) | ![Photos on a phone](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos-phone.png) |
 
 ---
 
@@ -81,9 +81,9 @@ If Mimick can't read these settings (for example, an API key without `userPrefer
 - sort selector (**Newest / Filename / File Type**, or the album sorts on the Albums page), where there's something to sort
 - **Upload** button (invokes the manual multi-file picker)
 
-|                                                        Search Options                                                         |                                                                         View Options                                                                         |
-| :---------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| ![Search options](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search_options_menu_library_view.png) | ![View options](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/library_view_showing_view_options_for_albums_remote_local_unified.png) |
+|                                             Main Menu                                             |                                             Sort Options                                             |
+| :-----------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
+| ![Main menu](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/main-menu.png) | ![Sort options](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/sort-menu.png) |
 
 ---
 
@@ -156,10 +156,6 @@ The source dropdown controls which assets the grid shows.
 
 Switching sources clears any active search and reloads from page 1.
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/library_view_showing_view_options_for_albums_remote_local_unified.png" width="40%" alt="Source view options" />
-</div>
-
 **Local source notes:**
 
 - Local enumeration walks your watch folders using the same extension filter as the sync engine.
@@ -191,12 +187,12 @@ Use the mode dropdown below the search entry, next to **Search**:
 Press **Filters** under the search entry to open the filters panel: it docks on the right of the results on wide windows and slides in over them on phones (swipe it away or press the close button). The panel has the text, type and flags, tag, date, camera, and location groups, with **Reset** (clears the filters, keeping your search text) and **Search** at the bottom; on phones **Search** also closes the panel so you see the results. The **Filters** button shows how many filters are set, for example **Filters · 3**. The **Clear** button next to **Filters** clears the search text and the filters.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search_view_with_thequickbrownfox_searched_ocr_mode.png" width="80%" alt="OCR search example" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-ocr-results.png" width="80%" alt="OCR search example" />
 </div>
 
 |                                                     Advanced Filters                                                     |                                                      Advanced Filters (More Options)                                                       |
 | :----------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------: |
-| ![Filters](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/advanced_filters_menu_library_view.png) | ![Filters more](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/advanced_filters_menu_library_view_more_options.png) |
+| ![Filters](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-filters.png) | ![Filters more](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-filters-camera-location-phone.png) |
 
 ### Search by Tag
 
@@ -213,7 +209,7 @@ Press **Filters** under the search entry to open the filters panel: it docks on 
 Select **Explore** in the sidebar to open the Explore view.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/explore_page_view_showing_people_places_sidebar_on.png" width="80%" alt="Explore page" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/explore-page.png" width="80%" alt="Explore page" />
 </div>
 
 Three sections are populated from the Immich server:
@@ -279,7 +275,7 @@ When the map is short (for example on a phone, with photos listed below it), the
 Click the checkbox icon in the header bar (or use **Esc** to exit) to toggle selection mode.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/library_view_photos_page_showing_selected_assets_with_checkboxes.png" width="80%" alt="Multi-select with checkboxes" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/selection-mode.png" width="80%" alt="Multi-select with checkboxes" />
 </div>
 
 In selection mode:
@@ -315,7 +311,7 @@ Click any asset in the grid to open it in the lightbox.
 
 |                                                      Lightbox (Details On)                                                      |                                                      Lightbox (Details Off)                                                       |
 | :-----------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------: |
-| ![Lightbox details on](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_on.png) | ![Lightbox details off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox_view_details_pane_off.png) |
+| ![Lightbox details on](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox-details-on.png) | ![Lightbox details off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/lightbox-details-off.png) |
 
 - The lightbox shows a preview image. If **Open Originals in Lightbox** is on in Settings → Library, it loads the original file instead of a server-generated proxy.
 - Local files and originals are shown at your screen's resolution; zooming in past it loads the full resolution in the background, with a spinner while it decodes.
@@ -478,7 +474,7 @@ The **Trash** sidebar entry lists everything in the Immich trash in the normal g
 Select **Albums** in the sidebar to open the album landing page.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album_page_view_showing_albums_recent_youralbums.png" width="80%" alt="Album page" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/albums-page.png" width="80%" alt="Album page" />
 </div>
 
 Three sections are shown:
@@ -493,7 +489,7 @@ Right-click or long-press any album tile, or focus it and press **Shift+F10** or
 
 |                                               Selected Album (Dark)                                               |                                                         Album View (Sidebar Off)                                                          |
 | :---------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------: |
-| ![Album dark](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/selected_album_view_dark.png) | ![Album sidebar off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/name_dark_album_selected_view_sidebar_off.png) |
+| ![Album dark](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album-view-dark.png) | ![Album sidebar off](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album-view-dark-sidebar-hidden.png) |
 
 ### Creating an Album
 
@@ -549,7 +545,7 @@ When viewing an album, its header shows the linked local watch folder (if any) a
 | **Sync**        | Runs a bidirectional sync between the linked folder and the album |
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/library_view_showing_sync_album_dialog_upload_download_apply_cancel.png" width="80%" alt="Album sync dialog" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album-sync-dialog.png" width="80%" alt="Album sync dialog" />
 </div>
 
 **Sync steps:**

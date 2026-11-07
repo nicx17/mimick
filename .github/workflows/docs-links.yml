@@ -32,12 +32,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # Check links to main's screenshots and site pages against this checkout,
+      # so a PR that adds them passes before it merges.
       - name: Check markdown links
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: >-
             --no-progress
             --verbose
+            --remap '^https://raw\.githubusercontent\.com/nicx17/mimick/main/(.+)$ file://${{ github.workspace }}/$1'
+            --remap '^https://mimick\.nicx\.dev/([^/]+\.html)$ file://${{ github.workspace }}/site/$1'
             --exclude 'https://img.shields.io/.*'
             --exclude 'https://unsplash.com/.*'
             --exclude '^file:///.*/wiki/[^/.]+$'

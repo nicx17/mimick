@@ -45,11 +45,11 @@ Mimick is an unofficial Immich desktop client for Linux. It syncs your photo and
 
 ## Screenshots
 
-|                                    Library View (Light)                                    |                                                Explore View                                                |
-| :----------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
-|           ![Photos page light](docs/screenshots/photos_page_view_sidebar_on.png)           |          ![Explore View](docs/screenshots/explore_page_view_showing_people_places_sidebar_on.png)          |
-|                                 **Sync Status Dashboard**                                  |                                        **Settings & Watch Folders**                                        |
-| ![Status dashboard](docs/screenshots/status_pane_sync_status_health_dashboard_actions.png) | ![Settings & Watch Folders](docs/screenshots/settings_pane_showing_library_settings_and_watch_folders.png) |
+|                    Library View (Light)                    |                                    Explore View                                     |
+| :--------------------------------------------------------: | :---------------------------------------------------------------------------------: |
+| ![Photos page light](docs/screenshots/photos-timeline.png) |                 ![Explore View](docs/screenshots/explore-page.png)                  |
+|                 **Sync Status Dashboard**                  |                            **Settings & Watch Folders**                             |
+|   ![Status dashboard](docs/screenshots/status-page.png)    | ![Settings & Watch Folders](docs/screenshots/settings-server-and-watch-folders.png) |
 
 <div align="center">
 

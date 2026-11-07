@@ -15,7 +15,7 @@ Once the application is running, the Mimick tray icon will appear in your system
 Clicking on the tray icon reveals a menu:
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/tray_icon_menu.png" width="40%" alt="Tray icon menu" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/tray-menu.png" width="40%" alt="Tray icon menu" />
 </div>
 
 * **Settings**: Opens the configuration and status window.
@@ -47,7 +47,7 @@ The window follows your desktop appearance preference, so it can render in eithe
 ### Server
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_showing_connnectivity_config_details.png" width="60%" alt="Connectivity settings" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings-server-and-watch-folders.png" width="60%" alt="Connectivity settings" />
 </div>
 
 1. **Internal URL (LAN)**: Enter the local IP address of your Immich server (e.g., `http://192.168.1.10:2283`). Can be toggled on/off.
@@ -64,10 +64,6 @@ The window follows your desktop appearance preference, so it can render in eithe
 
 **Save and Connect**: Saves the URLs and API key and connects with them. These are the only settings that wait for a button; see [Saving Changes](#saving-changes).
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_connection_successful_dialog.png" width="60%" alt="Connection test successful" />
-</div>
-
 ### Choosing Folders to Watch
 
 1. Under **Watch Folders**, click **Add Folder…**.
@@ -79,12 +75,12 @@ The window follows your desktop appearance preference, so it can render in eithe
     * **Deletions**: **Delete from Immich Too** and **Delete from This Folder Too** (not available yet)
     * **Files**: **Skip Hidden Files**, **Upload XMP Sidecars**, **Largest File in MB**, and **Only These Types**, a comma-separated allowlist like `jpg, png, mp4`
 
-| Watch Folders List | Album Selection | Album Search |
+| Watch Folders List | Upload Target | Upload Target Search |
 | :---: | :---: | :---: |
-| ![Watch folders](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/watching_folders_list_in_settings_showing_folder_details.png) | ![Album selection](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album_selection_menu_for_watching_folder.png) | ![Album search](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/watching_folder_album_selection_menu_with_search_feat.png) |
+| ![Watch folders](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings-watch-folder-expanded.png) | ![Upload target picker](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/upload-target-picker.png) | ![Upload target search](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/upload-target-search.png) |
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album_specific_rule_dialog.png" width="50%" alt="Folder rules dialog" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/folder-rules.png" width="50%" alt="Folder rules dialog" />
 </div>
 
 Flatpak builds only have access to folders that you add through this picker. If you are upgrading from an older build that had wider filesystem access, remove and re-add existing watch folders once.
@@ -102,7 +98,7 @@ There is no limit on nesting depth. If a file matches multiple watch paths, the 
 ### Startup Behavior
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_showing_behaviour_settings.png" width="60%" alt="Behaviour settings" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings-uploads-and-app.png" width="60%" alt="Behaviour settings" />
 </div>
 
 Use the **Run on Startup** switch in the **App** section if you want Mimick to launch automatically when you log in.
@@ -162,7 +158,7 @@ Server details (API key and server URLs) are the exception: they take effect onl
 ### Status Page
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/status_pane_sync_status_health_dashboard_actions.png" width="60%" alt="Status and health dashboard" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/status-page.png" width="60%" alt="Status and health dashboard" />
 </div>
 
 The **Status** page groups the live actions you may want while Mimick is already running:
@@ -184,7 +180,7 @@ The headline shows what is currently happening:
 ### Queue Inspector and Recovery
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/queue_inspector_dialog.png" width="60%" alt="Queue inspector" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/queue-inspector.png" width="60%" alt="Queue inspector" />
 </div>
 
 Inside it you can:
@@ -219,14 +215,14 @@ API keys, raw logs, full local paths, and raw server URLs are intentionally omit
 Mimick includes an opt-in library browser for albums, Explore, and search.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings_pane_showing_library_settings_and_watch_folders.png" width="60%" alt="Library settings" />
+  <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings-uploads-and-app.png" width="60%" alt="Library View setting under App" />
 </div>
 
 Turn on **Settings → App → Library View** (the tray menu entry appears after a restart). See the [Library View user guide](Library-View-User-Guide) for full usage documentation.
 
 | Photos Page | Explore Page |
 | :---: | :---: |
-| ![Photos](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos_page_view_sidebar_on.png) | ![Explore](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/explore_page_view_showing_people_places_sidebar_on.png) |
+| ![Photos](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos-timeline.png) | ![Explore](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/explore-page.png) |
 
 **Extra permissions:** Library browsing requires **Asset Read** and downloads require **Asset Download**.
 
