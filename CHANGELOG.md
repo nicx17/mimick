@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The viewer's **Fullscreen** button moved into its **⋯** menu (**F11** still works), so the header fits narrow windows with large text or minimize and maximize buttons.
 - Recognized text in the viewer can now be selected a few characters at a time: drag across it with the mouse to select just what you sweep over, even across lines, double-click to pick a word, and **Shift**-click to extend. A single click still selects the whole line, and taps on touch screens still pick whole lines.
 
+- The lightbox's zoom percentage now counts the photo's real pixels: 100% shows it pixel for pixel, so a large photo fitted to the window reads, say, 17%. Zoom now reaches 2000% of the real pixels (or 10× the fitted size, if that's further), so high-resolution photos, and any photo on a phone, can be looked at past full detail. Before, zoom stopped at 10× the fitted size, short of the real pixels on large photos.
 - Double-clicking or double-tapping a zoomed-in photo in the lightbox now zooms back out, so phones without a zoom-reset button can get back to the whole photo. Before, each double-click zoomed in further.
 - **Delete Album…** and **Leave Album…** in an album tile's context menu are now red, like **Move to Trash** in the photo menu.
 - The details pane now follows Immich's order: the description, rating, and people come first, then **Details** (date taken, dimensions, size; formerly **Image**), **Camera**, **Location**, **Appears In**, and **Tags**.
@@ -54,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - In the viewer, dragging a finger across a photo that has a file on this computer no longer starts dragging the file out to another app, which got in the way of swiping and panning. A mouse or pen still drags it out.
+- Dragging a zoomed-in photo in the viewer with a mouse now pans it instead of dragging the file out to another app. Drag-out still works at the fitted size.
 - **Space** plays and pauses a video again after you pick a speed, audio track, or volume; it used to reopen that menu.
 - Context menus too tall for the screen, such as a photo's menu on a phone, now scroll instead of running off the bottom.
 - Fixed switches not toggling when you clicked their knob. A click anywhere on a switch now toggles it.

@@ -106,6 +106,7 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - View Similar Photos and View in Timeline in the photo menu
 - Select recognized text down to a word or a few characters
 - Translation progress chart in the README
+- Lightbox zoom shown in real pixels, reaching 2000% for high-resolution photos
 
 ---
 

@@ -53,21 +53,50 @@ fn apply_lightbox_zoom(
         picture.set_size_request(-1, -1);
         return None;
     };
-    let nw = paintable.intrinsic_width().max(1) as f64;
-    let nh = paintable.intrinsic_height().max(1) as f64;
-    let viewer_w = viewer.width().max(1) as f64;
-    let viewer_h = viewer.height().max(1) as f64;
-    let texture_aspect = nw / nh;
-    let viewer_aspect = viewer_w / viewer_h;
-    let (fit_w, fit_h) = if viewer_aspect > texture_aspect {
-        (viewer_h * texture_aspect, viewer_h)
-    } else {
-        (viewer_w, viewer_w / texture_aspect)
-    };
+    let (fit_w, fit_h) = fit_size(
+        paintable.intrinsic_width(),
+        paintable.intrinsic_height(),
+        viewer,
+    );
     let cw = fit_w * zoom;
     let ch = fit_h * zoom;
     picture.set_size_request(cw as i32, ch as i32);
     Some((cw, ch))
+}
+
+/// Size of a `width`×`height` image fitted inside `viewer` (`ContentFit::Contain`).
+fn fit_size(width: i32, height: i32, viewer: &gtk::ScrolledWindow) -> (f64, f64) {
+    fit_within(
+        (f64::from(width.max(1)), f64::from(height.max(1))),
+        (
+            f64::from(viewer.width().max(1)),
+            f64::from(viewer.height().max(1)),
+        ),
+    )
+}
+
+fn fit_within((width, height): (f64, f64), (viewer_w, viewer_h): (f64, f64)) -> (f64, f64) {
+    let aspect = width / height;
+    if viewer_w / viewer_h > aspect {
+        (viewer_h * aspect, viewer_h)
+    } else {
+        (viewer_w, viewer_w / aspect)
+    }
+}
+
+/// Deepest zoom as a multiple of the photo's real pixels.
+const MAX_REAL_ZOOM: f64 = 20.0;
+/// Deepest zoom as a multiple of the fitted size, for photos smaller than the viewer.
+const MAX_FIT_ZOOM: f64 = 10.0;
+
+/// Zoom cap relative to fit, for a fitted photo shown at `fit_scale` of its real pixels.
+fn max_zoom(fit_scale: f64) -> f64 {
+    (MAX_REAL_ZOOM / fit_scale).max(MAX_FIT_ZOOM)
+}
+
+/// Zoom button label: the shown size as a percentage of the photo's real pixels.
+fn zoom_label(zoom: f64, fit_scale: f64) -> String {
+    format!("{}%", (zoom * fit_scale * 100.0).round() as i32)
 }
 
 /// One request to load an asset into the inactive picture.
@@ -318,7 +347,34 @@ impl Drop for Lightbox {
 
 #[cfg(test)]
 mod tests {
-    use super::{edited_original_cache_path, original_preview_cache_path};
+    use super::{
+        MAX_FIT_ZOOM, edited_original_cache_path, fit_within, max_zoom,
+        original_preview_cache_path, zoom_label,
+    };
+
+    #[test]
+    fn fit_within_keeps_aspect_and_touches_one_edge() {
+        assert_eq!(fit_within((4000.0, 3000.0), (800.0, 800.0)), (800.0, 600.0));
+        assert_eq!(fit_within((3000.0, 4000.0), (800.0, 800.0)), (600.0, 800.0));
+        assert_eq!(fit_within((100.0, 50.0), (1000.0, 1000.0)), (1000.0, 500.0));
+    }
+
+    #[test]
+    fn zoom_label_counts_real_pixels() {
+        // A 12000 px photo fitted to 1200 px shows a tenth of its pixels.
+        assert_eq!(zoom_label(1.0, 0.1), "10%");
+        assert_eq!(zoom_label(10.0, 0.1), "100%");
+        // A photo smaller than the viewer is upscaled to fit.
+        assert_eq!(zoom_label(1.0, 2.0), "200%");
+    }
+
+    #[test]
+    fn max_zoom_reaches_past_real_pixels() {
+        // High-res: 20x real pixels needs 200x fit when fit shows a tenth.
+        assert!((max_zoom(0.1) - 200.0).abs() < 1e-9);
+        // Small photos keep the 10x-fit reach.
+        assert!((max_zoom(4.0) - MAX_FIT_ZOOM).abs() < 1e-9);
+    }
 
     #[test]
     fn edited_original_cache_path_never_reuses_the_original() {

@@ -120,7 +120,7 @@ impl Lightbox {
         self.picture
             .strip
             .set_swipe_enabled(!self.face_mode.is_active());
-        self.actions.zoom_reset.set_label("100%");
+        self.show_zoom_label();
         self.load_into_picture(PictureLoad {
             target,
             asset_id: info.asset_id.clone(),
@@ -228,6 +228,7 @@ impl Lightbox {
                         started.elapsed().as_millis()
                     );
                     picture.set_paintable(Some(&texture));
+                    lb.show_zoom_label();
                 }
                 None => log::warn!("Full-size decode failed for {}", path.display()),
             }
@@ -440,6 +441,7 @@ impl Lightbox {
                     texture_megabytes(&texture),
                 );
                 load.target.set_paintable(Some(&texture));
+                self.show_zoom_label();
                 *self.drag_path.borrow_mut() = drag_path;
                 let capped = texture.width().max(texture.height()) as u32 >= self.screen_edge();
                 *self.full_source.borrow_mut() = full_source.filter(|_| capped);

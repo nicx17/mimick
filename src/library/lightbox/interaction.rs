@@ -19,7 +19,7 @@ use super::fullscreen;
 use super::strip::Slot;
 use super::{
     LOCAL_ID_PREFIX, LibraryWindowUi, Lightbox, apply_lightbox_zoom, build_header,
-    build_picture_area,
+    build_picture_area, fit_size, max_zoom, zoom_label,
 };
 use crate::library::actions::{TrashTarget, confirm_trash};
 use crate::library::archive::{archive_icon, archive_tooltip, set_archived};
@@ -88,16 +88,19 @@ impl Lightbox {
         let lb = Rc::downgrade(self);
         drag_source.connect_prepare(move |source, _x, _y| {
             // A finger drag pans, swipes, or opens the sheet; files are dragged out with a
-            // mouse or pen. A drag while tagging faces or cropping draws on the photo instead.
+            // mouse or pen. A drag while zoomed in pans, and while tagging faces or cropping
+            // it draws on the photo instead.
             if source
                 .device()
                 .is_some_and(|device| device.source() == gtk::gdk::InputSource::Touchscreen)
             {
                 return None;
             }
-            let lb = lb
-                .upgrade()
-                .filter(|lb| !lb.face_mode.is_active() && !lb.edit_mode.is_active())?;
+            let lb = lb.upgrade().filter(|lb| {
+                (lb.zoom_level.get() - 1.0).abs() < 0.001
+                    && !lb.face_mode.is_active()
+                    && !lb.edit_mode.is_active()
+            })?;
             let path = lb.drag_path.borrow().clone()?;
             if !path.exists() {
                 return None;
@@ -204,6 +207,17 @@ impl Lightbox {
             None => glib::Propagation::Proceed,
         });
         self.picture.scrolled.add_controller(zoom_scroll);
+
+        // Resizing the viewer changes the fitted size, and so the real-pixel percentage.
+        let scrolled = &self.picture.scrolled;
+        for adjustment in [scrolled.hadjustment(), scrolled.vadjustment()] {
+            let lb = Rc::downgrade(self);
+            adjustment.connect_page_size_notify(move |_| {
+                if let Some(lb) = lb.upgrade() {
+                    lb.show_zoom_label();
+                }
+            });
+        }
     }
 
     /// Pinch-to-zoom and click-and-drag panning, grouped so they don't fight over touches.
@@ -533,17 +547,41 @@ impl Lightbox {
         self.set_zoom(1.0);
     }
 
-    /// Zoom to `z` (clamped to 1–10×), keeping the focal point under the cursor.
+    /// Share of the photo's real pixels a fitted photo shows on screen; 1.0 when unknown.
+    fn fit_scale(&self) -> f64 {
+        let picture = self.active_picture();
+        let Some(paintable) = picture.paintable() else {
+            return 1.0;
+        };
+        let (width, height) = (paintable.intrinsic_width(), paintable.intrinsic_height());
+        // The asset's size can be a thumbnail's when Immich has none; the decode never is.
+        let asset_edge = self
+            .current_item()
+            .map_or(0, |item| item.width().max(item.height()));
+        let real_edge = f64::from(width.max(height)).max(f64::from(asset_edge));
+        if width <= 0 || height <= 0 || real_edge <= 0.0 {
+            return 1.0;
+        }
+        let (fit_w, fit_h) = fit_size(width, height, &self.picture.scrolled);
+        let scale = self.ui.window.surface().map_or(1.0, |s| s.scale());
+        fit_w.max(fit_h) * scale / real_edge
+    }
+
+    pub(super) fn show_zoom_label(&self) {
+        let label = zoom_label(self.zoom_level.get(), self.fit_scale());
+        self.actions.zoom_reset.set_label(&label);
+    }
+
+    /// Zoom to `z` (from fit up to `max_zoom`), keeping the focal point under the cursor.
     fn set_zoom(self: &Rc<Self>, z: f64) {
         // Zooming would swap in a sharper decode of the unedited photo under the crop box.
         if self.edit_mode.is_active() {
             return;
         }
-        let z_new = z.clamp(1.0, 10.0);
+        let z_new = z.clamp(1.0, max_zoom(self.fit_scale()));
         let z_old = self.zoom_level.get();
-        let zoom_label = format!("{}%", (z_new * 100.0).round() as i32);
         if (z_new - z_old).abs() < 0.0001 {
-            self.actions.zoom_reset.set_label(&zoom_label);
+            self.show_zoom_label();
             return;
         }
 
@@ -571,7 +609,7 @@ impl Lightbox {
         let swipe = (z_new - 1.0).abs() < 0.001 && !self.face_mode.is_active();
         self.picture.strip.set_swipe_enabled(swipe);
         let content = apply_lightbox_zoom(&self.active_picture(), scrolled, z_new);
-        self.actions.zoom_reset.set_label(&zoom_label);
+        self.show_zoom_label();
 
         // Pre-set adjustment ranges to match the new content size so the
         // scroll position can be applied in the same frame. Without this
