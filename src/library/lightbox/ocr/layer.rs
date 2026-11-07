@@ -48,8 +48,31 @@ impl OcrLayer {
         self.area.queue_draw();
     }
 
-    pub(super) fn has_boxes(&self) -> bool {
+    pub(in crate::library::lightbox) fn has_boxes(&self) -> bool {
         !self.state.borrow().boxes().is_empty()
+    }
+
+    /// Each box's bounds as fractions of the photo: left, top, width, and height.
+    pub(in crate::library::lightbox) fn text_bounds(&self) -> Vec<(f64, f64, f64, f64)> {
+        self.state
+            .borrow()
+            .boxes()
+            .iter()
+            .map(|ocr_box| {
+                let corners = ocr_box.corners();
+                let xs = corners.map(|c| c.0);
+                let ys = corners.map(|c| c.1);
+                let (left, top) = (
+                    xs.iter().copied().fold(1.0, f64::min),
+                    ys.iter().copied().fold(1.0, f64::min),
+                );
+                let (right, bottom) = (
+                    xs.iter().copied().fold(0.0, f64::max),
+                    ys.iter().copied().fold(0.0, f64::max),
+                );
+                (left, top, right - left, bottom - top)
+            })
+            .collect()
     }
 
     /// Box under `p`, given in this area's coordinates.

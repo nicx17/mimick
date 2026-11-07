@@ -22,7 +22,7 @@ pub use download::DownloadArchive;
 mod duplicates;
 pub use duplicates::DuplicateGroup;
 mod edits;
-pub use edits::{AssetEdit, MirrorAxis};
+pub use edits::{AssetEdit, CopyUpload, MirrorAxis};
 mod errors;
 mod faces;
 pub use faces::{AssetFace, NewFace};

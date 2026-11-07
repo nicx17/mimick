@@ -1,7 +1,16 @@
-//! Crop, rotate, and mirror a photo in Immich without touching the original file: the edit
-//! session the lightbox drives, kept apart from its widgets.
+//! Editing a photo without touching the original file: crops, turns, and flips Immich stores,
+//! and levelling, the look, and redaction saved as a copy. The session the lightbox drives,
+//! kept apart from its widgets.
 
+mod carried;
+mod copy;
+mod copy_exif;
+mod embed;
+mod exif_tree;
+pub(super) mod look;
 mod orientation;
+mod pixels;
+pub(super) mod redaction;
 
 use gettextrs::gettext;
 
@@ -10,33 +19,58 @@ use gtk::prelude::*;
 use super::photo_canvas::{Region, keep_aspect};
 use crate::api_client::{AssetEdit, LibraryAsset};
 use crate::app_context::AppContext;
-use orientation::{Orientation, orient_pixels};
+pub(super) use copy::{CopyJob, match_record};
+pub(super) use copy_exif::CopyDetails;
+use look::{FILTERS, Look};
+use orientation::Orientation;
+use pixels::{Rgba, Steps, develop, straighten_region};
+use redaction::{RedactStyle, Redaction};
+
+/// The furthest Straighten turns either way, in degrees.
+pub(super) const MAX_STRAIGHTEN: f64 = 45.0;
+/// Edge of the filter tiles' pictures, in pixels.
+const FILTER_PREVIEW_EDGE: usize = 96;
 
 /// Crop shapes: label and width over height (landscape); `None` is free, 0 is the photo's own.
-pub(super) const ASPECTS: [(&str, Option<f64>); 6] = [
+/// Narrowest first: prints, cameras, screens, then wide and panoramic; each turns with the box.
+pub(super) const ASPECTS: [(&str, Option<f64>); 12] = [
     (crate::i18n::gettext_noop("Free"), None),
     (crate::i18n::gettext_noop("Original"), Some(0.0)),
     (crate::i18n::gettext_noop("Square"), Some(1.0)),
+    ("5:4", Some(5.0 / 4.0)),
     ("4:3", Some(4.0 / 3.0)),
+    ("7:5", Some(7.0 / 5.0)),
     ("3:2", Some(3.0 / 2.0)),
+    ("16:10", Some(16.0 / 10.0)),
     ("16:9", Some(16.0 / 9.0)),
+    ("2:1", Some(2.0)),
+    ("21:9", Some(21.0 / 9.0)),
+    ("3:1", Some(3.0)),
 ];
 
 /// The unedited preview's pixels, which every orientation is drawn from.
+#[derive(Clone)]
 struct Preview {
     bytes: glib::Bytes,
     stride: usize,
     size: (usize, usize),
 }
 
-/// One photo being edited: its unedited preview, and the crop, turns, and flips so far.
+/// One photo being edited: its unedited preview, and every edit so far.
 pub(super) struct EditSession {
     pub asset_id: String,
+    /// The original as Immich has it, whose details a saved copy keeps.
+    pub asset: Option<LibraryAsset>,
     preview: Preview,
     full: (f64, f64),
     orientation: Orientation,
-    /// In the preview's original-orientation pixels; `None` keeps the whole photo.
+    /// In the levelled preview's original-orientation pixels; `None` keeps the whole photo.
     crop: Option<Region>,
+    /// Clockwise degrees on screen that level the photo.
+    straighten: f64,
+    pub look: Look,
+    /// Areas to hide, in the levelled preview's original-orientation pixels.
+    redactions: Vec<Redaction>,
     was_edited: bool,
     /// The thumbhash before saving; Immich changes it once the saved edit is rendered.
     pub thumbhash: Option<String>,
@@ -68,41 +102,193 @@ impl EditSession {
         let full = full_size(asset.as_ref(), size);
         Ok(Self {
             thumbhash: asset.as_ref().and_then(|a| a.thumbhash.clone()),
+            asset,
             asset_id,
             crop: saved_crop(&edits, size, full),
             orientation: Orientation::from_edits(&edits),
+            straighten: 0.0,
+            look: Look::default(),
+            redactions: Vec::new(),
             preview,
             full,
             was_edited,
         })
     }
 
-    /// The preview turned and flipped as it stands, drawn on a worker thread. The future owns
-    /// what it needs, so no borrow of the session is held while it runs.
-    pub(super) fn oriented_texture(
+    /// The preview with every edit, drawn on a worker thread; `cropped` false shows the whole
+    /// frame for the crop box. The future owns what it needs, so it holds no borrow.
+    pub(super) fn developed_texture(
         &self,
+        cropped: bool,
     ) -> impl std::future::Future<Output = Option<gtk::gdk::Texture>> + 'static {
-        let (bytes, stride, size) = (
-            self.preview.bytes.clone(),
-            self.preview.stride,
-            self.preview.size,
-        );
-        let orientation = self.orientation;
+        let (preview, steps) = (self.preview.clone(), self.steps(cropped));
         async move {
-            let (pixels, w, h) = tokio::task::spawn_blocking(move || {
-                orient_pixels(&bytes, stride, size, orientation)
+            let img = tokio::task::spawn_blocking(move || develop(preview.rgba(), &steps))
+                .await
+                .ok()?;
+            Some(texture_of(img))
+        }
+    }
+
+    /// One small picture per filter, in `FILTERS` order, with the sliders as they are.
+    pub(super) fn filter_previews(
+        &self,
+    ) -> impl std::future::Future<Output = Vec<gtk::gdk::Texture>> + 'static {
+        let (preview, mut steps, look) = (self.preview.clone(), self.steps(true), self.look);
+        steps.recipe = None;
+        async move {
+            let tiles = tokio::task::spawn_blocking(move || {
+                let base = pixels::shrink(&develop(preview.rgba(), &steps), FILTER_PREVIEW_EDGE);
+                FILTERS
+                    .iter()
+                    .map(|(filter, _, _)| {
+                        let mut tile = base.clone();
+                        let look = Look {
+                            filter: *filter,
+                            strength: 1.0,
+                            ..look
+                        };
+                        pixels::apply(&mut tile, &look.recipe());
+                        tile
+                    })
+                    .collect::<Vec<_>>()
             })
             .await
-            .ok()?;
-            let texture = gtk::gdk::MemoryTexture::new(
-                w as i32,
-                h as i32,
-                gtk::gdk::MemoryFormat::R8g8b8a8,
-                &glib::Bytes::from_owned(pixels),
-                w * 4,
-            );
-            Some(texture.upcast())
+            .unwrap_or_default();
+            tiles.into_iter().map(texture_of).collect()
         }
+    }
+
+    fn steps(&self, cropped: bool) -> Steps {
+        Steps {
+            redactions: self.redactions.clone(),
+            degrees: self.original_degrees(),
+            crop: self.crop.filter(|_| cropped),
+            orientation: self.orientation,
+            recipe: Some(self.look.recipe()),
+        }
+    }
+
+    /// What saving a copy needs, set out on the preview; `keep_details` keeps the original's
+    /// metadata, else the copy is a new photo.
+    pub(super) fn copy_job(&self, keep_details: bool) -> CopyJob {
+        CopyJob {
+            steps: self.steps(true),
+            preview: preview_size(&self.preview),
+            details: self
+                .asset
+                .as_ref()
+                .map(CopyDetails::from_asset)
+                .unwrap_or_default(),
+            keep_details,
+            original: None,
+        }
+    }
+
+    pub(super) fn preview_size(&self) -> (f64, f64) {
+        preview_size(&self.preview)
+    }
+
+    pub(super) fn straighten(&self) -> f64 {
+        self.straighten
+    }
+
+    pub(super) fn set_straighten(&mut self, degrees: f64) {
+        self.straighten = degrees.clamp(-MAX_STRAIGHTEN, MAX_STRAIGHTEN);
+    }
+
+    /// Levelling in the original's own pixels: on a mirrored photo it turns the other way.
+    fn original_degrees(&self) -> f64 {
+        if self.orientation.mirror_h == self.orientation.mirror_v {
+            self.straighten
+        } else {
+            -self.straighten
+        }
+    }
+
+    /// An area drawn on the developed, cropped preview, in the levelled preview's pixels.
+    fn levelled(&self, shown: Region) -> Region {
+        let crop = self.screen_crop();
+        let framed = Region {
+            x: shown.x + crop.x,
+            y: shown.y + crop.y,
+            ..shown
+        };
+        self.orientation
+            .to_original(framed, preview_size(&self.preview))
+    }
+
+    /// Hides an area drawn on the developed, cropped preview; returns its index.
+    pub(super) fn add_redaction(&mut self, shown: Region, style: RedactStyle) -> usize {
+        let area = self.levelled(shown);
+        self.redactions.push(Redaction { area, style });
+        self.redactions.len() - 1
+    }
+
+    /// Moves or resizes area `index` to `shown`, on the developed, cropped preview.
+    pub(super) fn move_redaction(&mut self, index: usize, shown: Region) {
+        let area = self.levelled(shown);
+        if let Some(redaction) = self.redactions.get_mut(index) {
+            redaction.area = area;
+        }
+    }
+
+    pub(super) fn redaction_style(&self, index: usize) -> Option<RedactStyle> {
+        self.redactions.get(index).map(|r| r.style)
+    }
+
+    pub(super) fn set_redaction_style(&mut self, index: usize, style: RedactStyle) {
+        if let Some(redaction) = self.redactions.get_mut(index) {
+            redaction.style = style;
+        }
+    }
+
+    /// Hides areas given in the unedited preview's pixels, as found by face or text
+    /// recognition; areas already hidden aren't added twice.
+    pub(super) fn add_original_redactions(&mut self, areas: &[Region], style: RedactStyle) {
+        let size = preview_size(&self.preview);
+        for area in areas {
+            let area = straighten_region(*area, self.original_degrees(), size);
+            if !self.redactions.iter().any(|r| r.area == area) {
+                self.redactions.push(Redaction { area, style });
+            }
+        }
+    }
+
+    /// The hidden areas as they land on the developed, cropped preview.
+    pub(super) fn shown_redactions(&self) -> Vec<Region> {
+        let size = preview_size(&self.preview);
+        let crop = self.screen_crop();
+        self.redactions
+            .iter()
+            .map(|r| {
+                let screen = self.orientation.to_screen(r.area, size);
+                Region {
+                    x: screen.x - crop.x,
+                    y: screen.y - crop.y,
+                    ..screen
+                }
+            })
+            .collect()
+    }
+
+    pub(super) fn remove_redaction(&mut self, index: usize) {
+        if index < self.redactions.len() {
+            self.redactions.remove(index);
+        }
+    }
+
+    pub(super) fn clear_redactions(&mut self) {
+        self.redactions.clear();
+    }
+
+    pub(super) fn has_redactions(&self) -> bool {
+        !self.redactions.is_empty()
+    }
+
+    /// Saving makes a new photo: some edit is one Immich can't store.
+    pub(super) fn needs_copy(&self) -> bool {
+        self.straighten.abs() >= 0.05 || !self.look.is_neutral() || !self.redactions.is_empty()
     }
 
     /// The crop box as it lands on the turned preview.
@@ -131,6 +317,9 @@ impl EditSession {
     pub(super) fn reset(&mut self) {
         self.orientation = Orientation::default();
         self.crop = None;
+        self.straighten = 0.0;
+        self.look = Look::default();
+        self.redactions.clear();
     }
 
     pub(super) fn edits(&self) -> Vec<AssetEdit> {
@@ -142,9 +331,9 @@ impl EditSession {
         )
     }
 
-    /// Saving does something: there are edits, or old ones to remove.
+    /// Saving does something: there are edits, old ones to remove, or a copy to make.
     pub(super) fn has_changes(&self) -> bool {
-        !self.edits().is_empty() || self.was_edited
+        !self.edits().is_empty() || self.was_edited || self.needs_copy()
     }
 
     pub(super) fn was_edited(&self) -> bool {
@@ -175,6 +364,23 @@ pub(super) fn aspect_label(index: usize) -> String {
 
 fn preview_size(preview: &Preview) -> (f64, f64) {
     (preview.size.0 as f64, preview.size.1 as f64)
+}
+
+impl Preview {
+    fn rgba(&self) -> Rgba {
+        Rgba::from_strided(&self.bytes, self.stride, self.size)
+    }
+}
+
+fn texture_of(img: Rgba) -> gtk::gdk::Texture {
+    gtk::gdk::MemoryTexture::new(
+        img.w as i32,
+        img.h as i32,
+        gtk::gdk::MemoryFormat::R8g8b8a8,
+        &glib::Bytes::from_owned(img.data),
+        img.w * 4,
+    )
+    .upcast()
 }
 
 fn whole((w, h): (f64, f64)) -> Region {

@@ -18,6 +18,7 @@ mod activity;
 mod albums;
 mod details;
 mod edit;
+mod face_people;
 mod faces;
 mod fullscreen;
 mod interaction;
@@ -160,6 +161,8 @@ pub(super) struct Lightbox {
     /// A stack member picked in the stack strip, shown in place of the grid item.
     member: RefCell<Option<AssetObject>>,
     stack: stack::StackStrip,
+    /// The shown photo's faces, for face mode and for naming the one pointed at.
+    faces: faces::PhotoFaces,
     face_mode: faces::FaceMode,
     edit_mode: edit::EditMode,
     slideshow: slideshow::Slideshow,
@@ -209,6 +212,7 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
     lightbox.connect_slideshow();
     lightbox.connect_stack();
     lightbox.connect_faces();
+    lightbox.connect_face_highlights();
     lightbox.connect_edit_mode();
     lightbox.render();
     lightbox.ui.nav.push(&lightbox.header.page);

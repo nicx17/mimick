@@ -362,6 +362,7 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Memories above Photos | `memory.read`; marking a memory seen needs `memory.update`, and removing photos from one `memoryAsset.delete` |
 | Stacks (view, make, change cover, unstack) | `stack.read`; changing stacks also needs `stack.create`, `stack.update`, and `stack.delete` |
 | Edit Photo (crop, rotate, flip, revert) | `asset.edit.get`, `asset.edit.create`, `asset.edit.delete` |
+| Edit Photo saved as a copy (Straighten, Adjust, Filters, Redact) | `asset.download`, `asset.upload`, `stack.create`, `album.read`, `albumAsset.create` |
 | Tag People (change, remove, or draw faces; cover photos) | `face.read`, `face.create`, `face.update`, `face.delete`; naming someone new needs `person.create`, and cover photos `person.update` |
 | Duplicates page | `duplicate.read`, `duplicate.delete` |
 | View Similar Photos | `asset.read` |

@@ -15,9 +15,13 @@ pub(super) fn draw(cr: &gtk::cairo::Context, state: &State, fit: Fit) {
     {
         dim_outside(cr, photo, fit.to_widget(sel));
     }
-    let highlighted = state.highlighted.get();
+    let highlighted = state.highlighted.borrow();
+    let accent = libadwaita::StyleManager::default().accent_color().to_rgba();
     for (index, marker) in state.markers.borrow().iter().enumerate() {
-        stroke_box(cr, fit.to_widget(*marker), highlighted == Some(index));
+        let lit = highlighted.contains(&index).then_some(&accent);
+        if lit.is_some() || state.outline_all.get() {
+            stroke_box(cr, fit.to_widget(*marker), lit);
+        }
     }
     if let Some(sel) = state.selection.get() {
         draw_selection(cr, fit.to_widget(sel), state.dim_outside.get());
@@ -33,17 +37,22 @@ fn dim_outside(cr: &gtk::cairo::Context, photo: Region, sel: Region) {
     cr.set_fill_rule(gtk::cairo::FillRule::Winding);
 }
 
-/// A face box: white with a dark halo, or accent blue and thicker when picked.
-fn stroke_box(cr: &gtk::cairo::Context, r: Region, highlighted: bool) {
-    let width = if highlighted { 3.0 } else { 2.0 };
+/// A face box: white with a dark halo, or thicker in the `lit` colour (the system accent)
+/// when pointed at or picked.
+fn stroke_box(cr: &gtk::cairo::Context, r: Region, lit: Option<&gtk::gdk::RGBA>) {
+    let width = if lit.is_some() { 3.0 } else { 2.0 };
     rounded(cr, r, 6.0);
     cr.set_source_rgba(0.0, 0.0, 0.0, 0.45);
     cr.set_line_width(width + 2.0);
     let _ = cr.stroke_preserve();
-    if highlighted {
-        cr.set_source_rgba(0.21, 0.52, 0.89, 1.0);
-    } else {
-        cr.set_source_rgba(1.0, 1.0, 1.0, 0.9);
+    match lit {
+        Some(color) => cr.set_source_rgba(
+            f64::from(color.red()),
+            f64::from(color.green()),
+            f64::from(color.blue()),
+            1.0,
+        ),
+        None => cr.set_source_rgba(1.0, 1.0, 1.0, 0.9),
     }
     cr.set_line_width(width);
     let _ = cr.stroke();

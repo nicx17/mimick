@@ -87,7 +87,9 @@ enum Drag {
 struct State {
     image: Cell<(f64, f64)>,
     markers: RefCell<Vec<Region>>,
-    highlighted: Cell<Option<usize>>,
+    highlighted: RefCell<Vec<usize>>,
+    /// Outline every marker, not just the highlighted ones.
+    outline_all: Cell<bool>,
     selection: Cell<Option<Region>>,
     /// Width over height the selection keeps, in image pixels.
     aspect: Cell<Option<f64>>,
@@ -96,8 +98,20 @@ struct State {
     /// A drag on the photo outside the selection draws a new one.
     can_draw: Cell<bool>,
     drag: Cell<Option<Drag>>,
+    /// The last finished drag drew a new box, rather than moving or resizing one.
+    drew: Cell<bool>,
     on_marker: RefCell<Option<MarkerHandler>>,
     on_selection: RefCell<Option<SelectionHandler>>,
+}
+
+impl State {
+    /// Topmost marker under `point`, in image pixels.
+    fn marker_under(&self, point: (f64, f64)) -> Option<usize> {
+        self.markers
+            .borrow()
+            .iter()
+            .rposition(|marker| marker.contains(point))
+    }
 }
 
 type MarkerHandler = Box<dyn Fn(usize)>;
@@ -106,6 +120,7 @@ type SelectionHandler = Box<dyn Fn(Option<Region>)>;
 type ToLayer = Rc<dyn Fn(f64, f64) -> Option<(f64, f64)>>;
 
 /// Boxes drawn over a photo that another widget shows; input reaches it through `attach_input`.
+#[derive(Clone)]
 pub(super) struct BoxLayer {
     pub area: gtk::DrawingArea,
     state: Rc<State>,
@@ -143,8 +158,14 @@ impl BoxLayer {
         self.area.queue_draw();
     }
 
-    pub(super) fn highlight(&self, marker: Option<usize>) {
-        self.state.highlighted.set(marker);
+    pub(super) fn highlight(&self, markers: Vec<usize>) {
+        *self.state.highlighted.borrow_mut() = markers;
+        self.area.queue_draw();
+    }
+
+    /// Outlines every marker, or only the highlighted ones.
+    pub(super) fn set_outline_all(&self, all: bool) {
+        self.state.outline_all.set(all);
         self.area.queue_draw();
     }
 
@@ -155,14 +176,16 @@ impl BoxLayer {
         Some(fit.to_widget(marker))
     }
 
+    /// The first highlighted marker in the layer's own coordinates.
+    pub(super) fn highlight_rect(&self) -> Option<Region> {
+        let first = *self.state.highlighted.borrow().first()?;
+        self.marker_rect(first)
+    }
+
     /// Topmost marker under `p`, given in the layer's coordinates.
     pub(super) fn marker_at(&self, p: (f64, f64)) -> Option<usize> {
         let point = self.fit()?.to_image(p);
-        self.state
-            .markers
-            .borrow()
-            .iter()
-            .rposition(|marker| marker.contains(point))
+        self.state.marker_under(point)
     }
 
     pub(super) fn selection(&self) -> Option<Region> {
@@ -189,6 +212,11 @@ impl BoxLayer {
 
     pub(super) fn set_can_draw(&self, can_draw: bool) {
         self.state.can_draw.set(can_draw);
+    }
+
+    /// Whether the selection last reported was drawn new, not moved or resized.
+    pub(super) fn drew(&self) -> bool {
+        self.state.drew.get()
     }
 
     pub(super) fn connect_marker_tapped(&self, f: impl Fn(usize) + 'static) {
@@ -240,9 +268,11 @@ impl BoxLayer {
         });
         let state = self.state.clone();
         drag.connect_drag_end(move |_, _, _| {
-            if state.drag.take().is_some()
-                && let Some(notify) = state.on_selection.borrow().as_ref()
-            {
+            let Some(finished) = state.drag.take() else {
+                return;
+            };
+            state.drew.set(matches!(finished, Drag::Draw { .. }));
+            if let Some(notify) = state.on_selection.borrow().as_ref() {
                 notify(state.selection.get());
             }
         });
@@ -261,12 +291,7 @@ impl BoxLayer {
             let Some(fit) = fit(size, state.image.get()) else {
                 return;
             };
-            let point = fit.to_image(point);
-            let hit = state
-                .markers
-                .borrow()
-                .iter()
-                .rposition(|marker| marker.contains(point));
+            let hit = state.marker_under(fit.to_image(point));
             if let (Some(index), Some(on_marker)) = (hit, state.on_marker.borrow().as_ref()) {
                 gesture.set_state(gtk::EventSequenceState::Claimed);
                 on_marker(index);
@@ -278,22 +303,33 @@ impl BoxLayer {
 
 fn begin_drag(state: &State, area: &gtk::DrawingArea, point: (f64, f64)) -> bool {
     let size = (f64::from(area.width()), f64::from(area.height()));
-    let Some(fit) = fit(size, state.image.get()) else {
-        return false;
-    };
+    let drag = fit(size, state.image.get()).and_then(|fit| drag_at(state, fit, point));
+    state.drag.set(drag);
+    // A new box replaces the selection; a tap that draws nothing leaves none.
+    if matches!(drag, Some(Drag::Draw { .. })) {
+        state.selection.set(None);
+        area.queue_draw();
+    }
+    drag.is_some()
+}
+
+/// The drag a press at `point` (in widget pixels) starts. A press on a marker starts none:
+/// claiming it would deny the tap that opens the marker's menu.
+fn drag_at(state: &State, fit: Fit, point: (f64, f64)) -> Option<Drag> {
     let grip = state
         .selection
         .get()
         .and_then(|sel| grip_at(fit.to_widget(sel), point));
-    let drag = match (grip, state.selection.get()) {
-        (Some(grip), Some(start)) => Drag::Adjust { grip, start },
-        _ if state.can_draw.get() => Drag::Draw {
-            origin: clamp_point(fit.to_image(point), state.image.get()),
-        },
-        _ => return false,
-    };
-    state.drag.set(Some(drag));
-    true
+    let image_point = fit.to_image(point);
+    match (grip, state.selection.get()) {
+        (Some(grip), Some(start)) => Some(Drag::Adjust { grip, start }),
+        _ if state.can_draw.get() && state.marker_under(image_point).is_none() => {
+            Some(Drag::Draw {
+                origin: clamp_point(image_point, state.image.get()),
+            })
+        }
+        _ => None,
+    }
 }
 
 /// A drag from `start` to `now`, both in the layer's coordinates.
@@ -446,6 +482,24 @@ mod tests {
         );
         assert_eq!(grip_at(sel, (200.0, 200.0)), Some(Grip::Move));
         assert_eq!(grip_at(sel, (10.0, 10.0)), None);
+    }
+
+    #[test]
+    fn presses_on_a_marker_are_left_for_its_tap() {
+        let state = State::default();
+        state.image.set((100.0, 100.0));
+        state.can_draw.set(true);
+        *state.markers.borrow_mut() = vec![region(10.0, 10.0, 20.0, 20.0)];
+        let fit = Fit {
+            x: 0.0,
+            y: 0.0,
+            scale: 1.0,
+        };
+        assert!(drag_at(&state, fit, (15.0, 15.0)).is_none());
+        assert!(matches!(
+            drag_at(&state, fit, (60.0, 60.0)),
+            Some(Drag::Draw { .. })
+        ));
     }
 
     #[test]

@@ -62,10 +62,21 @@ modules:
 
   - name: mimick
     buildsystem: simple
+    build-options:
+      env:
+        # Local builds skip whole-program optimisation, which shrinks the binary a little
+        # but takes most of a release build's time; dev.nicx.mimick.yml keeps it.
+        CARGO_PROFILE_RELEASE_LTO: "off"
+        CARGO_PROFILE_RELEASE_CODEGEN_UNITS: "16"
+        CARGO_PROFILE_RELEASE_INCREMENTAL: "true"
     build-commands:
       - mv cargo/config cargo/config.toml
-      - cargo --offline build --release
-      - install -Dm755 target/release/mimick /app/bin/mimick
+      # flatpak-builder mounts /run/ccache from .flatpak-builder/ccache on every build, so a
+      # target dir there survives and cargo rebuilds only what changed. CI starts without it.
+      - >-
+        TARGET=$( [ -d /run/ccache ] && echo /run/ccache/mimick-target || echo target );
+        cargo --offline build --release --target-dir "$TARGET" &&
+        install -Dm755 "$TARGET/release/mimick" /app/bin/mimick
       - scripts/i18n.sh install /app/share/locale
       - scripts/i18n.sh merge setup/dev.nicx.mimick.desktop /app/share/applications/dev.nicx.mimick.desktop
       - install -Dm644 src/assets/icon.svg /app/share/icons/hicolor/scalable/apps/dev.nicx.mimick.svg
@@ -81,4 +92,12 @@ modules:
           - .git
           - build-dir
           - target
+          # Not needed to build, and about 2 GB to copy into the sandbox every time.
+          - tests
+          - flatpak-venv
+          - docs
+          - pv_docs
+          - site
+          - wiki
+          - .github
       - cargo-sources.json

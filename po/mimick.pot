@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 01:56+0530\n"
+"POT-Creation-Date: 2026-11-07 16:32+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -445,7 +445,7 @@ msgstr[1] ""
 #: src/library/album_link.rs:230 src/library/album_wiring.rs:35
 #: src/library/asset_edit.rs:253 src/library/bulk_date.rs:316
 #: src/library/dialogs.rs:40 src/library/dialogs.rs:85
-#: src/library/dialogs.rs:110 src/library/lightbox/edit.rs:50
+#: src/library/dialogs.rs:110 src/library/lightbox/edit/panel.rs:101
 #: src/library/map/location_dialog.rs:96 src/library/people_view.rs:408
 #: src/library/shared_links_view.rs:268 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:324 src/library/trash_view.rs:262
@@ -1133,7 +1133,7 @@ msgid "Description"
 msgstr ""
 
 #: src/library/asset_edit.rs:255 src/library/bulk_date.rs:318
-#: src/library/dialogs.rs:86 src/library/lightbox/edit.rs:52
+#: src/library/dialogs.rs:86 src/library/lightbox/edit/panel.rs:103
 #: src/library/map/location_dialog.rs:68 src/library/people_view.rs:381
 #: src/library/people_view.rs:413 src/library/shared_link_dialog.rs:202
 #: src/library/tags_view.rs:325
@@ -1221,7 +1221,7 @@ msgid "Map"
 msgstr ""
 
 #: src/library/bottom_nav.rs:14 src/library/explore_view.rs:211
-#: src/library/lightbox/people.rs:28 src/library/navigation.rs:163
+#: src/library/lightbox/people.rs:47 src/library/navigation.rs:163
 #: src/library/shortcuts_dialog.rs:54 src/library/sidebar/rows.rs:56
 msgid "People"
 msgstr ""
@@ -1441,7 +1441,7 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:66 src/library/lightbox/widgets.rs:418
+#: src/library/context_menu/manage.rs:66 src/library/lightbox/widgets.rs:435
 msgid "Add to Album…"
 msgstr ""
 
@@ -1453,7 +1453,7 @@ msgstr ""
 msgid "Remove from Album"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:112 src/library/lightbox/widgets.rs:416
+#: src/library/context_menu/manage.rs:112 src/library/lightbox/widgets.rs:433
 msgid "Edit Info…"
 msgstr ""
 
@@ -1461,7 +1461,7 @@ msgstr ""
 msgid "Edit Photo…"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:140 src/library/lightbox/people.rs:40
+#: src/library/context_menu/manage.rs:140 src/library/lightbox/people.rs:59
 msgid "Tag People…"
 msgstr ""
 
@@ -1502,6 +1502,7 @@ msgid "Most assets"
 msgstr ""
 
 #: src/library/controls.rs:340 src/library/people_view.rs:380
+#: src/library/person_picker.rs:163
 msgid "Name"
 msgstr ""
 
@@ -1813,7 +1814,7 @@ msgstr ""
 msgid "Show photos"
 msgstr ""
 
-#: src/library/header_format.rs:58 src/library/lightbox/people.rs:153
+#: src/library/header_format.rs:58 src/library/lightbox/people.rs:242
 #, rust-format
 msgid "Age {age}"
 msgstr ""
@@ -1861,7 +1862,7 @@ msgstr ""
 msgid "Lens"
 msgstr ""
 
-#: src/library/lightbox/details.rs:182
+#: src/library/lightbox/details.rs:182 src/library/photo_editor/look.rs:37
 msgid "Exposure"
 msgstr ""
 
@@ -1918,67 +1919,224 @@ msgstr ""
 msgid "Taken"
 msgstr ""
 
-#: src/library/lightbox/edit.rs:59 src/library/search_panel.rs:72
-msgid "Reset"
+#: src/library/lightbox/edit.rs:43
+msgid "Crop"
 msgstr ""
 
-#: src/library/lightbox/edit.rs:63
-msgid "Revert to Original…"
+#: src/library/lightbox/edit.rs:49
+msgid "Adjust"
 msgstr ""
 
-#: src/library/lightbox/edit.rs:169
+#: src/library/lightbox/edit.rs:55 src/library/search_panel.rs:48
+#: src/library/search_panel.rs:105
+msgid "Filters"
+msgstr ""
+
+#: src/library/lightbox/edit.rs:61
+msgid "Redact"
+msgstr ""
+
+#: src/library/lightbox/edit.rs:276
 msgid "Couldn't load the photo"
 msgstr ""
 
-#: src/library/lightbox/edit.rs:354
-msgid "Revert to the Original?"
+#: src/library/lightbox/edit.rs:437
+msgid "Saving a copy…"
 msgstr ""
 
-#: src/library/lightbox/edit.rs:355
-msgid "Every crop, turn, and flip made in Immich is removed."
+#: src/library/lightbox/edit.rs:439
+msgid "Saves a copy stacked with the original"
 msgstr ""
 
-#: src/library/lightbox/edit.rs:356
-msgid "Revert"
+#: src/library/lightbox/edit.rs:440
+msgid "Saves as a new photo"
 msgstr ""
 
-#: src/library/lightbox/edit.rs:377
-msgid "Immich didn't save the edit"
+#: src/library/lightbox/edit/looks.rs:160
+#, rust-format
+msgid "{degrees}°"
 msgstr ""
 
-#: src/library/lightbox/edit.rs:385
-msgid "Saved. Immich is updating the photo."
+#: src/library/lightbox/edit/looks.rs:168
+#, rust-format
+msgid "{percent}%"
 msgstr ""
 
-#: src/library/lightbox/edit/panel.rs:16 src/library/lightbox/widgets.rs:290
-msgid "Edit Photo"
+#: src/library/lightbox/edit/pages.rs:53
+msgid "Pixelate"
 msgstr ""
 
-#: src/library/lightbox/edit/panel.rs:58
+#: src/library/lightbox/edit/pages.rs:54
+msgid "Blur"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:55
+msgid "Frosted"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:56
+msgid "Bar"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:64
+msgid "Straighten"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:110
+msgid "Strength"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:125
+msgid "Drag over what to hide. Tap a box to move, resize, or change it."
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:135
+msgid "Hide Faces"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:136
+msgid "Hide Text"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:138 src/library/people_view.rs:410
+msgid "Remove"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:143
+msgid "Clear All"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:171
+#: src/library/lightbox/edit/pages.rs:177
+msgid "Bar Colour"
+msgstr ""
+
+#: src/library/lightbox/edit/pages.rs:255
 msgid "Rotate Left"
 msgstr ""
 
-#: src/library/lightbox/edit/panel.rs:63
+#: src/library/lightbox/edit/pages.rs:260
 msgid "Rotate Right"
 msgstr ""
 
-#: src/library/lightbox/edit/panel.rs:66
+#: src/library/lightbox/edit/pages.rs:263
 msgid "Mirror"
 msgstr ""
 
-#: src/library/lightbox/edit/panel.rs:69
+#: src/library/lightbox/edit/pages.rs:266
 msgid "Flip"
 msgstr ""
 
-#: src/library/lightbox/faces.rs:34
+#: src/library/lightbox/edit/panel.rs:54 src/library/search_panel.rs:72
+msgid "Reset"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:107
+msgid "Reset All"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:108
+msgid "Revert to Original…"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:111 src/library/lightbox/widgets.rs:307
+msgid "Edit Photo"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:169
+msgid "Keep Original Details"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:171
+msgid ""
+"A saved copy keeps the original's camera details, date, place, caption, "
+"rating, and albums. Off, the copy is a new photo of its own."
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:176
+msgid "Stack with Original"
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:177
+msgid "A saved copy becomes the cover of a stack, with the original under it."
+msgstr ""
+
+#: src/library/lightbox/edit/panel.rs:248 src/library/people_view.rs:258
+#: src/library/source_header/enrichment.rs:203
+#: src/library/source_header/enrichment.rs:232
+#: src/library/source_header/enrichment.rs:287 src/library/tags_view.rs:148
+msgid "More"
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:73
+msgid "Revert to the Original?"
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:74
+msgid "Every crop, turn, and flip made in Immich is removed."
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:75
+msgid "Revert"
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:96
+msgid "Immich didn't save the edit"
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:104
+msgid "Saved. Immich is updating the photo."
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:153
+msgid "Couldn't save the copy"
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:178
+msgid "Couldn't open the original"
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:220
+msgid "Saved as a new photo, but not everything carried over"
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:224
+msgid "Saved as a new photo, stacked with the original"
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:225
+msgid "Saved as a new photo"
+msgstr ""
+
+#: src/library/lightbox/edit/saving.rs:257
+msgid "Couldn't add it to the original's albums"
+msgstr ""
+
+#: src/library/lightbox/face_people.rs:183 src/library/lightbox/faces.rs:295
+msgid "Change Person…"
+msgstr ""
+
+#: src/library/lightbox/face_people.rs:189
+msgid "Remove from Photo"
+msgstr ""
+
+#: src/library/lightbox/face_people.rs:211 src/library/lightbox/faces.rs:304
+msgid "Face moved"
+msgstr ""
+
+#: src/library/lightbox/face_people.rs:230 src/library/lightbox/faces.rs:326
+msgid "Face removed"
+msgstr ""
+
+#: src/library/lightbox/faces.rs:43
 msgid "Drag around a face to tag it"
 msgstr ""
 
-#: src/library/lightbox/faces.rs:39
+#: src/library/lightbox/faces.rs:48
 msgid "Done"
 msgstr ""
 
-#: src/library/lightbox/faces.rs:215
+#: src/library/lightbox/faces.rs:216
 msgid "Couldn't load the faces"
 msgstr ""
 
@@ -1986,71 +2144,59 @@ msgstr ""
 msgid "No faces yet. Drag around one to tag it."
 msgstr ""
 
-#: src/library/lightbox/faces.rs:278
-msgid "Change Person…"
-msgstr ""
-
-#: src/library/lightbox/faces.rs:280
+#: src/library/lightbox/faces.rs:297
 msgid "Choose Person…"
 msgstr ""
 
-#: src/library/lightbox/faces.rs:287
-msgid "Face moved"
-msgstr ""
-
-#: src/library/lightbox/faces.rs:295
+#: src/library/lightbox/faces.rs:312
 msgid "Use as Cover Photo"
 msgstr ""
 
-#: src/library/lightbox/faces.rs:301
+#: src/library/lightbox/faces.rs:318
 msgid "Cover photo changed"
 msgstr ""
 
-#: src/library/lightbox/faces.rs:307
+#: src/library/lightbox/faces.rs:324
 msgid "Remove Face"
 msgstr ""
 
-#: src/library/lightbox/faces.rs:309
-msgid "Face removed"
-msgstr ""
-
-#: src/library/lightbox/faces.rs:347
+#: src/library/lightbox/faces.rs:364
 msgid "Face tagged"
 msgstr ""
 
-#: src/library/lightbox/faces.rs:369
+#: src/library/lightbox/faces.rs:387
 msgid "Immich didn't accept the change"
 msgstr ""
 
-#: src/library/lightbox/faces.rs:397
+#: src/library/lightbox/faces.rs:415
 msgid "Unknown Person"
 msgstr ""
 
-#: src/library/lightbox/interaction.rs:324 src/library/lightbox/widgets.rs:278
+#: src/library/lightbox/interaction.rs:325 src/library/lightbox/widgets.rs:295
 msgid "Raw"
 msgstr ""
 
-#: src/library/lightbox/interaction.rs:326 src/library/lightbox/widgets.rs:280
+#: src/library/lightbox/interaction.rs:327 src/library/lightbox/widgets.rs:297
 msgid "Prev"
 msgstr ""
 
-#: src/library/lightbox/interaction.rs:428
+#: src/library/lightbox/interaction.rs:429
 msgid "Add a description"
 msgstr ""
 
-#: src/library/lightbox/interaction/rendering.rs:90
+#: src/library/lightbox/interaction/rendering.rs:91
 msgid "On Immich and locally"
 msgstr ""
 
-#: src/library/lightbox/interaction/rendering.rs:91
+#: src/library/lightbox/interaction/rendering.rs:92
 msgid "Local only"
 msgstr ""
 
-#: src/library/lightbox/interaction/rendering.rs:92
+#: src/library/lightbox/interaction/rendering.rs:93
 msgid "On Immich only"
 msgstr ""
 
-#: src/library/lightbox/interaction/rendering.rs:98
+#: src/library/lightbox/interaction/rendering.rs:99
 #, rust-format
 msgid "Created: {date}"
 msgstr ""
@@ -2092,7 +2238,7 @@ msgstr ""
 msgid "Hide recognized text (T)"
 msgstr ""
 
-#: src/library/lightbox/ocr.rs:66 src/library/lightbox/widgets.rs:287
+#: src/library/lightbox/ocr.rs:66 src/library/lightbox/widgets.rs:304
 msgid "Show recognized text (T)"
 msgstr ""
 
@@ -2104,26 +2250,26 @@ msgstr ""
 msgid "Copy Selected Text"
 msgstr ""
 
-#: src/library/lightbox/people.rs:46
+#: src/library/lightbox/people.rs:65
 msgid "No one is tagged yet."
 msgstr ""
 
-#: src/library/lightbox/people.rs:126 src/library/people_view.rs:234
+#: src/library/lightbox/people.rs:215 src/library/people_view.rs:234
 #, rust-format
 msgid "Show photos of {name}"
 msgstr ""
 
-#: src/library/lightbox/people.rs:148
+#: src/library/lightbox/people.rs:237
 #, rust-format
 msgid "Age {months}"
 msgstr ""
 
-#: src/library/lightbox/people.rs:150
+#: src/library/lightbox/people.rs:239
 #, rust-format
 msgid "Age 1 year, {months}"
 msgstr ""
 
-#: src/library/lightbox/people.rs:166
+#: src/library/lightbox/people.rs:255
 #, rust-format
 msgid "{n} month"
 msgid_plural "{n} months"
@@ -2148,11 +2294,11 @@ msgstr ""
 msgid "Pause (Space)"
 msgstr ""
 
-#: src/library/lightbox/slideshow.rs:86 src/library/lightbox/widgets.rs:145
+#: src/library/lightbox/slideshow.rs:86 src/library/lightbox/widgets.rs:150
 msgid "Previous (Left)"
 msgstr ""
 
-#: src/library/lightbox/slideshow.rs:87 src/library/lightbox/widgets.rs:146
+#: src/library/lightbox/slideshow.rs:87 src/library/lightbox/widgets.rs:151
 msgid "Next (Right)"
 msgstr ""
 
@@ -2247,59 +2393,59 @@ msgstr ""
 msgid "The video file is no longer on disk."
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:137
+#: src/library/lightbox/widgets.rs:142
 msgid "Back to library"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:149
+#: src/library/lightbox/widgets.rs:154
 msgid "Toggle details (I)"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:156
+#: src/library/lightbox/widgets.rs:161
 msgid "More (Shift+F10)"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:225
+#: src/library/lightbox/widgets.rs:242
 msgid "Preview unavailable"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:235
+#: src/library/lightbox/widgets.rs:252
 msgid "Open in external app"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:269
+#: src/library/lightbox/widgets.rs:286
 msgid "Play video (Space)"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:282
+#: src/library/lightbox/widgets.rs:299
 msgid "Toggle preview vs original full-resolution image"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:293
+#: src/library/lightbox/widgets.rs:310
 msgid "Download asset"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:294
+#: src/library/lightbox/widgets.rs:311
 msgid "Open with…"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:295
+#: src/library/lightbox/widgets.rs:312
 msgid "Move to trash (Delete)"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:336
+#: src/library/lightbox/widgets.rs:353
 msgid "Zoom out (Ctrl+-)"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:337
+#: src/library/lightbox/widgets.rs:354
 msgid "Zoom in (Ctrl++)"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:340
+#: src/library/lightbox/widgets.rs:357
 msgid "Reset zoom (Ctrl+0)"
 msgstr ""
 
-#: src/library/lightbox/widgets.rs:436
+#: src/library/lightbox/widgets.rs:453
 msgid "Loading details…"
 msgstr ""
 
@@ -2609,12 +2755,6 @@ msgstr ""
 msgid "No one matches your search."
 msgstr ""
 
-#: src/library/people_view.rs:258 src/library/source_header/enrichment.rs:203
-#: src/library/source_header/enrichment.rs:232
-#: src/library/source_header/enrichment.rs:287 src/library/tags_view.rs:148
-msgid "More"
-msgstr ""
-
 #: src/library/people_view.rs:274
 msgid "Add Name…"
 msgstr ""
@@ -2660,10 +2800,6 @@ msgstr ""
 msgid "Immich shows {name}'s age on photos."
 msgstr ""
 
-#: src/library/people_view.rs:410
-msgid "Remove"
-msgstr ""
-
 #: src/library/person_merge_dialog.rs:47 src/library/person_merge_dialog.rs:157
 msgid "Merge"
 msgstr ""
@@ -2695,29 +2831,112 @@ msgstr ""
 msgid "Could Not Merge People"
 msgstr ""
 
-#: src/library/person_picker.rs:63
+#: src/library/person_picker.rs:122
 msgid "Search or type a new name"
 msgstr ""
 
-#: src/library/person_picker.rs:101
+#: src/library/person_picker.rs:138
+msgid "Create Person…"
+msgstr ""
+
+#: src/library/person_picker.rs:140
 msgid "Who Is This?"
 msgstr ""
 
-#: src/library/person_picker.rs:194
-#, rust-format
-msgid "Add “{name}”"
+#: src/library/person_picker.rs:156
+msgid "Back"
 msgstr ""
 
-#: src/library/photo_editor.rs:17
+#: src/library/person_picker.rs:161
+msgid "Create Person"
+msgstr ""
+
+#: src/library/person_picker.rs:166
+msgid "Tag Face"
+msgstr ""
+
+#: src/library/photo_editor.rs:37
 msgid "Free"
 msgstr ""
 
-#: src/library/photo_editor.rs:18
+#: src/library/photo_editor.rs:38 src/library/photo_editor/look.rs:130
 msgid "Original"
 msgstr ""
 
-#: src/library/photo_editor.rs:19
+#: src/library/photo_editor.rs:39
 msgid "Square"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:38
+msgid "Brightness"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:39
+msgid "Contrast"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:40
+msgid "Highlights"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:41
+msgid "Shadows"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:42
+msgid "Saturation"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:43
+msgid "Warmth"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:44
+msgid "Tint"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:45
+msgid "Vignette"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:46
+msgid "Sharpen"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:133
+msgid "Vivid"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:142
+msgid "Warm"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:151
+msgid "Cool"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:159
+msgid "Dramatic"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:171
+msgid "Fade"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:181
+msgid "Vintage"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:192
+msgid "Mono"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:200
+msgid "Noir"
+msgstr ""
+
+#: src/library/photo_editor/look.rs:211
+msgid "Sepia"
 msgstr ""
 
 #: src/library/related.rs:20
@@ -2849,10 +3068,6 @@ msgstr ""
 
 #: src/library/search_filters.rs:212
 msgid "City"
-msgstr ""
-
-#: src/library/search_panel.rs:48 src/library/search_panel.rs:105
-msgid "Filters"
 msgstr ""
 
 #: src/library/search_panel.rs:55

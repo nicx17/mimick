@@ -6,7 +6,7 @@ use std::rc::Rc;
 
 use gtk::prelude::*;
 
-use super::Lightbox;
+use super::{AssetInfo, Lightbox};
 use crate::api_client::{AssetFace, ImmichApiClient, NewFace, PersonUpdate};
 use crate::library::asset_object::AssetObject;
 use crate::library::context_menu::{Menu, show_error_toast};
@@ -17,14 +17,23 @@ use crate::library::photo_canvas::Region;
 /// Hand-drawn faces smaller than this many image pixels are taken as slips.
 const MIN_FACE: f64 = 12.0;
 
-/// The bar over the photo while face mode is on, and the faces it shows.
+/// The shown photo's faces, for face mode and for naming the face under the pointer.
+#[derive(Default)]
+pub(super) struct PhotoFaces {
+    /// Server id of the photo they belong to; empty when it has none to show.
+    pub(super) asset_id: RefCell<String>,
+    pub(super) list: RefCell<Vec<AssetFace>>,
+    /// The face under the pointer, so moving within it doesn't redraw.
+    pub(super) hovered: Cell<Option<usize>>,
+    /// A menu is open for the highlighted faces, which stay lit wherever the pointer goes.
+    pub(super) held: Cell<bool>,
+}
+
+/// The bar over the photo while face mode is on.
 pub(super) struct FaceMode {
     pub(super) bar: gtk::Revealer,
     done: gtk::Button,
-    faces: RefCell<Vec<AssetFace>>,
-    asset_id: RefCell<String>,
     active: Cell<bool>,
-    changed: Cell<bool>,
 }
 
 impl FaceMode {
@@ -56,10 +65,7 @@ impl FaceMode {
         Self {
             bar,
             done,
-            faces: RefCell::default(),
-            asset_id: RefCell::default(),
             active: Cell::new(false),
-            changed: Cell::new(false),
         }
     }
 
@@ -84,7 +90,6 @@ impl Lightbox {
                 lb.face_drawn(region);
             }
         });
-        self.connect_face_tooltip();
     }
 
     /// Drags and taps on the photo reach the face boxes only while face mode is on.
@@ -107,30 +112,6 @@ impl Lightbox {
         );
     }
 
-    /// Resting the pointer on a face box names the person.
-    fn connect_face_tooltip(self: &Rc<Self>) {
-        let lb = Rc::downgrade(self);
-        self.picture
-            .scrolled
-            .connect_query_tooltip(move |scrolled, x, y, _, tooltip| {
-                let Some(lb) = lb.upgrade().filter(|lb| lb.face_mode.is_active()) else {
-                    return false;
-                };
-                let layer = &lb.picture.faces.area;
-                let point =
-                    scrolled.compute_point(layer, &gtk::graphene::Point::new(x as f32, y as f32));
-                let name = point
-                    .and_then(|p| {
-                        lb.picture
-                            .faces
-                            .marker_at((f64::from(p.x()), f64::from(p.y())))
-                    })
-                    .and_then(|index| lb.face_mode.faces.borrow().get(index).map(face_name));
-                tooltip.set_text(name.as_deref());
-                name.is_some()
-            });
-    }
-
     /// Shows the photo's face boxes over it; dragging on the photo draws a new one.
     pub(in crate::library) fn enter_face_mode(self: &Rc<Self>) {
         let Some(item) = self.current_item() else {
@@ -145,13 +126,17 @@ impl Lightbox {
         self.stop_live();
         self.exit_edit_mode();
         self.actions.ocr_toggle.set_active(false);
-        self.face_mode.asset_id.replace(id);
+        // On a phone the details pane covers the photo, which has to show to tag faces on it.
+        if self.ui.split.is_collapsed() {
+            self.header.details_btn.set_active(false);
+        }
+        if self.faces.asset_id.replace(id.clone()) != id {
+            self.faces.list.borrow_mut().clear();
+        }
         self.face_mode.active.set(true);
-        self.face_mode.changed.set(false);
-        self.picture.faces.set_image_size(self.shown_size(&item));
-        self.picture.faces.set_markers(Vec::new());
+        self.place_faces();
+        self.picture.faces.set_outline_all(true);
         self.picture.faces.set_can_draw(true);
-        self.picture.faces.area.set_visible(true);
         self.picture
             .scrolled
             .set_cursor_from_name(Some("crosshair"));
@@ -174,7 +159,7 @@ impl Lightbox {
             .unwrap_or((f64::from(item.width()), f64::from(item.height())))
     }
 
-    /// Leaves face mode; the People section catches up if anything changed.
+    /// Leaves face mode; the boxes stay, unseen until one is pointed at.
     pub(super) fn exit_face_mode(self: &Rc<Self>) {
         let mode = &self.face_mode;
         if !mode.active.replace(false) {
@@ -182,15 +167,12 @@ impl Lightbox {
         }
         mode.bar.set_reveal_child(false);
         self.picture.faces.set_can_draw(false);
+        self.picture.faces.set_outline_all(false);
         self.picture.scrolled.set_cursor(None::<&gtk::gdk::Cursor>);
         self.picture.faces.set_selection(None);
-        self.picture.faces.area.set_visible(false);
         self.picture
             .strip
             .set_swipe_enabled((self.zoom_level.get() - 1.0).abs() < 0.001);
-        if mode.changed.replace(false) {
-            self.refresh_people();
-        }
     }
 
     /// Escape leaves face mode before it would close the lightbox.
@@ -202,31 +184,64 @@ impl Lightbox {
         leaving
     }
 
+    /// Loads the faces of your own photos, the ones the People section is shown for.
+    pub(super) fn load_faces(self: &Rc<Self>, info: &AssetInfo, editable: bool) {
+        let wanted = editable && !info.is_video() && self.ui.features.get().people;
+        self.faces.list.borrow_mut().clear();
+        self.place_faces();
+        let id = if wanted {
+            info.asset_id.clone()
+        } else {
+            String::new()
+        };
+        self.faces.asset_id.replace(id);
+        self.reload_faces();
+    }
+
+    /// Fetches the faces again; a result for a photo the user has left is dropped.
     fn reload_faces(self: &Rc<Self>) {
-        let id = self.face_mode.asset_id.borrow().clone();
+        let id = self.faces.asset_id.borrow().clone();
+        if id.is_empty() {
+            return;
+        }
         let lb = self.clone();
         glib::MainContext::default().spawn_local(async move {
             let result = lb.ui.ctx.api_client.fetch_faces(&id).await;
-            if !lb.face_mode.is_active() || *lb.face_mode.asset_id.borrow() != id {
+            if *lb.faces.asset_id.borrow() != id {
                 return;
             }
             match result {
                 Ok(faces) => lb.show_faces(faces),
-                Err(err) => show_error_toast(&lb.ui, &gettext("Couldn't load the faces"), &err),
+                Err(err) if lb.face_mode.is_active() => {
+                    show_error_toast(&lb.ui, &gettext("Couldn't load the faces"), &err)
+                }
+                Err(err) => log::debug!("Faces fetch failed for {id}: {err}"),
             }
         });
     }
 
     fn show_faces(&self, faces: Vec<AssetFace>) {
-        let size = self.picture.faces.image_size();
-        let markers = faces.iter().map(|face| face_region(face, size)).collect();
-        self.picture.faces.set_markers(markers);
-        if faces.is_empty() {
+        if faces.is_empty() && self.face_mode.is_active() {
             self.ui.toasts.add_toast(libadwaita::Toast::new(&gettext(
                 "No faces yet. Drag around one to tag it.",
             )));
         }
-        *self.face_mode.faces.borrow_mut() = faces;
+        *self.faces.list.borrow_mut() = faces;
+        self.place_faces();
+    }
+
+    /// Puts the face boxes on the photo, in the pixels of the picture shown, and clears
+    /// any highlight, since indices into the old list no longer hold.
+    fn place_faces(&self) {
+        self.release_face_highlight();
+        let Some(item) = self.current_item() else {
+            return;
+        };
+        let size = self.shown_size(&item);
+        self.picture.faces.set_image_size(size);
+        let faces = self.faces.list.borrow();
+        let markers = faces.iter().map(|face| face_region(face, size)).collect();
+        self.picture.faces.set_markers(markers);
     }
 
     /// A box in the face layer's coordinates, as a rectangle on the picture scroller.
@@ -245,7 +260,7 @@ impl Lightbox {
     }
 
     fn show_face_menu(self: &Rc<Self>, index: usize) {
-        let Some(face) = self.face_mode.faces.borrow().get(index).cloned() else {
+        let Some(face) = self.faces.list.borrow().get(index).cloned() else {
             return;
         };
         let Some(at) = self
@@ -256,7 +271,9 @@ impl Lightbox {
         else {
             return;
         };
-        self.picture.faces.highlight(Some(index));
+        self.hold_face_highlight(vec![index]);
+        // The menu points where the name would show, and names the face itself.
+        self.picture.face_label.set_visible(false);
         let menu = Menu::new(
             &self.picture.scrolled,
             f64::from(at.x() + at.width() / 2),
@@ -267,7 +284,7 @@ impl Lightbox {
         let lb = Rc::downgrade(self);
         menu.on_closed(move || {
             if let Some(lb) = lb.upgrade() {
-                lb.picture.faces.highlight(None);
+                lb.release_face_highlight();
             }
         });
         menu.popup();
@@ -294,7 +311,7 @@ impl Lightbox {
             let (lb, person_id) = (self.clone(), person.id.clone());
             menu.add(&gettext("Use as Cover Photo"), false, move || {
                 let update = PersonUpdate {
-                    feature_face_asset_id: Some(lb.face_mode.asset_id.borrow().clone()),
+                    feature_face_asset_id: Some(lb.faces.asset_id.borrow().clone()),
                     ..PersonUpdate::default()
                 };
                 let person_id = person_id.clone();
@@ -342,7 +359,7 @@ impl Lightbox {
             width: region.w.round() as u32,
             height: region.h.round() as u32,
         };
-        let asset_id = self.face_mode.asset_id.borrow().clone();
+        let asset_id = self.faces.asset_id.borrow().clone();
         self.picture.faces.set_selection(None);
         self.change_faces(gettext("Face tagged"), async move |api| {
             let person = person_id(&api, choice).await?;
@@ -350,8 +367,9 @@ impl Lightbox {
         });
     }
 
-    /// Runs one change, then reloads the boxes and says `done`, or shows why it failed.
-    fn change_faces<F, Fut>(self: &Rc<Self>, done: String, change: F)
+    /// Runs one change, then reloads the boxes and the People section and says `done`,
+    /// or shows why it failed.
+    pub(super) fn change_faces<F, Fut>(self: &Rc<Self>, done: String, change: F)
     where
         F: FnOnce(std::sync::Arc<ImmichApiClient>) -> Fut + 'static,
         Fut: std::future::Future<Output = Result<(), String>> + 'static,
@@ -361,9 +379,9 @@ impl Lightbox {
         glib::MainContext::default().spawn_local(async move {
             match change(api).await {
                 Ok(()) => {
-                    lb.face_mode.changed.set(true);
                     lb.ui.toasts.add_toast(libadwaita::Toast::new(&done));
                     lb.reload_faces();
+                    lb.refresh_people();
                 }
                 Err(err) => {
                     show_error_toast(&lb.ui, &gettext("Immich didn't accept the change"), &err)
@@ -392,7 +410,7 @@ impl Lightbox {
     }
 }
 
-fn face_name(face: &AssetFace) -> String {
+pub(super) fn face_name(face: &AssetFace) -> String {
     face.person.as_ref().map_or_else(
         || gettext("Unknown Person"),
         |person| display_name(person).into_owned(),
@@ -400,7 +418,10 @@ fn face_name(face: &AssetFace) -> String {
 }
 
 /// The picked person's id, creating the person first when a new name was typed.
-async fn person_id(api: &ImmichApiClient, choice: PersonChoice) -> Result<String, String> {
+pub(super) async fn person_id(
+    api: &ImmichApiClient,
+    choice: PersonChoice,
+) -> Result<String, String> {
     match choice {
         PersonChoice::Existing(person) => Ok(person.id),
         PersonChoice::New(name) => Ok(api.create_person(&name).await?.id),
@@ -408,7 +429,7 @@ async fn person_id(api: &ImmichApiClient, choice: PersonChoice) -> Result<String
 }
 
 /// A face box in the shown photo's pixels; faces carry the size of the image they were found on.
-fn face_region(face: &AssetFace, (w, h): (f64, f64)) -> Region {
+pub(super) fn face_region(face: &AssetFace, (w, h): (f64, f64)) -> Region {
     let sx = w / f64::from(face.image_width.max(1));
     let sy = h / f64::from(face.image_height.max(1));
     Region {

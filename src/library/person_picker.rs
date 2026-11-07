@@ -1,6 +1,5 @@
-//! "Who is this?": pick a named person, or type a new name, for a face.
+//! "Who is this?": pick a named person, or create someone new, for a face.
 
-use crate::i18n::fill;
 use gettextrs::gettext;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -17,6 +16,8 @@ pub(super) enum PersonChoice {
     Existing(Person),
     New(String),
 }
+
+type Chosen = Rc<RefCell<Option<PersonChoice>>>;
 
 /// Opens the picker in a popover on `parent`, pointing at `at` (in `parent`'s coordinates).
 /// `on_pick` runs once, after the popover closes, and not at all when it's dismissed.
@@ -53,33 +54,53 @@ fn named_people(people: &[Person]) -> Vec<Person> {
     named
 }
 
+/// Whether `name` is worth creating: typed, and not anyone's name already.
+fn is_new_name(people: &[Person], name: &str) -> bool {
+    !name.is_empty() && !people.iter().any(|p| p.name.eq_ignore_ascii_case(name))
+}
+
+/// The first page: search, everyone named, and a way to create someone new.
+struct PickPage {
+    root: gtk::Box,
+    search: gtk::SearchEntry,
+    list: gtk::ListBox,
+    create: gtk::Button,
+}
+
+/// The second page, which names the person to create.
+struct NamePage {
+    root: gtk::Box,
+    back: gtk::Button,
+    name: gtk::Entry,
+    tag: gtk::Button,
+}
+
 fn build(
     ui: &Rc<LibraryWindowUi>,
     people: Vec<Person>,
     on_pick: Rc<dyn Fn(PersonChoice)>,
 ) -> gtk::Popover {
     let popover = gtk::Popover::builder().autohide(true).build();
-    let search = gtk::SearchEntry::builder()
-        .placeholder_text(gettext("Search or type a new name"))
-        .build();
-    let create = gtk::Button::builder()
-        .halign(gtk::Align::Start)
-        .visible(false)
-        .css_classes(["flat"])
-        .build();
-    let list = gtk::ListBox::builder()
-        .selection_mode(gtk::SelectionMode::None)
-        .css_classes(["boxed-list"])
-        .valign(gtk::Align::Start)
-        .build();
     let people = Rc::new(people);
-    for person in people.iter() {
-        list.append(&person_row(ui, person));
-    }
-    let chosen = Rc::new(RefCell::new(None::<PersonChoice>));
-    let typed = Rc::new(RefCell::new(String::new()));
-    connect_choices(&popover, &list, &create, &people, &chosen, &typed);
-    connect_search(&search, &list, &create, &people, &typed);
+    let pick = pick_page(ui, &people);
+    let naming = name_page();
+    let pages = gtk::Stack::builder()
+        .transition_type(gtk::StackTransitionType::SlideLeftRight)
+        .vhomogeneous(false)
+        .interpolate_size(true)
+        .width_request(260)
+        .margin_top(6)
+        .margin_bottom(6)
+        .margin_start(6)
+        .margin_end(6)
+        .build();
+    pages.add_named(&pick.root, Some("pick"));
+    pages.add_named(&naming.root, Some("name"));
+    let chosen: Chosen = Rc::default();
+    connect_picks(&popover, &pick, &people, &chosen);
+    connect_search(&pick, &people);
+    connect_pages(&pages, &pick, &naming);
+    connect_naming(&popover, &naming, &chosen);
     popover.connect_closed(move |popover| {
         let popover = popover.clone();
         glib::idle_add_local_once(move || popover.unparent());
@@ -87,41 +108,90 @@ fn build(
             on_pick(choice);
         }
     });
-    popover.set_child(Some(&layout(&search, &create, &list)));
-    let search_focus = search.clone();
+    popover.set_child(Some(&pages));
+    let search = pick.search.clone();
     popover.connect_map(move |_| {
-        search_focus.grab_focus();
+        search.grab_focus();
     });
     popover
 }
 
-/// Title, search, and "Add" stay put; the list scrolls, so the popover fits small screens.
-fn layout(search: &gtk::SearchEntry, create: &gtk::Button, list: &gtk::ListBox) -> gtk::Widget {
-    let title = gtk::Label::builder()
-        .label(gettext("Who Is This?"))
-        .xalign(0.0)
-        .css_classes(["heading"])
+/// Title, search, and Create stay put; the list scrolls, so the popover fits small screens.
+fn pick_page(ui: &LibraryWindowUi, people: &[Person]) -> PickPage {
+    let search = gtk::SearchEntry::builder()
+        .placeholder_text(gettext("Search or type a new name"))
         .build();
+    let list = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .css_classes(["boxed-list"])
+        .valign(gtk::Align::Start)
+        .build();
+    for person in people {
+        list.append(&person_row(ui, person));
+    }
     let scroller = gtk::ScrolledWindow::builder()
         .hscrollbar_policy(gtk::PolicyType::Never)
         .max_content_height(300)
         .propagate_natural_height(true)
-        .child(list)
+        .child(&list)
         .build();
-    let body = gtk::Box::builder()
+    let create = gtk::Button::with_label(&gettext("Create Person…"));
+    let root = page_box();
+    root.append(&heading(&gettext("Who Is This?")));
+    root.append(&search);
+    root.append(&scroller);
+    root.append(&create);
+    PickPage {
+        root,
+        search,
+        list,
+        create,
+    }
+}
+
+/// A name field and Tag Face, under a back button to the list.
+fn name_page() -> NamePage {
+    let back = gtk::Button::builder()
+        .icon_name("go-previous-symbolic")
+        .tooltip_text(gettext("Back"))
+        .css_classes(["flat"])
+        .build();
+    let top = gtk::Box::builder().spacing(6).build();
+    top.append(&back);
+    top.append(&heading(&gettext("Create Person")));
+    let name = gtk::Entry::builder()
+        .placeholder_text(gettext("Name"))
+        .build();
+    let tag = gtk::Button::builder()
+        .label(gettext("Tag Face"))
+        .sensitive(false)
+        .css_classes(["suggested-action"])
+        .build();
+    let root = page_box();
+    root.append(&top);
+    root.append(&name);
+    root.append(&tag);
+    NamePage {
+        root,
+        back,
+        name,
+        tag,
+    }
+}
+
+fn page_box() -> gtk::Box {
+    gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(8)
-        .margin_top(6)
-        .margin_bottom(6)
-        .margin_start(6)
-        .margin_end(6)
-        .width_request(260)
-        .build();
-    body.append(&title);
-    body.append(search);
-    body.append(create);
-    body.append(&scroller);
-    body.upcast()
+        .build()
+}
+
+fn heading(text: &str) -> gtk::Label {
+    gtk::Label::builder()
+        .label(text)
+        .xalign(0.0)
+        .css_classes(["heading"])
+        .build()
 }
 
 fn person_row(ui: &LibraryWindowUi, person: &Person) -> libadwaita::ActionRow {
@@ -134,71 +204,80 @@ fn person_row(ui: &LibraryWindowUi, person: &Person) -> libadwaita::ActionRow {
     row
 }
 
-/// A row or the "Add" button records the choice and closes; closing hands it over.
-fn connect_choices(
+/// A row, or Enter on a name nobody has, records the choice and closes; closing hands it over.
+fn connect_picks(
     popover: &gtk::Popover,
-    list: &gtk::ListBox,
-    create: &gtk::Button,
+    pick: &PickPage,
     people: &Rc<Vec<Person>>,
-    chosen: &Rc<RefCell<Option<PersonChoice>>>,
-    typed: &Rc<RefCell<String>>,
+    chosen: &Chosen,
 ) {
     let (popover_row, people_row, chosen_row) = (popover.clone(), people.clone(), chosen.clone());
-    list.connect_row_activated(move |_, row| {
+    pick.list.connect_row_activated(move |_, row| {
         if let Some(person) = people_row.get(row.index() as usize) {
             chosen_row.replace(Some(PersonChoice::Existing(person.clone())));
             popover_row.popdown();
         }
     });
-    let (popover_new, chosen_new, typed) = (popover.clone(), chosen.clone(), typed.clone());
-    create.connect_clicked(move |_| {
-        let name = typed.borrow().clone();
-        if !name.is_empty() {
-            chosen_new.replace(Some(PersonChoice::New(name)));
-            popover_new.popdown();
+    let (popover, people, chosen) = (popover.clone(), people.clone(), chosen.clone());
+    pick.search.connect_activate(move |entry| {
+        let name = entry.text().trim().to_string();
+        if is_new_name(&people, &name) {
+            chosen.replace(Some(PersonChoice::New(name)));
+            popover.popdown();
         }
     });
 }
 
-/// Filters the list by name; a name nobody has yet offers to add that person.
-fn connect_search(
-    search: &gtk::SearchEntry,
-    list: &gtk::ListBox,
-    create: &gtk::Button,
-    people: &Rc<Vec<Person>>,
-    typed: &Rc<RefCell<String>>,
-) {
+/// Filters the list by name as the search changes.
+fn connect_search(pick: &PickPage, people: &[Person]) {
     let query = Rc::new(RefCell::new(String::new()));
-    let (filter_query, names) = (
-        query.clone(),
-        people
-            .iter()
-            .map(|p| p.name.to_lowercase())
-            .collect::<Vec<_>>(),
-    );
-    list.set_filter_func(move |row| {
+    let filter_query = query.clone();
+    let names: Vec<String> = people.iter().map(|p| p.name.to_lowercase()).collect();
+    pick.list.set_filter_func(move |row| {
         let query = filter_query.borrow();
         names
             .get(row.index() as usize)
             .is_some_and(|name| name.contains(query.as_str()))
     });
-    let create_on_enter = create.clone();
-    let (list, create, people, typed) =
-        (list.clone(), create.clone(), people.clone(), typed.clone());
-    search.connect_search_changed(move |entry| {
-        let text = entry.text().trim().to_string();
-        *query.borrow_mut() = text.to_lowercase();
+    let list = pick.list.clone();
+    pick.search.connect_search_changed(move |entry| {
+        *query.borrow_mut() = entry.text().trim().to_lowercase();
         list.invalidate_filter();
-        let exists = people.iter().any(|p| p.name.eq_ignore_ascii_case(&text));
-        create.set_visible(!text.is_empty() && !exists);
-        create.set_label(&fill(gettext("Add “{name}”"), &[("name", &text)]));
-        *typed.borrow_mut() = text;
     });
-    search.connect_activate(move |_| {
-        if create_on_enter.is_visible() {
-            create_on_enter.emit_clicked();
+}
+
+/// Create Person… opens the name page with whatever was typed; Back returns to the list.
+fn connect_pages(pages: &gtk::Stack, pick: &PickPage, naming: &NamePage) {
+    let (to_name, search, name) = (pages.clone(), pick.search.clone(), naming.name.clone());
+    pick.create.connect_clicked(move |_| {
+        name.set_text(search.text().trim());
+        to_name.set_visible_child_name("name");
+        name.grab_focus();
+    });
+    let (to_pick, search) = (pages.clone(), pick.search.clone());
+    naming.back.connect_clicked(move |_| {
+        to_pick.set_visible_child_name("pick");
+        search.grab_focus();
+    });
+}
+
+/// Tag Face, or Enter in the name field, creates the person once a name is typed.
+fn connect_naming(popover: &gtk::Popover, naming: &NamePage, chosen: &Chosen) {
+    let tag = naming.tag.clone();
+    naming.name.connect_changed(move |entry| {
+        tag.set_sensitive(!entry.text().trim().is_empty());
+    });
+    let (popover, name, chosen) = (popover.clone(), naming.name.clone(), chosen.clone());
+    let create = Rc::new(move || {
+        let typed = name.text().trim().to_string();
+        if !typed.is_empty() {
+            chosen.replace(Some(PersonChoice::New(typed)));
+            popover.popdown();
         }
     });
+    let on_tag = create.clone();
+    naming.tag.connect_clicked(move |_| on_tag());
+    naming.name.connect_activate(move |_| create());
 }
 
 #[cfg(test)]
@@ -214,5 +293,13 @@ mod tests {
         let named = named_people(&[person("bea"), person(""), person("Ana"), person("  ")]);
         let names: Vec<&str> = named.iter().map(|p| p.name.as_str()).collect();
         assert_eq!(names, ["Ana", "bea"]);
+    }
+
+    #[test]
+    fn enter_creates_only_names_nobody_has() {
+        let people = [person("Ana")];
+        assert!(is_new_name(&people, "Bea"));
+        assert!(!is_new_name(&people, "ana"));
+        assert!(!is_new_name(&people, ""));
     }
 }

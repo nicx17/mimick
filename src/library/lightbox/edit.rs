@@ -1,81 +1,110 @@
-//! Edit mode in the lightbox: crop, rotate, and flip right on the photo.
+//! Edit mode in the lightbox, right on the photo: crop, turn, and level it, adjust its light and
+//! colour or pick a filter, and hide parts of it. Immich keeps crops, turns, and flips on the
+//! photo itself; anything else is saved as a new photo stacked with the original.
 
-use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
+use gettextrs::gettext;
 use gtk::prelude::*;
 
+mod looks;
+mod pages;
 mod panel;
+mod redact;
+mod saving;
+mod wheel;
 
 use super::Lightbox;
-use super::details::edited_original_cache_path;
-use crate::api_client::ImmichApiClient;
+use crate::i18n::gettext_noop;
 use crate::library::actions::TrashTarget;
 use crate::library::asset_object::AssetObject;
 use crate::library::context_menu::show_error_toast;
+use crate::library::photo_editor::look::Slider;
 use crate::library::photo_editor::{ASPECTS, EditSession, shaped_crop};
 
-/// A tool button: icon, caption, and what it does to the session.
-type Tool = (&'static str, String, EditAction);
-/// A change a tool button makes to the photo being edited.
+/// A change a turn or flip makes to the photo being edited.
 type EditAction = fn(&mut EditSession);
-/// A tool's button and its change.
-type ToolButton = (gtk::Button, EditAction);
 
-/// How often to ask whether Immich has rendered a saved edit, and how many times.
-const RENDER_POLL: std::time::Duration = std::time::Duration::from_millis(1500);
-const RENDER_POLLS: u32 = 40;
+/// The editor's tools, one page each.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Tool {
+    Crop,
+    Adjust,
+    Filters,
+    Redact,
+}
 
-/// Cancel and Save in the header, the tools in a panel under the photo, and the photo being edited.
+/// Each tool's page name, title, and icon, in switcher order.
+const TOOLS: [(Tool, &str, &str, &str); 4] = [
+    (
+        Tool::Crop,
+        "crop",
+        gettext_noop("Crop"),
+        "mimick-crop-symbolic",
+    ),
+    (
+        Tool::Adjust,
+        "adjust",
+        gettext_noop("Adjust"),
+        "mimick-adjust-symbolic",
+    ),
+    (
+        Tool::Filters,
+        "filters",
+        gettext_noop("Filters"),
+        "mimick-filters-symbolic",
+    ),
+    (
+        Tool::Redact,
+        "redact",
+        gettext_noop("Redact"),
+        "view-conceal-symbolic",
+    ),
+];
+
+/// The editor's header and panel, and the photo being edited.
 pub(super) struct EditMode {
     /// Stands in for the lightbox header while editing.
     pub(super) header: libadwaita::HeaderBar,
     /// Stands in for the action bar under the photo while editing.
     pub(super) panel: gtk::Box,
-    cancel: gtk::Button,
-    save: gtk::Button,
-    revert: gtk::Button,
-    shapes: Vec<gtk::ToggleButton>,
-    tool_buttons: Vec<ToolButton>,
-    reset: gtk::Button,
+    widgets: panel::EditWidgets,
     session: RefCell<Option<EditSession>>,
     item: RefCell<Option<AssetObject>>,
     active: Cell<bool>,
+    /// Bumped per session, so a render started for an earlier one is dropped.
     render_gen: Cell<u64>,
+    /// A render is running; `stale` asks for one more once it's done.
+    rendering: Cell<bool>,
+    stale: Cell<bool>,
+    /// Controls are being set to match the session, so their changes aren't edits.
+    syncing: Cell<bool>,
+    /// A copy is being made and uploaded.
+    saving: Cell<bool>,
+    /// The hidden area picked on the Redact page, to move, resize, or restyle.
+    redact_picked: Cell<Option<usize>>,
+    /// The slider the Adjust page's dial moves.
+    slider: Cell<Slider>,
 }
 
 impl EditMode {
     pub(super) fn new() -> Self {
-        let cancel = gtk::Button::with_label(&gettext("Cancel"));
-        let save = gtk::Button::builder()
-            .label(gettext("Save"))
-            .sensitive(false)
-            .css_classes(["suggested-action"])
-            .build();
-        let (shape_row, shapes) = panel::shape_chips();
-        let tool_buttons = panel::tool_buttons();
-        let reset = gtk::Button::builder()
-            .label(gettext("Reset"))
-            .css_classes(["flat"])
-            .build();
-        let revert = gtk::Button::builder()
-            .label(gettext("Revert to Original…"))
-            .css_classes(["flat", "mimick-edit-revert"])
-            .build();
+        let widgets = panel::EditWidgets::new();
         Self {
-            header: panel::edit_header(&cancel, &save),
-            panel: panel::edit_panel(&shape_row, &tool_buttons, &reset, &revert),
-            cancel,
-            save,
-            revert,
-            shapes,
-            tool_buttons,
-            reset,
+            header: widgets.header.clone(),
+            panel: widgets.panel.clone(),
+            widgets,
             session: RefCell::default(),
             item: RefCell::default(),
             active: Cell::new(false),
             render_gen: Cell::new(0),
+            rendering: Cell::new(false),
+            stale: Cell::new(false),
+            syncing: Cell::new(false),
+            saving: Cell::new(false),
+            redact_picked: Cell::new(None),
+            slider: Cell::new(Slider::Exposure),
         }
     }
 
@@ -86,12 +115,56 @@ impl EditMode {
 
 impl Lightbox {
     pub(super) fn connect_edit_mode(self: &Rc<Self>) {
-        let mode = &self.edit_mode;
-        self.on_click(&mode.cancel, Self::exit_edit_mode);
-        self.on_click(&mode.save, Self::save_edit);
-        self.on_click(&mode.revert, Self::confirm_revert_edit);
-        self.on_click(&mode.reset, |lb| lb.change_edit(EditSession::reset));
-        for (button, action) in &mode.tool_buttons {
+        let w = &self.edit_mode.widgets;
+        self.on_click(&w.cancel, Self::exit_edit_mode);
+        self.on_click(&w.save, Self::save_edit);
+        self.on_click(&w.revert, Self::confirm_revert_edit);
+        self.on_click(&w.reset, |lb| lb.change_edit(EditSession::reset));
+        self.connect_copy_choices();
+        self.connect_crop_page();
+        self.connect_look_pages();
+        self.connect_redact();
+        self.connect_tool_switch();
+        self.connect_crop_input();
+    }
+
+    /// Remembers whether copies keep the original's details, for the next edit too.
+    /// The ⋯ menu's choices for copies, remembered for the next edit too.
+    fn connect_copy_choices(self: &Rc<Self>) {
+        let (w, config) = (&self.edit_mode.widgets, self.ui.ctx.config.read());
+        w.keep_details
+            .set_active(config.data.edit_copy_keeps_details);
+        w.stack_copy.set_active(config.data.edit_copy_stacks);
+        drop(config);
+        self.remember_choice(&w.keep_details, |data, on| {
+            data.edit_copy_keeps_details = on
+        });
+        self.remember_choice(&w.stack_copy, |data, on| data.edit_copy_stacks = on);
+    }
+
+    fn remember_choice(
+        self: &Rc<Self>,
+        check: &gtk::CheckButton,
+        store: fn(&mut crate::config::ConfigData, bool),
+    ) {
+        let lb = Rc::downgrade(self);
+        check.connect_toggled(move |check| {
+            let Some(lb) = lb.upgrade() else {
+                return;
+            };
+            let mut config = lb.ui.ctx.config.write();
+            store(&mut config.data, check.is_active());
+            if !config.save() {
+                log::error!("Failed to save config after changing how copies are saved");
+            }
+            drop(config);
+            lb.sync_edit_save();
+        });
+    }
+
+    fn connect_crop_page(self: &Rc<Self>) {
+        let page = &self.edit_mode.widgets.crop;
+        for (button, action) in &page.turns {
             let (lb, action) = (Rc::downgrade(self), *action);
             button.connect_clicked(move |_| {
                 if let Some(lb) = lb.upgrade() {
@@ -99,7 +172,7 @@ impl Lightbox {
                 }
             });
         }
-        for check in &mode.shapes {
+        for check in &page.shapes {
             let lb = Rc::downgrade(self);
             check.connect_toggled(move |check| {
                 if let Some(lb) = lb.upgrade().filter(|_| check.is_active()) {
@@ -108,10 +181,35 @@ impl Lightbox {
                 }
             });
         }
-        self.connect_crop_input();
     }
 
-    /// Drags on the photo move and resize the crop box only while editing.
+    /// Each tool shows its own boxes; phones get the switcher's compact, stacked labels.
+    fn connect_tool_switch(self: &Rc<Self>) {
+        let lb = Rc::downgrade(self);
+        self.edit_mode
+            .widgets
+            .tools
+            .connect_visible_child_name_notify(move |_| {
+                if let Some(lb) = lb.upgrade().filter(|lb| lb.edit_mode.is_active()) {
+                    lb.show_tool_layers();
+                    lb.show_edit();
+                }
+            });
+        self.ui
+            .split
+            .bind_property("collapsed", &self.edit_mode.widgets.switcher, "policy")
+            .transform_to(|_, collapsed: bool| {
+                Some(if collapsed {
+                    libadwaita::ViewSwitcherPolicy::Narrow
+                } else {
+                    libadwaita::ViewSwitcherPolicy::Wide
+                })
+            })
+            .sync_create()
+            .build();
+    }
+
+    /// Drags on the photo move and resize the crop box only on the Crop page.
     fn connect_crop_input(self: &Rc<Self>) {
         self.picture.crop.set_crop_look(true);
         let lb = Rc::downgrade(self);
@@ -119,7 +217,7 @@ impl Lightbox {
             &self.picture.scrolled,
             gtk::PropagationPhase::Capture,
             move |x, y| {
-                let lb = lb.upgrade().filter(|lb| lb.edit_mode.is_active())?;
+                let lb = lb.upgrade().filter(|lb| lb.editing_with(Tool::Crop))?;
                 let point = lb.picture.scrolled.compute_point(
                     &lb.picture.crop.area,
                     &gtk::graphene::Point::new(x as f32, y as f32),
@@ -135,7 +233,11 @@ impl Lightbox {
         });
     }
 
-    /// Starts editing the photo on screen, in place.
+    fn editing_with(&self, tool: Tool) -> bool {
+        self.edit_mode.is_active() && self.edit_mode.widgets.tool() == tool
+    }
+
+    /// Starts editing the photo on screen, in place, on the Crop page.
     pub(in crate::library) fn enter_edit_mode(self: &Rc<Self>) {
         let Some(item) = self.current_item() else {
             return;
@@ -147,9 +249,12 @@ impl Lightbox {
         let mode = &self.edit_mode;
         mode.active.set(true);
         mode.item.replace(Some(item.clone()));
-        mode.revert.set_visible(item.is_edited());
-        mode.save.set_sensitive(false);
-        mode.shapes[0].set_active(true);
+        mode.widgets.revert.set_visible(item.is_edited());
+        mode.widgets.save.set_sensitive(false);
+        mode.widgets.crop.shapes[0].set_active(true);
+        mode.widgets.show_tool(Tool::Crop);
+        mode.redact_picked.set(None);
+        mode.render_gen.set(mode.render_gen.get().wrapping_add(1));
         // Any load still running for this photo would replace the picture being edited.
         self.load_gen.set(self.load_gen.get().wrapping_add(1));
         self.set_edit_chrome(true);
@@ -162,6 +267,8 @@ impl Lightbox {
             match session {
                 Ok(session) => {
                     lb.edit_mode.session.replace(Some(session));
+                    lb.sync_edit_controls();
+                    lb.show_tool_layers();
                     lb.show_edit();
                 }
                 Err(err) => {
@@ -177,6 +284,10 @@ impl Lightbox {
         if self.ui.window.is_fullscreen() {
             self.ui.window.unfullscreen();
         }
+        // On a phone the details pane covers the photo being edited.
+        if self.ui.split.is_collapsed() {
+            self.header.details_btn.set_active(false);
+        }
         self.stop_slideshow();
         self.stop_live();
         self.exit_face_mode();
@@ -188,7 +299,7 @@ impl Lightbox {
 
     /// The edit header and panel replace the lightbox header, action bar, and the photo's own
     /// overlays; hiding the header also keeps Prev/Next from dropping the unsaved edit.
-    fn set_edit_chrome(&self, editing: bool) {
+    fn set_edit_chrome(self: &Rc<Self>, editing: bool) {
         let mode = &self.edit_mode;
         mode.header.set_visible(editing);
         mode.panel.set_visible(editing);
@@ -196,7 +307,12 @@ impl Lightbox {
         self.actions
             .bar
             .set_visible(!editing && !self.ui.window.is_fullscreen());
-        self.picture.crop.area.set_visible(editing);
+        if editing {
+            self.show_tool_layers();
+        } else {
+            self.picture.crop.area.set_visible(false);
+            self.picture.redact.area.set_visible(false);
+        }
         self.sync_stack_visible();
         self.picture
             .strip
@@ -204,55 +320,85 @@ impl Lightbox {
         self.show_overlays(!editing);
     }
 
-    /// Draws the turned preview in place of the photo, with the crop box over it.
+    /// The crop box on the Crop page and the hidden areas on the Redact page.
+    fn show_tool_layers(self: &Rc<Self>) {
+        let tool = self.edit_mode.widgets.tool();
+        self.picture.crop.area.set_visible(tool == Tool::Crop);
+        self.picture.redact.area.set_visible(tool == Tool::Redact);
+        match tool {
+            Tool::Filters => self.refresh_filter_previews(),
+            Tool::Redact => self.sync_redact_page(),
+            Tool::Crop | Tool::Adjust => {}
+        }
+    }
+
+    /// Redraws the photo as edited: the whole frame on the Crop page, else the result.
+    /// Changes made while a render runs fold into one more render after it.
     fn show_edit(self: &Rc<Self>) {
-        let generation = self.edit_mode.render_gen.get().wrapping_add(1);
-        self.edit_mode.render_gen.set(generation);
-        let lb = self.clone();
+        let mode = &self.edit_mode;
+        if mode.rendering.replace(true) {
+            mode.stale.set(true);
+            return;
+        }
+        mode.stale.set(false);
+        let cropped = mode.widgets.tool() != Tool::Crop;
+        let drawing = mode
+            .session
+            .borrow()
+            .as_ref()
+            .map(|session| session.developed_texture(cropped));
+        let Some(drawing) = drawing else {
+            mode.rendering.set(false);
+            return;
+        };
+        let (lb, generation) = (self.clone(), mode.render_gen.get());
         glib::MainContext::default().spawn_local(async move {
-            let drawing = lb
-                .edit_mode
-                .session
-                .borrow()
-                .as_ref()
-                .map(EditSession::oriented_texture);
-            let Some(drawing) = drawing else {
-                return;
-            };
             let texture = drawing.await;
-            if lb.edit_mode.render_gen.get() != generation || !lb.edit_mode.is_active() {
-                return;
+            let mode = &lb.edit_mode;
+            mode.rendering.set(false);
+            let current = mode.is_active() && mode.render_gen.get() == generation;
+            if let Some(texture) = texture.filter(|_| current) {
+                lb.show_developed(&texture, cropped);
             }
-            let Some(texture) = texture else {
-                return;
-            };
-            lb.active_picture().set_paintable(Some(&texture));
-            let size = (f64::from(texture.width()), f64::from(texture.height()));
-            lb.picture.crop.set_image_size(size);
-            let crop = lb
+            if mode.stale.get() && mode.is_active() {
+                lb.show_edit();
+            }
+        });
+    }
+
+    /// Puts a render on screen, with the crop box or the hidden areas over it.
+    fn show_developed(self: &Rc<Self>, texture: &gtk::gdk::Texture, cropped: bool) {
+        self.active_picture().set_paintable(Some(texture));
+        let size = (f64::from(texture.width()), f64::from(texture.height()));
+        if cropped {
+            self.picture.redact.set_image_size(size);
+            self.show_redactions();
+        } else {
+            self.picture.crop.set_image_size(size);
+            let crop = self
                 .edit_mode
                 .session
                 .borrow()
                 .as_ref()
                 .map(EditSession::screen_crop);
-            lb.picture.crop.set_selection(crop);
-            lb.apply_shape();
-            lb.sync_edit_save();
-        });
+            self.picture.crop.set_selection(crop);
+            self.apply_shape();
+        }
+        self.sync_edit_save();
     }
 
     fn change_edit(self: &Rc<Self>, change: EditAction) {
         if let Some(session) = self.edit_mode.session.borrow_mut().as_mut() {
             change(session);
         }
+        self.sync_edit_controls();
         self.show_edit();
     }
 
     /// Locks the crop box to the chosen shape, turned to match the box's orientation.
     fn apply_shape(&self) {
-        let mode = &self.edit_mode;
-        let preset = mode
-            .shapes
+        let shapes = &self.edit_mode.widgets.crop.shapes;
+        let preset = shapes
             .iter()
             .position(gtk::ToggleButton::is_active)
             .and_then(|index| ASPECTS.get(index))
@@ -276,14 +422,24 @@ impl Lightbox {
         self.sync_edit_save();
     }
 
+    /// Save is on when there's something to save, and says when it makes a copy.
     fn sync_edit_save(&self) {
-        let changed = self
+        let (changed, copy) = self
             .edit_mode
             .session
             .borrow()
             .as_ref()
-            .is_some_and(EditSession::has_changes);
-        self.edit_mode.save.set_sensitive(changed);
+            .map_or((false, false), |s| (s.has_changes(), s.needs_copy()));
+        let (w, saving) = (&self.edit_mode.widgets, self.edit_mode.saving.get());
+        w.save.set_sensitive(changed && !saving);
+        // Save keeps one short label so the header fits a phone; the subtitle says the rest.
+        let subtitle = match (saving, copy, w.stack_copy.is_active()) {
+            (true, _, _) => gettext("Saving a copy…"),
+            (false, false, _) => String::new(),
+            (false, true, true) => gettext("Saves a copy stacked with the original"),
+            (false, true, false) => gettext("Saves as a new photo"),
+        };
+        w.title.set_subtitle(&subtitle);
     }
 
     /// Leaves edit mode without saving and puts the photo back.
@@ -295,6 +451,8 @@ impl Lightbox {
         mode.session.take();
         mode.item.take();
         self.picture.crop.set_selection(None);
+        self.picture.redact.set_selection(None);
+        self.picture.redact.set_markers(Vec::new());
         self.set_edit_chrome(false);
         self.render();
     }
@@ -308,116 +466,14 @@ impl Lightbox {
         }
         match key {
             Key::Escape => self.exit_edit_mode(),
-            Key::Return | Key::KP_Enter if self.edit_mode.save.is_sensitive() => self.save_edit(),
+            Key::Delete | Key::BackSpace if self.editing_with(Tool::Redact) => {
+                self.remove_picked_redaction()
+            }
+            Key::Return | Key::KP_Enter if self.edit_mode.widgets.save.is_sensitive() => {
+                self.save_edit()
+            }
             _ => {}
         }
         true
-    }
-
-    fn save_edit(self: &Rc<Self>) {
-        let Some((id, edits, thumbhash)) = self
-            .edit_mode
-            .session
-            .borrow()
-            .as_ref()
-            .map(|s| (s.asset_id.clone(), s.edits(), s.thumbhash.clone()))
-        else {
-            return;
-        };
-        self.edit_mode.save.set_sensitive(false);
-        let lb = self.clone();
-        glib::MainContext::default().spawn_local(async move {
-            let api = &lb.ui.ctx.api_client;
-            let result = if edits.is_empty() {
-                api.revert_edits(&id).await
-            } else {
-                api.save_edits(&id, &edits).await
-            };
-            lb.finish_edit(result, id, !edits.is_empty(), thumbhash);
-        });
-    }
-
-    fn confirm_revert_edit(self: &Rc<Self>) {
-        let Some((id, thumbhash)) = self
-            .edit_mode
-            .session
-            .borrow()
-            .as_ref()
-            .filter(|s| s.was_edited())
-            .map(|s| (s.asset_id.clone(), s.thumbhash.clone()))
-        else {
-            return;
-        };
-        let lb = self.clone();
-        crate::library::dialogs::confirm(
-            &self.ui,
-            &gettext("Revert to the Original?"),
-            &gettext("Every crop, turn, and flip made in Immich is removed."),
-            &gettext("Revert"),
-            move || {
-                let (lb, id, thumbhash) = (lb.clone(), id.clone(), thumbhash.clone());
-                glib::MainContext::default().spawn_local(async move {
-                    let result = lb.ui.ctx.api_client.revert_edits(&id).await;
-                    lb.finish_edit(result, id, false, thumbhash);
-                });
-            },
-        );
-    }
-
-    /// Immich renders the edit in the background; the photo refreshes once that's done.
-    fn finish_edit(
-        self: &Rc<Self>,
-        result: Result<(), String>,
-        id: String,
-        edited: bool,
-        thumbhash: Option<String>,
-    ) {
-        if let Err(err) = result {
-            self.sync_edit_save();
-            show_error_toast(&self.ui, &gettext("Immich didn't save the edit"), &err);
-            return;
-        }
-        if let Some(item) = self.edit_mode.item.borrow().as_ref() {
-            item.set_is_edited(edited);
-        }
-        self.exit_edit_mode();
-        self.ui.toasts.add_toast(libadwaita::Toast::new(&gettext(
-            "Saved. Immich is updating the photo.",
-        )));
-        let (lb, api) = (Rc::downgrade(self), self.ui.ctx.api_client.clone());
-        glib::MainContext::default().spawn_local(async move {
-            wait_for_render(&api, &id, thumbhash.as_deref()).await;
-            if let Some(lb) = lb.upgrade() {
-                lb.show_rendered_edit(&id);
-            }
-        });
-    }
-
-    /// Drops every copy of the old render, then redraws the grid and, if still shown, the photo.
-    fn show_rendered_edit(self: &Rc<Self>, id: &str) {
-        self.ui.ctx.thumbnail_cache.forget(id);
-        if let Some(dir) = crate::profile::cache_dir() {
-            let _ = std::fs::remove_file(edited_original_cache_path(&dir.join("preview"), id));
-        }
-        self.ui.grid.canvas.queue_draw();
-        let still_here = self.current_item().is_some_and(|item| item.id() == id);
-        if still_here && !self.edit_mode.is_active() {
-            self.render();
-        }
-    }
-}
-
-/// Immich's render job changes the thumbhash as its last step; gives up after a minute.
-async fn wait_for_render(api: &ImmichApiClient, id: &str, before: Option<&str>) {
-    for _ in 0..RENDER_POLLS {
-        glib::timeout_future(RENDER_POLL).await;
-        match api.fetch_asset_by_id(id).await {
-            Ok(asset) if asset.thumbhash.as_deref() == before => {}
-            Ok(_) => return,
-            Err(err) => {
-                log::debug!("Stopped waiting for the edit of {id}: {err}");
-                return;
-            }
-        }
     }
 }

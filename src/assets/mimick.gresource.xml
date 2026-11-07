@@ -31,6 +31,12 @@
     <file alias="scalable/actions/mimick-crop-symbolic.svg"
           compressed="true"
           preprocess="xml-stripblanks">scalable/actions/mimick-crop-symbolic.svg</file>
+    <file alias="scalable/actions/mimick-adjust-symbolic.svg"
+          compressed="true"
+          preprocess="xml-stripblanks">scalable/actions/mimick-adjust-symbolic.svg</file>
+    <file alias="scalable/actions/mimick-filters-symbolic.svg"
+          compressed="true"
+          preprocess="xml-stripblanks">scalable/actions/mimick-filters-symbolic.svg</file>
     <file alias="scalable/actions/mimick-rotate-left-symbolic.svg"
           compressed="true"
           preprocess="xml-stripblanks">scalable/actions/mimick-rotate-left-symbolic.svg</file>

@@ -50,6 +50,7 @@ impl Lightbox {
             motion: RefCell::new(None),
             member: RefCell::new(None),
             stack: layers.stack,
+            faces: super::faces::PhotoFaces::default(),
             face_mode: layers.face_mode,
             edit_mode: layers.edit_mode,
             slideshow: layers.slideshow,

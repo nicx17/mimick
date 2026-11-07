@@ -47,6 +47,7 @@ impl Lightbox {
         self.on_slide_shown();
         self.picture.ocr.clear();
         self.sync_ocr_controls();
+        self.load_faces(&info, editable);
         self.fill_slot_with(Slot::Current, Some(AssetInfo::from_item(&item)));
         self.start_picture_load(&info);
         // After the load bumps `load_gen`, or the stack arrives looking stale and is dropped.
