@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.13.0] - 2026-11-08
+
 ### Added
 
 - Added 11 more map styles from VersaTiles under **More Styles** in the map's style menu: Positrino, Protocol, Protostar, Protozoa, Fnord, Classic, Googol, Freedom, Macbob, Mactaylor, and Bingo.
@@ -42,7 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The video seek bar is now a thick bar filled in your accent color. Its knob appears only when you point at it, drag it, or move to it with the keyboard.
 - The viewer's **Fullscreen** button moved into its **⋯** menu (**F11** still works), so the header fits narrow windows with large text or minimize and maximize buttons.
 - Recognized text in the viewer can now be selected a few characters at a time: drag across it with the mouse to select just what you sweep over, even across lines, double-click to pick a word, and **Shift**-click to extend. A single click still selects the whole line, and taps on touch screens still pick whole lines.
-
 - The lightbox's zoom percentage now counts the photo's real pixels: 100% shows it pixel for pixel, so a large photo fitted to the window reads, say, 17%. Zoom now reaches 2000% of the real pixels (or 10× the fitted size, if that's further), so high-resolution photos, and any photo on a phone, can be looked at past full detail. Before, zoom stopped at 10× the fitted size, short of the real pixels on large photos.
 - Double-clicking or double-tapping a zoomed-in photo in the lightbox now zooms back out, so phones without a zoom-reset button can get back to the whole photo. Before, each double-click zoomed in further.
 - **Delete Album…** and **Leave Album…** in an album tile's context menu are now red, like **Move to Trash** in the photo menu.

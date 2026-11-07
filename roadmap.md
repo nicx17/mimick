@@ -79,34 +79,34 @@ Per-release highlights and live open issues are on the [roadmap page](https://mi
 - [x] **Large Photos** — Even 200-megapixel photos open quickly; full resolution loads when you zoom in (#278).
 - [x] **Memory Settings** — A Memory Limit, and grid thumbnails decoded at tile size (#280, #281).
 
+### 9.13.0 Everyday Immich Release
+- [x] **Edit Photo** — Crop, rotate, flip, and straighten; adjust light and colour, filters, and redaction, saved as a stacked copy (#303).
+- [x] **Tag People** — Name, move, remove, or draw faces; point at a face to see who it is (#304).
+- [x] **Memories** — "On this day" and birthday memories above Photos, opening as a slideshow (#301).
+- [x] **Live Photos** — Live and motion photos play their clip in the lightbox (#300).
+- [x] **Stacks** — Bursts and RAW+JPEG pairs as one tile, with a stack strip in the lightbox (#302).
+- [x] **Slideshows** — Crossfade, shuffle, and repeat (#306).
+- [x] **Duplicates** — A page to review and resolve look-alike photos (#305).
+- [x] **Similar Photos and Timeline** — View Similar Photos and View in Timeline in the photo menu (#307, #308).
+- [x] **Album Activity** — Likes and comments on shared albums, in the album and the lightbox.
+- [x] **Place Search** — Search places on the Map page and in Set Location, powered by Photon.
+- [x] **Satellite Map** — Imagery and place names from VersaTiles.
+- [x] **More Map Styles** — 11 more VersaTiles styles, an Appearance choice to keep maps light or dark, and styles that ship with Mimick so changes on VersaTiles' side can't break them.
+- [x] **Map Credits** — Linked map attribution, and credits for map data and libraries in the About dialog.
+- [x] **Real-Pixel Zoom** — Lightbox zoom shown in real pixels, reaching 2000% for high-resolution photos.
+- [x] **Text Selection** — Select recognized text down to a word or a few characters.
+- [x] **Touch and Keyboard** — Context menus open with a long-press, and the photo grid works from the keyboard (#293).
+- [x] **Translatable Interface** — Ready for translations, with a progress chart in the README (#220).
+- [x] **AUR Package** — `mimick` on the Arch User Repository (#295).
+- [x] **AppImages** — x86_64 and aarch64 AppImages attached to each release (#295).
+
 ---
 
 ## In Pipeline
 
 Finished on `main` and coming in the next release (see the Unreleased section of [CHANGELOG.md](CHANGELOG.md)).
 
-- 11 more map styles from VersaTiles, and an Appearance choice to keep maps light or dark
-- Satellite map style with imagery and place names from VersaTiles
-- Place search on the Map page and in Set Location, powered by Photon
-- VersaTiles map styles ship with Mimick, so changes on VersaTiles' side can't break them
-- Linked map attribution, and credits for map data and libraries in the About dialog
-- Likes and comments on shared albums, in the album and the lightbox
-- Context menus open with a long-press on touch screens
-- Keyboard navigation in the photo grid
-- Arch Linux package on the AUR (`mimick`)
-- AppImages for x86_64 and aarch64 attached to each release
-- Translatable interface, ready for translations (#220)
-- Live and motion photos play in the lightbox
-- Memories above Photos, opening as a slideshow
-- Stacks for bursts and RAW+JPEG pairs, with a stack strip in the lightbox
-- Slideshows with crossfade, shuffle, and repeat
-- Edit Photo: crop, rotate, flip, and straighten; adjust light and colour, filters, and redaction, saved as a stacked copy
-- Tag People: name, move, remove, or draw faces; point at a face to see who it is
-- Duplicates page to review and resolve look-alike photos
-- View Similar Photos and View in Timeline in the photo menu
-- Select recognized text down to a word or a few characters
-- Translation progress chart in the README
-- Lightbox zoom shown in real pixels, reaching 2000% for high-resolution photos
+Nothing merged yet since 9.13.0.
 
 ---
 

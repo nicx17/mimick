@@ -218,7 +218,7 @@ Used by:
 --------------------------------------------------------------------------------
 Apache License 2.0 (Apache-2.0)
 Used by:
-  - openssl 0.10.81
+  - openssl 0.10.82
 --------------------------------------------------------------------------------
 
                                  Apache License
@@ -994,7 +994,7 @@ For these and/or other purposes and motivations, and without any expectation of 
 --------------------------------------------------------------------------------
 GNU General Public License v3.0 or later (GPL-3.0-or-later)
 Used by:
-  - mimick 9.12.0
+  - mimick 9.13.0
 --------------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
@@ -2739,7 +2739,7 @@ Used by:
   - cfg-if 1.0.5
   - js-sys 0.3.107
   - openssl-probe 0.2.2
-  - openssl-sys 0.9.117
+  - openssl-sys 0.9.118
   - socket2 0.6.5
   - wasm-bindgen-futures 0.4.80
   - wasm-bindgen-macro-support 0.2.130
@@ -2845,7 +2845,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - mime 0.3.17
+  - mime 0.3.18
 --------------------------------------------------------------------------------
 
 Copyright (c) 2014 Sean McArthur
@@ -2922,7 +2922,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - uuid 1.29.0
+  - uuid 1.29.1
 --------------------------------------------------------------------------------
 
 Copyright (c) 2014 The Rust Project Developers
@@ -3018,7 +3018,7 @@ IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - flate2 1.1.10
+  - flate2 1.1.11
 --------------------------------------------------------------------------------
 
 Copyright (c) 2014-2026 Alex Crichton
@@ -3294,6 +3294,35 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+================================================================================
+
+--------------------------------------------------------------------------------
+MIT License (MIT)
+Used by:
+  - winapi 0.3.9
+--------------------------------------------------------------------------------
+
+Copyright (c) 2015-2018 The winapi-rs Developers
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 
 ================================================================================
@@ -4116,7 +4145,7 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - arc-swap 1.9.3
+  - arc-swap 1.9.4
 --------------------------------------------------------------------------------
 
 Copyright (c) 2017 arc-swap developers
@@ -4538,7 +4567,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - smallvec 1.16.4
+  - smallvec 1.16.5
 --------------------------------------------------------------------------------
 
 Copyright (c) 2018 The Servo Project Developers
@@ -4573,7 +4602,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - svgtypes 0.16.1
+  - svgtypes 0.16.2
   - ttf-parser 0.25.1
 --------------------------------------------------------------------------------
 
@@ -5669,8 +5698,8 @@ DEALINGS IN THE SOFTWARE.
 MIT License (MIT)
 Used by:
   - kstring 2.0.5
-  - toml_datetime 1.1.2+spec-1.1.0
-  - toml_edit 0.25.17+spec-1.1.0
+  - toml_datetime 1.1.3+spec-1.1.0
+  - toml_edit 0.25.19+spec-1.1.0
   - toml_parser 1.1.5+spec-1.1.0
 --------------------------------------------------------------------------------
 
@@ -6155,7 +6184,7 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - crc32fast 1.5.3
+  - crc32fast 1.5.4
 --------------------------------------------------------------------------------
 
 MIT License
@@ -6577,6 +6606,7 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
+  - block 0.1.6
   - brotli-decompressor 5.0.3
   - chrono 0.4.45
   - gstreamer-play-sys 0.25.4
@@ -6585,11 +6615,16 @@ Used by:
   - libshumate-sys 0.8.1
   - libshumate 0.8.1
   - libwebp-sys 0.9.6
+  - malloc_buf 0.0.6
+  - objc-foundation 0.1.1
   - objc2-core-foundation 0.3.2
   - objc2-core-services 0.3.2
+  - objc_id 0.1.1
   - r-efi 6.0.0
   - rsraw-sys 0.1.1
   - turbojpeg-sys 1.2.0
+  - winapi-i686-pc-windows-gnu 0.4.0
+  - winapi-x86_64-pc-windows-gnu 0.4.0
   - windows-core 0.62.2
   - windows-implement 0.60.2
   - windows-interface 0.59.3
@@ -6617,6 +6652,37 @@ LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE A
 EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+================================================================================
+
+--------------------------------------------------------------------------------
+MIT License (MIT)
+Used by:
+  - objc 0.2.7
+--------------------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) Steven Sheldon
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 
 ================================================================================
@@ -6880,7 +6946,7 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - unicode-script 0.5.8
+  - unicode-script 0.5.9
 --------------------------------------------------------------------------------
 
 MIT License
@@ -6980,6 +7046,7 @@ Used by:
   - jxl-render 0.12.4
   - jxl-threadpool 1.0.0
   - jxl-vardct 0.11.1
+  - lazy_static 1.5.1
   - linux-raw-sys 0.12.1
   - minimal-lexical 0.2.1
   - once_cell 1.21.4
@@ -7075,7 +7142,7 @@ DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
-  - winnow 1.0.4
+  - winnow 1.0.5
 --------------------------------------------------------------------------------
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -7420,6 +7487,38 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 MIT License (MIT)
 Used by:
+  - gettext-rs 0.8.0
+  - gettext-sys 0.27.0
+--------------------------------------------------------------------------------
+
+The MIT License (MIT)
+
+Copyright (c) 2016 Konstantin V. Salikhov
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+================================================================================
+
+--------------------------------------------------------------------------------
+MIT License (MIT)
+Used by:
   - color_quant 1.1.0
 --------------------------------------------------------------------------------
 
@@ -7444,6 +7543,41 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+================================================================================
+
+--------------------------------------------------------------------------------
+MIT License (MIT)
+Used by:
+  - locale_config 0.3.0
+--------------------------------------------------------------------------------
+
+The MIT License (MIT)
+
+Copyright (c) 2016–2019 Jan Hudec <bulb@ucw.cz>
+Copyright (c) 2016 A.J. Gardner <aaron.j.gardner@gmail.com>
+Copyright (c) 2019, Bastien Orivel <eijebong@bananium.fr>
+Copyright (c) 2019, Igor Gnatenko <i.gnatenko.brain@gmail.com>
+Copyright (c) 2019, Sophie Tauchert <999eagle@999eagle.moe>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 
 
 ================================================================================

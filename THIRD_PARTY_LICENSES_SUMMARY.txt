@@ -2,7 +2,7 @@ Mimick bundles or links against the third-party Rust crates listed below.
 Full license texts are shipped alongside the application binary.
 
 == Summary ==
-  362 crates: MIT License (MIT)
+  374 crates: MIT License (MIT)
   20 crates: Unicode License v3 (Unicode-3.0)
   8 crates: BSD 3-Clause "New" or "Revised" License (BSD-3-Clause)
   6 crates: Apache License 2.0 (Apache-2.0)
@@ -19,7 +19,7 @@ Full license texts are shipped alongside the application binary.
 == Crate listing ==
   moxcms 0.8.1 — Apache-2.0
   pxfm 0.1.30 — Apache-2.0
-  openssl 0.10.81 — Apache-2.0
+  openssl 0.10.82 — Apache-2.0
   blake3 1.8.7 — Apache-2.0
   constant_time_eq 0.4.2 — Apache-2.0
   sync_wrapper 1.0.2 — Apache-2.0
@@ -34,7 +34,7 @@ Full license texts are shipped alongside the application binary.
   encoding_rs 0.8.44 — BSD-3-Clause
   turbojpeg-sys 1.2.0 — BSD-3-Clause
   notify 8.2.1 — CC0-1.0
-  mimick 9.12.0 — GPL-3.0-or-later
+  mimick 9.13.0 — GPL-3.0-or-later
   turbojpeg-sys 1.2.0 — IJG
   inotify-sys 0.1.8 — ISC
   inotify 0.11.5 — ISC
@@ -56,7 +56,7 @@ Full license texts are shipped alongside the application binary.
   cfg-if 1.0.5 — MIT
   js-sys 0.3.107 — MIT
   openssl-probe 0.2.2 — MIT
-  openssl-sys 0.9.117 — MIT
+  openssl-sys 0.9.118 — MIT
   socket2 0.6.5 — MIT
   wasm-bindgen-futures 0.4.80 — MIT
   wasm-bindgen-macro-support 0.2.130 — MIT
@@ -66,7 +66,7 @@ Full license texts are shipped alongside the application binary.
   web-sys 0.3.107 — MIT
   mio 1.2.4 — MIT
   errno 0.3.14 — MIT
-  mime 0.3.17 — MIT
+  mime 0.3.18 — MIT
   bitflags 2.13.2 — MIT
   log 0.4.35 — MIT
   num-bigint-dig 0.9.1 — MIT
@@ -80,11 +80,11 @@ Full license texts are shipped alongside the application binary.
   regex-automata 0.4.18 — MIT
   regex-syntax 0.8.11 — MIT
   regex 1.13.1 — MIT
-  uuid 1.29.0 — MIT
+  uuid 1.29.1 — MIT
   nom 7.1.3 — MIT
   nom 8.0.0 — MIT
   float-cmp 0.9.0 — MIT
-  flate2 1.1.10 — MIT
+  flate2 1.1.11 — MIT
   hyper 1.12.0 — MIT
   unicase 2.10.0 — MIT
   either 1.19.0 — MIT
@@ -96,6 +96,7 @@ Full license texts are shipped alongside the application binary.
   quick-error 2.0.1 — MIT
   png 0.18.1 — MIT
   schannel 0.1.30 — MIT
+  winapi 0.3.9 — MIT
   hkdf 0.12.4 — MIT
   httparse 1.10.1 — MIT
   num_cpus 1.17.0 — MIT
@@ -133,7 +134,7 @@ Full license texts are shipped alongside the application binary.
   geo-types 0.7.20 — MIT
   foreign-types-shared 0.1.1 — MIT
   foreign-types 0.3.2 — MIT
-  arc-swap 1.9.3 — MIT
+  arc-swap 1.9.4 — MIT
   h2 0.4.20 — MIT
   http 1.5.0 — MIT
   signal-hook-registry 1.4.8 — MIT
@@ -146,8 +147,8 @@ Full license texts are shipped alongside the application binary.
   kurbo 0.13.1 — MIT
   polycool 0.4.0 — MIT
   flexi_logger 0.31.10 — MIT
-  smallvec 1.16.4 — MIT
-  svgtypes 0.16.1 — MIT
+  smallvec 1.16.5 — MIT
+  svgtypes 0.16.2 — MIT
   ttf-parser 0.25.1 — MIT
   want 0.3.2 — MIT
   block-buffer 0.10.4 — MIT
@@ -195,8 +196,8 @@ Full license texts are shipped alongside the application binary.
   zvariant_derive 5.15.1 — MIT
   zcheapstr 1.2.0 — MIT
   kstring 2.0.5 — MIT
-  toml_datetime 1.1.2+spec-1.1.0 — MIT
-  toml_edit 0.25.17+spec-1.1.0 — MIT
+  toml_datetime 1.1.3+spec-1.1.0 — MIT
+  toml_edit 0.25.19+spec-1.1.0 — MIT
   toml_parser 1.1.5+spec-1.1.0 — MIT
   libc 0.2.191 — MIT
   idna_adapter 1.2.2 — MIT
@@ -219,7 +220,7 @@ Full license texts are shipped alongside the application binary.
   field-offset 0.3.6 — MIT
   static_assertions 1.1.0 — MIT
   tiff 0.11.3 — MIT
-  crc32fast 1.5.3 — MIT
+  crc32fast 1.5.4 — MIT
   bytemuck 1.25.2 — MIT
   libheif-rs 2.7.0 — MIT
   libheif-sys 5.3.1+1.23.1 — MIT
@@ -234,6 +235,7 @@ Full license texts are shipped alongside the application binary.
   iso6709parse 0.1.2 — MIT
   nom-exif 3.8.0 — MIT
   core_maths 0.1.1 — MIT
+  block 0.1.6 — MIT
   brotli-decompressor 5.0.3 — MIT
   chrono 0.4.45 — MIT
   gstreamer-play-sys 0.25.4 — MIT
@@ -242,11 +244,16 @@ Full license texts are shipped alongside the application binary.
   libshumate-sys 0.8.1 — MIT
   libshumate 0.8.1 — MIT
   libwebp-sys 0.9.6 — MIT
+  malloc_buf 0.0.6 — MIT
+  objc-foundation 0.1.1 — MIT
   objc2-core-foundation 0.3.2 — MIT
   objc2-core-services 0.3.2 — MIT
+  objc_id 0.1.1 — MIT
   r-efi 6.0.0 — MIT
   rsraw-sys 0.1.1 — MIT
   turbojpeg-sys 1.2.0 — MIT
+  winapi-i686-pc-windows-gnu 0.4.0 — MIT
+  winapi-x86_64-pc-windows-gnu 0.4.0 — MIT
   windows-core 0.62.2 — MIT
   windows-implement 0.60.2 — MIT
   windows-interface 0.59.3 — MIT
@@ -254,6 +261,7 @@ Full license texts are shipped alongside the application binary.
   windows-result 0.4.1 — MIT
   windows-strings 0.5.1 — MIT
   windows-sys 0.61.2 — MIT
+  objc 0.2.7 — MIT
   tokio-util 0.7.20 — MIT
   tokio 1.54.1 — MIT
   simd-adler32 0.3.10 — MIT
@@ -267,7 +275,7 @@ Full license texts are shipped alongside the application binary.
   simdutf8 0.1.5 — MIT
   half 2.7.1 — MIT
   imagesize 0.14.0 — MIT
-  unicode-script 0.5.8 — MIT
+  unicode-script 0.5.9 — MIT
   fontconfig-parser 0.5.8 — MIT
   adler2 2.0.1 — MIT
   anyhow 1.0.104 — MIT
@@ -301,6 +309,7 @@ Full license texts are shipped alongside the application binary.
   jxl-render 0.12.4 — MIT
   jxl-threadpool 1.0.0 — MIT
   jxl-vardct 0.11.1 — MIT
+  lazy_static 1.5.1 — MIT
   linux-raw-sys 0.12.1 — MIT
   minimal-lexical 0.2.1 — MIT
   once_cell 1.21.4 — MIT
@@ -333,7 +342,7 @@ Full license texts are shipped alongside the application binary.
   zmij 1.0.23 — MIT
   zvariant_utils 4.2.0 — MIT
   async-recursion 1.2.0 — MIT
-  winnow 1.0.4 — MIT
+  winnow 1.0.5 — MIT
   siphasher 1.0.4 — MIT
   cairo-rs 0.22.9 — MIT
   cairo-sys-rs 0.22.9 — MIT
@@ -377,7 +386,10 @@ Full license texts are shipped alongside the application binary.
   security-framework-sys 2.17.0 — MIT
   security-framework 3.7.0 — MIT
   gif 0.14.2 — MIT
+  gettext-rs 0.8.0 — MIT
+  gettext-sys 0.27.0 — MIT
   color_quant 1.1.0 — MIT
+  locale_config 0.3.0 — MIT
   same-file 1.0.6 — MIT
   winapi-util 0.1.11 — MIT
   redox_users 0.5.3 — MIT
