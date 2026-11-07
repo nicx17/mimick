@@ -5,8 +5,8 @@ use std::rc::Rc;
 
 use gtk::prelude::*;
 
-use super::geometry::{contain_rect, quad_in_area};
-use super::state::OcrState;
+use super::geometry::{contain_rect, quad_in_area, slice_quad};
+use super::state::{Caret, OcrState, even_stops};
 use crate::api_client::OcrBox;
 
 /// Non-interactive drawing area over the picture stack; it scrolls and zooms with the photo.
@@ -37,7 +37,9 @@ impl OcrLayer {
 
     /// Replaces the boxes and clears the selection; `image` is the displayed texture's size.
     pub(super) fn set_boxes(&self, boxes: Vec<OcrBox>, image: (f64, f64)) {
-        *self.state.borrow_mut() = OcrState::new(boxes, image);
+        let area = self.area.clone();
+        let state = OcrState::measured(boxes, image, |text| char_stops(&area, text));
+        *self.state.borrow_mut() = state;
         self.area.queue_draw();
     }
 
@@ -46,8 +48,31 @@ impl OcrLayer {
         self.area.queue_draw();
     }
 
-    pub(super) fn has_boxes(&self) -> bool {
+    pub(in crate::library::lightbox) fn has_boxes(&self) -> bool {
         !self.state.borrow().boxes().is_empty()
+    }
+
+    /// Each box's bounds as fractions of the photo: left, top, width, and height.
+    pub(in crate::library::lightbox) fn text_bounds(&self) -> Vec<(f64, f64, f64, f64)> {
+        self.state
+            .borrow()
+            .boxes()
+            .iter()
+            .map(|ocr_box| {
+                let corners = ocr_box.corners();
+                let xs = corners.map(|c| c.0);
+                let ys = corners.map(|c| c.1);
+                let (left, top) = (
+                    xs.iter().copied().fold(1.0, f64::min),
+                    ys.iter().copied().fold(1.0, f64::min),
+                );
+                let (right, bottom) = (
+                    xs.iter().copied().fold(0.0, f64::max),
+                    ys.iter().copied().fold(0.0, f64::max),
+                );
+                (left, top, right - left, bottom - top)
+            })
+            .collect()
     }
 
     /// Box under `p`, given in this area's coordinates.
@@ -65,20 +90,31 @@ impl OcrLayer {
         changed
     }
 
-    /// Mouse press on a box; returns whether dragging should extend the selection.
-    pub(super) fn press(&self, idx: usize, shift: bool, ctrl: bool) -> bool {
-        let extends = self.state.borrow_mut().press(idx, shift, ctrl);
+    /// The caret nearest `p` (in this area's coordinates) in the box under it.
+    pub(super) fn caret_at(&self, p: (f64, f64)) -> Option<Caret> {
+        let area = (f64::from(self.area.width()), f64::from(self.area.height()));
+        self.state.borrow().caret_at(area, p)
+    }
+
+    /// Mouse press; returns whether dragging from here selects characters.
+    pub(super) fn press_at(&self, caret: Caret, shift: bool, ctrl: bool) -> bool {
+        let drags = self.state.borrow_mut().press_at(caret, shift, ctrl);
         self.area.queue_draw();
-        extends
+        drags
+    }
+
+    pub(super) fn drag_to(&self, caret: Caret) {
+        self.state.borrow_mut().drag_to(caret);
+        self.area.queue_draw();
+    }
+
+    pub(super) fn select_word(&self, caret: Caret) {
+        self.state.borrow_mut().select_word(caret);
+        self.area.queue_draw();
     }
 
     pub(super) fn click(&self, idx: usize, extend: bool) {
         self.state.borrow_mut().click(idx, extend);
-        self.area.queue_draw();
-    }
-
-    pub(super) fn extend_to(&self, idx: usize) {
-        self.state.borrow_mut().extend_to(idx);
         self.area.queue_draw();
     }
 
@@ -113,30 +149,61 @@ impl OcrLayer {
     }
 }
 
-/// Outlines every box in the accent colour, filled more strongly when hovered or selected.
+/// Outlines every box in the accent colour, filled more strongly when hovered, and
+/// strongest over the selected characters.
 fn draw_boxes(cr: &gtk::cairo::Context, state: &OcrState, area: (f64, f64)) {
     let Some(rect) = contain_rect(area, state.image()) else {
         return;
     };
     let accent = libadwaita::StyleManager::default().accent_color().to_rgba();
-    let (r, g, b) = (
+    let rgb = (
         f64::from(accent.red()),
         f64::from(accent.green()),
         f64::from(accent.blue()),
     );
     for (idx, ocr_box) in state.boxes().iter().enumerate() {
         let quad = quad_in_area(rect, ocr_box.corners());
-        cr.move_to(quad[0].0, quad[0].1);
-        for &(x, y) in &quad[1..] {
-            cr.line_to(x, y);
-        }
-        cr.close_path();
-        let active = state.is_selected(idx) || state.hovered() == Some(idx);
-        let (fill_alpha, line_width) = if active { (0.35, 2.5) } else { (0.12, 1.5) };
-        cr.set_source_rgba(r, g, b, fill_alpha);
+        let hovered = state.hovered() == Some(idx);
+        let span = state.span(idx);
+        trace(cr, &quad);
+        cr.set_source_rgba(rgb.0, rgb.1, rgb.2, if hovered { 0.22 } else { 0.12 });
         let _ = cr.fill_preserve();
-        cr.set_source_rgba(r, g, b, 1.0);
-        cr.set_line_width(line_width);
+        cr.set_source_rgba(rgb.0, rgb.1, rgb.2, 1.0);
+        cr.set_line_width(if hovered || span.is_some() { 2.5 } else { 1.5 });
         let _ = cr.stroke();
+        if let Some((start, end)) = span {
+            let stops = state.stops(idx);
+            let at = |offset: usize| stops.get(offset).copied().unwrap_or(1.0);
+            trace(cr, &slice_quad(&quad, at(start), at(end)));
+            cr.set_source_rgba(rgb.0, rgb.1, rgb.2, 0.45);
+            let _ = cr.fill();
+        }
     }
+}
+
+fn trace(cr: &gtk::cairo::Context, quad: &[(f64, f64); 4]) {
+    cr.move_to(quad[0].0, quad[0].1);
+    for &(x, y) in &quad[1..] {
+        cr.line_to(x, y);
+    }
+    cr.close_path();
+}
+
+/// Where each character boundary falls across `text` set in the widget's font, from 0 to 1.
+/// The box's real typeface is unknown, but proportional widths beat even spacing.
+fn char_stops(widget: &impl IsA<gtk::Widget>, text: &str) -> Vec<f64> {
+    let layout = widget.create_pango_layout(Some(text));
+    let width = f64::from(layout.extents().1.width());
+    if width <= 0.0 {
+        return even_stops(text);
+    }
+    let mut stops: Vec<f64> = text
+        .char_indices()
+        .map(|(byte, _)| {
+            let x = layout.index_to_pos(byte as i32).x();
+            (f64::from(x) / width).clamp(0.0, 1.0)
+        })
+        .collect();
+    stops.push(1.0);
+    stops
 }

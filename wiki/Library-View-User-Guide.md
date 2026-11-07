@@ -123,6 +123,25 @@ When **Photos** (Remote) is sorted by **Newest**, it shows your whole library as
 
 Sorting by **Filename** or **File Type**, and the Local and Unified sources, use the regular grid without headings or scrubber.
 
+### Memories
+
+When **Memories** is on in your Immich account settings (Account Settings → Features), Photos shows a row of cards above the timeline: "1 year ago", "3 years ago", and, on Immich v3.3 and newer, birthdays such as "Ana's birthday". Immich builds them each night from photos taken on this day. Swipe or scroll the row sideways to see more.
+
+- Click or tap a card to open its photos as a fullscreen [slideshow](#slideshow) that moves at the pace set under **Memories** in Immich. Leaving the slideshow (**Esc**) leaves you on the memory's photos.
+- Opening a memory marks it seen in Immich; seen cards have a lighter caption.
+- **Remove from Memory** in a photo's right-click menu takes it out of the memory.
+- Requires `memory.read`; marking seen needs `memory.update`, and removing photos `memoryAsset.delete`.
+
+### Stacks
+
+Immich can group photos into a stack, such as a burst or a RAW+JPEG pair. In Photos, a stack shows as one tile, its cover, with a stack icon and the number of photos in the top-right corner.
+
+- Open the cover in the lightbox and a strip of the stack's photos appears under the photo, between it and the buttons. Click or tap one to look at it; the cover is first. The strip scrolls sideways when the stack doesn't fit, and it hides while editing and in fullscreen.
+- Right-click or long-press a thumbnail (or select it and press **Shift+F10** or the **Menu** key) for **Set as Stack Cover** and **Remove from Stack** on that photo, and **Unstack**. The strip's **⋮** button opens the same menu for the photo you're looking at. The grid regroups when you close the lightbox.
+- To make a stack, select two or more of your photos and choose **Stack** in the selection bar; the first selected photo becomes the cover. A stacked tile's right-click menu has **Unstack**.
+- Stacks only collapse in Photos (and a partner's photos); albums, searches, and other views show every photo, as in Immich.
+- Requires `stack.read`; changing stacks needs `stack.create`, `stack.update`, and `stack.delete`.
+
 ---
 
 ## Sources
@@ -216,7 +235,7 @@ Use the **Refresh** button in the header to reload the Explore data. Sections th
 Select **Map** in the sidebar to see every photo and video with a location.
 
 - Photos close together are grouped into a bubble showing how many there are; zoom in and the bubbles split apart. A single photo shows as a round thumbnail. Hover a bubble to see where it is.
-- Click a bubble or thumbnail to list those photos beside the map, titled after the most common place among them (below the map on narrow windows). The sidebar hides to make room and comes back when you close the list; drag the divider to resize. The lightbox, selection, and bulk actions work in the list as in any grid. The **×** in the list's header or **Back** returns to the map alone, and the bubble you opened stays highlighted until then.
+- Click a bubble or thumbnail to list those photos beside the map, titled after the most common place among them (below the map on narrow windows). The sidebar hides to make room and comes back when you close the list; drag the divider to resize. The lightbox, selection, and bulk actions work in the list as in any grid. The **×** in the list's header or **Back** returns to the map alone, and the bubble you opened stays highlighted until then. The grid button next to the **×** hides the map so the photos fill the window, and switches back; **Open Map Places in a Full Grid** in Settings → Library makes that the way places open.
 - The first visit zooms to fit all your photos. The map remembers where you were until you refresh. You can't zoom out past the point where the world fills the map's height.
 - Archived photos are not shown, matching Immich's web map.
 
@@ -273,6 +292,7 @@ In selection mode:
 
 - **Add to album** — opens the album picker (see [Managing Albums](#managing-albums))
 - **Remove from album** — inside an album you own or edit, takes the selected photos out of it (see [Managing Albums](#managing-albums))
+- **Stack** — with two or more of your photos selected, groups them into a stack under the first one (see [Stacks](#stacks))
 - **Download** — saves selected remote assets to the configured download folder (local-only assets are skipped)
 - **Change date** — sets or shifts the capture date and time zone of every selected photo you own (see [Changing Dates](#changing-dates))
 - **Set location** — gives every selected photo you own the same location; photos other people own (from partners or shared albums) are left unchanged (see [Setting a Location](#setting-a-location))
@@ -281,7 +301,7 @@ In selection mode:
 
 Pressing **Delete** while the grid has focus does the same as **Move to trash** for the current selection.
 
-On phone-width windows, Add to album, Download, and Move to trash stay as buttons; Create share link, Archive, Set location, Change date, and Remove from album are in the **⋯** (More actions) menu.
+On phone-width windows, Add to album, Download, and Move to trash stay as buttons; Create share link, Archive, Set location, Change date, Stack, and Remove from album are in the **⋯** (More actions) menu.
 
 In the [Trash](#trash) view the bar shows **Restore** and **Delete Permanently** instead of Download and Move to trash.
 
@@ -301,7 +321,8 @@ Click any asset in the grid to open it in the lightbox.
 - Local files and originals are shown at your screen's resolution; zooming in past it loads the full resolution in the background, with a spinner while it decodes.
 - Double-click or double-tap the picture to zoom in 2× at that spot; do it again while zoomed in to zoom back out. Pinch, **Ctrl**+scroll, and **Ctrl+plus**/**Ctrl+minus** zoom too.
 - **Moving between photos**: swipe on a touch screen or with two fingers on a touchpad and the photo follows, then springs to the next or previous one (or back, if you let go early). **Left**/**Right** and the header buttons use the same motion, and pressing them quickly glides through several photos. The photos on either side are loaded ahead of time. While zoomed in, dragging pans instead.
-- **Edited photos**: Photos edited in Immich (cropped or rotated) show the edited version. Download and drag-out still give the original file.
+- **Edited photos**: Photos edited in Immich or with [Edit Photo…](#editing-photos) (cropped, rotated, or flipped) show the edited version. Download and drag-out still give the original file.
+- **Live photos**: live and motion photos show a **Live** button in the top-left corner of the photo. Click or tap it (or press **Space**) to play the short clip over the photo on a loop; click again to stop. Grid tiles of live photos have a small live icon. The clip uses the video volume setting.
 - **RAW Previews**: By default, RAW files display using their fast embedded previews. The extractor first scans the file for the largest embedded JPEG (catching the full-resolution preview on cameras that store both a tiny thumb and a full-res one — e.g. Sony ARW); if the file contains no JPEG at all (Samsung DNG, OnePlus DNG, and other phone DNGs that store their preview as uncompressed TIFF strips), it falls back to libraw's bitmap thumbnail with container orientation applied. You can toggle **Full RAW Decoding** in settings to perform a full sensor demosaic instead.
 - **Videos**: Clicking a video opens it in the lightbox with its thumbnail as a poster and a centered play badge. Click the badge (or press **Space**) to play it in the app. Local and synced videos play from disk; server videos stream from Immich, which serves its transcoded copy when one exists. Decoding uses the GPU (VA-API) when the codec is supported.
   - The control bar has play/pause, stop, back/forward 10 seconds, a seek bar with elapsed and total time, loop, playback speed (0.25×–2×), volume and mute, and fullscreen. An audio and subtitle menu appears when the file has more than one audio track or any subtitles; subtitles start off.
@@ -310,14 +331,16 @@ Click any asset in the grid to open it in the lightbox.
   - **Open with…** in the action bar opens the video in another app you pick (remote videos download to the cache first).
   - Volume and mute are remembered between sessions. Zoom, resolution toggle, and download controls are hidden for videos.
 - EXIF metadata is fetched (including for local files) and displayed alongside the asset. The details pane lists, from the top: the filename with **Edit Info…** and **Add to Album…**, then **Description**, **Rating**, and **People**, then **Details** (date taken, dimensions, size), **Camera**, **Location**, **Appears In** (albums), and **Tags**, the same order as Immich, and in shared albums with comments and likes on, **Activity** (see [Album Activity](#album-activity)). Sections with nothing to show are left out. Under the filename, the summary shows the file type, where the file is (on Immich, local, or both), and when it was created; **Created** is left out when **Details** shows the date the photo was taken. On your photos without a description, **Description** shows **Add a description**, which opens **Edit Info…**.
-- **Fullscreen** (header button or **F11**) shows the asset edge to edge on black. Move the pointer or tap to bring the header back (it hides again after 3 seconds); press **Esc**, **F11**, or the header button to leave. Left/Right and swipes still change assets.
+- **Fullscreen** (in the **⋯** menu, or **F11**) shows the asset edge to edge on black. Move the pointer or tap to bring the header back (it hides again after 3 seconds); press **Esc** or **F11**, or pick **Leave Fullscreen** in the **⋯** menu, to leave. Left/Right and swipes still change assets.
 - **Download** saves the original file to the configured download folder.
 - **Move to trash** (trash button or **Delete**) moves the asset to the Immich trash after a confirmation, then shows the next asset. If it was the last one the lightbox steps back; if nothing is left it closes. Local copies are kept.
 - **Edit Info…** in the details pane (also in the right-click menu) edits the description, the date taken, the time zone, and the favorite flag (heart toggle). For the date, click the calendar button: pick a day, set the hour, minute, and second, then **Set Date**. The date shows in the photo's own time zone, and the searchable **Time zone** row changes it; the date is saved as shown, in the zone you pick. Only changed fields are sent to Immich. If you change the date, the grid reloads when you close the lightbox, since the asset moves in the timeline.
 - **Location**: photos with GPS coordinates show a small map under **Coordinates**, with the spot marked by a round photo badge; click it to open the [Map](#map) there. The copy button next to the coordinates copies them for pasting elsewhere, and the pen button sets or changes the location (see [Setting a Location](#setting-a-location)); on your photos without a location, **Coordinates** reads **Not set** and keeps the pen. As in Immich, **Edit Info…** and the pen only appear on photos you own.
-- Right-clicking or long-pressing the picture, or pressing **Shift+F10** or the **Menu** key, opens the same context menu as the grid: Copy, Download, Open In, **Edit Info…**, **Set Location…**, and **Move to Trash**.
+- The **⋯** (More) button in the header, a swipe up on the photo (touch screens), or **F10** opens a panel from the bottom of the window with each action as an icon. On phones the icons wrap into rows, so every action shows at once. Swipe it down, or press **Esc** or **F10** again, to close it. Right-clicking or long-pressing the picture, or pressing **Shift+F10** or the **Menu** key, opens the same actions as a menu next to the photo, like the grid's: Copy, Download, Open In, **Slideshow**, **Fullscreen**, **View Similar Photos**, **View in Timeline**, **Edit Info…**, **Set Location…**, **Edit Photo…**, **Tag People…**, and **Move to Trash** (each where it applies).
+- **View Similar Photos** runs smart search with the photo as the query and shows the closest matches first. It's offered when smart search is on in Immich. Requires `asset.read`.
+- **View in Timeline** (outside Photos, on your own photos that aren't archived) opens Photos at the photo's month and rings it, so you can see what else you took around then.
 - **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text and show a **Copy All Text** button over the photo.
-  - With a mouse, the pointer becomes a text cursor over a box. Click a box to select it, drag across boxes to select everything between them in reading order, Shift-click to extend the selection, and Ctrl-click to add or remove one box. Hover a box to read it. **Ctrl+A** selects all.
+  - With a mouse, the pointer becomes a text cursor over a box. Click a box to select its whole line, or drag across text to select just the characters you sweep over, across lines in reading order. Double-click selects a word, Shift-click extends the selection to that spot, and Ctrl-click adds or removes a whole box. Hover a box to read it. **Ctrl+A** selects all.
   - On a touch screen, tap a box to add or remove it; dragging and pinching still move and zoom the photo.
   - Once something is selected the button reads **Copy Selected Text**. The button (or **Ctrl+C**) copies the selection, or all text when nothing is selected, one box per line in reading order.
 
@@ -346,6 +369,12 @@ Photos on the server show an **Appears In** section listing every album they're 
 
 Your own photos show a **People** section below the rating with everyone Immich recognized in them: their face and name ("Unnamed" when they have none), and, when a birth date is set in Immich, their age when the photo was taken ("Age 3 months", "Age 1 year, 2 months", "Age 34"). Click someone to close the lightbox and see all their photos. People you've hidden in Immich are left out, and the section only appears when face recognition is on (see the table above). Requires `person.read`.
 
+Point at someone and their face is outlined on the photo, with their name under it; keyboard focus on someone does the same. Pointing at a face on the photo works the other way round: it outlines the face, names it, and rings that person here.
+
+Right-click or long-press someone, or press **Shift+F10** or the **Menu** key, for their menu, which outlines their face while it's open: **Change Person…** picks who it really is, and **Remove from Photo** deletes their face from this photo (requires `face.delete`).
+
+The pen button in the section's header opens [Tag People](#tagging-faces).
+
 **Download folder:**
 
 - On the first download, a folder picker opens and the chosen path is saved to `download_target_path` in `config.json`.
@@ -354,6 +383,53 @@ Your own photos show a **People** section below the rating with everyone Immich 
 - Filename collisions are resolved by appending a numeric suffix (e.g. `photo (1).jpg`).
 
 ---
+
+## Slideshow
+
+Play a slideshow with **Play Slideshow** in the header of Photos, an album, a search, or any other photo view, with **Slideshow** in a photo's right-click menu (it starts from that photo), or with **S** in the lightbox.
+
+- It plays fullscreen. A thin line along the top shows when the next photo comes.
+- The controls at the bottom (previous, pause, next, settings, end) hide after 3 seconds; move the pointer or tap the photo to bring them back.
+- **Settings**: seconds per photo (2–60), the transition (**Crossfade**, **Slide**, or **None**), **Shuffle**, and **Repeat** (start over after the last photo). They're remembered for next time.
+- **Space** pauses and resumes, **Left**/**Right** step back or forward (the next photo then gets its full time), and **Esc** or **S** ends the slideshow, as does leaving fullscreen. In Photos, it keeps loading the next month as it goes.
+
+## Editing Photos
+
+**Edit Photo…** in the right-click menu of your own photos edits them right on the photo in the lightbox, starting on the **Crop** tab; from the grid, the photo opens there first. On windows wider than 600 px, the edit button under the photo, next to the text button, opens it too.
+
+- **Cancel**, the **⋯** menu, and **Save** replace the header. A panel under the photo holds one tool at a time, picked from the tabs at its bottom, so nothing covers the photo and it keeps most of a phone's screen. Editing from fullscreen leaves fullscreen first, and on phones the details pane closes.
+- **Crop** shows the whole photo with the crop box over it; the other tabs show the result. Drag the corners or edges of the box, or drag inside it to move it. The row of crop shapes, each with a small picture of its shape, keeps it **Free**, the photo's **Original** shape, **Square**, 5:4, 4:3, 7:5, 3:2, 16:10, 16:9, 2:1, 21:9, or 3:1, turned to match the box (portrait or landscape); on a phone the row scrolls sideways. **Rotate Left**, **Rotate Right**, **Mirror** (left to right), and **Flip** (upside down) sit at the start of that row. Under it, the **Straighten** wheel turns the photo up to 45° either way, enlarged just enough to leave no empty corners: drag the wheel left or right and its ruler rolls past the blue mark in the middle, a degree for every few millimetres, in tenths of a degree. A scroll wheel or the arrow keys turn it a tenth at a time, and **Shift** with the arrows a whole degree.
+- **Adjust** has a chip for each slider: **Exposure**, **Brightness**, **Contrast**, **Highlights**, **Shadows**, **Saturation**, **Warmth**, **Tint**, **Vignette**, and **Sharpen**. Pick one to move it on the slider underneath; chips of sliders you've moved keep an accent line. The button at the end of a slider puts it back.
+- **Filters** shows a small picture of the photo with each filter: **Vivid**, **Warm**, **Cool**, **Dramatic**, **Fade**, **Vintage**, **Mono**, **Noir**, and **Sepia**. **Strength** sets how much of the picked filter shows; the Adjust sliders apply on top.
+- **Redact** hides what you drag over, such as faces or number plates. Pick how: **Pixelate** (coarse blocks), **Blur**, **Frosted** (a blur with grain over it, which leaves nothing smooth to sharpen back), or **Bar**, a solid bar in the colour of the button beside it (black at first). The way you pick and the bar's colour are remembered for the next edit. A box you draw stays picked: drag inside it to move it, drag its corners or edges to resize it, or pick another way to hide it. Tap another box to pick it, or empty space to let go. **Remove** (or **Delete**) takes the picked box away, and **Clear All** every box.
+- **Hide Faces** hides every face tagged in the photo at once, and **Hide Text** every piece of text Immich recognized, both in the way picked. They show on photos with no crop, turn, or flip stored in Immich, where the boxes Immich found line up.
+- In the **⋯** menu, **Reset All** clears every edit in the editor, and on photos already edited, **Revert to Original…** removes every edit in Immich after asking.
+- **Save** (or **Enter**) sends crops, turns, and flips to Immich, which keeps them without changing the original file and renders the result in the background; the photo and its grid tile update once Immich has finished. **Cancel** or **Esc** leaves without saving. While editing, the arrow keys don't move to another photo, and the previous and next buttons are hidden, so an unsaved edit isn't lost by accident.
+- Immich can't keep straightening, adjustments, filters, or redactions on the photo itself, so with any of those Save makes a copy, and the header's subtitle says so. Mimick then draws every edit from the full-size original, in any format it can open (JPEG, HEIC, AVIF, RAW, JPEG XL, PNG, WebP, and the rest), and uploads it as a new photo named like the original with `_edited`: a JPEG, or a PNG when the photo has see-through parts. The copy keeps the original's own metadata: its whole EXIF block, maker notes included, its XMP, and its colour profile, turned upright and set to the copy's size. On top of that go the capture time and time zone, place, caption, and rating as Immich has them now, so changes made in Immich carry over too, and the favorite. The copy joins the original's albums; the original is never changed. The grid shows the copy once you close the lightbox.
+- **Keep Original Details** in the **⋯** menu, on by default and remembered, chooses this. Turned off, the copy is a new photo of its own: no metadata from the original, dated when you save it, and in no albums; only the colour profile stays, so its colours still look right.
+- **Stack with Original** in the **⋯** menu, off by default and remembered, makes the copy the cover of a stack with the original under it. The header says which Save will do.
+- Metadata comes from JPEG, HEIC, HEIF, AVIF, PNG, WebP, TIFF, DNG and the other TIFF-based RAW formats, Fujifilm RAF, Canon CR3 (without Canon's maker note), and JPEG XL files that carry it in boxes. Maker notes and XMP too big for a JPEG's 64 KB segments are left out. Formats without metadata Mimick reads, such as GIF and BMP, get the details Immich has.
+- Requires `asset.edit.get`, `asset.edit.create`, and, to revert, `asset.edit.delete`. Copies also need `asset.download`, `asset.upload`, `stack.create`, `album.read`, and `albumAsset.create`.
+
+## Tagging Faces
+
+**Tag People…** (in your photos' right-click menu, or the pen in the details pane's **People** section) turns on face mode in the lightbox itself: a box appears around each face on the photo, and a bar at the top says "Drag around a face to tag it" next to **Done**. The boxes pan and zoom with the photo. On narrow windows, where the details pane covers the photo, it closes the pane. It needs face recognition on in Immich.
+
+- Click or tap a face box for its menu, headed with the person's name (point at a box to see the name under it too): **Change Person…** (or **Choose Person…** for a face without one) picks who it is from a list you can search; **Use as Cover Photo** makes this face that person's picture on the People page; **Remove Face** deletes a wrong face.
+- To tag someone who isn't in the list yet, type their name in the search and press **Enter**, or choose **Create Person…** under the list, type the name, and choose **Tag Face**.
+- To add a face Immich missed, drag a box around it on the photo (with a finger too), and the person list opens right there.
+- **Done**, **Esc**, or moving to another photo leaves face mode. The **People** section updates after each change. Dragging the photo out to another app is off while face mode is on.
+- Requires `face.read`; changing faces needs `face.create`, `face.update`, and `face.delete`, new people `person.create`, and cover photos `person.update`.
+
+## Duplicates
+
+When duplicate detection is on in Immich, **Duplicates** under **Utilities** in the sidebar shows the photos Immich found more than once, one group at a time, with the arrows at the top moving between groups.
+
+- On wider windows the group's photos stand side by side, whole and as large as the window allows, so they're easy to compare; on phones they're in two columns.
+- Each photo shows its file name, resolution (with megapixels), size (the group's largest file is marked), and date. Immich's suggestion (else the largest file) starts as **Keep**; the rest start as **Trash**. Click or tap a photo to switch it.
+- **Trash N Photos** keeps the photos marked Keep and moves the others to the trash; Immich copies their albums, tags, and favorite onto what you keep. When trash is turned off on the server it reads **Delete N Photos** and asks first.
+- **Not Duplicates** keeps every photo and stops showing the group.
+- Requires `duplicate.read`; resolving and dismissing need `duplicate.delete`.
 
 ## Favorites
 
@@ -594,6 +670,8 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 | **1**–**5** / **0**           | Rate the current asset with 1 to 5 stars / clear the rating (lightbox, your photos)                           |
 | **E**                         | Edit Info… for the current asset (lightbox, your photos)                                                      |
 | **Shift+D**                   | Download the current asset (lightbox)                                                                         |
+| **S**                         | Start or end a slideshow (lightbox)                                                                           |
+| **Space**                     | Play or stop a live photo (lightbox); pause or resume a slideshow                                             |
 | **T**                         | Show or hide recognized text (lightbox, when Immich found text)                                               |
 | **Ctrl+A**                    | Select all recognized text (lightbox, while shown)                                                            |
 | **Ctrl+C**                    | Copy the selected recognized text, or all of it when nothing is selected (lightbox)                           |
@@ -601,6 +679,7 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 | **J** / **L**                 | Skip back / forward 10 seconds (lightbox video)                                                               |
 | **,** / **.**                 | Step one frame back / forward (lightbox video)                                                                |
 | **M**                         | Mute or unmute (lightbox video)                                                                               |
+| **F10**                       | Show or hide all actions for the photo, in a bottom panel (lightbox)                                          |
 | **F11**                       | Toggle fullscreen (lightbox); **Esc** also exits                                                              |
 | **Alt+Left** / mouse back     | Go back to the previous view (mouse back also closes the lightbox)                                            |
 | **Alt+Right** / mouse forward | Go forward again after going back                                                                             |

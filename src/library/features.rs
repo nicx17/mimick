@@ -13,6 +13,9 @@ pub(super) fn load(ui: &Rc<LibraryWindowUi>) {
         ui.features.set(features);
         let explore_changed = apply(&ui, features);
         let current = super::navigation::current(&ui);
+        if let Location::Source(source) = &current {
+            super::memories::sync(&ui, source);
+        }
         if !is_available(&features, &current) {
             super::navigation::navigate_source(&ui, LibrarySource::AllAssets);
         } else if explore_changed && current == Location::Source(LibrarySource::Explore) {
@@ -30,6 +33,7 @@ fn apply(ui: &LibraryWindowUi, features: LibraryFeatures) -> bool {
         ("folders", features.folders),
         ("shared-links", features.shared_links),
         ("map", features.map),
+        ("duplicates", features.duplicates),
     ];
     for (key, visible) in rows {
         super::sidebar::set_row_visible(&ui.sidebar, key, visible);
@@ -67,12 +71,16 @@ pub(super) fn is_available(features: &LibraryFeatures, location: &Location) -> b
         Location::Source(LibrarySource::Folder { .. })
         | Location::Page(LibraryPage::Folders { .. }) => features.folders,
         Location::Page(LibraryPage::SharedLinks) => features.shared_links,
+        Location::Page(LibraryPage::Duplicates) => features.duplicates,
         Location::Page(LibraryPage::Search) => features.search,
         Location::Source(LibrarySource::Place { .. }) => features.places,
-        Location::Source(LibrarySource::Thing { .. } | LibrarySource::SmartSearch { .. }) => {
-            features.smart_search
-        }
+        Location::Source(
+            LibrarySource::Thing { .. }
+            | LibrarySource::SmartSearch { .. }
+            | LibrarySource::Similar { .. },
+        ) => features.smart_search,
         Location::Source(LibrarySource::OcrSearch { .. }) => features.ocr,
+        Location::Source(LibrarySource::Memory { .. }) => features.memories,
         Location::Source(LibrarySource::MapArea { .. }) | Location::Page(LibraryPage::Map) => {
             features.map
         }

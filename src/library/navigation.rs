@@ -134,6 +134,7 @@ fn show_page(ui: &Rc<LibraryWindowUi>, page: &LibraryPage) {
             super::refresh_search_tags(ui.clone(), None);
         }
         LibraryPage::Map => {}
+        LibraryPage::Duplicates => super::duplicates_view::show(ui),
     }
 }
 
@@ -165,12 +166,15 @@ fn page_title(page: &LibraryPage) -> String {
         LibraryPage::Sharing => gettext("Sharing"),
         LibraryPage::Search => gettext("Search"),
         LibraryPage::Map => gettext("Map"),
+        LibraryPage::Duplicates => gettext("Duplicates"),
     }
 }
 
 pub(super) fn sync_controls(ui: &LibraryWindowUi, location: &Location) {
     let sort = match location {
-        Location::Source(LibrarySource::Explore | LibrarySource::MapArea { .. }) => false,
+        Location::Source(
+            LibrarySource::Explore | LibrarySource::MapArea { .. } | LibrarySource::Memory { .. },
+        ) => false,
         Location::Source(_) => true,
         Location::Page(LibraryPage::Albums { .. }) => true,
         Location::Page(_) => false,
@@ -254,6 +258,7 @@ fn page_key(page: &LibraryPage) -> &'static str {
         LibraryPage::Sharing => "sharing",
         LibraryPage::Search => "search",
         LibraryPage::Map => "map",
+        LibraryPage::Duplicates => "duplicates",
     }
 }
 
@@ -262,7 +267,10 @@ fn source_target(source: &LibrarySource) -> SidebarTarget {
         LibrarySource::Album { id, .. }
         | LibrarySource::AlbumLocal { id, .. }
         | LibrarySource::AlbumUnified { id, .. } => return SidebarTarget::Album(id.clone()),
-        LibrarySource::AllAssets | LibrarySource::Unified | LibrarySource::LocalAll => "photos",
+        LibrarySource::AllAssets
+        | LibrarySource::Unified
+        | LibrarySource::LocalAll
+        | LibrarySource::Memory { .. } => "photos",
         LibrarySource::Explore | LibrarySource::Place { .. } | LibrarySource::Thing { .. } => {
             "explore"
         }
@@ -279,38 +287,52 @@ fn source_target(source: &LibrarySource) -> SidebarTarget {
         | LibrarySource::OcrSearch { .. }
         | LibrarySource::AdvancedSearch { .. }
         | LibrarySource::LocalSearch { .. }
-        | LibrarySource::UnifiedSearch { .. } => "search",
+        | LibrarySource::UnifiedSearch { .. }
+        | LibrarySource::Similar { .. } => "search",
     };
     SidebarTarget::Fixed(key)
 }
 
+/// A sidebar key and the view it opens.
+type KeyLocation = (&'static str, fn() -> Location);
+
+/// Sidebar keys and where each one goes; a table, so adding a page doesn't grow a `match`.
+const KEY_LOCATIONS: [KeyLocation; 15] = [
+    ("photos", || Location::Source(LibrarySource::AllAssets)),
+    ("explore", || Location::Source(LibrarySource::Explore)),
+    ("map", || Location::Page(LibraryPage::Map)),
+    ("favorites", || Location::Source(LibrarySource::Favorites)),
+    ("archive", || Location::Source(LibrarySource::Archive)),
+    ("trash", || Location::Source(LibrarySource::Trash)),
+    ("search", || Location::Page(LibraryPage::Search)),
+    ("people", || Location::Page(LibraryPage::People)),
+    ("tags", || Location::Page(LibraryPage::Tags { path: None })),
+    ("folders", || {
+        Location::Page(LibraryPage::Folders { path: None })
+    }),
+    ("albums", || {
+        Location::Page(LibraryPage::Albums { shared_only: false })
+    }),
+    ("shared-albums", || {
+        Location::Page(LibraryPage::Albums { shared_only: true })
+    }),
+    ("shared-links", || Location::Page(LibraryPage::SharedLinks)),
+    ("sharing", || Location::Page(LibraryPage::Sharing)),
+    ("duplicates", || Location::Page(LibraryPage::Duplicates)),
+];
+
 pub(super) fn location_for_key(key: &str) -> Option<Location> {
-    let source = |source| Some(Location::Source(source));
-    let page = |page| Some(Location::Page(page));
-    match key {
-        "photos" => source(LibrarySource::AllAssets),
-        "explore" => source(LibrarySource::Explore),
-        "map" => page(LibraryPage::Map),
-        "favorites" => source(LibrarySource::Favorites),
-        "archive" => source(LibrarySource::Archive),
-        "trash" => source(LibrarySource::Trash),
-        "search" => page(LibraryPage::Search),
-        "people" => page(LibraryPage::People),
-        "tags" => page(LibraryPage::Tags { path: None }),
-        "folders" => page(LibraryPage::Folders { path: None }),
-        "albums" => page(LibraryPage::Albums { shared_only: false }),
-        "shared-albums" => page(LibraryPage::Albums { shared_only: true }),
-        "shared-links" => page(LibraryPage::SharedLinks),
-        "sharing" => page(LibraryPage::Sharing),
-        _ => None,
-    }
+    KEY_LOCATIONS
+        .iter()
+        .find(|(name, _)| *name == key)
+        .map(|(_, location)| location())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    const KEYS: [&str; 14] = [
+    const KEYS: [&str; 15] = [
         "photos",
         "explore",
         "map",
@@ -325,6 +347,7 @@ mod tests {
         "shared-albums",
         "shared-links",
         "sharing",
+        "duplicates",
     ];
 
     #[test]

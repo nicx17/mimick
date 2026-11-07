@@ -10,6 +10,7 @@ pub struct LibraryWidgets {
     pub grid_quality_row: adw::ComboRow,
     pub grid_fit_row: adw::SwitchRow,
     pub date_headings_row: adw::ComboRow,
+    pub map_full_grid_row: adw::SwitchRow,
     pub raw_full_decode_row: adw::SwitchRow,
     pub raw_cache_row: adw::SwitchRow,
     pub disk_cache_row: adw::SpinRow,
@@ -31,6 +32,7 @@ fn group(page: &adw::PreferencesPage, title: &str) -> adw::PreferencesGroup {
 pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidgets {
     let (viewer, preview_full_row, grid_quality_row, grid_fit_row, date_headings_row) =
         build_viewer_group(settings_page);
+    let map_full_grid_row = map_full_grid_row(&viewer);
     let (grid, border_width_row, border_color_btn) = build_appearance_group(settings_page);
     let (raw, raw_full_decode_row, raw_cache_row) = build_raw_group(settings_page);
     let (
@@ -49,6 +51,7 @@ pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidge
         grid_quality_row,
         grid_fit_row,
         date_headings_row,
+        map_full_grid_row,
         raw_full_decode_row,
         raw_cache_row,
         disk_cache_row,
@@ -60,6 +63,15 @@ pub fn build_library_group(settings_page: &adw::PreferencesPage) -> LibraryWidge
         border_width_row,
         border_color_btn,
     }
+}
+
+fn map_full_grid_row(viewer: &adw::PreferencesGroup) -> adw::SwitchRow {
+    let row = adw::SwitchRow::builder()
+        .title(gettext("Open Map Places in a Full Grid"))
+        .subtitle(gettext("Otherwise their photos open beside the map."))
+        .build();
+    viewer.add(&row);
+    row
 }
 
 fn build_viewer_group(

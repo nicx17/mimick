@@ -56,7 +56,7 @@ pub(crate) struct LightboxHeader {
     pub(super) prev_btn: gtk::Button,
     pub(super) next_btn: gtk::Button,
     pub(super) details_btn: gtk::ToggleButton,
-    pub(super) fullscreen_btn: gtk::Button,
+    pub(super) menu_btn: gtk::Button,
 }
 
 /// The photo strip, its scroller, and the overlay holding the spinner.
@@ -67,6 +67,15 @@ pub(crate) struct PictureArea {
     pub(super) loader: gtk::Revealer,
     pub(super) ocr: ocr::OcrLayer,
     pub(super) ocr_copy: gtk::Button,
+    /// Face boxes: all of them in face mode, otherwise the one pointed at. They pan and zoom
+    /// with the photo, like the OCR boxes.
+    pub(super) faces: crate::library::photo_canvas::BoxLayer,
+    /// The name of the face pointed at, by its box.
+    pub(super) face_label: gtk::Label,
+    /// The crop box in edit mode.
+    pub(super) crop: crate::library::photo_canvas::BoxLayer,
+    /// The areas edit mode's Redact hides.
+    pub(super) redact: crate::library::photo_canvas::BoxLayer,
 }
 
 /// "Preview unavailable" card shown over the picture when nothing can be decoded.
@@ -81,6 +90,9 @@ pub(crate) struct UnavailableCard {
 pub(crate) struct ActionBar {
     pub(super) bar: gtk::Box,
     pub(super) ocr_toggle: gtk::ToggleButton,
+    /// Shown per photo; `edit_slot` hides it on narrow windows, where the ⋯ menu has it.
+    pub(super) edit: gtk::Button,
+    pub(super) edit_slot: gtk::Box,
     pub(super) resolution_toggle: gtk::ToggleButton,
     pub(super) download: gtk::Button,
     pub(super) open_with: gtk::Button,
@@ -145,9 +157,10 @@ pub(crate) fn build_header(ui: &Rc<LibraryWindowUi>, initial_filename: &str) -> 
     header.pack_start(&back_btn);
     header.pack_start(&prev_btn);
     header.pack_start(&next_btn);
+    // The same menu as right-click and long-press, so its actions have a visible entry point.
+    let menu_btn = icon_button("view-more-symbolic", &gettext("More (Shift+F10)"));
+    header.pack_end(&menu_btn);
     header.pack_end(&details_btn);
-    let fullscreen_btn = icon_button("view-fullscreen-symbolic", &gettext("Fullscreen (F11)"));
-    header.pack_end(&fullscreen_btn);
     toolbar.add_top_bar(&header);
     page.set_child(Some(&toolbar));
     LightboxHeader {
@@ -157,8 +170,24 @@ pub(crate) fn build_header(ui: &Rc<LibraryWindowUi>, initial_filename: &str) -> 
         prev_btn,
         next_btn,
         details_btn,
-        fullscreen_btn,
+        menu_btn,
     }
+}
+
+type BoxLayer = crate::library::photo_canvas::BoxLayer;
+
+/// The face, crop, and redaction boxes over the photo. They take input through the scroller,
+/// as OCR does, and only while their mode is on. Faces stay up to outline the one pointed at;
+/// edit mode's boxes show only while editing.
+fn box_layers(content: &gtk::Overlay) -> (BoxLayer, BoxLayer, BoxLayer) {
+    let (faces, crop, redact) = (BoxLayer::new(), BoxLayer::new(), BoxLayer::new());
+    for layer in [&faces, &crop, &redact] {
+        layer.area.set_can_target(false);
+        content.add_overlay(&layer.area);
+    }
+    crop.area.set_visible(false);
+    redact.area.set_visible(false);
+    (faces, crop, redact)
 }
 
 pub(crate) fn build_picture_area() -> PictureArea {
@@ -166,6 +195,8 @@ pub(crate) fn build_picture_area() -> PictureArea {
     let ocr = ocr::OcrLayer::new();
     let content = gtk::Overlay::builder().child(&strip).build();
     content.add_overlay(&ocr.area);
+    let (faces, crop, redact) = box_layers(&content);
+    let face_label = super::face_people::face_label(&content, &faces);
     let scrolled = gtk::ScrolledWindow::builder()
         .hscrollbar_policy(gtk::PolicyType::Automatic)
         .vscrollbar_policy(gtk::PolicyType::Automatic)
@@ -199,6 +230,10 @@ pub(crate) fn build_picture_area() -> PictureArea {
         loader,
         ocr,
         ocr_copy,
+        faces,
+        face_label,
+        crop,
+        redact,
     }
 }
 
@@ -269,6 +304,9 @@ pub(crate) fn build_action_bar(initial_full: bool) -> ActionBar {
         .tooltip_text(gettext("Show recognized text (T)"))
         .visible(false)
         .build();
+    let edit = icon_button("mimick-adjust-symbolic", &gettext("Edit Photo"));
+    let edit_slot = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    edit_slot.append(&edit);
     let download = icon_button("mimick-download-symbolic", &gettext("Download asset"));
     let open_with = icon_button("document-open-symbolic", &gettext("Open with…"));
     let trash = icon_button("user-trash-symbolic", &gettext("Move to trash (Delete)"));
@@ -286,6 +324,7 @@ pub(crate) fn build_action_bar(initial_full: bool) -> ActionBar {
     bar.append(&zoom_group);
     bar.append(&spacer);
     bar.append(&ocr_toggle);
+    bar.append(&edit_slot);
     bar.append(&resolution_toggle);
     bar.append(&favorite);
     bar.append(&archive);
@@ -295,6 +334,8 @@ pub(crate) fn build_action_bar(initial_full: bool) -> ActionBar {
     ActionBar {
         bar,
         ocr_toggle,
+        edit,
+        edit_slot,
         resolution_toggle,
         download,
         open_with,

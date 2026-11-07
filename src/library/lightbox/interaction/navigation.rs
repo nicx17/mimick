@@ -17,7 +17,11 @@ impl Lightbox {
         let handled = if ctrl {
             self.handle_ocr_key(key, true) || self.handle_zoom_key(key)
         } else {
-            self.handle_video_key(key)
+            self.handle_edit_mode_key(key)
+                || self.handle_face_key(key)
+                || self.handle_slideshow_key(key)
+                || self.handle_video_key(key)
+                || self.handle_live_key(key)
                 || self.handle_ocr_key(key, false)
                 || self.handle_edit_key(key, shift)
                 || self.handle_plain_key(key)
@@ -68,6 +72,8 @@ impl Lightbox {
             Key::F11 => self.toggle_fullscreen(),
             Key::f | Key::F => self.toggle_current_favorite(),
             Key::a | Key::A => self.toggle_current_archive(),
+            Key::s | Key::S => self.start_slideshow(None),
+            Key::F10 => self.show_menu_sheet(),
             Key::Escape if self.ui.window.is_fullscreen() => self.ui.window.unfullscreen(),
             Key::Escape => {
                 self.ui.nav.pop();
@@ -96,7 +102,7 @@ impl Lightbox {
         glib::Propagation::Stop
     }
 
-    pub(super) fn goto_prev(self: &Rc<Self>) {
+    pub(in crate::library::lightbox) fn goto_prev(self: &Rc<Self>) {
         let velocity = self.take_motion();
         let pos = self.pos.get();
         let step = if !self.step_into_unloaded_month(pos, false) && pos > 0 {
@@ -108,7 +114,7 @@ impl Lightbox {
     }
 
     /// Step forward, fetching the next grid page first when at the end.
-    pub(super) fn goto_next(self: &Rc<Self>) {
+    pub(in crate::library::lightbox) fn goto_next(self: &Rc<Self>) {
         let velocity = self.take_motion();
         let pos = self.pos.get();
         if self.step_into_unloaded_month(pos, true) {
@@ -180,11 +186,15 @@ impl Lightbox {
         });
     }
 
-    fn leave_current(self: &Rc<Self>) {
+    pub(in crate::library::lightbox) fn leave_current(self: &Rc<Self>) {
         if (self.zoom_level.get() - 1.0).abs() > 0.001 {
             self.zoom_reset();
         }
         self.drop_full_resolution();
+        self.exit_face_mode();
+        self.exit_edit_mode();
+        self.stop_live();
+        self.member.take();
         let player = self.video.borrow().clone();
         if let Some(player) = player {
             player.stop();
@@ -203,7 +213,17 @@ impl Lightbox {
         velocity
     }
 
-    fn commit(self: &Rc<Self>, step: i32) {
+    /// Steps without the spring. `rotate` expects the strip to have arrived at `step`, so it's
+    /// put there first; from progress 0 it would leave the new photo a whole width off-screen.
+    pub(in crate::library::lightbox) fn step_instantly(self: &Rc<Self>, step: i32) {
+        self.picture.strip.stop();
+        self.leave_current();
+        self.picture.strip.set_progress(f64::from(step));
+        self.commit(step);
+        self.show_overlays(true);
+    }
+
+    pub(in crate::library::lightbox) fn commit(self: &Rc<Self>, step: i32) {
         self.pos.set(self.pos.get().saturating_add_signed(step));
         self.picture.strip.rotate(step);
         log::debug!("Lightbox stepped {step} to position {}", self.pos.get());

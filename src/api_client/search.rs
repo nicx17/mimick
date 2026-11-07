@@ -204,6 +204,22 @@ impl ImmichApiClient {
         .await
     }
 
+    /// Photos that look like `asset_id`, most similar first (smart search by image).
+    pub async fn search_similar(
+        &self,
+        asset_id: &str,
+        page: u32,
+        size: u32,
+    ) -> Result<(Vec<LibraryAsset>, bool), String> {
+        let body = serde_json::json!({
+            "queryAssetId": asset_id,
+            "page": page,
+            "size": size.max(1),
+        });
+        self.fetch_search_assets("/api/search/smart", body, RequestContext::SmartSearch, None)
+            .await
+    }
+
     /// CLIP-based smart search combined with metadata filters.
     ///
     /// The Immich `SmartSearchDto` supports the same filter dimensions as

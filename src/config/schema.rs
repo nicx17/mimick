@@ -76,6 +76,22 @@ pub struct ConfigData {
     /// Decode Preview and Full Size grid thumbnails at their tile's size.
     #[serde(default = "default_true")]
     pub library_grid_fit_tiles: bool,
+    /// Open a map place's photos as a full grid instead of beside the map.
+    #[serde(default)]
+    pub library_map_full_grid: bool,
+    /// A photo saved as an edited copy keeps the original's metadata and albums; off, the
+    /// copy is a new photo of its own.
+    #[serde(default = "default_true")]
+    pub edit_copy_keeps_details: bool,
+    /// A photo saved as an edited copy becomes the cover of a stack with the original.
+    #[serde(default)]
+    pub edit_copy_stacks: bool,
+    /// The editor's last way of hiding an area: "pixelate", "blur", "frosted", or "bar".
+    #[serde(default = "default_redact_style")]
+    pub edit_redact_style: String,
+    /// The editor's last bar colour, as "#rrggbb".
+    #[serde(default = "default_bar_colour")]
+    pub edit_bar_colour: String,
     /// Total on-disk cache cap in megabytes across all subcaches
     /// (thumbnails, raw_decode, exif, video, preview, open-in).
     /// Pruning runs once at startup. Defaults to 2000 MB.
@@ -123,6 +139,17 @@ pub struct ConfigData {
     pub library_map_appearance: String,
     #[serde(default)]
     pub library_date_headings: DateHeadings,
+    /// Seconds each photo stays up in a slideshow.
+    #[serde(default = "default_slideshow_interval")]
+    pub slideshow_interval_secs: u32,
+    #[serde(default)]
+    pub slideshow_shuffle: bool,
+    /// Start over from the first photo after the last one.
+    #[serde(default)]
+    pub slideshow_repeat: bool,
+    /// `crossfade`, `slide`, or `none`; empty means crossfade.
+    #[serde(default)]
+    pub slideshow_transition: String,
 }
 
 impl Default for ConfigData {
@@ -147,6 +174,11 @@ impl Default for ConfigData {
             library_preview_full_resolution: false,
             library_grid_quality: default_grid_quality(),
             library_grid_fit_tiles: true,
+            library_map_full_grid: false,
+            edit_copy_keeps_details: true,
+            edit_copy_stacks: false,
+            edit_redact_style: default_redact_style(),
+            edit_bar_colour: default_bar_colour(),
             cache_disk_cap_mb: default_cache_disk_cap_mb(),
             cache_memory_cap_mb: default_cache_memory_cap_mb(),
             raw_decode_cache_enabled: false,
@@ -161,11 +193,23 @@ impl Default for ConfigData {
             library_map_style: String::new(),
             library_map_appearance: String::new(),
             library_date_headings: DateHeadings::default(),
+            slideshow_interval_secs: default_slideshow_interval(),
+            slideshow_shuffle: false,
+            slideshow_repeat: false,
+            slideshow_transition: String::new(),
         }
     }
 }
 
 /// Helper to default boolean fields to true during serialization.
+fn default_redact_style() -> String {
+    "pixelate".to_string()
+}
+
+fn default_bar_colour() -> String {
+    "#000000".to_string()
+}
+
 fn default_true() -> bool {
     true
 }
@@ -194,4 +238,35 @@ fn default_grid_border_color() -> String {
 
 fn default_video_volume() -> f64 {
     1.0
+}
+
+fn default_slideshow_interval() -> u32 {
+    5
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn editor_choices_default_and_are_remembered() {
+        let fresh: ConfigData = serde_json::from_str("{}").unwrap();
+        assert!(fresh.edit_copy_keeps_details);
+        assert!(!fresh.edit_copy_stacks);
+        assert_eq!(fresh.edit_redact_style, "pixelate");
+        assert_eq!(fresh.edit_bar_colour, "#000000");
+        let changed = ConfigData {
+            edit_copy_keeps_details: false,
+            edit_copy_stacks: true,
+            edit_redact_style: "bar".into(),
+            edit_bar_colour: "#ff8800".into(),
+            ..ConfigData::default()
+        };
+        let saved = serde_json::to_string(&changed).unwrap();
+        let read: ConfigData = serde_json::from_str(&saved).unwrap();
+        assert!(!read.edit_copy_keeps_details);
+        assert!(read.edit_copy_stacks);
+        assert_eq!(read.edit_redact_style, "bar");
+        assert_eq!(read.edit_bar_colour, "#ff8800");
+    }
 }

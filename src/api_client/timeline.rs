@@ -4,7 +4,9 @@ use crate::i18n::fill;
 use chrono::{Duration, Months, NaiveDate};
 use gettextrs::gettext;
 
-use super::{ImmichApiClient, LibraryAsset, MetadataSearchFilters, SortOrder};
+use std::collections::HashMap;
+
+use super::{AssetStack, ImmichApiClient, LibraryAsset, MetadataSearchFilters, SortOrder};
 
 const MONTH_PAGE_SIZE: u32 = 1000;
 const MAX_MONTH_PAGES: u32 = 200;
@@ -18,9 +20,46 @@ pub struct TimeBucket {
     pub count: u32,
 }
 
+/// A month's photos as columns; with `withStacked` only stack covers are listed.
 #[derive(serde::Deserialize)]
 struct BucketIds {
     id: Vec<String>,
+    /// Per photo, `[stackId, assetCount]` for a stack's cover, else null.
+    #[serde(default)]
+    stack: Vec<Option<Vec<String>>>,
+}
+
+impl BucketIds {
+    /// Keeps the photos this bucket lists (dropping hidden stack members) and marks stack covers.
+    fn apply_stacks(&self, assets: Vec<LibraryAsset>) -> Vec<LibraryAsset> {
+        let stacks: HashMap<&str, Option<(&str, u32)>> = self
+            .id
+            .iter()
+            .enumerate()
+            .map(|(i, id)| (id.as_str(), self.stack.get(i).and_then(stack_entry)))
+            .collect();
+        assets
+            .into_iter()
+            .filter_map(|mut asset| {
+                let entry = *stacks.get(asset.id.as_str())?;
+                if let Some((id, count)) = entry {
+                    asset.stack = Some(AssetStack {
+                        id: id.to_string(),
+                        primary_asset_id: asset.id.clone(),
+                        asset_count: count,
+                    });
+                }
+                Some(asset)
+            })
+            .collect()
+    }
+}
+
+fn stack_entry(entry: &Option<Vec<String>>) -> Option<(&str, u32)> {
+    match entry.as_deref()? {
+        [id, count] => Some((id.as_str(), count.parse().ok()?)),
+        _ => None,
+    }
 }
 
 impl ImmichApiClient {
@@ -41,16 +80,7 @@ impl ImmichApiClient {
         user_id: &str,
         month: &str,
     ) -> Result<Vec<LibraryAsset>, String> {
-        let path = format!(
-            "/api/timeline/bucket?{}",
-            timeline_query(Some(user_id), Some(month))
-        );
-        let bucket: BucketIds = self
-            .send_json(reqwest::Method::GET, &path, None)
-            .await?
-            .json()
-            .await
-            .map_err(|err| err.to_string())?;
+        let bucket = self.fetch_bucket(Some(user_id), month).await?;
         let assets = self.fetch_assets_by_ids(&bucket.id).await?;
         Ok(keep_local_month(assets, month))
     }
@@ -90,7 +120,24 @@ impl ImmichApiClient {
                 break;
             }
         }
+        // Search can't hide stack members, so the bucket says which photos the timeline shows.
+        match self.fetch_bucket(None, month).await {
+            Ok(bucket) => assets = bucket.apply_stacks(assets),
+            Err(err) => log::debug!("Stacks unavailable for {month}: {err}"),
+        }
         Ok(keep_local_month(assets, month))
+    }
+
+    async fn fetch_bucket(&self, user_id: Option<&str>, month: &str) -> Result<BucketIds, String> {
+        let path = format!(
+            "/api/timeline/bucket?{}",
+            timeline_query(user_id, Some(month))
+        );
+        self.send_json(reqwest::Method::GET, &path, None)
+            .await?
+            .json()
+            .await
+            .map_err(|err| err.to_string())
     }
 }
 
@@ -98,7 +145,8 @@ fn timeline_query(user_id: Option<&str>, month: Option<&str>) -> String {
     let mut query = url::form_urlencoded::Serializer::new(String::new());
     query
         .append_pair("visibility", "timeline")
-        .append_pair("order", "desc");
+        .append_pair("order", "desc")
+        .append_pair("withStacked", "true");
     match user_id {
         Some(user_id) => query.append_pair("userId", user_id),
         None => query.append_pair("withPartners", "true"),
@@ -160,6 +208,8 @@ mod tests {
             is_edited: false,
             owner_id: String::new(),
             local_date_time: local.map(str::to_string),
+            live_photo_video_id: None,
+            stack: None,
         }
     }
 
@@ -180,11 +230,11 @@ mod tests {
     fn photos_count_partners_and_a_partner_counts_only_their_own() {
         assert_eq!(
             timeline_query(None, None),
-            "visibility=timeline&order=desc&withPartners=true"
+            "visibility=timeline&order=desc&withStacked=true&withPartners=true"
         );
         assert_eq!(
             timeline_query(Some("u2"), Some("2024-01-01")),
-            "visibility=timeline&order=desc&userId=u2&timeBucket=2024-01-01"
+            "visibility=timeline&order=desc&withStacked=true&userId=u2&timeBucket=2024-01-01"
         );
     }
 
@@ -193,6 +243,23 @@ mod tests {
         let bucket: BucketIds =
             serde_json::from_str(r#"{"id":["a","b"],"isImage":[true,false]}"#).unwrap();
         assert_eq!(bucket.id, ["a", "b"]);
+    }
+
+    #[test]
+    fn buckets_hide_stack_members_and_mark_covers() {
+        let bucket: BucketIds =
+            serde_json::from_str(r#"{"id":["cover","plain"],"stack":[["s1","3"],null]}"#).unwrap();
+        let kept = bucket.apply_stacks(vec![
+            asset("cover", None),
+            asset("member", None),
+            asset("plain", None),
+        ]);
+        let ids: Vec<&str> = kept.iter().map(|a| a.id.as_str()).collect();
+        assert_eq!(ids, ["cover", "plain"]);
+        let stack = kept[0].stack.as_ref().unwrap();
+        assert_eq!((stack.id.as_str(), stack.asset_count), ("s1", 3));
+        assert_eq!(stack.primary_asset_id, "cover");
+        assert!(kept[1].stack.is_none());
     }
 
     #[test]

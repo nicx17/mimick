@@ -108,6 +108,10 @@ const LIGHTBOX: &[Shortcut] = &[
     key(gettext_noop("Previous asset"), "Left"),
     key(gettext_noop("Next asset"), "Right"),
     key(gettext_noop("Toggle details"), "i"),
+    key(
+        gettext_noop("Show or hide all actions for the photo"),
+        "F10",
+    ),
     key(gettext_noop("Toggle favorite"), "f"),
     key(gettext_noop("Archive or unarchive"), "a"),
     hint(
@@ -145,7 +149,27 @@ const LIGHTBOX: &[Shortcut] = &[
         "F11",
         gettext_noop("Or the header button; double-click a video; Esc exits"),
     ),
+    hint(
+        gettext_noop("Play or stop a live photo"),
+        "space",
+        gettext_noop("Only on live and motion photos"),
+    ),
+    key(gettext_noop("Start slideshow"), "s"),
     key(gettext_noop("Close"), "Escape"),
+];
+
+const SLIDESHOW: &[Shortcut] = &[
+    key(gettext_noop("Pause or resume"), "space"),
+    hint(
+        gettext_noop("Previous or next photo"),
+        "Left Right",
+        gettext_noop("The next photo then gets the full interval"),
+    ),
+    hint(
+        gettext_noop("End slideshow"),
+        "Escape",
+        gettext_noop("Or S, or leave fullscreen"),
+    ),
 ];
 
 const VIDEO: &[Shortcut] = &[
@@ -193,6 +217,7 @@ const SECTIONS: &[(&str, &[Shortcut])] = &[
     (gettext_noop("Timeline"), TIMELINE),
     (gettext_noop("Map"), MAP),
     (gettext_noop("Viewer"), LIGHTBOX),
+    (gettext_noop("Slideshow"), SLIDESHOW),
     (gettext_noop("Video"), VIDEO),
 ];
 

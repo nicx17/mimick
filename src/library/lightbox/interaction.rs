@@ -9,54 +9,51 @@ use crate::api_client::Tag;
 use crate::library::asset_object::AssetObject;
 
 mod details_loading;
+mod layout;
+mod menus;
 mod navigation;
+mod neighbours;
 mod rendering;
+
 use super::fullscreen;
 use super::strip::Slot;
 use super::{
-    LOCAL_ID_PREFIX, LibraryWindowUi, Lightbox, apply_lightbox_zoom, build_action_bar,
-    build_details_pane, build_header, build_picture_area, build_split_view, build_unavailable_card,
-    build_video_badge, build_viewer,
+    LOCAL_ID_PREFIX, LibraryWindowUi, Lightbox, apply_lightbox_zoom, build_header,
+    build_picture_area,
 };
 use crate::library::actions::{TrashTarget, confirm_trash};
 use crate::library::archive::{archive_icon, archive_tooltip, set_archived};
 use crate::library::asset_edit::show_edit_dialog;
-use crate::library::context_menu::{
-    AssetMenuHooks, connect_context_menu, menu_key, show_asset_context_menu,
-};
+use crate::library::context_menu::{connect_context_menu, menu_key};
 use crate::library::download::{open_local_with_default_app, start_download};
 use crate::library::favorites::{FavoriteHooks, heart_icon, heart_tooltip, toggle_favorite};
 use crate::library::trash_view;
+use layout::{build_layers, lay_out};
+pub(super) use menus::is_swipe_up;
 
 impl Lightbox {
     /// Build the page's widget tree; signal handlers are connected by the `connect_*` methods.
     pub(super) fn new(ui: Rc<LibraryWindowUi>, position: u32, initial_filename: &str) -> Rc<Self> {
         let header = build_header(&ui, initial_filename);
         let picture = build_picture_area();
-        let unavailable = build_unavailable_card();
-        picture.overlay.add_overlay(&unavailable.overlay);
-        let video_badge_button = build_video_badge();
-        picture.overlay.add_overlay(&video_badge_button);
-
-        let initial_full = ui.ctx.config.read().data.library_preview_full_resolution;
-        let actions = build_action_bar(initial_full);
-        // The full bar doesn't fit a 360 px window; Ctrl+0 still resets the zoom.
-        ui.split
-            .bind_property("collapsed", &actions.zoom_reset, "visible")
-            .invert_boolean()
-            .sync_create()
-            .build();
-        let details = build_details_pane();
-        let viewer = build_viewer(&picture, &actions);
-        let body = build_split_view(&ui, &viewer, &details, &header.details_btn);
-        header.toolbar.set_content(Some(&body));
+        let layers = build_layers(&picture);
+        let (actions, details, viewer) = lay_out(&ui, &header, &picture, &layers);
 
         Rc::new(Self {
             ui,
             header,
             picture,
-            unavailable,
-            video_badge_button,
+            unavailable: layers.unavailable,
+            video_badge_button: layers.video_badge_button,
+            live_button: layers.live_button,
+            live_layer: layers.live_layer,
+            motion: RefCell::new(None),
+            member: RefCell::new(None),
+            stack: layers.stack,
+            faces: super::faces::PhotoFaces::default(),
+            face_mode: layers.face_mode,
+            edit_mode: layers.edit_mode,
+            slideshow: layers.slideshow,
             actions,
             details,
             viewer,
@@ -89,8 +86,19 @@ impl Lightbox {
         let drag_source = gtk::DragSource::new();
         drag_source.set_actions(gtk::gdk::DragAction::COPY);
         let lb = Rc::downgrade(self);
-        drag_source.connect_prepare(move |_source, _x, _y| {
-            let path = lb.upgrade()?.drag_path.borrow().clone()?;
+        drag_source.connect_prepare(move |source, _x, _y| {
+            // A finger drag pans, swipes, or opens the sheet; files are dragged out with a
+            // mouse or pen. A drag while tagging faces or cropping draws on the photo instead.
+            if source
+                .device()
+                .is_some_and(|device| device.source() == gtk::gdk::InputSource::Touchscreen)
+            {
+                return None;
+            }
+            let lb = lb
+                .upgrade()
+                .filter(|lb| !lb.face_mode.is_active() && !lb.edit_mode.is_active())?;
+            let path = lb.drag_path.borrow().clone()?;
             if !path.exists() {
                 return None;
             }
@@ -204,7 +212,10 @@ impl Lightbox {
         // coordinate frame with drag (see drag comment below).
         let pinch = gtk::GestureZoom::new();
         let lb = Rc::downgrade(self);
-        pinch.connect_begin(move |_, _| {
+        pinch.connect_begin(move |pinch, _| {
+            // Two fingers only zoom (and pan, which is grouped with it): claiming them cancels
+            // the sideways photo swipe, the swipe up, and the long-press on those touches.
+            pinch.set_state(gtk::EventSequenceState::Claimed);
             if let Some(lb) = lb.upgrade() {
                 lb.pinch_start.set(lb.zoom_level.get());
             }
@@ -279,17 +290,8 @@ impl Lightbox {
             }
         }));
         self.connect_swipe_tracker();
-    }
-
-    fn show_menu_at(self: &Rc<Self>, x: f64, y: f64) {
-        show_asset_context_menu(
-            self.ui.clone(),
-            &self.picture.scrolled,
-            self.pos.get(),
-            x,
-            y,
-            self.menu_hooks(),
-        );
+        self.connect_swipe_up();
+        self.on_click(&self.header.menu_btn, Self::show_menu_sheet);
     }
 
     /// Ctrl +/-/0 zoom, Left/Right navigate, I toggles details, Escape closes.
@@ -306,13 +308,7 @@ impl Lightbox {
     /// Download button and the preview/original resolution toggle.
     pub(super) fn connect_actions(self: &Rc<Self>) {
         self.on_click(&self.actions.download, |lb| {
-            let Some(item) = lb
-                .ui
-                .grid
-                .model
-                .item(lb.pos.get())
-                .and_downcast::<AssetObject>()
-            else {
+            let Some(item) = lb.current_item() else {
                 return;
             };
             let asset_id = item.property::<String>("id");
@@ -335,11 +331,13 @@ impl Lightbox {
             }
         });
 
+        self.on_click(&self.actions.edit, Self::enter_edit_mode);
         self.on_click(&self.actions.trash, Self::confirm_trash_current);
         self.on_click(&self.actions.favorite, Self::toggle_current_favorite);
         self.on_click(&self.actions.archive, Self::toggle_current_archive);
         self.on_click(&self.details.edit_btn, Self::edit_current);
         self.on_click(&self.details.album_btn, |lb| lb.add_current_to_album());
+        self.on_click(&self.details.people.edit, Self::tag_people);
         let lb = Rc::downgrade(self);
         self.details.tags.bind(
             self.ui.clone(),
@@ -358,6 +356,11 @@ impl Lightbox {
         crate::library::search_by_tag(self.ui.clone(), tag);
     }
 
+    /// Face mode for the photo on screen.
+    fn tag_people(self: &Rc<Self>) {
+        self.enter_face_mode();
+    }
+
     fn add_current_to_album(&self) {
         let Some(target) = self
             .current_item()
@@ -370,22 +373,18 @@ impl Lightbox {
         crate::library::album_picker::present(&self.ui, ids, Rc::new(|| {}));
     }
 
+    /// The photo on screen: a stack member picked in the strip, else the grid item.
     pub(super) fn current_item(&self) -> Option<AssetObject> {
+        self.member.borrow().clone().or_else(|| self.grid_item())
+    }
+
+    /// The grid item at the lightbox position, which is a stack's cover when stacked.
+    pub(super) fn grid_item(&self) -> Option<AssetObject> {
         self.ui
             .grid
             .model
             .item(self.pos.get())
             .and_downcast::<AssetObject>()
-    }
-
-    /// Hooks for the right-click menu so trash/edit there update this lightbox.
-    fn menu_hooks(self: &Rc<Self>) -> AssetMenuHooks {
-        let lb_trashed = self.clone();
-        let lb_edited = self.clone();
-        AssetMenuHooks {
-            on_trashed: Rc::new(move || lb_trashed.after_trash()),
-            on_edited: Rc::new(move |date_changed| lb_edited.after_edit(date_changed)),
-        }
     }
 
     /// Delete key / trash button: move to trash, or delete permanently in the Trash view.
@@ -409,6 +408,10 @@ impl Lightbox {
     /// The trashed item is already gone from the grid model, so the same index now
     /// holds the next photo; step back at the end and close once nothing is left.
     fn after_trash(self: &Rc<Self>) {
+        // A trashed stack member isn't a grid item: show the cover again and reload the strip.
+        if self.member.take().is_some() {
+            self.forget_stack();
+        }
         let n = self.ui.grid.model.n_items();
         if n == 0 {
             self.ui.nav.pop();
@@ -518,7 +521,7 @@ impl Lightbox {
         }
     }
 
-    fn active_picture(&self) -> gtk::Picture {
+    pub(in crate::library::lightbox) fn active_picture(&self) -> gtk::Picture {
         self.picture.strip.picture(Slot::Current)
     }
 
@@ -532,6 +535,10 @@ impl Lightbox {
 
     /// Zoom to `z` (clamped to 1–10×), keeping the focal point under the cursor.
     fn set_zoom(self: &Rc<Self>, z: f64) {
+        // Zooming would swap in a sharper decode of the unedited photo under the crop box.
+        if self.edit_mode.is_active() {
+            return;
+        }
         let z_new = z.clamp(1.0, 10.0);
         let z_old = self.zoom_level.get();
         let zoom_label = format!("{}%", (z_new * 100.0).round() as i32);
@@ -557,9 +564,12 @@ impl Lightbox {
         let target_scroll_y = (vadj.value() + fy) * ratio - fy;
 
         self.zoom_level.set(z_new);
-        self.picture
-            .strip
-            .set_swipe_enabled((z_new - 1.0).abs() < 0.001);
+        if (z_new - 1.0).abs() > 0.001 {
+            self.stop_live();
+        }
+        // Swiping stays off while face mode owns drags on the photo.
+        let swipe = (z_new - 1.0).abs() < 0.001 && !self.face_mode.is_active();
+        self.picture.strip.set_swipe_enabled(swipe);
         let content = apply_lightbox_zoom(&self.active_picture(), scrolled, z_new);
         self.actions.zoom_reset.set_label(&zoom_label);
 

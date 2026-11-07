@@ -16,6 +16,9 @@ pub struct PersonUpdate {
     pub birth_date: Option<Option<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_favorite: Option<bool>,
+    /// Photo whose face becomes the person's cover picture.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feature_face_asset_id: Option<String>,
 }
 
 impl ImmichApiClient {
@@ -78,6 +81,18 @@ mod tests {
         assert_eq!(
             serde_json::to_value(&clear).unwrap(),
             serde_json::json!({ "birthDate": null })
+        );
+    }
+
+    #[test]
+    fn cover_update_sends_feature_face_asset_id() {
+        let cover = PersonUpdate {
+            feature_face_asset_id: Some("a1".into()),
+            ..PersonUpdate::default()
+        };
+        assert_eq!(
+            serde_json::to_value(&cover).unwrap(),
+            serde_json::json!({ "featureFaceAssetId": "a1" })
         );
     }
 

@@ -189,12 +189,69 @@ fn show(
         .scrolled
         .set_vscrollbar_policy(gtk::PolicyType::External);
     super::sync_content_state(ui);
-    if let Some((month, offset)) = anchor {
+    if let Some((asset_id, month)) = ui.interaction.timeline_reveal.take() {
+        reveal(ui, asset_id, &month);
+    } else if let Some((month, offset)) = anchor {
         scroll_when_laid_out(ui, month, offset);
     }
 }
 
+/// Scroll to the month starting `YYYY-MM`, load it, then scroll to `asset_id` and ring it.
+fn reveal(ui: &Rc<LibraryWindowUi>, asset_id: String, month_prefix: &str) {
+    let Some(timeline) = ui.interaction.timeline.borrow().clone() else {
+        return;
+    };
+    let found = timeline
+        .index
+        .borrow()
+        .months()
+        .iter()
+        .position(|month| month.key.get(..7) == Some(month_prefix));
+    let Some(month) = found else {
+        reveal_failed(ui);
+        return;
+    };
+    scroll_when_laid_out(ui, month, 0.0);
+    if matches!(
+        timeline.index.borrow().state(month),
+        index::MonthState::Loaded(_)
+    ) {
+        focus_asset(ui, &asset_id);
+        return;
+    }
+    let weak = Rc::downgrade(ui);
+    let waiter: Waiter = Box::new(move |_| {
+        if let Some(ui) = weak.upgrade() {
+            focus_asset(&ui, &asset_id);
+        }
+    });
+    timeline.waiters.borrow_mut().push((month, waiter));
+    load_month(ui, &timeline, month);
+}
+
+fn focus_asset(ui: &LibraryWindowUi, asset_id: &str) {
+    let model = &ui.grid.model;
+    let position = (0..model.n_items()).find(|&position| {
+        model
+            .item(position)
+            .and_downcast::<AssetObject>()
+            .is_some_and(|item| item.id() == asset_id)
+    });
+    match position {
+        Some(position) => ui.grid.canvas.reveal_tile(position),
+        None => reveal_failed(ui),
+    }
+}
+
+fn reveal_failed(ui: &LibraryWindowUi) {
+    ui.toasts
+        .add_toast(libadwaita::Toast::new(&gettextrs::gettext(
+            "This photo isn't in your Photos timeline",
+        )));
+}
+
 pub(super) fn close(ui: &LibraryWindowUi) {
+    ui.interaction.timeline_reveal.take();
     if ui.interaction.timeline.take().is_some() {
         ui.grid.canvas.set_timeline(None);
         ui.scrubber.set_index(None);

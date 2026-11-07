@@ -338,6 +338,10 @@ pub(super) async fn fetch_source_page(
         LibrarySource::Unified
         | LibrarySource::UnifiedSearch { .. }
         | LibrarySource::AlbumUnified { .. } => fetch_unified_page(ui, source, page, order).await,
+        LibrarySource::Memory { id, .. } if page == 1 => {
+            Ok((super::memories::assets(ui, &id).await?, false))
+        }
+        LibrarySource::Memory { .. } => Ok((Vec::new(), false)),
         remote => fetch_remote_page(&ui.ctx.api_client, remote, page, order).await,
     }
 }
@@ -369,6 +373,9 @@ pub(super) async fn fetch_remote_page(
             api.search_smart(&query, page, PAGE_SIZE).await
         }
         LibrarySource::OcrSearch { query } => api.search_ocr(&query, page, PAGE_SIZE, order).await,
+        LibrarySource::Similar { asset_id, .. } => {
+            api.search_similar(&asset_id, page, PAGE_SIZE).await
+        }
         LibrarySource::Partner { id, .. } => api.fetch_user_month_page(&id, page).await,
         LibrarySource::MetadataSearch { query } => {
             api.search_metadata(&query, page, PAGE_SIZE, order).await
