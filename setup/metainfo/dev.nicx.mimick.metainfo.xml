@@ -118,6 +118,25 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="9.13.0" date="2026-11-08">
+      <description translate="no">
+        <p>Edit your photos, tag the people in them, and relive them with memories and slideshows, all without leaving Mimick.</p>
+        <ul>
+          <li>Edit photos without touching the original: crop, rotate, flip, and straighten, adjust light and colour, apply filters, and redact faces or text.</li>
+          <li>Tag the people in a photo, draw a box around a face Immich missed, and point at a face to see who it is.</li>
+          <li>"On this day" memories above Photos, opening as a slideshow.</li>
+          <li>Slideshows with crossfade, shuffle, and repeat.</li>
+          <li>Live and motion photos play their clip in the viewer.</li>
+          <li>Stacks group bursts and RAW+JPEG pairs into one tile.</li>
+          <li>New Duplicates page to clear out look-alike photos.</li>
+          <li>Find similar photos, and jump to a photo's place in the timeline.</li>
+          <li>Likes and comments on shared albums.</li>
+          <li>Search for places on the map, with satellite imagery and 11 more map styles.</li>
+          <li>More keyboard shortcuts, keyboard navigation in the photo grid, and long-press menus on touch screens.</li>
+          <li>Fixed switches ignoring clicks on their knob, and map styles falling back to OpenStreetMap.</li>
+        </ul>
+      </description>
+    </release>
     <release version="9.12.0" date="2026-11-02">
       <description translate="no">
         <p>The library now matches much more of Immich's web app: its timeline, video playback, map, and album and photo editing.</p>
