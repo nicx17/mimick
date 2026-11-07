@@ -13,7 +13,9 @@ on:
         type: string
         default: ""
 
-permissions: read-all
+# Not read-all: release.yml grants this only contents, and a called workflow can't ask for more.
+permissions:
+  contents: read
 
 # Each run takes 20-40 minutes on two runners, so a new push to a pull request cancels its older
 # run. Release runs are never cancelled.
