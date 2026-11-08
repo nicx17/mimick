@@ -113,10 +113,12 @@ In the **Uploads** section you can also turn on:
 
 ### Background Sync
 
-The **Background Sync** switch controls whether Mimick continues running when the settings window is closed.
+The **Background Sync** switch controls whether Mimick keeps running when you close its last window, whether that's the library or Settings.
 
 * **Enabled**: closing the window hides it. Mimick keeps syncing in the background and remains accessible from the tray.
-* **Disabled (default)**: closing the window quits the application entirely if no upload is in progress. Mimick only runs while the window is open.
+* **Disabled (default)**: closing the last window quits Mimick. Mimick only runs while a window is open.
+
+Quitting doesn't lose uploads. An upload in progress gets a few seconds to finish; one that doesn't is saved and uploaded again the next time Mimick starts. Files that were still waiting their turn upload with the next **Sync Now**, since they aren't in the sync index yet.
 
 If you disable Background Sync and also enable Run on Startup, Mimick will launch on login but quit as soon as you close the window. Re-opening it from the launcher starts it again.
 

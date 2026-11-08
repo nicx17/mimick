@@ -2,7 +2,7 @@
 //! showing what the avatar will show. Drag to move it; pinch, scroll, the slider, or +/- to
 //! zoom; the arrow keys move it too.
 
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
 use std::io::Cursor;
 
 use gettextrs::gettext;
@@ -76,7 +76,12 @@ impl Square {
 }
 
 mod imp {
-    use super::*;
+    use std::cell::{Cell, RefCell};
+
+    use gtk::gdk;
+    use gtk::subclass::prelude::*;
+
+    use super::Square;
 
     #[derive(Default)]
     pub struct AvatarCrop {

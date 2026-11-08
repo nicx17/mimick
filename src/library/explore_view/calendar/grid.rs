@@ -2,8 +2,6 @@
 //! and weekday names beside. It fills the width it's given, up to a size, and stays small
 //! enough on a phone to scroll sideways.
 
-use std::cell::{Cell, RefCell};
-
 use chrono::{Duration, NaiveDate};
 use gtk::gdk;
 use gtk::glib;
@@ -23,13 +21,16 @@ const LABEL_ALPHA: f32 = 0.6;
 const LABEL_SCALE: f64 = 0.8;
 /// Space between the labels and the squares.
 const LABEL_PAD: f32 = 6.0;
-/// Weekday names on Monday, Wednesday, and Friday, as calendars like this usually show.
-const LABELLED_ROWS: [usize; 3] = [0, 2, 4];
-
 type OnSelect = Box<dyn Fn(Option<(NaiveDate, u32)>)>;
 
 mod imp {
-    use super::*;
+    use std::cell::{Cell, RefCell};
+
+    use chrono::NaiveDate;
+    use gtk::glib;
+    use gtk::subclass::prelude::*;
+
+    use super::OnSelect;
 
     #[derive(Default)]
     pub struct HeatmapGrid {
@@ -354,13 +355,15 @@ impl HeatmapGrid {
         }
     }
 
+    /// A name beside every row; every other row when large text makes them taller than a row.
     fn draw_weekdays(&self, snapshot: &gtk::Snapshot, geo: &Geometry, text: &gdk::RGBA) {
         let color = with_alpha(text, LABEL_ALPHA);
-        let names = weekday_names();
-        for (row, name) in LABELLED_ROWS.iter().zip(names.iter()) {
+        let label_height = self.label("0").pixel_size().1 as f32;
+        let every = if label_height > geo.step { 2 } else { 1 };
+        for (row, name) in weekday_names().iter().enumerate().step_by(every) {
             let layout = self.label(name);
             let (width, height) = layout.pixel_size();
-            let cell = geo.cell((0, *row));
+            let cell = geo.cell((0, row));
             let at = Point::new(
                 geo.left - LABEL_PAD - width as f32,
                 cell.y() + (cell.height() - height as f32) / 2.0,
@@ -376,11 +379,11 @@ impl Default for HeatmapGrid {
     }
 }
 
-/// Monday, Wednesday, and Friday in the user's language, short.
-fn weekday_names() -> [String; 3] {
+/// Monday to Sunday in the user's language, short, one per row.
+fn weekday_names() -> [String; 7] {
     // 1 January 2024 was a Monday.
     let monday = NaiveDate::from_ymd_opt(2024, 1, 1).unwrap_or_default();
-    LABELLED_ROWS.map(|row| format_day(monday + Duration::days(row as i64), "%a"))
+    std::array::from_fn(|row| format_day(monday + Duration::days(row as i64), "%a"))
 }
 
 fn with_alpha(color: &gdk::RGBA, alpha: f32) -> gdk::RGBA {

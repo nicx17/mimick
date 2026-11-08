@@ -29,23 +29,7 @@ pub(super) fn build(page: &TreePage) -> PathBar {
         .hexpand(true)
         .placeholder_text(gettext("Folder path"))
         .build();
-    let suggestions = gtk::ListBox::builder()
-        .selection_mode(gtk::SelectionMode::None)
-        .build();
-    let scroller = gtk::ScrolledWindow::builder()
-        .hscrollbar_policy(gtk::PolicyType::Never)
-        .propagate_natural_height(true)
-        .propagate_natural_width(true)
-        .max_content_height(320)
-        .child(&suggestions)
-        .build();
-    // Not autohide: that would take the keyboard away from the entry while typing.
-    let popover = gtk::Popover::builder()
-        .child(&scroller)
-        .autohide(false)
-        .has_arrow(false)
-        .position(gtk::PositionType::Bottom)
-        .build();
+    let (popover, suggestions) = suggestions_popover();
     popover.set_parent(&entry);
     let toggle = gtk::ToggleButton::builder()
         .icon_name("document-edit-symbolic")
@@ -75,6 +59,28 @@ pub(super) fn build(page: &TreePage) -> PathBar {
         popover,
         suggestions,
     }
+}
+
+/// The list of matching folders that drops down under the entry.
+fn suggestions_popover() -> (gtk::Popover, gtk::ListBox) {
+    let suggestions = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
+    let scroller = gtk::ScrolledWindow::builder()
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .propagate_natural_height(true)
+        .propagate_natural_width(true)
+        .max_content_height(320)
+        .child(&suggestions)
+        .build();
+    // Not autohide: that would take the keyboard away from the entry while typing.
+    let popover = gtk::Popover::builder()
+        .child(&scroller)
+        .autohide(false)
+        .has_arrow(false)
+        .position(gtk::PositionType::Bottom)
+        .build();
+    (popover, suggestions)
 }
 
 /// Wire the entry, its suggestions, both buttons, and Ctrl+L.

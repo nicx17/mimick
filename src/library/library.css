@@ -319,7 +319,7 @@ image.mimick-person-favorite {
     padding: 3px;
     border-radius: 999px;
     background-clip: content-box;
-    box-shadow: inset 0 0 0 1px alpha(currentColor, 0.15);
+    box-shadow: inset 0 0 0 1px var(--border-color);
 }
 
 .mimick-style-switcher checkbutton:checked {
@@ -438,13 +438,14 @@ picture.mimick-video-surface {
 }
 
 /* Play, pause, or volume, flashed over the video. Hidden at rest; each flash runs one of
-   two identical animations, since switching names is what restarts one in GTK. */
+   two identical animations, since switching names is what restarts one in GTK. It grows
+   as it fades, or, when the system asks for reduced motion, only fades. */
 .mimick-video-osd {
     padding: 20px;
     min-width: 40px;
     border-radius: 999px;
     color: white;
-    background-color: alpha(black, 0.55);
+    background-color: rgba(0, 0, 0, 0.55);
     opacity: 0;
 }
 
@@ -458,12 +459,34 @@ picture.mimick-video-surface {
     to   { opacity: 0; transform: scale(1.3); }
 }
 
-.mimick-video-osd.mimick-osd-flash-a {
-    animation: mimick-osd-a 650ms ease-out forwards;
+@keyframes mimick-osd-fade-a {
+    from { opacity: 1; }
+    to   { opacity: 0; }
 }
 
-.mimick-video-osd.mimick-osd-flash-b {
-    animation: mimick-osd-b 650ms ease-out forwards;
+@keyframes mimick-osd-fade-b {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .mimick-video-osd.mimick-osd-flash-a {
+        animation: mimick-osd-a 650ms ease-out forwards;
+    }
+
+    .mimick-video-osd.mimick-osd-flash-b {
+        animation: mimick-osd-b 650ms ease-out forwards;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mimick-video-osd.mimick-osd-flash-a {
+        animation: mimick-osd-fade-a 650ms ease-out forwards;
+    }
+
+    .mimick-video-osd.mimick-osd-flash-b {
+        animation: mimick-osd-fade-b 650ms ease-out forwards;
+    }
 }
 
 /* A thick seek bar filled in the accent color; the padding keeps it easy to hit. */

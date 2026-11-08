@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 00:45+0530\n"
+"POT-Creation-Date: 2026-11-09 01:08+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -394,7 +394,7 @@ msgstr ""
 msgid "Couldn't load this. Your API key needs the “{permission}” permission."
 msgstr ""
 
-#: src/library/account.rs:80 src/library/account/avatar_crop.rs:409
+#: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
 #: src/library/actions/trash.rs:164 src/library/album_delete.rs:123
 #: src/library/album_link.rs:230 src/library/album_wiring.rs:35
 #: src/library/asset_edit.rs:253 src/library/bulk_date.rs:316
@@ -407,19 +407,19 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/library/account/avatar_crop.rs:125
+#: src/library/account/avatar_crop.rs:130
 msgid "Picture to crop; drag or use the arrow keys to move it"
 msgstr ""
 
-#: src/library/account/avatar_crop.rs:402 src/library/bulk_date.rs:274
+#: src/library/account/avatar_crop.rs:407 src/library/bulk_date.rs:274
 msgid "Set"
 msgstr ""
 
-#: src/library/account/avatar_crop.rs:415
+#: src/library/account/avatar_crop.rs:420
 msgid "Zoom"
 msgstr ""
 
-#: src/library/account/avatar_crop.rs:435
+#: src/library/account/avatar_crop.rs:440
 msgid "Crop Picture"
 msgstr ""
 
@@ -2212,7 +2212,7 @@ msgstr ""
 msgid "More"
 msgstr ""
 
-#: src/library/explore_view/calendar/grid.rs:105
+#: src/library/explore_view/calendar/grid.rs:106
 msgid "Photos per day; use the arrow keys to pick a day"
 msgstr ""
 
@@ -2286,15 +2286,15 @@ msgstr ""
 msgid "Folder path"
 msgstr ""
 
-#: src/library/folders_view/path_bar.rs:52
+#: src/library/folders_view/path_bar.rs:36
 msgid "Enter a path (Ctrl+L)"
 msgstr ""
 
-#: src/library/folders_view/path_bar.rs:56
+#: src/library/folders_view/path_bar.rs:40
 msgid "Copy path"
 msgstr ""
 
-#: src/library/folders_view/path_bar.rs:213
+#: src/library/folders_view/path_bar.rs:219
 #, rust-format
 msgid "No folder at {path}"
 msgstr ""
@@ -3345,7 +3345,7 @@ msgstr ""
 msgid "Couldn't change the memory"
 msgstr ""
 
-#: src/library/mod.rs:396
+#: src/library/mod.rs:402
 msgid "Drop files to upload"
 msgstr ""
 
@@ -5688,7 +5688,7 @@ msgstr ""
 msgid "Set Up…"
 msgstr ""
 
-#: src/settings_window/status.rs:129 src/settings_window/status_poll.rs:224
+#: src/settings_window/status.rs:129 src/settings_window/status_poll.rs:231
 msgid "Up to Date"
 msgstr ""
 
@@ -5753,42 +5753,50 @@ msgstr ""
 msgid "Paused"
 msgstr ""
 
-#: src/settings_window/status_poll.rs:218
+#: src/settings_window/status_poll.rs:219
+msgid "Can't Reach Immich"
+msgstr ""
+
+#: src/settings_window/status_poll.rs:220
+msgid "Check the server address and API key in Settings."
+msgstr ""
+
+#: src/settings_window/status_poll.rs:225
 msgid "Waiting for Immich"
 msgstr ""
 
-#: src/settings_window/status_poll.rs:219
+#: src/settings_window/status_poll.rs:226
 msgid "Failed uploads retry when the server is reachable."
 msgstr ""
 
-#: src/settings_window/status_poll.rs:227
+#: src/settings_window/status_poll.rs:234
 #, rust-format
 msgid "Last upload {when}"
 msgstr ""
 
-#: src/settings_window/status_poll.rs:240
+#: src/settings_window/status_poll.rs:247
 #, rust-format
 msgid "Uploading {done} of {total}"
 msgstr ""
 
-#: src/settings_window/status_poll.rs:268
-#: src/settings_window/status_poll.rs:274
+#: src/settings_window/status_poll.rs:275
+#: src/settings_window/status_poll.rs:281
 msgid "Up to date"
 msgstr ""
 
-#: src/settings_window/status_poll.rs:271
+#: src/settings_window/status_poll.rs:278
 #, rust-format
 msgid "Problem: {err}"
 msgstr ""
 
-#: src/settings_window/status_poll.rs:277
+#: src/settings_window/status_poll.rs:284
 #, rust-format
 msgid "{n} waiting to upload"
 msgid_plural "{n} waiting to upload"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/settings_window/status_poll.rs:287
+#: src/settings_window/status_poll.rs:294
 #, rust-format
 msgid "last upload {when}"
 msgstr ""

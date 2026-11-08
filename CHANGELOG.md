@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The library view is on by default for new installs. Until a server is set up, Mimick opens Settings on its setup steps, and opens the library once **Save and Connect** succeeds. Before then the Status page says **Not Set Up Yet** with a **Set Up…** button, instead of reporting that the server can't be reached.
 - The **Upload** button now has a label, and shows only on Photos and on albums you can add to.
 - The transfer progress bar in the header is taller, with slightly rounded corners.
-- About Mimick lists the developer under Credits and credits the app icon and map data under **Attribution**; the third-party license text moved out of the dialog (packages still install it under `share/licenses`).
+- About Mimick lists the developer under Credits and credits the app icon and map data under **Attribution**; the third-party license text is no longer in the dialog or installed by the packages; it stays in the repository.
 
 - The disk cache now stays under its size limit during long sessions, not only at startup: Mimick trims it every half hour. Thumbnails and originals you keep coming back to count as recently used, so trimming removes the ones you haven't opened in longest instead of the oldest downloads.
 - Thumbnails of local HEIC and AVIF photos use the small picture phones store inside the file when there is one, instead of decoding the whole photo. Other formats that need a full decode (JPEG XL, PSD, and HEICs without one) decode at most three at a time and with one copy of the pixels fewer, so scrolling a folder of large photos uses much less memory.

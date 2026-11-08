@@ -60,7 +60,7 @@ add_app_data() {
     install -Dm644 src/assets/512x512/apps/dev.nicx.mimick.png -t "$icons/hicolor/512x512/apps/"
     install -Dm644 src/assets/scalable/apps/dev.nicx.mimick.svg -t "$icons/hicolor/scalable/apps/"
     install -Dm644 src/assets/symbolic/apps/dev.nicx.mimick-symbolic.svg -t "$icons/hicolor/symbolic/apps/"
-    install -Dm644 THIRD_PARTY_LICENSES.txt LICENSE -t "$APPDIR/share/licenses/mimick/"
+    install -Dm644 LICENSE -t "$APPDIR/share/licenses/mimick/"
     scripts/i18n.sh install "$APPDIR/share/locale"
 
     # Cursors are 12 of the theme's 15 MB, and the host's cursor theme is used anyway.
