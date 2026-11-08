@@ -7,7 +7,8 @@ pub(super) struct TreePage {
     pub toolbar: gtk::Box,
     pub list: gtk::ListBox,
     crumbs: gtk::Box,
-    crumb_scroller: gtk::ScrolledWindow,
+    /// Swapped for the Folders path entry while it is open.
+    pub(super) crumb_scroller: gtk::ScrolledWindow,
     empty: libadwaita::StatusPage,
 }
 

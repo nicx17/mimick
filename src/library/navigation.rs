@@ -103,12 +103,15 @@ fn show(ui: &Rc<LibraryWindowUi>, location: &Location) {
 
 /// Back to the map alone: a step back when the map is the previous view.
 pub(super) fn close_map_area(ui: &Rc<LibraryWindowUi>) {
-    let map = Location::Page(LibraryPage::Map);
-    let back_is_map = ui.ctx.library_state.lock().previous_location() == Some(&map);
+    let back_is_map = matches!(
+        ui.ctx.library_state.lock().previous_location(),
+        Some(Location::Page(LibraryPage::Map { .. }))
+    );
     if back_is_map {
         go_back(ui);
     } else {
-        navigate(ui, map);
+        let album = super::map::album_shown(ui);
+        navigate(ui, Location::Page(LibraryPage::Map { album }));
     }
 }
 
@@ -133,8 +136,16 @@ fn show_page(ui: &Rc<LibraryWindowUi>, page: &LibraryPage) {
             ui.search_view.search_entry.grab_focus();
             super::refresh_search_tags(ui.clone(), None);
         }
-        LibraryPage::Map => {}
+        LibraryPage::Map { .. } => {}
         LibraryPage::Duplicates => super::duplicates_view::show(ui),
+    }
+}
+
+/// "Map", or the album's name when the map shows only its photos.
+fn map_title(album: Option<&super::state::MapAlbum>) -> String {
+    match album {
+        Some(album) => album.name.clone(),
+        None => gettext("Map"),
     }
 }
 
@@ -165,7 +176,7 @@ fn page_title(page: &LibraryPage) -> String {
         LibraryPage::Folders { path } => leaf(path, &gettext("Folders")),
         LibraryPage::Sharing => gettext("Sharing"),
         LibraryPage::Search => gettext("Search"),
-        LibraryPage::Map => gettext("Map"),
+        LibraryPage::Map { album } => map_title(album.as_ref()),
         LibraryPage::Duplicates => gettext("Duplicates"),
     }
 }
@@ -183,6 +194,24 @@ pub(super) fn sync_controls(ui: &LibraryWindowUi, location: &Location) {
     if matches!(location, Location::Page(_)) {
         ui.source_revealer.set_reveal_child(false);
     }
+    sync_upload_button(ui);
+}
+
+/// Upload only where new photos land in view: Photos, and albums this user can add to.
+/// Also called when the album list loads, since that's where an album's editors come from.
+pub(super) fn sync_upload_button(ui: &LibraryWindowUi) {
+    let shown = match current(ui) {
+        Location::Source(
+            LibrarySource::AllAssets | LibrarySource::Unified | LibrarySource::LocalAll,
+        ) => true,
+        Location::Source(
+            LibrarySource::Album { .. }
+            | LibrarySource::AlbumLocal { .. }
+            | LibrarySource::AlbumUnified { .. },
+        ) => super::album_assets::can_remove_here(ui),
+        _ => false,
+    };
+    ui.upload_button.set_visible(shown);
 }
 
 pub(super) fn update_back_button(ui: &LibraryWindowUi) {
@@ -257,7 +286,7 @@ fn page_key(page: &LibraryPage) -> &'static str {
         LibraryPage::Folders { .. } => "folders",
         LibraryPage::Sharing => "sharing",
         LibraryPage::Search => "search",
-        LibraryPage::Map => "map",
+        LibraryPage::Map { .. } => "map",
         LibraryPage::Duplicates => "duplicates",
     }
 }
@@ -300,7 +329,7 @@ type KeyLocation = (&'static str, fn() -> Location);
 const KEY_LOCATIONS: [KeyLocation; 15] = [
     ("photos", || Location::Source(LibrarySource::AllAssets)),
     ("explore", || Location::Source(LibrarySource::Explore)),
-    ("map", || Location::Page(LibraryPage::Map)),
+    ("map", || Location::Page(LibraryPage::Map { album: None })),
     ("favorites", || Location::Source(LibrarySource::Favorites)),
     ("archive", || Location::Source(LibrarySource::Archive)),
     ("trash", || Location::Source(LibrarySource::Trash)),

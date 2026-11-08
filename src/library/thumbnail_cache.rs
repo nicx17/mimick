@@ -21,10 +21,11 @@ use tokio::sync::{Semaphore, watch};
 use crate::api_client::{ImmichApiClient, ThumbnailSize};
 
 mod decode;
-use decode::{
-    check_cancelled, decode_local_pixbuf, decode_to_scaled_texture, pixbuf_png_bytes,
-    pixbuf_to_texture, read_cached_texture, target_dim_for_bucket,
-};
+mod local;
+mod screen;
+#[cfg(test)]
+use decode::read_cached_texture;
+use decode::{check_cancelled, decode_to_scaled_texture, read_cached_bytes, target_dim_for_bucket};
 
 const FALLBACK_CPUS: usize = 4;
 const SMALL_LOAD_MAX: usize = 16;
@@ -406,12 +407,7 @@ impl ThumbnailCache {
         }
 
         let cache_file = self.cache_file(asset_id, size, edited);
-        let cache_file_for_read = cache_file.clone();
-        let from_disk =
-            tokio::task::spawn_blocking(move || std::fs::read(&cache_file_for_read).ok())
-                .await
-                .map_err(|err| err.to_string())?;
-        if let Some(bytes) = from_disk {
+        if let Some(bytes) = read_cached_bytes(cache_file.clone()).await? {
             return self.decode_into_memory(bytes, max_dim, key).await;
         }
 
@@ -435,127 +431,6 @@ impl ThumbnailCache {
             .await
             .map_err(|err| err.to_string())?;
         self.memory.lock().insert(key.to_string(), texture.clone());
-        Ok(texture)
-    }
-
-    pub fn cached_screen(&self, asset_id: &str, edited: bool, edge: u32) -> Option<Texture> {
-        self.memory.lock().get(&screen_key(asset_id, edited, edge))
-    }
-
-    /// A lightbox picture decoded from `path` to fit `edge` pixels, cached with the previews.
-    pub async fn load_screen(
-        &self,
-        asset_id: &str,
-        edited: bool,
-        path: PathBuf,
-        edge: u32,
-    ) -> Result<Texture, String> {
-        let key = screen_key(asset_id, edited, edge);
-        if let Some(texture) = self.memory.lock().lookup(&key) {
-            return Ok(texture);
-        }
-        let guard = match self.enter_inflight(&key) {
-            Ok(guard) => guard,
-            Err(rx) => return await_inflight(rx).await,
-        };
-        let decoded =
-            tokio::task::spawn_blocking(move || super::load_texture_fitted_blocking(&path, edge))
-                .await;
-        let result = match decoded {
-            Ok(Some(texture)) => {
-                self.memory.lock().insert(key, texture.clone());
-                Ok(texture)
-            }
-            Ok(None) => Err(gettext("No decoder could read the file")),
-            Err(err) => Err(err.to_string()),
-        };
-        guard.publish(result.clone());
-        result
-    }
-
-    /// Asynchronously generate a local file thumbnail with cancellable hook support.
-    pub async fn load_local_thumbnail_cancellable<F>(
-        &self,
-        asset_id: &str,
-        path: &std::path::Path,
-        is_cancelled: F,
-    ) -> Result<Texture, String>
-    where
-        F: Fn() -> bool,
-    {
-        let key = cache_key(asset_id, ThumbnailSize::Thumbnail, false);
-        if let Some(texture) = self.memory.lock().lookup(&key) {
-            return Ok(texture);
-        }
-
-        let guard = match self.enter_inflight(&key) {
-            Ok(guard) => guard,
-            Err(rx) => return await_inflight(rx).await,
-        };
-        let result = self
-            .fetch_local_thumbnail(asset_id, path, &key, &is_cancelled)
-            .await;
-        guard.publish(result.clone());
-        result
-    }
-
-    /// Internal helper that scales, saves, and loads a local folder asset thumbnail.
-    async fn fetch_local_thumbnail(
-        &self,
-        asset_id: &str,
-        path: &std::path::Path,
-        key: &str,
-        is_cancelled: &dyn Fn() -> bool,
-    ) -> Result<Texture, String> {
-        check_cancelled(is_cancelled)?;
-        let _permit = self
-            .semaphore_for(ThumbnailSize::Thumbnail)
-            .acquire_owned()
-            .await
-            .map_err(|err| err.to_string())?;
-        // Checked again: the user may have scrolled away while waiting for a permit.
-        check_cancelled(is_cancelled)?;
-        if let Some(texture) = self.memory.lock().get(key) {
-            return Ok(texture);
-        }
-
-        let cache_file = self.cache_file_local(asset_id);
-        let texture = match read_cached_texture(cache_file.clone()).await? {
-            Some(texture) => texture,
-            None => {
-                self.decode_local_to_cache(path.to_path_buf(), cache_file)
-                    .await?
-            }
-        };
-        self.memory.lock().insert(key.to_string(), texture.clone());
-        Ok(texture)
-    }
-
-    /// Decode a local file off the main thread and write the PNG thumbnail to `cache_file`.
-    async fn decode_local_to_cache(
-        &self,
-        path: std::path::PathBuf,
-        cache_file: std::path::PathBuf,
-    ) -> Result<Texture, String> {
-        let decode_started = std::time::Instant::now();
-        let log_path = path.clone();
-        let cache_dir = self.cache_dir.clone();
-        let texture = tokio::task::spawn_blocking(move || -> Result<Texture, String> {
-            let pixbuf = decode_local_pixbuf(&path)?;
-            std::fs::create_dir_all(&cache_dir).map_err(|err| err.to_string())?;
-            let encoded = pixbuf_png_bytes(&pixbuf)?;
-            std::fs::write(&cache_file, encoded).map_err(|err| err.to_string())?;
-            Ok(pixbuf_to_texture(&pixbuf))
-        })
-        .await
-        .map_err(|err| err.to_string())??;
-        log::debug!(
-            "Local thumbnail decoded fresh for {} in {}ms ({}x{})",
-            log_path.display(),
-            decode_started.elapsed().as_millis(),
-            texture.width(),
-            texture.height(),
-        );
         Ok(texture)
     }
 
@@ -611,10 +486,6 @@ impl ThumbnailCache {
     }
 
     /// Return the physical disk cache path for a local folder asset thumbnail.
-    fn cache_file_local(&self, asset_id: &str) -> PathBuf {
-        self.cache_dir.join(local_cache_key(asset_id))
-    }
-
     /// Register or join an ongoing in-flight loading request for a key.
     fn enter_inflight(&self, key: &str) -> Result<InflightGuard, InflightRx> {
         let mut map = self.inflight.lock();
@@ -663,11 +534,6 @@ fn memory_target(
         memory_key(asset_id, size, edited, edge),
         edge.unwrap_or(full),
     )
-}
-
-fn screen_key(asset_id: &str, edited: bool, edge: u32) -> String {
-    let edited = if edited { "-edited" } else { "" };
-    format!("screen{edited}@{edge}:{asset_id}")
 }
 
 /// Construct a cache key string for local assets using hashed paths.

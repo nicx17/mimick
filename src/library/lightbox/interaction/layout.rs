@@ -14,6 +14,7 @@ pub(super) struct Layers {
     pub(super) video_badge_button: gtk::Button,
     pub(super) live_layer: gtk::Box,
     pub(super) live_button: gtk::ToggleButton,
+    pub(super) panorama: std::rc::Rc<super::super::panorama::Panorama>,
     pub(super) stack: super::super::stack::StackStrip,
     pub(super) face_mode: super::super::faces::FaceMode,
     pub(super) edit_mode: super::super::edit::EditMode,
@@ -27,8 +28,13 @@ pub(super) fn build_layers(picture: &PictureArea) -> Layers {
     picture.overlay.add_overlay(&video_badge_button);
     let live_layer = super::super::live::build_live_layer();
     picture.overlay.add_overlay(&live_layer);
+    let panorama = super::super::panorama::Panorama::new();
+    picture.overlay.add_overlay(&panorama.layer);
     let live_button = super::super::live::build_live_button();
-    picture.overlay.add_overlay(&live_button);
+    picture.overlay.add_overlay(&pills(&[
+        live_button.upcast_ref(),
+        panorama.button.upcast_ref(),
+    ]));
     let face_mode = super::super::faces::FaceMode::new();
     picture.overlay.add_overlay(&face_mode.bar);
     let slideshow = super::super::slideshow::Slideshow::new();
@@ -40,11 +46,27 @@ pub(super) fn build_layers(picture: &PictureArea) -> Layers {
         video_badge_button,
         live_layer,
         live_button,
+        panorama,
         stack: super::super::stack::StackStrip::new(),
         face_mode,
         edit_mode: super::super::edit::EditMode::new(),
         slideshow,
     }
+}
+
+/// Live and 360° in the photo's top-left corner.
+fn pills(buttons: &[&gtk::Widget]) -> gtk::Box {
+    let row = gtk::Box::builder()
+        .spacing(6)
+        .halign(gtk::Align::Start)
+        .valign(gtk::Align::Start)
+        .margin_top(12)
+        .margin_start(12)
+        .build();
+    for button in buttons {
+        row.append(*button);
+    }
+    row
 }
 
 /// The action bar, the details pane, and the viewer holding the photo. The stack strip and

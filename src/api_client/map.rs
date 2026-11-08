@@ -2,6 +2,7 @@
 
 use std::time::Duration;
 
+use chrono::{DateTime, SecondsFormat, Utc};
 use futures_util::stream::{self, StreamExt};
 
 use super::{ImmichApiClient, LibraryAsset};
@@ -27,6 +28,66 @@ pub struct MapMarker {
     pub country: Option<String>,
 }
 
+/// Which photos `GET /api/map/markers` returns; the default is Immich's: your own, not archived.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct MarkerFilter {
+    pub favorites_only: bool,
+    pub include_archived: bool,
+    pub with_partners: bool,
+    pub with_shared_albums: bool,
+    pub created_after: Option<DateTime<Utc>>,
+    pub created_before: Option<DateTime<Utc>>,
+}
+
+impl MarkerFilter {
+    /// Only switched-on flags are sent: `isFavorite=false` would hide favorites instead.
+    fn query(&self) -> String {
+        let mut query = url::form_urlencoded::Serializer::new(String::new());
+        let flags = [
+            ("isFavorite", self.favorites_only),
+            ("isArchived", self.include_archived),
+            ("withPartners", self.with_partners),
+            ("withSharedAlbums", self.with_shared_albums),
+        ];
+        for (name, _) in flags.iter().filter(|(_, on)| *on) {
+            query.append_pair(name, "true");
+        }
+        let dates = [
+            ("fileCreatedAfter", self.created_after),
+            ("fileCreatedBefore", self.created_before),
+        ];
+        for (name, date) in dates {
+            if let Some(date) = date {
+                query.append_pair(name, &date.to_rfc3339_opts(SecondsFormat::Millis, true));
+            }
+        }
+        query.finish()
+    }
+}
+
+/// The place around a point, from `GET /api/map/reverse-geocode`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Deserialize)]
+pub struct PlaceName {
+    #[serde(default)]
+    pub city: Option<String>,
+    #[serde(default)]
+    pub state: Option<String>,
+    #[serde(default)]
+    pub country: Option<String>,
+}
+
+impl PlaceName {
+    /// "City, State, Country", skipping the parts Immich doesn't know.
+    pub fn display(&self) -> Option<String> {
+        let parts: Vec<&str> = [&self.city, &self.state, &self.country]
+            .into_iter()
+            .filter_map(|part| part.as_deref().map(str::trim))
+            .filter(|part| !part.is_empty())
+            .collect();
+        (!parts.is_empty()).then(|| parts.join(", "))
+    }
+}
+
 /// A named place from Immich's geodata, from `GET /api/search/places`.
 #[derive(Debug, Clone, PartialEq, serde::Deserialize)]
 pub struct Place {
@@ -49,11 +110,34 @@ pub struct MapStyleUrls {
 }
 
 impl ImmichApiClient {
-    pub async fn fetch_map_markers(&self) -> Result<Vec<MapMarker>, String> {
-        let resp = self
-            .send_json(reqwest::Method::GET, "/api/map/markers", None)
-            .await?;
+    pub async fn fetch_map_markers(&self, filter: &MarkerFilter) -> Result<Vec<MapMarker>, String> {
+        let query = filter.query();
+        let path = if query.is_empty() {
+            "/api/map/markers".to_string()
+        } else {
+            format!("/api/map/markers?{query}")
+        };
+        let resp = self.send_json(reqwest::Method::GET, &path, None).await?;
         resp.json().await.map_err(|err| err.to_string())
+    }
+
+    /// Geotagged photos in one album, from `GET /api/albums/{id}/map-markers` (Immich v3).
+    pub async fn fetch_album_map_markers(&self, album_id: &str) -> Result<Vec<MapMarker>, String> {
+        let path = format!("/api/albums/{album_id}/map-markers");
+        let resp = self.send_json(reqwest::Method::GET, &path, None).await?;
+        resp.json().await.map_err(|err| err.to_string())
+    }
+
+    /// The place Immich's geodata puts at a point; `None` out at sea or far from towns.
+    pub async fn reverse_geocode(&self, lat: f64, lon: f64) -> Result<Option<PlaceName>, String> {
+        let query = url::form_urlencoded::Serializer::new(String::new())
+            .append_pair("lat", &lat.to_string())
+            .append_pair("lon", &lon.to_string())
+            .finish();
+        let path = format!("/api/map/reverse-geocode?{query}");
+        let resp = self.send_json(reqwest::Method::GET, &path, None).await?;
+        let places: Vec<PlaceName> = resp.json().await.map_err(|err| err.to_string())?;
+        Ok(places.into_iter().next())
     }
 
     pub async fn search_places(&self, name: &str) -> Result<Vec<Place>, String> {
@@ -232,6 +316,34 @@ mod tests {
         ]))
         .unwrap();
         assert_eq!(places[0].admin2name, None);
+    }
+
+    #[test]
+    fn marker_filter_sends_only_what_is_switched_on() {
+        assert_eq!(MarkerFilter::default().query(), "");
+        let after = DateTime::parse_from_rfc3339("2025-01-02T03:04:05Z")
+            .unwrap()
+            .with_timezone(&Utc);
+        let filter = MarkerFilter {
+            favorites_only: true,
+            with_shared_albums: true,
+            created_after: Some(after),
+            ..MarkerFilter::default()
+        };
+        assert_eq!(
+            filter.query(),
+            "isFavorite=true&withSharedAlbums=true&fileCreatedAfter=2025-01-02T03%3A04%3A05.000Z"
+        );
+    }
+
+    #[test]
+    fn place_names_skip_unknown_parts() {
+        let place: Vec<PlaceName> = serde_json::from_value(serde_json::json!([
+            { "city": "Lisbon", "state": null, "country": "Portugal" }
+        ]))
+        .unwrap();
+        assert_eq!(place[0].display().as_deref(), Some("Lisbon, Portugal"));
+        assert_eq!(PlaceName::default().display(), None);
     }
 
     #[test]

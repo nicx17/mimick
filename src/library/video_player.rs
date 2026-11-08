@@ -1,6 +1,7 @@
 use gettextrs::gettext;
 mod controls;
 mod motion;
+mod osd;
 mod pipeline;
 mod tracks;
 
@@ -21,6 +22,8 @@ use controls::{Controls, NORMAL_SPEED, SPEEDS, format_time, speed_label, volume_
 use pipeline::frame_duration;
 
 const SKIP: gst::ClockTime = gst::ClockTime::from_seconds(10);
+/// Up and Down change the volume by the volume slider's own step.
+const VOLUME_STEP: f64 = 0.05;
 const DEFAULT_FRAME: gst::ClockTime = gst::ClockTime::from_nseconds(33_333_333);
 const SEEK_SETTLE: Duration = Duration::from_millis(400);
 
@@ -42,6 +45,7 @@ pub(super) struct VideoPlayer {
     surface: gtk::Picture,
     badge: gtk::Button,
     controls: Controls,
+    osd: osd::Osd,
     hooks: VideoHooks,
     state: Cell<PlayState>,
     available: Cell<bool>,
@@ -72,6 +76,7 @@ impl VideoPlayer {
             surface: video_surface(&paintable),
             badge: badge.clone(),
             controls: Controls::new(volume, muted),
+            osd: osd::Osd::new(),
             hooks,
             state: Cell::new(PlayState::Stopped),
             available: Cell::new(false),
@@ -97,6 +102,11 @@ impl VideoPlayer {
 
     pub(super) fn controls(&self) -> &gtk::Revealer {
         &self.controls.revealer
+    }
+
+    /// The badge flashed over the video; it sits between the surface and the controls.
+    pub(super) fn osd(&self) -> &gtk::Box {
+        &self.osd.root
     }
 
     pub(super) fn volume(&self) -> f64 {
@@ -160,9 +170,25 @@ impl VideoPlayer {
             (self.hooks.start)();
         } else if self.is_playing() {
             self.play.pause();
+            self.osd.flash("media-playback-pause-symbolic", None);
+            return;
         } else {
             self.play.play();
         }
+        self.osd.flash("media-playback-start-symbolic", None);
+    }
+
+    /// Up and Down: a step louder or quieter, unmuting on the way up, shown as a percentage.
+    pub(super) fn nudge_volume(&self, louder: bool) {
+        let step = if louder { VOLUME_STEP } else { -VOLUME_STEP };
+        let volume = (self.volume() + step).clamp(0.0, 1.0);
+        if louder && self.muted() {
+            self.controls.mute.set_active(false);
+        }
+        self.controls.volume.set_value(volume);
+        let percent = format!("{}%", (volume * 100.0).round());
+        self.osd
+            .flash(volume_icon(volume, self.muted()), Some(&percent));
     }
 
     pub(super) fn pause(&self) {

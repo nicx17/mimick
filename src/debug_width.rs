@@ -67,7 +67,7 @@ pub fn trace_overflow_warnings(window: &impl IsA<gtk::Window>) {
                 let width = available_width(&content);
                 eprintln!("[width] ===== at the warning: {width} px available =====");
                 let mut culprits = Vec::new();
-                walk(&content, 0, width, true, &mut culprits, false);
+                walk(&content, &Walk::root(width, true), &mut culprits);
                 print_summary(width, culprits);
             }
         },
@@ -78,8 +78,36 @@ fn dump(root: &gtk::Widget, width: i32, print_all: bool) {
     eprintln!("[width] ===== {width} px available =====");
     eprintln!("[width] min / nat = minimum and natural width | alloc = allocated width");
     let mut culprits = Vec::new();
-    walk(root, 0, width, print_all, &mut culprits, false);
+    walk(root, &Walk::root(width, print_all), &mut culprits);
     print_summary(width, culprits);
+}
+
+/// Where the walk is: how deep, and whether every widget above is too wide as well.
+struct Walk {
+    depth: usize,
+    limit: i32,
+    print_all: bool,
+    /// False below a widget that fits, such as a scroller: overflow there just scrolls.
+    chain_over: bool,
+}
+
+impl Walk {
+    fn root(limit: i32, print_all: bool) -> Self {
+        Self {
+            depth: 0,
+            limit,
+            print_all,
+            chain_over: true,
+        }
+    }
+
+    fn child(&self, over: bool) -> Self {
+        Self {
+            depth: self.depth + 1,
+            chain_over: self.chain_over && over,
+            ..*self
+        }
+    }
 }
 
 fn print_summary(width: i32, culprits: Vec<String>) {
@@ -91,34 +119,33 @@ fn print_summary(width: i32, culprits: Vec<String>) {
     }
 }
 
-/// Print `widget` and its subtree; returns whether anything in it is wider than `limit`.
-/// The innermost too-wide widgets go into `culprits`.
-fn walk(
-    widget: &gtk::Widget,
-    depth: usize,
-    limit: i32,
-    print_all: bool,
-    culprits: &mut Vec<String>,
-    quiet: bool,
-) -> bool {
+/// Print `widget` and its subtree; returns whether it widens the window past `limit`.
+/// Only widgets whose every ancestor is too wide count, and the innermost go into `culprits`.
+fn walk(widget: &gtk::Widget, at: &Walk, culprits: &mut Vec<String>) -> bool {
     if !widget.is_visible() {
         return false;
     }
     let (min, nat, _, _) = widget.measure(gtk::Orientation::Horizontal, -1);
-    let over = min > limit;
-    if !quiet && (print_all || over || min >= MIN_REPORTED) {
+    let over = at.chain_over && min > at.limit;
+    if at.print_all || over || min >= MIN_REPORTED {
         eprintln!(
-            "[width] {}{} min {min} nat {nat} | alloc {}{}",
-            "  ".repeat(depth),
+            "[width] {}{} min {min} nat {nat} | alloc {}{}{}",
+            "  ".repeat(at.depth),
             describe(widget),
             widget.width(),
+            // A stack's hidden pages still count toward its width; their allocation is stale.
+            if widget.is_child_visible() {
+                ""
+            } else {
+                " (hidden page)"
+            },
             if over { "  <-- WIDER THAN WINDOW" } else { "" },
         );
     }
     let mut child_over = false;
     let mut child = widget.first_child();
     while let Some(current) = child {
-        child_over |= walk(&current, depth + 1, limit, print_all, culprits, quiet);
+        child_over |= walk(&current, &at.child(over), culprits);
         child = current.next_sibling();
     }
     if over && !child_over {

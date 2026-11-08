@@ -34,12 +34,14 @@ pub(super) fn choose_diagnostics_folder(window: &adw::ApplicationWindow, ctx: Ar
 fn export_diagnostics(window: &adw::ApplicationWindow, ctx: &AppContext, path: std::path::PathBuf) {
     let state_snapshot = ctx.state.lock().clone();
     let config_snapshot = ctx.config.read().clone();
+    // Read here, on the GTK thread, like the rest of Settings: the log is scrubbed of it.
+    let api_key = config_snapshot.get_api_key().unwrap_or_default();
     glib::MainContext::default().spawn_local(clone!(
         #[weak]
         window,
         async move {
             let export_result = tokio::task::spawn_blocking(move || {
-                diagnostics::export_bundle(&path, &state_snapshot, &config_snapshot)
+                diagnostics::export_bundle(&path, &state_snapshot, &config_snapshot, &api_key)
             })
             .await;
             let (heading, body) = match export_result {

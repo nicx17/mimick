@@ -41,12 +41,7 @@ fn apply(ui: &LibraryWindowUi, features: LibraryFeatures) -> bool {
     super::bottom_nav::set_button_visible(&ui.bottom_nav, "people", features.people);
     super::bottom_nav::set_button_visible(&ui.bottom_nav, "map", features.map);
     super::search_view::set_available_modes(&ui.search_view, features.smart_search, features.ocr);
-    super::search_view::set_filter_features(
-        &ui.search_view,
-        features.ocr,
-        features.ratings,
-        features.tags,
-    );
+    super::search_view::set_filter_features(&ui.search_view, &features);
     let sections = ExploreSections {
         people: features.people,
         places: features.places,
@@ -81,9 +76,8 @@ pub(super) fn is_available(features: &LibraryFeatures, location: &Location) -> b
         ) => features.smart_search,
         Location::Source(LibrarySource::OcrSearch { .. }) => features.ocr,
         Location::Source(LibrarySource::Memory { .. }) => features.memories,
-        Location::Source(LibrarySource::MapArea { .. }) | Location::Page(LibraryPage::Map) => {
-            features.map
-        }
+        Location::Source(LibrarySource::MapArea { .. })
+        | Location::Page(LibraryPage::Map { .. }) => features.map,
         _ => true,
     }
 }

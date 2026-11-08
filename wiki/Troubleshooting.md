@@ -189,8 +189,9 @@ Use **Export Diagnostics** in **Settings → Troubleshooting** to collect:
 - `status.redacted.json`
 - `retries.redacted.json`
 - `synced_index.redacted.json`
+- `log.redacted.txt`, the end of the log with the API key, server addresses, and your home folder replaced
 
-API keys, raw logs, full local paths, and raw server URLs are intentionally omitted. The bundle is written to a timestamped `mimick-diagnostics-*` folder.
+The API key, server addresses, and full local paths are otherwise left out. The bundle is written to a timestamped `mimick-diagnostics-*` folder. For a bug report, switch on **Detailed Logs** first, reproduce the problem, export, and attach `log.redacted.txt` to the issue along with the debug info from **About Mimick → Troubleshooting**.
 
 ### Useful Logs
 

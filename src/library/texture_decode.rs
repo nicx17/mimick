@@ -7,6 +7,8 @@
 use gtk::prelude::*;
 
 mod codecs;
+mod heif_thumbnail;
+pub(super) use heif_thumbnail::{decode_heif_thumbnail, is_heif_path};
 
 /// Runtime flag controlling the on-disk RAW decode cache.
 /// Initialised from config at startup; toggled live from the settings UI.

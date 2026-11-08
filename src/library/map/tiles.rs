@@ -16,6 +16,34 @@ use super::styles::{MapAppearance, MapStyle};
 const OSM_TILE_URL: &str = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const OSM_CREDIT: &str =
     "<a href=\"https://www.openstreetmap.org/copyright\">© OpenStreetMap contributors</a>";
+const TOPO_CREDIT: &str = "<a href=\"https://www.openstreetmap.org/copyright\">© OpenStreetMap \
+contributors</a>, SRTM · <a href=\"https://opentopomap.org\">© OpenTopoMap</a> (CC-BY-SA)";
+const HOT_CREDIT: &str = "<a href=\"https://www.openstreetmap.org/copyright\">© OpenStreetMap \
+contributors</a> · <a href=\"https://www.hotosm.org\">Humanitarian OpenStreetMap Team</a>, \
+hosted by <a href=\"https://www.openstreetmap.fr\">OpenStreetMap France</a>";
+
+/// A tile server's map: id, URL, credit, and the deepest zoom it draws.
+struct TileMap {
+    id: &'static str,
+    url: &'static str,
+    credit: &'static str,
+    max_zoom: u32,
+}
+
+const TOPO: TileMap = TileMap {
+    id: "opentopomap",
+    url: "https://tile.opentopomap.org/{z}/{x}/{y}.png",
+    credit: TOPO_CREDIT,
+    max_zoom: 17,
+};
+
+const HUMANITARIAN: TileMap = TileMap {
+    id: "humanitarian",
+    url: "https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+    credit: HOT_CREDIT,
+    max_zoom: 19,
+};
+
 /// Recently used styles stay loaded, so switching back to one is instant.
 const KEPT_STYLES: usize = 3;
 
@@ -226,7 +254,7 @@ async fn load_sources(api: &Arc<ImmichApiClient>, style: MapStyle) -> (Sources, 
         return (sources, true);
     }
     let Some((light, dark)) = style.themes() else {
-        return (Sources::raster(), true);
+        return (Sources::single(tile_map(style)), true);
     };
     if light == dark {
         let light = bundled_source(api, &light).await;
@@ -303,6 +331,27 @@ async fn style_source(api: &ImmichApiClient, url: Option<&str>) -> shumate::MapS
             raster()
         }
     }
+}
+
+/// OpenTopoMap, Humanitarian, or else OpenStreetMap's own tiles.
+fn tile_map(style: MapStyle) -> shumate::MapSource {
+    let map = match style {
+        MapStyle::OpenTopoMap => &TOPO,
+        MapStyle::Humanitarian => &HUMANITARIAN,
+        _ => return raster(),
+    };
+    let renderer = shumate::RasterRenderer::new_full_from_url(
+        map.id,
+        &style.label(),
+        map.credit,
+        "https://www.openstreetmap.org/copyright",
+        0,
+        map.max_zoom,
+        256,
+        shumate::MapProjection::Mercator,
+        map.url,
+    );
+    renderer.upcast()
 }
 
 fn raster() -> shumate::MapSource {

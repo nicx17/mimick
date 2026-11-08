@@ -14,7 +14,9 @@ use crate::api_client::SharedLink;
 
 use super::LibraryWindowUi;
 use super::albums_view::spawn_thumbnail;
-use super::context_menu::{show_alert_dialog, show_error_toast};
+use super::context_menu::{
+    Menu, connect_context_menu, menu_key, show_alert_dialog, show_error_toast,
+};
 use super::shared_link_dialog::{self, LinkDialogMode, copy_to_clipboard, format_expiry};
 
 const COPY_ICON: &str = "edit-copy-symbolic";
@@ -137,9 +139,92 @@ fn link_row(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::ListBoxRow {
         .build();
     content.append(&link_cover(ui, link));
     content.append(&link_text(link));
-    content.append(&copy_button(ui, link));
-    content.append(&delete_button(ui, link));
-    gtk::ListBoxRow::builder().child(&content).build()
+    content.append(&row_buttons(&[
+        copy_button(ui, link),
+        qr_button(ui, link),
+        more_button(ui, link),
+    ]));
+    let row = gtk::ListBoxRow::builder().child(&content).build();
+    connect_row_menu(ui, link, &row);
+    row
+}
+
+/// Right-click, long-press, and the Menu key open the same menu as the ⋯ button.
+fn connect_row_menu(ui: &Rc<LibraryWindowUi>, link: &SharedLink, row: &gtk::ListBoxRow) {
+    // Weak: the row owns these controllers, and a strong handle would keep it alive forever.
+    let (ui_menu, link_menu, row_menu) = (ui.clone(), link.clone(), row.downgrade());
+    connect_context_menu(row, move |x, y| {
+        if let Some(row) = row_menu.upgrade() {
+            link_menu_at(&ui_menu, &link_menu, &row, x, y).popup();
+        }
+    });
+    let (ui, link, row_key) = (ui.clone(), link.clone(), row.downgrade());
+    row.add_controller(menu_key(move || {
+        if let Some(row) = row_key.upgrade() {
+            let (x, y) = (f64::from(row.width()) / 2.0, f64::from(row.height()) / 2.0);
+            link_menu_at(&ui, &link, &row, x, y).popup();
+        }
+    }));
+}
+
+/// QR Code, Photos (for links to some photos), Edit, and Delete, so a narrow row keeps
+/// room for the link's name.
+fn more_button(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::Button {
+    let button = icon_button("view-more-symbolic", &gettext("More"));
+    let (ui, link) = (ui.clone(), link.clone());
+    button.connect_clicked(move |button| {
+        let (x, y) = (f64::from(button.width()) / 2.0, f64::from(button.height()));
+        link_menu_at(&ui, &link, button, x, y).popup();
+    });
+    button
+}
+
+fn link_menu_at(
+    ui: &Rc<LibraryWindowUi>,
+    link: &SharedLink,
+    parent: &impl IsA<gtk::Widget>,
+    x: f64,
+    y: f64,
+) -> Menu {
+    let menu = Menu::new(parent, x, y);
+    let (ui_qr, link_qr) = (ui.clone(), link.clone());
+    menu.add_with_icon(
+        "mimick-qr-code-symbolic",
+        &gettext("QR Code"),
+        false,
+        move || super::shared_link_qr::present(&ui_qr, &link_qr),
+    );
+    if link.album.is_none() {
+        let (ui_photos, link_photos) = (ui.clone(), link.clone());
+        menu.add_with_icon(
+            "image-x-generic-symbolic",
+            &gettext("Photos…"),
+            false,
+            move || {
+                let ui_after = ui_photos.clone();
+                super::shared_link_photos::present(
+                    &ui_photos,
+                    &link_photos,
+                    Rc::new(move || reload(ui_after.clone())),
+                )
+            },
+        );
+    }
+    let (ui_edit, link_edit) = (ui.clone(), link.clone());
+    menu.add_with_icon(
+        "document-edit-symbolic",
+        &gettext("Edit…"),
+        false,
+        move || edit(&ui_edit, link_edit.clone()),
+    );
+    let (ui_delete, link_id) = (ui.clone(), link.id.clone());
+    menu.add_with_icon(
+        "user-trash-symbolic",
+        &gettext("Delete…"),
+        true,
+        move || confirm_delete(ui_delete.clone(), link_id.clone()),
+    );
+    menu
 }
 
 fn link_cover(ui: &LibraryWindowUi, link: &SharedLink) -> gtk::Overlay {
@@ -214,6 +299,22 @@ fn text_label(text: &str, classes: &[&str]) -> gtk::Label {
         .build()
 }
 
+/// Side by side without the row's gaps, so the link's name keeps room on a phone.
+fn row_buttons(buttons: &[gtk::Button]) -> gtk::Box {
+    let group = gtk::Box::builder().valign(gtk::Align::Center).build();
+    for button in buttons {
+        group.append(button);
+    }
+    group
+}
+
+fn qr_button(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::Button {
+    let button = icon_button("mimick-qr-code-symbolic", &gettext("Show QR code"));
+    let (ui, link) = (ui.clone(), link.clone());
+    button.connect_clicked(move |_| super::shared_link_qr::present(&ui, &link));
+    button
+}
+
 fn copy_button(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::Button {
     let button = icon_button(COPY_ICON, &gettext("Copy link"));
     let (ui, link) = (ui.clone(), link.clone());
@@ -239,14 +340,6 @@ fn show_copied(button: &gtk::Button) {
             button.set_icon_name(COPY_ICON);
         }
     });
-}
-
-fn delete_button(ui: &Rc<LibraryWindowUi>, link: &SharedLink) -> gtk::Button {
-    let button = icon_button("user-trash-symbolic", &gettext("Delete link"));
-    button.add_css_class("error");
-    let (ui, link_id) = (ui.clone(), link.id.clone());
-    button.connect_clicked(move |_| confirm_delete(ui.clone(), link_id.clone()));
-    button
 }
 
 fn icon_button(icon: &str, tooltip: &str) -> gtk::Button {

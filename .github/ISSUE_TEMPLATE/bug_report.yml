@@ -1,0 +1,52 @@
+name: Bug report
+description: Something in Mimick doesn't work the way it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. For questions or help with setup, please use [Discussions](https://github.com/nicx17/mimick/discussions) instead.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead. Screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open …
+        2. Click …
+        3. See …
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install Mimick?
+      options:
+        - Flathub
+        - Flatpak bundle from GitHub
+        - AppImage
+        - AUR
+        - Built from source
+    validations:
+      required: true
+  - type: input
+    id: immich-version
+    attributes:
+      label: Immich server version
+      placeholder: v3.3.6
+  - type: textarea
+    id: debug-info
+    attributes:
+      label: Debug info
+      description: In Mimick, open the main menu → About Mimick → Troubleshooting → Debug Info, and copy it here.
+      render: text
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        In Settings → Troubleshooting, switch on Detailed Logs, reproduce the problem, then choose Export Diagnostics. Drag the bundle's `log.redacted.txt` here. The API key, server addresses, and your home folder are replaced, but please read it before sharing.

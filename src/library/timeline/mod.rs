@@ -3,6 +3,7 @@
 pub mod dates;
 pub mod index;
 pub mod layout;
+mod load_all;
 pub mod marks;
 pub mod nav;
 pub mod scrubber;
@@ -19,6 +20,7 @@ use super::state::{LibrarySortMode, LibrarySource};
 use crate::api_client::LibraryAsset;
 use index::{Month, TimelineIndex};
 use layout::section_at;
+pub(super) use load_all::load_all;
 
 /// Called once a month finishes loading: `(insert position, photos added)`, or `None` on failure.
 type Waiter = Box<dyn FnOnce(Option<(u32, u32)>)>;

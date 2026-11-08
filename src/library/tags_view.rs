@@ -11,7 +11,7 @@ use crate::api_client::Tag;
 use super::LibraryWindowUi;
 use super::asset_tags::color_dot;
 use super::context_menu::{show_alert_dialog, show_error_toast};
-use super::dialogs::{TextPrompt, confirm, popover_menu, prompt_text};
+use super::dialogs::{TextPrompt, confirm, prompt_text};
 use super::state::{LibraryPage, LibrarySource, Location};
 use super::tree_page::{
     TreePage, build_tree_page, parent_path, render_breadcrumbs, show_empty_state,
@@ -32,8 +32,12 @@ pub(super) struct TagsView {
 pub(super) fn build_tags_view() -> TagsView {
     let page = build_tree_page("mimick-tag-symbolic");
     let new_tag = gtk::Button::builder()
-        .icon_name("list-add-symbolic")
-        .tooltip_text(gettext("New tag"))
+        .child(
+            &libadwaita::ButtonContent::builder()
+                .icon_name("list-add-symbolic")
+                .label(gettext("New Tag"))
+                .build(),
+        )
         .build();
     page.toolbar.append(&new_tag);
     TagsView {
@@ -108,13 +112,11 @@ fn render(ui: &Rc<LibraryWindowUi>) {
     let (title, body) = match &path {
         None => (
             gettext("No Tags"),
-            gettext(
-                "Create a tag with the + button, or tag photos from the lightbox details pane.",
-            ),
+            gettext("Create a tag with New Tag, or tag photos from the lightbox details pane."),
         ),
         Some(_) => (
             gettext("No Tags Inside"),
-            gettext("Use the + button to add one here."),
+            gettext("Use New Tag to add one here."),
         ),
     };
     show_empty_state(
@@ -143,14 +145,9 @@ fn tag_row(ui: &Rc<LibraryWindowUi>, tag: &Tag, children: usize) -> libadwaita::
         ));
     }
     row.add_prefix(&color_dot(tag.color.as_deref(), 12));
-    let menu = gtk::MenuButton::builder()
-        .icon_name("view-more-symbolic")
-        .tooltip_text(gettext("More"))
-        .valign(gtk::Align::Center)
-        .css_classes(["flat"])
-        .build();
-    popover_menu(&menu, tag_menu_items(ui, tag));
-    row.add_suffix(&menu);
+    for button in row_actions(ui, tag) {
+        row.add_suffix(&button);
+    }
     if children > 0 {
         let browse = gtk::Button::builder()
             .icon_name("go-next-symbolic")
@@ -176,6 +173,27 @@ fn tag_row(ui: &Rc<LibraryWindowUi>, tag: &Tag, children: usize) -> libadwaita::
         );
     });
     row
+}
+
+/// Rename, Change Color, and Delete as buttons on the row, one tap away like a link's QR code.
+fn row_actions(ui: &Rc<LibraryWindowUi>, tag: &Tag) -> [gtk::Button; 3] {
+    type Action = fn(&Rc<LibraryWindowUi>, &Tag);
+    let actions: [(&str, String, Action); 3] = [
+        ("document-edit-symbolic", gettext("Rename"), rename_tag),
+        ("color-select-symbolic", gettext("Change color"), pick_color),
+        ("user-trash-symbolic", gettext("Delete"), delete_tag),
+    ];
+    actions.map(|(icon, tooltip, action)| {
+        let button = gtk::Button::builder()
+            .icon_name(icon)
+            .tooltip_text(tooltip)
+            .valign(gtk::Align::Center)
+            .css_classes(["flat"])
+            .build();
+        let (ui, tag) = (ui.clone(), tag.clone());
+        button.connect_clicked(move |_| action(&ui, &tag));
+        button
+    })
 }
 
 pub(super) fn tag_menu_items(ui: &Rc<LibraryWindowUi>, tag: &Tag) -> Vec<(String, Box<dyn Fn()>)> {
@@ -307,25 +325,27 @@ type ChosenColor = Rc<RefCell<String>>;
 
 fn pick_color(ui: &Rc<LibraryWindowUi>, tag: &Tag) {
     let chosen: ChosenColor = Rc::new(RefCell::new(tag.color.clone().unwrap_or_default()));
-    let (swatches, buttons) = color_swatches(&chosen);
-    let body = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(12)
-        .build();
-    body.append(&swatches);
-    body.append(&custom_color_row(tag, &chosen, buttons));
     let dialog = libadwaita::AlertDialog::builder()
         .heading(fill(
             gettext("Color for “{name}”"),
             &[("name", &tag.name.to_string())],
         ))
-        .extra_child(&body)
         .build();
     dialog.add_response("cancel", &gettext("Cancel"));
     dialog.add_response("save", &gettext("Save"));
     dialog.set_response_appearance("save", libadwaita::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("save"));
     dialog.set_close_response("cancel");
+    // A tag without a color has nothing to save until one is picked.
+    dialog.set_response_enabled("save", !chosen.borrow().is_empty());
+    let (swatches, buttons) = color_swatches(&chosen, &dialog);
+    let body = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(12)
+        .build();
+    body.append(&swatches);
+    body.append(&custom_color_row(tag, &chosen, buttons, &dialog));
+    dialog.set_extra_child(Some(&body));
     let (ui_save, tag_id) = (ui.clone(), tag.id.clone());
     dialog.connect_response(None, move |_, response| {
         let color = chosen.borrow().clone();
@@ -340,7 +360,11 @@ fn pick_color(ui: &Rc<LibraryWindowUi>, tag: &Tag) {
     dialog.present(Some(&ui.window));
 }
 
-fn color_swatches(chosen: &ChosenColor) -> (gtk::FlowBox, Rc<Vec<gtk::ToggleButton>>) {
+/// The preset colors as one group, so exactly one stays picked and tapping it again keeps it.
+fn color_swatches(
+    chosen: &ChosenColor,
+    dialog: &libadwaita::AlertDialog,
+) -> (gtk::FlowBox, Rc<Vec<gtk::ToggleButton>>) {
     let swatches = gtk::FlowBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .homogeneous(true)
@@ -361,17 +385,15 @@ fn color_swatches(chosen: &ChosenColor) -> (gtk::FlowBox, Rc<Vec<gtk::ToggleButt
             })
             .collect(),
     );
+    for swatch in buttons.iter().skip(1) {
+        swatch.set_group(buttons.first());
+    }
     for (swatch, color) in buttons.iter().zip(PRESET_COLORS) {
-        let (chosen, buttons_for_toggle) = (chosen.clone(), Rc::downgrade(&buttons));
+        let (chosen, dialog) = (chosen.clone(), dialog.clone());
         swatch.connect_toggled(move |swatch| {
-            if !swatch.is_active() {
-                return;
-            }
-            *chosen.borrow_mut() = color.to_string();
-            if let Some(buttons) = buttons_for_toggle.upgrade() {
-                for other in buttons.iter().filter(|other| *other != swatch) {
-                    other.set_active(false);
-                }
+            if swatch.is_active() {
+                *chosen.borrow_mut() = color.to_string();
+                dialog.set_response_enabled("save", true);
             }
         });
         swatches.append(swatch);
@@ -383,6 +405,7 @@ fn custom_color_row(
     tag: &Tag,
     chosen: &ChosenColor,
     swatches: Rc<Vec<gtk::ToggleButton>>,
+    dialog: &libadwaita::AlertDialog,
 ) -> gtk::Box {
     let custom = gtk::ColorDialogButton::builder()
         .dialog(&gtk::ColorDialog::builder().with_alpha(false).build())
@@ -396,12 +419,13 @@ fn custom_color_row(
     {
         custom.set_rgba(&rgba);
     }
-    let chosen = chosen.clone();
+    let (chosen, dialog) = (chosen.clone(), dialog.clone());
     custom.connect_rgba_notify(move |button| {
         for swatch in swatches.iter() {
             swatch.set_active(false);
         }
         *chosen.borrow_mut() = rgba_hex(&button.rgba());
+        dialog.set_response_enabled("save", true);
     });
     let row = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)

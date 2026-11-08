@@ -25,6 +25,7 @@ mod interaction;
 mod live;
 mod location;
 mod ocr;
+mod panorama;
 mod people;
 mod rating;
 mod slideshow;
@@ -186,6 +187,7 @@ pub(super) struct Lightbox {
     video_badge_button: gtk::Button,
     live_button: gtk::ToggleButton,
     live_layer: gtk::Box,
+    panorama: Rc<panorama::Panorama>,
     motion: RefCell<Option<Rc<super::video_player::MotionPlayer>>>,
     /// A stack member picked in the stack strip, shown in place of the grid item.
     member: RefCell<Option<AssetObject>>,
@@ -238,6 +240,7 @@ pub(super) fn open_lightbox(ui: Rc<LibraryWindowUi>, position: u32) {
     lightbox.connect_actions();
     lightbox.connect_fullscreen();
     lightbox.connect_live();
+    lightbox.connect_panorama();
     lightbox.connect_slideshow();
     lightbox.connect_stack();
     lightbox.connect_faces();
@@ -317,6 +320,7 @@ impl Lightbox {
         }
         self.close_video();
         self.close_live();
+        self.leave_panorama();
         self.picture.strip.stop();
         for picture in self.picture.strip.pictures() {
             picture.set_paintable(None::<&gtk::gdk::Paintable>);

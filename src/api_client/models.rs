@@ -532,6 +532,9 @@ pub struct ExifInfo {
     pub exif_image_height: Option<u32>,
     #[serde(default)]
     pub rating: Option<i8>,
+    /// `EQUIRECTANGULAR` for 360° photos.
+    #[serde(default)]
+    pub projection_type: Option<String>,
 }
 
 /// Asset details metadata payload.

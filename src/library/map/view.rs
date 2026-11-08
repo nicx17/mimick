@@ -15,6 +15,7 @@ use crate::library::LibraryWindowUi;
 use crate::library::navigation;
 use crate::library::state::{AssetIds, LibrarySource};
 
+use super::album::AlbumScope;
 use super::camera;
 use super::cluster::{self, Cluster, PixelWindow};
 use super::controls::{self, MapControls};
@@ -23,6 +24,7 @@ use super::layout::Mode;
 use super::markers::{self, Members};
 use super::minimap::Minimap;
 use super::search::{self, MapSearch};
+use super::status::{Status, show_status, status_page};
 use super::styles::{MapAppearance, MapStyle};
 use super::tiles::Tiles;
 
@@ -51,9 +53,10 @@ pub struct MapView {
     pub(super) map: shumate::SimpleMap,
     layer: shumate::MarkerLayer,
     here_layer: shumate::MarkerLayer,
-    status: libadwaita::StatusPage,
+    pub(super) status: libadwaita::StatusPage,
     resize_watch: gtk::DrawingArea,
     pub(super) controls: MapControls,
+    pub(super) album: AlbumScope,
     pub(super) search: MapSearch,
     pub tiles: Rc<Tiles>,
     /// Markers are loaded; cleared after location edits so the next visit reloads.
@@ -83,13 +86,6 @@ struct ViewState {
     selected: Option<usize>,
 }
 
-enum Status<'a> {
-    Loading,
-    Empty,
-    Error(&'a str),
-    Hidden,
-}
-
 pub fn build_map_view() -> MapView {
     let map = shumate::SimpleMap::builder()
         .show_zoom_buttons(false)
@@ -108,7 +104,9 @@ pub fn build_map_view() -> MapView {
     map.add_overlay_layer(&layer);
     let (status, resize_watch) = (status_page(), resize_watch());
     let controls = controls::build(&viewport);
+    let album = AlbumScope::new();
     let overlay = gtk::Overlay::builder().child(&map).build();
+    overlay.add_overlay(&album.chip);
     overlay.add_overlay(&resize_watch);
     overlay.add_overlay(&status);
     overlay.add_overlay(&controls.root);
@@ -125,6 +123,7 @@ pub fn build_map_view() -> MapView {
         status,
         resize_watch,
         controls,
+        album,
         search,
         tiles: Tiles::new(),
         populated: Cell::new(false),
@@ -148,17 +147,6 @@ fn split_with(map: &libadwaita::ToastOverlay) -> gtk::Paned {
         .shrink_end_child(false)
         .wide_handle(true)
         .vexpand(true)
-        .build()
-}
-
-fn status_page() -> libadwaita::StatusPage {
-    libadwaita::StatusPage::builder()
-        .icon_name("mark-location-symbolic")
-        .halign(gtk::Align::Center)
-        .valign(gtk::Align::Center)
-        .can_target(false)
-        .css_classes(["card", "compact", "mimick-map-status"])
-        .visible(false)
         .build()
 }
 
@@ -200,12 +188,18 @@ pub fn connect_map_view(ui: &Rc<LibraryWindowUi>) {
         }
     });
     controls::connect(ui);
+    super::album::connect(ui);
     search::connect(ui);
     super::layout::connect(ui);
 }
 
 pub(super) fn show(ui: &Rc<LibraryWindowUi>) {
     ui.map.tiles.attach(ui, &ui.map.map);
+    if super::album::follow(ui) {
+        ui.map.populated.set(false);
+        ui.map.state.borrow_mut().camera_placed = false;
+        controls::sync_settings_button(ui);
+    }
     if !ui.map.populated.get() {
         load(ui.clone());
     }
@@ -264,14 +258,27 @@ fn select(ui: &Rc<LibraryWindowUi>, anchor: Option<usize>) {
     });
 }
 
+/// Load the markers again with the current Map Settings, now if the map shows.
+pub(super) fn reload(ui: &Rc<LibraryWindowUi>) {
+    ui.map.populated.set(false);
+    if ui.map.root.is_mapped() {
+        load(ui.clone());
+    }
+}
+
 fn load(ui: Rc<LibraryWindowUi>) {
     if ui.map.loading.replace(true) {
         return;
     }
     show_status(&ui.map, Status::Loading);
     glib::MainContext::default().spawn_local(async move {
-        let result = ui.ctx.api_client.fetch_map_markers().await;
+        let source = super::album::marker_source(&ui);
+        let result = super::album::fetch_markers(&ui, &source).await;
         ui.map.loading.set(false);
+        // The album or Map Settings changed while this load ran: its markers are out of date.
+        if super::album::marker_source(&ui) != source {
+            return load(ui);
+        }
         match result {
             Ok(markers) => apply_markers(&ui, markers),
             Err(err) => show_status(&ui.map, Status::Error(&err)),
@@ -317,25 +324,6 @@ fn place_camera(view: &MapView) {
         map.center_on(lat, lon);
         state.camera_placed = true;
     }
-}
-
-fn show_status(view: &MapView, status: Status<'_>) {
-    let (title, description) = match status {
-        Status::Loading => (&gettext("Loading Map…"), String::new()),
-        Status::Empty => (
-            &gettext("No Photos With a Location"),
-            gettext("Photos with GPS data, or a location you set, appear here"),
-        ),
-        Status::Error(err) => (&gettext("Could Not Load the Map"), err.to_string()),
-        Status::Hidden => {
-            view.status.set_visible(false);
-            return;
-        }
-    };
-    view.status.set_title(title);
-    view.status
-        .set_description((!description.is_empty()).then_some(description.as_str()));
-    view.status.set_visible(true);
 }
 
 /// At most one refresh per delay, so markers keep up while the map is dragged.

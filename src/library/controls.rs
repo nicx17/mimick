@@ -42,6 +42,9 @@ fn connect_window_actions(ui: &Rc<LibraryWindowUi>) {
         }
     ));
     ui.window.add_action(&action_settings);
+    // Ctrl+, opens preferences across GNOME apps; the main menu shows it beside Settings.
+    ui.app
+        .set_accels_for_action("win.settings", &["<Control>comma"]);
 
     let action_queue = gtk::gio::SimpleAction::new("queue", None);
     action_queue.connect_activate(clone!(
@@ -80,6 +83,7 @@ fn connect_window_actions(ui: &Rc<LibraryWindowUi>) {
     ));
 }
 
+/// `win.shortcuts` (Ctrl+?) and `win.about`, the main menu's last two items.
 fn connect_shortcuts_action(ui: &Rc<LibraryWindowUi>) {
     let action = gtk::gio::SimpleAction::new("shortcuts", None);
     action.connect_activate(clone!(
@@ -90,6 +94,10 @@ fn connect_shortcuts_action(ui: &Rc<LibraryWindowUi>) {
     ui.window.add_action(&action);
     ui.app
         .set_accels_for_action("win.shortcuts", &["<Control>question"]);
+    let about = gtk::gio::SimpleAction::new("about", None);
+    let window = ui.window.clone();
+    about.connect_activate(move |_, _| crate::about::present(&window));
+    ui.window.add_action(&about);
 }
 
 /// Upload button and the F5 shortcut; Back is wired in `connect_back_controls`.
@@ -232,8 +240,7 @@ fn select_all(ui: &Rc<LibraryWindowUi>) -> bool {
     if !ui.grid.canvas.is_mapped() || ui.grid.model.n_items() == 0 || !no_dialog_open(ui) {
         return false;
     }
-    ui.select_toggle.set_active(true);
-    ui.grid.selection.select_all();
+    super::select_all::start(ui);
     true
 }
 

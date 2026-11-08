@@ -6,10 +6,12 @@ The library view is an optional in-app browser for your Immich server's assets, 
 
 ## Enabling the Library View
 
+The library view is on by default for new installs. On first run Mimick opens Settings with the **Get Started** steps; once **Save and Connect** succeeds, the library window opens in its place. Settings stay one click away under **Settings** in the main menu.
+
+If you turned it off, or upgraded from a version where it was off:
+
 1. Turn on **Settings → App → Library View**. It saves right away.
 2. Close the window and open Mimick again. The tray menu's library entry appears after a restart.
-
-The library window now opens instead of the settings window. Settings remain accessible from **Settings** in the header bar's main menu.
 
 |                                               Photos (Light)                                               |                                                Photos (Phone)                                                |
 | :--------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
@@ -79,7 +81,9 @@ If Mimick can't read these settings (for example, an API key without `userPrefer
 
 - source selector (**Remote / Local / Unified**), inside albums only
 - sort selector (**Newest / Filename / File Type**, or the album sorts on the Albums page), where there's something to sort
-- **Upload** button (invokes the manual multi-file picker)
+- **Upload** button (invokes the manual multi-file picker), on Photos and on albums you can add to
+
+The main menu starts with a **Follow System** / **Light** / **Dark** switch for the whole app, and ends with **Keyboard Shortcuts** and **About Mimick**. About Mimick shows what's new in this version, links to the website, source, documentation, and support questions, and, under **Troubleshooting**, debug info to paste into a bug report.
 
 |                                             Main Menu                                             |                                             Sort Options                                             |
 | :-----------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
@@ -184,7 +188,7 @@ Use the mode dropdown below the search entry, next to **Search**:
 
 ### Filters
 
-Press **Filters** under the search entry to open the filters panel: it docks on the right of the results on wide windows and slides in over them on phones (swipe it away or press the close button). The panel has the text, type and flags, tag, date, camera, and location groups, with **Reset** (clears the filters, keeping your search text) and **Search** at the bottom; on phones **Search** also closes the panel so you see the results. The **Filters** button shows how many filters are set, for example **Filters · 3**. The **Clear** button next to **Filters** clears the search text and the filters.
+Press **Filters** under the search entry to open the filters panel: it docks on the right of the results on wide windows and slides in over them on phones (swipe it away or press the close button). The panel has the text; people, tags, and albums; type and flags; date; camera; and location groups, with **Reset** (clears the filters, keeping your search text) and **Search** at the bottom; on phones **Search** also closes the panel so you see the results. The **Filters** button shows how many filters are set, for example **Filters · 3**. The **Clear** button next to **Filters** clears the search text and the filters.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-ocr-results.png" width="80%" alt="OCR search example" />
@@ -194,9 +198,13 @@ Press **Filters** under the search entry to open the filters panel: it docks on 
 | :----------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------: |
 | ![Filters](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-filters.png) | ![Filters more](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/search-filters-camera-location-phone.png) |
 
+- **People**, **Tags**, and **Albums** each open a list with a filter box; tick as many as you like (people show their faces). A photo has to have everything you pick: every person in it, every tag, and in every album. **Clear** in the list unticks them all.
+- **Camera** (make, model, lens) and **Location** (country, state, city) list the values that exist in your library; typing while a list is open finds one. Picking a make lists only its models and lenses, and picking a country lists only its states and cities, as in Immich.
+- These lists load from the server each time you open Search. People need `person.read`, tags `tag.read`, and albums `album.read`; without a permission that list stays empty.
+
 ### Search by Tag
 
-- The **Tag** filter in the advanced filters (Tags group) limits results to assets carrying one tag. Its list is loaded from the server each time you open Search.
+- The **Tags** filter limits results to assets carrying the tags you tick.
 - Clicking a tag in the lightbox details pane runs the same search directly (see [Tags in the Details Pane](#tags-in-the-details-pane)).
 - Requires the `tag.read` API key permission; without it the list stays at **Any**.
 
@@ -222,6 +230,8 @@ Clicking a tile filters the grid to assets belonging to that person, place, or t
 
 Use the **Refresh** button in the header to reload the Explore data. Sections that return no results from the server are hidden automatically.
 
+**Calendar** at the bottom is a card with a square for each day of the past year, darker the more photos you took that day (the key under it runs from **Less** to **More**), with month names above, Monday, Wednesday, and Friday beside, and the year's photo count at the top; switch to **Uploaded** to see when they reached Immich instead. The squares grow to fill wide windows. Tap or click a day (or focus the calendar and use the arrow keys: Left and Right move a week, Up and Down a day) to see its date and photo count, then **Show Photos** (or **Enter**) opens them. The arrows above it step a year back or forward. On narrow windows it scrolls sideways and starts at today. Requires `user.read`.
+
 **Face Visibility:** By default, unnamed faces are shown and hidden faces are excluded. Toggle **Show unnamed** and **Show hidden** independently from the **⋯** (Filter people) menu on the People row.
 
 ---
@@ -233,7 +243,8 @@ Select **Map** in the sidebar to see every photo and video with a location.
 - Photos close together are grouped into a bubble showing how many there are; zoom in and the bubbles split apart. A single photo shows as a round thumbnail. Hover a bubble to see where it is.
 - Click a bubble or thumbnail to list those photos beside the map, titled after the most common place among them (below the map on narrow windows). The sidebar hides to make room and comes back when you close the list; drag the divider to resize. The lightbox, selection, and bulk actions work in the list as in any grid. The **×** in the list's header or **Back** returns to the map alone, and the bubble you opened stays highlighted until then. The grid button next to the **×** hides the map so the photos fill the window, and switches back; **Open Map Places in a Full Grid** in Settings → Library makes that the way places open.
 - The first visit zooms to fit all your photos. The map remembers where you were until you refresh. You can't zoom out past the point where the world fills the map's height.
-- Archived photos are not shown, matching Immich's web map.
+- By default the map shows your own photos that aren't archived, like Immich's web map. **Map Settings** (the funnel button) can show **Only Favorites**, **Include Archived**, **Include Partners** (photos partners share with you), and **Include Shared Albums**, and limit the map to the **Past 24 Hours**, **7 Days**, **30 Days**, **Year**, or **3 Years**, or a **Custom Range** with **From** and **Until** days (either can be left as **Any Day**). Changes apply when you close it and are remembered; the button is tinted while the settings differ from the defaults.
+- **Show on Map** in an album's menu (the **⋯** in its header) shows only that album's photos. A chip with the album's name sits in the bottom-left corner; press it to see all your photos again. Map Settings don't apply to an album's map.
 
 **Search places** (top left): type a country, city, neighbourhood, street, address, or landmark. Results appear as you type (a spinner shows while Photon answers, which can take a second or two; places you already searched come back at once), with places near where the map is looking ranked first; click one, or press **Enter** for the first, and the map flies there, zoomed to fit the place, with a red pin on it. **Ctrl+F** jumps to the field from anywhere on the Map page, and after you pick a place the arrow keys move the map. **Esc** or the clear button empties the field and removes the pin. The search works the same with every map style.
 
@@ -248,11 +259,12 @@ Searches go to [Photon](https://photon.komoot.io), a free place search built on 
 | Compass             | Appears while the map is turned; click it to point north again                         |
 | Photos              | **Show photos in this area** lists every photo currently on screen                     |
 | Location            | **Show my location** asks the desktop's location service for your position (see below) |
+| Funnel              | **Map settings**: which photos the map shows (see above)                               |
 | Layers              | The map style                                                                          |
 
 When the map is short (for example on a phone, with photos listed below it), the zoom and rotate buttons are hidden; pinch, scroll, and two-finger rotation still work, and the compass still appears while the map is turned.
 
-**Map styles:** **Immich** uses the style set on your server (**Administration → Settings → Map**), the same as Immich's web app. **Colorful**, **Natural**, **Muted**, **Gray**, and **Toner** are the free VersaTiles styles (also used by Home Assistant), and **More Styles** holds VersaTiles' other themes (Positrino, Protocol, Protostar, Protozoa, Fnord, Classic, Googol, Freedom, Macbob, Mactaylor, and Bingo). **Satellite** shows aerial and satellite imagery from VersaTiles with the names of countries, states, cities, towns, villages, and neighbourhoods on top. It is sharp down to street level in about 35 European countries (Paris, Berlin, Amsterdam, and Vienna, for example) and to about town level elsewhere, including London, Madrid, Rome, and cities outside Europe; zooming in past that enlarges the closest imagery, so it gets blurry rather than blank. **OpenStreetMap** is the standard OpenStreetMap map. Under **Appearance**, **Follow System** switches maps between light and dark with the system style, and **Light** or **Dark** keeps them one way. Immich and the styles that come in both versions (Colorful, Natural, Muted, Gray, Toner, Positrino, Protocol, and Protostar) follow it; the others, Satellite, and OpenStreetMap always look the same. Your choices apply to every map in Mimick and are remembered. If a style can't be loaded, the map shows OpenStreetMap instead.
+**Map styles:** **Immich** uses the style set on your server (**Administration → Settings → Map**), the same as Immich's web app. **Colorful**, **Natural**, **Muted**, **Gray**, and **Toner** are the free VersaTiles styles (also used by Home Assistant), and **More Styles** holds VersaTiles' other themes (Positrino, Protocol, Protostar, Protozoa, Fnord, Classic, Googol, Freedom, Macbob, Mactaylor, and Bingo). **Satellite** shows aerial and satellite imagery from VersaTiles with the names of countries, states, cities, towns, villages, and neighbourhoods on top. It is sharp down to street level in about 35 European countries (Paris, Berlin, Amsterdam, and Vienna, for example) and to about town level elsewhere, including London, Madrid, Rome, and cities outside Europe; zooming in past that enlarges the closest imagery, so it gets blurry rather than blank. **OpenStreetMap** is the standard OpenStreetMap map, **OpenTopoMap** a topographic map with contour lines and hill shading (down to zoom 17), and **Humanitarian** the Humanitarian OpenStreetMap Team's style, which picks out buildings, roads, and services. Under **Appearance**, **Follow System** switches maps between light and dark with the system style, and **Light** or **Dark** keeps them one way. Immich and the styles that come in both versions (Colorful, Natural, Muted, Gray, Toner, Positrino, Protocol, and Protostar) follow it; the others, Satellite, OpenStreetMap, OpenTopoMap, and Humanitarian always look the same. Your choices apply to every map in Mimick and are remembered. If a style can't be loaded, the map shows OpenStreetMap instead.
 
 **Your location:** the first time, your desktop asks whether Mimick may see your location. Location services must be turned on (in GNOME, **Settings → Privacy → Location**). Mimick asks for your position only when you press the button, and only to show it on the map.
 
@@ -265,6 +277,8 @@ When the map is short (for example on a phone, with photos listed below it), the
 - **Search places** — type a place, street, or address; results come from Photon, the same search as on the [Map](#map) page, with your Immich server as the fallback. Click one to move the pin there.
 - **Click the map** — drops the pin where you click. Drag to pan and scroll to zoom as usual.
 - **Latitude, Longitude** — type or paste coordinates such as `38.7223, -9.1393`. The paste button reads them from the clipboard. To copy the location of another photo, use the copy button next to its **Coordinates** in the details pane, then paste it here.
+
+Under the coordinates, **Place** names the spot as Immich's place data knows it, such as "Lisbon, Lisbon, Portugal" (it needs `map.search`).
 
 **Save** sends the location to Immich for every chosen photo. Immich fills in the city and country shortly after, once it has looked the place up.
 
@@ -286,6 +300,7 @@ In selection mode:
 
 **Bulk actions available:**
 
+- **Favorite** — favorites every selected photo you own; when they all are already, the filled heart unfavorites them instead
 - **Add to album** — opens the album picker (see [Managing Albums](#managing-albums))
 - **Remove from album** — inside an album you own or edit, takes the selected photos out of it (see [Managing Albums](#managing-albums))
 - **Stack** — with two or more of your photos selected, groups them into a stack under the first one (see [Stacks](#stacks))
@@ -295,9 +310,13 @@ In selection mode:
 - **Move to trash** — moves selected remote assets to the Immich trash after a confirmation dialog. They can be restored from the [Trash](#trash) view or the Immich web UI. Local copies in your watch folders are kept, and local-only assets are skipped (the dialog says how many).
 - **Clear** — deselects all items without taking action
 
+The **⋯** (More actions) menu holds **Edit Description…**, which gives every selected photo you own the same description, and **Refresh Faces**, **Refresh Metadata**, **Refresh Thumbnails**, and **Refresh Video**, which ask Immich to redo that work on them (needs `job.create`).
+
+**Ctrl+A** selects every photo in the view, not only the ones scrolled to so far: Photos loads its remaining months, and albums, search, and other views their remaining pages, then selects them all.
+
 Pressing **Delete** while the grid has focus does the same as **Move to trash** for the current selection.
 
-On phone-width windows, Add to album, Download, and Move to trash stay as buttons; Create share link, Archive, Set location, Change date, Stack, and Remove from album are in the **⋯** (More actions) menu.
+On phone-width windows, Add to album, Download, and Move to trash stay as buttons; Favorite, Share, Archive, Set location, Change date, Stack, and Remove from album move into the **⋯** menu too.
 
 In the [Trash](#trash) view the bar shows **Restore** and **Delete Permanently** instead of Download and Move to trash.
 
@@ -319,10 +338,11 @@ Click any asset in the grid to open it in the lightbox.
 - The zoom percentage between the zoom buttons counts the photo's real pixels: at 100% each pixel of the photo fills one pixel of your screen, so a large photo fitted to the window can read 17%. Zoom goes up to 2000% of the real pixels (or 10× the fitted size for small photos). Click the percentage, middle-click, or press **Ctrl+0** to fit the photo again. While zoomed in, dragging with the mouse pans the photo; drag it out to another app at the fitted size.
 - **Moving between photos**: swipe on a touch screen or with two fingers on a touchpad and the photo follows, then springs to the next or previous one (or back, if you let go early). **Left**/**Right** and the header buttons use the same motion, and pressing them quickly glides through several photos. The photos on either side are loaded ahead of time. While zoomed in, dragging pans instead.
 - **Edited photos**: Photos edited in Immich or with [Edit Photo…](#editing-photos) (cropped, rotated, or flipped) show the edited version. Download and drag-out still give the original file.
+- **360° photos**: photos Immich knows are 360° panoramas open in a 360° view. Drag (or swipe) to look around, scroll or pinch to zoom, and use **Up**/**Down** to tilt, **Shift+Left**/**Shift+Right** to turn, and **+**/**−** to zoom; plain **Left**/**Right** still go to the previous or next photo. The **360°** button in the top-left corner, or **P**, switches between the 360° view and the flat photo. The view uses the full-size photo when there is one, so it stays sharp when you zoom in.
 - **Live photos**: live and motion photos show a **Live** button in the top-left corner of the photo. Click or tap it (or press **Space**) to play the short clip over the photo on a loop; click again to stop. Grid tiles of live photos have a small live icon. The clip uses the video volume setting.
 - **RAW Previews**: By default, RAW files display using their fast embedded previews. The extractor first scans the file for the largest embedded JPEG (catching the full-resolution preview on cameras that store both a tiny thumb and a full-res one — e.g. Sony ARW); if the file contains no JPEG at all (Samsung DNG, OnePlus DNG, and other phone DNGs that store their preview as uncompressed TIFF strips), it falls back to libraw's bitmap thumbnail with container orientation applied. You can toggle **Full RAW Decoding** in settings to perform a full sensor demosaic instead.
 - **Videos**: Clicking a video opens it in the lightbox with its thumbnail as a poster and a centered play badge. Click the badge (or press **Space**) to play it in the app. Local and synced videos play from disk; server videos stream from Immich, which serves its transcoded copy when one exists. Decoding uses the GPU (VA-API) when the codec is supported.
-  - The control bar has play/pause, stop, back/forward 10 seconds, a seek bar with elapsed and total time, loop, playback speed (0.25×–2×), volume and mute, and fullscreen. An audio and subtitle menu appears when the file has more than one audio track or any subtitles; subtitles start off.
+  - The control bar has play/pause, stop, back/forward 10 seconds, a seek bar with elapsed and total time, loop, playback speed (0.25×–2×), volume and mute, and fullscreen. Playing or pausing flashes a badge in the middle of the video, and **Up** and **Down** change the volume, showing the new level the same way. An audio and subtitle menu appears when the file has more than one audio track or any subtitles; subtitles start off.
   - The controls fade out after 3 seconds of playback without mouse movement; move the pointer or tap the video to bring them back. Double-click (or double-tap) the video or press **F11** for fullscreen.
   - On narrow windows (phones) the ±10 s buttons are hidden to fit the bar (**J** / **L** still work), and swiping on a playing video moves to the previous or next asset.
   - **Open with…** in the action bar opens the video in another app you pick (remote videos download to the cache first).
@@ -336,6 +356,9 @@ Click any asset in the grid to open it in the lightbox.
 - The **⋯** (More) button in the header, a swipe up on the photo (touch screens), or **F10** opens a panel from the bottom of the window with each action as an icon. On phones the icons wrap into rows, so every action shows at once. Swipe it down, or press **Esc** or **F10** again, to close it. Right-clicking or long-pressing the picture, or pressing **Shift+F10** or the **Menu** key, opens the same actions as a menu next to the photo, like the grid's: Copy, Download, Open In, **Slideshow**, **Fullscreen**, **View Similar Photos**, **View in Timeline**, **Edit Info…**, **Set Location…**, **Edit Photo…**, **Tag People…**, and **Move to Trash** (each where it applies).
 - **View Similar Photos** runs smart search with the photo as the query and shows the closest matches first. It's offered when smart search is on in Immich. Requires `asset.read`.
 - **View in Timeline** (outside Photos, on your own photos that aren't archived) opens Photos at the photo's month and rings it, so you can see what else you took around then.
+- **Refresh Faces**, **Refresh Metadata**, and **Refresh Thumbnails** (and **Refresh Video** for videos) in the menu of your own photos ask Immich to redo that work, as in Immich's viewer menu. It runs in the background on the server; a new thumbnail shows the next time the photo loads. Requires `job.create`.
+- **Set as Profile Picture** in the menu of your own photos makes the photo's preview your Immich profile picture (see [Account](#account)).
+- **Add to Share Link…** puts the photo in a link you made earlier for some photos (see [Shared Links](#shared-links)).
 - **Recognized text**: when Immich found text in a photo (OCR), a text button appears in the action bar. Click it (or press **T**) to outline each piece of text and show a **Copy All Text** button over the photo.
   - With a mouse, the pointer becomes a text cursor over a box. Click a box to select its whole line, or drag across text to select just the characters you sweep over, across lines in reading order. Double-click selects a word, Shift-click extends the selection to that spot, and Ctrl-click adds or removes a whole box. Hover a box to read it. **Ctrl+A** selects all.
   - On a touch screen, tap a box to add or remove it; dragging and pinching still move and zoom the photo.
@@ -483,7 +506,11 @@ Three sections are shown:
 - **Your albums** — albums you own
 - **Shared with you** — albums shared by other users
 
+Under the page's title, a line counts the albums you own, how many are shared (by you or with you), and how many of yours aren't shared. It needs `album.statistics`.
+
 Click an album tile to open it in the grid view. The album is also added to the sidebar list for quick re-access.
+
+**Add to Album…** (in the photo menu, the details pane, or the selection bar) lists your albums and the ones you can add to. Tap an album to add right away, or tick several with their check boxes and press **Add to … Albums** at the bottom to add to all of them at once; once one is ticked, tapping another album ticks it too.
 
 Right-click or long-press any album tile, or focus it and press **Shift+F10** or the **Menu** key, for its context menu. Your own albums offer **Share…**, **Create Share Link…**, **Rename…**, **Edit Description…**, **Download**, and **Delete Album…**; albums shared with you offer **Download** and **Leave Album…**.
 
@@ -560,7 +587,7 @@ Album sync is on-demand — it runs only when you press **Sync**. For automatic 
 
 ## People
 
-- The **People** sidebar entry shows every recognized face. Type in the search box to filter by name; the eye button also shows people you've hidden (dimmed).
+- The **People** sidebar entry shows every recognized face. Type in the search box to filter by name; the eye button also shows people you've hidden (dimmed). Typing two or more letters also asks Immich, so people past the first 500 it lists are found too.
 - Click a face to see that person's photos.
 - The **⋯** button on each face has:
   - **Rename…** (or **Add Name…**)
@@ -574,8 +601,8 @@ Album sync is on-demand — it runs only when you press **Sync**. For automatic 
 ## Tags page
 
 - The **Tags** sidebar entry lists your top-level tags. Click a tag to see its photos; the **›** button opens the tags inside it, and the path at the top takes you back up.
-- **+** creates a tag at the current level.
-- Each tag's **⋯** menu has **Rename…**, **Change Color…** (a preset or a custom color), and **Delete…**.
+- **New Tag** creates a tag at the current level.
+- Each tag has **Rename**, **Change Color** (a preset or a custom color), and **Delete** buttons.
 - Renaming tags needs a newer Immich than v3.0.0; older servers show an error instead.
 
 ---
@@ -583,7 +610,9 @@ Album sync is on-demand — it runs only when you press **Sync**. For automatic 
 ## Folders
 
 - The **Folders** sidebar entry shows the folders your photos came from on the server. It opens at the first level that has more than one folder; the path at the top takes you back up.
-- Click a folder to open it. A folder without subfolders opens its photos directly; otherwise **Photos in …** at the top of the list shows the photos in that folder itself.
+- A folder with subfolders expands in place to show them, and its **›** button opens it. A folder without subfolders opens its photos directly; **Photos in …** shows the photos in a folder itself.
+- Right-click, long-press, or press Shift+F10 on a folder for **Copy Path**. The copy button in the toolbar copies the open folder's path.
+- **Enter a path** (the pencil button, or **Ctrl+L**) swaps the path at the top for an entry: type or paste a folder's path, pick one of the suggested folders, or press **Tab** to complete as far as they agree, then **Enter**. **Esc** puts the path back.
 
 ---
 
@@ -601,11 +630,29 @@ Album sync is on-demand — it runs only when you press **Sync**. For automatic 
 
 - Create a public link that anyone with the URL can open in a browser:
   - **An album:** right-click its tile on the Albums or Shared Albums page and choose **Create Share Link…**.
-  - **A selection:** select assets, then click the share button in the selection bar.
+  - **A selection:** select assets, then click the share button in the selection bar and choose **New Link…**.
   - **One asset:** right-click it and choose **Create Share Link…**.
 - The dialog sets a **Description**, when the link **Expires** (Never, 1 hour, 1 day, 7 days, 30 days), an optional **Password**, and whether visitors can download originals, upload into the album (album links only), and see metadata. **Create** copies the URL to the clipboard.
-- The **Shared Links** sidebar entry lists every link with its cover photo, its expiry (red once expired), the album name (or "Individual share" for selected photos), its description, and what visitors may do (Upload, Download, Exif, Password). Click a link to edit it in the same dialog (leave the password empty to keep it). Each row also has **Copy link**, which shows a checkmark once the URL is on the clipboard, and **Delete** (asks first).
+- The **Shared Links** sidebar entry lists every link with its cover photo, its expiry (red once expired), the album name (or "Individual share" for selected photos), its description, and what visitors may do (Upload, Download, Exif, Password). Click a link to edit it in the same dialog (leave the password empty to keep it). Each row also has **Copy link**, which shows a checkmark once the URL is on the clipboard, **Show QR code**, which shows the link as a code to scan with a phone, with the URL under it and **Copy Link**, and a **⋯** menu (also opened by right-clicking or long-pressing the link, or with **Shift+F10** or the **Menu** key):
+  - **QR Code**, the same as the QR code button.
+  - **Photos…** (links made for some photos, not albums) shows the link's photos; tap photos to select them and press **Remove … Photos** to take them out of the link.
+  - **Edit…** opens the link's settings, and **Delete…** deletes it after asking.
+- To add photos to a link you made before, choose **Add to Share Link…** in a photo's menu, or select photos and choose **Add to Existing Link…** from the selection bar's share button, then pick the link. Album links always show the whole album, so only links made for some photos are listed.
 - The URL uses the server's **External domain** (Immich Administration → Settings → Server) when set, and otherwise the address Mimick is connected through. Requires `sharedLink.read`, `sharedLink.create`, `sharedLink.update`, and `sharedLink.delete`.
+
+---
+
+## Account
+
+**Account** in the main menu has three pages; on narrow windows their switcher is at the bottom.
+
+- **Profile** shows your picture, name, and email. **Change Picture…** picks a JPEG, PNG, or WebP file, then lets you crop it: drag the photo in the round frame and zoom with the slider, a pinch, the scroll wheel, or **+** and **−**; **Set** uploads it. **Remove Picture** goes back to your initials. To use one of your photos, choose **Set as Profile Picture** in its menu. Needs `user.read` and `userProfileImage.read`, `.update`, and `.delete`.
+- **Devices** lists the browsers and apps signed in to your account, with when each was last used; the sign-out button signs one out. Mimick signs in with an API key, so it isn't in the list. Needs `session.read` and `session.delete`.
+- **API Keys** shows the key Mimick uses under **This App** and your other keys under **Other Keys**, each with when it was made and how many permissions it has. Delete keys you no longer use (asks first). On Immich 3.2 or newer, **Rotate…** gives Mimick's key a new secret: Mimick starts using it at once and saves it in your keyring, and anything else using the same key stops working until you give it the new secret. If the keyring can't be written, Mimick shows the new secret so you can paste it in Settings. Make new keys in Immich's web app. Needs `apiKey.read` and `apiKey.delete`, and `apiKey.rotate` for Rotate.
+
+## Notifications
+
+Immich keeps a notifications inbox for album invites, failed backups, and messages from your server's admin. When some are unread, a bell with their count appears in the header; **Notifications** in the main menu opens the inbox at any time. Unread ones are bold. Tap a notification to mark it read (an album invite also opens the album), or dismiss it with its **×**; **Mark All Read** clears the bell. Mimick checks for new ones every two minutes while a library window is open and shows each new one as a desktop notification, unless **Notifications** is off in Settings. Needs `notification.read`, `notification.update`, and `notification.delete`.
 
 ---
 
@@ -646,10 +693,11 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 | Key                           | Action                                                                                                        |
 | :---------------------------- | :------------------------------------------------------------------------------------------------------------ |
 | **Ctrl+?**                    | Show keyboard shortcuts (also **Keyboard Shortcuts** in the main menu)                                        |
+| **Ctrl+,**                    | Open Settings (also **Settings** in the main menu)                                                            |
 | **F9**                        | Toggle sidebar                                                                                                |
 | **Ctrl+K**                    | Open Search                                                                                                   |
 | **Ctrl+1** … **Ctrl+9**       | Go to Photos, Explore, Map, People, Favorites, Archive, Trash, Albums, Sharing                                |
-| **Ctrl+A**                    | Select every photo loaded in the grid (in Photos, the months loaded so far)                                   |
+| **Ctrl+A**                    | Select every photo in the view, loading the rest first                                                        |
 | **Esc**                       | Exit selection mode                                                                                           |
 | Arrow keys / **Home** / **End**| Move between photos in the grid (after clicking a photo or tabbing to the grid)                               |
 | **Enter** / **Space**         | Open / select or deselect the current photo in the grid                                                       |
@@ -670,12 +718,18 @@ See [Performance Tuning](Performance-Tuning) for guidance on choosing values for
 | **S**                         | Start or end a slideshow (lightbox)                                                                           |
 | **Space**                     | Play or stop a live photo (lightbox); pause or resume a slideshow                                             |
 | **T**                         | Show or hide recognized text (lightbox, when Immich found text)                                               |
+| **P**                         | Switch between the 360° view and the flat photo (lightbox, 360° photos)                                       |
+| **Up** / **Down**             | Tilt the 360° view (lightbox)                                                                                 |
+| **Shift+Left** / **Shift+Right** | Turn the 360° view (lightbox)                                                                              |
+| **+** / **−**                 | Zoom the 360° view (lightbox)                                                                                 |
 | **Ctrl+A**                    | Select all recognized text (lightbox, while shown)                                                            |
 | **Ctrl+C**                    | Copy the selected recognized text, or all of it when nothing is selected (lightbox)                           |
 | **Space**                     | Play or pause the current video (lightbox)                                                                    |
 | **J** / **L**                 | Skip back / forward 10 seconds (lightbox video)                                                               |
 | **,** / **.**                 | Step one frame back / forward (lightbox video)                                                                |
 | **M**                         | Mute or unmute (lightbox video)                                                                               |
+| **Up** / **Down**             | Volume up / down (lightbox video)                                                                             |
+| **Ctrl+L**                    | Enter a folder path (Folders page)                                                                            |
 | **F10**                       | Show or hide all actions for the photo, in a bottom panel (lightbox)                                          |
 | **F11**                       | Toggle fullscreen (lightbox); **Esc** also exits                                                              |
 | **Alt+Left** / mouse back     | Go back to the previous view (mouse back also closes the lightbox)                                            |

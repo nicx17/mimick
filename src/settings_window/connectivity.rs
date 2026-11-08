@@ -11,6 +11,7 @@ pub struct ConnectivityWidgets {
     pub api_key_entry: PasswordEntry,
     pub test_btn: Button,
     pub save_btn: Button,
+    pub open_library_btn: Button,
     /// Shows the result of the last connection test.
     pub status_row: adw::ActionRow,
 }
@@ -41,6 +42,9 @@ pub fn build_connectivity_group(
         Some("suggested-action"),
         6,
     );
+    // Shown once a key is saved and the library view is on; see `apply::sync_open_library`.
+    let open_library_btn = add_group_button(&conn_group, &gettext("Open Library"), None, 6);
+    open_library_btn.set_visible(false);
 
     add_connectivity_breakpoint(
         window,
@@ -59,6 +63,7 @@ pub fn build_connectivity_group(
         api_key_entry,
         test_btn,
         save_btn,
+        open_library_btn,
         status_row,
     }
 }

@@ -8,7 +8,7 @@ use std::rc::Rc;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-/// Popover content plus a helper for full-width buttons that close the menu first.
+/// Popover content; the buttons are built when it opens, as a popover or a bottom sheet.
 pub(in crate::library) struct Menu {
     content: gtk::Box,
     popover: gtk::Popover,
@@ -17,7 +17,7 @@ pub(in crate::library) struct Menu {
 
 /// One choice, kept so the menu can open as a popover or as a bottom sheet.
 struct Entry {
-    icon: Option<&'static str>,
+    icon: &'static str,
     label: String,
     destructive: bool,
     action: Rc<dyn Fn()>,
@@ -91,6 +91,9 @@ impl Menu {
 
     /// Scrollable, so GTK lets the compositor shrink a menu taller than the screen.
     pub(in crate::library) fn popup(self) {
+        for entry in self.entries.borrow().iter() {
+            self.content.append(&popover_button(&self.popover, entry));
+        }
         let scroller = gtk::ScrolledWindow::builder()
             .child(&self.content)
             .hscrollbar_policy(gtk::PolicyType::Never)
@@ -122,16 +125,7 @@ impl Menu {
         self.content.append(&label);
     }
 
-    pub(in crate::library) fn add(
-        &self,
-        label: &str,
-        destructive: bool,
-        on_click: impl Fn() + 'static,
-    ) {
-        self.add_entry(None, label, destructive, Rc::new(on_click));
-    }
-
-    /// Like `add`, with the icon the bottom sheet shows; the popover stays text-only.
+    /// A choice with the icon both the popover and the bottom sheet show beside its name.
     pub(in crate::library) fn add_with_icon(
         &self,
         icon: &'static str,
@@ -139,36 +133,39 @@ impl Menu {
         destructive: bool,
         on_click: impl Fn() + 'static,
     ) {
-        self.add_entry(Some(icon), label, destructive, Rc::new(on_click));
-    }
-
-    fn add_entry(
-        &self,
-        icon: Option<&'static str>,
-        label: &str,
-        destructive: bool,
-        action: Rc<dyn Fn()>,
-    ) {
-        let button = gtk::Button::builder()
-            .label(label)
-            .halign(gtk::Align::Fill)
-            .build();
-        if destructive {
-            button.add_css_class("destructive-action");
-        }
-        let (popover, on_click) = (self.popover.clone(), action.clone());
-        button.connect_clicked(move |_| {
-            popover.popdown();
-            on_click();
-        });
-        self.content.append(&button);
         self.entries.borrow_mut().push(Entry {
             icon,
             label: label.to_string(),
             destructive,
-            action,
+            action: Rc::new(on_click),
         });
     }
+}
+
+/// A full-width button, icon then name, that closes the menu before acting.
+fn popover_button(popover: &gtk::Popover, entry: &Entry) -> gtk::Button {
+    let row = gtk::Box::builder().spacing(12).build();
+    row.append(&gtk::Image::from_icon_name(entry.icon));
+    row.append(
+        &gtk::Label::builder()
+            .label(&entry.label)
+            .xalign(0.0)
+            .hexpand(true)
+            .build(),
+    );
+    let button = gtk::Button::builder()
+        .child(&row)
+        .halign(gtk::Align::Fill)
+        .build();
+    if entry.destructive {
+        button.add_css_class("destructive-action");
+    }
+    let (popover, on_click) = (popover.clone(), entry.action.clone());
+    button.connect_clicked(move |_| {
+        popover.popdown();
+        on_click();
+    });
+    button
 }
 
 /// F10 opens the sheet from the lightbox, so pressing it again closes it.
@@ -197,7 +194,7 @@ fn sheet_tile(dialog: &libadwaita::Dialog, entry: Entry) -> gtk::Button {
         .build();
     content.append(
         &gtk::Image::builder()
-            .icon_name(entry.icon.unwrap_or("view-more-symbolic"))
+            .icon_name(entry.icon)
             .pixel_size(20)
             .halign(gtk::Align::Center)
             .css_classes(["mimick-sheet-icon"])

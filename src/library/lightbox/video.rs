@@ -19,6 +19,7 @@ impl Lightbox {
         };
         let player = VideoPlayer::new(&self.video_badge_button, volume, muted, self.video_hooks())?;
         self.picture.overlay.add_overlay(player.surface());
+        self.picture.overlay.add_overlay(player.osd());
         self.picture.overlay.add_overlay(player.controls());
         // The video sits above the photo's scroller, so it handles the photo swipes itself.
         let swipe = gtk::GestureSwipe::new();
@@ -152,6 +153,8 @@ impl Lightbox {
                     Key::comma => player.step_frame(false),
                     Key::period => player.step_frame(true),
                     Key::m | Key::M => player.toggle_mute(),
+                    Key::Up | Key::KP_Up => player.nudge_volume(true),
+                    Key::Down | Key::KP_Down => player.nudge_volume(false),
                     _ => return false,
                 }
             }
@@ -165,6 +168,7 @@ impl Lightbox {
         };
         player.stop();
         self.picture.overlay.remove_overlay(player.surface());
+        self.picture.overlay.remove_overlay(player.osd());
         self.picture.overlay.remove_overlay(player.controls());
         let mut config = self.ui.ctx.config.write();
         if config.data.video_volume != player.volume() || config.data.video_muted != player.muted()

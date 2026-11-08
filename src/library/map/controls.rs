@@ -7,6 +7,7 @@ use std::rc::Rc;
 use gtk::gio;
 use gtk::prelude::*;
 
+use crate::config::MapFilters;
 use crate::library::LibraryWindowUi;
 use crate::library::context_menu::show_error_toast;
 
@@ -29,6 +30,8 @@ pub struct MapControls {
     north_card: gtk::Box,
     area: gtk::Button,
     locate: gtk::Button,
+    /// Opens Map Settings; tinted while it hides or adds photos.
+    settings: gtk::Button,
     /// The zoom and rotate cards; hidden on short maps, where pinch and rotate gestures remain.
     optional: [gtk::Box; 2],
 }
@@ -49,6 +52,7 @@ pub fn build(viewport: &shumate::Viewport) -> MapControls {
         ),
         control("find-location-symbolic", &gettext("Show my location")),
     );
+    let settings = control("mimick-filter-symbolic", &gettext("Map settings"));
     let north = north_button(viewport);
     let north_card = card(&[north.upcast_ref()]);
     north_card.set_visible(false);
@@ -56,19 +60,13 @@ pub fn build(viewport: &shumate::Viewport) -> MapControls {
         card(&[zoom_in.upcast_ref(), zoom_out.upcast_ref()]),
         card(&[rotate_left.upcast_ref(), rotate_right.upcast_ref()]),
     ];
-    let root = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(10)
-        .halign(gtk::Align::End)
-        .valign(gtk::Align::Start)
-        .margin_top(12)
-        .margin_end(12)
-        .build();
-    root.append(&optional[0]);
-    root.append(&optional[1]);
-    root.append(&north_card);
-    root.append(&card(&[area.upcast_ref(), locate.upcast_ref()]));
-    root.append(&card(&[style_button().upcast_ref()]));
+    let root = column(&[
+        &optional[0],
+        &optional[1],
+        &north_card,
+        &card(&[area.upcast_ref(), locate.upcast_ref()]),
+        &card(&[settings.upcast_ref(), style_button().upcast_ref()]),
+    ]);
     MapControls {
         root,
         zoom_in,
@@ -79,8 +77,25 @@ pub fn build(viewport: &shumate::Viewport) -> MapControls {
         north_card,
         area,
         locate,
+        settings,
         optional,
     }
+}
+
+/// The cards stacked down the map's top-right corner.
+fn column(cards: &[&gtk::Box]) -> gtk::Box {
+    let root = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(10)
+        .halign(gtk::Align::End)
+        .valign(gtk::Align::Start)
+        .margin_top(12)
+        .margin_end(12)
+        .build();
+    for card in cards {
+        root.append(*card);
+    }
+    root
 }
 
 fn style_button() -> gtk::MenuButton {
@@ -139,10 +154,7 @@ fn style_menu() -> gio::Menu {
         &style_items(&MapStyle::LOOKALIKES),
     );
     menu.append_section(None, &palettes);
-    menu.append_section(
-        None,
-        &style_items(&[MapStyle::Satellite, MapStyle::OpenStreetMap]),
-    );
+    menu.append_section(None, &style_items(&MapStyle::TILE_MAPS));
     menu.append_section(Some(&gettext("Appearance")), &appearance_items());
     menu
 }
@@ -186,6 +198,8 @@ pub fn connect(ui: &Rc<LibraryWindowUi>) {
     on_click(&controls.north, ui, |ui| camera::reset_north(&ui.map.map));
     on_click(&controls.area, ui, show_area);
     on_click(&controls.locate, ui, locate_me);
+    on_click(&controls.settings, ui, super::settings::present);
+    sync_settings_button(ui);
     install_map_actions(ui);
     connect_keys(ui);
 }
@@ -245,6 +259,19 @@ fn on_click(button: &gtk::Button, ui: &Rc<LibraryWindowUi>, action: fn(&Rc<Libra
             action(&ui);
         }
     });
+}
+
+/// Tint the settings button while the map shows other photos than Immich's default.
+/// An album's map has no settings, so the button is off there.
+pub fn sync_settings_button(ui: &LibraryWindowUi) {
+    let changed = ui.ctx.config.read().data.library_map_filters != MapFilters::default();
+    let button = &ui.map.controls.settings;
+    button.set_sensitive(ui.map.album.shown().is_none());
+    if changed {
+        button.add_css_class("accent");
+    } else {
+        button.remove_css_class("accent");
+    }
 }
 
 /// Show the north button only while the map is turned away from north.

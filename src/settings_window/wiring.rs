@@ -16,7 +16,6 @@ use crate::app_context::AppContext;
 use super::behavior::BehaviorWidgets;
 use super::connectivity::ConnectivityWidgets;
 use super::form::SettingsForm;
-use super::queue_inspector::show_about_dialog;
 use super::status::StatusWidgets;
 use super::{show_alert, show_queue_inspector};
 
@@ -28,10 +27,12 @@ pub(super) use folder_wiring::{
 };
 pub(super) use library_wiring::connect_library_rows;
 
-/// Window with Status / Settings pages behind a header view switcher.
+/// Window with Status / Settings pages behind a header view switcher, showing `start_page`
+/// ("status" or "settings") first.
 pub(super) fn build_window_shell(
     app: &adw::Application,
     parent: Option<&adw::ApplicationWindow>,
+    start_page: &str,
 ) -> (
     adw::ApplicationWindow,
     adw::PreferencesPage,
@@ -77,6 +78,7 @@ pub(super) fn build_window_shell(
         &gettext("Settings"),
         "emblem-system-symbolic",
     );
+    view_stack.set_visible_child_name(start_page);
     (window, status_page, settings_page)
 }
 
@@ -102,7 +104,7 @@ fn build_header_bar(
     header_bar.pack_end(&menu_btn);
     let about = gtk::gio::SimpleAction::new("about", None);
     let window_for_about = window.clone();
-    about.connect_activate(move |_, _| show_about_dialog(&window_for_about));
+    about.connect_activate(move |_, _| crate::about::present(&window_for_about));
     window.add_action(&about);
     let quit = gtk::gio::SimpleAction::new("quit", None);
     let app = app.clone();
@@ -144,7 +146,9 @@ fn add_page(stack: &adw::ViewStack, name: &str, title: &str, icon: &str) -> adw:
 pub(super) fn add_welcome_group(settings_page: &adw::PreferencesPage) {
     let welcome_group = adw::PreferencesGroup::builder()
         .title(gettext("Get Started"))
-        .description(gettext("Three steps to start backing up to Immich."))
+        .description(gettext(
+            "Three steps to connect Mimick to your Immich server.",
+        ))
         .build();
     let steps = [
         (
@@ -156,8 +160,10 @@ pub(super) fn add_welcome_group(settings_page: &adw::PreferencesPage) {
             &gettext("In Immich: Account Settings → API Keys. The guide lists the permissions."),
         ),
         (
-            &gettext("3. Choose a folder"),
-            &gettext("Add a folder under Watch Folders, then Save and Connect."),
+            &gettext("3. Save and Connect"),
+            &gettext(
+                "Your library opens next. To back up a folder too, add it under Watch Folders.",
+            ),
         ),
     ];
     for (index, (title, subtitle)) in steps.into_iter().enumerate() {
@@ -374,6 +380,19 @@ pub(super) fn connect_action_buttons(
         window,
         move |_| diagnostics_wiring::choose_diagnostics_folder(&window, c.clone())
     ));
+}
+
+/// Detailed Logs takes effect at once and is remembered across restarts.
+pub(super) fn connect_detailed_logs_row(ctx: &Arc<AppContext>, row: &adw::SwitchRow) {
+    row.set_active(ctx.config.read().data.detailed_logging);
+    let ctx = ctx.clone();
+    row.connect_active_notify(move |row| {
+        let detailed = row.is_active();
+        crate::logging::set_detailed(detailed);
+        save_flag(&ctx, |d| {
+            std::mem::replace(&mut d.detailed_logging, detailed) != detailed
+        });
+    });
 }
 
 /// At least one server URL must stay enabled; each entry is editable only while enabled.

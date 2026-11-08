@@ -36,7 +36,19 @@ pub(super) fn append_manage_buttons(
     append_archive_button(menu, ui, item, &hooks);
     append_album_buttons(menu, ui, &remote_id, &hooks);
     crate::library::memories::append_remove_button(menu, ui, &remote_id, hooks.on_trashed.clone());
-    let (ui_link, link_id) = (ui.clone(), remote_id.clone());
+    append_share_buttons(menu, ui, &remote_id);
+    crate::library::lightbox::append_unstack_button(menu, ui, item);
+    if crate::library::actions::is_mine(ui, item) {
+        append_edit_buttons(menu, ui, item, remote_id.clone(), hooks.on_edited);
+        append_profile_button(menu, ui, item, remote_id);
+        crate::library::asset_jobs::append_refresh_buttons(menu, ui, item);
+    }
+    append_trash_button(menu, ui, target, hooks.on_trashed);
+}
+
+/// "Create Share Link…" for a new link, and "Add to Share Link…" for one made before.
+fn append_share_buttons(menu: &Menu, ui: &Rc<LibraryWindowUi>, id: &str) {
+    let (ui_link, link_id) = (ui.clone(), id.to_string());
     menu.add_with_icon(
         "mimick-share-symbolic",
         &gettext("Create Share Link…"),
@@ -51,11 +63,13 @@ pub(super) fn append_manage_buttons(
             )
         },
     );
-    crate::library::lightbox::append_unstack_button(menu, ui, item);
-    if crate::library::actions::is_mine(ui, item) {
-        append_edit_buttons(menu, ui, item, remote_id, hooks.on_edited);
-    }
-    append_trash_button(menu, ui, target, hooks.on_trashed);
+    let (ui_add, add_id) = (ui.clone(), id.to_string());
+    menu.add_with_icon(
+        "insert-link-symbolic",
+        &gettext("Add to Share Link…"),
+        false,
+        move || crate::library::shared_link_photos::add_to_link(&ui_add, vec![add_id.clone()]),
+    );
 }
 
 /// "Add to Album…"; inside an album also "Set as Album Cover" (owner) and "Remove from Album".
@@ -142,6 +156,23 @@ fn append_edit_buttons(
             move || crate::library::lightbox::tag_people(&ui, &item),
         );
     }
+}
+
+/// "Set as Profile Picture" on your own photos, as in Immich's viewer menu.
+fn append_profile_button(menu: &Menu, ui: &Rc<LibraryWindowUi>, item: &AssetObject, id: String) {
+    let is_image = item
+        .property::<String>("asset-type")
+        .eq_ignore_ascii_case("IMAGE");
+    if !is_image {
+        return;
+    }
+    let ui = ui.clone();
+    menu.add_with_icon(
+        "avatar-default-symbolic",
+        &gettext("Set as Profile Picture"),
+        false,
+        move || crate::library::account::set_from_photo(&ui, id.clone()),
+    );
 }
 
 fn append_location_button(menu: &Menu, ui: &Rc<LibraryWindowUi>, item: &AssetObject, id: String) {

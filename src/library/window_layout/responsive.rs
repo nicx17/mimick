@@ -104,12 +104,8 @@ pub(super) fn add_narrow_breakpoint(
 ) {
     let narrow_bp = breakpoint("max-width: 600px");
     narrow_bp.add_setter(&content.bottom_nav.root, "visible", Some(&true.to_value()));
+    // The bar's More menu takes over the secondary buttons while they're hidden.
     narrow_bp.add_setter(&content.bulk.secondary, "visible", Some(&false.to_value()));
-    narrow_bp.add_setter(
-        &content.bulk.overflow_box,
-        "visible",
-        Some(&true.to_value()),
-    );
     narrow_bp.add_setter(
         &content.map.split,
         "orientation",

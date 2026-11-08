@@ -40,6 +40,17 @@ impl ImmichApiClient {
         resp.json().await.map_err(|err| err.to_string())
     }
 
+    /// Everyone whose name matches `name`, hidden people too, across the whole server.
+    pub async fn search_people(&self, name: &str) -> Result<Vec<Person>, String> {
+        let query = url::form_urlencoded::Serializer::new(String::new())
+            .append_pair("name", name)
+            .append_pair("withHidden", "true")
+            .finish();
+        let path = format!("/api/search/person?{query}");
+        let resp = self.send_json(reqwest::Method::GET, &path, None).await?;
+        resp.json().await.map_err(|err| err.to_string())
+    }
+
     pub async fn person_asset_count(&self, person_id: &str) -> Result<u64, String> {
         let path = format!("/api/people/{person_id}/statistics");
         let resp = self.send_json(reqwest::Method::GET, &path, None).await?;

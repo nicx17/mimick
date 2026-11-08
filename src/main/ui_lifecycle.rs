@@ -262,7 +262,14 @@ pub(super) fn open_default_window(app: &adw::Application, ctx: Arc<AppContext>) 
         win.present();
         return;
     }
-    if ctx.config.read().data.library_view_enabled {
+    // Until a server is set up there's no library to show: Settings walks through setup,
+    // and opens the library once it connects.
+    let (library, set_up) = {
+        let config = ctx.config.read();
+        let has_key = !config.get_api_key().unwrap_or_default().is_empty();
+        (config.data.library_view_enabled, has_key)
+    };
+    if library && set_up {
         open_library_window_now(app, ctx);
     } else {
         open_settings_window_now(app, ctx);

@@ -1,6 +1,7 @@
 //! Saving settings: validate, write config, then push the changes into the running app.
 
 use gettextrs::gettext;
+use gtk::prelude::*;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -136,6 +137,15 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
         state.in_flight.set(false);
         return;
     }
+    let first_setup = request.include_connectivity
+        && !request.conn.api_key.is_empty()
+        && state
+            .ctx
+            .config
+            .read()
+            .get_api_key()
+            .unwrap_or_default()
+            .is_empty();
     let Some(key_file_notice) = write_config(form, state, &request) else {
         state.in_flight.set(false);
         return;
@@ -149,8 +159,11 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
     apply_sync_runtime(state, &request);
 
     state.in_flight.set(false);
+    sync_open_library(form, &state.ctx);
     if let Some(notice) = key_file_notice {
         show_alert(&form.window, &gettext("API Key Stored in a File"), &notice);
+    } else if first_setup && request.values.library_view_enabled {
+        open_library(form, &state.ctx);
     } else if request.show_success_ack {
         show_alert(
             &form.window,
@@ -158,6 +171,28 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
             &gettext("Mimick saved the updated settings successfully."),
         );
     }
+}
+
+/// Show the library and close Settings, which its main menu reopens. Runs once the first
+/// key connects, and from Open Library.
+pub(super) fn open_library(form: &SettingsForm, ctx: &Arc<AppContext>) {
+    let Some(app) = form
+        .window
+        .application()
+        .and_downcast::<libadwaita::Application>()
+    else {
+        return;
+    };
+    crate::ui_lifecycle::open_library_window_now(&app, ctx.clone());
+    form.window.close();
+}
+
+/// Open Library shows once there's a saved key to browse with and the library view is on.
+pub(super) fn sync_open_library(form: &SettingsForm, ctx: &AppContext) {
+    let config = ctx.config.read();
+    let ready =
+        config.data.library_view_enabled && !config.get_api_key().unwrap_or_default().is_empty();
+    form.open_library_btn.set_visible(ready);
 }
 
 /// Apply a changed "Run on Startup" choice; on refusal or error, revert the switch and say why.

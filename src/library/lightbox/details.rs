@@ -49,6 +49,7 @@ fn exif_from_local(local: &LocalExif, file_size: Option<u64>) -> ExifInfo {
         exif_image_width: local.image_width,
         exif_image_height: local.image_height,
         rating: None,
+        projection_type: None,
     }
 }
 

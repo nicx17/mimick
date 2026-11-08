@@ -17,7 +17,7 @@ pub enum Mode {
 
 fn mode_for(location: &Location) -> Mode {
     match location {
-        Location::Page(LibraryPage::Map) => Mode::MapOnly,
+        Location::Page(LibraryPage::Map { .. }) => Mode::MapOnly,
         Location::Source(LibrarySource::MapArea { .. }) => Mode::WithPhotos,
         _ => Mode::Off,
     }
@@ -133,7 +133,10 @@ mod tests {
 
     #[test]
     fn map_views_choose_their_layout() {
-        assert_eq!(mode_for(&Location::Page(LibraryPage::Map)), Mode::MapOnly);
+        assert_eq!(
+            mode_for(&Location::Page(LibraryPage::Map { album: None })),
+            Mode::MapOnly
+        );
         let area = Location::Source(LibrarySource::MapArea {
             ids: AssetIds(["a".to_string()].into()),
             label: "Lisbon".into(),

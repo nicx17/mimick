@@ -186,6 +186,10 @@ pub(super) async fn run_manual_sync_listener(
 
 /// Record the initial server route and any connection error for the status page.
 pub(super) async fn refresh_connection_status(ctx: Arc<AppContext>) {
+    // Before setup there's no server to reach; "could not reach" would read as a fault.
+    if !ctx.config.read().data.has_server() {
+        return;
+    }
     let connected = ctx.api_client.check_connection().await;
     let route = ctx.api_client.active_route_label().await;
     let latest_issue = ctx.api_client.latest_issue().await;

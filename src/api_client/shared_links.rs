@@ -163,6 +163,50 @@ impl ImmichApiClient {
             .map(|_| ())
     }
 
+    /// One link with every photo in it; the list from `fetch_shared_links` holds at most one.
+    pub async fn fetch_shared_link(&self, link_id: &str) -> Result<SharedLink, String> {
+        let path = format!("/api/shared-links/{link_id}");
+        let resp = self.send_json(reqwest::Method::GET, &path, None).await?;
+        resp.json().await.map_err(|err| err.to_string())
+    }
+
+    /// Put `asset_ids` in an individual link; returns how many went in (ones already there don't).
+    pub async fn add_shared_link_assets(
+        &self,
+        link_id: &str,
+        asset_ids: &[String],
+    ) -> Result<usize, String> {
+        self.shared_link_assets(reqwest::Method::PUT, link_id, asset_ids)
+            .await
+    }
+
+    /// Take `asset_ids` out of an individual link; returns how many came out.
+    pub async fn remove_shared_link_assets(
+        &self,
+        link_id: &str,
+        asset_ids: &[String],
+    ) -> Result<usize, String> {
+        self.shared_link_assets(reqwest::Method::DELETE, link_id, asset_ids)
+            .await
+    }
+
+    async fn shared_link_assets(
+        &self,
+        method: reqwest::Method,
+        link_id: &str,
+        asset_ids: &[String],
+    ) -> Result<usize, String> {
+        #[derive(serde::Deserialize)]
+        struct AssetIdResult {
+            success: bool,
+        }
+        let path = format!("/api/shared-links/{link_id}/assets");
+        let body = serde_json::json!({ "assetIds": asset_ids });
+        let resp = self.send_json(method, &path, Some(body)).await?;
+        let results: Vec<AssetIdResult> = resp.json().await.map_err(|err| err.to_string())?;
+        Ok(results.iter().filter(|result| result.success).count())
+    }
+
     /// Base URL for public links: the server's configured external domain, or the
     /// address Mimick is connected through when none is set.
     pub async fn shared_link_base(&self) -> Result<String, String> {

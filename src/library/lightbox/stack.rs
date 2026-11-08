@@ -267,18 +267,27 @@ impl Lightbox {
         let menu = Menu::new(parent, x, y);
         if asset_id != stack.primary_asset_id {
             let (lb, stack_id, id) = (self.clone(), stack.id.clone(), asset_id.to_string());
-            menu.add(&gettext("Set as Stack Cover"), false, move || {
-                lb.change_stack(StackChange::Cover(stack_id.clone(), id.clone()))
-            });
+            menu.add_with_icon(
+                "starred-symbolic",
+                &gettext("Set as Stack Cover"),
+                false,
+                move || lb.change_stack(StackChange::Cover(stack_id.clone(), id.clone())),
+            );
             let (lb, stack_id, id) = (self.clone(), stack.id.clone(), asset_id.to_string());
-            menu.add(&gettext("Remove from Stack"), false, move || {
-                lb.change_stack(StackChange::Remove(stack_id.clone(), id.clone()))
-            });
+            menu.add_with_icon(
+                "list-remove-symbolic",
+                &gettext("Remove from Stack"),
+                false,
+                move || lb.change_stack(StackChange::Remove(stack_id.clone(), id.clone())),
+            );
         }
         let (lb, stack_id) = (self.clone(), stack.id);
-        menu.add(&gettext("Unstack"), true, move || {
-            lb.change_stack(StackChange::Unstack(stack_id.clone()))
-        });
+        menu.add_with_icon(
+            "mimick-stack-symbolic",
+            &gettext("Unstack"),
+            true,
+            move || lb.change_stack(StackChange::Unstack(stack_id.clone())),
+        );
         menu.popup();
     }
 

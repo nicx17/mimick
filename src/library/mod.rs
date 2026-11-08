@@ -39,6 +39,7 @@ pub mod asset_model;
 pub mod asset_object;
 mod bottom_nav;
 mod bulk_date;
+mod bulk_more;
 mod bulk_overflow;
 pub mod explore_view;
 mod favorites;
@@ -48,10 +49,12 @@ pub mod masonry;
 pub mod sidebar;
 pub mod state;
 pub mod style;
+pub mod theme;
 pub mod thumbnail_cache;
 mod thumbnail_loader;
 
 mod about_dialog;
+mod account;
 mod actions;
 mod album_activity;
 mod album_assets;
@@ -64,6 +67,7 @@ mod album_picker;
 mod album_share_dialog;
 mod album_wiring;
 mod asset_edit;
+mod asset_jobs;
 mod asset_tags;
 mod content_state;
 mod context_menu;
@@ -75,6 +79,7 @@ mod duplicates_view;
 mod features;
 mod folders_view;
 mod header_format;
+mod inbox;
 mod lightbox;
 mod map;
 mod memories;
@@ -87,9 +92,11 @@ mod photo_canvas;
 mod photo_editor;
 mod related;
 pub mod search_filters;
+mod search_options;
 mod search_panel;
 pub mod search_view;
 mod search_wiring;
+mod select_all;
 mod source_loading;
 use album_wiring::{
     connect_albums_create, refresh_albums_view, refresh_search_tags, search_by_tag,
@@ -105,6 +112,8 @@ use source_loading::{
 };
 mod server_stats_dialog;
 mod shared_link_dialog;
+mod shared_link_photos;
+mod shared_link_qr;
 mod shared_links_view;
 mod sharing_view;
 mod shortcuts_dialog;
@@ -126,16 +135,21 @@ mod texture_decode;
 mod time_zones;
 mod timeline;
 use texture_decode::{
-    decode_raw_thumbnail_texture, load_texture_blocking, load_texture_fitted_blocking,
+    decode_heif_thumbnail, decode_raw_thumbnail_texture, is_heif_path, load_texture_blocking,
+    load_texture_fitted_blocking,
 };
 pub use texture_decode::{set_raw_cache_enabled, set_raw_full_decode};
 
-/// Register application custom icons with the Gtk icon theme system.
+/// Register application custom icons with the Gtk icon theme system, once per process.
+/// Startup calls it, so the Settings window has them before any library window exists.
 pub(crate) fn register_app_icons() {
-    if let Some(display) = gtk::gdk::Display::default() {
-        let theme = gtk::IconTheme::for_display(&display);
-        theme.add_resource_path("/dev/nicx/mimick/icons");
-    }
+    static REGISTERED: std::sync::OnceLock<()> = std::sync::OnceLock::new();
+    REGISTERED.get_or_init(|| {
+        if let Some(display) = gtk::gdk::Display::default() {
+            let theme = gtk::IconTheme::for_display(&display);
+            theme.add_resource_path("/dev/nicx/mimick/icons");
+        }
+    });
 }
 
 /// Load a local texture, preferring decoders that cover formats outside the
@@ -181,6 +195,8 @@ struct LibraryWindowUi {
     upload_button: gtk::Button,
     controls_row: gtk::Box,
     back_button: gtk::Button,
+    /// Notifications from Immich; shown while some are unread.
+    bell: inbox::Bell,
     select_toggle: gtk::ToggleButton,
     bulk: window_layout::BulkParts,
     album_link: window_layout::AlbumLinkParts,
@@ -263,9 +279,11 @@ fn connect_window_controls(ui: &Rc<LibraryWindowUi>, controls: WindowControls) {
     actions::connect_bulk_date(ui.clone(), &controls.bulk_date);
     actions::connect_bulk_add_to_album(ui.clone());
     actions::connect_bulk_remove_from_album(ui.clone());
+    bulk_more::connect(ui);
     trash_view::connect_trash_controls(ui.clone());
     people_view::connect_people_view(ui.clone());
     tags_view::connect_tags_view(ui.clone());
+    folders_view::connect_folders_view(ui);
     sharing_view::connect_sharing_view(ui.clone());
     duplicates_view::connect_duplicates_view(ui.clone());
     shared_links_view::connect_shared_links_view(ui.clone());
@@ -354,9 +372,11 @@ fn bootstrap_window(ui: Rc<LibraryWindowUi>) {
     features::load(&ui);
     fetch_current_user(ui.clone());
     connect_albums_create(ui.clone());
+    account::connect(&ui);
     let timers = vec![
         spawn_server_ping_loop(ui.clone()),
         spawn_transfer_poll_loop(ui.clone()),
+        inbox::connect(&ui),
     ];
     stop_timers_on_close(&ui.window, timers);
     navigation::restore(&ui);

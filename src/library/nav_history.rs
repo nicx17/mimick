@@ -248,16 +248,16 @@ mod tests {
             })
         };
         let mut state = LibraryState::new();
-        state.navigate_to(Location::Page(LibraryPage::Map));
+        state.navigate_to(Location::Page(LibraryPage::Map { album: None }));
         state.navigate_to(area("Lisbon"));
         state.navigate_to(area("Porto"));
         assert_eq!(
             state.previous_location(),
-            Some(&Location::Page(LibraryPage::Map))
+            Some(&Location::Page(LibraryPage::Map { album: None }))
         );
         assert_eq!(
             state.navigate_back(),
-            Some(Location::Page(LibraryPage::Map))
+            Some(Location::Page(LibraryPage::Map { album: None }))
         );
     }
 }

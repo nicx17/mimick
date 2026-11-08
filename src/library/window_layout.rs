@@ -32,6 +32,8 @@ use super::{
 
 pub(super) struct HeaderParts {
     header: libadwaita::HeaderBar,
+    menu_button: gtk::MenuButton,
+    bell: super::inbox::Bell,
     sidebar_toggle: gtk::ToggleButton,
     back_button: gtk::Button,
     select_toggle: gtk::ToggleButton,
@@ -73,8 +75,10 @@ pub(super) struct BulkParts {
     pub remove_from_album: gtk::Button,
     pub(super) archive: gtk::Button,
     pub(super) stack: gtk::Button,
+    pub(super) favorite: gtk::Button,
+    pub(super) description: gtk::Button,
+    pub(super) jobs: Vec<(crate::api_client::AssetJob, gtk::Button)>,
     secondary: gtk::Box,
-    overflow_box: gtk::Box,
     pub(super) trash: TrashControls,
 }
 
@@ -128,6 +132,13 @@ impl WindowParts {
             .height_request(480)
             .build();
         let header = build_header();
+        if let Some(popover) = header
+            .menu_button
+            .popover()
+            .and_downcast::<gtk::PopoverMenu>()
+        {
+            popover.add_child(&super::theme::switcher(ctx), super::theme::MENU_SLOT);
+        }
         // Shared with the grid canvas so masonry layout knows when the window is narrow.
         let narrow = Rc::new(Cell::new(false));
         let content = ContentParts::build(ctx, header.select_toggle.clone(), narrow.clone());
@@ -276,6 +287,7 @@ impl LibraryWindowUi {
             upload_button: controls.upload_button,
             controls_row: controls.root,
             back_button: header.back_button,
+            bell: header.bell,
             select_toggle: header.select_toggle,
             bulk: content.bulk,
             album_link: content.album_link,
@@ -308,10 +320,21 @@ fn build_header() -> HeaderParts {
     let back_button = pressable_button("go-previous-symbolic", &gettext("Back (Alt+Left)"));
     back_button.set_sensitive(false);
     let menu = gtk::gio::Menu::new();
-    menu.append(Some(&gettext("Refresh")), Some("win.refresh"));
-    menu.append(Some(&gettext("Queue Inspector")), Some("win.queue"));
-    menu.append(Some(&gettext("Settings")), Some("win.settings"));
-    menu.append(Some(&gettext("Keyboard Shortcuts")), Some("win.shortcuts"));
+    // The style switcher sits on top in its own section, as GNOME apps place it.
+    let theme = gtk::gio::MenuItem::new(None, None);
+    theme.set_attribute_value("custom", Some(&super::theme::MENU_SLOT.to_variant()));
+    let theme_section = gtk::gio::Menu::new();
+    theme_section.append_item(&theme);
+    menu.append_section(None, &theme_section);
+    let actions = gtk::gio::Menu::new();
+    actions.append(Some(&gettext("Refresh")), Some("win.refresh"));
+    actions.append(Some(&gettext("Notifications")), Some("win.notifications"));
+    actions.append(Some(&gettext("Account")), Some("win.account"));
+    actions.append(Some(&gettext("Queue Inspector")), Some("win.queue"));
+    actions.append(Some(&gettext("Settings")), Some("win.settings"));
+    actions.append(Some(&gettext("Keyboard Shortcuts")), Some("win.shortcuts"));
+    actions.append(Some(&gettext("About Mimick")), Some("win.about"));
+    menu.append_section(None, &actions);
     let menu_button = gtk::MenuButton::builder()
         .icon_name("open-menu-symbolic")
         .menu_model(&menu)
@@ -321,12 +344,16 @@ fn build_header() -> HeaderParts {
     header.pack_start(&sidebar_toggle);
     header.pack_start(&back_button);
     header.pack_end(&menu_button);
+    let bell = super::inbox::Bell::new();
+    header.pack_end(&bell.button);
     let select_toggle = gtk::ToggleButton::builder()
         .icon_name("checkbox-symbolic")
         .tooltip_text(gettext("Select assets (Esc to exit)"))
         .build();
     HeaderParts {
         header,
+        menu_button,
+        bell,
         sidebar_toggle,
         back_button,
         select_toggle,
@@ -371,6 +398,12 @@ fn build_controls() -> ControlsParts {
         .selected(0)
         .build();
     let upload_button = pressable_button("document-send-symbolic", &gettext("Upload to library"));
+    upload_button.set_child(Some(
+        &libadwaita::ButtonContent::builder()
+            .icon_name("mimick-upload-symbolic")
+            .label(gettext("Upload"))
+            .build(),
+    ));
     upload_button.add_css_class("suggested-action");
 
     let spacer = gtk::Box::builder().hexpand(true).build();
@@ -434,8 +467,9 @@ fn build_content_stack(
 
 fn build_transfer_indicator() -> TransferParts {
     let icon = gtk::Image::from_icon_name("mimick-upload-symbolic");
+    // Narrow, so the header still fits a 360 px phone while something transfers.
     let progress = gtk::ProgressBar::builder()
-        .width_request(28)
+        .width_request(40)
         .valign(gtk::Align::Center)
         .css_classes(["mimick-transfer-mini"])
         .build();
@@ -506,7 +540,7 @@ fn bulk_buttons() -> (gtk::Button, gtk::Button, gtk::Button, gtk::Button) {
         .build();
     let share_link = gtk::Button::builder()
         .icon_name("mimick-share-symbolic")
-        .tooltip_text(gettext("Create share link for selected"))
+        .tooltip_text(gettext("Share selected"))
         .build();
     (delete, download, clear, share_link)
 }

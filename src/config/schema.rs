@@ -16,6 +16,46 @@ impl DateHeadings {
     pub const ALL: [DateHeadings; 3] = [DateHeadings::Day, DateHeadings::Month, DateHeadings::Off];
 }
 
+/// How far back the Map page looks for photos.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum MapDateRange {
+    #[default]
+    All,
+    Day,
+    Week,
+    Month,
+    Year,
+    ThreeYears,
+    Custom,
+}
+
+impl MapDateRange {
+    pub const ALL: [MapDateRange; 7] = [
+        MapDateRange::All,
+        MapDateRange::Day,
+        MapDateRange::Week,
+        MapDateRange::Month,
+        MapDateRange::Year,
+        MapDateRange::ThreeYears,
+        MapDateRange::Custom,
+    ];
+}
+
+/// Which photos the Map page shows, like Immich's map settings.
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq)]
+#[serde(default)]
+pub struct MapFilters {
+    pub favorites_only: bool,
+    pub include_archived: bool,
+    pub with_partners: bool,
+    pub with_shared_albums: bool,
+    pub date_range: MapDateRange,
+    /// First and last day of a custom range as `YYYY-MM-DD`; either end may be open.
+    pub custom_from: Option<String>,
+    pub custom_until: Option<String>,
+}
+
 /// Configuration schema driving application behavior and connection settings.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ConfigData {
@@ -61,9 +101,16 @@ pub struct ConfigData {
     /// Quiet-hours window end (local clock hour, 0-23, exclusive).
     #[serde(default)]
     pub quiet_hours_end: Option<u8>,
-    /// Whether the built-in library viewer is the primary window.
-    #[serde(default)]
+    /// Whether the built-in library viewer is the primary window. On for new installs;
+    /// a saved config keeps whatever it has.
+    #[serde(default = "default_true")]
     pub library_view_enabled: bool,
+    /// Log Mimick's debug messages too, while diagnosing a problem.
+    #[serde(default)]
+    pub detailed_logging: bool,
+    /// "system" follows the desktop's light or dark style; "light" or "dark" overrides it.
+    #[serde(default = "default_color_scheme")]
+    pub color_scheme: String,
     /// Target folder for asset downloads from the library viewer.
     #[serde(default)]
     pub download_target_path: Option<String>,
@@ -138,6 +185,8 @@ pub struct ConfigData {
     #[serde(default)]
     pub library_map_appearance: String,
     #[serde(default)]
+    pub library_map_filters: MapFilters,
+    #[serde(default)]
     pub library_date_headings: DateHeadings,
     /// Seconds each photo stays up in a slideshow.
     #[serde(default = "default_slideshow_interval")]
@@ -150,6 +199,15 @@ pub struct ConfigData {
     /// `crossfade`, `slide`, or `none`; empty means crossfade.
     #[serde(default)]
     pub slideshow_transition: String,
+}
+
+impl ConfigData {
+    /// Whether a server address is saved and switched on; false until first-run setup.
+    pub fn has_server(&self) -> bool {
+        let saved = |enabled: bool, url: &str| enabled && !url.trim().is_empty();
+        saved(self.internal_url_enabled, &self.internal_url)
+            || saved(self.external_url_enabled, &self.external_url)
+    }
 }
 
 impl Default for ConfigData {
@@ -169,7 +227,9 @@ impl Default for ConfigData {
             upload_concurrency: default_upload_concurrency(),
             quiet_hours_start: None,
             quiet_hours_end: None,
-            library_view_enabled: false,
+            library_view_enabled: true,
+            color_scheme: default_color_scheme(),
+            detailed_logging: false,
             download_target_path: None,
             library_preview_full_resolution: false,
             library_grid_quality: default_grid_quality(),
@@ -192,6 +252,7 @@ impl Default for ConfigData {
             video_muted: false,
             library_map_style: String::new(),
             library_map_appearance: String::new(),
+            library_map_filters: MapFilters::default(),
             library_date_headings: DateHeadings::default(),
             slideshow_interval_secs: default_slideshow_interval(),
             slideshow_shuffle: false,
@@ -202,6 +263,10 @@ impl Default for ConfigData {
 }
 
 /// Helper to default boolean fields to true during serialization.
+fn default_color_scheme() -> String {
+    "system".to_string()
+}
+
 fn default_redact_style() -> String {
     "pixelate".to_string()
 }

@@ -146,11 +146,23 @@ fn show_album(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, me: &str) {
             .actions
             .append(&super::super::album_activity::header_button(ui, &album));
     }
-    if owns_album(&album, me) {
-        add_menu(
-            header,
-            super::super::album_edit::album_menu_items(ui, &album),
-        );
+    let mut items = album_menu(ui, &album, me);
+    if ui.features.get().map {
+        let (ui_map, id, name) = (ui.clone(), album.id.clone(), album.album_name.clone());
+        let show_map: Box<dyn Fn()> =
+            Box::new(move || crate::library::map::show_album(&ui_map, id.clone(), name.clone()));
+        items.insert(0, (gettext("Show on Map"), show_map));
+    }
+    if !items.is_empty() {
+        add_menu(header, items);
+    }
+    add_album_actions(ui, &album, me);
+}
+
+/// Share (for the owner), Download, and Create Share Link in the album's header.
+fn add_album_actions(ui: &Rc<LibraryWindowUi>, album: &LibraryAlbum, me: &str) {
+    let header = &ui.header;
+    if owns_album(album, me) {
         let (ui_share, share_album) = (ui.clone(), album.clone());
         add_action(
             header,
@@ -160,12 +172,6 @@ fn show_album(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, me: &str) {
                 super::super::album_share_dialog::present(ui_share.clone(), share_album.clone())
             },
         );
-    } else if !me.is_empty() {
-        let (ui_leave, leave_album) = (ui.clone(), album.clone());
-        let leave: Box<dyn Fn()> = Box::new(move || {
-            super::super::album_assets::confirm_leave(&ui_leave, leave_album.clone())
-        });
-        add_menu(header, vec![(gettext("Leave Album…"), leave)]);
     }
     let (ui_zip, zip_id, zip_name) = (ui.clone(), album.id.clone(), album.album_name.clone());
     add_action(
@@ -195,6 +201,24 @@ fn show_album(ui: &Rc<LibraryWindowUi>, album: LibraryAlbum, me: &str) {
             )
         },
     );
+}
+
+/// The owner's album menu, or Leave Album for someone it's shared with.
+fn album_menu(
+    ui: &Rc<LibraryWindowUi>,
+    album: &LibraryAlbum,
+    me: &str,
+) -> Vec<(String, Box<dyn Fn()>)> {
+    if owns_album(album, me) {
+        return super::super::album_edit::album_menu_items(ui, album);
+    }
+    if me.is_empty() {
+        return Vec::new();
+    }
+    let (ui_leave, leave_album) = (ui.clone(), album.clone());
+    let leave: Box<dyn Fn()> =
+        Box::new(move || super::super::album_assets::confirm_leave(&ui_leave, leave_album.clone()));
+    vec![(gettext("Leave Album…"), leave)]
 }
 
 fn add_menu(header: &SourceHeader, items: Vec<(String, Box<dyn Fn()>)>) {

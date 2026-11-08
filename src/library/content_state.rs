@@ -42,6 +42,7 @@ pub(super) fn build_album_sidebar_row(
 
 pub(super) fn reload_sidebar(ui: &Rc<LibraryWindowUi>) {
     album_assets::sync_bulk_remove(ui);
+    super::navigation::sync_upload_button(ui);
     let albums = ui.ctx.library_state.lock().albums.clone();
     sidebar::set_recent_albums(&ui.sidebar, &albums);
     if sidebar::album_list_changed(&ui.sidebar, &albums) {

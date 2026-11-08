@@ -12,11 +12,15 @@ use super::LibraryWindowUi;
 use super::context_menu::show_alert_dialog;
 use super::state::{LibraryPage, LibrarySource, Location};
 use super::tree_page::{
-    TreePage, build_tree_page, leaf_name, parent_path, render_breadcrumbs, show_empty_state,
+    TreePage, build_tree_page, parent_path, render_breadcrumbs, show_empty_state,
 };
+
+mod path_bar;
+mod rows;
 
 pub(super) struct FoldersView {
     pub page: TreePage,
+    path_bar: path_bar::PathBar,
     asset_folders: RefCell<HashSet<String>>,
     folders: RefCell<BTreeSet<String>>,
     path: RefCell<Option<String>>,
@@ -24,8 +28,11 @@ pub(super) struct FoldersView {
 }
 
 pub(super) fn build_folders_view() -> FoldersView {
+    let page = build_tree_page("folder-symbolic");
+    let path_bar = path_bar::build(&page);
     FoldersView {
-        page: build_tree_page("folder-symbolic"),
+        page,
+        path_bar,
         asset_folders: RefCell::default(),
         folders: RefCell::default(),
         path: RefCell::default(),
@@ -69,6 +76,17 @@ fn reload(ui: Rc<LibraryWindowUi>) {
     });
 }
 
+/// Go to Path, Copy Path, and Ctrl+L.
+pub(super) fn connect_folders_view(ui: &Rc<LibraryWindowUi>) {
+    path_bar::connect(ui);
+}
+
+fn copy_path(ui: &LibraryWindowUi, path: &str) {
+    ui.window.clipboard().set_text(path);
+    ui.toasts
+        .add_toast(libadwaita::Toast::new(&gettext("Path copied")));
+}
+
 fn open_path(ui: &Rc<LibraryWindowUi>, path: Option<String>) {
     super::navigation::navigate(ui, Location::Page(LibraryPage::Folders { path }));
 }
@@ -98,20 +116,16 @@ fn render(ui: &Rc<LibraryWindowUi>) {
         path.as_deref(),
         Rc::new(move |target| open_path(&ui_crumb, target)),
     );
+    path_bar::sync(ui);
 
     view.page.list.remove_all();
     if let Some(path) = path.as_deref()
         && view.asset_folders.borrow().contains(path)
     {
-        view.page.list.append(&photos_row(ui, path));
+        view.page.list.append(&rows::photos_row(ui, path));
     }
-    let children = subfolders(&folders, path.as_deref());
-    for child in &children {
-        view.page.list.append(&folder_row(
-            ui,
-            child,
-            subfolders(&folders, Some(child)).len(),
-        ));
+    for child in subfolders(&folders, path.as_deref()) {
+        view.page.list.append(&rows::folder_row(ui, child));
     }
     let (title, body) = (
         gettext("No Folders"),
@@ -121,46 +135,6 @@ fn render(ui: &Rc<LibraryWindowUi>) {
         &view.page,
         (view.page.list.first_child().is_none()).then_some((title.as_str(), body.as_str())),
     );
-}
-
-fn photos_row(ui: &Rc<LibraryWindowUi>, path: &str) -> libadwaita::ActionRow {
-    let row = libadwaita::ActionRow::builder()
-        .title(fill(
-            gettext("Photos in {folder}"),
-            &[("folder", leaf_name(path))],
-        ))
-        .use_markup(false)
-        .title_lines(1)
-        .activatable(true)
-        .build();
-    row.add_prefix(&gtk::Image::from_icon_name("image-x-generic-symbolic"));
-    row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
-    let (ui, path) = (ui.clone(), path.to_string());
-    row.connect_activated(move |_| open_photos(&ui, &path));
-    row
-}
-
-fn folder_row(ui: &Rc<LibraryWindowUi>, path: &str, children: usize) -> libadwaita::ActionRow {
-    let row = libadwaita::ActionRow::builder()
-        .title(leaf_name(path))
-        .use_markup(false)
-        .title_lines(1)
-        .activatable(true)
-        .build();
-    row.add_prefix(&gtk::Image::from_icon_name("folder-symbolic"));
-    let (ui, path) = (ui.clone(), path.to_string());
-    if children == 0 {
-        row.set_tooltip_text(Some(&gettext("Show photos")));
-        row.connect_activated(move |_| open_photos(&ui, &path));
-    } else {
-        row.set_subtitle(&match children {
-            1 => "1 folder".to_string(),
-            n => format!("{n} folders"),
-        });
-        row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
-        row.connect_activated(move |_| open_path(&ui, Some(path.clone())));
-    }
-    row
 }
 
 pub(super) fn sort_by_date(assets: &mut [LibraryAsset], order: Option<SortOrder>) {

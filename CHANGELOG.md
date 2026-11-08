@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Ctrl+A** now selects every photo in the view, in Photos, albums, and every other grid, instead of only the ones already loaded: Mimick loads the rest first, with a note while it does.
+- The selection bar has a **Favorite** button (a filled heart unfavorites when all of them already are), and its **⋯** menu, now shown at every width, adds **Edit Description…**, **Refresh Faces**, **Refresh Metadata**, **Refresh Thumbnails**, and **Refresh Video** for the selected photos you own. Menu items show their icons.
+- Added the GNOME style switcher to the top of the main menu: round **Follow System**, **Light**, and **Dark** buttons.
+- **Ctrl+,** opens Settings, and Settings has an **Open Library** button once your API key is saved.
+- **About Mimick** is now in the library's main menu too, and shows **What's New** for this version, links to the website, source, documentation, and **Support Questions** (GitHub Discussions), and, under **Troubleshooting**, debug info to paste into a bug report: Mimick, GTK, and libadwaita versions, how it's installed, the desktop, and the graphics renderer.
+- Added **Detailed Logs** to Settings → Troubleshooting, and **Export Diagnostics** now includes the end of the log, with the API key, server addresses, and your home folder replaced. New bug-report and feature-request forms on GitHub ask for both.
+- The Folders page expands a folder in place to show what's inside, with an **Open** button to step into it. Each folder's menu (right-click, long-press, or Shift+F10) has **Copy Path**; the toolbar copies the open folder's path, and **Enter a path** (**Ctrl+L**) takes a typed or pasted path, suggesting folders as you type, with **Tab** completing.
+- Choosing a new profile picture, from Account or a photo's **Set as Profile Picture**, now lets you crop it first: drag the photo in the round frame, and zoom with the slider, a pinch, the scroll wheel, or **+** and **−**.
+- Videos flash a play or pause badge in the middle as they start and stop, and **Up** and **Down** turn the volume up and down, showing the level.
+- Added **OpenTopoMap** and **Humanitarian** to the map's styles.
+- Menus opened from a photo, album, face, stack, or folder show an icon beside each item.
+- Each tag on the Tags page has **Rename**, **Change Color**, and **Delete** buttons, and **New Tag** has a label.
+
+- Added **Map Settings** to the Map page's buttons: show only favorites, add your archived photos, partners' photos, or photos in albums shared with you, and limit the map to the past day, week, 30 days, year, three years, or a range of dates you pick. The button is tinted while the map shows something other than your own photos (#319).
+- **Set Location** now names the place under the pin, such as "Lisbon, Lisbon, Portugal", before you save (#319).
+- Added **Refresh Faces**, **Refresh Metadata**, **Refresh Thumbnails**, and, for videos, **Refresh Video** to the photo menu of your own photos. Immich redoes that work in the background; your API key needs the `job.create` permission (#322).
+- **Add to Album** can add to several albums at once: tick the albums, then press **Add to … Albums**. Once one is ticked, tapping another album ticks it too; with none ticked, tapping an album adds right away as before (#318).
+- Added **Show on Map** to an album's menu: the Map page shows only that album's photos, and the album's chip in the corner goes back to all of them (#318).
+- The Albums page shows how many albums you own, how many are shared, and how many of yours aren't (#318).
+- Search filters can now pick several **People**, **Tags**, and **Albums**: a photo has to have all of them. Each opens a list with a filter box; people show their faces (#317).
+- The **Camera** and **Location** search filters now list the makes, models, lenses, countries, states, and cities in your library, and typing in the list finds one. Picking a make lists only its models and lenses, and picking a country lists only its states and cities, as in Immich (#317).
+- Searching on the People page now also asks Immich, so people past the first 500 it lists show up too (#317).
+- Each link on the Shared Links page has a QR code button that shows the link as a code to scan with a phone, and a **⋯** menu, also opened by right-clicking or long-pressing the link, with **QR Code**, **Photos…**, **Edit…**, and **Delete…**. **Photos…** lists the photos in a link made for some photos, and you can take any of them out (#320).
+- Added **Add to Share Link…** to the photo menu, and **Add to Existing Link…** to the selection bar's share button, to put photos in a link you made before (#320).
+- Added **Account** to the main menu, with three pages: **Profile** shows your picture, name, and email, and changes or removes the picture; **Devices** lists the browsers and apps signed in to your account and signs any of them out; **API Keys** lists your keys, deletes ones you no longer use, and, on Immich 3.2 or newer, gives Mimick's own key a new secret with **Rotate**, which Mimick saves for itself (#321).
+- Added **Set as Profile Picture** to the photo menu of your own photos (#321).
+- Added a notifications inbox: a bell in the header shows how many of Immich's notifications, such as album invites and failed backups, are unread, and **Notifications** in the main menu opens them. Tap one to mark it read, or an album invite to open the album, and dismiss the ones you're done with. New ones also appear as desktop notifications while Mimick runs (#321).
+- Added a **Calendar** to Explore: a card with a square for each day of the past year, darker the more photos you took (or, with **Uploaded**, uploaded) that day, with month names above, weekdays beside, the year's total, and a key from **Less** to **More**. Tap or click a day, or move with the arrow keys, to see its count, then **Show Photos** opens them; the arrows step a year at a time. The squares grow to fill wide windows and scroll sideways on phones, starting at today (#323).
+- 360° photos now open in a 360° view in the viewer: drag, pinch, or scroll to look around, or use **Up** and **Down** to tilt, **Shift+Left** and **Shift+Right** to turn, and **+** and **−** to zoom. The **360°** button, or **P**, switches between it and the flat photo (#322).
+
+### Changed
+
+- The library view is on by default for new installs. Until a server is set up, Mimick opens Settings on its setup steps, and opens the library once **Save and Connect** succeeds. Before then the Status page says **Not Set Up Yet** with a **Set Up…** button, instead of reporting that the server can't be reached.
+- The **Upload** button now has a label, and shows only on Photos and on albums you can add to.
+- The transfer progress bar in the header is taller, with slightly rounded corners.
+- About Mimick lists the developer under Credits and credits the app icon and map data under **Attribution**; the third-party license text moved out of the dialog (packages still install it under `share/licenses`).
+
+- The disk cache now stays under its size limit during long sessions, not only at startup: Mimick trims it every half hour. Thumbnails and originals you keep coming back to count as recently used, so trimming removes the ones you haven't opened in longest instead of the oldest downloads.
+- Thumbnails of local HEIC and AVIF photos use the small picture phones store inside the file when there is one, instead of decoding the whole photo. Other formats that need a full decode (JPEG XL, PSD, and HEICs without one) decode at most three at a time and with one copy of the pixels fewer, so scrolling a folder of large photos uses much less memory.
+- Thumbnails of local photos are now kept on disk as JPEG instead of PNG (PNG only when they have transparent parts), which takes a fraction of the space and loads faster.
+- The selection bar's share button now asks whether to make a new link or add to one you made before; on the Shared Links page, **Delete** moved into each link's **⋯** menu (#320).
+
+### Fixed
+
+- The Explore calendar no longer cuts off its lower rows, and the Friday label, on wide windows.
+- The selection bar's **⋯** menu no longer disappears for good on phone-width windows after selecting two or more of your own photos.
+- Mimick's own icons, such as the one at the top of the Status page, now show when Settings opens before the library.
+- In a tag's color picker, tapping the picked color no longer unpicks it, and **Save** waits until a color is chosen instead of doing nothing.
+
 ## [9.13.0] - 2026-11-08
 
 ### Added

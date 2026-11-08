@@ -146,6 +146,7 @@ pub(super) fn load_explore_landing(ui: Rc<LibraryWindowUi>) {
     ui.explore.populated.set(true);
     explore_view::wire_people_filter(&ui.explore, ui.ctx.clone(), || {});
     explore_view::show_loading(&ui.explore);
+    explore_view::calendar::load(&ui.explore.calendar, &ui);
     ui.content_stack.set_visible_child_name("explore");
 
     let sections = ui.explore.sections.get();

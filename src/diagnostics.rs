@@ -14,17 +14,36 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
+mod logs;
+
+/// What the bundle leaves out, written beside it and summarized in summary.txt.
+const PRIVACY_NOTE: &str = "This bundle leaves out the API key, server addresses, and full \
+local paths. log.redacted.txt is the end of Mimick's log with the API key, server addresses, \
+and your home folder replaced; read it before sharing.\n";
+
 /// Primary entrypoint to create and export a redacted diagnostics zip/bundle folder.
+/// `api_key` is passed in so the log can be scrubbed without another keyring lookup.
 pub fn export_bundle(
     destination_root: &Path,
     state: &AppState,
     config: &Config,
+    api_key: &str,
 ) -> io::Result<PathBuf> {
     let cache_root = crate::profile::cache_dir()
         .unwrap_or_else(|| PathBuf::from("/tmp").join(crate::profile::dir_segment()));
     let data_root = crate::profile::data_dir()
         .unwrap_or_else(|| PathBuf::from("/tmp").join(crate::profile::dir_segment()));
-    export_bundle_with_paths(destination_root, state, config, &cache_root, &data_root)
+    let roots = BundleRoots {
+        cache: &cache_root,
+        data: &data_root,
+    };
+    export_bundle_with_paths(destination_root, state, config, api_key, &roots)
+}
+
+/// Where the log, retries, and sync index are read from; temporary folders in tests.
+struct BundleRoots<'a> {
+    cache: &'a Path,
+    data: &'a Path,
 }
 
 /// Helper that generates redactions by specifying explicit caches and data roots for testing.
@@ -32,9 +51,10 @@ fn export_bundle_with_paths(
     destination_root: &Path,
     state: &AppState,
     config: &Config,
-    cache_root: &Path,
-    data_root: &Path,
+    api_key: &str,
+    roots: &BundleRoots,
 ) -> io::Result<PathBuf> {
+    let (cache_root, data_root) = (roots.cache, roots.data);
     let timestamp = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
@@ -44,9 +64,10 @@ fn export_bundle_with_paths(
 
     let summary_path = bundle_dir.join("summary.txt");
     fs::write(summary_path, build_summary(config, state))?;
+    fs::write(bundle_dir.join("privacy-note.txt"), PRIVACY_NOTE)?;
     fs::write(
-        bundle_dir.join("privacy-note.txt"),
-        "This bundle intentionally omits API keys, raw logs, server URLs, and full local paths.\n",
+        bundle_dir.join("log.redacted.txt"),
+        logs::redacted_tail(cache_root, config, api_key),
     )?;
 
     write_json_pretty(
@@ -75,10 +96,13 @@ fn build_summary(config: &Config, state: &AppState) -> String {
         "Mimick diagnostics export".to_string(),
         format!("Version: {}", env!("CARGO_PKG_VERSION")),
     ];
+    lines.extend(crate::about::environment_lines());
     lines.extend(state_lines(state));
     lines.extend(config_lines(config));
     lines.push(
-        "Sensitive data policy: URLs, API key, logs, and full local paths omitted".to_string(),
+        "Sensitive data policy: API key, server addresses, and full local paths omitted; \
+         the log has them replaced"
+            .to_string(),
     );
     lines.push(String::new());
     lines.push("Recent queue events:".to_string());
@@ -472,11 +496,9 @@ mod tests {
         assert!(summary.contains("App status: paused"));
         assert!(summary.contains("Watched folder count: 0"));
         assert!(summary.contains("Configured watch paths: 1"));
-        assert!(
-            summary.contains(
-                "Sensitive data policy: URLs, API key, logs, and full local paths omitted"
-            )
-        );
+        assert!(summary.contains(
+            "Sensitive data policy: API key, server addresses, and full local paths omitted"
+        ));
         assert!(summary.contains("a.jpg [failed] attempts=2"));
         assert!(!summary.contains("/photos/a.jpg [failed] attempts=2"));
     }
@@ -505,8 +527,8 @@ mod tests {
         assert!(summary.contains("Quiet hours start: disabled"));
     }
 
-    #[test]
-    fn test_export_bundle_writes_redacted_files_only() {
+    /// A bundle exported from temporary folders holding a config, status, retries, index, and log.
+    fn export_fixture() -> (tempfile::TempDir, PathBuf) {
         let dir = tempdir().unwrap();
         let dest_root = dir.path().join("exports");
         let cache_root = dir.path().join("cache");
@@ -527,10 +549,26 @@ mod tests {
             data: ConfigData::default(),
             config_file: config_path,
         };
-        let state = AppState::default();
-
+        let roots = super::BundleRoots {
+            cache: &cache_root,
+            data: &data_root,
+        };
         let bundle_dir =
-            export_bundle_with_paths(&dest_root, &state, &config, &cache_root, &data_root).unwrap();
+            export_bundle_with_paths(&dest_root, &AppState::default(), &config, "", &roots)
+                .unwrap();
+        (dir, bundle_dir)
+    }
+
+    #[test]
+    fn test_export_bundle_includes_the_log_tail() {
+        let (_dir, bundle_dir) = export_fixture();
+        let log = fs::read_to_string(bundle_dir.join("log.redacted.txt")).unwrap();
+        assert_eq!(log, "hello log");
+    }
+
+    #[test]
+    fn test_export_bundle_writes_redacted_files_only() {
+        let (_dir, bundle_dir) = export_fixture();
         assert!(bundle_dir.join("summary.txt").exists());
         assert!(bundle_dir.join("privacy-note.txt").exists());
         assert!(bundle_dir.join("config.redacted.json").exists());

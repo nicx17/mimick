@@ -10,7 +10,7 @@
 mod folders;
 pub use folders::*;
 mod schema;
-pub use schema::{ConfigData, DateHeadings};
+pub use schema::{ConfigData, DateHeadings, MapDateRange, MapFilters};
 mod keyring;
 pub use keyring::ApiKeyStorage;
 #[cfg(test)]

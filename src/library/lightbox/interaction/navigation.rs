@@ -17,20 +17,30 @@ impl Lightbox {
         let handled = if ctrl {
             self.handle_ocr_key(key, true) || self.handle_zoom_key(key)
         } else {
-            self.handle_edit_mode_key(key)
-                || self.handle_face_key(key)
-                || self.handle_slideshow_key(key)
-                || self.handle_video_key(key)
-                || self.handle_live_key(key)
-                || self.handle_ocr_key(key, false)
-                || self.handle_edit_key(key, shift)
-                || self.handle_plain_key(key)
+            self.handle_mode_key(key, shift) || self.handle_photo_key(key, shift)
         };
         if handled {
             glib::Propagation::Stop
         } else {
             glib::Propagation::Proceed
         }
+    }
+
+    /// Keys owned by whatever is showing over the photo: edit, faces, slideshow, video, live, 360°.
+    fn handle_mode_key(self: &Rc<Self>, key: gtk::gdk::Key, shift: bool) -> bool {
+        self.handle_edit_mode_key(key)
+            || self.handle_face_key(key)
+            || self.handle_slideshow_key(key)
+            || self.handle_video_key(key)
+            || self.handle_live_key(key)
+            || self.handle_panorama_key(key, shift)
+    }
+
+    /// Keys acting on the photo itself: recognized text, edits and ratings, and navigation.
+    fn handle_photo_key(self: &Rc<Self>, key: gtk::gdk::Key, shift: bool) -> bool {
+        self.handle_ocr_key(key, false)
+            || self.handle_edit_key(key, shift)
+            || self.handle_plain_key(key)
     }
 
     /// Ctrl +/-/0 zoom; false for any other key.

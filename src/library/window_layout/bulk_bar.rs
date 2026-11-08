@@ -4,6 +4,7 @@ use gettextrs::gettext;
 use gtk::prelude::*;
 
 use super::{BulkParts, hbox};
+use crate::api_client::AssetJob;
 
 struct BulkActions {
     delete: gtk::Button,
@@ -16,6 +17,10 @@ struct BulkActions {
     remove_from_album: gtk::Button,
     archive: gtk::Button,
     stack: gtk::Button,
+    favorite: gtk::Button,
+    /// Only in the More menu: Edit Description, then each Immich job.
+    description: gtk::Button,
+    jobs: Vec<(AssetJob, gtk::Button)>,
     trash: super::super::trash_view::TrashControls,
 }
 
@@ -42,7 +47,16 @@ fn build_bulk_actions() -> BulkActions {
     stack.set_visible(false);
     let remove_from_album = bar_button("list-remove-symbolic", &gettext("Remove from album"));
     remove_from_album.set_visible(false);
-    let trash = super::super::trash_view::build_trash_controls(vec![
+    let favorite = bar_button(
+        "mimick-heart-outline-symbolic",
+        &gettext("Favorite selected"),
+    );
+    let description = bar_button(
+        "format-justify-left-symbolic",
+        &gettext("Edit Description…"),
+    );
+    let jobs = super::super::asset_jobs::bulk_buttons();
+    let mut live_only = vec![
         delete.clone(),
         download.clone(),
         share_link.clone(),
@@ -50,7 +64,11 @@ fn build_bulk_actions() -> BulkActions {
         location.clone(),
         date.clone(),
         add_to_album.clone(),
-    ]);
+        favorite.clone(),
+        description.clone(),
+    ];
+    live_only.extend(jobs.iter().map(|(_, button)| button.clone()));
+    let trash = super::super::trash_view::build_trash_controls(live_only);
     BulkActions {
         delete,
         download,
@@ -62,6 +80,9 @@ fn build_bulk_actions() -> BulkActions {
         remove_from_album,
         archive,
         stack,
+        favorite,
+        description,
+        jobs,
         trash,
     }
 }
@@ -73,7 +94,7 @@ pub(super) fn build_bulk_bar() -> BulkParts {
         .ellipsize(gtk::pango::EllipsizeMode::End)
         .build();
     let actions = build_bulk_actions();
-    let (bar, secondary, overflow_box) = assemble_bulk_bar(&count_label, &actions);
+    let (bar, secondary) = assemble_bulk_bar(&count_label, &actions);
     BulkParts {
         bar,
         count_label,
@@ -87,17 +108,17 @@ pub(super) fn build_bulk_bar() -> BulkParts {
         remove_from_album: actions.remove_from_album,
         archive: actions.archive,
         stack: actions.stack,
+        favorite: actions.favorite,
+        description: actions.description,
+        jobs: actions.jobs,
         secondary,
-        overflow_box,
         trash: actions.trash,
     }
 }
 
-fn assemble_bulk_bar(
-    count_label: &gtk::Label,
-    actions: &BulkActions,
-) -> (gtk::Revealer, gtk::Box, gtk::Box) {
+fn assemble_bulk_bar(count_label: &gtk::Label, actions: &BulkActions) -> (gtk::Revealer, gtk::Box) {
     let secondary_buttons = [
+        actions.favorite.clone(),
         actions.share_link.clone(),
         actions.archive.clone(),
         actions.location.clone(),
@@ -109,8 +130,13 @@ fn assemble_bulk_bar(
     for button in &secondary_buttons {
         secondary.append(button);
     }
-    let overflow_box = hbox(&[super::super::bulk_overflow::build(&secondary_buttons).upcast_ref()]);
-    overflow_box.set_visible(false);
+    let mut extras = vec![actions.description.clone()];
+    extras.extend(actions.jobs.iter().map(|(_, button)| button.clone()));
+    let overflow_box =
+        hbox(&[
+            super::super::bulk_overflow::build(&secondary_buttons, &secondary, &extras)
+                .upcast_ref(),
+        ]);
     let inner = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
         .spacing(8)
@@ -134,5 +160,5 @@ fn assemble_bulk_bar(
         .reveal_child(false)
         .child(&inner)
         .build();
-    (bar, secondary, overflow_box)
+    (bar, secondary)
 }
