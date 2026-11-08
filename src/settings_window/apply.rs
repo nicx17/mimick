@@ -254,13 +254,18 @@ fn write_config(
     Some(key_file_notice)
 }
 
-/// Point the API client at the new addresses; refresh the album list after a key change.
+/// Point the API client at the new addresses; after a connection change, check it again so
+/// the Status page shows the new route or problem, and refresh the album list.
 async fn update_api_client(state: &ApplyState, request: &ApplyRequest) {
     let (internal, external) = request.conn.runtime_urls();
     let api_client = &state.ctx.api_client;
     api_client
         .update_settings(internal, external, request.conn.api_key.clone())
         .await;
+    if request.include_connectivity {
+        // Startup is otherwise the only check, so Status kept the old result until a restart.
+        crate::file_events::refresh_connection_status(state.ctx.clone()).await;
+    }
     if request.include_connectivity && !request.conn.api_key.is_empty() {
         match api_client.get_all_albums().await {
             Ok(fetched) => *state.albums.borrow_mut() = fetched,

@@ -56,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Explore calendar no longer cuts off its lower rows, and the Friday label, on wide windows.
 - The selection bar's **⋯** menu no longer disappears for good on phone-width windows after selecting two or more of your own photos.
 - Mimick's own icons, such as the one at the top of the Status page, now show when Settings opens before the library.
+- Closing the library window with **Background Sync** off now quits Mimick, as closing Settings does, instead of leaving it running in the tray.
+- The Status page updates after **Save and Connect** instead of keeping the connection result from startup, and says **Can't Reach Immich** rather than **Up to Date** when the server can't be reached.
 - In a tag's color picker, tapping the picked color no longer unpicks it, and **Save** waits until a color is chosen instead of doing nothing.
 
 ## [9.13.0] - 2026-11-08

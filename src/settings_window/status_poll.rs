@@ -213,6 +213,13 @@ fn status_headline(s: &StatusSnapshot) -> Option<Headline> {
         });
     }
     match s.status.as_str() {
+        // Idle with no route and an error: nothing is being uploaded because Immich is unreachable.
+        "idle" if s.route.is_none() && s.last_error.is_some() => Some(Headline {
+            icon: "network-offline-symbolic",
+            title: gettext("Can't Reach Immich"),
+            subtitle: gettext("Check the server address and API key in Settings."),
+            progress: None,
+        }),
         "idle" if s.failed > 0 => Some(Headline {
             icon: "network-offline-symbolic",
             title: gettext("Waiting for Immich"),
@@ -356,6 +363,24 @@ mod tests {
             ..StatusSnapshot::default()
         };
         assert!(status_headline(&unknown).is_none());
+    }
+
+    #[test]
+    fn headline_says_when_immich_is_unreachable() {
+        let offline = StatusSnapshot {
+            status: "idle".into(),
+            last_error: Some("Could not reach the Immich server".into()),
+            ..StatusSnapshot::default()
+        };
+        assert_eq!(
+            status_headline(&offline).unwrap().title,
+            "Can't Reach Immich"
+        );
+        let connected = StatusSnapshot {
+            route: Some("LAN".into()),
+            ..offline
+        };
+        assert_eq!(status_headline(&connected).unwrap().title, "Up to Date");
     }
 
     #[test]

@@ -298,13 +298,19 @@ fn connect_window_controls(ui: &Rc<LibraryWindowUi>, controls: WindowControls) {
     connect_drop_target(ui.clone());
 }
 
+/// Closing the library frees its memory; as the last window with background sync off, it
+/// quits Mimick too, as closing Settings does, instead of leaving it in the tray.
 fn install_close_handler(ui: &Rc<LibraryWindowUi>, window: &libadwaita::ApplicationWindow) {
-    let close_ctx = ui.ctx.clone();
+    let (close_ctx, app) = (ui.ctx.clone(), ui.app.clone());
     let weak = Rc::downgrade(ui);
     window.connect_close_request(move |_| {
         log::info!("Library window closing");
         if let Some(ui) = weak.upgrade() {
             lightbox::close_lightbox(&ui);
+        }
+        if crate::ui_lifecycle::quits_on_close(&app, &close_ctx) {
+            app.quit();
+            return glib::Propagation::Stop;
         }
         close_ctx.thumbnail_cache.clear_memory();
         glib::timeout_add_seconds_local_once(3, release_freed_memory);

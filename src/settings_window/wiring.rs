@@ -473,13 +473,8 @@ pub(super) fn connect_close_request(
 ) {
     let (app, ctx) = (app.clone(), ctx.clone());
     window.connect_close_request(move |_| {
-        // Read background sync directly from config rather than a shadow
-        // RefCell, so any code path that changes the config is reflected here.
-        // The closing window is still in app.windows() at this point: a count
-        // of 1 means it is the last window, so quit; more means another window
-        // (usually the library) is open and should keep running.
-        let bg_sync = ctx.config.read().data.background_sync_enabled;
-        if !bg_sync && app.windows().len() <= 1 {
+        // Reads the config each time, so a change from any window counts.
+        if crate::ui_lifecycle::quits_on_close(&app, &ctx) {
             app.quit();
             return glib::Propagation::Stop;
         }

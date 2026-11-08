@@ -254,6 +254,13 @@ pub(super) async fn persist_on_shutdown(shared_state: &Arc<Mutex<AppState>>) {
     log::info!("Mimick exiting");
 }
 
+/// Whether closing this window should quit Mimick: background sync is off, so nothing needs
+/// the tray, and it's the last window. Call from a close handler, where the closing window
+/// still counts in `app.windows()`.
+pub(super) fn quits_on_close(app: &adw::Application, ctx: &AppContext) -> bool {
+    !ctx.config.read().data.background_sync_enabled && app.windows().len() <= 1
+}
+
 /// Open whichever window the user prefers, presenting an existing instance if available.
 pub(super) fn open_default_window(app: &adw::Application, ctx: Arc<AppContext>) {
     if let Some(win) = find_window(app, "mimick-library-window")
