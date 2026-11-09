@@ -39,6 +39,10 @@ pub(super) fn append_manage_buttons(
     append_share_buttons(menu, ui, &remote_id);
     crate::library::lightbox::append_unstack_button(menu, ui, item);
     if crate::library::actions::is_mine(ui, item) {
+        // A new stack cover regroups the grid, as a changed date does.
+        let on_edited = hooks.on_edited.clone();
+        let on_stacked: Rc<dyn Fn()> = Rc::new(move || on_edited(true));
+        crate::library::upload_stack::append_button(menu, ui, item, remote_id.clone(), on_stacked);
         append_edit_buttons(menu, ui, item, remote_id.clone(), hooks.on_edited);
         append_profile_button(menu, ui, item, remote_id);
         crate::library::asset_jobs::append_refresh_buttons(menu, ui, item);

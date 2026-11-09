@@ -291,6 +291,12 @@ button.mimick-pop {
     border-radius: 6px;
 }
 
+/* A fifth of a 360 px screen leaves "Explore" no room beside Adwaita's 10 px button sides. */
+.mimick-bottom-nav button {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
 image.mimick-person-favorite {
     padding: 6px;
     margin: 4px;

@@ -27,11 +27,10 @@ pub(in crate::library) fn decode_heif_thumbnail(
         .decode(&handle, ColorSpace::Rgb(RgbChroma::Rgba), None)
         .ok()?;
     let plane = image.planes().interleaved?;
-    super::memory_texture(
-        plane.width,
-        plane.height,
-        gdk4::MemoryFormat::R8g8b8a8,
-        plane.data.to_vec(),
+    super::heif_texture(
+        &handle,
+        plane.data,
+        (plane.width, plane.height),
         plane.stride,
     )
 }

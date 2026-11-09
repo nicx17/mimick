@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 01:08+0530\n"
+"POT-Creation-Date: 2026-11-09 14:37+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -169,7 +169,7 @@ msgstr ""
 msgid "Check network quality and server responsiveness, then retry."
 msgstr ""
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:302
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
 msgid "Could not reach the Immich server"
 msgstr ""
 
@@ -228,11 +228,11 @@ msgid ""
 "Retry the request after checking network connectivity and server health."
 msgstr ""
 
-#: src/api_client/mod.rs:385
+#: src/api_client/mod.rs:387
 msgid "No active connection"
 msgstr ""
 
-#: src/api_client/search.rs:303
+#: src/api_client/search.rs:358
 msgid "Immich can't count by file name or deleted photos"
 msgstr ""
 
@@ -245,7 +245,7 @@ msgstr ""
 msgid "Renaming tags needs a newer version of Immich."
 msgstr ""
 
-#: src/api_client/timeline.rs:105
+#: src/api_client/timeline.rs:194
 #, rust-format
 msgid "Invalid month {month}"
 msgstr ""
@@ -353,9 +353,10 @@ msgid "Build Image"
 msgstr ""
 
 #. Translators: strftime date, e.g. "9 Oct 2026".
-#: src/library/about_dialog.rs:78 src/library/duplicates_view/cards.rs:217
+#: src/library/about_dialog.rs:78 src/library/day_row.rs:63
+#: src/library/duplicates_view/cards.rs:217
 #: src/library/explore_view/calendar.rs:36 src/library/header_format.rs:64
-#: src/library/header_format.rs:77 src/library/map/settings.rs:194
+#: src/library/header_format.rs:77 src/library/utilities/controls.rs:137
 msgid "%-d %b %Y"
 msgstr ""
 
@@ -364,19 +365,19 @@ msgstr ""
 msgid "Installed {version} on {date}"
 msgstr ""
 
-#: src/library/about_dialog.rs:134 src/library/about_dialog.rs:149
-msgid "About"
+#: src/library/about_dialog.rs:135 src/library/about_dialog.rs:150
+msgid "Immich Server"
 msgstr ""
 
-#: src/library/about_dialog.rs:213
+#: src/library/about_dialog.rs:214
 msgid "Version History"
 msgstr ""
 
-#: src/library/about_dialog.rs:233
+#: src/library/about_dialog.rs:234
 msgid "Server details unavailable"
 msgstr ""
 
-#: src/library/about_dialog.rs:234
+#: src/library/about_dialog.rs:235
 #, rust-format
 msgid ""
 "Your API key needs the 'server.about' and 'server.versionCheck' "
@@ -385,7 +386,7 @@ msgid ""
 "{err}"
 msgstr ""
 
-#: src/library/account.rs:34 src/library/window_layout.rs:332
+#: src/library/account.rs:34 src/library/window_layout.rs:319
 msgid "Account"
 msgstr ""
 
@@ -395,12 +396,12 @@ msgid "Couldn't load this. Your API key needs the “{permission}” permission.
 msgstr ""
 
 #: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
-#: src/library/actions/trash.rs:164 src/library/album_delete.rs:123
+#: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
 #: src/library/album_link.rs:230 src/library/album_wiring.rs:35
 #: src/library/asset_edit.rs:253 src/library/bulk_date.rs:316
 #: src/library/dialogs.rs:40 src/library/dialogs.rs:85
 #: src/library/dialogs.rs:110 src/library/lightbox/edit/panel.rs:101
-#: src/library/map/location_dialog.rs:101 src/library/people_view.rs:444
+#: src/library/map/location_dialog.rs:113 src/library/people_view.rs:444
 #: src/library/shared_links_view.rs:361 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
 #: src/settings_window/watch_folders/rules_dialog.rs:120
@@ -560,9 +561,9 @@ msgid ""
 "{secret}"
 msgstr ""
 
-#: src/library/account/keys.rs:199 src/library/context_menu.rs:316
-#: src/library/context_menu.rs:331 src/library/masonry/canvas_helpers.rs:141
-#: src/settings_window/mod.rs:64
+#: src/library/account/keys.rs:199 src/library/context_menu.rs:321
+#: src/library/context_menu.rs:336 src/library/masonry/canvas_helpers.rs:141
+#: src/settings_window/mod.rs:65
 msgid "OK"
 msgstr ""
 
@@ -578,7 +579,7 @@ msgstr ""
 msgid "Anything signing in with it stops working. This can't be undone."
 msgstr ""
 
-#: src/library/account/keys.rs:225 src/library/actions/trash.rs:168
+#: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
 #: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
 #: src/library/shared_links_view.rs:362 src/library/tags_view.rs:184
 #: src/library/tags_view.rs:305
@@ -662,39 +663,39 @@ msgstr ""
 msgid "Immich's preview of this photo isn't a JPEG or WebP."
 msgstr ""
 
-#: src/library/actions.rs:41 src/library/actions.rs:237
+#: src/library/actions.rs:222
+msgid "New Link…"
+msgstr ""
+
+#: src/library/actions.rs:229
+msgid "Add to Existing Link…"
+msgstr ""
+
+#: src/library/actions.rs:270 src/library/utilities.rs:190
 #, rust-format
 msgid "{n} selected"
 msgid_plural "{n} selected"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/library/actions.rs:189
-msgid "New Link…"
-msgstr ""
-
-#: src/library/actions.rs:196
-msgid "Add to Existing Link…"
-msgstr ""
-
-#: src/library/actions.rs:243
+#: src/library/actions.rs:276
 #, rust-format
 msgid "{owned} of {n} selected, only yours change"
 msgid_plural "{owned} of {n} selected, only yours change"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/library/actions.rs:285 src/library/actions.rs:309
+#: src/library/actions.rs:318 src/library/actions.rs:351
 msgid "Not Your Photos"
 msgstr ""
 
-#: src/library/actions.rs:286
+#: src/library/actions.rs:319
 msgid ""
 "Only the owner can change where a photo was taken, and the selected photos "
 "belong to other people."
 msgstr ""
 
-#: src/library/actions.rs:310
+#: src/library/actions.rs:352
 msgid ""
 "Only the owner can change when a photo was taken, and the selected photos "
 "belong to other people."
@@ -743,11 +744,11 @@ msgid_plural "{n} local-only items are not on the server and will be skipped."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/library/actions/trash.rs:140
+#: src/library/actions/trash.rs:159
 msgid "Could Not Move to Trash"
 msgstr ""
 
-#: src/library/actions/trash.rs:142 src/library/album_assets.rs:125
+#: src/library/actions/trash.rs:161 src/library/album_assets.rs:125
 #: src/library/album_assets.rs:226 src/library/album_delete.rs:218
 #: src/library/album_picker.rs:194 src/library/album_picker.rs:228
 #: src/library/album_picker/several.rs:101
@@ -755,7 +756,7 @@ msgstr ""
 msgid "Immich rejected the request: {err}"
 msgstr ""
 
-#: src/library/actions/trash.rs:166 src/library/shortcuts_dialog.rs:140
+#: src/library/actions/trash.rs:185 src/library/shortcuts_dialog.rs:160
 msgid "Move to trash"
 msgstr ""
 
@@ -818,7 +819,7 @@ msgstr ""
 msgid "Couldn't delete"
 msgstr ""
 
-#: src/library/album_activity/feed.rs:260 src/library/content_state.rs:211
+#: src/library/album_activity/feed.rs:260 src/library/content_state.rs:213
 #: src/library/server_stats_dialog.rs:42
 msgid "Loading…"
 msgstr ""
@@ -955,7 +956,7 @@ msgstr ""
 msgid "Deleted “{album_name}”"
 msgstr ""
 
-#: src/library/album_download.rs:20 src/library/controls.rs:529
+#: src/library/album_download.rs:20 src/library/controls.rs:541
 #: src/library/staging_view.rs:148
 msgid "Album"
 msgstr ""
@@ -996,7 +997,7 @@ msgid "Rename…"
 msgstr ""
 
 #: src/library/album_edit.rs:25 src/library/albums_view.rs:68
-#: src/library/window_layout/bulk_bar.rs:56
+#: src/library/window_layout/bulk_bar.rs:83
 msgid "Edit Description…"
 msgstr ""
 
@@ -1038,15 +1039,15 @@ msgstr ""
 msgid "Unlink"
 msgstr ""
 
-#: src/library/album_link.rs:54 src/library/window_layout.rs:492
+#: src/library/album_link.rs:54 src/library/window_layout.rs:500
 msgid "No local folder linked"
 msgstr ""
 
-#: src/library/album_link.rs:56 src/library/window_layout.rs:494
+#: src/library/album_link.rs:56 src/library/window_layout.rs:502
 msgid "Drop files in the linked folder to sync this album"
 msgstr ""
 
-#: src/library/album_link.rs:60 src/library/window_layout/responsive.rs:153
+#: src/library/album_link.rs:60 src/library/window_layout/responsive.rs:178
 msgid "Link folder…"
 msgstr ""
 
@@ -1280,7 +1281,7 @@ msgstr ""
 msgid "Editor"
 msgstr ""
 
-#: src/library/album_share_dialog.rs:150 src/library/shortcuts_dialog.rs:243
+#: src/library/album_share_dialog.rs:150 src/library/shortcuts_dialog.rs:263
 msgid "Viewer"
 msgstr ""
 
@@ -1319,7 +1320,7 @@ msgstr ""
 msgid "Choose a name for the new album."
 msgstr ""
 
-#: src/library/album_wiring.rs:88 src/library/source_loading.rs:97
+#: src/library/album_wiring.rs:88 src/library/source_loading.rs:98
 #, rust-format
 msgid "Could not load albums: {err}"
 msgstr ""
@@ -1328,13 +1329,13 @@ msgstr ""
 msgid "Share…"
 msgstr ""
 
-#: src/library/albums_view.rs:65 src/library/context_menu/manage.rs:54
+#: src/library/albums_view.rs:65 src/library/context_menu/manage.rs:58
 msgid "Create Share Link…"
 msgstr ""
 
 #: src/library/albums_view.rs:71 src/library/albums_view.rs:76
 #: src/library/context_menu.rs:139 src/library/shared_links_view.rs:416
-#: src/library/shortcuts_dialog.rs:124
+#: src/library/shortcuts_dialog.rs:139
 msgid "Download"
 msgstr ""
 
@@ -1355,14 +1356,14 @@ msgid "Shared with you"
 msgstr ""
 
 #: src/library/albums_view.rs:185 src/library/albums_view.rs:229
-#: src/library/bottom_nav.rs:13 src/library/navigation.rs:171
-#: src/library/search_filters.rs:85 src/library/shortcuts_dialog.rs:59
-#: src/library/sidebar/rows.rs:62
+#: src/library/bottom_nav.rs:13 src/library/navigation.rs:200
+#: src/library/search_filters.rs:85 src/library/shortcuts_dialog.rs:64
+#: src/library/sidebar/rows.rs:70
 msgid "Albums"
 msgstr ""
 
-#: src/library/albums_view.rs:227 src/library/navigation.rs:172
-#: src/library/sidebar/rows.rs:68
+#: src/library/albums_view.rs:227 src/library/navigation.rs:201
+#: src/library/sidebar/rows.rs:76
 msgid "Shared Albums"
 msgstr ""
 
@@ -1404,8 +1405,8 @@ msgid "Unarchive"
 msgstr ""
 
 #: src/library/archive.rs:26 src/library/search_filters.rs:137
-#: src/library/shortcuts_dialog.rs:57 src/library/sidebar/rows.rs:104
-#: src/library/source_header.rs:244
+#: src/library/shortcuts_dialog.rs:62 src/library/sidebar/rows.rs:112
+#: src/library/source_header.rs:271
 msgid "Archive"
 msgstr ""
 
@@ -1429,11 +1430,11 @@ msgstr ""
 msgid "Unarchive selected"
 msgstr ""
 
-#: src/library/archive.rs:90 src/library/window_layout/bulk_bar.rs:36
+#: src/library/archive.rs:90 src/library/window_layout/bulk_bar.rs:63
 msgid "Archive selected"
 msgstr ""
 
-#: src/library/asset_edit.rs:131 src/library/map/location_dialog.rs:57
+#: src/library/asset_edit.rs:131 src/library/map/location_dialog.rs:59
 msgid "Could Not Load Info"
 msgstr ""
 
@@ -1456,7 +1457,7 @@ msgstr ""
 
 #: src/library/asset_edit.rs:255 src/library/bulk_date.rs:318
 #: src/library/bulk_more.rs:139 src/library/dialogs.rs:86
-#: src/library/lightbox/edit/panel.rs:103 src/library/map/location_dialog.rs:73
+#: src/library/lightbox/edit/panel.rs:103 src/library/map/location_dialog.rs:76
 #: src/library/people_view.rs:417 src/library/people_view.rs:449
 #: src/library/shared_link_dialog.rs:202 src/library/tags_view.rs:335
 #: src/settings_window/watch_folders/rules_dialog.rs:122
@@ -1471,7 +1472,7 @@ msgstr ""
 msgid "Could Not Save Info"
 msgstr ""
 
-#: src/library/asset_edit.rs:351 src/library/map/location_dialog.rs:155
+#: src/library/asset_edit.rs:351 src/library/map/location_dialog.rs:167
 #, rust-format
 msgid "Immich rejected the update: {err}"
 msgstr ""
@@ -1530,8 +1531,8 @@ msgstr ""
 msgid "Add tag"
 msgstr ""
 
-#: src/library/asset_tags.rs:51 src/library/navigation.rs:175
-#: src/library/search_filters.rs:84 src/library/sidebar/rows.rs:92
+#: src/library/asset_tags.rs:51 src/library/navigation.rs:204
+#: src/library/search_filters.rs:84 src/library/sidebar/rows.rs:100
 msgid "Tags"
 msgstr ""
 
@@ -1567,26 +1568,27 @@ msgid "Create “{query}”"
 msgstr ""
 
 #: src/library/bottom_nav.rs:10 src/library/server_stats_dialog.rs:94
-#: src/library/server_stats_dialog.rs:126 src/library/shortcuts_dialog.rs:52
-#: src/library/sidebar/rows.rs:32 src/library/source_header.rs:221
+#: src/library/server_stats_dialog.rs:126 src/library/shortcuts_dialog.rs:57
+#: src/library/sidebar/rows.rs:40 src/library/source_header.rs:230
+#: src/library/utilities/controls.rs:29
 msgid "Photos"
 msgstr ""
 
-#: src/library/bottom_nav.rs:11 src/library/shortcuts_dialog.rs:53
-#: src/library/sidebar/rows.rs:44 src/library/source_header.rs:242
+#: src/library/bottom_nav.rs:11 src/library/shortcuts_dialog.rs:58
+#: src/library/sidebar/rows.rs:52 src/library/source_header.rs:269
 msgid "Explore"
 msgstr ""
 
-#: src/library/bottom_nav.rs:12 src/library/navigation.rs:148
-#: src/library/shortcuts_dialog.rs:54 src/library/shortcuts_dialog.rs:241
-#: src/library/sidebar/rows.rs:50
+#: src/library/bottom_nav.rs:12 src/library/navigation.rs:177
+#: src/library/shortcuts_dialog.rs:59 src/library/shortcuts_dialog.rs:261
+#: src/library/sidebar/rows.rs:58
 msgid "Map"
 msgstr ""
 
 #: src/library/bottom_nav.rs:14 src/library/explore_view.rs:217
-#: src/library/lightbox/people.rs:47 src/library/navigation.rs:174
-#: src/library/search_filters.rs:83 src/library/shortcuts_dialog.rs:55
-#: src/library/sidebar/rows.rs:56
+#: src/library/lightbox/people.rs:47 src/library/navigation.rs:203
+#: src/library/search_filters.rs:83 src/library/shortcuts_dialog.rs:60
+#: src/library/sidebar/rows.rs:64
 msgid "People"
 msgstr ""
 
@@ -1676,7 +1678,7 @@ msgstr ""
 msgid "Unfavorite selected"
 msgstr ""
 
-#: src/library/bulk_more.rs:76 src/library/window_layout/bulk_bar.rs:52
+#: src/library/bulk_more.rs:76 src/library/window_layout/bulk_bar.rs:79
 msgid "Favorite selected"
 msgstr ""
 
@@ -1721,6 +1723,60 @@ msgstr ""
 msgid "More actions"
 msgstr ""
 
+#: src/library/clipboard.rs:141
+#, rust-format
+msgid "Copied {n} photo"
+msgid_plural "Copied {n} photos"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/library/clipboard.rs:151
+#, rust-format
+msgid ""
+"Pasting into an album here adds all {count}. Only {local} are on this "
+"computer, so other apps such as Files paste those; use Download for the rest."
+msgstr ""
+
+#: src/library/clipboard.rs:162
+msgid "Paste in Photos or albums"
+msgstr ""
+
+#: src/library/clipboard.rs:177 src/library/clipboard.rs:187
+msgid "Couldn't paste"
+msgstr ""
+
+#: src/library/clipboard.rs:186 src/library/clipboard.rs:191
+#: src/library/clipboard.rs:226
+msgid "No photos to paste"
+msgstr ""
+
+#: src/library/clipboard.rs:233 src/library/upload_stack.rs:74
+#, rust-format
+msgid "Uploading {n} file…"
+msgid_plural "Uploading {n} files…"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/library/clipboard.rs:262
+msgid "Already in your library"
+msgstr ""
+
+#: src/library/clipboard.rs:273
+msgid "Uploading pasted image…"
+msgstr ""
+
+#: src/library/clipboard.rs:279
+msgid "Pasted image"
+msgstr ""
+
+#: src/library/clipboard.rs:290
+msgid "Pasted image uploaded"
+msgstr ""
+
+#: src/library/clipboard.rs:294
+msgid "Couldn't paste the image"
+msgstr ""
+
 #: src/library/content_state.rs:24
 #, rust-format
 msgid "{n} asset"
@@ -1728,81 +1784,81 @@ msgid_plural "{n} assets"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/library/content_state.rs:117 src/library/explore_view/calendar.rs:43
+#: src/library/content_state.rs:119 src/library/explore_view/calendar.rs:43
 #: src/library/header_format.rs:177 src/library/map/markers.rs:125
 #: src/library/memories.rs:134 src/library/server_stats_dialog.rs:227
-#: src/library/source_header.rs:213
+#: src/library/source_header.rs:222
 #, rust-format
 msgid "{n} photo"
 msgid_plural "{n} photos"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/library/content_state.rs:121 src/library/server_stats_dialog.rs:231
-#: src/library/source_header.rs:217
+#: src/library/content_state.rs:123 src/library/server_stats_dialog.rs:231
+#: src/library/source_header.rs:226
 #, rust-format
 msgid "{n} video"
 msgid_plural "{n} videos"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/library/content_state.rs:126 src/library/sidebar.rs:36
+#: src/library/content_state.rs:128 src/library/sidebar.rs:36
 msgid "Statistics unavailable"
 msgstr ""
 
-#: src/library/content_state.rs:131 src/library/server_stats_dialog.rs:80
+#: src/library/content_state.rs:133 src/library/server_stats_dialog.rs:80
 #, rust-format
 msgid "Immich {version}"
 msgstr ""
 
-#: src/library/content_state.rs:132
+#: src/library/content_state.rs:134
 msgid "Version unavailable"
 msgstr ""
 
-#: src/library/content_state.rs:138 src/settings_window/status_poll.rs:181
+#: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
 #: src/settings_window/wiring.rs:215
 msgid "Connected through LAN"
 msgstr ""
 
-#: src/library/content_state.rs:139 src/settings_window/status_poll.rs:182
+#: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
 #: src/settings_window/wiring.rs:217
 msgid "Connected through WAN"
 msgstr ""
 
-#: src/library/content_state.rs:140 src/settings_window/status_poll.rs:183
+#: src/library/content_state.rs:142 src/settings_window/status_poll.rs:183
 msgid "Connected through configured server"
 msgstr ""
 
-#: src/library/content_state.rs:142 src/library/sidebar.rs:35
+#: src/library/content_state.rs:144 src/library/sidebar.rs:35
 msgid "Offline"
 msgstr ""
 
-#: src/library/content_state.rs:173
+#: src/library/content_state.rs:175
 msgid "queued asset"
 msgstr ""
 
-#: src/library/content_state.rs:174
+#: src/library/content_state.rs:176
 msgid "selected asset"
 msgstr ""
 
-#: src/library/content_state.rs:215
+#: src/library/content_state.rs:217
 msgid "Fetching library data from the Immich server"
 msgstr ""
 
-#: src/library/content_state.rs:364 src/library/masonry/canvas_helpers.rs:138
+#: src/library/content_state.rs:366 src/library/masonry/canvas_helpers.rs:138
 #: src/library/server_stats_dialog.rs:161
 msgid "Missing API Permissions"
 msgstr ""
 
-#: src/library/content_state.rs:365
+#: src/library/content_state.rs:367
 msgid ""
 "Your API key is missing permissions required for the Library view. Please "
 "ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
 "'person.read' enabled."
 msgstr ""
 
-#: src/library/content_state.rs:367 src/library/server_stats_dialog.rs:27
-#: src/library/shortcuts_dialog.rs:159
+#: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
+#: src/library/shortcuts_dialog.rs:179
 msgid "Close"
 msgstr ""
 
@@ -1814,7 +1870,7 @@ msgstr ""
 msgid "Open In"
 msgstr ""
 
-#: src/library/context_menu.rs:174 src/library/shortcuts_dialog.rs:244
+#: src/library/context_menu.rs:174 src/library/shortcuts_dialog.rs:264
 msgid "Slideshow"
 msgstr ""
 
@@ -1834,76 +1890,76 @@ msgstr ""
 msgid "Could not decode the original image."
 msgstr ""
 
-#: src/library/context_menu.rs:251
+#: src/library/context_menu.rs:256
 msgid "Couldn't open the file"
 msgstr ""
 
-#: src/library/context_menu.rs:283
+#: src/library/context_menu.rs:288
 msgid "Could not locate a cache directory."
 msgstr ""
 
-#: src/library/context_menu.rs:311 src/library/lightbox/details.rs:205
+#: src/library/context_menu.rs:316 src/library/lightbox/details.rs:205
 msgid "Details"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:69
+#: src/library/context_menu/manage.rs:73
 msgid "Add to Share Link…"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:80 src/library/lightbox/widgets.rs:435
+#: src/library/context_menu/manage.rs:84 src/library/lightbox/widgets.rs:435
 msgid "Add to Album…"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:88
+#: src/library/context_menu/manage.rs:92
 msgid "Set as Album Cover"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:104
+#: src/library/context_menu/manage.rs:108
 msgid "Remove from Album"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:126 src/library/lightbox/widgets.rs:433
+#: src/library/context_menu/manage.rs:130 src/library/lightbox/widgets.rs:433
 msgid "Edit Info…"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:145
+#: src/library/context_menu/manage.rs:149
 msgid "Edit Photo…"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:154 src/library/lightbox/people.rs:59
+#: src/library/context_menu/manage.rs:158 src/library/lightbox/people.rs:59
 msgid "Tag People…"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:172
+#: src/library/context_menu/manage.rs:176
 msgid "Set as Profile Picture"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:182
+#: src/library/context_menu/manage.rs:186
 msgid "Set Location…"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:204
+#: src/library/context_menu/manage.rs:208
 msgid "Move to Trash"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:206 src/library/shared_links_view.rs:223
+#: src/library/context_menu/manage.rs:210 src/library/shared_links_view.rs:223
 #: src/library/tags_view.rs:213
 msgid "Delete…"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:227 src/library/people_view.rs:320
+#: src/library/context_menu/manage.rs:231 src/library/people_view.rs:320
 msgid "Remove from Favorites"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:229 src/library/people_view.rs:322
+#: src/library/context_menu/manage.rs:233 src/library/people_view.rs:322
 msgid "Add to Favorites"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:279
+#: src/library/context_menu/manage.rs:283
 msgid "Restore"
 msgstr ""
 
-#: src/library/context_menu/manage.rs:289 src/library/trash_view.rs:207
+#: src/library/context_menu/manage.rs:293 src/library/trash_view.rs:207
 msgid "Delete Permanently"
 msgstr ""
 
@@ -1911,34 +1967,39 @@ msgstr ""
 msgid "Photo Actions"
 msgstr ""
 
-#: src/library/controls.rs:347
+#: src/library/controls.rs:359
 msgid "Most assets"
 msgstr ""
 
-#: src/library/controls.rs:347 src/library/people_view.rs:416
+#: src/library/controls.rs:359 src/library/people_view.rs:416
 #: src/library/person_picker.rs:163
 msgid "Name"
 msgstr ""
 
-#: src/library/controls.rs:347 src/library/controls.rs:350
-#: src/library/window_layout.rs:394
+#: src/library/controls.rs:359 src/library/controls.rs:362
+#: src/library/window_layout.rs:389
 msgid "Newest"
 msgstr ""
 
-#: src/library/controls.rs:348
+#: src/library/controls.rs:360 src/library/theme/palettes.rs:54
+#: src/library/theme/palettes.rs:82
 msgid "Default"
 msgstr ""
 
-#: src/library/controls.rs:351
+#: src/library/controls.rs:363
 msgid "Oldest"
 msgstr ""
 
-#: src/library/controls.rs:352 src/library/window_layout.rs:395
+#: src/library/controls.rs:364 src/library/window_layout.rs:390
 msgid "Filename"
 msgstr ""
 
-#: src/library/controls.rs:353 src/library/window_layout.rs:396
+#: src/library/controls.rs:365 src/library/window_layout.rs:391
 msgid "File Type"
+msgstr ""
+
+#: src/library/day_row.rs:37 src/library/day_row.rs:69
+msgid "Any Day"
 msgstr ""
 
 #: src/library/download.rs:153
@@ -2118,8 +2179,8 @@ msgstr ""
 msgid "Keep"
 msgstr ""
 
-#: src/library/duplicates_view/cards.rs:181 src/library/shortcuts_dialog.rs:58
-#: src/library/sidebar/rows.rs:110 src/library/source_header.rs:245
+#: src/library/duplicates_view/cards.rs:181 src/library/shortcuts_dialog.rs:63
+#: src/library/sidebar/rows.rs:118 src/library/source_header.rs:272
 msgid "Trash"
 msgstr ""
 
@@ -2171,7 +2232,7 @@ msgid "Later year"
 msgstr ""
 
 #: src/library/explore_view/calendar.rs:86 src/library/lightbox/details.rs:453
-#: src/library/map/settings.rs:88
+#: src/library/map/settings.rs:76
 msgid "Taken"
 msgstr ""
 
@@ -2269,8 +2330,8 @@ msgstr ""
 msgid "Path copied"
 msgstr ""
 
-#: src/library/folders_view.rs:115 src/library/navigation.rs:176
-#: src/library/shortcuts_dialog.rs:242 src/library/sidebar/rows.rs:98
+#: src/library/folders_view.rs:115 src/library/navigation.rs:205
+#: src/library/shortcuts_dialog.rs:262 src/library/sidebar/rows.rs:106
 msgid "Folders"
 msgstr ""
 
@@ -2335,7 +2396,7 @@ msgid "Born {date}"
 msgstr ""
 
 #. Translators: strftime day and month that start a date range, e.g. "30 Dec".
-#: src/library/header_format.rs:84
+#: src/library/header_format.rs:84 src/library/map/nearby.rs:129
 msgid "%-d %b"
 msgstr ""
 
@@ -2352,7 +2413,7 @@ msgid "Shared by {owner}"
 msgstr ""
 
 #: src/library/inbox.rs:55 src/library/inbox.rs:382
-#: src/library/window_layout.rs:331 src/settings_window/behavior.rs:116
+#: src/library/window_layout.rs:316 src/settings_window/behavior.rs:116
 msgid "Notifications"
 msgstr ""
 
@@ -2426,7 +2487,7 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
-#: src/library/lightbox/details.rs:252 src/library/map/location_dialog.rs:500
+#: src/library/lightbox/details.rs:252 src/library/map/location_dialog.rs:512
 msgid "Place"
 msgstr ""
 
@@ -2439,12 +2500,12 @@ msgstr ""
 msgid "ISO {iso}"
 msgstr ""
 
-#: src/library/lightbox/details.rs:358 src/settings_window/library.rs:256
+#: src/library/lightbox/details.rs:358 src/settings_window/library.rs:258
 #, rust-format
 msgid "{size} GB"
 msgstr ""
 
-#: src/library/lightbox/details.rs:363 src/settings_window/library.rs:261
+#: src/library/lightbox/details.rs:363 src/settings_window/library.rs:263
 #, rust-format
 msgid "{size} MB"
 msgstr ""
@@ -2641,7 +2702,7 @@ msgstr ""
 msgid "Saved as a new photo"
 msgstr ""
 
-#: src/library/lightbox/edit/saving.rs:257
+#: src/library/lightbox/edit/saving.rs:270
 msgid "Couldn't add it to the original's albums"
 msgstr ""
 
@@ -2818,7 +2879,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: src/library/lightbox/rating.rs:28 src/library/search_filters/choices.rs:134
-#: src/library/search_view.rs:162 src/settings_window/library.rs:201
+#: src/library/search_view.rs:162 src/settings_window/library.rs:203
 #: src/settings_window/queue_inspector.rs:43
 msgid "Clear"
 msgstr ""
@@ -2888,48 +2949,75 @@ msgstr ""
 msgid "Transition"
 msgstr ""
 
-#: src/library/lightbox/stack.rs:45
+#: src/library/lightbox/stack.rs:46
 msgid "Stack Actions"
 msgstr ""
 
-#: src/library/lightbox/stack.rs:272
+#: src/library/lightbox/stack.rs:273
 msgid "Set as Stack Cover"
 msgstr ""
 
-#: src/library/lightbox/stack.rs:279
+#: src/library/lightbox/stack.rs:280
 msgid "Remove from Stack"
 msgstr ""
 
-#: src/library/lightbox/stack.rs:287 src/library/lightbox/stack.rs:364
+#: src/library/lightbox/stack.rs:288 src/library/lightbox/stack.rs:465
 msgid "Unstack"
 msgstr ""
 
-#: src/library/lightbox/stack.rs:305 src/library/lightbox/stack.rs:375
+#: src/library/lightbox/stack.rs:299
+msgid "Keep This, Trash Others"
+msgstr ""
+
+#: src/library/lightbox/stack.rs:301
+msgid "Keep This, Delete Others"
+msgstr ""
+
+#: src/library/lightbox/stack.rs:348 src/library/lightbox/stack.rs:388
+#: src/library/lightbox/stack.rs:476
 msgid "Couldn't change the stack"
 msgstr ""
 
-#: src/library/lightbox/stack.rs:320
+#: src/library/lightbox/stack.rs:403
 msgid "Stack cover changed"
 msgstr ""
 
-#: src/library/lightbox/stack.rs:325
+#: src/library/lightbox/stack.rs:408
 msgid "Removed from the stack"
 msgstr ""
 
-#: src/library/lightbox/stack.rs:329 src/library/lightbox/stack.rs:372
+#: src/library/lightbox/stack.rs:412 src/library/lightbox/stack.rs:473
 msgid "Unstacked"
 msgstr ""
 
-#: src/library/lightbox/stack.rs:398
+#: src/library/lightbox/stack.rs:424
+#, rust-format
+msgid "Trashed {n} other photo"
+msgid_plural "Trashed {n} other photos"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/library/lightbox/stack.rs:430
+#, rust-format
+msgid "Deleted {n} other photo"
+msgid_plural "Deleted {n} other photos"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/library/lightbox/stack.rs:501 src/library/upload_stack.rs:122
+msgid "Couldn't stack the photos"
+msgstr ""
+
+#: src/library/lightbox/stack.rs:510
+msgid "Stacked, see the timeline"
+msgstr ""
+
+#: src/library/lightbox/stack.rs:513
 #, rust-format
 msgid "Stacked {n} photo"
 msgid_plural "Stacked {n} photos"
 msgstr[0] ""
 msgstr[1] ""
-
-#: src/library/lightbox/stack.rs:407
-msgid "Couldn't stack the photos"
-msgstr ""
 
 #: src/library/lightbox/video.rs:121
 msgid "The video file is no longer on disk."
@@ -2995,21 +3083,21 @@ msgstr ""
 msgid "Show all photos"
 msgstr ""
 
-#: src/library/map/controls.rs:41 src/library/shortcuts_dialog.rs:142
-#: src/library/shortcuts_dialog.rs:217
+#: src/library/map/controls.rs:41 src/library/shortcuts_dialog.rs:162
+#: src/library/shortcuts_dialog.rs:237
 msgid "Zoom in"
 msgstr ""
 
-#: src/library/map/controls.rs:42 src/library/shortcuts_dialog.rs:146
-#: src/library/shortcuts_dialog.rs:218
+#: src/library/map/controls.rs:42 src/library/shortcuts_dialog.rs:166
+#: src/library/shortcuts_dialog.rs:238
 msgid "Zoom out"
 msgstr ""
 
-#: src/library/map/controls.rs:45 src/library/shortcuts_dialog.rs:219
+#: src/library/map/controls.rs:45 src/library/shortcuts_dialog.rs:239
 msgid "Rotate left"
 msgstr ""
 
-#: src/library/map/controls.rs:46 src/library/shortcuts_dialog.rs:220
+#: src/library/map/controls.rs:46 src/library/shortcuts_dialog.rs:240
 msgid "Rotate right"
 msgstr ""
 
@@ -3017,7 +3105,7 @@ msgstr ""
 msgid "Show photos in this area"
 msgstr ""
 
-#: src/library/map/controls.rs:53 src/library/shortcuts_dialog.rs:222
+#: src/library/map/controls.rs:53 src/library/shortcuts_dialog.rs:242
 msgid "Show my location"
 msgstr ""
 
@@ -3029,7 +3117,7 @@ msgstr ""
 msgid "Map style"
 msgstr ""
 
-#: src/library/map/controls.rs:130 src/library/shortcuts_dialog.rs:221
+#: src/library/map/controls.rs:130 src/library/shortcuts_dialog.rs:241
 msgid "Point north"
 msgstr ""
 
@@ -3037,7 +3125,7 @@ msgstr ""
 msgid "More Styles"
 msgstr ""
 
-#: src/library/map/controls.rs:158
+#: src/library/map/controls.rs:158 src/settings_window/appearance.rs:18
 msgid "Appearance"
 msgstr ""
 
@@ -3072,37 +3160,37 @@ msgid ""
 "Location services are unavailable ({err}). Check that they are turned on."
 msgstr ""
 
-#: src/library/map/location_dialog.rs:106
-#: src/library/map/location_dialog.rs:115
+#: src/library/map/location_dialog.rs:118
+#: src/library/map/location_dialog.rs:127
 msgid "Set Location"
 msgstr ""
 
-#: src/library/map/location_dialog.rs:153
+#: src/library/map/location_dialog.rs:165
 msgid "Could Not Set Location"
 msgstr ""
 
-#: src/library/map/location_dialog.rs:192 src/library/map/search.rs:34
-#: src/library/shortcuts_dialog.rs:216
+#: src/library/map/location_dialog.rs:204 src/library/map/search.rs:34
+#: src/library/shortcuts_dialog.rs:236
 msgid "Search places"
 msgstr ""
 
-#: src/library/map/location_dialog.rs:275
+#: src/library/map/location_dialog.rs:287
 msgid "Looking up…"
 msgstr ""
 
-#: src/library/map/location_dialog.rs:297
+#: src/library/map/location_dialog.rs:309
 msgid "No place name here"
 msgstr ""
 
-#: src/library/map/location_dialog.rs:300
+#: src/library/map/location_dialog.rs:312
 msgid "Place name unavailable"
 msgstr ""
 
-#: src/library/map/location_dialog.rs:485
+#: src/library/map/location_dialog.rs:497
 msgid "Latitude, Longitude"
 msgstr ""
 
-#: src/library/map/location_dialog.rs:489
+#: src/library/map/location_dialog.rs:501
 msgid "Paste coordinates"
 msgstr ""
 
@@ -3123,6 +3211,10 @@ msgstr ""
 
 #: src/library/map/minimap.rs:99
 msgid "Photo location"
+msgstr ""
+
+#: src/library/map/nearby.rs:141
+msgid "Taken Nearby"
 msgstr ""
 
 #: src/library/map/place_search.rs:172
@@ -3159,83 +3251,81 @@ msgstr ""
 msgid "No places found"
 msgstr ""
 
-#: src/library/map/settings.rs:62
+#: src/library/map/settings.rs:50
 msgid "All Time"
 msgstr ""
 
-#: src/library/map/settings.rs:63
+#: src/library/map/settings.rs:51
 msgid "Past 24 Hours"
 msgstr ""
 
-#: src/library/map/settings.rs:64
+#: src/library/map/settings.rs:52
 msgid "Past 7 Days"
 msgstr ""
 
-#: src/library/map/settings.rs:65
+#: src/library/map/settings.rs:53
 msgid "Past 30 Days"
 msgstr ""
 
-#: src/library/map/settings.rs:66
+#: src/library/map/settings.rs:54
 msgid "Past Year"
 msgstr ""
 
-#: src/library/map/settings.rs:67
+#: src/library/map/settings.rs:55
 msgid "Past 3 Years"
 msgstr ""
 
-#: src/library/map/settings.rs:68
+#: src/library/map/settings.rs:56
 msgid "Custom Range"
 msgstr ""
 
-#: src/library/map/settings.rs:96
+#: src/library/map/settings.rs:84
 msgid "Only Favorites"
 msgstr ""
 
-#: src/library/map/settings.rs:98
+#: src/library/map/settings.rs:86
 msgid "Include Archived"
 msgstr ""
 
-#: src/library/map/settings.rs:99
+#: src/library/map/settings.rs:87
 msgid "Your archived photos"
 msgstr ""
 
-#: src/library/map/settings.rs:103
+#: src/library/map/settings.rs:91
 msgid "Include Partners"
 msgstr ""
 
-#: src/library/map/settings.rs:104
+#: src/library/map/settings.rs:92
 msgid "Photos partners share with you"
 msgstr ""
 
-#: src/library/map/settings.rs:108
+#: src/library/map/settings.rs:96
 msgid "Include Shared Albums"
 msgstr ""
 
-#: src/library/map/settings.rs:109
+#: src/library/map/settings.rs:97
 msgid "Photos in albums shared with you"
 msgstr ""
 
-#: src/library/map/settings.rs:113 src/settings_window/behavior.rs:140
+#: src/library/map/settings.rs:101 src/library/utilities/controls.rs:96
+#: src/settings_window/behavior.rs:140
 msgid "From"
 msgstr ""
 
-#: src/library/map/settings.rs:114 src/settings_window/behavior.rs:141
+#: src/library/map/settings.rs:102 src/library/utilities/controls.rs:97
+#: src/settings_window/behavior.rs:141
 msgid "Until"
 msgstr ""
 
-#: src/library/map/settings.rs:168 src/library/map/settings.rs:200
-msgid "Any Day"
-msgstr ""
-
-#: src/library/map/settings.rs:236
+#: src/library/map/settings.rs:149
 msgid "Map Settings"
 msgstr ""
 
-#: src/library/map/settings.rs:260
+#: src/library/map/settings.rs:173 src/library/utilities/controls.rs:108
 msgid "Show"
 msgstr ""
 
-#: src/library/map/settings.rs:267
+#: src/library/map/settings.rs:180
 msgid "Date Range"
 msgstr ""
 
@@ -3275,15 +3365,18 @@ msgstr ""
 msgid "Humanitarian"
 msgstr ""
 
-#: src/library/map/styles.rs:181 src/library/theme.rs:14
+#: src/library/map/styles.rs:181 src/library/theme.rs:20
+#: src/settings_window/appearance.rs:21
 msgid "Follow System"
 msgstr ""
 
-#: src/library/map/styles.rs:182 src/library/theme.rs:15
+#: src/library/map/styles.rs:182 src/library/theme.rs:21
+#: src/settings_window/appearance.rs:21
 msgid "Light"
 msgstr ""
 
-#: src/library/map/styles.rs:183 src/library/theme.rs:16
+#: src/library/map/styles.rs:183 src/library/theme.rs:22
+#: src/settings_window/appearance.rs:21
 msgid "Dark"
 msgstr ""
 
@@ -3295,12 +3388,13 @@ msgstr ""
 msgid "Map Area"
 msgstr ""
 
-#: src/library/masonry/canvas.rs:525 src/library/server_stats_dialog.rs:156
-#: src/library/server_stats_dialog.rs:157 src/library/source_loading.rs:173
+#: src/library/masonry/canvas.rs:532 src/library/server_stats_dialog.rs:156
+#: src/library/server_stats_dialog.rs:157
+#: src/library/source_loading/explore.rs:56
 msgid "HTTP 403"
 msgstr ""
 
-#: src/library/masonry/canvas/interaction.rs:261
+#: src/library/masonry/canvas/interaction.rs:272
 #, rust-format
 msgid "{n} file"
 msgid_plural "{n} files"
@@ -3345,27 +3439,27 @@ msgstr ""
 msgid "Couldn't change the memory"
 msgstr ""
 
-#: src/library/mod.rs:402
+#: src/library/mod.rs:397
 msgid "Drop files to upload"
 msgstr ""
 
-#: src/library/navigation.rs:173 src/library/shared_links_view.rs:35
-#: src/library/sidebar/rows.rs:74
+#: src/library/navigation.rs:202 src/library/shared_links_view.rs:35
+#: src/library/sidebar/rows.rs:82
 msgid "Shared Links"
 msgstr ""
 
-#: src/library/navigation.rs:177 src/library/shortcuts_dialog.rs:60
-#: src/library/sidebar/rows.rs:80
+#: src/library/navigation.rs:206 src/library/shortcuts_dialog.rs:65
+#: src/library/sidebar/rows.rs:88
 msgid "Sharing"
 msgstr ""
 
-#: src/library/navigation.rs:178 src/library/search_panel.rs:77
+#: src/library/navigation.rs:207 src/library/search_panel.rs:77
 #: src/library/search_view.rs:166 src/library/shortcuts_dialog.rs:33
-#: src/library/sidebar/rows.rs:38
+#: src/library/sidebar/rows.rs:46
 msgid "Search"
 msgstr ""
 
-#: src/library/navigation.rs:180 src/library/sidebar/rows.rs:116
+#: src/library/navigation.rs:209 src/library/sidebar/rows.rs:124
 msgid "Duplicates"
 msgstr ""
 
@@ -3664,7 +3758,7 @@ msgstr ""
 msgid "Visibility"
 msgstr ""
 
-#: src/library/search_filters.rs:136 src/library/shortcuts_dialog.rs:240
+#: src/library/search_filters.rs:136 src/library/shortcuts_dialog.rs:260
 msgid "Timeline"
 msgstr ""
 
@@ -3783,10 +3877,11 @@ msgid "Server statistics"
 msgstr ""
 
 #: src/library/server_stats_dialog.rs:99 src/library/server_stats_dialog.rs:131
+#: src/library/utilities/controls.rs:29
 msgid "Videos"
 msgstr ""
 
-#: src/library/server_stats_dialog.rs:104 src/settings_window/library.rs:183
+#: src/library/server_stats_dialog.rs:104 src/settings_window/library.rs:185
 msgid "Storage"
 msgstr ""
 
@@ -4062,7 +4157,7 @@ msgid "Never expires"
 msgstr ""
 
 #: src/library/shared_links_view.rs:415 src/library/staging_view.rs:143
-#: src/library/window_layout.rs:404
+#: src/library/window_layout.rs:421
 msgid "Upload"
 msgstr ""
 
@@ -4180,320 +4275,353 @@ msgstr ""
 msgid "Toggle sidebar"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:32 src/library/window_layout.rs:330
+#: src/library/shortcuts_dialog.rs:32 src/library/window_layout.rs:315
 msgid "Refresh"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:35
-msgid "Go back"
+msgid "Paste photos"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:37
-msgid "Or the mouse back button"
+msgid "Into the open album, or Photos"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:40
-msgid "Go forward"
+msgid "Go back"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:42
-msgid "Or the mouse forward button"
+msgid "Or the mouse back button"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:45
-msgid "Open context menu"
+msgid "Go forward"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:47
+msgid "Or the mouse forward button"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:50
+msgid "Open context menu"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:52
 msgid "Or the Menu key; in the grid, the viewer, and on album tiles"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:56 src/library/sidebar/rows.rs:86
-#: src/library/source_header.rs:243
+#: src/library/shortcuts_dialog.rs:61 src/library/sidebar/rows.rs:94
+#: src/library/source_header.rs:270
 msgid "Favorites"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:65
+#: src/library/shortcuts_dialog.rs:70
 msgid "Move between photos"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:67
+#: src/library/shortcuts_dialog.rs:72
 msgid "After clicking a photo or tabbing to the grid"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:69
+#: src/library/shortcuts_dialog.rs:74
 msgid "First or last photo"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:70
+#: src/library/shortcuts_dialog.rs:75
 msgid "Open photo"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:71
+#: src/library/shortcuts_dialog.rs:76
 msgid "Select or deselect photo"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:76
+#: src/library/shortcuts_dialog.rs:81
 msgid "Select assets"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:78
+#: src/library/shortcuts_dialog.rs:83
 msgid "Hold and click to add or remove assets"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:81
+#: src/library/shortcuts_dialog.rs:86
 msgid "Select a range"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:83
+#: src/library/shortcuts_dialog.rs:88
 msgid "Hold and click; add Ctrl to extend the selection"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:86
+#: src/library/shortcuts_dialog.rs:91
 msgid "Move selection to trash"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:88
+#: src/library/shortcuts_dialog.rs:93
 msgid "Deletes permanently in the Trash view"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:91 src/library/staging_view.rs:193
+#: src/library/shortcuts_dialog.rs:96 src/library/staging_view.rs:193
 msgid "Select all"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:93
+#: src/library/shortcuts_dialog.rs:98
 msgid "Every photo in the view, loading the rest first"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:95
-msgid "Exit selection mode"
+#: src/library/shortcuts_dialog.rs:101
+msgid "Select a whole day"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:100
-msgid "Next or previous day"
+#: src/library/shortcuts_dialog.rs:103
+msgid ""
+"The focused photo's day or month; or tap its date heading while selecting"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:102
-msgid "In Photos, sorted newest first"
+#: src/library/shortcuts_dialog.rs:106
+msgid "Copy selection"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:104
-msgid "Next or previous month"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:105
-msgid "Next or previous year"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:109
-msgid "Previous asset"
+#: src/library/shortcuts_dialog.rs:108
+msgid "Paste into an album to add them; one photo copies as a picture"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:110
-msgid "Next asset"
+msgid "Exit selection mode"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:111
-msgid "Toggle details"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:113
-msgid "Show or hide all actions for the photo"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:116
-msgid "Toggle favorite"
+#: src/library/shortcuts_dialog.rs:115
+msgid "Next or previous day"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:117
-msgid "Archive or unarchive"
+msgid "In Photos, sorted newest first"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:119
-msgid "Rate"
+msgid "Next or previous month"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:121
-msgid "0 clears the rating"
+#: src/library/shortcuts_dialog.rs:120
+msgid "Next or previous year"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:123
-msgid "Edit info"
+#: src/library/shortcuts_dialog.rs:124
+msgid "Previous asset"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:125
+msgid "Next asset"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:126
-msgid "Show or hide recognized text"
+msgid "Toggle details"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:128
-msgid "Only when Immich found text in the photo"
+msgid "Show or hide all actions for the photo"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:131
-msgid "Select all recognized text"
+msgid "Toggle favorite"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:133
-msgid "Drag across text to select it; Ctrl-click adds or removes a box"
+#: src/library/shortcuts_dialog.rs:132
+msgid "Archive or unarchive"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:134
+msgid "Rate"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:136
-msgid "Copy recognized text"
+msgid "0 clears the rating"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:138
-msgid "Copies the selection, or all text when nothing is selected"
+msgid "Edit info"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:144
-msgid "Or hold Ctrl and scroll"
+#: src/library/shortcuts_dialog.rs:141
+msgid "Copy the photo"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:147
-msgid "Reset zoom"
+#: src/library/shortcuts_dialog.rs:143
+msgid "While recognized text shows, copies the text instead"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:149
-msgid "Toggle fullscreen"
+#: src/library/shortcuts_dialog.rs:146
+msgid "Show or hide recognized text"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:148
+msgid "Only when Immich found text in the photo"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:151
-msgid "Or the header button; double-click a video; Esc exits"
+msgid "Select all recognized text"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:154
-msgid "Play or stop a live photo"
+#: src/library/shortcuts_dialog.rs:153
+msgid "Drag across text to select it; Ctrl-click adds or removes a box"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:156
-msgid "Only on live and motion photos"
+msgid "Copy recognized text"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:158
-msgid "Start slideshow"
+msgid "Copies the selection, or all text when nothing is selected"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:163
-msgid "Pause or resume"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:165
-msgid "Previous or next photo"
+#: src/library/shortcuts_dialog.rs:164
+msgid "Or hold Ctrl and scroll"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:167
-msgid "The next photo then gets the full interval"
+msgid "Reset zoom"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:170
-msgid "End slideshow"
+#: src/library/shortcuts_dialog.rs:169
+msgid "Toggle fullscreen"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:172
-msgid "Or S, or leave fullscreen"
+#: src/library/shortcuts_dialog.rs:171
+msgid "Or the header button; double-click a video; Esc exits"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:174
+msgid "Play or stop a live photo"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:176
+msgid "Only on live and motion photos"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:178
-msgid "Switch the 360° view"
+msgid "Start slideshow"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:180
-msgid "Only on 360° photos, which open in it"
+#: src/library/shortcuts_dialog.rs:183
+msgid "Pause or resume"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:182
-msgid "Tilt up or down"
+#: src/library/shortcuts_dialog.rs:185
+msgid "Previous or next photo"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:184
-msgid "Turn left or right"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:188
-msgid "Zoom in or out"
+#: src/library/shortcuts_dialog.rs:187
+msgid "The next photo then gets the full interval"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:190
-msgid "Or scroll, or pinch"
+msgid "End slideshow"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:195
-msgid "Play or pause"
+#: src/library/shortcuts_dialog.rs:192
+msgid "Or S, or leave fullscreen"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:196
-msgid "Back 10 seconds"
+#: src/library/shortcuts_dialog.rs:198
+msgid "Switch the 360° view"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:197
-msgid "Forward 10 seconds"
+#: src/library/shortcuts_dialog.rs:200
+msgid "Only on 360° photos, which open in it"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:199
-msgid "Previous frame"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:201 src/library/shortcuts_dialog.rs:206
-msgid "Pauses playback"
+#: src/library/shortcuts_dialog.rs:202
+msgid "Tilt up or down"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:204
-msgid "Next frame"
+msgid "Turn left or right"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:208
-msgid "Mute or unmute"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:209
-msgid "Volume up"
+msgid "Zoom in or out"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:210
-msgid "Volume down"
+msgid "Or scroll, or pinch"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:213
-msgid "Enter a folder path"
+#: src/library/shortcuts_dialog.rs:215
+msgid "Play or pause"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:216
+msgid "Back 10 seconds"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:217
+msgid "Forward 10 seconds"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:219
+msgid "Previous frame"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:221 src/library/shortcuts_dialog.rs:226
+msgid "Pauses playback"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:224
-msgid "Clear the search"
+msgid "Next frame"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:226
-msgid "While typing in the search field"
+#: src/library/shortcuts_dialog.rs:228
+msgid "Mute or unmute"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:229
-msgid "Move the map"
+msgid "Volume up"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:231
-msgid "After clicking the map"
+#: src/library/shortcuts_dialog.rs:230
+msgid "Volume down"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:236
-msgid "General"
+#: src/library/shortcuts_dialog.rs:233
+msgid "Enter a folder path"
 msgstr ""
 
-#: src/library/shortcuts_dialog.rs:237
-msgid "Go To"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:238
-msgid "Grid"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:239
-msgid "Selection"
-msgstr ""
-
-#: src/library/shortcuts_dialog.rs:245
-msgid "360° Photos"
+#: src/library/shortcuts_dialog.rs:244
+msgid "Clear the search"
 msgstr ""
 
 #: src/library/shortcuts_dialog.rs:246
+msgid "While typing in the search field"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:249
+msgid "Move the map"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:251
+msgid "After clicking the map"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:256
+msgid "General"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:257
+msgid "Go To"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:258
+msgid "Grid"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:259
+msgid "Selection"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:265
+msgid "360° Photos"
+msgstr ""
+
+#: src/library/shortcuts_dialog.rs:266
 msgid "Video"
 msgstr ""
 
@@ -4528,104 +4656,128 @@ msgstr ""
 msgid "Browse"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:24
+#: src/library/sidebar/rows.rs:25
 msgid "Utilities"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:33
+#: src/library/sidebar/rows.rs:41
 msgid "Timeline of every photo and video"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:39
+#: src/library/sidebar/rows.rs:47
 msgid "Find photos, videos, and text"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:45
+#: src/library/sidebar/rows.rs:53
 msgid "People, places, and things"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:51
+#: src/library/sidebar/rows.rs:59
 msgid "Photos by where they were taken"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:57
+#: src/library/sidebar/rows.rs:65
 msgid "Faces Immich has recognized"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:63
+#: src/library/sidebar/rows.rs:71
 msgid "Recent, owned, and shared"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:69
+#: src/library/sidebar/rows.rs:77
 msgid "Shared with you and by you"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:75
+#: src/library/sidebar/rows.rs:83
 msgid "Public links you've created"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:81
+#: src/library/sidebar/rows.rs:89
 msgid "Partners who share libraries"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:87
+#: src/library/sidebar/rows.rs:95
 msgid "Photos and videos you've marked"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:93
+#: src/library/sidebar/rows.rs:101
 msgid "Browse and organize tags"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:99
+#: src/library/sidebar/rows.rs:107
 msgid "Browse by folder on the server"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:105
+#: src/library/sidebar/rows.rs:113
 msgid "Hidden from Photos"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:111
+#: src/library/sidebar/rows.rs:119
 msgid "Restore or permanently delete"
 msgstr ""
 
-#: src/library/sidebar/rows.rs:117
+#: src/library/sidebar/rows.rs:125
 msgid "Photos Immich found more than once"
 msgstr ""
 
-#: src/library/source_header.rs:128 src/library/window_layout.rs:449
+#: src/library/sidebar/rows.rs:130 src/library/source_header.rs:253
+msgid "Large Files"
+msgstr ""
+
+#: src/library/sidebar/rows.rs:131
+msgid "The photos and videos taking the most space"
+msgstr ""
+
+#: src/library/sidebar/rows.rs:136 src/library/source_header.rs:256
+msgid "Missing Location"
+msgstr ""
+
+#: src/library/sidebar/rows.rs:137
+msgid "Photos and videos without a place"
+msgstr ""
+
+#: src/library/sidebar/rows.rs:142 src/library/source_header.rs:259
+msgid "Unusual Dates"
+msgstr ""
+
+#: src/library/sidebar/rows.rs:143
+msgid "Dated in the future, or too long ago"
+msgstr ""
+
+#: src/library/source_header.rs:133 src/library/window_layout.rs:457
 msgid "Library data unavailable"
 msgstr ""
 
-#: src/library/source_header.rs:129 src/library/window_layout.rs:450
+#: src/library/source_header.rs:134 src/library/window_layout.rs:458
 msgid "Could not load library assets"
 msgstr ""
 
-#: src/library/source_header.rs:144
+#: src/library/source_header.rs:149
 msgid "Nothing Here"
 msgstr ""
 
-#: src/library/source_header.rs:145
+#: src/library/source_header.rs:150
 msgid "There are no photos or videos to show."
 msgstr ""
 
-#: src/library/source_header.rs:185
+#: src/library/source_header.rs:191
 msgid "Play Slideshow"
 msgstr ""
 
-#: src/library/source_header.rs:200
+#: src/library/source_header.rs:209
 msgid "Nothing to show yet"
 msgstr ""
 
-#: src/library/source_header.rs:241
+#: src/library/source_header.rs:268
 msgid "On This Computer"
 msgstr ""
 
-#: src/library/source_header.rs:265
+#: src/library/source_header.rs:292
 #, rust-format
 msgid "Similar to {name}"
 msgstr ""
 
-#: src/library/source_header.rs:272
+#: src/library/source_header.rs:299
 msgid "Search Results"
 msgstr ""
 
@@ -4674,16 +4826,16 @@ msgstr ""
 msgid "In {path}"
 msgstr ""
 
-#: src/library/source_loading.rs:53 src/library/upload_picker.rs:30
+#: src/library/source_loading.rs:54 src/library/upload_picker.rs:30
 msgid "Upload to album"
 msgstr ""
 
-#: src/library/source_loading.rs:56 src/library/upload_picker.rs:32
-#: src/library/window_layout.rs:400
+#: src/library/source_loading.rs:57 src/library/upload_picker.rs:32
+#: src/library/window_layout.rs:430
 msgid "Upload to library"
 msgstr ""
 
-#: src/library/source_loading.rs:504
+#: src/library/source_loading.rs:415
 #, rust-format
 msgid "Could not load library assets: {err}"
 msgstr ""
@@ -4868,6 +5020,30 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
+#: src/library/theme/palettes.rs:61
+msgid "Warm White"
+msgstr ""
+
+#: src/library/theme/palettes.rs:68
+msgid "Lavender"
+msgstr ""
+
+#: src/library/theme/palettes.rs:75
+msgid "Mint"
+msgstr ""
+
+#: src/library/theme/palettes.rs:91
+msgid "Black"
+msgstr ""
+
+#: src/library/theme/palettes.rs:99
+msgid "Midnight"
+msgstr ""
+
+#: src/library/theme/palettes.rs:106
+msgid "Mocha"
+msgstr ""
+
 #: src/library/thumbnail_cache.rs:68 src/library/thumbnail_cache.rs:69
 msgid "Thumbnail load cancelled"
 msgstr ""
@@ -4876,16 +5052,16 @@ msgstr ""
 msgid "MemTotal:"
 msgstr ""
 
-#: src/library/thumbnail_cache/decode.rs:95
+#: src/library/thumbnail_cache/decode.rs:122
 msgid "Failed to scale video thumbnail"
 msgstr ""
 
-#: src/library/thumbnail_cache/decode.rs:107
+#: src/library/thumbnail_cache/decode.rs:134
 #, rust-format
 msgid "No decoder succeeded for {path}"
 msgstr ""
 
-#: src/library/thumbnail_cache/decode.rs:131
+#: src/library/thumbnail_cache/decode.rs:158
 msgid "Failed to scale pixbuf"
 msgstr ""
 
@@ -4912,7 +5088,7 @@ msgstr ""
 msgid "%B %Y"
 msgstr ""
 
-#: src/library/timeline/mod.rs:251
+#: src/library/timeline/mod.rs:241
 msgid "This photo isn't in your Photos timeline"
 msgstr ""
 
@@ -4965,6 +5141,129 @@ msgstr ""
 
 #: src/library/trash_view.rs:243
 msgid "Could Not Empty Trash"
+msgstr ""
+
+#: src/library/upload_stack.rs:33
+msgid "Upload and Create Stack…"
+msgstr ""
+
+#: src/library/upload_stack.rs:35
+msgid "Upload and Add to Stack…"
+msgstr ""
+
+#: src/library/upload_stack.rs:50
+msgid "Upload and Stack"
+msgstr ""
+
+#: src/library/upload_stack.rs:107
+msgid "Stack created"
+msgstr ""
+
+#: src/library/upload_stack.rs:109
+msgid "Added to the stack"
+msgstr ""
+
+#: src/library/upload_stack.rs:130
+#, rust-format
+msgid "Couldn't upload {n} file"
+msgid_plural "Couldn't upload {n} files"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/library/upload_stack.rs:138
+msgid "Immich didn't accept the upload."
+msgstr ""
+
+#: src/library/utilities.rs:58
+msgid "Add Location"
+msgstr ""
+
+#: src/library/utilities.rs:59
+msgid "Change Date"
+msgstr ""
+
+#: src/library/utilities.rs:124
+msgid "Select photos, then Change Date"
+msgstr ""
+
+#: src/library/utilities.rs:125
+msgid "Select photos, then Add Location"
+msgstr ""
+
+#: src/library/utilities.rs:181
+#, rust-format
+msgid "{size} in all"
+msgstr ""
+
+#: src/library/utilities/controls.rs:29 src/settings_window/behavior.rs:182
+msgid "All Files"
+msgstr ""
+
+#: src/library/utilities/controls.rs:31
+msgid "Kind of file"
+msgstr ""
+
+#: src/library/utilities/controls.rs:36
+msgid "Smallest size"
+msgstr ""
+
+#: src/library/utilities/controls.rs:72
+msgid "Any Size"
+msgstr ""
+
+#: src/library/utilities/controls.rs:73
+#, rust-format
+msgid "Over {n} GB"
+msgstr ""
+
+#: src/library/utilities/controls.rs:74
+#, rust-format
+msgid "Over {n} MB"
+msgstr ""
+
+#: src/library/utilities/controls.rs:84 src/library/utilities/controls.rs:116
+msgid "Dates"
+msgstr ""
+
+#: src/library/utilities/controls.rs:87
+msgid "Show only photos taken between two days"
+msgstr ""
+
+#: src/library/utilities/controls.rs:100
+msgid "Show the photos without a place taken between these days."
+msgstr ""
+
+#: src/library/utilities/controls.rs:141
+#, rust-format
+msgid "From {from} to {until}"
+msgstr ""
+
+#: src/library/utilities/controls.rs:144
+#, rust-format
+msgid "From {from}"
+msgstr ""
+
+#: src/library/utilities/controls.rs:145
+#, rust-format
+msgid "Until {until}"
+msgstr ""
+
+#: src/library/utilities/controls.rs:156
+#, rust-format
+msgid "Before {year}"
+msgstr ""
+
+#: src/library/utilities/controls.rs:159
+msgid "Future"
+msgstr ""
+
+#: src/library/utilities/controls.rs:186
+msgid "Dated after today"
+msgstr ""
+
+#: src/library/utilities/controls.rs:188
+#, rust-format
+msgid "Dated before {year}"
 msgstr ""
 
 #: src/library/video_player.rs:240
@@ -5029,7 +5328,7 @@ msgstr ""
 msgid "Audio"
 msgstr ""
 
-#: src/library/video_player/tracks.rs:49 src/settings_window/library.rs:116
+#: src/library/video_player/tracks.rs:49 src/settings_window/library.rs:118
 msgid "Off"
 msgstr ""
 
@@ -5037,113 +5336,125 @@ msgstr ""
 msgid "Subtitles"
 msgstr ""
 
-#: src/library/window_layout.rs:127
+#: src/library/window_layout.rs:110
 msgid "Mimick Library"
 msgstr ""
 
-#: src/library/window_layout.rs:316
+#: src/library/window_layout.rs:300
 msgid "Toggle sidebar (F9)"
 msgstr ""
 
-#: src/library/window_layout.rs:320
+#: src/library/window_layout.rs:304
 msgid "Back (Alt+Left)"
 msgstr ""
 
-#: src/library/window_layout.rs:333 src/settings_window/queue_inspector.rs:61
+#: src/library/window_layout.rs:320 src/settings_window/queue_inspector.rs:61
 msgid "Queue Inspector"
 msgstr ""
 
-#: src/library/window_layout.rs:334 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:323 src/settings_window/wiring.rs:78
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr ""
 
-#: src/library/window_layout.rs:335
+#: src/library/window_layout.rs:324
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:325 src/settings_window/wiring.rs:97
 msgid "About Mimick"
 msgstr ""
 
-#: src/library/window_layout.rs:341
+#: src/library/window_layout.rs:330
 msgid "Menu"
 msgstr ""
 
-#: src/library/window_layout.rs:351
+#: src/library/window_layout.rs:338
+msgid "Search (Ctrl+K)"
+msgstr ""
+
+#: src/library/window_layout.rs:344
 msgid "Select assets (Esc to exit)"
 msgstr ""
 
-#: src/library/window_layout.rs:377
+#: src/library/window_layout.rs:372
 msgid "Remote"
 msgstr ""
 
-#: src/library/window_layout.rs:378
+#: src/library/window_layout.rs:373
 msgid "Local"
 msgstr ""
 
-#: src/library/window_layout.rs:379
+#: src/library/window_layout.rs:374
 msgid "Unified"
 msgstr ""
 
-#: src/library/window_layout.rs:382
+#: src/library/window_layout.rs:377
 msgid "Asset source"
 msgstr ""
 
-#: src/library/window_layout.rs:444
+#: src/library/window_layout.rs:423
+msgid "Paste from Clipboard"
+msgstr ""
+
+#: src/library/window_layout.rs:431
+msgid "More ways to upload"
+msgstr ""
+
+#: src/library/window_layout.rs:452
 msgid "Nothing to show"
 msgstr ""
 
-#: src/library/window_layout.rs:445
+#: src/library/window_layout.rs:453
 msgid "No assets match the current view"
 msgstr ""
 
-#: src/library/window_layout.rs:500
+#: src/library/window_layout.rs:508
 #: src/settings_window/watch_folders/rules_dialog.rs:238
 msgid "Sync"
 msgstr ""
 
-#: src/library/window_layout.rs:506
+#: src/library/window_layout.rs:514
 msgid "Link"
 msgstr ""
 
-#: src/library/window_layout.rs:529
-msgid "Delete selected"
-msgstr ""
-
-#: src/library/window_layout.rs:534
-msgid "Download selected"
-msgstr ""
-
-#: src/library/window_layout.rs:538
-msgid "Clear selection"
-msgstr ""
-
-#: src/library/window_layout.rs:543
-msgid "Share selected"
-msgstr ""
-
-#: src/library/window_layout/bulk_bar.rs:39
+#: src/library/window_layout/bulk_bar.rs:66
 msgid "Set location for selected"
 msgstr ""
 
-#: src/library/window_layout/bulk_bar.rs:43
+#: src/library/window_layout/bulk_bar.rs:70
 msgid "Change date for selected"
 msgstr ""
 
-#: src/library/window_layout/bulk_bar.rs:45
+#: src/library/window_layout/bulk_bar.rs:72
 msgid "Add to album"
 msgstr ""
 
-#: src/library/window_layout/bulk_bar.rs:46
+#: src/library/window_layout/bulk_bar.rs:73
 msgid "Stack selected"
 msgstr ""
 
-#: src/library/window_layout/bulk_bar.rs:48
+#: src/library/window_layout/bulk_bar.rs:75
 msgid "Remove from album"
 msgstr ""
 
-#: src/library/window_layout/responsive.rs:148
+#: src/library/window_layout/bulk_bar.rs:216
+msgid "Delete selected"
+msgstr ""
+
+#: src/library/window_layout/bulk_bar.rs:221
+msgid "Download selected"
+msgstr ""
+
+#: src/library/window_layout/bulk_bar.rs:225
+msgid "Clear selection"
+msgstr ""
+
+#: src/library/window_layout/bulk_bar.rs:230
+msgid "Share selected"
+msgstr ""
+
+#: src/library/window_layout/responsive.rs:173
 msgid "Sync…"
 msgstr ""
 
@@ -5257,6 +5568,18 @@ msgstr ""
 msgid ""
 "For bug reports: settings, status, and the end of the log, with private "
 "details removed."
+msgstr ""
+
+#: src/settings_window/appearance.rs:22
+msgid "Style"
+msgstr ""
+
+#: src/settings_window/appearance.rs:23
+msgid "Light Theme"
+msgstr ""
+
+#: src/settings_window/appearance.rs:24
+msgid "Dark Theme"
 msgstr ""
 
 #: src/settings_window/apply.rs:164
@@ -5377,10 +5700,6 @@ msgstr ""
 msgid "Don't upload during these hours each day."
 msgstr ""
 
-#: src/settings_window/behavior.rs:182
-msgid "All Files"
-msgstr ""
-
 #: src/settings_window/behavior.rs:183
 msgid "Changed in the Last 7 Days"
 msgstr ""
@@ -5494,105 +5813,107 @@ msgstr ""
 msgid "Date Headings"
 msgstr ""
 
-#: src/settings_window/library.rs:112
-msgid "Dates between photos in Photos."
+#: src/settings_window/library.rs:113
+msgid "Dates between photos in Photos, albums, and other timelines."
 msgstr ""
 
-#: src/settings_window/library.rs:114
+#: src/settings_window/library.rs:116
 msgid "By Day"
 msgstr ""
 
-#: src/settings_window/library.rs:115
+#: src/settings_window/library.rs:117
 msgid "By Month"
 msgstr ""
 
-#: src/settings_window/library.rs:132
+#: src/settings_window/library.rs:134
 msgid "Grid Appearance"
 msgstr ""
 
-#: src/settings_window/library.rs:134
+#: src/settings_window/library.rs:136
 msgid "Border Width"
 msgstr ""
 
-#: src/settings_window/library.rs:135
+#: src/settings_window/library.rs:137
 msgid "Gap between photos, in pixels. 0 for none."
 msgstr ""
 
-#: src/settings_window/library.rs:141
+#: src/settings_window/library.rs:143
 msgid "Border Color"
 msgstr ""
 
-#: src/settings_window/library.rs:156
+#: src/settings_window/library.rs:158
 msgid "RAW Files"
 msgstr ""
 
-#: src/settings_window/library.rs:158
+#: src/settings_window/library.rs:160
 msgid "Full RAW Decoding"
 msgstr ""
 
-#: src/settings_window/library.rs:160
-msgid "Uses the sensor data, not the embedded preview. Slower."
+#: src/settings_window/library.rs:162
+msgid ""
+"Uses the sensor data, not the embedded preview, with every colour the camera "
+"recorded. Slower, and uses more memory."
 msgstr ""
 
-#: src/settings_window/library.rs:165
+#: src/settings_window/library.rs:167
 msgid "Keep Decoded RAW Files"
 msgstr ""
 
-#: src/settings_window/library.rs:166
+#: src/settings_window/library.rs:168
 msgid "Reopen instantly, using disk space."
 msgstr ""
 
-#: src/settings_window/library.rs:185
+#: src/settings_window/library.rs:187
 msgid "Cache Limit (MB)"
 msgstr ""
 
-#: src/settings_window/library.rs:186
+#: src/settings_window/library.rs:188
 msgid "Trimmed when Mimick starts."
 msgstr ""
 
-#: src/settings_window/library.rs:193
+#: src/settings_window/library.rs:195
 msgid "Memory Limit (MB)"
 msgstr ""
 
-#: src/settings_window/library.rs:194
+#: src/settings_window/library.rs:196
 msgid "At most half your RAM."
 msgstr ""
 
-#: src/settings_window/library.rs:205
+#: src/settings_window/library.rs:207
 msgid "Clear Cache"
 msgstr ""
 
-#: src/settings_window/library.rs:207
+#: src/settings_window/library.rs:209
 msgid "Free the space now. Thumbnails reload as you browse."
 msgstr ""
 
-#: src/settings_window/library.rs:213
+#: src/settings_window/library.rs:215
 msgid "Download Folder"
 msgstr ""
 
-#: src/settings_window/library.rs:214 src/settings_window/library.rs:223
+#: src/settings_window/library.rs:216 src/settings_window/library.rs:225
 #: src/settings_window/wiring/folder_wiring.rs:58
 msgid "Ask each time"
 msgstr ""
 
-#: src/settings_window/library.rs:218
+#: src/settings_window/library.rs:220
 msgid "Change…"
 msgstr ""
 
-#: src/settings_window/library.rs:245
+#: src/settings_window/library.rs:247
 #, rust-format
 msgid "Using {used} of {limit}"
 msgstr ""
 
-#: src/settings_window/mod.rs:51
+#: src/settings_window/mod.rs:52
 msgid "Default (Folder Name)"
 msgstr ""
 
-#: src/settings_window/mod.rs:55
+#: src/settings_window/mod.rs:56
 msgid "Library (No Album)"
 msgstr ""
 
-#: src/settings_window/mod.rs:126
+#: src/settings_window/mod.rs:127
 #, rust-format
 msgid ""
 "Settings were saved, but the system keyring is unavailable, so the API key "
@@ -5603,29 +5924,29 @@ msgid ""
 "See: {url}"
 msgstr ""
 
-#: src/settings_window/mod.rs:140
+#: src/settings_window/mod.rs:141
 msgid "No successful sync yet"
 msgstr ""
 
-#: src/settings_window/mod.rs:150
+#: src/settings_window/mod.rs:151
 msgid "Less than a minute ago"
 msgstr ""
 
-#: src/settings_window/mod.rs:156
+#: src/settings_window/mod.rs:157
 #, rust-format
 msgid "{n} minute ago"
 msgid_plural "{n} minutes ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/settings_window/mod.rs:160
+#: src/settings_window/mod.rs:161
 #, rust-format
 msgid "{n} hour ago"
 msgid_plural "{n} hours ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/settings_window/mod.rs:163
+#: src/settings_window/mod.rs:164
 #, rust-format
 msgid "{n} day ago"
 msgid_plural "{n} days ago"

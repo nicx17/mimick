@@ -4,23 +4,18 @@ use std::rc::Rc;
 
 use chrono::NaiveDate;
 use gtk::glib;
-use gtk::graphene::{Point, Rect};
-use gtk::pango;
 use gtk::prelude::*;
 use gtk::subclass::prelude::{ObjectSubclassExt, ObjectSubclassIsExt};
 
-use super::{LayoutConfig, LibraryAssetModel, MasonryCanvas, imp, placeholder_color};
+use super::{LayoutConfig, LibraryAssetModel, MasonryCanvas, imp};
 use crate::config::DateHeadings;
 use crate::library::asset_object::AssetObject;
 use crate::library::timeline::dates::{day_groups, day_heading, local_day, month_heading};
 use crate::library::timeline::index::{MonthState, TimelineIndex};
 use crate::library::timeline::layout::{
-    ESTIMATED_ASPECT, Group, HEADING_HEIGHT, LaidSection, PackedSection, Placed, TimelineLayout,
-    anchored_scroll, compose, estimated_height, pack_run, pack_section,
+    Group, HEADING_HEIGHT, LaidSection, PackedSection, Placed, TimelineLayout, anchored_scroll,
+    compose, estimated_height, pack_run, pack_section,
 };
-
-const HEADING_INSET: f32 = 12.0;
-const PLACEHOLDER_GAP: f32 = 2.0;
 
 #[derive(Clone, Copy, PartialEq)]
 struct SectionKey {
@@ -38,10 +33,12 @@ pub(super) struct CachedSection {
 }
 
 impl MasonryCanvas {
-    /// Lay Photos out by month from `index`; `None` returns to the plain grid.
-    pub fn set_timeline(&self, index: Option<Rc<RefCell<TimelineIndex>>>) {
+    /// Lay photos out by month from `index`; `None` returns to the plain grid.
+    /// Without `dated`, its sections are pages, not months, and get no date headings.
+    pub fn set_timeline(&self, index: Option<Rc<RefCell<TimelineIndex>>>, dated: bool) {
         let imp = self.imp();
         *imp.timeline.borrow_mut() = index;
+        imp.timeline_dated.set(dated);
         imp.section_cache.borrow_mut().clear();
         imp.sections.borrow_mut().clear();
         imp.headings.borrow_mut().clear();
@@ -100,6 +97,42 @@ impl MasonryCanvas {
             .map(|heading| heading.y)
             .collect()
     }
+
+    /// The photos under the date heading at canvas height `y`, as `(first, count)`.
+    pub(super) fn heading_range_at(&self, y: f32) -> Option<(u32, u32)> {
+        self.imp()
+            .headings
+            .borrow()
+            .iter()
+            .find(|heading| (heading.y..heading.y + HEADING_HEIGHT).contains(&y))
+            .map(|heading| (heading.first, heading.count))
+    }
+
+    /// The photos under the same date heading as the photo at `pos`.
+    pub(super) fn heading_range_of(&self, pos: u32) -> Option<(u32, u32)> {
+        self.imp()
+            .headings
+            .borrow()
+            .iter()
+            .find(|heading| (heading.first..heading.first + heading.count).contains(&pos))
+            .map(|heading| (heading.first, heading.count))
+    }
+
+    /// Selects every photo in `(first, count)`, or clears them when they all are already.
+    pub(super) fn toggle_group(&self, (first, count): (u32, u32)) {
+        let Some(sel) = self.imp().selection.get() else {
+            return;
+        };
+        if all_selected(sel, first, count) {
+            sel.unselect_range(first, count);
+        } else {
+            sel.select_range(first, count, false);
+        }
+    }
+}
+
+pub(super) fn all_selected(sel: &gtk::MultiSelection, first: u32, count: u32) -> bool {
+    count > 0 && sel.selection_in_range(first, count).size() == u64::from(count)
 }
 
 impl imp::MasonryCanvas {
@@ -110,7 +143,7 @@ impl imp::MasonryCanvas {
         width: f32,
     ) -> TimelineLayout {
         let cfg = self.cfg();
-        let mode = self.date_headings.get();
+        let mode = self.headings_mode();
         let key = SectionKey {
             width,
             min_row: cfg.min_row_height,
@@ -204,76 +237,12 @@ impl imp::MasonryCanvas {
         offsets
     }
 
-    pub(super) fn paint_timeline_extras(
-        &self,
-        snapshot: &gtk::Snapshot,
-        top: f32,
-        bottom: f32,
-        width: f32,
-    ) {
-        self.paint_estimated_sections(snapshot, top, bottom, width);
-        self.paint_headings(snapshot, top, bottom);
-    }
-
-    fn paint_estimated_sections(
-        &self,
-        snapshot: &gtk::Snapshot,
-        top: f32,
-        bottom: f32,
-        width: f32,
-    ) {
-        let cfg = self.cfg();
-        let gap = cfg.gap.max(PLACEHOLDER_GAP);
-        let row_h = (cfg.min_row_height + cfg.max_row_height) / 2.0;
-        let per_row = ((width - 2.0 * gap) / (ESTIMATED_ASPECT * row_h))
-            .floor()
-            .max(1.0);
-        let tile_w = (width - gap * (per_row + 1.0)) / per_row;
-        let color = placeholder_color();
-        let sections = self.sections.borrow();
-        for section in sections
-            .iter()
-            .filter(|s| !s.loaded && s.y + s.h > top && s.y < bottom)
-        {
-            let end = section.y + section.h;
-            let mut y = section.y + gap;
-            while y < end.min(bottom) {
-                let h = row_h.min(end - y);
-                if y + h > top {
-                    for i in 0..per_row as usize {
-                        let x = gap + i as f32 * (tile_w + gap);
-                        snapshot.append_color(&color, &Rect::new(x, y, tile_w, h));
-                    }
-                }
-                y += row_h + gap;
-            }
-        }
-    }
-
-    fn paint_headings(&self, snapshot: &gtk::Snapshot, top: f32, bottom: f32) {
-        let widget = self.obj();
-        let color = match self.border_color.get() {
-            Some(border) if self.border_gap.get() > 0.0 => readable_on(&border),
-            _ => widget.color(),
-        };
-        let attrs = pango::AttrList::new();
-        attrs.insert(pango::AttrInt::new_weight(pango::Weight::Bold));
-        for heading in self
-            .headings
-            .borrow()
-            .iter()
-            .filter(|h| h.y + HEADING_HEIGHT > top && h.y < bottom)
-        {
-            let layout = widget.create_pango_layout(Some(&heading.text));
-            layout.set_attributes(Some(&attrs));
-            let (_, text_h) = layout.pixel_size();
-            snapshot.save();
-            snapshot.translate(&Point::new(
-                HEADING_INSET,
-                heading.y + (HEADING_HEIGHT - text_h as f32) / 2.0,
-            ));
-            snapshot.append_layout(&layout, &color);
-            snapshot.restore();
+    /// The date headings to lay out: none on a timeline of pages.
+    pub(super) fn headings_mode(&self) -> DateHeadings {
+        if self.timeline_dated.get() {
+            self.date_headings.get()
+        } else {
+            DateHeadings::Off
         }
     }
 
@@ -461,32 +430,4 @@ fn pack_month(
         }],
     };
     pack_section(&groups, width, cfg)
-}
-
-/// Near-black or near-white heading text, whichever reads better on `background`.
-fn readable_on(background: &gdk4::RGBA) -> gdk4::RGBA {
-    let luminance =
-        0.2126 * background.red() + 0.7152 * background.green() + 0.0722 * background.blue();
-    if luminance > 0.5 {
-        gdk4::RGBA::new(0.1, 0.1, 0.1, 1.0)
-    } else {
-        gdk4::RGBA::new(0.95, 0.95, 0.95, 1.0)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::readable_on;
-
-    #[test]
-    fn headings_stay_readable_on_the_border_colour() {
-        let white = gdk4::RGBA::new(1.0, 1.0, 1.0, 1.0);
-        let black = gdk4::RGBA::new(0.0, 0.0, 0.0, 1.0);
-        let yellow = gdk4::RGBA::new(1.0, 0.9, 0.2, 1.0);
-        let navy = gdk4::RGBA::new(0.1, 0.1, 0.4, 1.0);
-        assert!(readable_on(&white).red() < 0.5);
-        assert!(readable_on(&yellow).red() < 0.5);
-        assert!(readable_on(&black).red() > 0.5);
-        assert!(readable_on(&navy).red() > 0.5);
-    }
 }

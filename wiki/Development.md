@@ -9,23 +9,24 @@
 - libshumate development packages (>= 1.7 required), for the maps
 - GStreamer and GstPlay development packages, plus the GTK 4 video sink plugin (`gtk4paintablesink`) for video playback
 - libclang (Clang development files), used at build time to generate the bundled LibRaw 0.21 bindings
+- Little CMS 2 (`lcms2`) development files, for photos' colour profiles; when they're missing, a bundled copy is compiled instead
 
 ### Ubuntu / Debian
 
 ```bash
-sudo apt install libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential cmake libheif-dev libshumate-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-gtk4 libclang-dev
+sudo apt install libgtk-4-dev libadwaita-1-dev libglib2.0-dev pkg-config build-essential cmake libheif-dev libshumate-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-gtk4 libclang-dev liblcms2-dev
 ```
 
 ### Fedora
 
 ```bash
-sudo dnf install gtk4-devel libadwaita-devel pkg-config cmake libheif-devel libshumate-devel gstreamer1-devel gstreamer1-plugins-bad-free-devel gstreamer1-plugin-gtk4 clang-devel
+sudo dnf install gtk4-devel libadwaita-devel pkg-config cmake libheif-devel libshumate-devel gstreamer1-devel gstreamer1-plugins-bad-free-devel gstreamer1-plugin-gtk4 clang-devel lcms2-devel
 ```
 
 ### Arch Linux
 
 ```bash
-sudo pacman -S gtk4 libadwaita pkgconf base-devel cmake libheif libshumate gstreamer gst-plugins-bad-libs gst-plugin-gtk4 clang
+sudo pacman -S gtk4 libadwaita pkgconf base-devel cmake libheif libshumate gstreamer gst-plugins-bad-libs gst-plugin-gtk4 clang lcms2
 ```
 
 ### Flatpak Packaging Prerequisites

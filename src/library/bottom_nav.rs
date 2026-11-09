@@ -86,7 +86,7 @@ pub(super) fn connect_bottom_nav(ui: &Rc<LibraryWindowUi>) {
         let (ui, key) = (ui.clone(), key.clone());
         button.connect_clicked(move |_| {
             if let Some(location) = super::navigation::location_for_key(&key) {
-                super::navigation::navigate(&ui, location);
+                super::navigation::switch_tab(&ui, location);
             }
         });
     }

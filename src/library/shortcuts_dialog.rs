@@ -32,6 +32,11 @@ const GENERAL: &[Shortcut] = &[
     key(gettext_noop("Refresh"), "F5"),
     key(gettext_noop("Search"), "<Control>k"),
     hint(
+        gettext_noop("Paste photos"),
+        "<Control>v",
+        gettext_noop("Into the open album, or Photos"),
+    ),
+    hint(
         gettext_noop("Go back"),
         "<Alt>Left",
         gettext_noop("Or the mouse back button"),
@@ -92,6 +97,16 @@ const SELECTION: &[Shortcut] = &[
         "<Control>a",
         gettext_noop("Every photo in the view, loading the rest first"),
     ),
+    hint(
+        gettext_noop("Select a whole day"),
+        "<Shift>space",
+        gettext_noop("The focused photo's day or month; or tap its date heading while selecting"),
+    ),
+    hint(
+        gettext_noop("Copy selection"),
+        "<Control>c",
+        gettext_noop("Paste into an album to add them; one photo copies as a picture"),
+    ),
     key(gettext_noop("Exit selection mode"), "Escape"),
 ];
 
@@ -122,6 +137,11 @@ const LIGHTBOX: &[Shortcut] = &[
     ),
     key(gettext_noop("Edit info"), "e"),
     key(gettext_noop("Download"), "<Shift>d"),
+    hint(
+        gettext_noop("Copy the photo"),
+        "<Control>c",
+        gettext_noop("While recognized text shows, copies the text instead"),
+    ),
     hint(
         gettext_noop("Show or hide recognized text"),
         "t",

@@ -115,7 +115,12 @@ Finished on `main` and coming in the next release (see the Unreleased section of
 - **Photo calendar** — A square for each day of the year on Explore, by when photos were taken or uploaded.
 - **Selection** — Ctrl+A selects the whole view; favorite, describe, and refresh many photos at once.
 - **Folders** — Expand folders in place, copy a folder's path, and jump to a typed or pasted path (Ctrl+L).
-- **Look and help** — Follow System, Light, or Dark; About with What's New and debug info; detailed logs and a redacted log in diagnostics; bug and feature forms on GitHub.
+- **Look and help** — Follow System, Light, or Dark, with Warm White, Lavender, Mint, Black, Midnight, and Mocha palettes; About with What's New and debug info; detailed logs and a redacted log in diagnostics; bug and feature forms on GitHub.
+- **Timelines everywhere** — Albums, people, tags, Favorites, Archive, and Trash scroll like Photos, with a scrollbar that knows the full height; Missing Location, places, and map clusters too.
+- **Utilities** — Sizes and filters on Large Files; dates, Add Location, and places taken nearby in Missing Location; and Unusual Dates to fix wrong dates.
+- **Stacks** — Keep one photo and trash the rest, or upload files into a photo's stack.
+- **Copy and paste** — Ctrl+V uploads copied files and screenshots to the open album or Photos; Ctrl+C copies photos, and pasting them into another album adds them there.
+- **Phones** — A search button in the header, bottom-bar tabs that don't pile up Back steps, and album pages that fit a 360 px screen.
 - **Smaller touches** — Crop a new profile picture, a play/pause badge and Up/Down volume in videos, OpenTopoMap and Humanitarian map styles, icons in menus, and the library view on by default.
 
 ---

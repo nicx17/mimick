@@ -109,7 +109,9 @@ fn build_viewer_group(
     viewer.add(&grid_fit_row);
     let date_headings_row = adw::ComboRow::builder()
         .title(gettext("Date Headings"))
-        .subtitle(gettext("Dates between photos in Photos."))
+        .subtitle(gettext(
+            "Dates between photos in Photos, albums, and other timelines.",
+        ))
         .model(&gtk::StringList::new(&[
             &gettext("By Day"),
             &gettext("By Month"),
@@ -157,7 +159,7 @@ fn build_raw_group(
     let raw_full_decode_row = adw::SwitchRow::builder()
         .title(gettext("Full RAW Decoding"))
         .subtitle(gettext(
-            "Uses the sensor data, not the embedded preview. Slower.",
+            "Uses the sensor data, not the embedded preview, with every colour the camera recorded. Slower, and uses more memory.",
         ))
         .build();
     raw.add(&raw_full_decode_row);

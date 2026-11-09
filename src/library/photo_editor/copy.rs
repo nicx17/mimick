@@ -27,6 +27,9 @@ pub(in crate::library) struct CopyJob {
     pub(super) keep_details: bool,
     /// The original's file, which its metadata is read from.
     pub(super) original: Option<PathBuf>,
+    /// The colour profile of the pixels `run` is given, when they were read out in a colour
+    /// space other than the original's; it replaces the original's in the copy.
+    pub(super) pixels_profile: Option<Vec<u8>>,
 }
 
 /// A copy ready to upload.
@@ -40,6 +43,11 @@ pub(in crate::library) struct EncodedCopy {
 impl CopyJob {
     pub(in crate::library) fn with_original(mut self, path: &Path) -> Self {
         self.original = Some(path.to_path_buf());
+        self
+    }
+
+    pub(in crate::library) fn with_pixels_profile(mut self, icc: Option<Vec<u8>>) -> Self {
+        self.pixels_profile = icc;
         self
     }
 
@@ -65,11 +73,14 @@ impl CopyJob {
         }
         let source = Rgba::from_strided(pixels, stride, size);
         let img = develop(source, &self.steps.clone().scaled(self.preview, full));
-        let carried = self
+        let mut carried = self
             .original
             .as_deref()
             .map(carried::read)
             .unwrap_or_default();
+        if let Some(icc) = &self.pixels_profile {
+            carried.icc = Some(icc.clone());
+        }
         encode(&img, self.metadata_source(carried))
     }
 
@@ -218,6 +229,7 @@ mod tests {
             },
             keep_details,
             original: None,
+            pixels_profile: None,
         }
     }
 

@@ -115,6 +115,25 @@ pub(in crate::library) fn confirm_trash(
     skipped_local: usize,
     on_trashed: impl Fn() + 'static,
 ) {
+    confirm_then_trash(ui, targets, skipped_local, true, on_trashed);
+}
+
+/// Like `confirm_trash`, but leaves the grid alone for `on_trashed` to update in place.
+pub(in crate::library) fn confirm_trash_leaving_grid(
+    ui: Rc<LibraryWindowUi>,
+    targets: Vec<TrashTarget>,
+    on_trashed: impl Fn() + 'static,
+) {
+    confirm_then_trash(ui, targets, 0, false, on_trashed);
+}
+
+fn confirm_then_trash(
+    ui: Rc<LibraryWindowUi>,
+    targets: Vec<TrashTarget>,
+    skipped_local: usize,
+    update_grid: bool,
+    on_trashed: impl Fn() + 'static,
+) {
     if targets.is_empty() {
         return;
     }
@@ -131,7 +150,7 @@ pub(in crate::library) fn confirm_trash(
         let ids = ids.clone();
         let on_trashed = on_trashed.clone();
         glib::MainContext::default().spawn_local(async move {
-            match trash_assets(&ui, &ids).await {
+            match trash_assets(&ui, &ids, update_grid).await {
                 Ok(()) => on_trashed(),
                 Err(err) => {
                     log::error!("Move to trash failed: {}", err);
@@ -174,10 +193,16 @@ fn trash_dialog(
     dialog
 }
 
-/// Trash on the server, then drop the items from the grid.
-async fn trash_assets(ui: &Rc<LibraryWindowUi>, ids: &[String]) -> Result<(), String> {
+/// Trash on the server, then drop the items from the grid when asked to.
+async fn trash_assets(
+    ui: &Rc<LibraryWindowUi>,
+    ids: &[String],
+    update_grid: bool,
+) -> Result<(), String> {
     ui.ctx.api_client.delete_assets(ids).await?;
-    remove_assets_from_grid(ui, ids);
+    if update_grid {
+        remove_assets_from_grid(ui, ids);
+    }
     Ok(())
 }
 

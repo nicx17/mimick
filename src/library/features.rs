@@ -1,5 +1,7 @@
 use std::rc::Rc;
 
+use gtk::prelude::*;
+
 use crate::api_client::LibraryFeatures;
 
 use super::LibraryWindowUi;
@@ -34,12 +36,14 @@ fn apply(ui: &LibraryWindowUi, features: LibraryFeatures) -> bool {
         ("shared-links", features.shared_links),
         ("map", features.map),
         ("duplicates", features.duplicates),
+        ("missing-location", features.places),
     ];
     for (key, visible) in rows {
         super::sidebar::set_row_visible(&ui.sidebar, key, visible);
     }
     super::bottom_nav::set_button_visible(&ui.bottom_nav, "people", features.people);
     super::bottom_nav::set_button_visible(&ui.bottom_nav, "map", features.map);
+    ui.search_button.set_visible(features.search);
     super::search_view::set_available_modes(&ui.search_view, features.smart_search, features.ocr);
     super::search_view::set_filter_features(&ui.search_view, &features);
     let sections = ExploreSections {
@@ -68,7 +72,10 @@ pub(super) fn is_available(features: &LibraryFeatures, location: &Location) -> b
         Location::Page(LibraryPage::SharedLinks) => features.shared_links,
         Location::Page(LibraryPage::Duplicates) => features.duplicates,
         Location::Page(LibraryPage::Search) => features.search,
-        Location::Source(LibrarySource::Place { .. }) => features.places,
+        // Without reverse geocoding every photo has no city, so Missing Location would list all.
+        Location::Source(LibrarySource::Place { .. } | LibrarySource::MissingLocation { .. }) => {
+            features.places
+        }
         Location::Source(
             LibrarySource::Thing { .. }
             | LibrarySource::SmartSearch { .. }

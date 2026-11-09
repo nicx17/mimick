@@ -13,6 +13,7 @@ use gtk::prelude::*;
 
 mod bulk_bar;
 mod responsive;
+pub(super) use bulk_bar::BulkParts;
 use libadwaita::prelude::*;
 
 use crate::app_context::AppContext;
@@ -24,7 +25,6 @@ use crate::library::sidebar::{SidebarParts, build_sidebar};
 
 use super::shared_links_view::{SharedLinksView, build_shared_links_view};
 use super::timeline::scrubber::TimelineScrubber;
-use super::trash_view::TrashControls;
 use super::{
     LibraryWindowUi, WindowInteractionState, build_drop_overlay, build_loading_view,
     build_status_view,
@@ -33,6 +33,9 @@ use super::{
 pub(super) struct HeaderParts {
     header: libadwaita::HeaderBar,
     menu_button: gtk::MenuButton,
+    /// Holds `search_button`: the narrow breakpoint shows the slot, search being on the button.
+    search_slot: gtk::Box,
+    search_button: gtk::Button,
     bell: super::inbox::Bell,
     sidebar_toggle: gtk::ToggleButton,
     back_button: gtk::Button,
@@ -45,7 +48,8 @@ pub(super) struct ControlsParts {
     source_mode: gtk::DropDown,
     source_revealer: gtk::Revealer,
     sort_mode: gtk::DropDown,
-    upload_button: gtk::Button,
+    upload_button: libadwaita::SplitButton,
+    upload_content: libadwaita::ButtonContent,
 }
 
 pub(super) struct TransferParts {
@@ -59,27 +63,6 @@ pub(super) struct AlbumLinkParts {
     pub(super) row: libadwaita::ActionRow,
     pub(super) link_button: gtk::Button,
     pub(super) sync_button: gtk::Button,
-}
-
-/// Bottom selection bar; `delete`, `download`, and `clear` are wired by `connect_bulk_actions`.
-pub(super) struct BulkParts {
-    pub(super) bar: gtk::Revealer,
-    pub(super) count_label: gtk::Label,
-    pub delete: gtk::Button,
-    pub download: gtk::Button,
-    pub clear: gtk::Button,
-    pub share_link: gtk::Button,
-    pub location: gtk::Button,
-    pub date: gtk::Button,
-    pub add_to_album: gtk::Button,
-    pub remove_from_album: gtk::Button,
-    pub(super) archive: gtk::Button,
-    pub(super) stack: gtk::Button,
-    pub(super) favorite: gtk::Button,
-    pub(super) description: gtk::Button,
-    pub(super) jobs: Vec<(crate::api_client::AssetJob, gtk::Button)>,
-    secondary: gtk::Box,
-    pub(super) trash: TrashControls,
 }
 
 /// Everything shown in the main content column, plus the sidebar.
@@ -155,7 +138,7 @@ impl WindowParts {
             .build();
         header.header.pack_end(&content.transfer.indicator);
 
-        responsive::add_narrow_breakpoint(&window, narrow, &content);
+        responsive::add_narrow_breakpoint(&window, narrow, &content, &header.search_slot);
         responsive::add_desktop_breakpoint(&window, &content, &split);
         responsive::add_sidebar_shortcut(&window, &split);
         Self {
@@ -287,6 +270,7 @@ impl LibraryWindowUi {
             upload_button: controls.upload_button,
             controls_row: controls.root,
             back_button: header.back_button,
+            search_button: header.search_button,
             bell: header.bell,
             select_toggle: header.select_toggle,
             bulk: content.bulk,
@@ -326,15 +310,20 @@ fn build_header() -> HeaderParts {
     let theme_section = gtk::gio::Menu::new();
     theme_section.append_item(&theme);
     menu.append_section(None, &theme_section);
-    let actions = gtk::gio::Menu::new();
-    actions.append(Some(&gettext("Refresh")), Some("win.refresh"));
-    actions.append(Some(&gettext("Notifications")), Some("win.notifications"));
-    actions.append(Some(&gettext("Account")), Some("win.account"));
-    actions.append(Some(&gettext("Queue Inspector")), Some("win.queue"));
-    actions.append(Some(&gettext("Settings")), Some("win.settings"));
-    actions.append(Some(&gettext("Keyboard Shortcuts")), Some("win.shortcuts"));
-    actions.append(Some(&gettext("About Mimick")), Some("win.about"));
-    menu.append_section(None, &actions);
+    // Library, then account, then the app's own entries last, as GNOME apps order them.
+    let library = gtk::gio::Menu::new();
+    library.append(Some(&gettext("Refresh")), Some("win.refresh"));
+    library.append(Some(&gettext("Notifications")), Some("win.notifications"));
+    menu.append_section(None, &library);
+    let account = gtk::gio::Menu::new();
+    account.append(Some(&gettext("Account")), Some("win.account"));
+    account.append(Some(&gettext("Queue Inspector")), Some("win.queue"));
+    menu.append_section(None, &account);
+    let app = gtk::gio::Menu::new();
+    app.append(Some(&gettext("Settings")), Some("win.settings"));
+    app.append(Some(&gettext("Keyboard Shortcuts")), Some("win.shortcuts"));
+    app.append(Some(&gettext("About Mimick")), Some("win.about"));
+    menu.append_section(None, &app);
     let menu_button = gtk::MenuButton::builder()
         .icon_name("open-menu-symbolic")
         .menu_model(&menu)
@@ -346,6 +335,10 @@ fn build_header() -> HeaderParts {
     header.pack_end(&menu_button);
     let bell = super::inbox::Bell::new();
     header.pack_end(&bell.button);
+    let search_button = pressable_button("system-search-symbolic", &gettext("Search (Ctrl+K)"));
+    let search_slot = gtk::Box::builder().visible(false).build();
+    search_slot.append(&search_button);
+    header.pack_end(&search_slot);
     let select_toggle = gtk::ToggleButton::builder()
         .icon_name("checkbox-symbolic")
         .tooltip_text(gettext("Select assets (Esc to exit)"))
@@ -353,6 +346,8 @@ fn build_header() -> HeaderParts {
     HeaderParts {
         header,
         menu_button,
+        search_slot,
+        search_button,
         bell,
         sidebar_toggle,
         back_button,
@@ -397,15 +392,7 @@ fn build_controls() -> ControlsParts {
         ]))
         .selected(0)
         .build();
-    let upload_button = pressable_button("document-send-symbolic", &gettext("Upload to library"));
-    upload_button.set_child(Some(
-        &libadwaita::ButtonContent::builder()
-            .icon_name("mimick-upload-symbolic")
-            .label(gettext("Upload"))
-            .build(),
-    ));
-    upload_button.add_css_class("suggested-action");
-
+    let (upload_button, upload_content) = build_upload_button();
     let spacer = gtk::Box::builder().hexpand(true).build();
     let root = hbox(&[
         source_revealer.upcast_ref(),
@@ -423,7 +410,28 @@ fn build_controls() -> ControlsParts {
         source_revealer,
         sort_mode,
         upload_button,
+        upload_content,
     }
+}
+
+/// Upload, with Paste in its menu: the touch way in, and where Ctrl+V is shown.
+fn build_upload_button() -> (libadwaita::SplitButton, libadwaita::ButtonContent) {
+    let content = libadwaita::ButtonContent::builder()
+        .icon_name("mimick-upload-symbolic")
+        .label(gettext("Upload"))
+        .build();
+    let paste = gtk::gio::MenuItem::new(Some(&gettext("Paste from Clipboard")), Some("win.paste"));
+    paste.set_attribute_value("accel", Some(&"<Control>v".to_variant()));
+    let menu = gtk::gio::Menu::new();
+    menu.append_item(&paste);
+    let button = libadwaita::SplitButton::builder()
+        .child(&content)
+        .menu_model(&menu)
+        .tooltip_text(gettext("Upload to library"))
+        .dropdown_tooltip(gettext("More ways to upload"))
+        .css_classes(["mimick-pressable", "suggested-action"])
+        .build();
+    (button, content)
 }
 
 /// Stack of loading/empty/error states and the grid, Explore, and Albums views.
@@ -520,27 +528,4 @@ fn build_album_link() -> AlbumLinkParts {
         link_button,
         sync_button,
     }
-}
-
-/// Delete, download, clear, and share-link buttons for the selection bar.
-fn bulk_buttons() -> (gtk::Button, gtk::Button, gtk::Button, gtk::Button) {
-    let delete = gtk::Button::builder()
-        .icon_name("user-trash-symbolic")
-        .tooltip_text(gettext("Delete selected"))
-        .css_classes(vec!["destructive-action".to_string()])
-        .build();
-    let download = gtk::Button::builder()
-        .icon_name("mimick-download-symbolic")
-        .tooltip_text(gettext("Download selected"))
-        .build();
-    let clear = gtk::Button::builder()
-        .icon_name("edit-clear-symbolic")
-        .tooltip_text(gettext("Clear selection"))
-        .css_classes(vec!["flat".to_string()])
-        .build();
-    let share_link = gtk::Button::builder()
-        .icon_name("mimick-share-symbolic")
-        .tooltip_text(gettext("Share selected"))
-        .build();
-    (delete, download, clear, share_link)
 }

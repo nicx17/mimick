@@ -22,7 +22,9 @@ use super::download::start_download_group;
 
 mod trash;
 use trash::confirm_and_bulk_delete;
-pub(super) use trash::{TrashTarget, confirm_trash, remove_assets_from_grid};
+pub(super) use trash::{
+    TrashTarget, confirm_trash, confirm_trash_leaving_grid, remove_assets_from_grid,
+};
 
 pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::ToggleButton) {
     let selection = ui.grid.selection.clone();
@@ -34,13 +36,12 @@ pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::T
         let bulk_bar = bulk_bar.clone();
         let count_label = count_label.clone();
         let select_toggle = select_toggle.clone();
+        let canvas = ui.grid.canvas.clone();
         Rc::new(move || {
             let n = selection_count(&selection);
             bulk_bar.set_reveal_child(select_toggle.is_active() && n > 0);
-            count_label.set_label(&fill(
-                ngettext("{n} selected", "{n} selected", plural_n(n)),
-                &[("n", &n.to_string())],
-            ));
+            let sizes = canvas.shows_file_sizes();
+            count_label.set_label(&super::utilities::selection_text(&selection, n, sizes));
         })
     };
 
@@ -63,6 +64,42 @@ pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::T
     connect_transient_select_keys(ui, select_toggle, selection);
 }
 
+/// Escape bubbles, so an open dialog, menu, or path field it's meant for gets it first.
+/// On the library page too, because the navigation view around it takes Escape for itself.
+fn connect_escape(
+    ui: &LibraryWindowUi,
+    select_toggle: &gtk::ToggleButton,
+    transient: &Rc<Cell<bool>>,
+) {
+    if let Some(page) = ui
+        .nav
+        .navigation_stack()
+        .item(0)
+        .and_downcast::<gtk::Widget>()
+    {
+        page.add_controller(escape_leaves_selection(select_toggle, transient));
+    }
+    ui.window
+        .add_controller(escape_leaves_selection(select_toggle, transient));
+}
+
+fn escape_leaves_selection(
+    select_toggle: &gtk::ToggleButton,
+    transient: &Rc<Cell<bool>>,
+) -> gtk::EventControllerKey {
+    let escape = gtk::EventControllerKey::new();
+    let (select_toggle, transient) = (select_toggle.clone(), transient.clone());
+    escape.connect_key_pressed(move |_, keyval, _, _| {
+        if keyval != gtk::gdk::Key::Escape || !select_toggle.is_active() {
+            return glib::Propagation::Proceed;
+        }
+        select_toggle.set_active(false);
+        transient.set(false);
+        glib::Propagation::Stop
+    });
+    escape
+}
+
 fn connect_transient_select_keys(
     ui: Rc<LibraryWindowUi>,
     select_toggle: gtk::ToggleButton,
@@ -73,17 +110,13 @@ fn connect_transient_select_keys(
     // Ctrl+click then commits a selection (handled separately in grid_view)
     // and the release no longer collapses select mode.
     let transient = Rc::new(Cell::new(false));
+    connect_escape(&ui, &select_toggle, &transient);
     let key_controller = gtk::EventControllerKey::new();
     key_controller.set_propagation_phase(gtk::PropagationPhase::Capture);
     key_controller.connect_key_pressed({
         let select_toggle = select_toggle.clone();
         let transient = transient.clone();
         move |_, keyval, _, _| {
-            if keyval == gtk::gdk::Key::Escape && select_toggle.is_active() {
-                select_toggle.set_active(false);
-                transient.set(false);
-                return glib::Propagation::Stop;
-            }
             if matches!(keyval, gtk::gdk::Key::Control_L | gtk::gdk::Key::Control_R)
                 && !select_toggle.is_active()
             {
@@ -287,13 +320,22 @@ pub(super) fn connect_bulk_location(ui: Rc<LibraryWindowUi>, button: &gtk::Butto
             );
             return;
         }
+        let on_saved = super::utilities::after_fixing(&ui, ids.clone(), clear_selection_after(&ui));
         let target = super::map::LocationTarget {
             title: batch_title(ids.len(), on_server),
+            around: taken_span(&selected_items(&ui)),
             ids,
             initial: None,
         };
-        super::map::set_location(ui.clone(), target, clear_selection_after(&ui));
+        super::map::set_location(ui.clone(), target, on_saved);
     });
+}
+
+/// When the earliest and latest of `items` were taken, as Immich's UTC times.
+fn taken_span(items: &[AssetObject]) -> Option<(String, String)> {
+    let times = items.iter().map(AssetObject::created_at);
+    let earliest = times.clone().min()?;
+    Some((earliest, times.max()?))
 }
 
 /// Selection-bar button: set or shift the capture date of every selected asset the user owns.
@@ -312,7 +354,8 @@ pub(super) fn connect_bulk_date(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
             return;
         }
         let title = batch_title(ids.len(), on_server);
-        super::bulk_date::present(&ui, ids, title, clear_selection_after(&ui));
+        let on_done = super::utilities::after_fixing(&ui, ids.clone(), clear_selection_after(&ui));
+        super::bulk_date::present(&ui, ids, title, on_done);
     });
 }
 

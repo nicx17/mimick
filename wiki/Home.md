@@ -54,7 +54,7 @@ Mimick is a Linux background app that watches selected folders and syncs photos 
 - Two-page `Settings` / `Status` settings window
 - Upload each watched folder to the Immich library, an album you pick, or an album named after the folder
 - Per-folder sync methods (Upload Only, Download Only, Full) with optional deletion mirroring in either direction
-- In-app library viewer, on by default: a Photos timeline with date headings, a scrubber, Memories, and stacks, albums, Explore with a photo calendar, search that picks several people, tags, and albums and lists the cameras and places in your library, People, Tags, Folders you can expand in place or jump to by path, Favorites, Archive, Trash, and Duplicates
+- In-app library viewer, on by default: a Photos timeline with date headings, a scrubber, Memories, and stacks, albums and other collections that scroll like it, Large Files with sizes and filters, Missing Location with dates and nearby places, and Unusual Dates, albums, Explore with a photo calendar, search that picks several people, tags, and albums and lists the cameras and places in your library, People, Tags, Folders you can expand in place or jump to by path, Favorites, Archive, Trash, and Duplicates
 - In-app video playback (streamed from Immich, hardware-decoded), live photos, 360° photos you can look around in, slideshows, and fullscreen viewing in the lightbox
 - Select and copy text Immich recognized in photos (OCR), down to a word or a few characters, and tag the people in a photo and see who is who by pointing at their faces, in the lightbox
 - Edit photos without touching the original: crop, rotate, flip, and straighten, adjust light and colour, apply filters, and redact faces or number plates, find similar photos, and jump from any view to a photo's place in the timeline
@@ -70,5 +70,5 @@ Mimick is a Linux background app that watches selected folders and syncs photos 
 - Queue inspector with retry actions
 - Per-folder rules for hidden paths, size limits, and extension filters
 - Diagnostics bundle export for support and bug reports, with detailed logs on demand and the log's private details removed
-- Follow System, Light, or Dark style, and an About dialog with what's new and debug info
+- Follow System, Light, or Dark style with light palettes (Warm White, Lavender, Mint) and dark ones (Black, Midnight, Mocha), and an About dialog with what's new and debug info
 - Quiet hours, and metered-network and battery-aware upload deferral

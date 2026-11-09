@@ -53,6 +53,8 @@ tokio = { version = "1.52.1", features = [
 ] }
 flexi_logger = "0.31.8"
 base64 = "0.22"
+# Reads photos' ICC colour profiles and converts the ones GTK can't describe.
+lcms2 = "6.2.0"
 nom-exif = "3.4.2"
 image = { version = "0.25.10", default-features = false, features = [
     "jpeg",

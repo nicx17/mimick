@@ -8,8 +8,9 @@ use std::rc::Rc;
 use gtk::prelude::*;
 
 use super::Lightbox;
-use crate::api_client::Stack;
-use crate::library::actions::is_mine;
+use crate::api_client::{LibraryAsset, Stack};
+use crate::library::actions::{TrashTarget, confirm_trash_leaving_grid, is_mine};
+use crate::library::asset_model::object_for;
 use crate::library::asset_object::AssetObject;
 use crate::library::context_menu::{Menu, connect_context_menu, menu_key, show_error_toast};
 
@@ -288,7 +289,89 @@ impl Lightbox {
             true,
             move || lb.change_stack(StackChange::Unstack(stack_id.clone())),
         );
+        self.append_keep_only(&menu, asset_id);
         menu.popup();
+    }
+
+    /// "Keep This, Trash Others", or "Delete Others" when the Immich trash is off.
+    fn append_keep_only(self: &Rc<Self>, menu: &Menu, asset_id: &str) {
+        let label = if self.ui.features.get().trash {
+            gettext("Keep This, Trash Others")
+        } else {
+            gettext("Keep This, Delete Others")
+        };
+        let (lb, keep) = (self.clone(), asset_id.to_string());
+        menu.add_with_icon("user-trash-symbolic", &label, true, move || {
+            lb.keep_only(&keep)
+        });
+    }
+
+    /// Trashes the stack's other photos, then the stack itself, as Immich's "Keep this, delete others".
+    fn keep_only(self: &Rc<Self>, keep_id: &str) {
+        let (Some(stack), Some(cover)) = (self.stack.loaded.borrow().clone(), self.grid_item())
+        else {
+            return;
+        };
+        let Some(mut kept) = stack.assets.iter().find(|a| a.id == keep_id).cloned() else {
+            return;
+        };
+        kept.stack = None;
+        let others: Vec<TrashTarget> = stack
+            .assets
+            .iter()
+            .filter(|asset| asset.id != keep_id)
+            .filter_map(|asset| TrashTarget::from_item(&object_for(&self.ui.ctx, asset)))
+            .collect();
+        let count = others.len();
+        let (lb, cover_id) = (self.clone(), cover.id());
+        confirm_trash_leaving_grid(self.ui.clone(), others, move || {
+            lb.dissolve_stack(&stack.id, &cover_id, &kept, count)
+        });
+    }
+
+    fn dissolve_stack(
+        self: &Rc<Self>,
+        stack_id: &str,
+        cover_id: &str,
+        kept: &LibraryAsset,
+        count: usize,
+    ) {
+        let lb = self.clone();
+        let (stack_id, cover_id, kept) = (stack_id.to_string(), cover_id.to_string(), kept.clone());
+        glib::MainContext::default().spawn_local(async move {
+            // The photos are already trashed; a stack left with one photo is only untidy.
+            match lb.ui.ctx.api_client.delete_stack(&stack_id).await {
+                Ok(()) => lb
+                    .ui
+                    .toasts
+                    .add_toast(libadwaita::Toast::new(&trashed_others(&lb.ui, count))),
+                Err(err) => show_error_toast(&lb.ui, &gettext("Couldn't change the stack"), &err),
+            }
+            lb.show_kept(&cover_id, &kept);
+        });
+    }
+
+    /// Puts the kept photo in the cover's grid slot, so neither the grid nor the lightbox shifts.
+    fn show_kept(self: &Rc<Self>, cover_id: &str, kept: &LibraryAsset) {
+        let ui = &self.ui;
+        if let Some(slot) = ui
+            .ctx
+            .library_state
+            .lock()
+            .assets
+            .iter_mut()
+            .find(|a| a.id == cover_id)
+        {
+            *slot = kept.clone();
+        }
+        // Outside the lock: items_changed handlers may read the library state.
+        if let Some(position) = ui.grid.model.replace(&ui.ctx, cover_id, kept) {
+            crate::library::timeline::forget_layout_at(ui, position);
+        }
+        self.member.take();
+        self.forget_stack();
+        self.render();
+        crate::library::refresh_library_after_mutation(ui.clone(), false);
     }
 
     fn change_stack(self: &Rc<Self>, change: StackChange) {
@@ -332,6 +415,24 @@ impl Lightbox {
         self.mark_shown_member();
         self.ui.toasts.add_toast(libadwaita::Toast::new(&message));
     }
+}
+
+/// Short, as a toast on a 360 px screen ellipsizes past about 26 characters.
+fn trashed_others(ui: &crate::library::LibraryWindowUi, count: usize) -> String {
+    let template = if ui.features.get().trash {
+        ngettext(
+            "Trashed {n} other photo",
+            "Trashed {n} other photos",
+            plural_n(count),
+        )
+    } else {
+        ngettext(
+            "Deleted {n} other photo",
+            "Deleted {n} other photos",
+            plural_n(count),
+        )
+    };
+    fill(template, &[("n", &count.to_string())])
 }
 
 /// The middle of `widget`, where a menu opened from the keyboard points.
@@ -393,18 +494,23 @@ pub(in crate::library) fn stack_selected(
             Ok(_) => {
                 ui.grid.selection.unselect_all();
                 ui.select_toggle.set_active(false);
-                let message = fill(
-                    ngettext(
-                        "Stacked {n} photo",
-                        "Stacked {n} photos",
-                        plural_n(ids.len()),
-                    ),
-                    &[("n", &ids.len().to_string())],
-                );
+                let message = stacked_message(&ui, ids.len());
                 ui.toasts.add_toast(libadwaita::Toast::new(&message));
                 crate::library::refresh_library_after_mutation(ui.clone(), true);
             }
             Err(err) => show_error_toast(&ui, &gettext("Couldn't stack the photos"), &err),
         }
     });
+}
+
+/// Only the timeline groups stacks; albums and searches show every photo, as Immich's web app does.
+/// Kept short: a toast on a 360 px screen ellipsizes past about 26 characters.
+fn stacked_message(ui: &crate::library::LibraryWindowUi, count: usize) -> String {
+    if !crate::library::timeline::groups_stacks(ui) {
+        return gettext("Stacked, see the timeline");
+    }
+    fill(
+        ngettext("Stacked {n} photo", "Stacked {n} photos", plural_n(count)),
+        &[("n", &count.to_string())],
+    )
 }

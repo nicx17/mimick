@@ -2,6 +2,7 @@
 
 use crate::api_client::ThumbnailSize;
 use crate::i18n::fill;
+use crate::library::color;
 use gdk4::Texture;
 use gdk4::prelude::TextureExt;
 use gettextrs::gettext;
@@ -23,7 +24,10 @@ pub(super) fn decode_local_pixbuf(
         });
     }
     match gtk::gdk_pixbuf::Pixbuf::from_file_at_scale(path, 256, 256, true) {
-        Ok(raw) => Ok(raw.apply_embedded_orientation().unwrap_or(raw)),
+        Ok(raw) => Ok(in_srgb(
+            raw.apply_embedded_orientation().unwrap_or(raw),
+            path,
+        )),
         Err(err) => {
             log::debug!(
                 "gdk_pixbuf direct load failed for {}: {}; attempting custom decoder",
@@ -33,6 +37,29 @@ pub(super) fn decode_local_pixbuf(
             custom_decode_to_thumbnail(path)
         }
     }
+}
+
+/// gdk-pixbuf ignores colour profiles and the cache's JPEGs can't keep one, so a wide-gamut
+/// photo's thumbnail is brought into sRGB here. Textures from the decoders arrive tagged,
+/// and GTK does that while `custom_decode_to_thumbnail` reads them out.
+fn in_srgb(pixbuf: gtk::gdk_pixbuf::Pixbuf, path: &std::path::Path) -> gtk::gdk_pixbuf::Pixbuf {
+    let Some(icc) = color::file_icc_profile(path) else {
+        return pixbuf;
+    };
+    let layout = color::pixbuf_layout(&pixbuf);
+    let mut pixels = pixbuf.read_pixel_bytes().to_vec();
+    if !color::convert_to_srgb(&mut pixels, &layout, &icc) {
+        return pixbuf;
+    }
+    gtk::gdk_pixbuf::Pixbuf::from_bytes(
+        &Bytes::from_owned(pixels),
+        gtk::gdk_pixbuf::Colorspace::Rgb,
+        pixbuf.has_alpha(),
+        8,
+        layout.width,
+        layout.height,
+        pixbuf.rowstride(),
+    )
 }
 
 /// Extract a thumbnail frame from a video file using `ffmpeg`.
@@ -277,6 +304,8 @@ pub(super) async fn decode_to_scaled_texture(
     max_dim: i32,
 ) -> Result<Texture, String> {
     tokio::task::spawn_blocking(move || -> Result<Texture, String> {
+        // Immich makes previews of wide-gamut photos in Display P3, with the profile attached.
+        let icc = color::icc_profile(&bytes);
         let stream = gtk::gio::MemoryInputStream::from_bytes(&Bytes::from_owned(bytes));
         let pixbuf = gtk::gdk_pixbuf::Pixbuf::from_stream_at_scale(
             &stream,
@@ -286,21 +315,12 @@ pub(super) async fn decode_to_scaled_texture(
             gtk::gio::Cancellable::NONE,
         )
         .map_err(|err| err.to_string())?;
-        let format = if pixbuf.has_alpha() {
-            gdk4::MemoryFormat::R8g8b8a8
-        } else {
-            gdk4::MemoryFormat::R8g8b8
-        };
-        let bytes = pixbuf.read_pixel_bytes();
-        let mem_tex = gdk4::MemoryTexture::new(
-            pixbuf.width(),
-            pixbuf.height(),
-            format,
-            &bytes,
-            pixbuf.rowstride() as usize,
-        );
-        use gtk::prelude::Cast;
-        Ok(mem_tex.upcast::<Texture>())
+        let layout = color::pixbuf_layout(&pixbuf);
+        Ok(color::texture(
+            pixbuf.read_pixel_bytes(),
+            &layout,
+            icc.as_deref(),
+        ))
     })
     .await
     .map_err(|err| err.to_string())?

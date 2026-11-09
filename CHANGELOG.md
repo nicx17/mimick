@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Ctrl+A** now selects every photo in the view, in Photos, albums, and every other grid, instead of only the ones already loaded: Mimick loads the rest first, with a note while it does.
 - The selection bar has a **Favorite** button (a filled heart unfavorites when all of them already are), and its **⋯** menu, now shown at every width, adds **Edit Description…**, **Refresh Faces**, **Refresh Metadata**, **Refresh Thumbnails**, and **Refresh Video** for the selected photos you own. Menu items show their icons.
-- Added the GNOME style switcher to the top of the main menu: round **Follow System**, **Light**, and **Dark** buttons.
+- Added the GNOME style switcher to the top of the main menu: round **Follow System**, **Light**, and **Dark** buttons, and under them a swatch for each palette of the style showing: **Default**, **Warm White**, **Lavender**, or **Mint** when light, and **Default**, **Black** (pure black, for OLED screens), **Midnight**, or **Mocha** when dark. Settings → **Appearance** has the same **Style**, **Light Theme**, and **Dark Theme** choices; with **Follow System**, Mimick switches between your two palettes as the system does.
 - **Ctrl+,** opens Settings, and Settings has an **Open Library** button once your API key is saved.
 - **About Mimick** is now in the library's main menu too, and shows **What's New** for this version, links to the website, source, documentation, and **Support Questions** (GitHub Discussions), and, under **Troubleshooting**, debug info to paste into a bug report: Mimick, GTK, and libadwaita versions, how it's installed, the desktop, and the graphics renderer.
 - Added **Detailed Logs** to Settings → Troubleshooting, and **Export Diagnostics** now includes the end of the log, with the API key, server addresses, and your home folder replaced. New bug-report and feature-request forms on GitHub ask for both.
@@ -38,8 +38,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a notifications inbox: a bell in the header shows how many of Immich's notifications, such as album invites and failed backups, are unread, and **Notifications** in the main menu opens them. Tap one to mark it read, or an album invite to open the album, and dismiss the ones you're done with. New ones also appear as desktop notifications while Mimick runs (#321).
 - Added a **Calendar** to Explore: a card with a square for each day of the past year, darker the more photos you took (or, with **Uploaded**, uploaded) that day, with month names above, weekdays beside, the year's total, and a key from **Less** to **More**. Tap or click a day, or move with the arrow keys, to see its count, then **Show Photos** opens them; the arrows step a year at a time. The squares grow to fill wide windows and scroll sideways on phones, starting at today (#323).
 - 360° photos now open in a 360° view in the viewer: drag, pinch, or scroll to look around, or use **Up** and **Down** to tilt, **Shift+Left** and **Shift+Right** to turn, and **+** and **−** to zoom. The **360°** button, or **P**, switches between it and the flat photo (#322).
+- A stack's menu has **Keep This, Trash Others**: it moves the stack's other photos to the trash and unstacks the one you keep, as in Immich. Kept photos that weren't the cover take its place in the grid.
+- The menu of your own photos has **Upload and Create Stack…**: pick one or more files to upload, and they're stacked under the photo. On a stacked photo it's **Upload and Add to Stack…**, and the stack keeps its cover.
+- Phones have a search button in the header, so searching no longer takes a trip through the sidebar.
+- Albums, people, tags, Favorites, Archive, and Trash now load like the Photos timeline: the scrollbar knows the full height from the start, so it doesn't grow or jump as you scroll, months load as you reach them, and dragging the scrollbar to the end goes straight there. They show the same date headings, either way round (**Newest** or **Oldest**), without Photos' year scrubber. Missing Location, places from Explore, and the photos of a map cluster get a full-height scrollbar too, loading page by page as you reach them.
+- **Large Files** shows each file's size on its tile and the total in the header, and can list only **Photos** or **Videos**, and only files over 10 MB, 50 MB, 100 MB, 500 MB, or 1 GB. Its selection bar keeps to **Download** and **Delete**, saying how much space the selected files take.
+- **Missing Location** has an **Add Location** button at the top: with photos selected it sets their place, otherwise it starts selecting. **Dates** limits the list to photos taken between two days. Its selection bar keeps to **Add Location**, and placed photos leave the list. Neither utility offers a slideshow any more.
+- **Set Location** for selected photos suggests places under **Taken Nearby**: where your other photos from within 12 hours of them were taken, such as phone photos beside a camera's that have no GPS. Tap one to put the pin there.
+- Added **Unusual Dates** under Utilities: photos dated in the future, or before 1990, as when a camera's clock was never set. **Change Date** at the top fixes the selected ones, and fixed photos leave the list.
+- Paste photos into the library with **Ctrl+V**, or **Paste from Clipboard** in the **Upload** button's menu: files copied in a file manager, or an image copied in another app such as a screenshot, upload to the open album or to Photos. A photo copied in Mimick is added to the album without uploading it again.
+- **Ctrl+C** copies the photo open in the viewer, or the selected photos. Like a file manager, a selection is copied as references rather than pictures, so any number is quick and light: paste them into another album to add them there, or into Files to get the ones on this computer.
 
 ### Changed
+
+- The main menu is split into three groups: Refresh and Notifications; Account and Queue Inspector; and Settings, Keyboard Shortcuts, and About Mimick.
+- On phones, switching tabs in the bottom bar no longer adds a Back step for each tab: Back from any tab returns to Photos.
+- Going to another view leaves selection mode, instead of keeping the checkboxes on with nothing selected.
+- **Full RAW Decoding** keeps every colour the camera recorded, in 16-bit Rec. 2020, instead of clipping to sRGB. It uses about twice the memory per photo, and RAWs decoded before are decoded again once.
+- With photos selected, **Back** (the header button, a swipe on phones, **Alt+Left**, or the mouse back button) clears the selection first, as on phones, and a second Back goes to the previous view. **Esc** clears the selection even when focus is elsewhere in the window.
 
 - The library view is on by default for new installs. Until a server is set up, Mimick opens Settings on its setup steps, and opens the library once **Save and Connect** succeeds. Before then the Status page says **Not Set Up Yet** with a **Set Up…** button, instead of reporting that the server can't be reached.
 - The **Upload** button now has a label, and shows only on Photos and on albums you can add to.
@@ -59,6 +75,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Closing the library window with **Background Sync** off now quits Mimick, as closing Settings does, instead of leaving it running in the tray.
 - The Status page updates after **Save and Connect** instead of keeping the connection result from startup, and says **Can't Reach Immich** rather than **Up to Date** when the server can't be reached.
 - In a tag's color picker, tapping the picked color no longer unpicks it, and **Save** waits until a color is chosen instead of doing nothing.
+- Albums no longer run off the right edge of a 360 px phone screen: on narrow windows, **Upload** shows only its icon and the album's buttons sit below its name.
+- Stacking photos in an album, a search, or another view that shows every photo, as Immich's web app does, no longer seems to do nothing: the confirmation says **Stacked, see the timeline**.
+- Debug logs no longer fill with a line per frame while a photo's menu is open, and the grid no longer redraws itself when the pointer moves over the menu.
+- Photos with a wide-gamut colour profile no longer look dull: Mimick now reads colour profiles, so iPhone photos, Adobe RGB camera JPEGs, and Immich's previews of them and of RAW files (which Immich makes in Display P3) show their real colours, as in Immich's web app. On wide-gamut screens, colours beyond sRGB show too. Edited copies saved from such photos keep their colours.
+- The bottom bar on phones shows its labels in full instead of "Phot…" and "Expl…".
+- The header no longer runs off a 360 px screen when notifications are unread during an upload; a long title is shortened with "…" instead.
+- The sidebar's server row opens a dialog called **Immich Server** with a server icon, instead of one titled **About** with Mimick's icon that looked like **About Mimick**.
+- With photos selected, **Esc** closes an open dialog, menu, or the Folders path field first, instead of clearing the selection and leaving them open.
 
 ## [9.13.0] - 2026-11-08
 

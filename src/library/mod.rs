@@ -69,9 +69,11 @@ mod album_wiring;
 mod asset_edit;
 mod asset_jobs;
 mod asset_tags;
+mod color;
 mod content_state;
 mod context_menu;
 mod controls;
+mod day_row;
 mod dialogs;
 mod download;
 mod drop_target;
@@ -110,6 +112,7 @@ use source_loading::{
     apply_source_ui_state, load_albums, load_explore_landing, load_pages, load_source_page,
     load_status,
 };
+mod clipboard;
 mod server_stats_dialog;
 mod shared_link_dialog;
 mod shared_link_photos;
@@ -123,6 +126,8 @@ mod tags_view;
 mod trash_view;
 mod tree_page;
 mod upload_picker;
+mod upload_stack;
+mod utilities;
 mod video_player;
 mod window_layout;
 use search_wiring::{connect_lightweight_filters, connect_search_view};
@@ -130,6 +135,8 @@ use search_wiring::{connect_lightweight_filters, connect_search_view};
 const PAGE_SIZE: u32 = 50;
 /// Map areas load each photo by ID, so smaller pages show the first ones sooner.
 const MAP_AREA_PAGE_SIZE: u32 = 32;
+/// Large Files is one list from Immich, with no further pages; this many is plenty to clear.
+const LARGE_FILES_LIMIT: u32 = 250;
 
 mod texture_decode;
 mod time_zones;
@@ -192,9 +199,12 @@ struct LibraryWindowUi {
     sort_mode: gtk::DropDown,
     source_mode: gtk::DropDown,
     source_revealer: gtk::Revealer,
-    upload_button: gtk::Button,
+    /// Its menu holds Paste; shown wherever new photos can go.
+    upload_button: libadwaita::SplitButton,
     controls_row: gtk::Box,
     back_button: gtk::Button,
+    /// Header search on phones, which have no other one-tap way in; hidden when search is off.
+    search_button: gtk::Button,
     /// Notifications from Immich; shown while some are unread.
     bell: inbox::Bell,
     select_toggle: gtk::ToggleButton,
@@ -217,6 +227,8 @@ struct WindowInteractionState {
     lightbox: RefCell<Option<Rc<lightbox::Lightbox>>>,
     /// Photo for the next Photos timeline to scroll to: asset id and its `YYYY-MM`.
     timeline_reveal: RefCell<Option<(String, String)>>,
+    /// What Mimick last put on the clipboard, for Paste to recognise its own copy.
+    copied: RefCell<Option<clipboard::Copied>>,
 }
 
 /// Build and display the main library window application layout.
@@ -236,47 +248,28 @@ fn build_window_ui(
     let window = parts.window.clone();
     crate::debug_width::install(&window);
     crate::debug_width::trace_overflow_warnings(&window);
-    let bulk = &parts.content.bulk;
-    let controls = WindowControls {
-        album_link_listbox: parts.content.album_link.listbox.clone(),
-        bulk_delete: bulk.delete.clone(),
-        bulk_download: bulk.download.clone(),
-        bulk_clear: bulk.clear.clone(),
-        bulk_share_link: bulk.share_link.clone(),
-        bulk_location: bulk.location.clone(),
-        bulk_date: bulk.date.clone(),
-    };
     let ui = Rc::new(LibraryWindowUi::from_parts(ctx, app, parts));
-    connect_window_controls(&ui, controls);
+    connect_window_controls(&ui);
     install_close_handler(&ui, &window);
     (ui, window)
 }
 
-struct WindowControls {
-    album_link_listbox: gtk::ListBox,
-    bulk_delete: gtk::Button,
-    bulk_download: gtk::Button,
-    bulk_clear: gtk::Button,
-    bulk_share_link: gtk::Button,
-    bulk_location: gtk::Button,
-    bulk_date: gtk::Button,
-}
-
-fn connect_window_controls(ui: &Rc<LibraryWindowUi>, controls: WindowControls) {
+fn connect_window_controls(ui: &Rc<LibraryWindowUi>) {
+    let bulk = &ui.bulk;
     connect_menus(ui.clone());
-    connect_album_link_row(ui.clone(), controls.album_link_listbox);
+    connect_album_link_row(ui.clone(), ui.album_link.listbox.clone());
     connect_select_mode(ui.clone(), ui.select_toggle.clone());
     connect_bulk_actions(
         ui.clone(),
-        controls.bulk_delete,
-        controls.bulk_download,
-        controls.bulk_clear,
+        bulk.delete.clone(),
+        bulk.download.clone(),
+        bulk.clear.clone(),
     );
-    actions::connect_bulk_share_link(ui.clone(), &controls.bulk_share_link);
+    actions::connect_bulk_share_link(ui.clone(), &bulk.share_link);
     actions::connect_bulk_archive(ui.clone());
     actions::connect_bulk_stack(ui.clone());
-    actions::connect_bulk_location(ui.clone(), &controls.bulk_location);
-    actions::connect_bulk_date(ui.clone(), &controls.bulk_date);
+    actions::connect_bulk_location(ui.clone(), &bulk.location);
+    actions::connect_bulk_date(ui.clone(), &bulk.date);
     actions::connect_bulk_add_to_album(ui.clone());
     actions::connect_bulk_remove_from_album(ui.clone());
     bulk_more::connect(ui);
@@ -289,9 +282,11 @@ fn connect_window_controls(ui: &Rc<LibraryWindowUi>, controls: WindowControls) {
     shared_links_view::connect_shared_links_view(ui.clone());
     map::connect_map_view(ui);
     timeline::connect(ui);
+    utilities::connect(ui);
     bottom_nav::connect_bottom_nav(ui);
     connect_sidebar_handlers(ui.clone());
     connect_controls(ui.clone());
+    clipboard::connect_clipboard(ui);
     connect_grid_handlers(ui.clone());
     connect_search_view(ui.clone());
     connect_lightweight_filters(ui.clone());

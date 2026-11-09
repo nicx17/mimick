@@ -45,16 +45,21 @@ pub fn pick_and_upload(
                 return;
             }
         };
-        let paths: Vec<PathBuf> = (0..files.n_items())
-            .filter_map(|i| files.item(i))
-            .filter_map(|obj| obj.downcast::<gio::File>().ok())
-            .filter_map(|file| file.path())
-            .collect();
+        let paths = picked_paths(&files);
         if paths.is_empty() {
             return;
         }
         spawn_enqueue(ctx.clone(), album.clone(), paths);
     });
+}
+
+/// Local paths of the files picked in a `FileDialog`, skipping any without one.
+pub(super) fn picked_paths(files: &gio::ListModel) -> Vec<PathBuf> {
+    (0..files.n_items())
+        .filter_map(|i| files.item(i))
+        .filter_map(|obj| obj.downcast::<gio::File>().ok())
+        .filter_map(|file| file.path())
+        .collect()
 }
 
 pub(crate) fn spawn_enqueue(

@@ -58,18 +58,46 @@ impl ImmichApiClient {
         Ok(stats.assets)
     }
 
+    /// Merges `merge_ids` into `into_id` with `POST /people/merge` (v3.2.1+), falling back
+    /// to the deprecated `/people/{id}/merge` on older servers, which answer 404.
     pub async fn merge_people(&self, into_id: &str, merge_ids: &[String]) -> Result<(), String> {
-        let path = format!("/api/people/{into_id}/merge");
-        let body = serde_json::json!({ "ids": merge_ids });
-        self.send_json(reqwest::Method::POST, &path, Some(body))
+        let body = merge_body(into_id, merge_ids);
+        match self
+            .send_json(reqwest::Method::POST, "/api/people/merge", Some(body))
             .await
-            .map(|_| ())
+        {
+            Err(err) if err.starts_with("HTTP 404") => {
+                let path = format!("/api/people/{into_id}/merge");
+                let body = serde_json::json!({ "ids": merge_ids });
+                self.send_json(reqwest::Method::POST, &path, Some(body))
+                    .await
+                    .map(|_| ())
+            }
+            result => result.map(|_| ()),
+        }
     }
+}
+
+/// The new endpoint keeps the first person of an ordered list, so the target goes first.
+fn merge_body(into_id: &str, merge_ids: &[String]) -> serde_json::Value {
+    let ids: Vec<&str> = std::iter::once(into_id)
+        .chain(merge_ids.iter().map(String::as_str))
+        .collect();
+    serde_json::json!({ "ids": ids })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn merge_body_puts_the_kept_person_first() {
+        let merged = ["b".to_string(), "c".to_string()];
+        assert_eq!(
+            merge_body("a", &merged),
+            serde_json::json!({ "ids": ["a", "b", "c"] })
+        );
+    }
 
     #[test]
     fn update_sends_only_set_fields() {

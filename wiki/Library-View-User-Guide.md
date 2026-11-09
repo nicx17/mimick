@@ -58,7 +58,7 @@ The window uses a sidebar + content split.
 
 **Top bar title:** shows the current view's name (an album, a person, a tag, Favorites, and so on).
 
-**Mobile:** on narrow windows (under 600 px) a bar at the bottom switches between **Photos**, **Explore**, **Map**, **Albums**, and **People**. It hides while you're selecting photos.
+**Mobile:** on narrow windows (under 600 px) a bar at the bottom switches between **Photos**, **Explore**, **Map**, **Albums**, and **People**. It hides while you're selecting photos. Switching tabs doesn't add Back steps: Back from any tab returns to Photos. A search button in the header opens Search.
 
 **Turned-off features:** when the library opens (and on refresh) it reads Immich's server features and your account's **Features** settings, and hides what's turned off:
 
@@ -81,9 +81,10 @@ If Mimick can't read these settings (for example, an API key without `userPrefer
 
 - source selector (**Remote / Local / Unified**), inside albums only
 - sort selector (**Newest / Filename / File Type**, or the album sorts on the Albums page), where there's something to sort
-- **Upload** button (invokes the manual multi-file picker), on Photos and on albums you can add to
+- **Upload** button (invokes the manual multi-file picker), on Photos and on albums you can add to. Its arrow has **Paste from Clipboard** (**Ctrl+V** anywhere outside a text field), which uploads to the same place: files copied in a file manager go through the upload queue, and an image copied in another app, such as a screenshot, is uploaded as a PNG. A photo you copied in Mimick is added to the open album as it is, not uploaded again.
+- **Copy**: **Ctrl+C** in the viewer copies the photo on screen as a picture, for pasting into other apps (or its recognized text while that's showing). With photos selected, **Ctrl+C** copies them as a file manager does: as references, so copying thousands costs nothing. Paste them into another album with **Ctrl+V** to add them there. Pasting into Files or another app gives the photos that are on this computer; Mimick says when some are only in Immich, and **Download** saves those. A selection of one photo copies its picture; a video copies as a reference.
 
-The main menu starts with a **Follow System** / **Light** / **Dark** switch for the whole app, and ends with **Keyboard Shortcuts** and **About Mimick**. About Mimick shows what's new in this version, links to the website, source, documentation, and support questions, and, under **Troubleshooting**, debug info to paste into a bug report.
+The main menu starts with the style switch for the whole app: **Follow System**, **Light**, and **Dark**, and under them a swatch for each palette of the style showing (**Default**, **Warm White**, **Lavender**, or **Mint** when light; **Default**, **Black**, **Midnight**, or **Mocha** when dark, where **Black** is pure black for OLED screens). Settings → **Appearance** has the same choices as **Style**, **Light Theme**, and **Dark Theme**. The menu ends with **Keyboard Shortcuts** and **About Mimick**. About Mimick shows what's new in this version, links to the website, source, documentation, and support questions, and, under **Troubleshooting**, debug info to paste into a bug report.
 
 |                                             Main Menu                                             |                                             Sort Options                                             |
 | :-----------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
@@ -125,7 +126,9 @@ When **Photos** (Remote) is sorted by **Newest**, it shows your whole library as
 - **Scrubber** (right edge): years and a dot per month, spaced by how many photos each month has. Hover to see the month under the pointer; click or drag to jump there.
 - **Phone-width windows**: instead of the scrubber, a small handle appears on the right edge while you scroll. Drag it to move through the library quickly; the month shows beside it.
 
-Sorting by **Filename** or **File Type**, and the Local and Unified sources, use the regular grid without headings or scrubber.
+Albums, people, tags, **Favorites**, **Archive**, and **Trash** load the same way, sorted **Newest** or **Oldest**: date headings, a scrollbar that knows the full height from the start, and months that load as you reach them. They use the regular scrollbar instead of the scrubber. **Missing Location**, places opened from Explore, and a map cluster's photos also know their full height, without date headings, and load page by page as you scroll or drag to them.
+
+Sorting by **Filename** or **File Type**, searches, and the Local and Unified sources use the regular grid without headings or scrubber.
 
 ### Memories
 
@@ -143,6 +146,8 @@ Immich can group photos into a stack, such as a burst or a RAW+JPEG pair. In Pho
 - Open the cover in the lightbox and a strip of the stack's photos appears under the photo, between it and the buttons. Click or tap one to look at it; the cover is first. The strip scrolls sideways when the stack doesn't fit, and it hides while editing and in fullscreen.
 - Right-click or long-press a thumbnail (or select it and press **Shift+F10** or the **Menu** key) for **Set as Stack Cover** and **Remove from Stack** on that photo, and **Unstack**. The strip's **⋮** button opens the same menu for the photo you're looking at. The grid regroups when you close the lightbox.
 - To make a stack, select two or more of your photos and choose **Stack** in the selection bar; the first selected photo becomes the cover. A stacked tile's right-click menu has **Unstack**.
+- **Keep This, Trash Others** in the stack menu moves every other photo in the stack to the trash and unstacks the one you keep (**Delete Others** when the Immich trash is off). A kept photo that wasn't the cover takes the cover's place in the grid.
+- **Upload and Create Stack…** in your own photo's menu uploads the files you pick and stacks them under that photo. On a stacked photo it's **Upload and Add to Stack…**: the new files join the stack and its cover stays the cover.
 - Stacks only collapse in Photos (and a partner's photos); albums, searches, and other views show every photo, as in Immich.
 - Requires `stack.read`; changing stacks needs `stack.create`, `stack.update`, and `stack.delete`.
 
@@ -320,7 +325,7 @@ On phone-width windows, Add to album, Download, and Move to trash stay as button
 
 In the [Trash](#trash) view the bar shows **Restore** and **Delete Permanently** instead of Download and Move to trash.
 
-Selection mode exits automatically when all items are deselected.
+Selection mode exits automatically when all items are deselected. **Esc**, or **Back** (the header button, a swipe on phones, **Alt+Left**, or the mouse back button), clears the selection and leaves selection mode without leaving the view; press Back again to go back. Going to another view leaves selection mode too.
 
 ---
 
@@ -340,7 +345,8 @@ Click any asset in the grid to open it in the lightbox.
 - **Edited photos**: Photos edited in Immich or with [Edit Photo…](#editing-photos) (cropped, rotated, or flipped) show the edited version. Download and drag-out still give the original file.
 - **360° photos**: photos Immich knows are 360° panoramas open in a 360° view. Drag (or swipe) to look around, scroll or pinch to zoom, and use **Up**/**Down** to tilt, **Shift+Left**/**Shift+Right** to turn, and **+**/**−** to zoom; plain **Left**/**Right** still go to the previous or next photo. The **360°** button in the top-left corner, or **P**, switches between the 360° view and the flat photo. The view uses the full-size photo when there is one, so it stays sharp when you zoom in.
 - **Live photos**: live and motion photos show a **Live** button in the top-left corner of the photo. Click or tap it (or press **Space**) to play the short clip over the photo on a loop; click again to stop. Grid tiles of live photos have a small live icon. The clip uses the video volume setting.
-- **RAW Previews**: By default, RAW files display using their fast embedded previews. The extractor first scans the file for the largest embedded JPEG (catching the full-resolution preview on cameras that store both a tiny thumb and a full-res one — e.g. Sony ARW); if the file contains no JPEG at all (Samsung DNG, OnePlus DNG, and other phone DNGs that store their preview as uncompressed TIFF strips), it falls back to libraw's bitmap thumbnail with container orientation applied. You can toggle **Full RAW Decoding** in settings to perform a full sensor demosaic instead.
+- **RAW Previews**: By default, RAW files display using their fast embedded previews. The extractor first scans the file for the largest embedded JPEG (catching the full-resolution preview on cameras that store both a tiny thumb and a full-res one — e.g. Sony ARW); if the file contains no JPEG at all (Samsung DNG, OnePlus DNG, and other phone DNGs that store their preview as uncompressed TIFF strips), it falls back to libraw's bitmap thumbnail with container orientation applied. You can toggle **Full RAW Decoding** in settings to perform a full sensor demosaic instead. It keeps every colour the sensor recorded (16-bit Rec. 2020, rather than squeezing them into sRGB), at about twice the memory per photo.
+- **Colour**: photos are shown in the colours their colour profile describes. iPhone photos and Immich's previews of wide-gamut photos and RAW files are in Display P3, and cameras can save in Adobe RGB; Mimick shows those correctly on any screen, and on a wide-gamut screen (many laptops and OLED panels) the colours beyond sRGB appear too. Grid thumbnails of photos on this computer are kept in sRGB.
 - **Videos**: Clicking a video opens it in the lightbox with its thumbnail as a poster and a centered play badge. Click the badge (or press **Space**) to play it in the app. Local and synced videos play from disk; server videos stream from Immich, which serves its transcoded copy when one exists. Decoding uses the GPU (VA-API) when the codec is supported.
   - The control bar has play/pause, stop, back/forward 10 seconds, a seek bar with elapsed and total time, loop, playback speed (0.25×–2×), volume and mute, and fullscreen. Playing or pausing flashes a badge in the middle of the video, and **Up** and **Down** change the volume, showing the new level the same way. An audio and subtitle menu appears when the file has more than one audio track or any subtitles; subtitles start off.
   - The controls fade out after 3 seconds of playback without mouse movement; move the pointer or tap the video to bring them back. Double-click (or double-tap) the video or press **F11** for fullscreen.
@@ -450,6 +456,14 @@ When duplicate detection is on in Immich, **Duplicates** under **Utilities** in 
 - **Trash N Photos** keeps the photos marked Keep and moves the others to the trash; Immich copies their albums, tags, and favorite onto what you keep. When trash is turned off on the server it reads **Delete N Photos** and asks first.
 - **Not Duplicates** keeps every photo and stops showing the group.
 - Requires `duplicate.read`; resolving and dismissing need `duplicate.delete`.
+
+## Large Files, Missing Location, and Unusual Dates
+
+All three are under **Utilities** in the sidebar and keep to their one job, as in Immich: there's no slideshow, and the selection bar leaves out the everyday actions.
+
+- **Large Files** lists your biggest photos and videos, largest first, with each file's size on its tile and the total in the header. The menus at the top list only **Photos** or **Videos**, and only files over a size (10 MB up to 1 GB). Selecting files shows how much space they take; the selection bar has **Download** and **Delete**.
+- **Missing Location** lists the photos and videos with no place, newest first. **Dates** limits it to photos taken between two days (either day can be left open). **Add Location** at the top sets the place of the selected photos (with none selected, it starts selecting); the selection bar has its own **Add Location**. Set Location then suggests places under **Taken Nearby**: where your other photos from within 12 hours of the selected ones were taken, such as phone photos beside a camera's. Photos you place leave the list. Only photos you own can be placed. Requires `asset.update`.
+- **Unusual Dates** lists photos dated after today (**Future**) or before 1990, usually from a camera whose clock was never set. **Change Date** at the top, or in the selection bar, sets or shifts the dates of the selected photos, and fixed photos leave the list. Photos with no date at all can't be found this way: Immich's search has no filter for them. Requires `asset.update`.
 
 ## Favorites
 
@@ -675,7 +689,7 @@ These options are in the **Library**, **Grid Appearance**, **RAW Files**, and **
 | **Open Originals in Lightbox** | Off  | When on, the lightbox loads the original file instead of the ~1440px server-generated preview. Uses more bandwidth.                    |
 | **Thumbnail Quality**       | Thumbnail | **Automatic**, **Thumbnail**, **Preview**, or **Full Size** for grid tiles. Sharper thumbnails use more memory. Applies to an open library window right away. |
 | **Fit Thumbnails to Tiles** | On      | Decodes **Preview** and **Full Size** grid thumbnails at their tile's on-screen size instead of 1440 or 2560 px, using far less memory. Has no effect with **Thumbnail**. Applies right away. |
-| **Date Headings**           | By Day  | Dates between photos in the Photos timeline: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
+| **Date Headings**           | By Day  | Dates between photos in Photos, albums, and the other timelines: **By Day**, **By Month**, or **Off**. Changes apply to an open library window right away. |
 | **Border Width**            | 0       | Gap between photos, in pixels. With a border, its colour fills the whole grid, behind the date headings too. Applies right away.        |
 | **Border Color**            | White   | Colour of the grid border. Date headings switch between dark and light text to stay readable.                                          |
 | **Full RAW Decoding**       | Off     | Decode high-resolution sensor data instead of using fast embedded camera previews (slower).                                            |

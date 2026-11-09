@@ -1,19 +1,16 @@
 //! "Map Settings": which photos the Map page shows, saved in the config like Immich's.
 
 use gettextrs::gettext;
-use std::cell::RefCell;
 use std::rc::Rc;
 
-use chrono::{DateTime, Datelike, Duration, Local, Months, NaiveDate, NaiveTime, TimeZone, Utc};
+use chrono::{DateTime, Duration, Local, Months, Utc};
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
 use crate::api_client::MarkerFilter;
 use crate::config::{MapDateRange, MapFilters};
-use crate::i18n::format_day;
 use crate::library::LibraryWindowUi;
-
-const DAY_FORMAT: &str = "%Y-%m-%d";
+use crate::library::day_row::{DayRow, day_start};
 
 /// The marker query for `filters`, with relative ranges counted back from `now`.
 pub(super) fn marker_filter(filters: &MapFilters, now: DateTime<Local>) -> MarkerFilter {
@@ -46,15 +43,6 @@ fn date_bounds(
                 .map(|start| start + Duration::days(1) - Duration::milliseconds(1)),
         ),
     }
-}
-
-/// Local midnight at the start of a `YYYY-MM-DD` day.
-fn day_start(day: Option<&str>) -> Option<DateTime<Utc>> {
-    let day = NaiveDate::parse_from_str(day?, DAY_FORMAT).ok()?;
-    let local = Local
-        .from_local_datetime(&day.and_time(NaiveTime::MIN))
-        .earliest()?;
-    Some(local.with_timezone(&Utc))
 }
 
 fn range_label(range: MapDateRange) -> String {
@@ -151,81 +139,6 @@ fn switch(title: &str, subtitle: &str, active: bool) -> libadwaita::SwitchRow {
         row.set_subtitle(subtitle);
     }
     row
-}
-
-/// A day picked from a calendar popover, or open ("Any").
-struct DayRow {
-    row: libadwaita::ActionRow,
-    day: Rc<RefCell<Option<String>>>,
-}
-
-impl DayRow {
-    fn new(title: &str, day: Option<&str>) -> Self {
-        let row = libadwaita::ActionRow::builder().title(title).build();
-        let day = Rc::new(RefCell::new(day.map(str::to_owned)));
-        let calendar = gtk::Calendar::new();
-        let clear = gtk::Button::builder()
-            .label(gettext("Any Day"))
-            .css_classes(["flat"])
-            .build();
-        let content = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .spacing(6)
-            .build();
-        content.append(&calendar);
-        content.append(&clear);
-        let pick = gtk::MenuButton::builder()
-            .popover(&gtk::Popover::builder().child(&content).build())
-            .valign(gtk::Align::Center)
-            .css_classes(["flat"])
-            .build();
-        row.add_suffix(&pick);
-        row.set_activatable_widget(Some(&pick));
-        show_day(&pick, &calendar, day.borrow().as_deref());
-        connect_day(&pick, &calendar, &clear, &day);
-        Self { row, day }
-    }
-}
-
-fn show_day(pick: &gtk::MenuButton, calendar: &gtk::Calendar, day: Option<&str>) {
-    let parsed = day.and_then(|day| NaiveDate::parse_from_str(day, DAY_FORMAT).ok());
-    match parsed {
-        Some(date) => {
-            pick.set_label(&format_day(date, &gettext("%-d %b %Y")));
-            let (month, day) = (date.month() as i32, date.day() as i32);
-            if let Ok(glib_day) = glib::DateTime::from_local(date.year(), month, day, 0, 0, 0.0) {
-                calendar.set_date(&glib_day);
-            }
-        }
-        None => pick.set_label(&gettext("Any Day")),
-    }
-}
-
-fn connect_day(
-    pick: &gtk::MenuButton,
-    calendar: &gtk::Calendar,
-    clear: &gtk::Button,
-    day: &Rc<RefCell<Option<String>>>,
-) {
-    let (pick_ref, day_ref) = (pick.clone(), day.clone());
-    calendar.connect_day_selected(move |calendar| {
-        let picked = calendar.date();
-        let text = format!(
-            "{:04}-{:02}-{:02}",
-            picked.year(),
-            picked.month(),
-            picked.day_of_month()
-        );
-        show_day(&pick_ref, calendar, Some(&text));
-        day_ref.replace(Some(text));
-        pick_ref.popdown();
-    });
-    let (pick, calendar, day) = (pick.clone(), calendar.clone(), day.clone());
-    clear.connect_clicked(move |_| {
-        day.replace(None);
-        show_day(&pick, &calendar, None);
-        pick.popdown();
-    });
 }
 
 /// Open the dialog; closing it saves any change and reloads the markers.

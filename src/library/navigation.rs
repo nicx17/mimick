@@ -4,7 +4,9 @@ use std::rc::Rc;
 use gtk::prelude::*;
 
 use super::LibraryWindowUi;
-use super::state::{LibraryPage, LibrarySource, LibraryState, Location};
+use super::state::{
+    DayRange, LargeFilesFilter, LibraryPage, LibrarySource, LibraryState, Location, OddDates,
+};
 
 #[derive(Debug, PartialEq, Eq)]
 enum SidebarTarget {
@@ -19,6 +21,31 @@ pub(super) fn navigate(ui: &Rc<LibraryWindowUi>, location: Location) {
 
 pub(super) fn navigate_source(ui: &Rc<LibraryWindowUi>, source: LibrarySource) {
     navigate(ui, Location::Source(source));
+}
+
+/// A utility's filter changed: show it in place, without a Back step per change.
+pub(super) fn refine(ui: &Rc<LibraryWindowUi>, location: Location) {
+    ui.ctx
+        .library_state
+        .lock()
+        .replace_location(location.clone());
+    show(ui, &location);
+}
+
+/// The bottom bar's tabs switch without stacking up Back steps, as phone tab bars do.
+pub(super) fn switch_tab(ui: &Rc<LibraryWindowUi>, location: Location) {
+    ui.ctx.library_state.lock().switch_tab(location.clone());
+    show(ui, &location);
+}
+
+/// The Back button, swipe, Alt+Left, and mouse button: leave selection mode first, as
+/// phones do, then step back.
+pub(super) fn back(ui: &Rc<LibraryWindowUi>) -> bool {
+    if ui.select_toggle.is_active() && ui.nav.navigation_stack().n_items() == 1 {
+        ui.select_toggle.set_active(false);
+        return true;
+    }
+    go_back(ui)
 }
 
 pub(super) fn go_back(ui: &Rc<LibraryWindowUi>) -> bool {
@@ -75,6 +102,8 @@ pub(super) fn on_page(ui: &LibraryWindowUi) -> bool {
 
 fn show(ui: &Rc<LibraryWindowUi>, location: &Location) {
     log::debug!("Library view -> {location:?}");
+    // The grid is rebuilt, emptying any selection, so leave selection mode with it.
+    ui.select_toggle.set_active(false);
     let search_form =
         matches!(location, Location::Page(LibraryPage::Search)) || location.is_search();
     ui.search_view.root.set_reveal_child(search_form);
@@ -183,14 +212,19 @@ fn page_title(page: &LibraryPage) -> String {
 
 pub(super) fn sync_controls(ui: &LibraryWindowUi, location: &Location) {
     let sort = match location {
+        // Large Files comes biggest first; a date or name order would hide that.
         Location::Source(
-            LibrarySource::Explore | LibrarySource::MapArea { .. } | LibrarySource::Memory { .. },
+            LibrarySource::Explore
+            | LibrarySource::MapArea { .. }
+            | LibrarySource::Memory { .. }
+            | LibrarySource::LargeFiles { .. },
         ) => false,
         Location::Source(_) => true,
         Location::Page(LibraryPage::Albums { .. }) => true,
         Location::Page(_) => false,
     };
     ui.sort_mode.set_visible(sort);
+    super::utilities::sync(ui, location);
     if matches!(location, Location::Page(_)) {
         ui.source_revealer.set_reveal_child(false);
     }
@@ -214,9 +248,11 @@ pub(super) fn sync_upload_button(ui: &LibraryWindowUi) {
     ui.upload_button.set_visible(shown);
 }
 
+/// Also live while selecting, since Back then leaves selection mode.
 pub(super) fn update_back_button(ui: &LibraryWindowUi) {
     let can_go_back = ui.ctx.library_state.lock().can_go_back();
-    ui.back_button.set_sensitive(can_go_back);
+    ui.back_button
+        .set_sensitive(can_go_back || ui.select_toggle.is_active());
 }
 
 pub(super) fn sync_sidebar(ui: &LibraryWindowUi) {
@@ -311,6 +347,9 @@ fn source_target(source: &LibrarySource) -> SidebarTarget {
         LibrarySource::Favorites => "favorites",
         LibrarySource::Archive => "archive",
         LibrarySource::Trash => "trash",
+        LibrarySource::LargeFiles { .. }
+        | LibrarySource::MissingLocation { .. }
+        | LibrarySource::UnusualDates { .. } => super::utilities::sidebar_key(source),
         LibrarySource::SmartSearch { .. }
         | LibrarySource::MetadataSearch { .. }
         | LibrarySource::OcrSearch { .. }
@@ -326,7 +365,7 @@ fn source_target(source: &LibrarySource) -> SidebarTarget {
 type KeyLocation = (&'static str, fn() -> Location);
 
 /// Sidebar keys and where each one goes; a table, so adding a page doesn't grow a `match`.
-const KEY_LOCATIONS: [KeyLocation; 15] = [
+const KEY_LOCATIONS: [KeyLocation; 18] = [
     ("photos", || Location::Source(LibrarySource::AllAssets)),
     ("explore", || Location::Source(LibrarySource::Explore)),
     ("map", || Location::Page(LibraryPage::Map { album: None })),
@@ -348,6 +387,21 @@ const KEY_LOCATIONS: [KeyLocation; 15] = [
     ("shared-links", || Location::Page(LibraryPage::SharedLinks)),
     ("sharing", || Location::Page(LibraryPage::Sharing)),
     ("duplicates", || Location::Page(LibraryPage::Duplicates)),
+    ("large-files", || {
+        Location::Source(LibrarySource::LargeFiles {
+            filter: LargeFilesFilter::default(),
+        })
+    }),
+    ("missing-location", || {
+        Location::Source(LibrarySource::MissingLocation {
+            range: DayRange::default(),
+        })
+    }),
+    ("unusual-dates", || {
+        Location::Source(LibrarySource::UnusualDates {
+            which: OddDates::default(),
+        })
+    }),
 ];
 
 pub(super) fn location_for_key(key: &str) -> Option<Location> {
@@ -361,7 +415,7 @@ pub(super) fn location_for_key(key: &str) -> Option<Location> {
 mod tests {
     use super::*;
 
-    const KEYS: [&str; 15] = [
+    const KEYS: [&str; 18] = [
         "photos",
         "explore",
         "map",
@@ -377,6 +431,9 @@ mod tests {
         "shared-links",
         "sharing",
         "duplicates",
+        "large-files",
+        "missing-location",
+        "unusual-dates",
     ];
 
     #[test]

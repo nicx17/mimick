@@ -20,6 +20,7 @@ use std::sync::Arc;
 use crate::app_context::AppContext;
 
 mod actions_ui;
+mod appearance;
 mod apply;
 mod behavior;
 mod connectivity;
@@ -192,6 +193,7 @@ pub fn build_settings_window_with_parent(
     let folders_group = wiring::folders_group(&settings_page);
     let behavior = behavior::build_behavior_group(&settings_page);
     wiring::connect_quiet_hours_sensitivity(&behavior);
+    appearance::build_appearance_group(&settings_page, &ctx);
     let library = library::build_library_group(&settings_page);
     let troubleshooting = actions_ui::build_troubleshooting_group(&settings_page);
     wiring::connect_library_rows(&ctx, &library, &behavior.library_view_row);

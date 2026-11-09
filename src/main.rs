@@ -318,7 +318,8 @@ fn build_queue_manager(
 }
 
 fn apply_runtime_preferences(config: &Config) {
-    crate::library::theme::apply(&config.data.color_scheme);
+    let data = &config.data;
+    crate::library::theme::apply(&data.color_scheme, &data.light_theme, &data.dark_theme);
     crate::logging::set_detailed(config.data.detailed_logging);
     // Apply the user's notification preference before any notification can fire.
     crate::notifications::set_enabled(config.data.notifications_enabled);

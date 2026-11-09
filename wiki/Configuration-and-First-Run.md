@@ -361,7 +361,7 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Rename albums, edit descriptions, set covers, and change album options | `album.update` |
 | Likes and comments on shared albums | `activity.read`, `activity.statistics`; liking and commenting also need `activity.create`, and deleting `activity.delete` |
 | Memories above Photos | `memory.read`; marking a memory seen needs `memory.update`, and removing photos from one `memoryAsset.delete` |
-| Stacks (view, make, change cover, unstack) | `stack.read`; changing stacks also needs `stack.create`, `stack.update`, and `stack.delete` |
+| Stacks (view, make, change cover, unstack) | `stack.read`; changing stacks also needs `stack.create`, `stack.update`, and `stack.delete`. **Keep This, Trash Others** also needs `asset.delete`, and **Upload and Create Stack** `asset.upload` |
 | Edit Photo (crop, rotate, flip, revert) | `asset.edit.get`, `asset.edit.create`, `asset.edit.delete` |
 | Edit Photo saved as a copy (Straighten, Adjust, Filters, Redact) | `asset.download`, `asset.upload`, `stack.create`, `album.read`, `albumAsset.create` |
 | Tag People (change, remove, or draw faces; cover photos) | `face.read`, `face.create`, `face.update`, `face.delete`; naming someone new needs `person.create`, and cover photos `person.update` |

@@ -86,6 +86,7 @@ pub(super) fn sync_content_state(ui: &LibraryWindowUi) {
             LibrarySource::Folder { .. }
                 | LibrarySource::LocalAll
                 | LibrarySource::LocalSearch { .. }
+                | LibrarySource::LargeFiles { .. }
         );
         let count = (single_page && !state.has_more).then_some(state.assets.len());
         match &state.load_state {
@@ -98,6 +99,7 @@ pub(super) fn sync_content_state(ui: &LibraryWindowUi) {
     source_header::set_status(ui, status, error_msg.as_deref());
     if let Some(count) = single_page_count {
         source_header::set_loaded_count(ui, count);
+        super::utilities::show_total_size(ui);
     }
     ui.content_stack.set_visible_child_name("grid");
 }

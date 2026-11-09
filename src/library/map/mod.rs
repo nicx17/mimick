@@ -10,6 +10,7 @@ mod locate;
 mod location_dialog;
 mod markers;
 mod minimap;
+mod nearby;
 mod place_search;
 mod satellite;
 mod search;

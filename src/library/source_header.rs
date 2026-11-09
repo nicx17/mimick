@@ -18,6 +18,8 @@ const AVATAR_SIZE: i32 = 64;
 
 pub(super) struct SourceHeader {
     pub root: gtk::Box,
+    /// Title beside the actions; the narrow breakpoint stacks the actions below it.
+    pub top: gtk::Box,
     pub extra: gtk::Box,
     pub status: gtk::Stack,
     leading: gtk::Box,
@@ -70,6 +72,7 @@ pub(super) fn build_source_header() -> SourceHeader {
     let (status, status_error) = build_status_stack();
     SourceHeader {
         root,
+        top: top.root,
         extra,
         status,
         leading: top.leading,
@@ -109,9 +112,11 @@ fn build_header_top() -> HeaderTop {
         .spacing(6)
         .valign(gtk::Align::Center)
         .build();
+    let title_row = gtk::Box::builder().spacing(12).build();
+    title_row.append(&leading);
+    title_row.append(&text);
     let root = gtk::Box::builder().spacing(12).build();
-    root.append(&leading);
-    root.append(&text);
+    root.append(&title_row);
     root.append(&actions);
     HeaderTop {
         root,
@@ -177,7 +182,8 @@ pub(super) fn show(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
     render_facts(header);
     set_description(header, None);
     clear_actions(header);
-    if !matches!(source, LibrarySource::Trash | LibrarySource::Explore) {
+    let watchable = !matches!(source, LibrarySource::Trash | LibrarySource::Explore);
+    if watchable && !super::utilities::is_utility(source) {
         let ui_play = ui.clone();
         add_action(
             header,
@@ -185,6 +191,9 @@ pub(super) fn show(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
             &gettext("Play Slideshow"),
             move || play_slideshow(&ui_play),
         );
+    }
+    for widget in super::utilities::header_actions(ui, source) {
+        header.actions.append(&widget);
     }
     let (leading, title) = basics(ui, source);
     set_leading(ui, leading);
@@ -229,9 +238,27 @@ fn basics(ui: &LibraryWindowUi, source: &LibrarySource) -> (Leading, String) {
         ),
         LibrarySource::Tag { name, .. } => (Leading::TagColor(None), leaf_name(name).to_string()),
         other => {
-            let (icon, title) = library_icon(other).unwrap_or_else(|| found_icon(other));
+            let (icon, title) = library_icon(other)
+                .or_else(|| utility_icon(other))
+                .unwrap_or_else(|| found_icon(other));
             (Leading::Icon(icon), title)
         }
+    }
+}
+
+/// Icon and title for the Utilities grids.
+fn utility_icon(source: &LibrarySource) -> Option<(&'static str, String)> {
+    match source {
+        LibrarySource::LargeFiles { .. } => {
+            Some(("drive-harddisk-symbolic", gettext("Large Files")))
+        }
+        LibrarySource::MissingLocation { .. } => {
+            Some(("find-location-symbolic", gettext("Missing Location")))
+        }
+        LibrarySource::UnusualDates { .. } => {
+            Some(("x-office-calendar-symbolic", gettext("Unusual Dates")))
+        }
+        _ => None,
     }
 }
 
@@ -325,7 +352,7 @@ fn add_action(header: &SourceHeader, icon: &str, tooltip: &str, on_click: impl F
     header.actions.append(&button);
 }
 
-fn set_details(header: &SourceHeader, details: Vec<String>) {
+pub(super) fn set_details(header: &SourceHeader, details: Vec<String>) {
     *header.details.borrow_mut() = details;
     render_facts(header);
 }

@@ -135,6 +135,19 @@ impl LibraryAssetModel {
         self.items_changed(at, 0, added);
     }
 
+    /// Swap the item with `old_id` for `asset` in place; returns its position if it was shown.
+    pub fn replace(&self, ctx: &AppContext, old_id: &str, asset: &LibraryAsset) -> Option<u32> {
+        let object = object_for(ctx, asset);
+        let position = {
+            let mut items = self.imp().items.borrow_mut();
+            let position = items.iter().position(|item| item.id() == old_id)?;
+            items[position] = object;
+            position as u32
+        };
+        self.items_changed(position, 1, 1);
+        Some(position)
+    }
+
     /// Remove matching items in place; returns their former positions, ascending.
     pub fn remove_ids(&self, ids: &[String]) -> Vec<u32> {
         let ids: std::collections::HashSet<&str> = ids.iter().map(String::as_str).collect();
@@ -285,6 +298,8 @@ fn remote_asset_object(asset: &LibraryAsset, ctx: &AppContext) -> AssetObject {
         object.set_stack_id(stack.id.as_str());
         object.set_stack_count(stack.asset_count);
     }
+    let size = asset.exif_info.as_ref().and_then(|e| e.file_size_in_byte);
+    object.set_file_size(size.unwrap_or(0));
     object
 }
 

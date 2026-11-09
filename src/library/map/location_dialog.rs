@@ -35,6 +35,8 @@ pub struct LocationTarget {
     /// Dialog subtitle: a filename, or "3 photos".
     pub title: String,
     pub initial: Option<GeoPoint>,
+    /// When the photos were taken, earliest and latest, to suggest places from then.
+    pub around: Option<(String, String)>,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -63,6 +65,7 @@ pub fn set_location_for_asset(
             ids: vec![asset_id],
             title: filename,
             initial,
+            around: None,
         };
         set_location(ui, target, on_saved);
     });
@@ -78,6 +81,15 @@ pub fn set_location(ui: Rc<LibraryWindowUi>, target: LocationTarget, on_saved: R
     picker.connect(&ui);
     if let Some(point) = target.initial {
         picker.set_point(point, Origin::Place);
+    }
+    if let Some(around) = target.around.clone() {
+        let weak = Rc::downgrade(&picker);
+        let pick = move |point| {
+            if let Some(picker) = weak.upgrade() {
+                picker.set_point(point, Origin::Place);
+            }
+        };
+        super::nearby::offer(&ui, &picker.content, around, &target.ids, pick);
     }
     let dialog = dialog_shell(&target.title, &picker.content, &save);
     let dialog_ref = dialog.clone();

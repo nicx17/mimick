@@ -100,7 +100,7 @@ fn connect_shortcuts_action(ui: &Rc<LibraryWindowUi>) {
     ui.window.add_action(&about);
 }
 
-/// Upload button and the F5 shortcut; Back is wired in `connect_back_controls`.
+/// Upload and header search buttons and the F5 shortcut; Back is wired in `connect_back_controls`.
 fn connect_navigation_controls(ui: &Rc<LibraryWindowUi>) {
     ui.upload_button.connect_clicked(clone!(
         #[strong]
@@ -110,6 +110,13 @@ fn connect_navigation_controls(ui: &Rc<LibraryWindowUi>) {
         }
     ));
     connect_back_controls(ui);
+    ui.search_button.connect_clicked(clone!(
+        #[strong]
+        ui,
+        move |_| {
+            open_search(&ui);
+        }
+    ));
 
     let f5_controller = gtk::EventControllerKey::new();
     f5_controller.connect_key_pressed(clone!(
@@ -136,12 +143,17 @@ fn connect_back_controls(ui: &Rc<LibraryWindowUi>) {
         #[strong]
         ui,
         move |_| {
-            navigation::go_back(&ui);
+            navigation::back(&ui);
         }
     ));
-    add_mouse_button(ui, 8, navigation::go_back);
+    ui.select_toggle.connect_toggled(clone!(
+        #[strong]
+        ui,
+        move |_| navigation::update_back_button(&ui)
+    ));
+    add_mouse_button(ui, 8, navigation::back);
     add_mouse_button(ui, 9, navigation::go_forward);
-    add_shortcut(ui, "<Alt>Left", navigation::go_back);
+    add_shortcut(ui, "<Alt>Left", navigation::back);
     add_shortcut(ui, "<Alt>Right", navigation::go_forward);
     connect_swipe_back(ui);
 }
@@ -290,7 +302,7 @@ fn connect_swipe_back(ui: &Rc<LibraryWindowUi>) {
         ui,
         move |_, vx, vy| {
             if is_back_swipe(start_x.get(), vx, vy) {
-                navigation::go_back(&ui);
+                navigation::back(&ui);
             }
         }
     ));

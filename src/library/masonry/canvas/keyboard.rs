@@ -41,7 +41,13 @@ impl MasonryCanvas {
             }
         });
         self.add_controller(focus);
-        self.connect_state_flags_changed(|canvas, _| canvas.queue_draw());
+        // Only the focus ring depends on state; hover and press changes (which an open
+        // menu popover, a child of the canvas, sends often) need no new frame.
+        self.connect_state_flags_changed(|canvas, old| {
+            if (canvas.state_flags() ^ old).contains(gtk::StateFlags::FOCUS_VISIBLE) {
+                canvas.queue_draw();
+            }
+        });
     }
 
     /// Scroll tile `pos` to the middle of the view and ring it, once a layout includes it.
@@ -88,6 +94,9 @@ impl MasonryCanvas {
             | ModifierType::ALT_MASK
             | ModifierType::SUPER_MASK
             | ModifierType::SHIFT_MASK;
+        if matches!(key, Key::space | Key::KP_Space) && mods & held == ModifierType::SHIFT_MASK {
+            return self.toggle_focused_group();
+        }
         if mods.intersects(held) {
             return false;
         }
@@ -96,6 +105,19 @@ impl MasonryCanvas {
             Key::space | Key::KP_Space => self.toggle_focused(),
             _ => arrow_step(key).is_some_and(|step| self.move_focus(step)),
         }
+    }
+
+    /// Shift+Space: the focused photo's whole day or month, as tapping its heading does.
+    fn toggle_focused_group(&self) -> bool {
+        let Some(range) = self
+            .current_tile()
+            .and_then(|pos| self.heading_range_of(pos))
+        else {
+            return false;
+        };
+        self.toggle_group(range);
+        enable_select_mode_if_needed(self.imp(), range.0);
+        true
     }
 
     /// The focused tile while it's on screen, else the first tile at the top of the view.

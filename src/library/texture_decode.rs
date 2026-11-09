@@ -6,6 +6,8 @@
 
 use gtk::prelude::*;
 
+use super::color;
+
 mod codecs;
 mod heif_thumbnail;
 pub(super) use heif_thumbnail::{decode_heif_thumbnail, is_heif_path};
@@ -93,12 +95,19 @@ fn fit_pixbuf(pixbuf: gtk::gdk_pixbuf::Pixbuf, max_edge: u32) -> gtk::gdk_pixbuf
         .unwrap_or(pixbuf)
 }
 
+/// Scaled in 8-bit Display P3 when the photo is wider than sRGB, so it keeps its colours.
 fn fit_texture(texture: gdk4::Texture, max_edge: u32) -> gdk4::Texture {
     if fitted_size(texture.width(), texture.height(), max_edge).is_none() {
         return texture;
     }
+    let wide = (texture.color_state() != gdk4::ColorState::srgb())
+        .then(color::display_p3)
+        .flatten();
     let mut downloader = gdk4::TextureDownloader::new(&texture);
     downloader.set_format(gdk4::MemoryFormat::R8g8b8a8);
+    if let Some(state) = &wide {
+        downloader.set_color_state(state);
+    }
     let (bytes, stride) = downloader.download_bytes();
     let pixbuf = gtk::gdk_pixbuf::Pixbuf::from_bytes(
         &bytes,
@@ -109,7 +118,9 @@ fn fit_texture(texture: gdk4::Texture, max_edge: u32) -> gdk4::Texture {
         texture.height(),
         stride as i32,
     );
-    pixbuf_to_texture(&fit_pixbuf(pixbuf, max_edge)).unwrap_or(texture)
+    let fitted = fit_pixbuf(pixbuf, max_edge);
+    let layout = color::pixbuf_layout(&fitted);
+    color::tagged(&fitted.read_pixel_bytes(), &layout, wide.as_ref())
 }
 
 fn decode_with_fallbacks(
@@ -281,6 +292,8 @@ fn raw_decode_cache_key(path: &std::path::Path) -> Option<String> {
     let canonical = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
     use std::os::unix::ffi::OsStrExt;
     let mut hasher = blake3::Hasher::new();
+    // Bumped when decodes change: v2 is 16-bit linear Rec. 2020 instead of 8-bit sRGB.
+    hasher.update(b"v2");
     hasher.update(canonical.as_os_str().as_bytes());
     hasher.update(&mtime.to_le_bytes());
     hasher.update(&size.to_le_bytes());
@@ -701,6 +714,7 @@ fn jpeg_bytes_to_oriented_texture(
     let stream = gtk::gio::MemoryInputStream::from_bytes(&glib::Bytes::from(bytes));
     let raw_pixbuf =
         gtk::gdk_pixbuf::Pixbuf::from_stream(&stream, gtk::gio::Cancellable::NONE).ok()?;
+    let icc = color::icc_profile(bytes);
     let exif_orient = read_jpeg_exif_orientation(bytes);
     let oriented = match exif_orient {
         // Embedded JPEG carries a meaningful rotation -- trust it.
@@ -721,7 +735,7 @@ fn jpeg_bytes_to_oriented_texture(
             }
         }
     };
-    pixbuf_to_texture(&oriented)
+    pixbuf_texture(&oriented, icc.as_deref())
 }
 
 fn extract_primary_embedded_jpeg(
@@ -928,22 +942,45 @@ fn bitmap_thumb_rgb8(bytes: &[u8], bits: u16, samples: usize) -> Option<Vec<u8>>
     }
 }
 
-/// Convert a `Pixbuf` to a `gdk4::Texture` (same logic as `decode_pixbuf_texture`).
+/// Convert a `Pixbuf` to a `gdk4::Texture`, taking its pixels as sRGB.
 fn pixbuf_to_texture(pixbuf: &gtk::gdk_pixbuf::Pixbuf) -> Option<gdk4::Texture> {
-    let format = if pixbuf.has_alpha() {
-        gdk4::MemoryFormat::R8g8b8a8
-    } else {
-        gdk4::MemoryFormat::R8g8b8
+    pixbuf_texture(pixbuf, None)
+}
+
+/// A `Pixbuf`'s pixels in the colour space `icc` describes.
+fn pixbuf_texture(pixbuf: &gtk::gdk_pixbuf::Pixbuf, icc: Option<&[u8]>) -> Option<gdk4::Texture> {
+    Some(color::texture(
+        pixbuf.read_pixel_bytes(),
+        &color::pixbuf_layout(pixbuf),
+        icc,
+    ))
+}
+
+/// libheif's RGBA in the colour space the file declares: an ICC profile (iPhones), or
+/// H.273 codes that GTK takes as they are.
+fn heif_texture(
+    handle: &libheif_rs::ImageHandle,
+    pixels: &[u8],
+    (width, height): (u32, u32),
+    stride: usize,
+) -> Option<gdk4::Texture> {
+    let layout = color::Layout {
+        width: i32::try_from(width).ok()?,
+        height: i32::try_from(height).ok()?,
+        stride,
+        format: gdk4::MemoryFormat::R8g8b8a8,
     };
-    let bytes = pixbuf.read_pixel_bytes();
-    let texture = gdk4::MemoryTexture::new(
-        pixbuf.width(),
-        pixbuf.height(),
-        format,
-        &bytes,
-        pixbuf.rowstride() as usize,
-    );
-    Some(texture.upcast::<gdk4::Texture>())
+    let bytes = glib::Bytes::from(pixels);
+    if let Some(icc) = handle.color_profile_raw() {
+        return Some(color::texture(bytes, &layout, Some(&icc.data)));
+    }
+    let state = handle.color_profile_nclx().and_then(|nclx| {
+        color::cicp_state(
+            nclx.color_primaries() as u32,
+            nclx.transfer_characteristics() as u32,
+        )
+    });
+    Some(color::tagged(&bytes, &layout, state.as_ref()))
 }
 
 /// Apply libraw `flip` orientation to a `Pixbuf`.
@@ -1033,13 +1070,25 @@ unsafe fn init_libraw(path: &std::path::Path) -> Option<*mut rsraw_sys::libraw_d
     }
 }
 
+/// LibRaw's `output_color` for Rec. 2020, wide enough for the colours a sensor records.
+const LIBRAW_REC2020: i32 = 8;
+
+/// Half size, for thumbnails, is 8-bit sRGB. Full size keeps the camera's colours: 16-bit
+/// linear Rec. 2020, which `libraw_image_to_texture` tags so GTK maps it to the screen.
 unsafe fn configure_libraw_full_decode(lr: *mut rsraw_sys::libraw_data_t, half_size: bool) {
     unsafe {
         (*lr).params.half_size = i32::from(half_size);
         (*lr).params.use_camera_wb = 1;
-        (*lr).params.output_bps = 8;
-        (*lr).params.output_color = 1;
         (*lr).params.user_qual = 3;
+        if half_size {
+            (*lr).params.output_bps = 8;
+            (*lr).params.output_color = 1;
+        } else {
+            (*lr).params.output_bps = 16;
+            (*lr).params.output_color = LIBRAW_REC2020;
+            (*lr).params.gamm[0] = 1.0;
+            (*lr).params.gamm[1] = 1.0;
+        }
     }
 }
 
@@ -1108,13 +1157,22 @@ unsafe fn libraw_image_to_texture(
     let height = unsafe { (*img).height as u32 };
     let data_size = unsafe { (*img).data_size as usize };
     let pixels = unsafe { std::slice::from_raw_parts((*img).data.as_ptr(), data_size) }.to_vec();
-    memory_texture(
-        width,
-        height,
-        gdk4::MemoryFormat::R8g8b8,
-        pixels,
-        usize::try_from(width).ok()?.checked_mul(3)?,
-    )
+    // 16 bits per channel only comes from full-size decodes, in linear Rec. 2020.
+    let (format, bytes_per_pixel, state) = match unsafe { (*img).bits } {
+        16 => (gdk4::MemoryFormat::R16g16b16, 6, color::rec2020_linear()),
+        _ => (gdk4::MemoryFormat::R8g8b8, 3, None),
+    };
+    let layout = color::Layout {
+        width: i32::try_from(width).ok()?,
+        height: i32::try_from(height).ok()?,
+        stride: usize::try_from(width).ok()?.checked_mul(bytes_per_pixel)?,
+        format,
+    };
+    Some(color::tagged(
+        &glib::Bytes::from_owned(pixels),
+        &layout,
+        state.as_ref(),
+    ))
 }
 
 fn write_raw_decode_cache_async(path: &std::path::Path, texture: &gdk4::Texture) {
@@ -1142,11 +1200,10 @@ fn decode_heif_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
         .decode(&handle, ColorSpace::Rgb(RgbChroma::Rgba), None)
         .ok()?;
     let plane = image.planes().interleaved?;
-    memory_texture(
-        plane.width,
-        plane.height,
-        gdk4::MemoryFormat::R8g8b8a8,
-        plane.data.to_vec(),
+    heif_texture(
+        &handle,
+        plane.data,
+        (plane.width, plane.height),
         plane.stride,
     )
 }
@@ -1200,20 +1257,7 @@ fn decode_pixbuf_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
         }
     };
     let pixbuf = raw.apply_embedded_orientation().unwrap_or(raw);
-    let format = if pixbuf.has_alpha() {
-        gdk4::MemoryFormat::R8g8b8a8
-    } else {
-        gdk4::MemoryFormat::R8g8b8
-    };
-    let bytes = pixbuf.read_pixel_bytes();
-    let texture = gdk4::MemoryTexture::new(
-        pixbuf.width(),
-        pixbuf.height(),
-        format,
-        &bytes,
-        pixbuf.rowstride() as usize,
-    );
-    Some(texture.upcast::<gdk4::Texture>())
+    pixbuf_texture(&pixbuf, color::file_icc_profile(path).as_deref())
 }
 
 fn decode_jpeg_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
@@ -1229,6 +1273,7 @@ fn decode_jpeg(path: &std::path::Path, max_edge: Option<u32>) -> Option<gdk4::Te
         }
     };
     let orient = read_jpeg_exif_orientation(&bytes).filter(|&o| o != 1);
+    let icc = color::icc_profile(&bytes);
     let image = match decompress_jpeg(&bytes, max_edge) {
         Ok(image) => image,
         Err(err) => {
@@ -1240,13 +1285,14 @@ fn decode_jpeg(path: &std::path::Path, max_edge: Option<u32>) -> Option<gdk4::Te
     let height: i32 = image.height.try_into().ok()?;
     let oversized = max_edge.is_some_and(|edge| fitted_size(width, height, edge).is_some());
     if orient.is_none() && !oversized {
-        return memory_texture(
-            image.width.try_into().ok()?,
-            image.height.try_into().ok()?,
-            gdk4::MemoryFormat::R8g8b8,
-            image.pixels,
-            image.pitch,
-        );
+        let layout = color::Layout {
+            width,
+            height,
+            stride: image.pitch,
+            format: gdk4::MemoryFormat::R8g8b8,
+        };
+        let pixels = glib::Bytes::from_owned(image.pixels);
+        return Some(color::texture(pixels, &layout, icc.as_deref()));
     }
     let raw_pixbuf = gtk::gdk_pixbuf::Pixbuf::from_mut_slice(
         image.pixels,
@@ -1265,7 +1311,7 @@ fn decode_jpeg(path: &std::path::Path, max_edge: Option<u32>) -> Option<gdk4::Te
         Some(edge) => fit_pixbuf(oriented, edge),
         None => oriented,
     };
-    pixbuf_to_texture(&fitted)
+    pixbuf_texture(&fitted, icc.as_deref())
 }
 
 fn decompress_jpeg(
@@ -1317,21 +1363,24 @@ fn decode_webp_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
             return None;
         }
     };
-    let format = if image.is_alpha() {
-        gdk4::MemoryFormat::R8g8b8a8
+    let layout = webp_layout(&image)?;
+    let icc = color::icc_profile(&bytes);
+    let pixels = glib::Bytes::from_owned(image.to_vec());
+    Some(color::texture(pixels, &layout, icc.as_deref()))
+}
+
+fn webp_layout(image: &webp::WebPImage) -> Option<color::Layout> {
+    let (format, bpp) = if image.is_alpha() {
+        (gdk4::MemoryFormat::R8g8b8a8, 4)
     } else {
-        gdk4::MemoryFormat::R8g8b8
+        (gdk4::MemoryFormat::R8g8b8, 3)
     };
-    let bpp = if image.is_alpha() { 4 } else { 3 };
-    let width = image.width();
-    let height = image.height();
-    memory_texture(
-        width,
-        height,
+    Some(color::Layout {
+        width: i32::try_from(image.width()).ok()?,
+        height: i32::try_from(image.height()).ok()?,
+        stride: usize::try_from(image.width()).ok()?.checked_mul(bpp)?,
         format,
-        image.to_vec(),
-        usize::try_from(width).ok()?.checked_mul(bpp)?,
-    )
+    })
 }
 
 fn decode_psd_texture(path: &std::path::Path) -> Option<gdk4::Texture> {

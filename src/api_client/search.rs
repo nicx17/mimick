@@ -281,6 +281,61 @@ impl ImmichApiClient {
         .await
     }
 
+    /// Photos and videos with no place, which Immich files under no city.
+    /// Photos with no place, taken within `taken` when given (`takenAfter`, `takenBefore`).
+    pub async fn search_missing_location(
+        &self,
+        page: u32,
+        size: u32,
+        order: Option<SortOrder>,
+        taken: &TakenRange,
+    ) -> Result<(Vec<LibraryAsset>, bool), String> {
+        let mut body = missing_location_body(taken);
+        if let Some(obj) = body.as_object_mut() {
+            obj.insert("page".into(), serde_json::json!(page));
+            obj.insert("size".into(), serde_json::json!(size.max(1)));
+            if let Some(order) = order {
+                obj.insert("order".into(), serde_json::json!(order));
+            }
+        }
+        self.fetch_search_assets(
+            "/api/search/metadata",
+            body,
+            RequestContext::MetadataSearch,
+            None,
+        )
+        .await
+    }
+
+    /// How many photos Missing Location lists: the same filter, counted by `/search/statistics`.
+    pub async fn count_missing_location(&self, taken: &TakenRange) -> Result<u64, String> {
+        let body = missing_location_body(taken);
+        let resp = self
+            .send_json(reqwest::Method::POST, "/api/search/statistics", Some(body))
+            .await?;
+        let stats: SearchStatistics = resp.json().await.map_err(|err| err.to_string())?;
+        Ok(stats.total)
+    }
+
+    /// The biggest files first, from `POST /search/large-assets`, which answers in one list.
+    /// `asset_type` (`IMAGE` or `VIDEO`) is deprecated since v3.2 but has no replacement there.
+    pub async fn fetch_large_assets(
+        &self,
+        size: u32,
+        min_bytes: u64,
+        asset_type: Option<&str>,
+    ) -> Result<Vec<LibraryAsset>, String> {
+        let path = format!(
+            "/api/search/large-assets?{}",
+            large_assets_query(size, min_bytes, asset_type)
+        );
+        self.send_json(reqwest::Method::POST, &path, None)
+            .await?
+            .json()
+            .await
+            .map_err(|err| err.to_string())
+    }
+
     /// Search library assets matching specific text within their original filenames.
     pub async fn search_metadata(
         &self,
@@ -382,6 +437,38 @@ impl ImmichApiClient {
     }
 }
 
+/// Bounds on when photos were taken, as ISO 8601 UTC times; `None` leaves an end open.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct TakenRange {
+    pub after: Option<String>,
+    pub before: Option<String>,
+}
+
+fn missing_location_body(taken: &TakenRange) -> serde_json::Value {
+    let mut body = serde_json::json!({ "city": null, "visibility": "timeline" });
+    if let Some(obj) = body.as_object_mut() {
+        if let Some(after) = &taken.after {
+            obj.insert("takenAfter".into(), serde_json::json!(after));
+        }
+        if let Some(before) = &taken.before {
+            obj.insert("takenBefore".into(), serde_json::json!(before));
+        }
+    }
+    body
+}
+
+fn large_assets_query(size: u32, min_bytes: u64, asset_type: Option<&str>) -> String {
+    let mut query = url::form_urlencoded::Serializer::new(String::new());
+    query.append_pair("size", &size.max(1).to_string());
+    if min_bytes > 0 {
+        query.append_pair("minFileSize", &min_bytes.to_string());
+    }
+    if let Some(asset_type) = asset_type {
+        query.append_pair("type", asset_type);
+    }
+    query.finish()
+}
+
 #[derive(serde::Deserialize)]
 struct CityAsset {
     id: String,
@@ -417,6 +504,32 @@ fn places_from_cities(assets: Vec<CityAsset>) -> Vec<PlaceItem> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn large_files_send_only_the_filters_in_use() {
+        assert_eq!(large_assets_query(250, 0, None), "size=250");
+        assert_eq!(
+            large_assets_query(250, 100, Some("VIDEO")),
+            "size=250&minFileSize=100&type=VIDEO"
+        );
+    }
+
+    #[test]
+    fn missing_location_adds_dates_only_when_set() {
+        let open = missing_location_body(&TakenRange::default());
+        assert_eq!(
+            open,
+            serde_json::json!({"city": null, "visibility": "timeline"})
+        );
+        let after = TakenRange {
+            after: Some("2024-01-01T00:00:00.000Z".into()),
+            before: None,
+        };
+        assert_eq!(
+            missing_location_body(&after)["takenAfter"],
+            "2024-01-01T00:00:00.000Z"
+        );
+    }
 
     #[test]
     fn statistics_skip_filters_immich_cannot_count() {

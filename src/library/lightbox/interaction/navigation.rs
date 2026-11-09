@@ -15,7 +15,8 @@ impl Lightbox {
         let ctrl = mods.contains(gtk::gdk::ModifierType::CONTROL_MASK);
         let shift = mods.contains(gtk::gdk::ModifierType::SHIFT_MASK);
         let handled = if ctrl {
-            self.handle_ocr_key(key, true) || self.handle_zoom_key(key)
+            // Recognized text first: with its overlay showing, Ctrl+C copies the text.
+            self.handle_ocr_key(key, true) || self.handle_zoom_key(key) || self.handle_copy_key(key)
         } else {
             self.handle_mode_key(key, shift) || self.handle_photo_key(key, shift)
         };
@@ -41,6 +42,18 @@ impl Lightbox {
         self.handle_ocr_key(key, false)
             || self.handle_edit_key(key, shift)
             || self.handle_plain_key(key)
+    }
+
+    /// Ctrl+C copies the photo on screen, as the grid's Ctrl+C does a selection of one.
+    fn handle_copy_key(self: &Rc<Self>, key: gtk::gdk::Key) -> bool {
+        if !matches!(key, gtk::gdk::Key::c | gtk::gdk::Key::C) {
+            return false;
+        }
+        let Some(item) = self.current_item() else {
+            return false;
+        };
+        crate::library::clipboard::copy_photos(&self.ui, &[item]);
+        true
     }
 
     /// Ctrl +/-/0 zoom; false for any other key.

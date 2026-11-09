@@ -111,6 +111,12 @@ pub struct ConfigData {
     /// "system" follows the desktop's light or dark style; "light" or "dark" overrides it.
     #[serde(default = "default_color_scheme")]
     pub color_scheme: String,
+    /// Palette for the light style: "default", "warm", "lavender", or "mint".
+    #[serde(default = "default_palette")]
+    pub light_theme: String,
+    /// Palette for the dark style: "default", "black", "midnight", or "mocha".
+    #[serde(default = "default_palette")]
+    pub dark_theme: String,
     /// Target folder for asset downloads from the library viewer.
     #[serde(default)]
     pub download_target_path: Option<String>,
@@ -229,6 +235,8 @@ impl Default for ConfigData {
             quiet_hours_end: None,
             library_view_enabled: true,
             color_scheme: default_color_scheme(),
+            light_theme: default_palette(),
+            dark_theme: default_palette(),
             detailed_logging: false,
             download_target_path: None,
             library_preview_full_resolution: false,
@@ -265,6 +273,10 @@ impl Default for ConfigData {
 /// Helper to default boolean fields to true during serialization.
 fn default_color_scheme() -> String {
     "system".to_string()
+}
+
+fn default_palette() -> String {
+    "default".to_string()
 }
 
 fn default_redact_style() -> String {
