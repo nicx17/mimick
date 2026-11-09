@@ -96,8 +96,7 @@ pub struct AlbumsViewParts {
     pub root: gtk::ScrolledWindow,
     pub populated: Rc<Cell<bool>>,
     pub create_button: gtk::Button,
-    title: gtk::Label,
-    /// Owned, shared, and not-shared album counts under the title.
+    /// Owned, shared, and not-shared album counts, above the filter.
     stats: gtk::Label,
     owned_title: gtk::Label,
     /// Shared Albums mode: only "Shared by you" and "Shared with you".
@@ -130,9 +129,9 @@ pub fn build_albums_view() -> AlbumsViewParts {
         .margin_end(16)
         .build();
 
-    let (header_row, title, filter_entry, create_button) = build_header();
+    let (header_row, filter_entry, create_button) = build_header();
     let stats = stats::label();
-    header_row.insert_child_after(&stats, Some(&title));
+    header_row.prepend(&stats);
     outer.append(&header_row);
 
     let (recent_section, _, recent_grid) = build_section(&gettext("Recent"));
@@ -154,7 +153,6 @@ pub fn build_albums_view() -> AlbumsViewParts {
         root,
         populated: Rc::new(Cell::new(false)),
         create_button,
-        title,
         stats,
         owned_title,
         shared_only: Rc::default(),
@@ -175,17 +173,11 @@ pub fn build_albums_view() -> AlbumsViewParts {
     }
 }
 
-/// Page title with the filter entry and "Create album" button below it.
-fn build_header() -> (gtk::Box, gtk::Label, gtk::SearchEntry, gtk::Button) {
+/// The filter entry and "Create album"; the page's name is only in the title bar.
+fn build_header() -> (gtk::Box, gtk::SearchEntry, gtk::Button) {
     let header_row = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(8)
-        .build();
-    let title = gtk::Label::builder()
-        .label(gettext("Albums"))
-        .xalign(0.0)
-        .hexpand(true)
-        .css_classes(vec!["title-1".to_string()])
         .build();
     let create_button = gtk::Button::builder()
         .label(gettext("Create album"))
@@ -200,11 +192,10 @@ fn build_header() -> (gtk::Box, gtk::Label, gtk::SearchEntry, gtk::Button) {
         .orientation(gtk::Orientation::Horizontal)
         .spacing(8)
         .build();
-    header_row.append(&title);
     filter_row.append(&filter_entry);
     filter_row.append(&create_button);
     header_row.append(&filter_row);
-    (header_row, title, filter_entry, create_button)
+    (header_row, filter_entry, create_button)
 }
 
 /// Populate the album list grids grouped by ownership status.
@@ -223,11 +214,6 @@ pub fn populate_albums(
 /// Switch between the full Albums page and the Shared Albums page, then re-render.
 pub fn set_shared_only(parts: &AlbumsViewParts, shared_only: bool) {
     parts.shared_only.set(shared_only);
-    parts.title.set_label(&if shared_only {
-        gettext("Shared Albums")
-    } else {
-        gettext("Albums")
-    });
     parts.owned_title.set_label(&if shared_only {
         gettext("Shared by you")
     } else {

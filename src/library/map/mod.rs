@@ -24,7 +24,7 @@ mod view;
 
 pub use album::{album_shown, show_album};
 pub use coords::GeoPoint;
-pub use layout::{photos_full, set_photos_full, sync as sync_layout};
+pub use layout::{hides_controls, photos_full, set_photos_full, sync as sync_layout};
 pub use location_dialog::{LocationTarget, set_location, set_location_for_asset};
 pub use minimap::attach as attach_minimap;
 pub use view::{MapView, build_map_view, connect_map_view};

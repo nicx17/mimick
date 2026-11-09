@@ -3,6 +3,7 @@
 use std::rc::Rc;
 
 use glib::clone;
+use gtk::prelude::*;
 
 use crate::library::state::LibrarySource;
 
@@ -21,6 +22,14 @@ pub fn connect_source_controls(ui: &Rc<LibraryWindowUi>) {
             navigation::navigate_source(&ui, source);
         }
     ));
+}
+
+/// Sync and the Remote/Local/Unified switch beside the album's ⋯ menu only mean
+/// something once the album has a linked folder.
+pub fn show_linked_controls(ui: &LibraryWindowUi, linked: bool) {
+    ui.album_link.sync_button.set_visible(linked);
+    ui.source_revealer.set_visible(linked);
+    ui.source_revealer.set_reveal_child(linked);
 }
 
 /// The album being browsed, if any, as `(id, name)`.

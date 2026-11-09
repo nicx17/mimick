@@ -46,7 +46,7 @@ pub(super) fn refresh_album_link_row(ui: &LibraryWindowUi, source: &LibrarySourc
                     entry.path(),
                 ));
             ui.album_link.link_button.set_label(&gettext("Unlink"));
-            ui.album_link.sync_button.set_visible(true);
+            super::controls::show_linked_controls(ui, true);
         }
         None => {
             ui.album_link
@@ -58,7 +58,7 @@ pub(super) fn refresh_album_link_row(ui: &LibraryWindowUi, source: &LibrarySourc
             ui.album_link
                 .link_button
                 .set_label(&gettext("Link folder\u{2026}"));
-            ui.album_link.sync_button.set_visible(false);
+            super::controls::show_linked_controls(ui, false);
         }
     }
 }

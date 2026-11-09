@@ -18,12 +18,14 @@ const AVATAR_SIZE: i32 = 64;
 
 pub(super) struct SourceHeader {
     pub root: gtk::Box,
-    /// Title beside the actions; the narrow breakpoint stacks the actions below it.
+    /// Facts beside the actions; the narrow breakpoint stacks the actions below them.
+    /// The view's name is only in the title bar, so it isn't repeated here.
     pub top: gtk::Box,
     pub extra: gtk::Box,
     pub status: gtk::Stack,
+    /// Sits in the controls row beside Upload; `show` shows it where a slideshow fits.
+    pub slideshow: gtk::Button,
     leading: gtk::Box,
-    title: gtk::Label,
     facts: gtk::Label,
     description: gtk::Label,
     actions: gtk::Box,
@@ -32,8 +34,9 @@ pub(super) struct SourceHeader {
     details: RefCell<Vec<String>>,
 }
 
+/// What sits before the facts: a person's face or a tag's colour, else nothing.
 enum Leading {
-    Icon(&'static str),
+    None,
     Person { id: String, name: String },
     TagColor(Option<String>),
 }
@@ -41,7 +44,6 @@ enum Leading {
 struct HeaderTop {
     root: gtk::Box,
     leading: gtk::Box,
-    title: gtk::Label,
     facts: gtk::Label,
     actions: gtk::Box,
 }
@@ -61,7 +63,7 @@ pub(super) fn build_source_header() -> SourceHeader {
     let root = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(10)
-        .margin_top(16)
+        .margin_top(12)
         .margin_bottom(12)
         .margin_start(12)
         .margin_end(12)
@@ -70,13 +72,18 @@ pub(super) fn build_source_header() -> SourceHeader {
     root.append(&description);
     root.append(&extra);
     let (status, status_error) = build_status_stack();
+    let slideshow = gtk::Button::builder()
+        .icon_name("mimick-slideshow-symbolic")
+        .tooltip_text(gettext("Play Slideshow"))
+        .css_classes(["flat"])
+        .build();
     SourceHeader {
         root,
         top: top.root,
         extra,
         status,
+        slideshow,
         leading: top.leading,
-        title: top.title,
         facts: top.facts,
         description,
         actions: top.actions,
@@ -86,12 +93,46 @@ pub(super) fn build_source_header() -> SourceHeader {
     }
 }
 
+impl SourceHeader {
+    /// Adds a row under the facts; the rows' box shows only while one of them does,
+    /// so an empty one adds no spacing above the photos.
+    pub(super) fn add_extra(&self, row: &impl IsA<gtk::Widget>) {
+        self.extra.append(row);
+        let extra = self.extra.downgrade();
+        let sync = Rc::new(move || {
+            if let Some(extra) = extra.upgrade() {
+                extra.set_visible(shows_a_row(&extra));
+            }
+        });
+        let on_visible = sync.clone();
+        row.connect_visible_notify(move |_| on_visible());
+        if let Some(revealer) = row.dynamic_cast_ref::<gtk::Revealer>() {
+            let on_reveal = sync.clone();
+            revealer.connect_reveal_child_notify(move |_| on_reveal());
+        }
+        sync();
+    }
+}
+
+/// Whether a row in `extra` is showing; a revealer counts only while it reveals.
+fn shows_a_row(extra: &gtk::Box) -> bool {
+    let mut row = extra.first_child();
+    while let Some(widget) = row {
+        let revealed = widget
+            .downcast_ref::<gtk::Revealer>()
+            .is_none_or(gtk::Revealer::reveals_child);
+        if widget.get_visible() && revealed {
+            return true;
+        }
+        row = widget.next_sibling();
+    }
+    false
+}
+
 fn build_header_top() -> HeaderTop {
-    let leading = gtk::Box::builder().valign(gtk::Align::Center).build();
-    let title = gtk::Label::builder()
-        .xalign(0.0)
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .css_classes(["title-1"])
+    let leading = gtk::Box::builder()
+        .valign(gtk::Align::Center)
+        .visible(false)
         .build();
     let facts = gtk::Label::builder()
         .xalign(0.0)
@@ -106,7 +147,6 @@ fn build_header_top() -> HeaderTop {
         .hexpand(true)
         .valign(gtk::Align::Center)
         .build();
-    text.append(&title);
     text.append(&facts);
     let actions = gtk::Box::builder()
         .spacing(6)
@@ -121,7 +161,6 @@ fn build_header_top() -> HeaderTop {
     HeaderTop {
         root,
         leading,
-        title,
         facts,
         actions,
     }
@@ -183,23 +222,30 @@ pub(super) fn show(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
     set_description(header, None);
     clear_actions(header);
     let watchable = !matches!(source, LibrarySource::Trash | LibrarySource::Explore);
-    if watchable && !super::utilities::is_utility(source) {
-        let ui_play = ui.clone();
-        add_action(
-            header,
-            "mimick-slideshow-symbolic",
-            &gettext("Play Slideshow"),
-            move || play_slideshow(&ui_play),
-        );
-    }
+    let slideshow = watchable && !super::utilities::is_utility(source);
+    header.slideshow.set_visible(slideshow);
     for widget in super::utilities::header_actions(ui, source) {
         header.actions.append(&widget);
+    }
+    // Before the ⋯ menu, which comes once the album's details load.
+    if super::controls::current_album(ui).is_some() {
+        header.actions.append(&ui.source_revealer);
     }
     let (leading, title) = basics(ui, source);
     set_leading(ui, leading);
     set_title(ui, &title);
     enrich(ui, source);
     super::memories::sync(ui, source);
+}
+
+/// The controls row's slideshow button.
+pub(super) fn connect_slideshow(ui: &Rc<LibraryWindowUi>) {
+    let weak = Rc::downgrade(ui);
+    ui.header.slideshow.connect_clicked(move |_| {
+        if let Some(ui) = weak.upgrade() {
+            play_slideshow(&ui);
+        }
+    });
 }
 
 /// From the first photo shown; the grid may still be loading its first page.
@@ -227,7 +273,7 @@ fn basics(ui: &LibraryWindowUi, source: &LibrarySource) -> (Leading, String) {
                     ),
                 ];
             }
-            (Leading::Icon("image-x-generic-symbolic"), gettext("Photos"))
+            (Leading::None, gettext("Photos"))
         }
         LibrarySource::Person { id, name } => (
             Leading::Person {
@@ -238,65 +284,58 @@ fn basics(ui: &LibraryWindowUi, source: &LibrarySource) -> (Leading, String) {
         ),
         LibrarySource::Tag { name, .. } => (Leading::TagColor(None), leaf_name(name).to_string()),
         other => {
-            let (icon, title) = library_icon(other)
-                .or_else(|| utility_icon(other))
-                .unwrap_or_else(|| found_icon(other));
-            (Leading::Icon(icon), title)
+            let title = library_title(other)
+                .or_else(|| utility_title(other))
+                .unwrap_or_else(|| found_title(other));
+            (Leading::None, title)
         }
     }
 }
 
-/// Icon and title for the Utilities grids.
-fn utility_icon(source: &LibrarySource) -> Option<(&'static str, String)> {
+/// Title for the Utilities grids.
+fn utility_title(source: &LibrarySource) -> Option<String> {
     match source {
-        LibrarySource::LargeFiles { .. } => {
-            Some(("drive-harddisk-symbolic", gettext("Large Files")))
-        }
-        LibrarySource::MissingLocation { .. } => {
-            Some(("find-location-symbolic", gettext("Missing Location")))
-        }
-        LibrarySource::UnusualDates { .. } => {
-            Some(("x-office-calendar-symbolic", gettext("Unusual Dates")))
-        }
+        LibrarySource::LargeFiles { .. } => Some(gettext("Large Files")),
+        LibrarySource::MissingLocation { .. } => Some(gettext("Missing Location")),
+        LibrarySource::UnusualDates { .. } => Some(gettext("Unusual Dates")),
         _ => None,
     }
 }
 
-/// Icon and title for library places: local files, collections, albums, partners, folders.
-fn library_icon(source: &LibrarySource) -> Option<(&'static str, String)> {
-    let (icon, title) = match source {
-        LibrarySource::LocalAll => ("mimick-computer-symbolic", gettext("On This Computer")),
-        LibrarySource::Explore => ("view-grid-symbolic", gettext("Explore")),
-        LibrarySource::Favorites => ("mimick-heart-filled-symbolic", gettext("Favorites")),
-        LibrarySource::Archive => ("mimick-archive-symbolic", gettext("Archive")),
-        LibrarySource::Trash => ("user-trash-symbolic", gettext("Trash")),
+/// Title for library places: local files, collections, albums, partners, folders.
+fn library_title(source: &LibrarySource) -> Option<String> {
+    let title = match source {
+        LibrarySource::LocalAll => gettext("On This Computer"),
+        LibrarySource::Explore => gettext("Explore"),
+        LibrarySource::Favorites => gettext("Favorites"),
+        LibrarySource::Archive => gettext("Archive"),
+        LibrarySource::Trash => gettext("Trash"),
         LibrarySource::Album { name, .. }
         | LibrarySource::AlbumLocal { name, .. }
-        | LibrarySource::AlbumUnified { name, .. } => ("folder-pictures-symbolic", name.clone()),
-        LibrarySource::Partner { name, .. } => ("system-users-symbolic", name.clone()),
-        LibrarySource::Folder { path } => ("folder-symbolic", leaf_name(path).to_string()),
-        LibrarySource::Memory { title, .. } => ("mimick-slideshow-symbolic", title.clone()),
+        | LibrarySource::AlbumUnified { name, .. }
+        | LibrarySource::Partner { name, .. } => name.clone(),
+        LibrarySource::Folder { path } => leaf_name(path).to_string(),
+        LibrarySource::Memory { title, .. } => title.clone(),
         _ => return None,
     };
-    Some((icon, title))
+    Some(title)
 }
 
-/// Icon and title for places and searches.
-fn found_icon(source: &LibrarySource) -> (&'static str, String) {
+/// Title for places and searches.
+fn found_title(source: &LibrarySource) -> String {
     match source {
-        LibrarySource::Place { city } => ("mark-location-symbolic", city.clone()),
-        LibrarySource::MapArea { label, .. } => ("mark-location-symbolic", label.clone()),
-        LibrarySource::Thing { query } => ("system-search-symbolic", capitalize(query)),
-        LibrarySource::Similar { filename, .. } => (
-            "system-search-symbolic",
-            crate::i18n::fill(gettext("Similar to {name}"), &[("name", filename)]),
-        ),
+        LibrarySource::Place { city } => city.clone(),
+        LibrarySource::MapArea { label, .. } => label.clone(),
+        LibrarySource::Thing { query } => capitalize(query),
+        LibrarySource::Similar { filename, .. } => {
+            crate::i18n::fill(gettext("Similar to {name}"), &[("name", filename)])
+        }
         LibrarySource::SmartSearch { query }
         | LibrarySource::MetadataSearch { query }
         | LibrarySource::OcrSearch { query }
         | LibrarySource::LocalSearch { query }
-        | LibrarySource::UnifiedSearch { query } => ("system-search-symbolic", query.clone()),
-        _ => ("system-search-symbolic", gettext("Search Results")),
+        | LibrarySource::UnifiedSearch { query } => query.clone(),
+        _ => gettext("Search Results"),
     }
 }
 
@@ -305,8 +344,6 @@ fn enrich(ui: &Rc<LibraryWindowUi>, source: &LibrarySource) {
 }
 
 fn set_title(ui: &LibraryWindowUi, title: &str) {
-    ui.header.title.set_label(title);
-    ui.header.title.set_tooltip_text(Some(title));
     super::navigation::set_view_title(ui, title);
 }
 
@@ -316,12 +353,7 @@ fn set_leading(ui: &LibraryWindowUi, leading: Leading) {
         slot.remove(&child);
     }
     let widget: gtk::Widget = match leading {
-        Leading::Icon(name) => gtk::Image::builder()
-            .icon_name(name)
-            .pixel_size(32)
-            .css_classes(["dim-label"])
-            .build()
-            .upcast(),
+        Leading::None => return slot.set_visible(false),
         Leading::Person { id, name } => {
             let avatar = libadwaita::Avatar::new(AVATAR_SIZE, Some(&name), true);
             let avatar_for_image = avatar.clone();
@@ -333,6 +365,7 @@ fn set_leading(ui: &LibraryWindowUi, leading: Leading) {
         Leading::TagColor(color) => color_dot(color.as_deref(), 20).upcast(),
     };
     slot.append(&widget);
+    slot.set_visible(true);
 }
 
 fn clear_actions(header: &SourceHeader) {

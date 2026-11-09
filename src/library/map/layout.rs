@@ -37,6 +37,11 @@ pub fn sync(ui: &Rc<LibraryWindowUi>, location: &Location) {
     }
 }
 
+/// The map takes the controls row's place on the Map page and beside a place's photos.
+pub fn hides_controls(ui: &LibraryWindowUi) -> bool {
+    ui.map.mode.get() != Mode::Off
+}
+
 /// Whether a place's photos fill the window: kept while moving between places, else the
 /// setting's choice. The header asks before `sync` runs, so both use this.
 pub fn photos_full(ui: &LibraryWindowUi) -> bool {
@@ -67,7 +72,7 @@ fn show_halves(ui: &Rc<LibraryWindowUi>, mode: Mode) {
     };
     ui.map.root.set_visible(map_shown);
     ui.content_stack.set_visible(mode != Mode::MapOnly);
-    ui.controls_row.set_visible(mode == Mode::Off);
+    crate::library::navigation::sync_controls_row(ui);
     if map_shown {
         super::view::show(ui);
     }

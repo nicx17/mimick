@@ -125,7 +125,7 @@ pub(super) fn add_narrow_breakpoint(
         "orientation",
         Some(&gtk::Orientation::Vertical.to_value()),
     );
-    // In an album, Remote, Newest, and a labelled Upload need 388 px; the icon alone fits 360.
+    // Phones show Upload as its icon alone, leaving the row room beside Newest and Slideshow.
     narrow_bp.add_setter(
         &content.controls.upload_content,
         "label",

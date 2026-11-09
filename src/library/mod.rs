@@ -283,6 +283,7 @@ fn connect_window_controls(ui: &Rc<LibraryWindowUi>) {
     map::connect_map_view(ui);
     timeline::connect(ui);
     utilities::connect(ui);
+    source_header::connect_slideshow(ui);
     bottom_nav::connect_bottom_nav(ui);
     connect_sidebar_handlers(ui.clone());
     connect_controls(ui.clone());

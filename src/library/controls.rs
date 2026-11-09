@@ -19,7 +19,7 @@ use super::navigation;
 use super::{LibraryWindowUi, load_albums, load_source_page, load_status, open_lightbox};
 
 mod source_mode;
-pub(super) use source_mode::{connect_source_controls, current_album};
+pub(super) use source_mode::{connect_source_controls, current_album, show_linked_controls};
 
 pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
     connect_window_actions(&ui);

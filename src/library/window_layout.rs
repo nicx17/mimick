@@ -183,9 +183,9 @@ impl ContentParts {
         let album_link = build_album_link();
         let bulk = bulk_bar::build_bulk_bar();
         let memories = super::memories::build();
-        header.extra.append(&memories.root);
-        header.extra.append(&album_link.listbox);
-        header.extra.append(&bulk.trash.bar);
+        header.add_extra(&memories.root);
+        header.add_extra(&album_link.listbox);
+        header.add_extra(&bulk.trash.bar);
         grid.content.prepend(&header.status);
         grid.content.prepend(&header.root);
         Self {
@@ -200,12 +200,12 @@ impl ContentParts {
             sharing,
             duplicates,
             map,
+            controls: build_controls(&header.slideshow),
             header,
             memories,
             bottom_nav: super::bottom_nav::build_bottom_nav(),
             search_view,
             filters_split,
-            controls: build_controls(),
             stack,
             scrubber,
             error_label,
@@ -366,24 +366,10 @@ fn hbox(children: &[&gtk::Widget]) -> gtk::Box {
     row
 }
 
-fn build_controls() -> ControlsParts {
-    let source_mode = gtk::DropDown::builder()
-        .model(&gtk::StringList::new(&[
-            &gettext("Remote"),
-            &gettext("Local"),
-            &gettext("Unified"),
-        ]))
-        .selected(0)
-        .tooltip_text(gettext("Asset source"))
-        .build();
-    // Source mode (Remote/Local/Unified) is meaningful only inside a linked
-    // album; `apply_source_ui_state` reveals it per source kind.
-    let source_revealer = gtk::Revealer::builder()
-        .transition_type(gtk::RevealerTransitionType::SlideRight)
-        .transition_duration(180)
-        .reveal_child(false)
-        .child(&source_mode)
-        .build();
+/// The row above the grid; `slideshow` belongs to the source header, which shows it.
+/// The source switch goes beside an album's ⋯ menu, which `source_header::show` places.
+fn build_controls(slideshow: &gtk::Button) -> ControlsParts {
+    let (source_mode, source_revealer) = build_source_switch();
     let sort_mode = gtk::DropDown::builder()
         .model(&gtk::StringList::new(&[
             &gettext("Newest"),
@@ -395,9 +381,9 @@ fn build_controls() -> ControlsParts {
     let (upload_button, upload_content) = build_upload_button();
     let spacer = gtk::Box::builder().hexpand(true).build();
     let root = hbox(&[
-        source_revealer.upcast_ref(),
         sort_mode.upcast_ref(),
         spacer.upcast_ref(),
+        slideshow.upcast_ref(),
         upload_button.upcast_ref(),
     ]);
     root.set_margin_top(8);
@@ -412,6 +398,27 @@ fn build_controls() -> ControlsParts {
         upload_button,
         upload_content,
     }
+}
+
+/// Remote, Local, or Unified: meaningful only inside a linked album, so
+/// `controls::show_linked_controls` reveals it.
+fn build_source_switch() -> (gtk::DropDown, gtk::Revealer) {
+    let source_mode = gtk::DropDown::builder()
+        .model(&gtk::StringList::new(&[
+            &gettext("Remote"),
+            &gettext("Local"),
+            &gettext("Unified"),
+        ]))
+        .selected(0)
+        .tooltip_text(gettext("Asset source"))
+        .build();
+    let source_revealer = gtk::Revealer::builder()
+        .transition_type(gtk::RevealerTransitionType::SlideRight)
+        .transition_duration(180)
+        .reveal_child(false)
+        .child(&source_mode)
+        .build();
+    (source_mode, source_revealer)
 }
 
 /// Upload, with Paste in its menu: the touch way in, and where Ctrl+V is shown.

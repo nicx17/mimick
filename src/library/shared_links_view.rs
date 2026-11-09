@@ -32,7 +32,6 @@ pub(super) struct SharedLinksView {
 
 pub(super) fn build_shared_links_view() -> SharedLinksView {
     let group = libadwaita::PreferencesGroup::builder()
-        .title(gettext("Shared Links"))
         .description(gettext("Anyone with a link can view what it shares."))
         .build();
     let list = gtk::ListBox::builder()

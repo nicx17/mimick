@@ -51,6 +51,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Photo views, the Albums page, and Shared Links no longer repeat their name in a large title, since the title bar already shows it, which leaves more room on phones. The counts and details stay, beside a person's face or a tag's colour where there is one.
+- An album's **Remote / Local / Unified** switch moved beside its **⋯** menu and shows only once a folder is linked, since **Local** and **Unified** need one.
+- **Play Slideshow** moved from the header into the row above the photos, beside **Upload**. That row, and the space under a view's counts, now take no room when they have nothing to show, as in Explore, Large Files, and the People, Tags, and Folders pages.
 - The main menu is split into three groups: Refresh and Notifications; Account and Queue Inspector; and Settings, Keyboard Shortcuts, and About Mimick.
 - On phones, switching tabs in the bottom bar no longer adds a Back step for each tab: Back from any tab returns to Photos.
 - Going to another view leaves selection mode, instead of keeping the checkboxes on with nothing selected.

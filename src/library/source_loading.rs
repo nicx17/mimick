@@ -44,8 +44,6 @@ pub(super) fn apply_source_ui_state(ui: &LibraryWindowUi, source: &LibrarySource
             | LibrarySource::AlbumUnified { .. }
     );
 
-    // Source-mode (Remote/Local/Unified) only relevant inside an album.
-    ui.source_revealer.set_reveal_child(in_album);
     trash_view::set_trash_mode(ui, matches!(source, LibrarySource::Trash));
     archive::sync_bulk_button(&ui.bulk.archive, source);
 

@@ -226,7 +226,7 @@ pub(super) fn sync_controls(ui: &LibraryWindowUi, location: &Location) {
     ui.sort_mode.set_visible(sort);
     super::utilities::sync(ui, location);
     if matches!(location, Location::Page(_)) {
-        ui.source_revealer.set_reveal_child(false);
+        ui.header.slideshow.set_visible(false);
     }
     sync_upload_button(ui);
 }
@@ -246,6 +246,16 @@ pub(super) fn sync_upload_button(ui: &LibraryWindowUi) {
         _ => false,
     };
     ui.upload_button.set_visible(shown);
+    sync_controls_row(ui);
+}
+
+/// The row above the grid shows only while it holds something, and never beside the map.
+pub(super) fn sync_controls_row(ui: &LibraryWindowUi) {
+    let used = ui.sort_mode.get_visible()
+        || ui.upload_button.get_visible()
+        || ui.header.slideshow.get_visible();
+    ui.controls_row
+        .set_visible(used && !super::map::hides_controls(ui));
 }
 
 /// Also live while selecting, since Back then leaves selection mode.

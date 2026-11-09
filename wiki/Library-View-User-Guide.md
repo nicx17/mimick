@@ -77,10 +77,10 @@ The window uses a sidebar + content split.
 
 If Mimick can't read these settings (for example, an API key without `userPreference.read`), everything stays visible.
 
-**Controls row** (one row above the content, at every window width):
+**Controls row** (one row above the content, at every window width, shown only when it has something in it):
 
-- source selector (**Remote / Local / Unified**), inside albums only
 - sort selector (**Newest / Filename / File Type**, or the album sorts on the Albums page), where there's something to sort
+- **Play Slideshow**, on photo views other than the Trash and the Utilities
 - **Upload** button (invokes the manual multi-file picker), on Photos and on albums you can add to. Its arrow has **Paste from Clipboard** (**Ctrl+V** anywhere outside a text field), which uploads to the same place: files copied in a file manager go through the upload queue, and an image copied in another app, such as a screenshot, is uploaded as a PNG. A photo you copied in Mimick is added to the open album as it is, not uploaded again.
 - **Copy**: **Ctrl+C** in the viewer copies the photo on screen as a picture, for pasting into other apps (or its recognized text while that's showing). With photos selected, **Ctrl+C** copies them as a file manager does: as references, so copying thousands costs nothing. Paste them into another album with **Ctrl+V** to add them there. Pasting into Files or another app gives the photos that are on this computer; Mimick says when some are only in Immich, and **Download** saves those. A selection of one photo copies its picture; a video copies as a reference.
 
@@ -412,7 +412,7 @@ The pen button in the section's header opens [Tag People](#tagging-faces).
 
 ## Slideshow
 
-Play a slideshow with **Play Slideshow** in the header of Photos, an album, a search, or any other photo view, with **Slideshow** in a photo's right-click menu (it starts from that photo), or with **S** in the lightbox.
+Play a slideshow with **Play Slideshow** in the controls row of Photos, an album, a search, or any other photo view, with **Slideshow** in a photo's right-click menu (it starts from that photo), or with **S** in the lightbox.
 
 - It plays fullscreen. A thin line along the top shows when the next photo comes.
 - The controls at the bottom (previous, pause, next, settings, end) hide after 3 seconds; move the pointer or tap the photo to bring them back.
@@ -584,6 +584,8 @@ When viewing an album, its header shows the linked local watch folder (if any) a
 | :-------------- | :---------------------------------------------------------------- |
 | **Link folder** | Opens a picker to associate a local watch folder with this album  |
 | **Sync**        | Runs a bidirectional sync between the linked folder and the album |
+
+Once a folder is linked, a **Remote / Local / Unified** switch appears beside the album's **⋯** menu: **Remote** shows the album in Immich, **Local** the files in the linked folder, and **Unified** both, marking which are synced.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/album-sync-dialog.png" width="80%" alt="Album sync dialog" />
