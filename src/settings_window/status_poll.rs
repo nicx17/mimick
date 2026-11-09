@@ -213,50 +213,64 @@ fn status_headline(s: &StatusSnapshot) -> Option<Headline> {
         });
     }
     match s.status.as_str() {
-        // Idle with no route and an error: nothing is being uploaded because Immich is unreachable.
-        "idle" if s.route.is_none() && s.last_error.is_some() => Some(Headline {
+        "idle" => Some(idle_headline(s)),
+        "uploading" => Some(uploading_headline(s)),
+        _ => None,
+    }
+}
+
+/// Idle: Immich unreachable, failed uploads waiting to retry, or up to date.
+fn idle_headline(s: &StatusSnapshot) -> Headline {
+    // No route and an error: nothing is being uploaded because Immich is unreachable.
+    if s.route.is_none() && s.last_error.is_some() {
+        return Headline {
             icon: "network-offline-symbolic",
             title: gettext("Can't Reach Immich"),
             subtitle: gettext("Check the server address and API key in Settings."),
             progress: None,
-        }),
-        "idle" if s.failed > 0 => Some(Headline {
+        };
+    }
+    if s.failed > 0 {
+        return Headline {
             icon: "network-offline-symbolic",
             title: gettext("Waiting for Immich"),
             subtitle: gettext("Failed uploads retry when the server is reachable."),
             progress: None,
-        }),
-        "idle" => Some(Headline {
-            icon: "mimick-check-circle-symbolic",
-            title: gettext("Up to Date"),
-            subtitle: match s.last_successful_sync_at {
-                Some(_) => fill(
-                    gettext("Last upload {when}"),
-                    &[(
-                        "when",
-                        &lowercase_first(&format_sync_age(s.last_successful_sync_at)),
-                    )],
-                ),
-                None => String::new(),
-            },
-            progress: None,
-        }),
-        "uploading" => Some(Headline {
-            icon: "mimick-upload-symbolic",
-            title: fill(
-                gettext("Uploading {done} of {total}"),
-                &[
-                    ("done", &s.processed.to_string()),
-                    ("total", &s.total.to_string()),
-                ],
+        };
+    }
+    Headline {
+        icon: "mimick-check-circle-symbolic",
+        title: gettext("Up to Date"),
+        subtitle: match s.last_successful_sync_at {
+            Some(_) => fill(
+                gettext("Last upload {when}"),
+                &[(
+                    "when",
+                    &lowercase_first(&format_sync_age(s.last_successful_sync_at)),
+                )],
             ),
-            subtitle: std::path::Path::new(&s.current_file)
-                .file_name()
-                .map(|n| n.to_string_lossy().into_owned())
-                .unwrap_or_default(),
-            progress: Some(f64::from(s.progress) / 100.0),
-        }),
-        _ => None,
+            None => String::new(),
+        },
+        progress: None,
+    }
+}
+
+/// Uploading: how far through the queue, and the file going up now.
+fn uploading_headline(s: &StatusSnapshot) -> Headline {
+    Headline {
+        icon: "mimick-upload-symbolic",
+        title: fill(
+            gettext("Uploading {done} of {total}"),
+            &[
+                ("done", &s.processed.to_string()),
+                ("total", &s.total.to_string()),
+            ],
+        ),
+        subtitle: std::path::Path::new(&s.current_file)
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default(),
+        progress: Some(f64::from(s.progress) / 100.0),
     }
 }
 

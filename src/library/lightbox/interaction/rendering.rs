@@ -283,15 +283,7 @@ impl Lightbox {
     /// Edited assets use Immich's edited render and fall back to the local file.
     async fn fetch_picture(&self, load: &PictureLoad) -> LoadResult {
         if load.is_video {
-            // Use the grid's preview thumbnail as the poster.
-            return match self.load_preview_thumbnail(&load.asset_id, false).await {
-                Ok(texture) => LoadResult::Texture {
-                    texture,
-                    drag_path: None,
-                    full_source: None,
-                },
-                Err(_) => LoadResult::KeepPoster,
-            };
+            return self.fetch_poster(&load.asset_id).await;
         }
         if !load.local_path.is_empty() && !load.edited {
             let local = std::path::PathBuf::from(&load.local_path);
@@ -332,6 +324,18 @@ impl Lightbox {
             };
         }
         result
+    }
+
+    /// A video's poster: the grid's preview thumbnail.
+    async fn fetch_poster(&self, asset_id: &str) -> LoadResult {
+        match self.load_preview_thumbnail(asset_id, false).await {
+            Ok(texture) => LoadResult::Texture {
+                texture,
+                drag_path: None,
+                full_source: None,
+            },
+            Err(_) => LoadResult::KeepPoster,
+        }
     }
 
     async fn load_preview_thumbnail(

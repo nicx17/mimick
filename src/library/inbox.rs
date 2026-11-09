@@ -13,6 +13,7 @@ use libadwaita::prelude::*;
 use crate::api_client::Notification;
 
 use super::LibraryWindowUi;
+use super::dialogs::{clamped_list, scrolling_dialog};
 use super::shared_link_dialog::format_expiry;
 use super::state::LibrarySource;
 
@@ -358,32 +359,9 @@ fn inbox_dialog(
     let content = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .build();
-    content.append(
-        &libadwaita::Clamp::builder()
-            .maximum_size(560)
-            .margin_top(6)
-            .margin_bottom(12)
-            .margin_start(12)
-            .margin_end(12)
-            .child(list)
-            .build(),
-    );
+    content.append(&clamped_list(list));
     content.append(empty);
-    let scroller = gtk::ScrolledWindow::builder()
-        .hscrollbar_policy(gtk::PolicyType::Never)
-        .vexpand(true)
-        .child(&content)
-        .build();
-    let toolbar = libadwaita::ToolbarView::builder()
-        .content(&scroller)
-        .build();
-    toolbar.add_top_bar(&header);
-    libadwaita::Dialog::builder()
-        .title(gettext("Notifications"))
-        .content_width(440)
-        .content_height(560)
-        .child(&toolbar)
-        .build()
+    scrolling_dialog(&gettext("Notifications"), &header, &content, (440, 560))
 }
 
 #[cfg(test)]

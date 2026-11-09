@@ -10,6 +10,8 @@ use super::color;
 
 mod codecs;
 mod heif_thumbnail;
+mod raw_develop;
+mod raw_tone;
 pub(super) use heif_thumbnail::{decode_heif_thumbnail, is_heif_path};
 
 /// Runtime flag controlling the on-disk RAW decode cache.
@@ -63,10 +65,7 @@ pub(super) fn load_texture_fitted_blocking(
     max_edge: u32,
 ) -> Option<gdk4::Texture> {
     let started = std::time::Instant::now();
-    let texture = (texture_decoder_for_path(path) == TextureDecoder::Jpeg)
-        .then(|| decode_jpeg(path, Some(max_edge)))
-        .flatten()
-        .or_else(|| load_texture_blocking(path))?;
+    let texture = decode_shrinking(path, max_edge).or_else(|| load_texture_blocking(path))?;
     let texture = fit_texture(texture, max_edge);
     log::debug!(
         "Decoded {} to fit {max_edge}px in {}ms ({}x{})",
@@ -76,6 +75,27 @@ pub(super) fn load_texture_fitted_blocking(
         texture.height(),
     );
     Some(texture)
+}
+
+/// Decoders that can shrink as they go: JPEG's DCT scaling, and full RAW decoding at half
+/// size when that still fills `max_edge` (zooming in loads every pixel).
+fn decode_shrinking(path: &std::path::Path, max_edge: u32) -> Option<gdk4::Texture> {
+    match texture_decoder_for_path(path) {
+        TextureDecoder::Jpeg => decode_jpeg(path, Some(max_edge)),
+        TextureDecoder::Raw if RAW_FULL_DECODE.load(std::sync::atomic::Ordering::Relaxed) => {
+            decode_raw_fitted(path, max_edge)
+        }
+        _ => None,
+    }
+}
+
+/// Developed to fit; a decode that came out full size is cached for zooming in.
+fn decode_raw_fitted(path: &std::path::Path, max_edge: u32) -> Option<gdk4::Texture> {
+    let raw = raw_develop::develop(path, raw_develop::Size::Fit(max_edge))?;
+    if raw.full && RAW_CACHE_ENABLED.load(std::sync::atomic::Ordering::Relaxed) {
+        write_raw_decode_cache_async(path, &raw.texture);
+    }
+    Some(raw.texture)
 }
 
 fn fitted_size(width: i32, height: i32, max_edge: u32) -> Option<(i32, i32)> {
@@ -243,7 +263,7 @@ pub(super) fn decode_raw_thumbnail_texture(path: &std::path::Path) -> Option<gdk
     {
         return Some(texture);
     }
-    decode_libraw_uncached(path, true)
+    raw_develop::develop(path, raw_develop::Size::Half).map(|raw| raw.texture)
 }
 
 fn decode_raw_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
@@ -292,8 +312,9 @@ fn raw_decode_cache_key(path: &std::path::Path) -> Option<String> {
     let canonical = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
     use std::os::unix::ffi::OsStrExt;
     let mut hasher = blake3::Hasher::new();
-    // Bumped when decodes change: v2 is 16-bit linear Rec. 2020 instead of 8-bit sRGB.
-    hasher.update(b"v2");
+    // Bumped when decodes change: v3 is 8-bit Display P3 toned like the camera's JPEG,
+    // replacing v2's flat 16-bit linear Rec. 2020.
+    hasher.update(b"v3");
     hasher.update(canonical.as_os_str().as_bytes());
     hasher.update(&mtime.to_le_bytes());
     hasher.update(&size.to_le_bytes());
@@ -1012,36 +1033,20 @@ fn apply_libraw_flip(
 }
 
 /// Decode a RAW via vendored libraw with camera white balance + AHD demosaic
-/// at full resolution. Output goes through a disk cache keyed by (path, mtime,
-/// size) so a re-open hits the cache instead of re-demosaicing.
+/// at full resolution, toned like the camera's JPEG. Output goes through a disk cache
+/// keyed by (path, mtime, size) so a re-open hits the cache instead of re-demosaicing.
 fn decode_libraw_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
     let cache_enabled = RAW_CACHE_ENABLED.load(std::sync::atomic::Ordering::Relaxed);
     if cache_enabled && let Some(texture) = read_raw_decode_cache(path) {
         return Some(texture);
     }
-    let texture = decode_libraw_uncached(path, false);
+    let texture = raw_develop::develop(path, raw_develop::Size::Full).map(|raw| raw.texture);
     if let Some(ref tex) = texture
         && cache_enabled
     {
         write_raw_decode_cache_async(path, tex);
     }
     texture
-}
-
-fn decode_libraw_uncached(path: &std::path::Path, half_size: bool) -> Option<gdk4::Texture> {
-    use std::os::unix::ffi::OsStrExt;
-    let c_path = std::ffi::CString::new(path.as_os_str().as_bytes()).ok()?;
-    unsafe {
-        let lr = init_libraw(path)?;
-        let _guard = LibrawHandle(lr);
-        configure_libraw_full_decode(lr, half_size);
-        if !run_libraw_full_decode(lr, c_path.as_ptr(), path) {
-            return None;
-        }
-        let img = make_libraw_image(lr, path)?;
-        let _img_guard = MemImage(img);
-        libraw_image_to_texture(img, path)
-    }
 }
 
 struct LibrawHandle(*mut rsraw_sys::libraw_data_t);
@@ -1058,121 +1063,6 @@ impl Drop for MemImage {
     fn drop(&mut self) {
         unsafe { rsraw_sys::libraw_dcraw_clear_mem(self.0) };
     }
-}
-
-unsafe fn init_libraw(path: &std::path::Path) -> Option<*mut rsraw_sys::libraw_data_t> {
-    let lr = unsafe { rsraw_sys::libraw_init(0) };
-    if lr.is_null() {
-        log::debug!("libraw_init returned null for {}", path.display());
-        None
-    } else {
-        Some(lr)
-    }
-}
-
-/// LibRaw's `output_color` for Rec. 2020, wide enough for the colours a sensor records.
-const LIBRAW_REC2020: i32 = 8;
-
-/// Half size, for thumbnails, is 8-bit sRGB. Full size keeps the camera's colours: 16-bit
-/// linear Rec. 2020, which `libraw_image_to_texture` tags so GTK maps it to the screen.
-unsafe fn configure_libraw_full_decode(lr: *mut rsraw_sys::libraw_data_t, half_size: bool) {
-    unsafe {
-        (*lr).params.half_size = i32::from(half_size);
-        (*lr).params.use_camera_wb = 1;
-        (*lr).params.user_qual = 3;
-        if half_size {
-            (*lr).params.output_bps = 8;
-            (*lr).params.output_color = 1;
-        } else {
-            (*lr).params.output_bps = 16;
-            (*lr).params.output_color = LIBRAW_REC2020;
-            (*lr).params.gamm[0] = 1.0;
-            (*lr).params.gamm[1] = 1.0;
-        }
-    }
-}
-
-unsafe fn run_libraw_full_decode(
-    lr: *mut rsraw_sys::libraw_data_t,
-    c_path: *const std::ffi::c_char,
-    path: &std::path::Path,
-) -> bool {
-    unsafe {
-        libraw_step(lr, path, "libraw_open_file", || {
-            rsraw_sys::libraw_open_file(lr, c_path)
-        }) && libraw_step(lr, path, "libraw_unpack", || rsraw_sys::libraw_unpack(lr))
-            && libraw_step(lr, path, "libraw_dcraw_process", || {
-                rsraw_sys::libraw_dcraw_process(lr)
-            })
-    }
-}
-
-unsafe fn libraw_step(
-    _lr: *mut rsraw_sys::libraw_data_t,
-    path: &std::path::Path,
-    label: &str,
-    f: impl FnOnce() -> i32,
-) -> bool {
-    let rc = f();
-    if rc != 0 {
-        log::debug!("{} failed ({}) for {}", label, rc, path.display());
-        false
-    } else {
-        true
-    }
-}
-
-unsafe fn make_libraw_image(
-    lr: *mut rsraw_sys::libraw_data_t,
-    path: &std::path::Path,
-) -> Option<*mut rsraw_sys::libraw_processed_image_t> {
-    let mut errcode = 0i32;
-    let img = unsafe { rsraw_sys::libraw_dcraw_make_mem_image(lr, &mut errcode) };
-    if img.is_null() || errcode != 0 {
-        log::debug!(
-            "libraw_dcraw_make_mem_image failed ({}) for {}",
-            errcode,
-            path.display()
-        );
-        None
-    } else {
-        Some(img)
-    }
-}
-
-unsafe fn libraw_image_to_texture(
-    img: *mut rsraw_sys::libraw_processed_image_t,
-    path: &std::path::Path,
-) -> Option<gdk4::Texture> {
-    let width = unsafe { (*img).width as u32 };
-    let colors = unsafe { (*img).colors };
-    if colors != 3 {
-        log::debug!(
-            "libraw produced {}-channel output for {} -- skipping",
-            colors,
-            path.display()
-        );
-        return None;
-    }
-    let height = unsafe { (*img).height as u32 };
-    let data_size = unsafe { (*img).data_size as usize };
-    let pixels = unsafe { std::slice::from_raw_parts((*img).data.as_ptr(), data_size) }.to_vec();
-    // 16 bits per channel only comes from full-size decodes, in linear Rec. 2020.
-    let (format, bytes_per_pixel, state) = match unsafe { (*img).bits } {
-        16 => (gdk4::MemoryFormat::R16g16b16, 6, color::rec2020_linear()),
-        _ => (gdk4::MemoryFormat::R8g8b8, 3, None),
-    };
-    let layout = color::Layout {
-        width: i32::try_from(width).ok()?,
-        height: i32::try_from(height).ok()?,
-        stride: usize::try_from(width).ok()?.checked_mul(bytes_per_pixel)?,
-        format,
-    };
-    Some(color::tagged(
-        &glib::Bytes::from_owned(pixels),
-        &layout,
-        state.as_ref(),
-    ))
 }
 
 fn write_raw_decode_cache_async(path: &std::path::Path, texture: &gdk4::Texture) {

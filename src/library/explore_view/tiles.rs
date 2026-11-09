@@ -155,23 +155,7 @@ pub(crate) fn explore_tile(
     asset_id: &str,
     on_click: ExploreClick,
 ) -> gtk::Button {
-    // Fixed-height thumbnail container: the Overlay sizes itself from the
-    // spacer child (100px) so portrait thumbnails cannot inflate the row
-    // height.  The Picture overlay fills that space with ContentFit::Cover.
-    let thumb = gtk::Overlay::builder()
-        .overflow(gtk::Overflow::Hidden)
-        .css_classes(vec!["mimick-explore-tile".to_string()])
-        .build();
-    let spacer = gtk::Box::builder()
-        .css_classes(vec!["mimick-explore-spacer".to_string()])
-        .build();
-    let picture = gtk::Picture::builder()
-        .can_shrink(true)
-        .content_fit(gtk::ContentFit::Cover)
-        .build();
-    thumb.set_child(Some(&spacer));
-    thumb.add_overlay(&picture);
-
+    let (thumb, picture) = cover_frame();
     let label = gtk::Label::builder()
         .label(value)
         .xalign(0.0)
@@ -198,6 +182,25 @@ pub(crate) fn explore_tile(
 
     super::super::thumbnail_loader::load_into_picture(ctx, asset_id.to_string(), picture, false);
     button
+}
+
+/// A fixed-height thumbnail frame and the picture that covers it.
+/// The spacer (100px) sets the frame's height so portrait thumbnails cannot inflate a row.
+pub(crate) fn cover_frame() -> (gtk::Overlay, gtk::Picture) {
+    let thumb = gtk::Overlay::builder()
+        .overflow(gtk::Overflow::Hidden)
+        .css_classes(vec!["mimick-explore-tile".to_string()])
+        .build();
+    let spacer = gtk::Box::builder()
+        .css_classes(vec!["mimick-explore-spacer".to_string()])
+        .build();
+    let picture = gtk::Picture::builder()
+        .can_shrink(true)
+        .content_fit(gtk::ContentFit::Cover)
+        .build();
+    thumb.set_child(Some(&spacer));
+    thumb.add_overlay(&picture);
+    (thumb, picture)
 }
 
 /// Helper to asynchronously request and render a round avatar person face thumbnail.

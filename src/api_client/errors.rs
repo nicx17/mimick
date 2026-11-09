@@ -130,40 +130,39 @@ pub(super) fn classify_network_issue(context: RequestContext, error: &reqwest::E
         }
     } else {
         ApiIssue {
-            summary: match context {
-                RequestContext::Upload => gettext("The upload request failed before completion"),
-                RequestContext::Albums => gettext("The album request failed before completion"),
-                RequestContext::AlbumCreate => {
-                    gettext("The album creation request failed before completion")
-                }
-                RequestContext::AlbumAssign => {
-                    gettext("The album assignment request failed before completion")
-                }
-                RequestContext::ThumbnailFetch => {
-                    gettext("The thumbnail request failed before completion")
-                }
-                RequestContext::AssetList => {
-                    gettext("The library asset request failed before completion")
-                }
-                RequestContext::SmartSearch => {
-                    gettext("The smart search request failed before completion")
-                }
-                RequestContext::MetadataSearch => {
-                    gettext("The metadata search request failed before completion")
-                }
-                RequestContext::AssetDownload => {
-                    gettext("The asset download request failed before completion")
-                }
-                RequestContext::ServerStats => {
-                    gettext("The library statistics request failed before completion")
-                }
-                RequestContext::ServerAbout => {
-                    gettext("The server version request failed before completion")
-                }
-            },
+            summary: interrupted_summary(context),
             guidance: gettext(
                 "Retry the request after checking network connectivity and server health.",
             ),
+        }
+    }
+}
+
+/// Which request broke off, for a failure that was neither a timeout nor a refused connection.
+fn interrupted_summary(context: RequestContext) -> String {
+    match context {
+        RequestContext::Upload => gettext("The upload request failed before completion"),
+        RequestContext::Albums => gettext("The album request failed before completion"),
+        RequestContext::AlbumCreate => {
+            gettext("The album creation request failed before completion")
+        }
+        RequestContext::AlbumAssign => {
+            gettext("The album assignment request failed before completion")
+        }
+        RequestContext::ThumbnailFetch => gettext("The thumbnail request failed before completion"),
+        RequestContext::AssetList => gettext("The library asset request failed before completion"),
+        RequestContext::SmartSearch => gettext("The smart search request failed before completion"),
+        RequestContext::MetadataSearch => {
+            gettext("The metadata search request failed before completion")
+        }
+        RequestContext::AssetDownload => {
+            gettext("The asset download request failed before completion")
+        }
+        RequestContext::ServerStats => {
+            gettext("The library statistics request failed before completion")
+        }
+        RequestContext::ServerAbout => {
+            gettext("The server version request failed before completion")
         }
     }
 }

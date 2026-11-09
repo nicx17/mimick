@@ -44,7 +44,7 @@ pub async fn diff_album_vs_folder(
         rules,
         manual_sync,
     };
-    let (mut to_upload, mut to_delete_local) = classify_local_entries(
+    let (to_upload, mut to_delete_local) = classify_local_entries(
         &ctx,
         prepared.local_entries,
         &prepared.remote_set,
@@ -73,33 +73,44 @@ pub async fn diff_album_vs_folder(
         &prepared.local_paths,
     );
 
-    if !to_upload.is_empty()
-        || !prepared.to_download.is_empty()
-        || !to_delete_local.is_empty()
-        || !to_delete_remote.is_empty()
-    {
-        log::info!(
-            "Album sync diff: upload={} download={} trash_local={} trash_remote={}",
-            to_upload.len(),
-            prepared.to_download.len(),
-            to_delete_local.len(),
-            to_delete_remote.len()
-        );
-    }
-
-    if rules.sync_method == FolderSyncMethod::UploadOnly {
-        prepared.to_download.clear();
-    } else if rules.sync_method == FolderSyncMethod::DownloadOnly {
-        to_upload.clear();
-    }
-
-    Ok(AlbumDiff {
+    let mut diff = AlbumDiff {
         to_upload,
         to_download: prepared.to_download,
         to_delete_remote,
         to_delete_local,
         remote_unhashed: prepared.remote_unhashed,
-    })
+    };
+    diff.log_counts();
+    diff.keep_sync_direction(&rules.sync_method);
+    Ok(diff)
+}
+
+impl AlbumDiff {
+    /// Log what the diff found, before a one-way folder drops a direction.
+    fn log_counts(&self) {
+        if !self.to_upload.is_empty()
+            || !self.to_download.is_empty()
+            || !self.to_delete_local.is_empty()
+            || !self.to_delete_remote.is_empty()
+        {
+            log::info!(
+                "Album sync diff: upload={} download={} trash_local={} trash_remote={}",
+                self.to_upload.len(),
+                self.to_download.len(),
+                self.to_delete_local.len(),
+                self.to_delete_remote.len()
+            );
+        }
+    }
+
+    /// Drop the direction a one-way folder doesn't sync.
+    fn keep_sync_direction(&mut self, method: &FolderSyncMethod) {
+        if *method == FolderSyncMethod::UploadOnly {
+            self.to_download.clear();
+        } else if *method == FolderSyncMethod::DownloadOnly {
+            self.to_upload.clear();
+        }
+    }
 }
 
 struct PreparedDiff {

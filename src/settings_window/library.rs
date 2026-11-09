@@ -107,7 +107,18 @@ fn build_viewer_group(
         ))
         .build();
     viewer.add(&grid_fit_row);
-    let date_headings_row = adw::ComboRow::builder()
+    let date_headings_row = date_headings_row(&viewer);
+    (
+        viewer,
+        preview_full_row,
+        grid_quality_row,
+        grid_fit_row,
+        date_headings_row,
+    )
+}
+
+fn date_headings_row(viewer: &adw::PreferencesGroup) -> adw::ComboRow {
+    let row = adw::ComboRow::builder()
         .title(gettext("Date Headings"))
         .subtitle(gettext(
             "Dates between photos in Photos, albums, and other timelines.",
@@ -118,14 +129,8 @@ fn build_viewer_group(
             &gettext("Off"),
         ]))
         .build();
-    viewer.add(&date_headings_row);
-    (
-        viewer,
-        preview_full_row,
-        grid_quality_row,
-        grid_fit_row,
-        date_headings_row,
-    )
+    viewer.add(&row);
+    row
 }
 
 fn build_appearance_group(
@@ -199,6 +204,22 @@ fn build_storage_group(
         ))
         .build();
     storage.add(&memory_cache_row);
+    let clear_cache_btn = clear_cache_row(&storage);
+    let (download_folder_row, download_change_btn, download_clear_btn) =
+        download_folder_row(&storage);
+    (
+        storage,
+        disk_cache_row,
+        memory_cache_row,
+        clear_cache_btn,
+        download_folder_row,
+        download_change_btn,
+        download_clear_btn,
+    )
+}
+
+/// The Clear Cache row; returns its Clear button.
+fn clear_cache_row(storage: &adw::PreferencesGroup) -> gtk::Button {
     let clear_cache_btn = gtk::Button::builder()
         .label(gettext("Clear"))
         .valign(gtk::Align::Center)
@@ -211,6 +232,13 @@ fn build_storage_group(
         .build();
     clear_row.add_suffix(&clear_cache_btn);
     storage.add(&clear_row);
+    clear_cache_btn
+}
+
+/// The Download Folder row with its Change… and clear (back to asking) buttons.
+fn download_folder_row(
+    storage: &adw::PreferencesGroup,
+) -> (adw::ActionRow, gtk::Button, gtk::Button) {
     let download_folder_row = adw::ActionRow::builder()
         .title(gettext("Download Folder"))
         .subtitle(gettext("Ask each time"))
@@ -230,15 +258,7 @@ fn build_storage_group(
     download_folder_row.add_suffix(&download_clear_btn);
     download_folder_row.add_suffix(&download_change_btn);
     storage.add(&download_folder_row);
-    (
-        storage,
-        disk_cache_row,
-        memory_cache_row,
-        clear_cache_btn,
-        download_folder_row,
-        download_change_btn,
-        download_clear_btn,
-    )
+    (download_folder_row, download_change_btn, download_clear_btn)
 }
 
 /// "Using 1.2 GB of 2.0 GB" for the cache limit row.

@@ -101,70 +101,95 @@ impl Monitor {
         log::info!("Started {} hash worker(s) for file monitor", worker_count);
 
         std::thread::spawn(move || {
-            let (notify_tx, notify_rx) = std::sync::mpsc::channel();
-            let mut watcher = match create_watcher(notify_tx) {
-                Ok(w) => w,
-                Err(e) => {
-                    log::error!("Failed to create file watcher: {:?}", e);
-                    return;
-                }
-            };
-
-            let mut watch_paths = watch_paths;
-            let mut background_sync_enabled = background_sync_enabled;
-            let mut watched_roots = Vec::<PathBuf>::new();
-            replace_watches(
-                &mut *watcher,
-                &mut watched_roots,
-                &watch_paths,
+            run_watcher(
+                watch_paths,
                 background_sync_enabled,
+                &command_rx,
+                &tx,
+                &work_tx,
+                &active_tasks,
             );
-
-            let mut debounce_map: HashMap<String, Instant> = HashMap::new();
-
-            loop {
-                while let Ok(command) = command_rx.try_recv() {
-                    match command {
-                        MonitorCommand::ReplaceWatchPaths {
-                            watch_paths: new_paths,
-                            background_sync_enabled: new_background_sync_enabled,
-                        } => {
-                            watch_paths = new_paths;
-                            background_sync_enabled = new_background_sync_enabled;
-                            replace_watches(
-                                &mut *watcher,
-                                &mut watched_roots,
-                                &watch_paths,
-                                background_sync_enabled,
-                            );
-                        }
-                    }
-                }
-
-                let res = match notify_rx.recv_timeout(Duration::from_millis(500)) {
-                    Ok(res) => res,
-                    Err(std::sync::mpsc::RecvTimeoutError::Timeout) => continue,
-                    Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => break,
-                };
-
-                match res {
-                    Ok(event) => handle_notify_event(
-                        event,
-                        &watch_paths,
-                        &tx,
-                        &work_tx,
-                        &active_tasks,
-                        &mut debounce_map,
-                    ),
-                    Err(e) => log::error!("Watch error: {:?}", e),
-                }
-            }
-
-            log::warn!("File watcher thread exiting.");
         });
 
         MonitorHandle { command_tx }
     }
+}
+
+/// The live watcher and the folders it watches, so a command can swap them.
+struct Watches {
+    watcher: Box<dyn Watcher>,
+    roots: Vec<PathBuf>,
+    paths: Vec<WatchPathEntry>,
+}
+
+impl Watches {
+    fn replace(&mut self, paths: Vec<WatchPathEntry>, background_sync_enabled: bool) {
+        self.paths = paths;
+        replace_watches(
+            &mut *self.watcher,
+            &mut self.roots,
+            &self.paths,
+            background_sync_enabled,
+        );
+    }
+}
+
+/// The watcher thread's loop: apply folder changes, then pass each file event on,
+/// until the watcher's channel closes.
+fn run_watcher(
+    watch_paths: Vec<WatchPathEntry>,
+    background_sync_enabled: bool,
+    command_rx: &std::sync::mpsc::Receiver<MonitorCommand>,
+    tx: &mpsc::Sender<MonitorEvent>,
+    work_tx: &tokio::sync::mpsc::Sender<String>,
+    active_tasks: &std::sync::Arc<parking_lot::Mutex<std::collections::HashSet<String>>>,
+) {
+    let (notify_tx, notify_rx) = std::sync::mpsc::channel();
+    let watcher = match create_watcher(notify_tx) {
+        Ok(w) => w,
+        Err(e) => {
+            log::error!("Failed to create file watcher: {:?}", e);
+            return;
+        }
+    };
+    let mut watches = Watches {
+        watcher,
+        roots: Vec::new(),
+        paths: Vec::new(),
+    };
+    watches.replace(watch_paths, background_sync_enabled);
+
+    let mut debounce_map: HashMap<String, Instant> = HashMap::new();
+
+    loop {
+        while let Ok(command) = command_rx.try_recv() {
+            let MonitorCommand::ReplaceWatchPaths {
+                watch_paths,
+                background_sync_enabled,
+            } = command;
+            watches.replace(watch_paths, background_sync_enabled);
+        }
+
+        let res = match notify_rx.recv_timeout(Duration::from_millis(500)) {
+            Ok(res) => res,
+            Err(std::sync::mpsc::RecvTimeoutError::Timeout) => continue,
+            Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => break,
+        };
+
+        match res {
+            Ok(event) => handle_notify_event(
+                event,
+                &watches.paths,
+                tx,
+                work_tx,
+                active_tasks,
+                &mut debounce_map,
+            ),
+            Err(e) => log::error!("Watch error: {:?}", e),
+        }
+    }
+
+    log::warn!("File watcher thread exiting.");
 }
 
 fn spawn_hash_workers(

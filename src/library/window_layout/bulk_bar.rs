@@ -60,28 +60,13 @@ fn bar_button(icon: &str, tooltip: &str) -> gtk::Button {
 
 fn build_bulk_actions() -> BulkActions {
     let (delete, download, clear, share_link) = bulk_buttons();
+    let (location, date, favorite, description) = edit_buttons();
     let archive = bar_button("mimick-archive-symbolic", &gettext("Archive selected"));
-    let location = bar_button(
-        "mark-location-symbolic",
-        &gettext("Set location for selected"),
-    );
-    let date = bar_button(
-        "x-office-calendar-symbolic",
-        &gettext("Change date for selected"),
-    );
     let add_to_album = bar_button("list-add-symbolic", &gettext("Add to album"));
     let stack = bar_button("mimick-stack-symbolic", &gettext("Stack selected"));
     stack.set_visible(false);
     let remove_from_album = bar_button("list-remove-symbolic", &gettext("Remove from album"));
     remove_from_album.set_visible(false);
-    let favorite = bar_button(
-        "mimick-heart-outline-symbolic",
-        &gettext("Favorite selected"),
-    );
-    let description = bar_button(
-        "format-justify-left-symbolic",
-        &gettext("Edit Description…"),
-    );
     let jobs = super::super::asset_jobs::bulk_buttons();
     let mut live_only = vec![
         delete.clone(),
@@ -209,6 +194,27 @@ fn general_actions(actions: &BulkActions) -> (gtk::Box, gtk::Box) {
         actions.add_to_album.upcast_ref(),
     ]);
     (general, secondary)
+}
+
+/// Location, date, favorite, and description buttons: edits to the selection's details.
+fn edit_buttons() -> (gtk::Button, gtk::Button, gtk::Button, gtk::Button) {
+    let location = bar_button(
+        "mark-location-symbolic",
+        &gettext("Set location for selected"),
+    );
+    let date = bar_button(
+        "x-office-calendar-symbolic",
+        &gettext("Change date for selected"),
+    );
+    let favorite = bar_button(
+        "mimick-heart-outline-symbolic",
+        &gettext("Favorite selected"),
+    );
+    let description = bar_button(
+        "format-justify-left-symbolic",
+        &gettext("Edit Description…"),
+    );
+    (location, date, favorite, description)
 }
 
 /// Delete, download, clear, and share-link buttons for the selection bar.

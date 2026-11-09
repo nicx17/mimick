@@ -8,6 +8,7 @@ use gtk::prelude::*;
 
 use crate::api_client::LibraryAlbum;
 use crate::app_context::AppContext;
+use crate::library::explore_view::cover_frame;
 
 use super::AlbumClick;
 
@@ -21,7 +22,7 @@ pub(super) fn album_tile(
         .orientation(gtk::Orientation::Vertical)
         .spacing(4)
         .build();
-    let (thumb, picture) = build_album_cover();
+    let (thumb, picture) = cover_frame();
     tile_box.append(&thumb);
     tile_box.append(&build_album_metadata(album));
 
@@ -36,24 +37,6 @@ pub(super) fn album_tile(
     let name = album.album_name.clone();
     button.connect_clicked(move |_| on_click(&id, name.clone()));
     button
-}
-
-fn build_album_cover() -> (gtk::Overlay, gtk::Picture) {
-    // The spacer fixes the overlay height so portrait covers cannot expand a row.
-    let thumb = gtk::Overlay::builder()
-        .overflow(gtk::Overflow::Hidden)
-        .css_classes(vec!["mimick-explore-tile".to_string()])
-        .build();
-    let spacer = gtk::Box::builder()
-        .css_classes(vec!["mimick-explore-spacer".to_string()])
-        .build();
-    let picture = gtk::Picture::builder()
-        .can_shrink(true)
-        .content_fit(gtk::ContentFit::Cover)
-        .build();
-    thumb.set_child(Some(&spacer));
-    thumb.add_overlay(&picture);
-    (thumb, picture)
 }
 
 fn build_album_metadata(album: &LibraryAlbum) -> gtk::Box {

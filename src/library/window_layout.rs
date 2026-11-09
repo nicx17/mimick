@@ -12,9 +12,11 @@ use std::sync::Arc;
 use gtk::prelude::*;
 
 mod bulk_bar;
+mod pages;
 mod responsive;
 pub(super) use bulk_bar::BulkParts;
 use libadwaita::prelude::*;
+use pages::Pages;
 
 use crate::app_context::AppContext;
 use crate::library::albums_view::{AlbumsViewParts, build_albums_view};
@@ -23,7 +25,6 @@ use crate::library::masonry::{GridViewParts, build_grid_view};
 use crate::library::search_view::{SearchViewParts, build_search_view};
 use crate::library::sidebar::{SidebarParts, build_sidebar};
 
-use super::shared_links_view::{SharedLinksView, build_shared_links_view};
 use super::timeline::scrubber::TimelineScrubber;
 use super::{
     LibraryWindowUi, WindowInteractionState, build_drop_overlay, build_loading_view,
@@ -71,12 +72,7 @@ pub(super) struct ContentParts {
     grid: GridViewParts,
     explore: ExploreViewParts,
     albums: AlbumsViewParts,
-    shared_links: SharedLinksView,
-    people: super::people_view::PeopleView,
-    tags: super::tags_view::TagsView,
-    folders: super::folders_view::FoldersView,
-    sharing: super::sharing_view::SharingView,
-    duplicates: super::duplicates_view::DuplicatesView,
+    pages: Pages,
     map: super::map::MapView,
     header: super::source_header::SourceHeader,
     memories: super::memories::MemoriesRow,
@@ -163,18 +159,7 @@ impl ContentParts {
         let explore = build_explore_view();
         let albums = build_albums_view();
         let (stack, error_label, scrubber) = build_content_stack(&grid, &explore, &albums);
-        let shared_links = build_shared_links_view();
-        stack.add_named(&shared_links.root, Some("shared-links"));
-        let people = super::people_view::build_people_view();
-        stack.add_named(&people.root, Some("people"));
-        let tags = super::tags_view::build_tags_view();
-        stack.add_named(&tags.page.root, Some("tags"));
-        let folders = super::folders_view::build_folders_view();
-        stack.add_named(&folders.page.root, Some("folders"));
-        let sharing = super::sharing_view::build_sharing_view();
-        stack.add_named(&sharing.root, Some("sharing"));
-        let duplicates = super::duplicates_view::build_duplicates_view();
-        stack.add_named(&duplicates.root, Some("duplicates"));
+        let pages = Pages::build(&stack);
         let map = super::map::build_map_view();
         map.split.set_end_child(Some(&stack));
         let search_view = build_search_view();
@@ -193,12 +178,7 @@ impl ContentParts {
             grid,
             explore,
             albums,
-            shared_links,
-            people,
-            tags,
-            folders,
-            sharing,
-            duplicates,
+            pages,
             map,
             controls: build_controls(&header.slideshow),
             header,
@@ -247,12 +227,12 @@ impl LibraryWindowUi {
             grid: content.grid,
             explore: content.explore,
             albums: content.albums,
-            shared_links: content.shared_links,
-            people: content.people,
-            tags: content.tags,
-            folders: content.folders,
-            sharing: content.sharing,
-            duplicates: content.duplicates,
+            shared_links: content.pages.shared_links,
+            people: content.pages.people,
+            tags: content.pages.tags,
+            folders: content.pages.folders,
+            sharing: content.pages.sharing,
+            duplicates: content.pages.duplicates,
             map: content.map,
             header: content.header,
             memories: content.memories,
@@ -303,30 +283,9 @@ fn build_header() -> HeaderParts {
         .build();
     let back_button = pressable_button("go-previous-symbolic", &gettext("Back (Alt+Left)"));
     back_button.set_sensitive(false);
-    let menu = gtk::gio::Menu::new();
-    // The style switcher sits on top in its own section, as GNOME apps place it.
-    let theme = gtk::gio::MenuItem::new(None, None);
-    theme.set_attribute_value("custom", Some(&super::theme::MENU_SLOT.to_variant()));
-    let theme_section = gtk::gio::Menu::new();
-    theme_section.append_item(&theme);
-    menu.append_section(None, &theme_section);
-    // Library, then account, then the app's own entries last, as GNOME apps order them.
-    let library = gtk::gio::Menu::new();
-    library.append(Some(&gettext("Refresh")), Some("win.refresh"));
-    library.append(Some(&gettext("Notifications")), Some("win.notifications"));
-    menu.append_section(None, &library);
-    let account = gtk::gio::Menu::new();
-    account.append(Some(&gettext("Account")), Some("win.account"));
-    account.append(Some(&gettext("Queue Inspector")), Some("win.queue"));
-    menu.append_section(None, &account);
-    let app = gtk::gio::Menu::new();
-    app.append(Some(&gettext("Settings")), Some("win.settings"));
-    app.append(Some(&gettext("Keyboard Shortcuts")), Some("win.shortcuts"));
-    app.append(Some(&gettext("About Mimick")), Some("win.about"));
-    menu.append_section(None, &app);
     let menu_button = gtk::MenuButton::builder()
         .icon_name("open-menu-symbolic")
-        .menu_model(&menu)
+        .menu_model(&main_menu())
         .tooltip_text(gettext("Menu"))
         .css_classes(["mimick-pressable"])
         .build();
@@ -353,6 +312,32 @@ fn build_header() -> HeaderParts {
         back_button,
         select_toggle,
     }
+}
+
+/// The header's main menu model.
+fn main_menu() -> gtk::gio::Menu {
+    let menu = gtk::gio::Menu::new();
+    // The style switcher sits on top in its own section, as GNOME apps place it.
+    let theme = gtk::gio::MenuItem::new(None, None);
+    theme.set_attribute_value("custom", Some(&super::theme::MENU_SLOT.to_variant()));
+    let theme_section = gtk::gio::Menu::new();
+    theme_section.append_item(&theme);
+    menu.append_section(None, &theme_section);
+    // Library, then account, then the app's own entries last, as GNOME apps order them.
+    let library = gtk::gio::Menu::new();
+    library.append(Some(&gettext("Refresh")), Some("win.refresh"));
+    library.append(Some(&gettext("Notifications")), Some("win.notifications"));
+    menu.append_section(None, &library);
+    let account = gtk::gio::Menu::new();
+    account.append(Some(&gettext("Account")), Some("win.account"));
+    account.append(Some(&gettext("Queue Inspector")), Some("win.queue"));
+    menu.append_section(None, &account);
+    let app = gtk::gio::Menu::new();
+    app.append(Some(&gettext("Settings")), Some("win.settings"));
+    app.append(Some(&gettext("Keyboard Shortcuts")), Some("win.shortcuts"));
+    app.append(Some(&gettext("About Mimick")), Some("win.about"));
+    menu.append_section(None, &app);
+    menu
 }
 
 fn hbox(children: &[&gtk::Widget]) -> gtk::Box {

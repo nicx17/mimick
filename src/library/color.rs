@@ -15,7 +15,6 @@ const PRIMARIES_TOLERANCE: f64 = 0.002;
 /// H.273 code points, as GTK's `GdkCicpParams` takes them.
 const CICP_SRGB: (u32, u32) = (1, 13);
 const CICP_DISPLAY_P3: (u32, u32) = (12, 13);
-const CICP_REC2020_LINEAR: (u32, u32) = (9, 8);
 
 /// How 8-bit pixels are laid out; only RGB and RGBA can be converted.
 pub(super) struct Layout {
@@ -131,11 +130,6 @@ pub(super) fn cicp_state(primaries: u32, transfer: u32) -> Option<gdk::ColorStat
 
 pub(super) fn display_p3() -> Option<gdk::ColorState> {
     cicp_state(CICP_DISPLAY_P3.0, CICP_DISPLAY_P3.1)
-}
-
-/// Rec. 2020 primaries in linear light: how full RAW decoding hands over its pixels.
-pub(super) fn rec2020_linear() -> Option<gdk::ColorState> {
-    cicp_state(CICP_REC2020_LINEAR.0, CICP_REC2020_LINEAR.1)
 }
 
 /// The profile to embed in a picture whose pixels were read out in Display P3.

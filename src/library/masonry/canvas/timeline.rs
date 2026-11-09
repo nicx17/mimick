@@ -185,20 +185,8 @@ impl imp::MasonryCanvas {
     ) -> Vec<u32> {
         let today = chrono::Local::now().date_naive();
         let months = index.months();
-        let lens: Vec<Option<u32>> = (0..months.len())
-            .map(|month| match index.state(month) {
-                MonthState::Loaded(len) => Some(len),
-                _ => None,
-            })
-            .collect();
-        let offsets: Vec<u32> = lens
-            .iter()
-            .scan(0, |offset, len| {
-                let start = *offset;
-                *offset += len.unwrap_or(0);
-                Some(start)
-            })
-            .collect();
+        let lens = loaded_lens(index);
+        let offsets = model_offsets(&lens);
         let mut cache = self.section_cache.borrow_mut();
         let mut month = 0;
         while month < months.len() {
@@ -381,6 +369,27 @@ impl imp::MasonryCanvas {
     }
 }
 
+/// Each month's asset count once loaded; `None` while it isn't.
+fn loaded_lens(index: &TimelineIndex) -> Vec<Option<u32>> {
+    (0..index.months().len())
+        .map(|month| match index.state(month) {
+            MonthState::Loaded(len) => Some(len),
+            _ => None,
+        })
+        .collect()
+}
+
+/// Where each month's first asset sits in the model; unloaded months take no room.
+fn model_offsets(lens: &[Option<u32>]) -> Vec<u32> {
+    lens.iter()
+        .scan(0, |offset, len| {
+            let start = *offset;
+            *offset += len.unwrap_or(0);
+            Some(start)
+        })
+        .collect()
+}
+
 fn run_lens(lens: &[Option<u32>], headings: DateHeadings) -> Vec<u32> {
     let loaded = lens.iter().map_while(|len| *len);
     match headings {
@@ -430,4 +439,18 @@ fn pack_month(
         }],
     };
     pack_section(&groups, width, cfg)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::model_offsets;
+
+    #[test]
+    fn model_offsets_skip_unloaded_months() {
+        assert_eq!(
+            model_offsets(&[Some(3), None, Some(2), Some(4)]),
+            [0, 3, 3, 5]
+        );
+        assert!(model_offsets(&[]).is_empty());
+    }
 }

@@ -146,6 +146,42 @@ pub(super) fn popover_menu(button: &gtk::MenuButton, items: Vec<(String, Box<dyn
     button.set_popover(Some(&popover));
 }
 
+/// `list` centred at a readable width, with the margins list dialogs use.
+pub(super) fn clamped_list(list: &gtk::ListBox) -> libadwaita::Clamp {
+    libadwaita::Clamp::builder()
+        .maximum_size(560)
+        .margin_top(6)
+        .margin_bottom(12)
+        .margin_start(12)
+        .margin_end(12)
+        .child(list)
+        .build()
+}
+
+/// A dialog whose `content` scrolls below `header`.
+pub(super) fn scrolling_dialog(
+    title: &str,
+    header: &libadwaita::HeaderBar,
+    content: &impl IsA<gtk::Widget>,
+    (width, height): (i32, i32),
+) -> libadwaita::Dialog {
+    let scroller = gtk::ScrolledWindow::builder()
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .vexpand(true)
+        .child(content)
+        .build();
+    let toolbar = libadwaita::ToolbarView::builder()
+        .content(&scroller)
+        .build();
+    toolbar.add_top_bar(header);
+    libadwaita::Dialog::builder()
+        .title(title)
+        .content_width(width)
+        .content_height(height)
+        .child(&toolbar)
+        .build()
+}
+
 pub(super) fn toast_with_action(
     title: &str,
     button: &str,
