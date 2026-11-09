@@ -220,16 +220,7 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
     shared_state.lock().watched_folder_count = config.data.watch_paths.len();
 
     let background_sync_enabled = config.data.background_sync_enabled;
-    let api_client = Arc::new(build_api_client(&config));
-    let sync_index = Arc::new(ShardedSyncIndex::new());
-    spawn_sync_index_flusher(sync_index.clone());
-
-    let qm = Arc::new(build_queue_manager(
-        &config,
-        api_client.clone(),
-        shared_state.clone(),
-        sync_index.clone(),
-    ));
+    let (api_client, sync_index, qm) = start_upload_pipeline(&config, shared_state);
     apply_runtime_preferences(&config);
 
     let (tx, rx) = mpsc::channel(32);
@@ -270,6 +261,27 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
     let flags = UiFlags::default();
     listen_for_ui_flags(app.clone(), flags.clone());
     tokio::spawn(run_tray(tray_library_enabled, flags));
+}
+
+/// The API client, the sync index (flushed in the background), and the upload queue using both.
+fn start_upload_pipeline(
+    config: &Config,
+    shared_state: &Arc<Mutex<AppState>>,
+) -> (
+    Arc<ImmichApiClient>,
+    Arc<ShardedSyncIndex>,
+    Arc<QueueManager>,
+) {
+    let api_client = Arc::new(build_api_client(config));
+    let sync_index = Arc::new(ShardedSyncIndex::new());
+    spawn_sync_index_flusher(sync_index.clone());
+    let qm = Arc::new(build_queue_manager(
+        config,
+        api_client.clone(),
+        shared_state.clone(),
+        sync_index.clone(),
+    ));
+    (api_client, sync_index, qm)
 }
 
 fn log_config(config: &Config) {

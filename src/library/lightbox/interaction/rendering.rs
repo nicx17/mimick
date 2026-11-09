@@ -18,7 +18,7 @@ use crate::library::actions::is_mine;
 use crate::library::asset_object::AssetObject;
 use crate::library::download::{begin_download_session, finish_download_item, track_download_item};
 
-use crate::library::{LOCAL_ID_PREFIX, load_texture_oriented, timeline, trash_view};
+use crate::library::{LOCAL_ID_PREFIX, load_texture_oriented_like, timeline, trash_view};
 
 impl Lightbox {
     pub(in crate::library::lightbox) fn render(self: &Rc<Self>) {
@@ -213,9 +213,16 @@ impl Lightbox {
         let generation = self.load_gen.get();
         let cancel_loader = self.arm_loader_spinner(250);
         let lb = Rc::downgrade(self);
+        let asset_id = self
+            .current_item()
+            .map(|item| item.property::<String>("id"))
+            .unwrap_or_default();
+        let ctx = self.ui.ctx.clone();
         glib::MainContext::default().spawn_local(async move {
             let started = std::time::Instant::now();
-            let full = load_texture_oriented(&path).await;
+            // The same look as the screen-sized picture, so zooming in doesn't change it.
+            let look = ctx.thumbnail_cache.raw_look(&asset_id, false, &path).await;
+            let full = load_texture_oriented_like(&path, look).await;
             cancel_loader.set(true);
             let Some(lb) = lb.upgrade().filter(|lb| lb.load_gen.get() == generation) else {
                 return;
@@ -283,15 +290,7 @@ impl Lightbox {
     /// Edited assets use Immich's edited render and fall back to the local file.
     async fn fetch_picture(&self, load: &PictureLoad) -> LoadResult {
         if load.is_video {
-            // Use the grid's preview thumbnail as the poster.
-            return match self.load_preview_thumbnail(&load.asset_id, false).await {
-                Ok(texture) => LoadResult::Texture {
-                    texture,
-                    drag_path: None,
-                    full_source: None,
-                },
-                Err(_) => LoadResult::KeepPoster,
-            };
+            return self.fetch_poster(&load.asset_id).await;
         }
         if !load.local_path.is_empty() && !load.edited {
             let local = std::path::PathBuf::from(&load.local_path);
@@ -332,6 +331,18 @@ impl Lightbox {
             };
         }
         result
+    }
+
+    /// A video's poster: the grid's preview thumbnail.
+    async fn fetch_poster(&self, asset_id: &str) -> LoadResult {
+        match self.load_preview_thumbnail(asset_id, false).await {
+            Ok(texture) => LoadResult::Texture {
+                texture,
+                drag_path: None,
+                full_source: None,
+            },
+            Err(_) => LoadResult::KeepPoster,
+        }
     }
 
     async fn load_preview_thumbnail(

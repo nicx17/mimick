@@ -249,21 +249,13 @@ pub(super) fn avatar(ui: &LibraryWindowUi, person: &Person, size: i32) -> libadw
 }
 
 fn person_tile(ui: &Rc<LibraryWindowUi>, person: &Person) -> gtk::Overlay {
-    let label = gtk::Label::builder()
-        .label(display_name(person))
-        .ellipsize(gtk::pango::EllipsizeMode::End)
-        .max_width_chars(14)
-        .build();
-    if person.name.is_empty() {
-        label.add_css_class("dim-label");
-    }
     let inner = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(6)
         .halign(gtk::Align::Center)
         .build();
     inner.append(&tile_avatar(ui, person));
-    inner.append(&label);
+    inner.append(&name_label(person));
     let open = gtk::Button::builder()
         .child(&inner)
         .tooltip_text(fill(
@@ -289,6 +281,26 @@ fn person_tile(ui: &Rc<LibraryWindowUi>, person: &Person) -> gtk::Overlay {
             },
         );
     });
+    let tile = gtk::Overlay::builder().child(&open).build();
+    tile.add_overlay(&menu_button(ui, person));
+    tile
+}
+
+/// The tile's name, dimmed for someone not yet named.
+fn name_label(person: &Person) -> gtk::Label {
+    let label = gtk::Label::builder()
+        .label(display_name(person))
+        .ellipsize(gtk::pango::EllipsizeMode::End)
+        .max_width_chars(14)
+        .build();
+    if person.name.is_empty() {
+        label.add_css_class("dim-label");
+    }
+    label
+}
+
+/// The ⋯ button in the tile's corner with the person's actions.
+fn menu_button(ui: &Rc<LibraryWindowUi>, person: &Person) -> gtk::MenuButton {
     let menu = gtk::MenuButton::builder()
         .icon_name("view-more-symbolic")
         .tooltip_text(gettext("More"))
@@ -297,63 +309,63 @@ fn person_tile(ui: &Rc<LibraryWindowUi>, person: &Person) -> gtk::Overlay {
         .css_classes(["circular", "osd"])
         .build();
     popover_menu(&menu, person_menu_items(ui, person));
-    let tile = gtk::Overlay::builder().child(&open).build();
-    tile.add_overlay(&menu);
-    tile
+    menu
 }
 
 pub(super) fn person_menu_items(
     ui: &Rc<LibraryWindowUi>,
     person: &Person,
 ) -> Vec<(String, Box<dyn Fn()>)> {
-    let rename_label = &if person.name.is_empty() {
+    let rename_label = if person.name.is_empty() {
         gettext("Add Name…")
     } else {
         gettext("Rename…")
     };
-    let hide_label = &if person.is_hidden {
+    let hide_label = if person.is_hidden {
         gettext("Unhide")
     } else {
         gettext("Hide")
     };
-    let favorite_label = &if person.is_favorite {
+    let favorite_label = if person.is_favorite {
         gettext("Remove from Favorites")
     } else {
         gettext("Add to Favorites")
     };
-    let (ui_favorite, p_favorite) = (ui.clone(), person.clone());
-    let (ui_rename, p_rename) = (ui.clone(), person.clone());
-    let (ui_birthday, p_birthday) = (ui.clone(), person.clone());
-    let (ui_hide, p_hide) = (ui.clone(), person.clone());
-    let (ui_merge, p_merge) = (ui.clone(), person.clone());
     vec![
-        (
-            rename_label.to_string(),
-            Box::new(move || rename(&ui_rename, &p_rename)),
-        ),
-        (
-            favorite_label.to_string(),
-            Box::new(move || set_favorite(&ui_favorite, &p_favorite, !p_favorite.is_favorite)),
-        ),
-        (
-            gettext("Set Birthday…"),
-            Box::new(move || edit_birthday(&ui_birthday, &p_birthday)),
-        ),
-        (
-            hide_label.to_string(),
-            Box::new(move || {
-                let update = PersonUpdate {
-                    is_hidden: Some(!p_hide.is_hidden),
-                    ..PersonUpdate::default()
-                };
-                save(&ui_hide, &p_hide.id, update);
-            }),
-        ),
-        (
+        menu_item(ui, person, rename_label, rename),
+        menu_item(ui, person, favorite_label, |ui, person| {
+            set_favorite(ui, person, !person.is_favorite);
+        }),
+        menu_item(ui, person, gettext("Set Birthday…"), edit_birthday),
+        menu_item(ui, person, hide_label, |ui, person| {
+            set_hidden(ui, person, !person.is_hidden);
+        }),
+        menu_item(
+            ui,
+            person,
             gettext("Merge People…"),
-            Box::new(move || super::person_merge_dialog::present(&ui_merge, &p_merge)),
+            super::person_merge_dialog::present,
         ),
     ]
+}
+
+/// A menu entry that runs `action` on its own copy of `ui` and `person`.
+fn menu_item(
+    ui: &Rc<LibraryWindowUi>,
+    person: &Person,
+    label: String,
+    action: fn(&Rc<LibraryWindowUi>, &Person),
+) -> (String, Box<dyn Fn()>) {
+    let (ui, person) = (ui.clone(), person.clone());
+    (label, Box::new(move || action(&ui, &person)))
+}
+
+fn set_hidden(ui: &Rc<LibraryWindowUi>, person: &Person, hidden: bool) {
+    let update = PersonUpdate {
+        is_hidden: Some(hidden),
+        ..PersonUpdate::default()
+    };
+    save(ui, &person.id, update);
 }
 
 fn save(ui: &Rc<LibraryWindowUi>, person_id: &str, update: PersonUpdate) {

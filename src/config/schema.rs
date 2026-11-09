@@ -217,56 +217,10 @@ impl ConfigData {
 }
 
 impl Default for ConfigData {
+    /// Each field's `#[serde(default)]`, so a fresh config and a sparse saved one can't disagree.
     fn default() -> Self {
-        Self {
-            internal_url: String::new(),
-            external_url: String::new(),
-            internal_url_enabled: true,
-            external_url_enabled: true,
-            watch_paths: Vec::new(),
-            run_on_startup: false,
-            pause_on_metered_network: false,
-            pause_on_battery_power: false,
-            background_sync_enabled: false,
-            notifications_enabled: true,
-            startup_catchup_mode: StartupCatchupMode::default(),
-            upload_concurrency: default_upload_concurrency(),
-            quiet_hours_start: None,
-            quiet_hours_end: None,
-            library_view_enabled: true,
-            color_scheme: default_color_scheme(),
-            light_theme: default_palette(),
-            dark_theme: default_palette(),
-            detailed_logging: false,
-            download_target_path: None,
-            library_preview_full_resolution: false,
-            library_grid_quality: default_grid_quality(),
-            library_grid_fit_tiles: true,
-            library_map_full_grid: false,
-            edit_copy_keeps_details: true,
-            edit_copy_stacks: false,
-            edit_redact_style: default_redact_style(),
-            edit_bar_colour: default_bar_colour(),
-            cache_disk_cap_mb: default_cache_disk_cap_mb(),
-            cache_memory_cap_mb: default_cache_memory_cap_mb(),
-            raw_decode_cache_enabled: false,
-            raw_full_decode: false,
-            show_unnamed_faces: true,
-            show_hidden_faces: false,
-            upload_xmp_sidecars: true,
-            grid_border_width: 0.0,
-            grid_border_color: default_grid_border_color(),
-            video_volume: default_video_volume(),
-            video_muted: false,
-            library_map_style: String::new(),
-            library_map_appearance: String::new(),
-            library_map_filters: MapFilters::default(),
-            library_date_headings: DateHeadings::default(),
-            slideshow_interval_secs: default_slideshow_interval(),
-            slideshow_shuffle: false,
-            slideshow_repeat: false,
-            slideshow_transition: String::new(),
-        }
+        serde_json::from_value(serde_json::json!({}))
+            .expect("every ConfigData field has a serde default")
     }
 }
 

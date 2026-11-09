@@ -4,7 +4,7 @@
 //! watch-folder management, behaviour toggles, and a live health dashboard.
 //! Changes are validated and persisted to the JSON config file on save.
 
-use crate::config::{FolderRules, WatchPathEntry};
+use crate::config::{Config, FolderRules, WatchPathEntry};
 use crate::i18n::{fill, plural_n};
 use adw::prelude::*;
 use gettextrs::{gettext, ngettext};
@@ -178,15 +178,7 @@ pub fn build_settings_window_with_parent(
     parent: Option<&adw::ApplicationWindow>,
 ) {
     let config = ctx.config.read().clone();
-    // Until a key is saved there's nothing to show on Status: start on the setup steps.
-    let needs_setup = config.get_api_key().unwrap_or_default().is_empty();
-    let start_page = if needs_setup { "settings" } else { "status" };
-    let (window, status_page, settings_page) = wiring::build_window_shell(app, parent, start_page);
-    crate::debug_width::install(&window);
-    if needs_setup {
-        wiring::add_welcome_group(&settings_page);
-    }
-
+    let (window, status_page, settings_page) = open_shell(app, parent, &config);
     let status_widgets = status::build_status_group(&status_page);
     let conn = connectivity::build_connectivity_group(&settings_page, &window);
     wiring::connect_test_button(&conn, ctx.api_client.clone());
@@ -219,13 +211,7 @@ pub fn build_settings_window_with_parent(
 
     // Populate before connecting auto-apply so loading saved values doesn't trigger a save.
     form.populate(&config);
-    apply::sync_open_library(&form, &ctx);
-    let (weak_form, ctx_open) = (form.downgrade(), ctx.clone());
-    conn.open_library_btn.connect_clicked(move |_| {
-        if let Some(form) = weak_form.upgrade() {
-            apply::open_library(&form, &ctx_open);
-        }
-    });
+    connect_open_library(&form, &conn, &ctx);
     wiring::connect_url_switches(&window, &conn);
     wiring::connect_auto_apply(&form, auto_apply);
     wiring::connect_close_request(&window, app, &ctx);
@@ -236,6 +222,42 @@ pub fn build_settings_window_with_parent(
         ctx.config.clone(),
     );
     window.present();
+}
+
+/// The window shell. Until a key is saved there's nothing to show on Status,
+/// so it starts on the setup steps.
+fn open_shell(
+    app: &adw::Application,
+    parent: Option<&adw::ApplicationWindow>,
+    config: &Config,
+) -> (
+    adw::ApplicationWindow,
+    adw::PreferencesPage,
+    adw::PreferencesPage,
+) {
+    let needs_setup = config.get_api_key().unwrap_or_default().is_empty();
+    let start_page = if needs_setup { "settings" } else { "status" };
+    let (window, status_page, settings_page) = wiring::build_window_shell(app, parent, start_page);
+    crate::debug_width::install(&window);
+    if needs_setup {
+        wiring::add_welcome_group(&settings_page);
+    }
+    (window, status_page, settings_page)
+}
+
+/// Open Library follows the saved connection and opens the library window.
+fn connect_open_library(
+    form: &form::SettingsForm,
+    conn: &connectivity::ConnectivityWidgets,
+    ctx: &Arc<AppContext>,
+) {
+    apply::sync_open_library(form, ctx);
+    let (weak_form, ctx_open) = (form.downgrade(), ctx.clone());
+    conn.open_library_btn.connect_clicked(move |_| {
+        if let Some(form) = weak_form.upgrade() {
+            apply::open_library(&form, &ctx_open);
+        }
+    });
 }
 
 #[cfg(test)]

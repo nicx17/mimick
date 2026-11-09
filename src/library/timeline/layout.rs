@@ -125,47 +125,14 @@ fn month_starts(rows: &[LaidRow], lens: &[u32], height: f32) -> Vec<f32> {
 pub fn compose(placed: &[Placed<'_>]) -> TimelineLayout {
     let mut layout = TimelineLayout::default();
     for place in placed {
-        let y = layout.height;
         match place {
             Placed::Packed {
                 section,
                 model_offset,
-            } => {
-                layout.rows.extend(section.rows.iter().map(|row| {
-                    LaidRow {
-                        y: row.y + y,
-                        h: row.h,
-                        items: row
-                            .items
-                            .iter()
-                            .map(|item| LaidItem {
-                                asset_index: item.asset_index + model_offset,
-                                ..*item
-                            })
-                            .collect(),
-                    }
-                }));
-                layout
-                    .headings
-                    .extend(section.headings.iter().map(|heading| LaidHeading {
-                        y: heading.y + y,
-                        text: heading.text.clone(),
-                        first: heading.first + model_offset,
-                        count: heading.count,
-                    }));
-                let ends = section.starts.iter().skip(1).chain([&section.height]);
-                for (start, end) in section.starts.iter().zip(ends) {
-                    layout.sections.push(LaidSection {
-                        y: y + start,
-                        h: end - start,
-                        loaded: true,
-                    });
-                }
-                layout.height += section.height;
-            }
+            } => append_packed(&mut layout, section, *model_offset),
             Placed::Estimated { height } => {
                 layout.sections.push(LaidSection {
-                    y,
+                    y: layout.height,
                     h: *height,
                     loaded: false,
                 });
@@ -174,6 +141,42 @@ pub fn compose(placed: &[Placed<'_>]) -> TimelineLayout {
         }
     }
     layout
+}
+
+/// Put `section` below what's laid out, its asset indices shifted to where it starts in the model.
+fn append_packed(layout: &mut TimelineLayout, section: &PackedSection, model_offset: u32) {
+    let y = layout.height;
+    layout.rows.extend(section.rows.iter().map(|row| {
+        LaidRow {
+            y: row.y + y,
+            h: row.h,
+            items: row
+                .items
+                .iter()
+                .map(|item| LaidItem {
+                    asset_index: item.asset_index + model_offset,
+                    ..*item
+                })
+                .collect(),
+        }
+    }));
+    layout
+        .headings
+        .extend(section.headings.iter().map(|heading| LaidHeading {
+            y: heading.y + y,
+            text: heading.text.clone(),
+            first: heading.first + model_offset,
+            count: heading.count,
+        }));
+    let ends = section.starts.iter().skip(1).chain([&section.height]);
+    for (start, end) in section.starts.iter().zip(ends) {
+        layout.sections.push(LaidSection {
+            y: y + start,
+            h: end - start,
+            loaded: true,
+        });
+    }
+    layout.height += section.height;
 }
 
 pub fn estimated_height(count: u32, width: f32, cfg: LayoutConfig, headings: DateHeadings) -> f32 {

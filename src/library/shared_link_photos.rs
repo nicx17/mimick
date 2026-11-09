@@ -14,7 +14,7 @@ use super::LibraryWindowUi;
 use super::album_picker::asset_cover;
 use super::albums_view::spawn_thumbnail;
 use super::context_menu::show_error_toast;
-use super::dialogs::toast_with_action;
+use super::dialogs::{clamped_list, scrolling_dialog, toast_with_action};
 use super::header_format::count_label;
 use super::shared_link_dialog::{copy_to_clipboard, format_expiry};
 
@@ -322,31 +322,9 @@ fn picker_shell(list: &gtk::ListBox, count: usize, empty: bool) -> libadwaita::D
             .build()
             .upcast()
     } else {
-        libadwaita::Clamp::builder()
-            .maximum_size(560)
-            .margin_top(6)
-            .margin_bottom(12)
-            .margin_start(12)
-            .margin_end(12)
-            .child(list)
-            .build()
-            .upcast()
+        clamped_list(list).upcast()
     };
-    let scroller = gtk::ScrolledWindow::builder()
-        .hscrollbar_policy(gtk::PolicyType::Never)
-        .vexpand(true)
-        .child(&content)
-        .build();
-    let toolbar = libadwaita::ToolbarView::builder()
-        .content(&scroller)
-        .build();
-    toolbar.add_top_bar(&header);
-    libadwaita::Dialog::builder()
-        .title(gettext("Add to Share Link"))
-        .content_width(400)
-        .content_height(480)
-        .child(&toolbar)
-        .build()
+    scrolling_dialog(&gettext("Add to Share Link"), &header, &content, (400, 480))
 }
 
 /// Add, then say how many went in, with the link one tap away.

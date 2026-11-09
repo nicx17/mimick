@@ -290,20 +290,7 @@ pub(crate) fn build_video_badge() -> gtk::Button {
 }
 
 pub(crate) fn build_action_bar(initial_full: bool) -> ActionBar {
-    let resolution_toggle = gtk::ToggleButton::builder()
-        .label(if initial_full {
-            gettext("Raw")
-        } else {
-            gettext("Prev")
-        })
-        .tooltip_text(gettext("Toggle preview vs original full-resolution image"))
-        .active(initial_full)
-        .build();
-    let ocr_toggle = gtk::ToggleButton::builder()
-        .icon_name("insert-text-symbolic")
-        .tooltip_text(gettext("Show recognized text (T)"))
-        .visible(false)
-        .build();
+    let (resolution_toggle, ocr_toggle) = view_toggles(initial_full);
     let edit = icon_button("mimick-adjust-symbolic", &gettext("Edit Photo"));
     let edit_slot = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     edit_slot.append(&edit);
@@ -349,6 +336,25 @@ pub(crate) fn build_action_bar(initial_full: bool) -> ActionBar {
     }
 }
 
+/// The original/preview toggle, and the recognized-text toggle (hidden until there's text).
+fn view_toggles(initial_full: bool) -> (gtk::ToggleButton, gtk::ToggleButton) {
+    let resolution_toggle = gtk::ToggleButton::builder()
+        .label(if initial_full {
+            gettext("Raw")
+        } else {
+            gettext("Prev")
+        })
+        .tooltip_text(gettext("Toggle preview vs original full-resolution image"))
+        .active(initial_full)
+        .build();
+    let ocr_toggle = gtk::ToggleButton::builder()
+        .icon_name("insert-text-symbolic")
+        .tooltip_text(gettext("Show recognized text (T)"))
+        .visible(false)
+        .build();
+    (resolution_toggle, ocr_toggle)
+}
+
 fn build_zoom_group() -> (gtk::Box, gtk::Button, gtk::Button, gtk::Button) {
     let zoom_out = icon_button("zoom-out-symbolic", &gettext("Zoom out (Ctrl+-)"));
     let zoom_in = icon_button("zoom-in-symbolic", &gettext("Zoom in (Ctrl++)"));
@@ -367,14 +373,7 @@ fn build_zoom_group() -> (gtk::Box, gtk::Button, gtk::Button, gtk::Button) {
 }
 
 pub(crate) fn build_details_pane() -> DetailsPane {
-    let inner = gtk::Box::builder()
-        .orientation(gtk::Orientation::Vertical)
-        .spacing(14)
-        .margin_top(14)
-        .margin_bottom(14)
-        .margin_start(10)
-        .margin_end(10)
-        .build();
+    let inner = details_column();
     let pane = details_scroller(&inner);
     let (filename, summary, created, edit_btn, album_btn) = build_detail_actions(&inner);
     let (loading, exif) = build_exif_area();
@@ -459,6 +458,18 @@ fn build_exif_area() -> (gtk::Label, gtk::Box) {
         .visible(false)
         .build();
     (loading, exif)
+}
+
+/// The details pane's sections, top to bottom.
+fn details_column() -> gtk::Box {
+    gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(14)
+        .margin_top(14)
+        .margin_bottom(14)
+        .margin_start(10)
+        .margin_end(10)
+        .build()
 }
 
 fn details_scroller(inner: &gtk::Box) -> gtk::ScrolledWindow {

@@ -168,71 +168,69 @@ fn present_sync_dialog(
 /// Alert with one checkbox per sync direction that has work: upload, download,
 /// album trash, local trash (in that order).
 fn build_sync_dialog(diff: &AlbumDiff) -> (libadwaita::AlertDialog, [gtk::CheckButton; 4]) {
-    let dialog = libadwaita::AlertDialog::builder()
-        .heading(gettext("Sync album"))
-        .body(gettext("Pick which directions to apply.") + &unmatched_note(diff.remote_unhashed))
-        .build();
+    let dialog = sync_alert(diff.remote_unhashed);
     let body_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(6)
         .build();
-    let checks = [
-        direction_check(
-            &body_box,
-            &count_phrase(
-                ngettext(
-                    "Upload {n} item to album",
-                    "Upload {n} items to album",
-                    plural_n(diff.to_upload.len()),
-                ),
-                diff.to_upload.len(),
-            ),
-            diff.to_upload.len(),
-        ),
-        direction_check(
-            &body_box,
-            &count_phrase(
-                ngettext(
-                    "Download {n} item to folder",
-                    "Download {n} items to folder",
-                    plural_n(diff.to_download.len()),
-                ),
-                diff.to_download.len(),
-            ),
-            diff.to_download.len(),
-        ),
-        direction_check(
-            &body_box,
-            &count_phrase(
-                ngettext(
-                    "Move {n} album item to trash",
-                    "Move {n} album items to trash",
-                    plural_n(diff.to_delete_remote.len()),
-                ),
-                diff.to_delete_remote.len(),
-            ),
-            diff.to_delete_remote.len(),
-        ),
-        direction_check(
-            &body_box,
-            &count_phrase(
-                ngettext(
-                    "Move {n} local item to trash",
-                    "Move {n} local items to trash",
-                    plural_n(diff.to_delete_local.len()),
-                ),
-                diff.to_delete_local.len(),
-            ),
-            diff.to_delete_local.len(),
-        ),
-    ];
+    let checks = direction_checks(&body_box, diff);
     dialog.set_extra_child(Some(&body_box));
+    (dialog, checks)
+}
+
+/// The alert's heading and body, with Apply as the default and Cancel on close.
+fn sync_alert(remote_unhashed: usize) -> libadwaita::AlertDialog {
+    let dialog = libadwaita::AlertDialog::builder()
+        .heading(gettext("Sync album"))
+        .body(gettext("Pick which directions to apply.") + &unmatched_note(remote_unhashed))
+        .build();
     dialog.add_response("cancel", &gettext("Cancel"));
     dialog.add_response("apply", &gettext("Apply"));
     dialog.set_response_appearance("apply", libadwaita::ResponseAppearance::Suggested);
     dialog.set_default_response(Some("apply"));
     dialog.set_close_response("cancel");
-    (dialog, checks)
+    dialog
+}
+
+fn direction_checks(body_box: &gtk::Box, diff: &AlbumDiff) -> [gtk::CheckButton; 4] {
+    [
+        direction_check(
+            body_box,
+            ngettext(
+                "Upload {n} item to album",
+                "Upload {n} items to album",
+                plural_n(diff.to_upload.len()),
+            ),
+            diff.to_upload.len(),
+        ),
+        direction_check(
+            body_box,
+            ngettext(
+                "Download {n} item to folder",
+                "Download {n} items to folder",
+                plural_n(diff.to_download.len()),
+            ),
+            diff.to_download.len(),
+        ),
+        direction_check(
+            body_box,
+            ngettext(
+                "Move {n} album item to trash",
+                "Move {n} album items to trash",
+                plural_n(diff.to_delete_remote.len()),
+            ),
+            diff.to_delete_remote.len(),
+        ),
+        direction_check(
+            body_box,
+            ngettext(
+                "Move {n} local item to trash",
+                "Move {n} local items to trash",
+                plural_n(diff.to_delete_local.len()),
+            ),
+            diff.to_delete_local.len(),
+        ),
+    ]
 }
 
 fn show_in_sync(ui: &LibraryWindowUi, remote_unhashed: usize) {
@@ -240,14 +238,15 @@ fn show_in_sync(ui: &LibraryWindowUi, remote_unhashed: usize) {
         .add_toast(libadwaita::Toast::new(&in_sync_message(remote_unhashed)));
 }
 
-/// Checkbox for one sync direction, pre-checked and shown only when it has work to do.
 fn count_phrase(template: String, count: usize) -> String {
     fill(template, &[("n", &count.to_string())])
 }
 
-fn direction_check(body_box: &gtk::Box, label: &str, count: usize) -> gtk::CheckButton {
+/// Checkbox for one sync direction, pre-checked and shown only when it has work to do.
+/// `template` is the label with `{n}` for the count.
+fn direction_check(body_box: &gtk::Box, template: String, count: usize) -> gtk::CheckButton {
     let check = gtk::CheckButton::builder()
-        .label(label)
+        .label(count_phrase(template, count))
         .active(count > 0)
         .sensitive(count > 0)
         .build();
@@ -497,64 +496,4 @@ fn link_album_to_path(
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::api_client::LibraryAsset;
-
-    fn asset(id: &str) -> LibraryAsset {
-        serde_json::from_value(serde_json::json!({
-            "id": id,
-            "originalFileName": format!("{id}.jpg"),
-            "originalMimeType": "image/jpeg",
-            "fileCreatedAt": "2024-01-15T14:25:15.000Z",
-            "type": "IMAGE"
-        }))
-        .unwrap()
-    }
-
-    #[test]
-    fn filtered_diff_keeps_only_chosen_directions() {
-        let diff = AlbumDiff {
-            to_download: vec![asset("d1"), asset("d2")],
-            to_delete_remote: vec![asset("r1")],
-            remote_unhashed: 3,
-            ..AlbumDiff::default()
-        };
-        let choices = SyncChoices {
-            upload: true,
-            download: true,
-            delete_remote: false,
-            delete_local: true,
-        };
-        let filtered = filtered_diff(&diff, choices);
-        assert_eq!(filtered.to_download.len(), 2);
-        assert!(filtered.to_delete_remote.is_empty());
-        assert_eq!(filtered.remote_unhashed, 0);
-    }
-
-    #[test]
-    fn sync_choices_any_needs_one_direction() {
-        let none = SyncChoices {
-            upload: false,
-            download: false,
-            delete_remote: false,
-            delete_local: false,
-        };
-        assert!(!none.any());
-        assert!(
-            SyncChoices {
-                delete_local: true,
-                ..none
-            }
-            .any()
-        );
-    }
-
-    #[test]
-    fn messages_mention_unmatched_items_only_when_present() {
-        assert_eq!(in_sync_message(0), "Already in sync.");
-        assert!(in_sync_message(2).contains("2 remote items"));
-        assert_eq!(unmatched_note(0), "");
-        assert!(unmatched_note(1).contains("1 remote item couldn't"));
-    }
-}
+mod tests;

@@ -10,6 +10,8 @@ use super::color;
 
 mod codecs;
 mod heif_thumbnail;
+mod raw_develop;
+mod raw_tone;
 pub(super) use heif_thumbnail::{decode_heif_thumbnail, is_heif_path};
 
 /// Runtime flag controlling the on-disk RAW decode cache.
@@ -57,15 +59,41 @@ pub(super) fn load_texture_blocking(path: &std::path::Path) -> Option<gdk4::Text
     result
 }
 
-/// Decode `path` to fit `max_edge` pixels on its long side; JPEGs shrink while decoding.
+/// Whether full RAW decoding develops `path`, so it can take the look of the grid's picture.
+pub(super) fn develops_raw(path: &std::path::Path) -> bool {
+    RAW_FULL_DECODE.load(std::sync::atomic::Ordering::Relaxed)
+        && texture_decoder_for_path(path) == TextureDecoder::Raw
+}
+
+/// Like [`load_texture_blocking`], with a RAW that full decoding develops taking the look
+/// of `look`, the picture the grid shows for it.
+pub(super) fn load_texture_like(
+    path: &std::path::Path,
+    look: Option<&gdk4::Texture>,
+) -> Option<gdk4::Texture> {
+    look_reference(path, look)
+        .and_then(|reference| decode_libraw_texture(path, Some(&reference)))
+        .or_else(|| load_texture_blocking(path))
+}
+
+fn look_reference(
+    path: &std::path::Path,
+    look: Option<&gdk4::Texture>,
+) -> Option<raw_tone::Reference> {
+    look.filter(|_| develops_raw(path))
+        .and_then(raw_develop::reference_from_texture)
+}
+
+/// Decode `path` to fit `max_edge` pixels on its long side; JPEGs shrink while decoding,
+/// and a RAW takes the look of `look` as in [`load_texture_like`].
 pub(super) fn load_texture_fitted_blocking(
     path: &std::path::Path,
     max_edge: u32,
+    look: Option<&gdk4::Texture>,
 ) -> Option<gdk4::Texture> {
     let started = std::time::Instant::now();
-    let texture = (texture_decoder_for_path(path) == TextureDecoder::Jpeg)
-        .then(|| decode_jpeg(path, Some(max_edge)))
-        .flatten()
+    let reference = look_reference(path, look);
+    let texture = decode_shrinking(path, max_edge, reference.as_ref())
         .or_else(|| load_texture_blocking(path))?;
     let texture = fit_texture(texture, max_edge);
     log::debug!(
@@ -76,6 +104,33 @@ pub(super) fn load_texture_fitted_blocking(
         texture.height(),
     );
     Some(texture)
+}
+
+/// Decoders that can shrink as they go: JPEG's DCT scaling, and full RAW decoding at half
+/// size when that still fills `max_edge` (zooming in loads every pixel).
+fn decode_shrinking(
+    path: &std::path::Path,
+    max_edge: u32,
+    reference: Option<&raw_tone::Reference>,
+) -> Option<gdk4::Texture> {
+    match texture_decoder_for_path(path) {
+        TextureDecoder::Jpeg => decode_jpeg(path, Some(max_edge)),
+        TextureDecoder::Raw if develops_raw(path) => decode_raw_fitted(path, max_edge, reference),
+        _ => None,
+    }
+}
+
+/// Developed to fit; a decode that came out full size is cached for zooming in.
+fn decode_raw_fitted(
+    path: &std::path::Path,
+    max_edge: u32,
+    reference: Option<&raw_tone::Reference>,
+) -> Option<gdk4::Texture> {
+    let raw = raw_develop::develop(path, raw_develop::Size::Fit(max_edge), reference)?;
+    if raw.full && RAW_CACHE_ENABLED.load(std::sync::atomic::Ordering::Relaxed) {
+        write_raw_decode_cache_async(path, reference, &raw.texture);
+    }
+    Some(raw.texture)
 }
 
 fn fitted_size(width: i32, height: i32, max_edge: u32) -> Option<(i32, i32)> {
@@ -239,11 +294,11 @@ pub(super) fn decode_raw_thumbnail_texture(path: &std::path::Path) -> Option<gdk
         path.display()
     );
     if RAW_CACHE_ENABLED.load(std::sync::atomic::Ordering::Relaxed)
-        && let Some(texture) = read_raw_decode_cache(path)
+        && let Some(texture) = read_raw_decode_cache(path, None)
     {
         return Some(texture);
     }
-    decode_libraw_uncached(path, true)
+    raw_develop::develop(path, raw_develop::Size::Half, None).map(|raw| raw.texture)
 }
 
 fn decode_raw_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
@@ -256,7 +311,7 @@ fn decode_raw_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
 }
 
 fn decode_full_raw_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
-    decode_libraw_texture(path)
+    decode_libraw_texture(path, None)
 }
 
 fn decode_raw_preview_or_fallback(path: &std::path::Path) -> Option<gdk4::Texture> {
@@ -267,7 +322,7 @@ fn decode_raw_preview_or_fallback(path: &std::path::Path) -> Option<gdk4::Textur
         "No embedded preview in {}; falling back to full decode",
         path.display()
     );
-    decode_libraw_texture(path)
+    decode_libraw_texture(path, None)
 }
 
 /// Return the directory used for the on-disk RAW decode cache.
@@ -278,9 +333,12 @@ fn raw_decode_cache_dir() -> std::path::PathBuf {
 }
 
 /// Build a stable cache filename for a RAW file based on its canonical path,
-/// last-modified timestamp (seconds), and byte length.  Any change to the file
-/// on disk produces a different key so stale pixels are never served.
-fn raw_decode_cache_key(path: &std::path::Path) -> Option<String> {
+/// last-modified timestamp (seconds), byte length, and the look it was toned to.  Any
+/// change to the file on disk produces a different key so stale pixels are never served.
+fn raw_decode_cache_key(
+    path: &std::path::Path,
+    reference: Option<&raw_tone::Reference>,
+) -> Option<String> {
     let meta = std::fs::metadata(path).ok()?;
     let mtime = meta
         .modified()
@@ -292,18 +350,26 @@ fn raw_decode_cache_key(path: &std::path::Path) -> Option<String> {
     let canonical = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
     use std::os::unix::ffi::OsStrExt;
     let mut hasher = blake3::Hasher::new();
-    // Bumped when decodes change: v2 is 16-bit linear Rec. 2020 instead of 8-bit sRGB.
-    hasher.update(b"v2");
+    // Bumped when decodes change: v4 is 8-bit Display P3 matched channel by channel to a
+    // reference picture, replacing v2's flat 16-bit linear Rec. 2020.
+    hasher.update(b"v4");
     hasher.update(canonical.as_os_str().as_bytes());
     hasher.update(&mtime.to_le_bytes());
     hasher.update(&size.to_le_bytes());
+    // Without one, the look comes from the file's own preview, which the rest covers.
+    if let Some(reference) = reference {
+        hasher.update(&reference.fingerprint());
+    }
     Some(format!("{}.png", &hasher.finalize().to_hex()[..32]))
 }
 
 /// Attempt to load a previously cached demosaiced texture from disk.
 /// Returns `None` if the cache entry is absent, stale, or unreadable.
-fn read_raw_decode_cache(path: &std::path::Path) -> Option<gdk4::Texture> {
-    let key = raw_decode_cache_key(path)?;
+fn read_raw_decode_cache(
+    path: &std::path::Path,
+    reference: Option<&raw_tone::Reference>,
+) -> Option<gdk4::Texture> {
+    let key = raw_decode_cache_key(path, reference)?;
     let cache_file = raw_decode_cache_dir().join(&key);
     if !cache_file.exists() {
         return None;
@@ -328,8 +394,12 @@ fn read_raw_decode_cache(path: &std::path::Path) -> Option<gdk4::Texture> {
 
 /// Persist a successfully demosaiced RAW texture to the disk cache so future
 /// opens can skip the expensive libraw pipeline entirely.
-fn write_raw_decode_cache(path: &std::path::Path, texture: &gdk4::Texture) {
-    let Some(key) = raw_decode_cache_key(path) else {
+fn write_raw_decode_cache(
+    path: &std::path::Path,
+    reference: Option<&raw_tone::Reference>,
+    texture: &gdk4::Texture,
+) {
+    let Some(key) = raw_decode_cache_key(path, reference) else {
         return;
     };
     let cache_dir = raw_decode_cache_dir();
@@ -1011,37 +1081,25 @@ fn apply_libraw_flip(
     }
 }
 
-/// Decode a RAW via vendored libraw with camera white balance + AHD demosaic
-/// at full resolution. Output goes through a disk cache keyed by (path, mtime,
-/// size) so a re-open hits the cache instead of re-demosaicing.
-fn decode_libraw_texture(path: &std::path::Path) -> Option<gdk4::Texture> {
+/// Decode a RAW via vendored libraw with camera white balance + AHD demosaic at full
+/// resolution, toned like `reference` (else the camera's JPEG). Output goes through a disk
+/// cache keyed by (path, mtime, size, look) so a re-open skips re-demosaicing.
+fn decode_libraw_texture(
+    path: &std::path::Path,
+    reference: Option<&raw_tone::Reference>,
+) -> Option<gdk4::Texture> {
     let cache_enabled = RAW_CACHE_ENABLED.load(std::sync::atomic::Ordering::Relaxed);
-    if cache_enabled && let Some(texture) = read_raw_decode_cache(path) {
+    if cache_enabled && let Some(texture) = read_raw_decode_cache(path, reference) {
         return Some(texture);
     }
-    let texture = decode_libraw_uncached(path, false);
+    let texture =
+        raw_develop::develop(path, raw_develop::Size::Full, reference).map(|raw| raw.texture);
     if let Some(ref tex) = texture
         && cache_enabled
     {
-        write_raw_decode_cache_async(path, tex);
+        write_raw_decode_cache_async(path, reference, tex);
     }
     texture
-}
-
-fn decode_libraw_uncached(path: &std::path::Path, half_size: bool) -> Option<gdk4::Texture> {
-    use std::os::unix::ffi::OsStrExt;
-    let c_path = std::ffi::CString::new(path.as_os_str().as_bytes()).ok()?;
-    unsafe {
-        let lr = init_libraw(path)?;
-        let _guard = LibrawHandle(lr);
-        configure_libraw_full_decode(lr, half_size);
-        if !run_libraw_full_decode(lr, c_path.as_ptr(), path) {
-            return None;
-        }
-        let img = make_libraw_image(lr, path)?;
-        let _img_guard = MemImage(img);
-        libraw_image_to_texture(img, path)
-    }
 }
 
 struct LibrawHandle(*mut rsraw_sys::libraw_data_t);
@@ -1060,132 +1118,19 @@ impl Drop for MemImage {
     }
 }
 
-unsafe fn init_libraw(path: &std::path::Path) -> Option<*mut rsraw_sys::libraw_data_t> {
-    let lr = unsafe { rsraw_sys::libraw_init(0) };
-    if lr.is_null() {
-        log::debug!("libraw_init returned null for {}", path.display());
-        None
-    } else {
-        Some(lr)
-    }
-}
-
-/// LibRaw's `output_color` for Rec. 2020, wide enough for the colours a sensor records.
-const LIBRAW_REC2020: i32 = 8;
-
-/// Half size, for thumbnails, is 8-bit sRGB. Full size keeps the camera's colours: 16-bit
-/// linear Rec. 2020, which `libraw_image_to_texture` tags so GTK maps it to the screen.
-unsafe fn configure_libraw_full_decode(lr: *mut rsraw_sys::libraw_data_t, half_size: bool) {
-    unsafe {
-        (*lr).params.half_size = i32::from(half_size);
-        (*lr).params.use_camera_wb = 1;
-        (*lr).params.user_qual = 3;
-        if half_size {
-            (*lr).params.output_bps = 8;
-            (*lr).params.output_color = 1;
-        } else {
-            (*lr).params.output_bps = 16;
-            (*lr).params.output_color = LIBRAW_REC2020;
-            (*lr).params.gamm[0] = 1.0;
-            (*lr).params.gamm[1] = 1.0;
-        }
-    }
-}
-
-unsafe fn run_libraw_full_decode(
-    lr: *mut rsraw_sys::libraw_data_t,
-    c_path: *const std::ffi::c_char,
+fn write_raw_decode_cache_async(
     path: &std::path::Path,
-) -> bool {
-    unsafe {
-        libraw_step(lr, path, "libraw_open_file", || {
-            rsraw_sys::libraw_open_file(lr, c_path)
-        }) && libraw_step(lr, path, "libraw_unpack", || rsraw_sys::libraw_unpack(lr))
-            && libraw_step(lr, path, "libraw_dcraw_process", || {
-                rsraw_sys::libraw_dcraw_process(lr)
-            })
-    }
-}
-
-unsafe fn libraw_step(
-    _lr: *mut rsraw_sys::libraw_data_t,
-    path: &std::path::Path,
-    label: &str,
-    f: impl FnOnce() -> i32,
-) -> bool {
-    let rc = f();
-    if rc != 0 {
-        log::debug!("{} failed ({}) for {}", label, rc, path.display());
-        false
-    } else {
-        true
-    }
-}
-
-unsafe fn make_libraw_image(
-    lr: *mut rsraw_sys::libraw_data_t,
-    path: &std::path::Path,
-) -> Option<*mut rsraw_sys::libraw_processed_image_t> {
-    let mut errcode = 0i32;
-    let img = unsafe { rsraw_sys::libraw_dcraw_make_mem_image(lr, &mut errcode) };
-    if img.is_null() || errcode != 0 {
-        log::debug!(
-            "libraw_dcraw_make_mem_image failed ({}) for {}",
-            errcode,
-            path.display()
-        );
-        None
-    } else {
-        Some(img)
-    }
-}
-
-unsafe fn libraw_image_to_texture(
-    img: *mut rsraw_sys::libraw_processed_image_t,
-    path: &std::path::Path,
-) -> Option<gdk4::Texture> {
-    let width = unsafe { (*img).width as u32 };
-    let colors = unsafe { (*img).colors };
-    if colors != 3 {
-        log::debug!(
-            "libraw produced {}-channel output for {} -- skipping",
-            colors,
-            path.display()
-        );
-        return None;
-    }
-    let height = unsafe { (*img).height as u32 };
-    let data_size = unsafe { (*img).data_size as usize };
-    let pixels = unsafe { std::slice::from_raw_parts((*img).data.as_ptr(), data_size) }.to_vec();
-    // 16 bits per channel only comes from full-size decodes, in linear Rec. 2020.
-    let (format, bytes_per_pixel, state) = match unsafe { (*img).bits } {
-        16 => (gdk4::MemoryFormat::R16g16b16, 6, color::rec2020_linear()),
-        _ => (gdk4::MemoryFormat::R8g8b8, 3, None),
-    };
-    let layout = color::Layout {
-        width: i32::try_from(width).ok()?,
-        height: i32::try_from(height).ok()?,
-        stride: usize::try_from(width).ok()?.checked_mul(bytes_per_pixel)?,
-        format,
-    };
-    Some(color::tagged(
-        &glib::Bytes::from_owned(pixels),
-        &layout,
-        state.as_ref(),
-    ))
-}
-
-fn write_raw_decode_cache_async(path: &std::path::Path, texture: &gdk4::Texture) {
+    reference: Option<&raw_tone::Reference>,
+    texture: &gdk4::Texture,
+) {
     let path_clone = path.to_path_buf();
+    let reference = reference.cloned();
     let tex_clone = texture.clone();
+    let write = move || write_raw_decode_cache(&path_clone, reference.as_ref(), &tex_clone);
     if tokio::runtime::Handle::try_current().is_ok() {
-        tokio::task::spawn_blocking(move || {
-            write_raw_decode_cache(&path_clone, &tex_clone);
-        });
+        tokio::task::spawn_blocking(write);
     } else {
-        std::thread::spawn(move || {
-            write_raw_decode_cache(&path_clone, &tex_clone);
-        });
+        std::thread::spawn(write);
     }
 }
 
@@ -1436,7 +1381,7 @@ mod texture_decoder_tests {
         let png = dir.path().join("wide.png");
         image::RgbImage::new(1000, 500).save(&png).unwrap();
         let size = |path: &std::path::Path, edge| {
-            let texture = load_texture_fitted_blocking(path, edge).unwrap();
+            let texture = load_texture_fitted_blocking(path, edge, None).unwrap();
             (texture.width(), texture.height())
         };
         assert_eq!(size(&jpeg, 400), (400, 300));
@@ -1815,9 +1760,32 @@ mod texture_decoder_tests {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("photo.nef");
         std::fs::write(&path, b"first").unwrap();
-        let first = raw_decode_cache_key(&path).unwrap();
-        assert_eq!(raw_decode_cache_key(&path).unwrap(), first);
+        let first = raw_decode_cache_key(&path, None).unwrap();
+        assert_eq!(raw_decode_cache_key(&path, None).unwrap(), first);
         std::fs::write(&path, b"second, longer").unwrap();
-        assert_ne!(raw_decode_cache_key(&path).unwrap(), first);
+        assert_ne!(raw_decode_cache_key(&path, None).unwrap(), first);
+    }
+
+    #[test]
+    fn raw_cache_key_tracks_the_look() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("photo.nef");
+        std::fs::write(&path, b"raw").unwrap();
+        let look = |rgb: [u8; 3]| {
+            let bytes = rgb.repeat(64 * 64);
+            raw_tone::Reference::sample(&raw_tone::Pixels {
+                bytes: &bytes,
+                width: 64,
+                height: 64,
+                stride: 64 * 3,
+                bytes_per_pixel: 3,
+                encoding: raw_tone::Encoding::DisplayP3,
+            })
+            .unwrap()
+        };
+        let own = raw_decode_cache_key(&path, None).unwrap();
+        let warm = raw_decode_cache_key(&path, Some(&look([200, 120, 60]))).unwrap();
+        let cool = raw_decode_cache_key(&path, Some(&look([60, 120, 200]))).unwrap();
+        assert!(own != warm && warm != cool && own != cool);
     }
 }
