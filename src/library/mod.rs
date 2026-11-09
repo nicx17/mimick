@@ -142,8 +142,8 @@ mod texture_decode;
 mod time_zones;
 mod timeline;
 use texture_decode::{
-    decode_heif_thumbnail, decode_raw_thumbnail_texture, is_heif_path, load_texture_blocking,
-    load_texture_fitted_blocking,
+    decode_heif_thumbnail, decode_raw_thumbnail_texture, develops_raw, is_heif_path,
+    load_texture_blocking, load_texture_fitted_blocking, load_texture_like,
 };
 pub use texture_decode::{set_raw_cache_enabled, set_raw_full_decode};
 
@@ -162,8 +162,17 @@ pub(crate) fn register_app_icons() {
 /// Load a local texture, preferring decoders that cover formats outside the
 /// GDK-Pixbuf runtime loader set before falling back to pixbuf and image-rs.
 pub(crate) async fn load_texture_oriented(path: &std::path::Path) -> Option<gdk4::Texture> {
+    load_texture_oriented_like(path, None).await
+}
+
+/// Like [`load_texture_oriented`], with a RAW that full decoding develops taking the look
+/// of `look`, the picture the grid shows for it.
+pub(crate) async fn load_texture_oriented_like(
+    path: &std::path::Path,
+    look: Option<gdk4::Texture>,
+) -> Option<gdk4::Texture> {
     let path_buf = path.to_path_buf();
-    tokio::task::spawn_blocking(move || load_texture_blocking(&path_buf))
+    tokio::task::spawn_blocking(move || load_texture_like(&path_buf, look.as_ref()))
         .await
         .ok()
         .flatten()

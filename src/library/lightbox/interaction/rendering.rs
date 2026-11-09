@@ -18,7 +18,7 @@ use crate::library::actions::is_mine;
 use crate::library::asset_object::AssetObject;
 use crate::library::download::{begin_download_session, finish_download_item, track_download_item};
 
-use crate::library::{LOCAL_ID_PREFIX, load_texture_oriented, timeline, trash_view};
+use crate::library::{LOCAL_ID_PREFIX, load_texture_oriented_like, timeline, trash_view};
 
 impl Lightbox {
     pub(in crate::library::lightbox) fn render(self: &Rc<Self>) {
@@ -213,9 +213,16 @@ impl Lightbox {
         let generation = self.load_gen.get();
         let cancel_loader = self.arm_loader_spinner(250);
         let lb = Rc::downgrade(self);
+        let asset_id = self
+            .current_item()
+            .map(|item| item.property::<String>("id"))
+            .unwrap_or_default();
+        let ctx = self.ui.ctx.clone();
         glib::MainContext::default().spawn_local(async move {
             let started = std::time::Instant::now();
-            let full = load_texture_oriented(&path).await;
+            // The same look as the screen-sized picture, so zooming in doesn't change it.
+            let look = ctx.thumbnail_cache.raw_look(&asset_id, false, &path).await;
+            let full = load_texture_oriented_like(&path, look).await;
             cancel_loader.set(true);
             let Some(lb) = lb.upgrade().filter(|lb| lb.load_gen.get() == generation) else {
                 return;

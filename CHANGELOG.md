@@ -72,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- RAW photos opened with **Full RAW Decoding** no longer look washed out: Mimick takes their contrast, black level, and colour from the camera's own preview in the file, and no longer blows out the brightest highlights. With no preview in the file, it uses a gentle default curve. The viewer also opens them three to four times faster, developing at half size when that still fills the screen, and the full sensor when you zoom in.
+- RAW photos opened with **Full RAW Decoding** no longer look washed out: they now look like their thumbnails, taking their contrast, black level, white balance, and colour from Immich's preview, or from the camera's preview in the file for photos only on this computer. With neither, Mimick uses a gentle default curve. The viewer also opens them three to four times faster, developing at half size when that still fills the screen, and the full sensor when you zoom in.
 - The Explore calendar no longer cuts off its lower rows, and the Friday label, on wide windows.
 - The selection bar's **⋯** menu no longer disappears for good on phone-width windows after selecting two or more of your own photos.
 - Mimick's own icons, such as the one at the top of the Status page, now show when Settings opens before the library.

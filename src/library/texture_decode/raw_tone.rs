@@ -1,32 +1,37 @@
-//! Tone for developed RAWs: the camera's own look, read off its embedded preview.
+//! Tone for developed RAWs: the look of the picture the grid shows, matched channel by channel.
 //!
-//! LibRaw hands over linear light, which looks flat and washed out on screen. Mapping its
-//! brightness onto the embedded JPEG's brings back the camera's contrast, black level, and
-//! colour; a RAW without a usable preview gets a gentle S-curve instead.
+//! LibRaw hands over linear light, which looks flat and washed out on screen. Mapping each
+//! channel's distribution onto a reference picture's (Immich's preview of a synced photo, or
+//! the camera's embedded JPEG) brings back its contrast, black level, white balance, and
+//! colour. A RAW with no reference gets a gentle S-curve instead.
 
 use rayon::prelude::*;
 use std::f64::consts::TAU;
 
 /// One bin per 16-bit value.
 const BINS: usize = 1 << 16;
-/// Points along the matched curve: enough to follow a camera's toe and shoulder.
+/// Steps along each matched curve: enough to follow a camera's toe and shoulder.
 const STEPS: usize = 256;
+const LEVELS: usize = STEPS + 1;
 /// Pixels sampled for a histogram; more only costs time.
 const SAMPLES: usize = 250_000;
-/// A preview smaller than 64×64 is too coarse to match.
-const MIN_REFERENCE_PIXELS: u64 = 64 * 64;
+/// A reference smaller than 64×64 is too coarse to match.
+const MIN_REFERENCE_PIXELS: usize = 64 * 64;
 /// Fallback exposure: the brightest channel's 99.7th percentile becomes white.
 const FALLBACK_WHITE_QUANTILE: f64 = 0.997;
 /// Fallback S-curve strength in display space; 0 is the plain sRGB curve.
 const FALLBACK_CONTRAST: f64 = 0.3;
-/// Luminance weights summing to 65536: linear Display P3 (LibRaw's output), and sRGB previews.
-const P3_LUMA: [u64; 3] = [15009, 45330, 5197];
-const SRGB_LUMA: [u64; 3] = [13933, 46871, 4732];
-/// Samples handed to each parallel task when applying a curve.
-const CHUNK: usize = 1 << 16;
+/// Linear sRGB to linear Display P3: LibRaw's own matrix for its Display P3 output.
+const SRGB_TO_P3: [[f64; 3]; 3] = [
+    [0.822_488, 0.177_511, 0.0],
+    [0.033_2, 0.966_8, 0.0],
+    [0.017_089, 0.072_411, 0.910_499],
+];
+/// Pixels handed to each parallel task when toning.
+const PIXELS_PER_TASK: usize = 1 << 15;
 
 /// How often each 16-bit value occurs.
-pub(super) struct Histogram {
+struct Histogram {
     bins: Vec<u32>,
     total: u64,
 }
@@ -60,16 +65,103 @@ impl Histogram {
             })
             .collect()
     }
+
+    /// The values at each step along a curve, 0 to 1.
+    fn steps(&self) -> [u16; LEVELS] {
+        let levels: Vec<f64> = (0..LEVELS).map(|i| i as f64 / STEPS as f64).collect();
+        let values = self.quantiles(&levels);
+        std::array::from_fn(|i| values[i])
+    }
 }
 
-/// A decode's histograms: luminance for matching, each channel's for the fallback exposure.
-pub(super) struct DecodeStats {
-    luminance: Histogram,
-    channels: [Histogram; 3],
+/// Which encoding a reference picture's 8-bit pixels are in.
+#[derive(Clone, Copy)]
+pub(super) enum Encoding {
+    Srgb,
+    DisplayP3,
 }
 
-/// 8-bit Display P3 for every 16-bit linear value.
-pub(super) struct Lut(Box<[u8; BINS]>);
+/// A reference picture's 8-bit pixels: RGB first in each pixel, rows `stride` bytes apart.
+pub(super) struct Pixels<'a> {
+    pub(super) bytes: &'a [u8],
+    pub(super) width: usize,
+    pub(super) height: usize,
+    pub(super) stride: usize,
+    pub(super) bytes_per_pixel: usize,
+    pub(super) encoding: Encoding,
+}
+
+/// A picture's look: where its linear Display P3 channels' values fall, step by step.
+#[derive(Clone, Debug, PartialEq)]
+pub(super) struct Reference([[u16; LEVELS]; 3]);
+
+impl Reference {
+    /// `None` when the picture is too small to match, or shorter than its layout says.
+    pub(super) fn sample(pixels: &Pixels<'_>) -> Option<Self> {
+        let needed =
+            pixels.stride * pixels.height.saturating_sub(1) + pixels.width * pixels.bytes_per_pixel;
+        if pixels.width * pixels.height < MIN_REFERENCE_PIXELS || pixels.bytes.len() < needed {
+            return None;
+        }
+        let linear: [f64; 256] = std::array::from_fn(|v| srgb_decode(v as f64 / 255.0));
+        let mut histograms = [Histogram::new(), Histogram::new(), Histogram::new()];
+        for rgb in sampled_pixels(pixels) {
+            let rgb = rgb.map(|v| linear[usize::from(v)]);
+            let p3 = match pixels.encoding {
+                Encoding::DisplayP3 => rgb,
+                Encoding::Srgb => {
+                    SRGB_TO_P3.map(|row| row.iter().zip(rgb).map(|(m, v)| m * v).sum())
+                }
+            };
+            for (histogram, value) in histograms.iter_mut().zip(p3) {
+                histogram.add((value.clamp(0.0, 1.0) * 65535.0).round() as u16);
+            }
+        }
+        Some(Self(histograms.map(|histogram| histogram.steps())))
+    }
+
+    /// Bytes that change whenever the look does, for keying cached decodes.
+    pub(super) fn fingerprint(&self) -> Vec<u8> {
+        self.0
+            .iter()
+            .flatten()
+            .flat_map(|v| v.to_le_bytes())
+            .collect()
+    }
+}
+
+/// Every pixel up to `SAMPLES`, else an even grid of them.
+fn sampled_pixels<'a>(pixels: &'a Pixels<'a>) -> impl Iterator<Item = [u8; 3]> + 'a {
+    let step = ((pixels.width * pixels.height) as f64 / SAMPLES as f64)
+        .sqrt()
+        .ceil()
+        .max(1.0) as usize;
+    (0..pixels.height).step_by(step).flat_map(move |y| {
+        (0..pixels.width).step_by(step).map(move |x| {
+            let at = y * pixels.stride + x * pixels.bytes_per_pixel;
+            [pixels.bytes[at], pixels.bytes[at + 1], pixels.bytes[at + 2]]
+        })
+    })
+}
+
+/// Each channel's histogram of a decode.
+pub(super) struct DecodeStats([Histogram; 3]);
+
+/// Samples LibRaw's 16-bit linear Display P3 RGB (native byte order).
+pub(super) fn sample_decode(rgb16: &[u8]) -> DecodeStats {
+    let (pixels, _) = rgb16.as_chunks::<6>();
+    let mut histograms = [Histogram::new(), Histogram::new(), Histogram::new()];
+    for pixel in pixels.iter().step_by((pixels.len() / SAMPLES).max(1)) {
+        for (histogram, sample) in histograms.iter_mut().zip(pixel.as_chunks::<2>().0) {
+            histogram.add(u16::from_ne_bytes(*sample));
+        }
+    }
+    DecodeStats(histograms)
+}
+
+/// 8-bit Display P3 for every 16-bit linear value of one channel.
+#[derive(Clone)]
+struct Lut(Box<[u8; BINS]>);
 
 impl Lut {
     /// `encoded` gives each value's display-encoded output, 0 to 1; called in ascending order.
@@ -80,63 +172,42 @@ impl Lut {
     }
 }
 
-/// Samples LibRaw's 16-bit linear Display P3 RGB (native byte order).
-pub(super) fn sample_decode(rgb16: &[u8]) -> DecodeStats {
-    let (pixels, _) = rgb16.as_chunks::<6>();
-    let mut stats = DecodeStats {
-        luminance: Histogram::new(),
-        channels: [Histogram::new(), Histogram::new(), Histogram::new()],
-    };
-    for pixel in pixels.iter().step_by(sample_step(pixels.len())) {
-        let rgb = [0, 2, 4].map(|at| u16::from_ne_bytes([pixel[at], pixel[at + 1]]));
-        stats.luminance.add(luma(rgb, P3_LUMA));
-        for (histogram, value) in stats.channels.iter_mut().zip(rgb) {
-            histogram.add(value);
-        }
-    }
-    stats
+/// One table per channel.
+pub(super) struct Tone([Lut; 3]);
+
+/// The reference's look when every channel can be matched, else the fallback S-curve.
+pub(super) fn tone(decoded: &DecodeStats, reference: Option<&Reference>) -> Tone {
+    let matched = reference.and_then(|reference| {
+        let [r, g, b] = [0, 1, 2].map(|c| matched_lut(&decoded.0[c], &reference.0[c]));
+        Some(Tone([r?, g?, b?]))
+    });
+    matched.unwrap_or_else(|| {
+        log::debug!("RAW tone: nothing to match, using the fallback curve");
+        let lut = fallback_lut(&decoded.0);
+        Tone([lut.clone(), lut.clone(), lut])
+    })
 }
 
-/// Samples an 8-bit sRGB preview's luminance; `None` when it's too small to match.
-pub(super) fn sample_reference(rgb8: &[u8]) -> Option<Histogram> {
-    let linear: [u16; 256] =
-        std::array::from_fn(|v| (srgb_decode(v as f64 / 255.0) * 65535.0).round() as u16);
-    let (pixels, _) = rgb8.as_chunks::<3>();
-    let mut histogram = Histogram::new();
-    for pixel in pixels.iter().step_by(sample_step(pixels.len())) {
-        histogram.add(luma(pixel.map(|v| linear[usize::from(v)]), SRGB_LUMA));
-    }
-    let enough = pixels.len() as u64 >= MIN_REFERENCE_PIXELS;
-    enough.then_some(histogram)
-}
-
-/// The camera's look when its preview can show it, else the fallback S-curve.
-pub(super) fn tone_lut(decoded: &DecodeStats, reference: Option<&Histogram>) -> Lut {
-    if let Some(lut) = reference.and_then(|reference| matched_lut(&decoded.luminance, reference)) {
-        return lut;
-    }
-    log::debug!("RAW tone: no usable preview, using the fallback curve");
-    fallback_lut(&decoded.channels)
-}
-
-/// LibRaw's 16-bit samples (native byte order) to 8-bit through `lut`, in parallel.
-pub(super) fn apply(lut: &Lut, rgb16: &[u8]) -> Vec<u8> {
+/// LibRaw's 16-bit samples (native byte order) to 8-bit through `tone`, in parallel.
+pub(super) fn apply(tone: &Tone, rgb16: &[u8]) -> Vec<u8> {
     let mut out = vec![0; rgb16.len() / 2];
-    out.par_chunks_mut(CHUNK)
-        .zip(rgb16.par_chunks(CHUNK * 2))
+    out.par_chunks_mut(PIXELS_PER_TASK * 3)
+        .zip(rgb16.par_chunks(PIXELS_PER_TASK * 6))
         .for_each(|(chunk, samples)| {
-            for (dst, sample) in chunk.iter_mut().zip(samples.as_chunks::<2>().0) {
-                *dst = lut.0[usize::from(u16::from_ne_bytes(*sample))];
+            let pixels = chunk.as_chunks_mut::<3>().0.iter_mut();
+            for (pixel, sample) in pixels.zip(samples.as_chunks::<6>().0) {
+                let channels = pixel.iter_mut().zip(&tone.0);
+                for ((dst, lut), value) in channels.zip(sample.as_chunks::<2>().0) {
+                    *dst = lut.0[usize::from(u16::from_ne_bytes(*value))];
+                }
             }
         });
     out
 }
 
-/// The curve that gives the decode the preview's distribution of brightness; applied to
-/// each channel alike, as camera engines do, it restores their saturation too.
-fn matched_lut(decoded: &Histogram, reference: &Histogram) -> Option<Lut> {
-    let levels: Vec<f64> = (0..=STEPS).map(|step| step as f64 / STEPS as f64).collect();
-    let points = curve_points(&decoded.quantiles(&levels), &reference.quantiles(&levels));
+/// The curve that gives a decoded channel the reference channel's distribution.
+fn matched_lut(decoded: &Histogram, reference: &[u16; LEVELS]) -> Option<Lut> {
+    let points = curve_points(&decoded.steps(), reference);
     if points.len() < 2 {
         return None;
     }
@@ -150,7 +221,7 @@ fn matched_lut(decoded: &Histogram, reference: &Histogram) -> Option<Lut> {
     }))
 }
 
-/// Quantile pairs with strictly rising inputs; outputs never fall.
+/// Step pairs with strictly rising inputs; outputs never fall.
 fn curve_points(xs: &[u16], ys: &[u16]) -> Vec<(f64, f64)> {
     let mut points: Vec<(f64, f64)> = Vec::with_capacity(xs.len());
     let mut top = 0;
@@ -186,20 +257,6 @@ fn fallback_lut(channels: &[Histogram; 3]) -> Lut {
         let v = srgb_encode((f64::from(value) / f64::from(white)).min(1.0));
         v - FALLBACK_CONTRAST * (TAU * v).sin() / TAU
     })
-}
-
-fn luma(rgb: [u16; 3], weights: [u64; 3]) -> u16 {
-    let sum: u64 = rgb
-        .iter()
-        .zip(weights)
-        .map(|(&v, w)| u64::from(v) * w)
-        .sum();
-    (sum >> 16) as u16
-}
-
-/// Every pixel up to `SAMPLES`, else an even spread of them.
-fn sample_step(pixels: usize) -> usize {
-    (pixels / SAMPLES).max(1)
 }
 
 fn srgb_encode(linear: f64) -> f64 {
@@ -240,6 +297,18 @@ mod tests {
             .collect()
     }
 
+    fn solid(rgb: [u8; 3], side: usize, encoding: Encoding) -> Option<Reference> {
+        let bytes: Vec<u8> = rgb.repeat(side * side);
+        Reference::sample(&Pixels {
+            bytes: &bytes,
+            width: side,
+            height: side,
+            stride: side * 3,
+            bytes_per_pixel: 3,
+            encoding,
+        })
+    }
+
     #[test]
     fn quantiles_walk_the_sorted_values() {
         let h = histogram([5, 1, 9, 3, 7]);
@@ -247,26 +316,19 @@ mod tests {
     }
 
     #[test]
-    fn white_stays_white_in_both_luminances() {
-        assert_eq!(luma([65535; 3], P3_LUMA), 65535);
-        assert_eq!(luma([65535; 3], SRGB_LUMA), 65535);
-        assert_eq!(luma([0; 3], P3_LUMA), 0);
-    }
-
-    #[test]
-    fn matching_a_preview_with_the_same_tones_keeps_the_plain_curve() {
+    fn matching_a_channel_with_the_same_tones_keeps_the_plain_curve() {
         let same = || histogram((0..=60_000).step_by(7));
-        let lut = matched_lut(&same(), &same()).unwrap();
+        let lut = matched_lut(&same(), &same().steps()).unwrap();
         for value in [500, 9_000, 30_000, 59_000] {
             assert!(lut.0[value].abs_diff(plain(value as u16)) <= 1, "{value}");
         }
     }
 
     #[test]
-    fn matching_takes_on_the_preview_brightness() {
+    fn matching_takes_on_the_reference_brightness() {
         let decoded = histogram((0..=10_000).step_by(3));
         let brighter = histogram((0..=40_000).step_by(12));
-        let lut = matched_lut(&decoded, &brighter).unwrap();
+        let lut = matched_lut(&decoded, &brighter.steps()).unwrap();
         assert!(lut.0[5_000].abs_diff(plain(20_000)) <= 1);
         assert!(
             lut.0[20_000].abs_diff(plain(40_000)) <= 1,
@@ -275,15 +337,34 @@ mod tests {
     }
 
     #[test]
-    fn a_flat_decode_cannot_be_matched() {
+    fn a_flat_channel_cannot_be_matched() {
         let flat = histogram([1_000; 50]);
-        assert!(matched_lut(&flat, &histogram(0..5_000)).is_none());
+        assert!(matched_lut(&flat, &histogram(0..5_000).steps()).is_none());
     }
 
     #[test]
-    fn tiny_previews_are_not_used() {
-        assert!(sample_reference(&[128; 3 * 63 * 63]).is_none());
-        assert!(sample_reference(&[128; 3 * 64 * 64]).is_some());
+    fn references_are_read_in_display_p3() {
+        let p3_red = solid([255, 0, 0], 64, Encoding::DisplayP3).unwrap();
+        assert_eq!((p3_red.0[0][STEPS], p3_red.0[1][STEPS]), (65535, 0));
+        // sRGB's red sits inside Display P3: less red, a little green and blue.
+        let srgb_red = solid([255, 0, 0], 64, Encoding::Srgb).unwrap();
+        assert_eq!(srgb_red.0[0][STEPS], 53_902);
+        assert_eq!(srgb_red.0[1][STEPS], 2_176);
+        assert_ne!(p3_red.fingerprint(), srgb_red.fingerprint());
+    }
+
+    #[test]
+    fn tiny_or_short_references_are_not_used() {
+        assert!(solid([128; 3], 63, Encoding::Srgb).is_none());
+        let short = Pixels {
+            bytes: &[0; 10],
+            width: 64,
+            height: 64,
+            stride: 192,
+            bytes_per_pixel: 3,
+            encoding: Encoding::Srgb,
+        };
+        assert!(Reference::sample(&short).is_none());
     }
 
     #[test]
@@ -298,15 +379,20 @@ mod tests {
     }
 
     #[test]
-    fn no_preview_falls_back() {
+    fn no_reference_falls_back_on_every_channel() {
         let stats = sample_decode(&rgb16(&[[2_000, 4_000, 6_000]; 100]));
-        assert_eq!(tone_lut(&stats, None).0[6_000], 255);
+        let tone = tone(&stats, None);
+        assert!(tone.0.iter().all(|lut| lut.0[6_000] == 255));
     }
 
     #[test]
-    fn apply_maps_every_channel() {
-        let lut = Lut::from_encoded(|value| f64::from(value) / 65535.0);
-        let out = apply(&lut, &rgb16(&[[0, 32_768, 65_535], [65_535, 0, 257]]));
-        assert_eq!(out, [0, 128, 255, 255, 0, 1]);
+    fn apply_uses_each_channel_s_own_table() {
+        let tone = Tone([
+            Lut::from_encoded(|value| f64::from(value) / 65535.0),
+            Lut::from_encoded(|_| 0.0),
+            Lut::from_encoded(|_| 1.0),
+        ]);
+        let out = apply(&tone, &rgb16(&[[32_768, 9, 9], [65_535, 9, 9]]));
+        assert_eq!(out, [128, 0, 255, 255, 0, 255]);
     }
 }

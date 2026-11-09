@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 20:33+0530\n"
+"POT-Creation-Date: 2026-11-09 20:57+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1961,6 +1961,37 @@ msgstr ""
 msgid "Photo Actions"
 msgstr ""
 
+#: src/library/controls/sort.rs:57
+msgid "Most assets"
+msgstr ""
+
+#: src/library/controls/sort.rs:57 src/library/people_view.rs:428
+#: src/library/person_picker.rs:163
+msgid "Name"
+msgstr ""
+
+#: src/library/controls/sort.rs:57 src/library/controls/sort.rs:60
+#: src/library/window_layout.rs:360
+msgid "Newest"
+msgstr ""
+
+#: src/library/controls/sort.rs:58 src/library/theme/palettes.rs:54
+#: src/library/theme/palettes.rs:82
+msgid "Default"
+msgstr ""
+
+#: src/library/controls/sort.rs:61
+msgid "Oldest"
+msgstr ""
+
+#: src/library/controls/sort.rs:62 src/library/window_layout.rs:361
+msgid "Filename"
+msgstr ""
+
+#: src/library/controls/sort.rs:63 src/library/window_layout.rs:362
+msgid "File Type"
+msgstr ""
+
 #: src/library/day_row.rs:37 src/library/day_row.rs:69
 msgid "Any Day"
 msgstr ""
@@ -3402,7 +3433,7 @@ msgstr ""
 msgid "Couldn't change the memory"
 msgstr ""
 
-#: src/library/mod.rs:398
+#: src/library/mod.rs:407
 msgid "Drop files to upload"
 msgstr ""
 
@@ -3495,10 +3526,6 @@ msgstr ""
 
 #: src/library/people_view.rs:426
 msgid "This name is used in search and on the People page."
-msgstr ""
-
-#: src/library/people_view.rs:428 src/library/person_picker.rs:163
-msgid "Name"
 msgstr ""
 
 #: src/library/people_view.rs:449
@@ -4990,10 +5017,6 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
-#: src/library/theme/palettes.rs:54 src/library/theme/palettes.rs:82
-msgid "Default"
-msgstr ""
-
 #: src/library/theme/palettes.rs:61
 msgid "Warm White"
 msgstr ""
@@ -5039,7 +5062,7 @@ msgstr ""
 msgid "Failed to scale pixbuf"
 msgstr ""
 
-#: src/library/thumbnail_cache/screen.rs:39
+#: src/library/thumbnail_cache/screen.rs:40
 msgid "No decoder could read the file"
 msgstr ""
 
@@ -5349,18 +5372,6 @@ msgstr ""
 
 #: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
 msgid "About Mimick"
-msgstr ""
-
-#: src/library/window_layout.rs:360
-msgid "Newest"
-msgstr ""
-
-#: src/library/window_layout.rs:361
-msgid "Filename"
-msgstr ""
-
-#: src/library/window_layout.rs:362
-msgid "File Type"
 msgstr ""
 
 #: src/library/window_layout.rs:393
