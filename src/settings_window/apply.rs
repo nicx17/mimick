@@ -1,6 +1,7 @@
 //! Saving settings: validate, write config, then push the changes into the running app.
 
 use gettextrs::gettext;
+use gtk::prelude::*;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -136,6 +137,15 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
         state.in_flight.set(false);
         return;
     }
+    let first_setup = request.include_connectivity
+        && !request.conn.api_key.is_empty()
+        && state
+            .ctx
+            .config
+            .read()
+            .get_api_key()
+            .unwrap_or_default()
+            .is_empty();
     let Some(key_file_notice) = write_config(form, state, &request) else {
         state.in_flight.set(false);
         return;
@@ -149,8 +159,11 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
     apply_sync_runtime(state, &request);
 
     state.in_flight.set(false);
+    sync_open_library(form, &state.ctx);
     if let Some(notice) = key_file_notice {
         show_alert(&form.window, &gettext("API Key Stored in a File"), &notice);
+    } else if first_setup && request.values.library_view_enabled {
+        open_library(form, &state.ctx);
     } else if request.show_success_ack {
         show_alert(
             &form.window,
@@ -158,6 +171,28 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
             &gettext("Mimick saved the updated settings successfully."),
         );
     }
+}
+
+/// Show the library and close Settings, which its main menu reopens. Runs once the first
+/// key connects, and from Open Library.
+pub(super) fn open_library(form: &SettingsForm, ctx: &Arc<AppContext>) {
+    let Some(app) = form
+        .window
+        .application()
+        .and_downcast::<libadwaita::Application>()
+    else {
+        return;
+    };
+    crate::ui_lifecycle::open_library_window_now(&app, ctx.clone());
+    form.window.close();
+}
+
+/// Open Library shows once there's a saved key to browse with and the library view is on.
+pub(super) fn sync_open_library(form: &SettingsForm, ctx: &AppContext) {
+    let config = ctx.config.read();
+    let ready =
+        config.data.library_view_enabled && !config.get_api_key().unwrap_or_default().is_empty();
+    form.open_library_btn.set_visible(ready);
 }
 
 /// Apply a changed "Run on Startup" choice; on refusal or error, revert the switch and say why.
@@ -219,13 +254,18 @@ fn write_config(
     Some(key_file_notice)
 }
 
-/// Point the API client at the new addresses; refresh the album list after a key change.
+/// Point the API client at the new addresses; after a connection change, check it again so
+/// the Status page shows the new route or problem, and refresh the album list.
 async fn update_api_client(state: &ApplyState, request: &ApplyRequest) {
     let (internal, external) = request.conn.runtime_urls();
     let api_client = &state.ctx.api_client;
     api_client
         .update_settings(internal, external, request.conn.api_key.clone())
         .await;
+    if request.include_connectivity {
+        // Startup is otherwise the only check, so Status kept the old result until a restart.
+        crate::file_events::refresh_connection_status(state.ctx.clone()).await;
+    }
     if request.include_connectivity && !request.conn.api_key.is_empty() {
         match api_client.get_all_albums().await {
             Ok(fetched) => *state.albums.borrow_mut() = fetched,

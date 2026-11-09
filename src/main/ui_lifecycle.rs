@@ -254,6 +254,13 @@ pub(super) async fn persist_on_shutdown(shared_state: &Arc<Mutex<AppState>>) {
     log::info!("Mimick exiting");
 }
 
+/// Whether closing this window should quit Mimick: background sync is off, so nothing needs
+/// the tray, and it's the last window. Call from a close handler, where the closing window
+/// still counts in `app.windows()`.
+pub(super) fn quits_on_close(app: &adw::Application, ctx: &AppContext) -> bool {
+    !ctx.config.read().data.background_sync_enabled && app.windows().len() <= 1
+}
+
 /// Open whichever window the user prefers, presenting an existing instance if available.
 pub(super) fn open_default_window(app: &adw::Application, ctx: Arc<AppContext>) {
     if let Some(win) = find_window(app, "mimick-library-window")
@@ -262,7 +269,14 @@ pub(super) fn open_default_window(app: &adw::Application, ctx: Arc<AppContext>) 
         win.present();
         return;
     }
-    if ctx.config.read().data.library_view_enabled {
+    // Until a server is set up there's no library to show: Settings walks through setup,
+    // and opens the library once it connects.
+    let (library, set_up) = {
+        let config = ctx.config.read();
+        let has_key = !config.get_api_key().unwrap_or_default().is_empty();
+        (config.data.library_view_enabled, has_key)
+    };
+    if library && set_up {
         open_library_window_now(app, ctx);
     } else {
         open_settings_window_now(app, ctx);

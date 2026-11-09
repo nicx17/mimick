@@ -70,5 +70,4 @@ package() {
   install -Dm644 src/assets/256x256/apps/dev.nicx.mimick.png -t "$icons/256x256/apps/"
   install -Dm644 src/assets/512x512/apps/dev.nicx.mimick.png -t "$icons/512x512/apps/"
   install -Dm644 src/assets/symbolic/apps/dev.nicx.mimick-symbolic.svg -t "$icons/symbolic/apps/"
-  install -Dm644 THIRD_PARTY_LICENSES.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
 }

@@ -23,6 +23,8 @@ pub(super) struct PeopleView {
     grid: gtk::FlowBox,
     empty: libadwaita::StatusPage,
     pub people: RefCell<Vec<Person>>,
+    /// People the server found by name who weren't among those loaded, for the current search.
+    found: RefCell<Vec<Person>>,
 }
 
 pub(super) fn build_people_view() -> PeopleView {
@@ -57,6 +59,7 @@ pub(super) fn build_people_view() -> PeopleView {
         grid,
         empty,
         people: RefCell::default(),
+        found: RefCell::default(),
     }
 }
 
@@ -96,9 +99,11 @@ fn scrolled(grid: &gtk::FlowBox, empty: &libadwaita::StatusPage) -> gtk::Scrolle
 
 pub(super) fn connect_people_view(ui: Rc<LibraryWindowUi>) {
     let ui_search = ui.clone();
-    ui.people
-        .search
-        .connect_search_changed(move |_| render(&ui_search));
+    ui.people.search.connect_search_changed(move |_| {
+        ui_search.people.found.borrow_mut().clear();
+        render(&ui_search);
+        search_server(&ui_search);
+    });
     let ui_hidden = ui.clone();
     ui.people.show_hidden.connect_toggled(move |button| {
         button.set_icon_name(if button.is_active() {
@@ -145,7 +150,8 @@ fn render(ui: &Rc<LibraryWindowUi>) {
         view.grid.remove(&child);
     }
     let query = view.search.text().to_lowercase();
-    let people = view.people.borrow();
+    let mut people = view.people.borrow().clone();
+    people.extend(view.found.borrow().iter().cloned());
     let shown = visible_people(&people, &query, view.show_hidden.is_active());
     for person in &shown {
         view.grid.append(&person_tile(ui, person));
@@ -165,6 +171,36 @@ fn render(ui: &Rc<LibraryWindowUi>) {
     view.empty.set_description(Some(description));
     view.empty.set_visible(shown.is_empty());
     view.grid.set_visible(!shown.is_empty());
+}
+
+/// Ask the server too: the People page loads only the first 500 people.
+fn search_server(ui: &Rc<LibraryWindowUi>) {
+    let query = ui.people.search.text().trim().to_string();
+    if query.chars().count() < 2 {
+        return;
+    }
+    let ui = ui.clone();
+    glib::MainContext::default().spawn_local(async move {
+        let found = ui.ctx.api_client.search_people(&query).await;
+        if ui.people.search.text().trim() != query {
+            return;
+        }
+        match found {
+            Ok(found) => {
+                let loaded = ui.people.people.borrow();
+                let new: Vec<Person> = found
+                    .into_iter()
+                    .filter(|person| loaded.iter().all(|known| known.id != person.id))
+                    .collect();
+                drop(loaded);
+                if !new.is_empty() {
+                    ui.people.found.replace(new);
+                    render(&ui);
+                }
+            }
+            Err(err) => log::debug!("People search failed: {err}"),
+        }
+    });
 }
 
 fn visible_people<'a>(people: &'a [Person], query: &str, show_hidden: bool) -> Vec<&'a Person> {
@@ -327,14 +363,14 @@ fn save(ui: &Rc<LibraryWindowUi>, person_id: &str, update: PersonUpdate) {
             show_alert_dialog(&ui, &gettext("Could Not Update Person"), &err);
             return;
         }
-        if let Some(person) = ui
-            .people
-            .people
-            .borrow_mut()
-            .iter_mut()
-            .find(|person| person.id == person_id)
-        {
-            apply_update(person, &update);
+        for list in [&ui.people.people, &ui.people.found] {
+            if let Some(person) = list
+                .borrow_mut()
+                .iter_mut()
+                .find(|person| person.id == person_id)
+            {
+                apply_update(person, &update);
+            }
         }
         render(&ui);
         super::source_header::refresh(&ui);
@@ -444,68 +480,4 @@ fn parse_date(date: &str) -> Option<(i32, i32, i32)> {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn person(id: &str, name: &str, hidden: bool) -> Person {
-        Person {
-            id: id.into(),
-            name: name.into(),
-            is_hidden: hidden,
-            birth_date: None,
-            is_favorite: false,
-        }
-    }
-
-    #[test]
-    fn visible_people_filters_hidden_and_search() {
-        let people = vec![
-            person("1", "Ana", false),
-            person("2", "Ben", true),
-            person("3", "", false),
-        ];
-        let ids = |shown: Vec<&Person>| shown.iter().map(|p| p.id.clone()).collect::<Vec<_>>();
-        assert_eq!(ids(visible_people(&people, "", false)), ["1", "3"]);
-        assert_eq!(ids(visible_people(&people, "", true)), ["1", "2", "3"]);
-        assert_eq!(ids(visible_people(&people, "be", true)), ["2"]);
-    }
-
-    #[test]
-    fn favorites_come_first_in_their_original_order() {
-        let mut people = vec![
-            person("1", "Ana", false),
-            person("2", "Ben", false),
-            person("3", "Cy", false),
-        ];
-        people[1].is_favorite = true;
-        people[2].is_favorite = true;
-        let ids: Vec<&str> = visible_people(&people, "", false)
-            .iter()
-            .map(|p| p.id.as_str())
-            .collect();
-        assert_eq!(ids, ["2", "3", "1"]);
-    }
-
-    #[test]
-    fn apply_update_changes_only_set_fields() {
-        let mut ana = person("1", "Ana", false);
-        apply_update(
-            &mut ana,
-            &PersonUpdate {
-                is_hidden: Some(true),
-                birth_date: Some(Some("1990-05-04".into())),
-                ..PersonUpdate::default()
-            },
-        );
-        assert_eq!(ana.name, "Ana");
-        assert!(ana.is_hidden);
-        assert_eq!(ana.birth_date.as_deref(), Some("1990-05-04"));
-    }
-
-    #[test]
-    fn parse_date_reads_iso_dates() {
-        assert_eq!(parse_date("1990-05-04"), Some((1990, 5, 4)));
-        assert_eq!(parse_date("1990-05-04T00:00:00.000Z"), Some((1990, 5, 4)));
-        assert_eq!(parse_date("bad"), None);
-    }
-}
+mod tests;

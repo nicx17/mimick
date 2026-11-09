@@ -182,6 +182,7 @@ impl EditSession {
                 .unwrap_or_default(),
             keep_details,
             original: None,
+            pixels_profile: None,
         }
     }
 

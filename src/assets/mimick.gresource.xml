@@ -73,6 +73,9 @@
     <file alias="scalable/actions/mimick-layers-symbolic.svg"
           compressed="true"
           preprocess="xml-stripblanks">scalable/actions/mimick-layers-symbolic.svg</file>
+    <file alias="scalable/actions/mimick-qr-code-symbolic.svg"
+          compressed="true"
+          preprocess="xml-stripblanks">scalable/actions/mimick-qr-code-symbolic.svg</file>
     <file alias="scalable/actions/mimick-share-symbolic.svg"
           compressed="true"
           preprocess="xml-stripblanks">scalable/actions/mimick-share-symbolic.svg</file>
@@ -131,5 +134,9 @@
           compressed="true">map-styles/toner-dark.json</file>
     <file alias="toner.json"
           compressed="true">map-styles/toner.json</file>
+  </gresource>
+  <!-- The metainfo, for the About dialog's What's New and links. -->
+  <gresource prefix="/dev/nicx/mimick">
+    <file compressed="true">dev.nicx.mimick.metainfo.xml</file>
   </gresource>
 </gresources>

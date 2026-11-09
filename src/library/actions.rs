@@ -11,7 +11,6 @@ use std::rc::Rc;
 
 use glib::clone;
 use gtk::prelude::*;
-use libadwaita::prelude::*;
 
 use crate::api_client::SharedLinkTarget;
 use crate::library::asset_object::AssetObject;
@@ -20,6 +19,12 @@ use super::LOCAL_ID_PREFIX;
 use super::LibraryWindowUi;
 use super::context_menu::show_alert_dialog;
 use super::download::start_download_group;
+
+mod trash;
+use trash::confirm_and_bulk_delete;
+pub(super) use trash::{
+    TrashTarget, confirm_trash, confirm_trash_leaving_grid, remove_assets_from_grid,
+};
 
 pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::ToggleButton) {
     let selection = ui.grid.selection.clone();
@@ -31,13 +36,12 @@ pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::T
         let bulk_bar = bulk_bar.clone();
         let count_label = count_label.clone();
         let select_toggle = select_toggle.clone();
+        let canvas = ui.grid.canvas.clone();
         Rc::new(move || {
             let n = selection_count(&selection);
             bulk_bar.set_reveal_child(select_toggle.is_active() && n > 0);
-            count_label.set_label(&fill(
-                ngettext("{n} selected", "{n} selected", plural_n(n)),
-                &[("n", &n.to_string())],
-            ));
+            let sizes = canvas.shows_file_sizes();
+            count_label.set_label(&super::utilities::selection_text(&selection, n, sizes));
         })
     };
 
@@ -60,6 +64,42 @@ pub(super) fn connect_select_mode(ui: Rc<LibraryWindowUi>, select_toggle: gtk::T
     connect_transient_select_keys(ui, select_toggle, selection);
 }
 
+/// Escape bubbles, so an open dialog, menu, or path field it's meant for gets it first.
+/// On the library page too, because the navigation view around it takes Escape for itself.
+fn connect_escape(
+    ui: &LibraryWindowUi,
+    select_toggle: &gtk::ToggleButton,
+    transient: &Rc<Cell<bool>>,
+) {
+    if let Some(page) = ui
+        .nav
+        .navigation_stack()
+        .item(0)
+        .and_downcast::<gtk::Widget>()
+    {
+        page.add_controller(escape_leaves_selection(select_toggle, transient));
+    }
+    ui.window
+        .add_controller(escape_leaves_selection(select_toggle, transient));
+}
+
+fn escape_leaves_selection(
+    select_toggle: &gtk::ToggleButton,
+    transient: &Rc<Cell<bool>>,
+) -> gtk::EventControllerKey {
+    let escape = gtk::EventControllerKey::new();
+    let (select_toggle, transient) = (select_toggle.clone(), transient.clone());
+    escape.connect_key_pressed(move |_, keyval, _, _| {
+        if keyval != gtk::gdk::Key::Escape || !select_toggle.is_active() {
+            return glib::Propagation::Proceed;
+        }
+        select_toggle.set_active(false);
+        transient.set(false);
+        glib::Propagation::Stop
+    });
+    escape
+}
+
 fn connect_transient_select_keys(
     ui: Rc<LibraryWindowUi>,
     select_toggle: gtk::ToggleButton,
@@ -70,17 +110,13 @@ fn connect_transient_select_keys(
     // Ctrl+click then commits a selection (handled separately in grid_view)
     // and the release no longer collapses select mode.
     let transient = Rc::new(Cell::new(false));
+    connect_escape(&ui, &select_toggle, &transient);
     let key_controller = gtk::EventControllerKey::new();
     key_controller.set_propagation_phase(gtk::PropagationPhase::Capture);
     key_controller.connect_key_pressed({
         let select_toggle = select_toggle.clone();
         let transient = transient.clone();
         move |_, keyval, _, _| {
-            if keyval == gtk::gdk::Key::Escape && select_toggle.is_active() {
-                select_toggle.set_active(false);
-                transient.set(false);
-                return glib::Propagation::Stop;
-            }
             if matches!(keyval, gtk::gdk::Key::Control_L | gtk::gdk::Key::Control_R)
                 && !select_toggle.is_active()
             {
@@ -171,23 +207,49 @@ fn connect_delete_key(ui: Rc<LibraryWindowUi>) {
     ui.grid.scrolled.add_controller(delete_key);
 }
 
-/// Selection-bar button: create one public link for every selected server asset.
+/// Selection-bar button: a menu to make a new link of the selection, or add it to a link.
 pub(super) fn connect_bulk_share_link(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
-    button.connect_clicked(move |_| {
+    button.connect_clicked(move |button| {
         let ids = selected_server_ids(&ui);
         if ids.is_empty() {
             return;
         }
-        let ui_after = ui.clone();
-        super::shared_link_dialog::present(
-            ui.clone(),
-            super::shared_link_dialog::LinkDialogMode::Create(SharedLinkTarget::Assets(ids)),
-            Rc::new(move || {
-                ui_after.grid.selection.unselect_all();
-                ui_after.select_toggle.set_active(false);
-            }),
+        let (x, y) = (f64::from(button.width()) / 2.0, 0.0);
+        let menu = super::context_menu::Menu::new(button, x, y);
+        let (ui_new, ids_new) = (ui.clone(), ids.clone());
+        menu.add_with_icon(
+            "mimick-share-symbolic",
+            &gettext("New Link…"),
+            false,
+            move || create_link_for(&ui_new, ids_new.clone()),
         );
+        let ui_add = ui.clone();
+        menu.add_with_icon(
+            "insert-link-symbolic",
+            &gettext("Add to Existing Link…"),
+            false,
+            move || super::shared_link_photos::add_to_link(&ui_add, ids.clone()),
+        );
+        // On narrow windows the button sits in "More actions", so there's nothing to point at.
+        if button.is_mapped() {
+            menu.popup();
+        } else {
+            menu.present_sheet(&ui.window);
+        }
     });
+}
+
+/// A new public link for `ids`; the selection clears once it's made.
+fn create_link_for(ui: &Rc<LibraryWindowUi>, ids: Vec<String>) {
+    let ui_after = ui.clone();
+    super::shared_link_dialog::present(
+        ui.clone(),
+        super::shared_link_dialog::LinkDialogMode::Create(SharedLinkTarget::Assets(ids)),
+        Rc::new(move || {
+            ui_after.grid.selection.unselect_all();
+            ui_after.select_toggle.set_active(false);
+        }),
+    );
 }
 
 /// Selection-bar button: give every selected server asset one location.
@@ -258,13 +320,22 @@ pub(super) fn connect_bulk_location(ui: Rc<LibraryWindowUi>, button: &gtk::Butto
             );
             return;
         }
+        let on_saved = super::utilities::after_fixing(&ui, ids.clone(), clear_selection_after(&ui));
         let target = super::map::LocationTarget {
             title: batch_title(ids.len(), on_server),
+            around: taken_span(&selected_items(&ui)),
             ids,
             initial: None,
         };
-        super::map::set_location(ui.clone(), target, clear_selection_after(&ui));
+        super::map::set_location(ui.clone(), target, on_saved);
     });
+}
+
+/// When the earliest and latest of `items` were taken, as Immich's UTC times.
+fn taken_span(items: &[AssetObject]) -> Option<(String, String)> {
+    let times = items.iter().map(AssetObject::created_at);
+    let earliest = times.clone().min()?;
+    Some((earliest, times.max()?))
 }
 
 /// Selection-bar button: set or shift the capture date of every selected asset the user owns.
@@ -283,7 +354,8 @@ pub(super) fn connect_bulk_date(ui: Rc<LibraryWindowUi>, button: &gtk::Button) {
             return;
         }
         let title = batch_title(ids.len(), on_server);
-        super::bulk_date::present(&ui, ids, title, clear_selection_after(&ui));
+        let on_done = super::utilities::after_fixing(&ui, ids.clone(), clear_selection_after(&ui));
+        super::bulk_date::present(&ui, ids, title, on_done);
     });
 }
 
@@ -332,7 +404,7 @@ pub(super) fn connect_bulk_stack(ui: Rc<LibraryWindowUi>) {
 }
 
 /// Selected photos you own on the server, in grid order; the first becomes a new stack's cover.
-fn owned_selection_ids(ui: &Rc<LibraryWindowUi>) -> Vec<String> {
+pub(super) fn owned_selection_ids(ui: &Rc<LibraryWindowUi>) -> Vec<String> {
     selected_items(ui)
         .iter()
         .filter(|item| is_mine(ui, item))
@@ -387,267 +459,9 @@ pub(super) fn selected_items(ui: &Rc<LibraryWindowUi>) -> Vec<AssetObject> {
     out
 }
 
-/// A server asset the user asked to move to the Immich trash.
-pub(super) struct TrashTarget {
-    remote_id: String,
-    filename: String,
-    has_local_copy: bool,
-}
-
-impl TrashTarget {
-    pub(super) fn remote_id(&self) -> &str {
-        &self.remote_id
-    }
-
-    /// `None` for local-only items, which have nothing on the server to trash.
-    pub(super) fn from_item(item: &AssetObject) -> Option<Self> {
-        let id = item.property::<String>("id");
-        let remote_id = item.property::<String>("remote-id");
-        let remote_id = if remote_id.is_empty() { id } else { remote_id };
-        if remote_id.is_empty() || remote_id.starts_with(LOCAL_ID_PREFIX) {
-            return None;
-        }
-        Some(Self {
-            remote_id,
-            filename: item.property("filename"),
-            has_local_copy: !item.property::<String>("local-path").is_empty(),
-        })
-    }
-}
-
-/// Heading and body for the trash confirmation dialog.
-fn trash_dialog_text(
-    targets: &[TrashTarget],
-    skipped_local: usize,
-    trash: bool,
-) -> (String, String) {
-    let heading = match (targets, trash) {
-        ([single], true) => fill(
-            gettext("Move “{filename}” to trash?"),
-            &[("filename", &single.filename.to_string())],
-        ),
-        (_, true) => fill(
-            ngettext(
-                "Move {count} item to trash?",
-                "Move {count} items to trash?",
-                plural_n(targets.len()),
-            ),
-            &[("count", &targets.len().to_string())],
-        ),
-        ([single], false) => fill(
-            gettext("Delete “{filename}” permanently?"),
-            &[("filename", &single.filename.to_string())],
-        ),
-        (_, false) => fill(
-            ngettext(
-                "Delete {count} item permanently?",
-                "Delete {count} items permanently?",
-                plural_n(targets.len()),
-            ),
-            &[("count", &targets.len().to_string())],
-        ),
-    };
-    let mut body = if trash {
-        gettext("Items can be restored from the Immich trash.")
-    } else {
-        gettext("The Immich trash is turned off, so this can't be undone.")
-    };
-    if targets.iter().any(|t| t.has_local_copy) {
-        body.push(' ');
-        body.push_str(&gettext("Local copies in your watch folders are kept."));
-    }
-    if skipped_local > 0 {
-        body.push_str("\n\n");
-        body.push_str(&fill(
-            ngettext(
-                "{n} local-only item is not on the server and will be skipped.",
-                "{n} local-only items are not on the server and will be skipped.",
-                plural_n(skipped_local),
-            ),
-            &[("n", &skipped_local.to_string())],
-        ));
-    }
-    (heading, body)
-}
-
-/// Ask before moving `targets` to the Immich trash; `on_trashed` runs after the server confirms.
-pub(super) fn confirm_trash(
-    ui: Rc<LibraryWindowUi>,
-    targets: Vec<TrashTarget>,
-    skipped_local: usize,
-    on_trashed: impl Fn() + 'static,
-) {
-    if targets.is_empty() {
-        return;
-    }
-    let trash = ui.features.get().trash;
-    let (heading, body) = trash_dialog_text(&targets, skipped_local, trash);
-    let dialog = libadwaita::AlertDialog::builder()
-        .heading(heading)
-        .body(body)
-        .build();
-    dialog.add_response("cancel", &gettext("Cancel"));
-    dialog.add_response(
-        "delete",
-        &if trash {
-            gettext("Move to trash")
-        } else {
-            gettext("Delete")
-        },
-    );
-    dialog.set_response_appearance("delete", libadwaita::ResponseAppearance::Destructive);
-    dialog.set_default_response(Some("cancel"));
-    dialog.set_close_response("cancel");
-
-    let ids: Vec<String> = targets.into_iter().map(|t| t.remote_id).collect();
-    let on_trashed = Rc::new(on_trashed);
-    let ui_for_choice = ui.clone();
-    dialog.connect_response(None, move |_, response| {
-        if response != "delete" {
-            return;
-        }
-        let ui = ui_for_choice.clone();
-        let ids = ids.clone();
-        let on_trashed = on_trashed.clone();
-        glib::MainContext::default().spawn_local(async move {
-            match trash_assets(&ui, &ids).await {
-                Ok(()) => on_trashed(),
-                Err(err) => {
-                    log::error!("Move to trash failed: {}", err);
-                    super::context_menu::show_alert_dialog(
-                        &ui,
-                        &gettext("Could Not Move to Trash"),
-                        &fill(
-                            gettext("Immich rejected the request: {err}"),
-                            &[("err", &err.to_string())],
-                        ),
-                    );
-                }
-            }
-        });
-    });
-    dialog.present(Some(&ui.window));
-}
-
-/// Trash on the server, then drop the items from the grid.
-async fn trash_assets(ui: &Rc<LibraryWindowUi>, ids: &[String]) -> Result<(), String> {
-    ui.ctx.api_client.delete_assets(ids).await?;
-    remove_assets_from_grid(ui, ids);
-    Ok(())
-}
-
-/// Drop assets from the grid in place, so open views (like the lightbox) keep their
-/// position instead of reloading from the first page; then refresh album/stat counts.
-pub(super) fn remove_assets_from_grid(ui: &Rc<LibraryWindowUi>, ids: &[String]) {
-    if !super::timeline::remove(ui, ids) {
-        ui.ctx
-            .library_state
-            .lock()
-            .assets
-            .retain(|asset| !ids.contains(&asset.id));
-        // Outside the lock: items_changed handlers may read the library state.
-        ui.grid.model.remove_ids(ids);
-    }
-    super::refresh_library_after_mutation(ui.clone(), false);
-}
-
-fn confirm_and_bulk_delete(ui: Rc<LibraryWindowUi>) {
-    let items = selected_items(&ui);
-    let targets: Vec<TrashTarget> = items.iter().filter_map(TrashTarget::from_item).collect();
-    let skipped_local = items.len() - targets.len();
-    let ui_after = ui.clone();
-    confirm_trash(ui, targets, skipped_local, move || {
-        ui_after.grid.selection.unselect_all();
-        ui_after.select_toggle.set_active(false);
-    });
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{TrashTarget, batch_title, owned_by, trash_dialog_text};
-    use crate::library::LOCAL_ID_PREFIX;
-    use crate::library::asset_object::{AssetInit, AssetObject};
-    use glib::prelude::ObjectExt;
-
-    fn remote_item(id: &str) -> AssetObject {
-        AssetObject::new(AssetInit {
-            id,
-            filename: "IMG_1.jpg",
-            mime_type: "image/jpeg",
-            created_at: "2024-01-15T14:25:15.000Z",
-            asset_type: "IMAGE",
-            sync_state: 0,
-            thumbhash: None,
-            width: 0,
-            height: 0,
-            is_favorite: false,
-            is_archived: false,
-            is_edited: false,
-            owner_id: "",
-            local_date_time: "",
-        })
-    }
-
-    #[test]
-    fn trash_target_uses_remote_id_for_server_assets() {
-        let target = TrashTarget::from_item(&remote_item("remote-1")).expect("server asset");
-        assert_eq!(target.remote_id(), "remote-1");
-        assert_eq!(target.filename, "IMG_1.jpg");
-        assert!(!target.has_local_copy);
-    }
-
-    #[test]
-    fn trash_target_notes_a_local_copy() {
-        let item = remote_item("remote-1");
-        item.set_property("local-path", "/home/user/Pictures/IMG_1.jpg");
-        let target = TrashTarget::from_item(&item).expect("server asset");
-        assert!(target.has_local_copy);
-    }
-
-    #[test]
-    fn trash_target_skips_local_only_assets() {
-        let path = "/home/user/Pictures/IMG_2.jpg";
-        let item = AssetObject::new_local(
-            &format!("{LOCAL_ID_PREFIX}{path}"),
-            "IMG_2.jpg",
-            "image/jpeg",
-            "2024-01-15T14:25:15.000Z",
-            "IMAGE",
-            path,
-        );
-        assert!(TrashTarget::from_item(&item).is_none());
-    }
-
-    fn target(name: &str, has_local_copy: bool) -> TrashTarget {
-        TrashTarget {
-            remote_id: format!("id-{name}"),
-            filename: name.to_string(),
-            has_local_copy,
-        }
-    }
-
-    #[test]
-    fn single_item_heading_names_the_file() {
-        let (heading, body) = trash_dialog_text(&[target("IMG_1.jpg", false)], 0, true);
-        assert_eq!(heading, "Move “IMG_1.jpg” to trash?");
-        assert_eq!(body, "Items can be restored from the Immich trash.");
-    }
-
-    #[test]
-    fn body_mentions_kept_local_copies_and_skipped_items() {
-        let targets = [target("a.jpg", true), target("b.jpg", false)];
-        let (heading, body) = trash_dialog_text(&targets, 2, true);
-        assert_eq!(heading, "Move 2 items to trash?");
-        assert!(body.contains("Local copies in your watch folders are kept."));
-        assert!(body.contains("2 local-only items are not on the server"));
-    }
-
-    #[test]
-    fn without_trash_the_dialog_warns_deletion_is_permanent() {
-        let (heading, body) = trash_dialog_text(&[target("IMG_1.jpg", false)], 0, false);
-        assert_eq!(heading, "Delete “IMG_1.jpg” permanently?");
-        assert!(body.contains("can't be undone"));
-    }
+    use super::{batch_title, owned_by};
 
     #[test]
     fn only_the_owner_counts_as_mine() {

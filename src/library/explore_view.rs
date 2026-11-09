@@ -21,6 +21,7 @@ type PersonClick = Rc<dyn Fn(String, String)>;
 const INITIAL_TILE_COUNT: usize = 16;
 const RECENTS_EXPANDED_COUNT: usize = 30;
 
+pub(super) mod calendar;
 mod people;
 mod places;
 mod tiles;
@@ -51,6 +52,8 @@ pub struct ExploreViewParts {
     pub root: gtk::ScrolledWindow,
     pub sections: Rc<Cell<ExploreSections>>,
     pub populated: Rc<Cell<bool>>,
+    /// Photos per day for the past year, under the other sections.
+    pub calendar: Rc<calendar::Calendar>,
     people_row: gtk::Box,
     recents_grid: gtk::FlowBox,
     places_grid: gtk::FlowBox,
@@ -84,6 +87,8 @@ pub fn build_explore_view() -> ExploreViewParts {
         .margin_end(16)
         .build();
     let widgets = build_sections(&outer);
+    let calendar = calendar::Calendar::new();
+    outer.append(&calendar.root);
     let root = gtk::ScrolledWindow::builder()
         .child(&outer)
         .hscrollbar_policy(gtk::PolicyType::Never)
@@ -93,6 +98,7 @@ pub fn build_explore_view() -> ExploreViewParts {
     ExploreViewParts {
         root,
         populated: Rc::new(Cell::new(false)),
+        calendar,
         people_row: widgets.people_row,
         recents_grid: widgets.recents_grid,
         places_grid: widgets.places_grid,
@@ -288,6 +294,7 @@ fn clone_parts_handles(parts: &ExploreViewParts) -> ExploreViewParts {
     ExploreViewParts {
         root: parts.root.clone(),
         populated: parts.populated.clone(),
+        calendar: parts.calendar.clone(),
         people_row: parts.people_row.clone(),
         recents_grid: parts.recents_grid.clone(),
         places_grid: parts.places_grid.clone(),

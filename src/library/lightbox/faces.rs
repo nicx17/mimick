@@ -124,6 +124,7 @@ impl Lightbox {
         };
         self.stop_slideshow();
         self.stop_live();
+        self.leave_panorama();
         self.exit_edit_mode();
         self.actions.ocr_toggle.set_active(false);
         // On a phone the details pane covers the photo, which has to show to tag faces on it.
@@ -297,7 +298,7 @@ impl Lightbox {
             gettext("Choose Person…")
         };
         let (lb, face_id) = (self.clone(), face.id.clone());
-        menu.add(&label, false, move || {
+        menu.add_with_icon("avatar-default-symbolic", &label, false, move || {
             let (lb2, face_id) = (lb.clone(), face_id.clone());
             person_picker::present(&lb.ui, &lb.picture.scrolled, at, move |choice| {
                 let face_id = face_id.clone();
@@ -309,24 +310,34 @@ impl Lightbox {
         });
         if let Some(person) = &face.person {
             let (lb, person_id) = (self.clone(), person.id.clone());
-            menu.add(&gettext("Use as Cover Photo"), false, move || {
-                let update = PersonUpdate {
-                    feature_face_asset_id: Some(lb.faces.asset_id.borrow().clone()),
-                    ..PersonUpdate::default()
-                };
-                let person_id = person_id.clone();
-                lb.change_faces(gettext("Cover photo changed"), async move |api| {
-                    api.update_person(&person_id, &update).await
-                });
-            });
+            menu.add_with_icon(
+                "image-x-generic-symbolic",
+                &gettext("Use as Cover Photo"),
+                false,
+                move || {
+                    let update = PersonUpdate {
+                        feature_face_asset_id: Some(lb.faces.asset_id.borrow().clone()),
+                        ..PersonUpdate::default()
+                    };
+                    let person_id = person_id.clone();
+                    lb.change_faces(gettext("Cover photo changed"), async move |api| {
+                        api.update_person(&person_id, &update).await
+                    });
+                },
+            );
         }
         let (lb, face_id) = (self.clone(), face.id.clone());
-        menu.add(&gettext("Remove Face"), true, move || {
-            let face_id = face_id.clone();
-            lb.change_faces(gettext("Face removed"), async move |api| {
-                api.delete_face(&face_id).await
-            });
-        });
+        menu.add_with_icon(
+            "list-remove-symbolic",
+            &gettext("Remove Face"),
+            true,
+            move || {
+                let face_id = face_id.clone();
+                lb.change_faces(gettext("Face removed"), async move |api| {
+                    api.delete_face(&face_id).await
+                });
+            },
+        );
     }
 
     /// A box drawn on the photo: ask who it is, right at the box. Tiny ones are slips.

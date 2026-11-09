@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and help
+    url: https://github.com/nicx17/mimick/discussions
+    about: Ask how to set up or use Mimick.
+  - name: Documentation
+    url: https://github.com/nicx17/mimick/wiki
+    about: Guides for setup, the library view, and troubleshooting.

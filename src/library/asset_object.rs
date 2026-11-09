@@ -90,6 +90,10 @@ mod imp {
         /// Photos in the stack, the cover included; 0 when not stacked.
         #[property(get, set)]
         stack_count: Cell<u32>,
+
+        /// Original file size in bytes from Immich; 0 when unknown.
+        #[property(get, set)]
+        file_size: Cell<u64>,
     }
 
     #[glib::object_subclass]

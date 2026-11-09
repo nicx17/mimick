@@ -24,10 +24,12 @@ pub enum MapStyle {
     Bingo,
     Satellite,
     OpenStreetMap,
+    OpenTopoMap,
+    Humanitarian,
 }
 
 impl MapStyle {
-    pub const ALL: [Self; 19] = [
+    pub const ALL: [Self; 21] = [
         Self::Immich,
         Self::Colorful,
         Self::Natural,
@@ -47,6 +49,16 @@ impl MapStyle {
         Self::Bingo,
         Self::Satellite,
         Self::OpenStreetMap,
+        Self::OpenTopoMap,
+        Self::Humanitarian,
+    ];
+
+    /// Maps drawn as pictures by a tile server rather than from a bundled style.
+    pub const TILE_MAPS: [Self; 4] = [
+        Self::Satellite,
+        Self::OpenStreetMap,
+        Self::OpenTopoMap,
+        Self::Humanitarian,
     ];
 
     /// VersaTiles' own palettes, listed before the themes that resemble other maps.
@@ -102,6 +114,8 @@ impl MapStyle {
         ("bingo", "Bingo"),
         ("satellite", gettext_noop("Satellite")),
         ("osm", "OpenStreetMap"),
+        ("opentopomap", "OpenTopoMap"),
+        ("humanitarian", gettext_noop("Humanitarian")),
     ];
 
     fn names(self) -> (&'static str, &'static str) {
@@ -120,7 +134,11 @@ impl MapStyle {
     pub fn themes(self) -> Option<(String, String)> {
         let id = self.id();
         match self {
-            Self::Immich | Self::Satellite | Self::OpenStreetMap => None,
+            Self::Immich
+            | Self::Satellite
+            | Self::OpenStreetMap
+            | Self::OpenTopoMap
+            | Self::Humanitarian => None,
             Self::Colorful
             | Self::Natural
             | Self::Muted
@@ -235,7 +253,7 @@ mod tests {
             .into_iter()
             .chain(MapStyle::PALETTES)
             .chain(MapStyle::LOOKALIKES)
-            .chain([MapStyle::Satellite, MapStyle::OpenStreetMap])
+            .chain(MapStyle::TILE_MAPS)
             .collect();
         assert_eq!(grouped, MapStyle::ALL);
     }

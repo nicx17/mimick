@@ -9,17 +9,13 @@ use super::{AssetInfo, Lightbox};
 use crate::library::context_menu::show_error_toast;
 use crate::library::video_player::{MotionPlayer, VideoSource};
 
-/// "Live" pill in the photo's top-left corner; shown only on live photos.
+/// "Live" pill for the photo's top-left corner; shown only on live photos.
 pub(super) fn build_live_button() -> gtk::ToggleButton {
     let content = gtk::Box::builder().spacing(6).build();
     content.append(&gtk::Image::from_icon_name("mimick-live-symbolic"));
     content.append(&gtk::Label::new(Some(&gettext("Live"))));
     gtk::ToggleButton::builder()
         .child(&content)
-        .halign(gtk::Align::Start)
-        .valign(gtk::Align::Start)
-        .margin_top(12)
-        .margin_start(12)
         .tooltip_text(gettext("Play motion (Space)"))
         .css_classes(["osd", "pill", "mimick-live-button"])
         .visible(false)

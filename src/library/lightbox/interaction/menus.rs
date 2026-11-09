@@ -33,7 +33,7 @@ impl Lightbox {
             && !self.slideshow.is_running()
     }
 
-    pub(super) fn show_menu_at(self: &Rc<Self>, x: f64, y: f64) {
+    pub(in crate::library::lightbox) fn show_menu_at(self: &Rc<Self>, x: f64, y: f64) {
         self.show_menu_on(&self.picture.scrolled, x, y);
     }
 

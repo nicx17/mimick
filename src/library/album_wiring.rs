@@ -76,6 +76,7 @@ pub(super) fn refresh_albums_view(ui: Rc<LibraryWindowUi>) {
             Ok(albums) => {
                 let on_click = album_click_handler(ui.clone());
                 populate_albums(&ui.albums, ui.ctx.clone(), albums, on_click);
+                super::albums_view::refresh_stats(&ui.albums, ui.ctx.clone());
                 if on_albums_page(&ui) {
                     ui.content_stack.set_visible_child_name("albums");
                 }
@@ -114,8 +115,9 @@ pub(super) fn album_click_handler(ui: Rc<LibraryWindowUi>) -> AlbumClick {
 }
 
 /// Apply header control layout adjustments when switching view modes.
-/// Refresh the search form's Tag dropdown from the server, then select `select` if given.
+/// Refresh what the search filters pick from, then pick only the tag `select` if given.
 pub(super) fn refresh_search_tags(ui: Rc<LibraryWindowUi>, select: Option<String>) {
+    super::search_options::refresh(&ui);
     glib::MainContext::default().spawn_local(async move {
         match ui.ctx.api_client.fetch_tags().await {
             Ok(tags) => {

@@ -107,6 +107,6 @@ pub fn pin(point: GeoPoint) -> shumate::Marker {
 
 fn open_on_map(ui: &Rc<LibraryWindowUi>, point: GeoPoint) {
     ui.nav.pop();
-    navigation::navigate(ui, Location::Page(LibraryPage::Map));
+    navigation::navigate(ui, Location::Page(LibraryPage::Map { album: None }));
     super::view::focus(ui, point);
 }

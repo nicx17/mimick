@@ -236,6 +236,9 @@ impl MasonryCanvas {
             if asset.is_favorite() {
                 self.paint_favorite_badge(snapshot, it.x + it.w, row.y + row.h, row.h);
             }
+            if self.show_sizes.get() {
+                self.paint_size_pill(snapshot, asset, it, row);
+            }
             let live = !asset.live_video_id().is_empty();
             let stacked = asset.stack_count() > 1;
             if live || stacked {
@@ -407,7 +410,7 @@ impl MasonryCanvas {
         }
 
         /// Accent-filled square with a checkmark icon.
-        fn paint_checked_box(&self, snapshot: &gtk::Snapshot, bx: f32, by: f32, box_size: f32) {
+        pub(in crate::library::masonry::canvas) fn paint_checked_box(&self, snapshot: &gtk::Snapshot, bx: f32, by: f32, box_size: f32) {
             let r = 4.0_f32;
             let corner = Size::new(r, r);
             let rect = Rect::new(bx, by, box_size, box_size);
@@ -432,7 +435,7 @@ impl MasonryCanvas {
         }
 
         /// Bordered empty square (outline only).
-        fn paint_unchecked_box(snapshot: &gtk::Snapshot, bx: f32, by: f32, box_size: f32) {
+        pub(in crate::library::masonry::canvas) fn paint_unchecked_box(snapshot: &gtk::Snapshot, bx: f32, by: f32, box_size: f32) {
             let r = 4.0_f32;
             let border_w = 2.0_f32;
             let corner = Size::new(r, r);

@@ -12,6 +12,89 @@ const MONTH_PAGE_SIZE: u32 = 1000;
 const MAX_MONTH_PAGES: u32 = 200;
 const ZONE_SLACK_HOURS: i64 = 14;
 
+/// Which photos a timeline counts and lists: `/timeline/buckets` filters, and the order.
+#[derive(Clone, Debug, PartialEq)]
+pub struct BucketScope {
+    pub visibility: Option<&'static str>,
+    pub order: SortOrder,
+    /// Lists only each stack's cover, as Photos does.
+    pub with_stacked: bool,
+    pub user_id: Option<String>,
+    pub with_partners: bool,
+    pub album_id: Option<String>,
+    pub person_id: Option<String>,
+    pub tag_id: Option<String>,
+    pub is_favorite: bool,
+    pub is_trashed: bool,
+}
+
+impl BucketScope {
+    /// Everything with no filter, in `order`; fill in the filter a source needs.
+    pub fn all(order: SortOrder) -> Self {
+        Self {
+            visibility: None,
+            order,
+            with_stacked: false,
+            user_id: None,
+            with_partners: false,
+            album_id: None,
+            person_id: None,
+            tag_id: None,
+            is_favorite: false,
+            is_trashed: false,
+        }
+    }
+
+    /// Photos: the user's timeline and their partners', stacks folded.
+    pub fn photos() -> Self {
+        Self {
+            visibility: Some("timeline"),
+            with_stacked: true,
+            with_partners: true,
+            ..Self::all(SortOrder::Desc)
+        }
+    }
+
+    /// One partner's timeline, stacks folded.
+    pub fn partner(user_id: &str) -> Self {
+        Self {
+            visibility: Some("timeline"),
+            with_stacked: true,
+            user_id: Some(user_id.to_string()),
+            ..Self::all(SortOrder::Desc)
+        }
+    }
+
+    /// The query string, for `month` alone when given; unset filters are left out.
+    fn query(&self, month: Option<&str>) -> String {
+        let order = match self.order {
+            SortOrder::Asc => "asc",
+            SortOrder::Desc => "desc",
+        };
+        let flag = |on: bool| on.then(|| "true".to_string());
+        let pairs = [
+            ("visibility", self.visibility.map(str::to_string)),
+            ("order", Some(order.to_string())),
+            ("withStacked", flag(self.with_stacked)),
+            ("userId", self.user_id.clone()),
+            ("withPartners", flag(self.with_partners)),
+            ("albumId", self.album_id.clone()),
+            ("personId", self.person_id.clone()),
+            ("tagId", self.tag_id.clone()),
+            ("isFavorite", flag(self.is_favorite)),
+            ("isTrashed", flag(self.is_trashed)),
+            ("timeBucket", month.map(str::to_string)),
+        ];
+        let mut query = url::form_urlencoded::Serializer::new(String::new());
+        for (key, value) in pairs {
+            if let Some(value) = value {
+                query.append_pair(key, &value);
+            }
+        }
+        query.finish()
+    }
+}
+
 /// One month of the timeline, from `GET /api/timeline/buckets`.
 #[derive(Debug, Clone, PartialEq, serde::Deserialize)]
 pub struct TimeBucket {
@@ -63,11 +146,8 @@ fn stack_entry(entry: &Option<Vec<String>>) -> Option<(&str, u32)> {
 }
 
 impl ImmichApiClient {
-    pub async fn fetch_time_buckets(
-        &self,
-        user_id: Option<&str>,
-    ) -> Result<Vec<TimeBucket>, String> {
-        let path = format!("/api/timeline/buckets?{}", timeline_query(user_id, None));
+    pub async fn fetch_time_buckets(&self, scope: &BucketScope) -> Result<Vec<TimeBucket>, String> {
+        let path = format!("/api/timeline/buckets?{}", scope.query(None));
         self.send_json(reqwest::Method::GET, &path, None)
             .await?
             .json()
@@ -75,14 +155,15 @@ impl ImmichApiClient {
             .map_err(|err| err.to_string())
     }
 
-    pub async fn fetch_user_month_assets(
+    /// The photos `scope`'s bucket lists for `month`, fetched one by one, as for a partner.
+    pub async fn fetch_bucket_month_assets(
         &self,
-        user_id: &str,
+        scope: &BucketScope,
         month: &str,
     ) -> Result<Vec<LibraryAsset>, String> {
-        let bucket = self.fetch_bucket(Some(user_id), month).await?;
+        let bucket = self.fetch_bucket(scope, month).await?;
         let assets = self.fetch_assets_by_ids(&bucket.id).await?;
-        Ok(keep_local_month(assets, month))
+        Ok(keep_local_month(assets, month, scope.order))
     }
 
     pub async fn fetch_user_month_page(
@@ -90,25 +171,32 @@ impl ImmichApiClient {
         user_id: &str,
         page: u32,
     ) -> Result<(Vec<LibraryAsset>, bool), String> {
-        let buckets = self.fetch_time_buckets(Some(user_id)).await?;
+        let scope = BucketScope::partner(user_id);
+        let buckets = self.fetch_time_buckets(&scope).await?;
         let index = page.saturating_sub(1) as usize;
         let Some(bucket) = buckets.get(index) else {
             return Ok((Vec::new(), false));
         };
-        let assets = self.fetch_user_month_assets(user_id, &bucket.month).await?;
+        let assets = self
+            .fetch_bucket_month_assets(&scope, &bucket.month)
+            .await?;
         Ok((assets, index + 1 < buckets.len()))
     }
 
-    /// Photos taken in `month` (local time), newest first.
-    pub async fn fetch_month_assets(&self, month: &str) -> Result<Vec<LibraryAsset>, String> {
+    /// The photos `filters` match that were taken in `month` (local time), in `scope`'s order.
+    pub async fn fetch_month_assets(
+        &self,
+        scope: &BucketScope,
+        filters: &MetadataSearchFilters,
+        month: &str,
+    ) -> Result<Vec<LibraryAsset>, String> {
         let (taken_after, taken_before) = month_query_range(month)
             .ok_or_else(|| fill(gettext("Invalid month {month}"), &[("month", month)]))?;
         let filters = MetadataSearchFilters {
-            visibility: Some("timeline".to_string()),
-            order: Some(SortOrder::Desc),
+            order: Some(scope.order),
             taken_after: Some(taken_after),
             taken_before: Some(taken_before),
-            ..MetadataSearchFilters::default()
+            ..filters.clone()
         };
         let mut assets = Vec::new();
         for page in 1..=MAX_MONTH_PAGES {
@@ -120,41 +208,36 @@ impl ImmichApiClient {
                 break;
             }
         }
-        // Search can't hide stack members, so the bucket says which photos the timeline shows.
-        match self.fetch_bucket(None, month).await {
-            Ok(bucket) => assets = bucket.apply_stacks(assets),
-            Err(err) => log::debug!("Stacks unavailable for {month}: {err}"),
+        if scope.with_stacked {
+            assets = self.fold_stacks(scope, month, assets).await;
         }
-        Ok(keep_local_month(assets, month))
+        Ok(keep_local_month(assets, month, scope.order))
     }
 
-    async fn fetch_bucket(&self, user_id: Option<&str>, month: &str) -> Result<BucketIds, String> {
-        let path = format!(
-            "/api/timeline/bucket?{}",
-            timeline_query(user_id, Some(month))
-        );
+    /// Search can't hide stack members, so the bucket says which photos the timeline shows.
+    async fn fold_stacks(
+        &self,
+        scope: &BucketScope,
+        month: &str,
+        assets: Vec<LibraryAsset>,
+    ) -> Vec<LibraryAsset> {
+        match self.fetch_bucket(scope, month).await {
+            Ok(bucket) => bucket.apply_stacks(assets),
+            Err(err) => {
+                log::debug!("Stacks unavailable for {month}: {err}");
+                assets
+            }
+        }
+    }
+
+    async fn fetch_bucket(&self, scope: &BucketScope, month: &str) -> Result<BucketIds, String> {
+        let path = format!("/api/timeline/bucket?{}", scope.query(Some(month)));
         self.send_json(reqwest::Method::GET, &path, None)
             .await?
             .json()
             .await
             .map_err(|err| err.to_string())
     }
-}
-
-fn timeline_query(user_id: Option<&str>, month: Option<&str>) -> String {
-    let mut query = url::form_urlencoded::Serializer::new(String::new());
-    query
-        .append_pair("visibility", "timeline")
-        .append_pair("order", "desc")
-        .append_pair("withStacked", "true");
-    match user_id {
-        Some(user_id) => query.append_pair("userId", user_id),
-        None => query.append_pair("withPartners", "true"),
-    };
-    if let Some(month) = month {
-        query.append_pair("timeBucket", month);
-    }
-    query.finish()
 }
 
 /// UTC search range covering every timezone's version of `month`.
@@ -168,7 +251,11 @@ pub(crate) fn month_query_range(month: &str) -> Option<(String, String)> {
     Some((format(start - slack), format(end + slack)))
 }
 
-pub(crate) fn keep_local_month(assets: Vec<LibraryAsset>, month: &str) -> Vec<LibraryAsset> {
+pub(crate) fn keep_local_month(
+    assets: Vec<LibraryAsset>,
+    month: &str,
+    order: SortOrder,
+) -> Vec<LibraryAsset> {
     let Some(prefix) = month.get(..7) else {
         return Vec::new();
     };
@@ -177,6 +264,9 @@ pub(crate) fn keep_local_month(assets: Vec<LibraryAsset>, month: &str) -> Vec<Li
         .filter(|asset| local_time(asset).get(..7) == Some(prefix))
         .collect();
     kept.sort_by(|a, b| local_time(b).cmp(local_time(a)));
+    if order == SortOrder::Asc {
+        kept.reverse();
+    }
     kept
 }
 
@@ -229,13 +319,27 @@ mod tests {
     #[test]
     fn photos_count_partners_and_a_partner_counts_only_their_own() {
         assert_eq!(
-            timeline_query(None, None),
+            BucketScope::photos().query(None),
             "visibility=timeline&order=desc&withStacked=true&withPartners=true"
         );
         assert_eq!(
-            timeline_query(Some("u2"), Some("2024-01-01")),
+            BucketScope::partner("u2").query(Some("2024-01-01")),
             "visibility=timeline&order=desc&withStacked=true&userId=u2&timeBucket=2024-01-01"
         );
+    }
+
+    #[test]
+    fn other_timelines_send_only_their_own_filter() {
+        let album = BucketScope {
+            album_id: Some("a1".into()),
+            ..BucketScope::all(SortOrder::Asc)
+        };
+        assert_eq!(album.query(None), "order=asc&albumId=a1");
+        let trash = BucketScope {
+            is_trashed: true,
+            ..BucketScope::all(SortOrder::Desc)
+        };
+        assert_eq!(trash.query(None), "order=desc&isTrashed=true");
     }
 
     #[test]
@@ -282,23 +386,26 @@ mod tests {
     }
 
     #[test]
-    fn only_the_local_month_is_kept_newest_first() {
-        let kept = keep_local_month(
+    fn only_the_local_month_is_kept_in_order() {
+        let assets = || {
             vec![
                 asset("feb", Some("2026-02-28T22:00:00.000Z")),
                 asset("early", Some("2026-03-02T08:00:00.000Z")),
                 asset("apr", Some("2026-04-01T00:10:00.000Z")),
                 asset("late", Some("2026-03-31T23:30:00.000Z")),
-            ],
-            "2026-03-01",
-        );
-        let ids: Vec<&str> = kept.iter().map(|a| a.id.as_str()).collect();
-        assert_eq!(ids, ["late", "early"]);
+            ]
+        };
+        let ids =
+            |kept: Vec<LibraryAsset>| -> Vec<String> { kept.into_iter().map(|a| a.id).collect() };
+        let newest = keep_local_month(assets(), "2026-03-01", SortOrder::Desc);
+        assert_eq!(ids(newest), ["late", "early"]);
+        let oldest = keep_local_month(assets(), "2026-03-01", SortOrder::Asc);
+        assert_eq!(ids(oldest), ["early", "late"]);
     }
 
     #[test]
     fn assets_without_a_local_time_fall_back_to_the_file_date() {
-        let kept = keep_local_month(vec![asset("plain", None)], "2026-03-01");
+        let kept = keep_local_month(vec![asset("plain", None)], "2026-03-01", SortOrder::Desc);
         assert_eq!(kept.len(), 1);
     }
 }

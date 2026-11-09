@@ -19,7 +19,7 @@ use super::navigation;
 use super::{LibraryWindowUi, load_albums, load_source_page, load_status, open_lightbox};
 
 mod source_mode;
-pub(super) use source_mode::{connect_source_controls, current_album};
+pub(super) use source_mode::{connect_source_controls, current_album, show_linked_controls};
 
 pub(super) fn connect_controls(ui: Rc<LibraryWindowUi>) {
     connect_window_actions(&ui);
@@ -42,6 +42,9 @@ fn connect_window_actions(ui: &Rc<LibraryWindowUi>) {
         }
     ));
     ui.window.add_action(&action_settings);
+    // Ctrl+, opens preferences across GNOME apps; the main menu shows it beside Settings.
+    ui.app
+        .set_accels_for_action("win.settings", &["<Control>comma"]);
 
     let action_queue = gtk::gio::SimpleAction::new("queue", None);
     action_queue.connect_activate(clone!(
@@ -80,6 +83,7 @@ fn connect_window_actions(ui: &Rc<LibraryWindowUi>) {
     ));
 }
 
+/// `win.shortcuts` (Ctrl+?) and `win.about`, the main menu's last two items.
 fn connect_shortcuts_action(ui: &Rc<LibraryWindowUi>) {
     let action = gtk::gio::SimpleAction::new("shortcuts", None);
     action.connect_activate(clone!(
@@ -90,9 +94,13 @@ fn connect_shortcuts_action(ui: &Rc<LibraryWindowUi>) {
     ui.window.add_action(&action);
     ui.app
         .set_accels_for_action("win.shortcuts", &["<Control>question"]);
+    let about = gtk::gio::SimpleAction::new("about", None);
+    let window = ui.window.clone();
+    about.connect_activate(move |_, _| crate::about::present(&window));
+    ui.window.add_action(&about);
 }
 
-/// Upload button and the F5 shortcut; Back is wired in `connect_back_controls`.
+/// Upload and header search buttons and the F5 shortcut; Back is wired in `connect_back_controls`.
 fn connect_navigation_controls(ui: &Rc<LibraryWindowUi>) {
     ui.upload_button.connect_clicked(clone!(
         #[strong]
@@ -102,6 +110,13 @@ fn connect_navigation_controls(ui: &Rc<LibraryWindowUi>) {
         }
     ));
     connect_back_controls(ui);
+    ui.search_button.connect_clicked(clone!(
+        #[strong]
+        ui,
+        move |_| {
+            open_search(&ui);
+        }
+    ));
 
     let f5_controller = gtk::EventControllerKey::new();
     f5_controller.connect_key_pressed(clone!(
@@ -128,12 +143,17 @@ fn connect_back_controls(ui: &Rc<LibraryWindowUi>) {
         #[strong]
         ui,
         move |_| {
-            navigation::go_back(&ui);
+            navigation::back(&ui);
         }
     ));
-    add_mouse_button(ui, 8, navigation::go_back);
+    ui.select_toggle.connect_toggled(clone!(
+        #[strong]
+        ui,
+        move |_| navigation::update_back_button(&ui)
+    ));
+    add_mouse_button(ui, 8, navigation::back);
     add_mouse_button(ui, 9, navigation::go_forward);
-    add_shortcut(ui, "<Alt>Left", navigation::go_back);
+    add_shortcut(ui, "<Alt>Left", navigation::back);
     add_shortcut(ui, "<Alt>Right", navigation::go_forward);
     connect_swipe_back(ui);
 }
@@ -232,8 +252,7 @@ fn select_all(ui: &Rc<LibraryWindowUi>) -> bool {
     if !ui.grid.canvas.is_mapped() || ui.grid.model.n_items() == 0 || !no_dialog_open(ui) {
         return false;
     }
-    ui.select_toggle.set_active(true);
-    ui.grid.selection.select_all();
+    super::select_all::start(ui);
     true
 }
 
@@ -283,7 +302,7 @@ fn connect_swipe_back(ui: &Rc<LibraryWindowUi>) {
         ui,
         move |_, vx, vy| {
             if is_back_swipe(start_x.get(), vx, vy) {
-                navigation::go_back(&ui);
+                navigation::back(&ui);
             }
         }
     ));

@@ -385,6 +385,26 @@ impl ImmichApiClient {
             .map(|_| ())
     }
 
+    /// Favorite or unfavorite many assets in one request.
+    pub async fn set_assets_favorite(&self, ids: &[String], favorite: bool) -> Result<(), String> {
+        let body = serde_json::json!({ "ids": ids, "isFavorite": favorite });
+        self.send_json(reqwest::Method::PUT, "/api/assets", Some(body))
+            .await
+            .map(|_| ())
+    }
+
+    /// Give many assets the same description; an empty one clears it.
+    pub async fn set_assets_description(
+        &self,
+        ids: &[String],
+        description: &str,
+    ) -> Result<(), String> {
+        let body = serde_json::json!({ "ids": ids, "description": description });
+        self.send_json(reqwest::Method::PUT, "/api/assets", Some(body))
+            .await
+            .map(|_| ())
+    }
+
     pub async fn set_assets_visibility(
         &self,
         asset_ids: &[String],

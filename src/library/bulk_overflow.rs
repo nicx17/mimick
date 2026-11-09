@@ -1,4 +1,5 @@
-//! Phone-width "More actions" menu that mirrors the selection bar's secondary buttons.
+//! The selection bar's "More actions" menu: actions that only live there, plus the bar's
+//! secondary buttons on phone widths.
 
 use gettextrs::gettext;
 use gtk::prelude::*;
@@ -9,8 +10,14 @@ const MINOR_WORDS: [&str; 10] = [
     "a", "an", "the", "and", "for", "from", "in", "of", "on", "to",
 ];
 
-/// Menu button whose items click `sources` and follow their tooltip and visibility.
-pub(super) fn build(sources: &[gtk::Button]) -> gtk::MenuButton {
+/// Menu button for the selection bar's other actions. `inline` buttons show here only while
+/// `inline_row` is hidden (phone widths); `extras` live only here. Each item clicks its source
+/// button and follows its icon, tooltip, and visibility.
+pub(super) fn build(
+    inline: &[gtk::Button],
+    inline_row: &gtk::Box,
+    extras: &[gtk::Button],
+) -> gtk::MenuButton {
     let content = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(2)
@@ -26,25 +33,41 @@ pub(super) fn build(sources: &[gtk::Button]) -> gtk::MenuButton {
         .direction(gtk::ArrowType::Up)
         .popover(&popover)
         .build();
-    for source in sources {
-        content.append(&mirror(source, &popover));
+    let items: Vec<gtk::Button> = inline
+        .iter()
+        .map(|source| mirror(source, &popover, Some(inline_row)))
+        .chain(extras.iter().map(|source| mirror(source, &popover, None)))
+        .collect();
+    for item in &items {
+        content.append(item);
     }
+    // The visible property, not `is_visible`: that also asks every ancestor, and the items
+    // sit in a closed popover, so it would hide the menu for good.
     let sync = {
-        let (menu, sources) = (menu.clone(), sources.to_vec());
-        move || menu.set_visible(sources.iter().any(WidgetExt::is_visible))
+        let (menu, items) = (menu.clone(), items.clone());
+        move || menu.set_visible(items.iter().any(WidgetExt::get_visible))
     };
-    for source in sources {
+    for item in &items {
         let sync = sync.clone();
-        source.connect_visible_notify(move |_| sync());
+        item.connect_visible_notify(move |_| sync());
     }
     sync();
     menu
 }
 
-fn mirror(source: &gtk::Button, popover: &gtk::Popover) -> gtk::Button {
-    let label = gtk::Label::builder().xalign(0.0).build();
+/// A menu item for `source`, hidden while `inline_row` shows the button itself.
+fn mirror(
+    source: &gtk::Button,
+    popover: &gtk::Popover,
+    inline_row: Option<&gtk::Box>,
+) -> gtk::Button {
+    let icon = gtk::Image::new();
+    let label = gtk::Label::builder().xalign(0.0).hexpand(true).build();
+    let row = gtk::Box::builder().spacing(12).build();
+    row.append(&icon);
+    row.append(&label);
     let item = gtk::Button::builder()
-        .child(&label)
+        .child(&row)
         .css_classes(["flat"])
         .build();
     let set_label = move |button: &gtk::Button| {
@@ -53,9 +76,25 @@ fn mirror(source: &gtk::Button, popover: &gtk::Popover) -> gtk::Button {
     set_label(source);
     source.connect_tooltip_text_notify(set_label);
     source
-        .bind_property("visible", &item, "visible")
+        .bind_property("icon-name", &icon, "icon-name")
         .sync_create()
         .build();
+    let show = {
+        let (source, item, inline_row) = (source.clone(), item.clone(), inline_row.cloned());
+        move || {
+            // Properties again: a button in the hidden row would never count as shown.
+            let inline_shown = inline_row.as_ref().is_some_and(WidgetExt::get_visible);
+            item.set_visible(source.get_visible() && !inline_shown);
+        }
+    };
+    show();
+    source.connect_visible_notify({
+        let show = show.clone();
+        move |_| show()
+    });
+    if let Some(row) = inline_row {
+        row.connect_visible_notify(move |_| show());
+    }
     let (source, popover) = (source.clone(), popover.clone());
     item.connect_clicked(move |_| {
         popover.popdown();

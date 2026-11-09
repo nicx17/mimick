@@ -56,6 +56,23 @@ pub fn total_size_blocking() -> u64 {
     total
 }
 
+/// A file read from the cache counts as recently used, so pruning keeps it; at most once a day,
+/// to keep reads from turning into writes.
+pub fn mark_used(path: &std::path::Path) {
+    const STALE_AFTER: std::time::Duration = std::time::Duration::from_secs(24 * 60 * 60);
+    let now = SystemTime::now();
+    let stale = std::fs::metadata(path)
+        .and_then(|meta| meta.modified())
+        .is_ok_and(|modified| is_stale(modified, now, STALE_AFTER));
+    if stale && let Ok(file) = std::fs::File::options().write(true).open(path) {
+        let _ = file.set_modified(now);
+    }
+}
+
+fn is_stale(modified: SystemTime, now: SystemTime, after: std::time::Duration) -> bool {
+    now.duration_since(modified).is_ok_and(|age| age > after)
+}
+
 /// LRU-evict files across all subdirs until total size ≤ `cap_bytes`.
 pub fn prune_all_blocking(cap_bytes: u64) {
     let Some(root) = cache_root() else {
@@ -106,5 +123,20 @@ fn collect_files(
         let mtime = metadata.modified().unwrap_or(SystemTime::UNIX_EPOCH);
         *total = total.saturating_add(size);
         out.push((path, size, mtime));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::Duration;
+
+    #[test]
+    fn only_files_untouched_for_a_day_are_marked_again() {
+        let now = SystemTime::UNIX_EPOCH + Duration::from_secs(10 * 86_400);
+        let day = Duration::from_secs(86_400);
+        assert!(is_stale(now - 2 * day, now, day));
+        assert!(!is_stale(now - day / 2, now, day));
+        assert!(!is_stale(now + day, now, day));
     }
 }

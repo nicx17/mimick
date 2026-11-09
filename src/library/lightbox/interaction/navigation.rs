@@ -15,22 +15,45 @@ impl Lightbox {
         let ctrl = mods.contains(gtk::gdk::ModifierType::CONTROL_MASK);
         let shift = mods.contains(gtk::gdk::ModifierType::SHIFT_MASK);
         let handled = if ctrl {
-            self.handle_ocr_key(key, true) || self.handle_zoom_key(key)
+            // Recognized text first: with its overlay showing, Ctrl+C copies the text.
+            self.handle_ocr_key(key, true) || self.handle_zoom_key(key) || self.handle_copy_key(key)
         } else {
-            self.handle_edit_mode_key(key)
-                || self.handle_face_key(key)
-                || self.handle_slideshow_key(key)
-                || self.handle_video_key(key)
-                || self.handle_live_key(key)
-                || self.handle_ocr_key(key, false)
-                || self.handle_edit_key(key, shift)
-                || self.handle_plain_key(key)
+            self.handle_mode_key(key, shift) || self.handle_photo_key(key, shift)
         };
         if handled {
             glib::Propagation::Stop
         } else {
             glib::Propagation::Proceed
         }
+    }
+
+    /// Keys owned by whatever is showing over the photo: edit, faces, slideshow, video, live, 360°.
+    fn handle_mode_key(self: &Rc<Self>, key: gtk::gdk::Key, shift: bool) -> bool {
+        self.handle_edit_mode_key(key)
+            || self.handle_face_key(key)
+            || self.handle_slideshow_key(key)
+            || self.handle_video_key(key)
+            || self.handle_live_key(key)
+            || self.handle_panorama_key(key, shift)
+    }
+
+    /// Keys acting on the photo itself: recognized text, edits and ratings, and navigation.
+    fn handle_photo_key(self: &Rc<Self>, key: gtk::gdk::Key, shift: bool) -> bool {
+        self.handle_ocr_key(key, false)
+            || self.handle_edit_key(key, shift)
+            || self.handle_plain_key(key)
+    }
+
+    /// Ctrl+C copies the photo on screen, as the grid's Ctrl+C does a selection of one.
+    fn handle_copy_key(self: &Rc<Self>, key: gtk::gdk::Key) -> bool {
+        if !matches!(key, gtk::gdk::Key::c | gtk::gdk::Key::C) {
+            return false;
+        }
+        let Some(item) = self.current_item() else {
+            return false;
+        };
+        crate::library::clipboard::copy_photos(&self.ui, &[item]);
+        true
     }
 
     /// Ctrl +/-/0 zoom; false for any other key.

@@ -14,6 +14,8 @@ pub struct StatusWidgets {
     pub sync_now_btn: Button,
     pub pause_btn: Button,
     pub queue_btn: Button,
+    /// Shown instead of the sync actions until a server is set up; opens the Settings tab.
+    pub setup_btn: Button,
     pub attention_group: adw::PreferencesGroup,
     pub failed_row: adw::ActionRow,
     pub retry_btn: Button,
@@ -59,6 +61,7 @@ pub fn build_status_group(status_page: &adw::PreferencesPage) -> StatusWidgets {
         sync_now_btn: hero.sync_now_btn,
         pause_btn: hero.pause_btn,
         queue_btn: hero.queue_btn,
+        setup_btn: hero.setup_btn,
         attention_group,
         failed_row,
         retry_btn,
@@ -78,6 +81,7 @@ struct Hero {
     sync_now_btn: Button,
     pause_btn: Button,
     queue_btn: Button,
+    setup_btn: Button,
 }
 
 impl Hero {
@@ -85,15 +89,23 @@ impl Hero {
         let (icon, title, subtitle) = Self::build_labels();
         let progress_bar = Self::build_progress_bar();
         let (sync_now_btn, pause_btn, queue_btn) = Self::build_actions();
+        let setup_btn = pill(&gettext("Set Up…"), true);
+        setup_btn.connect_clicked(|button| {
+            if let Some(stack) = button
+                .ancestor(adw::ViewStack::static_type())
+                .and_downcast::<adw::ViewStack>()
+            {
+                stack.set_visible_child_name("settings");
+            }
+        });
         let root = Self::build_root(
             &icon,
             &title,
             &subtitle,
             &progress_bar,
-            &sync_now_btn,
-            &pause_btn,
-            &queue_btn,
+            &[&sync_now_btn, &pause_btn, &queue_btn, &setup_btn],
         );
+        show_pill(&setup_btn, false);
         Self {
             root,
             icon,
@@ -103,6 +115,7 @@ impl Hero {
             sync_now_btn,
             pause_btn,
             queue_btn,
+            setup_btn,
         }
     }
 
@@ -148,9 +161,7 @@ impl Hero {
         title: &gtk::Label,
         subtitle: &gtk::Label,
         progress_bar: &ProgressBar,
-        sync_now_btn: &Button,
-        pause_btn: &Button,
-        queue_btn: &Button,
+        actions: &[&Button],
     ) -> gtk::Box {
         let buttons = gtk::FlowBox::builder()
             .selection_mode(gtk::SelectionMode::None)
@@ -162,8 +173,8 @@ impl Hero {
             .halign(gtk::Align::Center)
             .margin_top(6)
             .build();
-        for button in [sync_now_btn, pause_btn, queue_btn] {
-            buttons.insert(button, -1);
+        for button in actions {
+            buttons.insert(*button, -1);
         }
         let root = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
@@ -181,6 +192,14 @@ impl Hero {
             root.append(child);
         }
         root
+    }
+}
+
+/// Show or hide a headline button and the flow-box slot around it, so no gap is left.
+pub(super) fn show_pill(button: &Button, shown: bool) {
+    button.set_visible(shown);
+    if let Some(slot) = button.parent() {
+        slot.set_visible(shown);
     }
 }
 

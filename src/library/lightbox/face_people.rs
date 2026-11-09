@@ -180,15 +180,25 @@ impl Lightbox {
         let menu = Menu::new(tile, x, y);
         menu.heading(&display_name(person));
         let (lb, id, anchor) = (self.clone(), person.id.clone(), tile.downgrade());
-        menu.add(&gettext("Change Person…"), false, move || {
-            if let Some(tile) = anchor.upgrade() {
-                lb.change_person_on_photo(&id, &tile);
-            }
-        });
+        menu.add_with_icon(
+            "avatar-default-symbolic",
+            &gettext("Change Person…"),
+            false,
+            move || {
+                if let Some(tile) = anchor.upgrade() {
+                    lb.change_person_on_photo(&id, &tile);
+                }
+            },
+        );
         let (lb, id) = (self.clone(), person.id.clone());
-        menu.add(&gettext("Remove from Photo"), true, move || {
-            lb.remove_person_from_photo(&id);
-        });
+        menu.add_with_icon(
+            "list-remove-symbolic",
+            &gettext("Remove from Photo"),
+            true,
+            move || {
+                lb.remove_person_from_photo(&id);
+            },
+        );
         self.hold_face_highlight(self.faces_of(&person.id));
         let lb = Rc::downgrade(self);
         menu.on_closed(move || {

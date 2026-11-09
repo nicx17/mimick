@@ -8,6 +8,9 @@ use crate::api_client::{
     LibraryAlbum, LibraryAsset, MetadataSearchFilters, ServerAbout, ServerStats,
 };
 
+mod filters;
+pub use filters::{DayRange, EARLY_YEAR, LargeFilesFilter, MediaKind, OddDates};
+
 const PAGE_SIZE: usize = 50;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -97,6 +100,18 @@ pub enum LibrarySource {
         ids: AssetIds,
         label: String,
     },
+    /// Utilities: the biggest files, largest first.
+    LargeFiles {
+        filter: LargeFilesFilter,
+    },
+    /// Utilities: photos and videos with no place, to give one with Set Location.
+    MissingLocation {
+        range: DayRange,
+    },
+    /// Utilities: photos whose date can't be right, to fix with Change Date.
+    UnusualDates {
+        which: OddDates,
+    },
 }
 
 /// Shared asset IDs; debug output shows only the count.
@@ -119,6 +134,13 @@ impl fmt::Debug for AssetIds {
     }
 }
 
+/// An album whose photos the Map page shows instead of the whole library.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MapAlbum {
+    pub id: String,
+    pub name: String,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum LibraryPage {
     Albums { shared_only: bool },
@@ -128,7 +150,7 @@ pub enum LibraryPage {
     Folders { path: Option<String> },
     Sharing,
     Search,
-    Map,
+    Map { album: Option<MapAlbum> },
     Duplicates,
 }
 

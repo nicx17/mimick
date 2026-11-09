@@ -238,10 +238,15 @@ fn copy_asset_to_clipboard(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {
             );
             return;
         };
-        if let Some(display) = gdk4::Display::default() {
-            display.clipboard().set_texture(&texture);
-        }
+        let provider = gdk4::ContentProvider::for_value(&texture.to_value());
+        let photo = super::clipboard::CopiedPhoto::new(&asset.remote_id, Some(path));
+        super::clipboard::set_copied(&ui, provider, vec![photo]);
     });
+}
+
+/// Ctrl+C on one photo: its picture, as the menu's Copy gives.
+pub(super) fn copy_picture(ui: &Rc<LibraryWindowUi>, item: &AssetObject) {
+    copy_asset_to_clipboard(ui.clone(), MenuAsset::from_item(item));
 }
 
 fn open_asset_in_default_app(ui: Rc<LibraryWindowUi>, asset: MenuAsset) {

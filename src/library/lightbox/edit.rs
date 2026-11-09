@@ -290,6 +290,7 @@ impl Lightbox {
         }
         self.stop_slideshow();
         self.stop_live();
+        self.leave_panorama();
         self.exit_face_mode();
         self.actions.ocr_toggle.set_active(false);
         if (self.zoom_level.get() - 1.0).abs() > 0.001 {

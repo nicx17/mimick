@@ -20,6 +20,7 @@ use std::sync::Arc;
 use crate::app_context::AppContext;
 
 mod actions_ui;
+mod appearance;
 mod apply;
 mod behavior;
 mod connectivity;
@@ -176,10 +177,13 @@ pub fn build_settings_window_with_parent(
     ctx: Arc<AppContext>,
     parent: Option<&adw::ApplicationWindow>,
 ) {
-    let (window, status_page, settings_page) = wiring::build_window_shell(app, parent);
-    crate::debug_width::install(&window);
     let config = ctx.config.read().clone();
-    if config.get_api_key().unwrap_or_default().is_empty() {
+    // Until a key is saved there's nothing to show on Status: start on the setup steps.
+    let needs_setup = config.get_api_key().unwrap_or_default().is_empty();
+    let start_page = if needs_setup { "settings" } else { "status" };
+    let (window, status_page, settings_page) = wiring::build_window_shell(app, parent, start_page);
+    crate::debug_width::install(&window);
+    if needs_setup {
         wiring::add_welcome_group(&settings_page);
     }
 
@@ -189,8 +193,9 @@ pub fn build_settings_window_with_parent(
     let folders_group = wiring::folders_group(&settings_page);
     let behavior = behavior::build_behavior_group(&settings_page);
     wiring::connect_quiet_hours_sensitivity(&behavior);
+    appearance::build_appearance_group(&settings_page, &ctx);
     let library = library::build_library_group(&settings_page);
-    let export_btn = actions_ui::build_troubleshooting_group(&settings_page);
+    let troubleshooting = actions_ui::build_troubleshooting_group(&settings_page);
     wiring::connect_library_rows(&ctx, &library, &behavior.library_view_row);
     wiring::connect_download_folder(&ctx, &library, &window);
 
@@ -207,12 +212,20 @@ pub fn build_settings_window_with_parent(
     };
     wiring::fetch_albums_for_picker(&window, &state);
     wiring::add_folders_group(&folders_group, &window, &config, &state, auto_apply.clone());
-    wiring::connect_action_buttons(&window, &ctx, &status_widgets, &export_btn);
+    wiring::connect_action_buttons(&window, &ctx, &status_widgets, &troubleshooting.export_btn);
+    wiring::connect_detailed_logs_row(&ctx, &troubleshooting.detailed_logs_row);
     conn.save_btn
         .connect_clicked(move |_| apply_settings(true, true));
 
     // Populate before connecting auto-apply so loading saved values doesn't trigger a save.
     form.populate(&config);
+    apply::sync_open_library(&form, &ctx);
+    let (weak_form, ctx_open) = (form.downgrade(), ctx.clone());
+    conn.open_library_btn.connect_clicked(move |_| {
+        if let Some(form) = weak_form.upgrade() {
+            apply::open_library(&form, &ctx_open);
+        }
+    });
     wiring::connect_url_switches(&window, &conn);
     wiring::connect_auto_apply(&form, auto_apply);
     wiring::connect_close_request(&window, app, &ctx);
@@ -220,6 +233,7 @@ pub fn build_settings_window_with_parent(
         status_widgets,
         state.tracked_rows.clone(),
         ctx.state.clone(),
+        ctx.config.clone(),
     );
     window.present();
 }

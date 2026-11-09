@@ -101,8 +101,19 @@ impl MasonryCanvas {
         item_at_x(row, x as f32).map(|it| it.asset_index)
     }
 
+    /// In selection mode, a date heading selects or clears its whole day or month.
+    fn click_heading(&self, y: f64) {
+        if !self.imp().select_mode.get() {
+            return;
+        }
+        if let Some(range) = self.heading_range_at(y as f32) {
+            self.toggle_group(range);
+        }
+    }
+
     fn handle_primary_click(&self, gesture: &gtk::GestureClick, x: f64, y: f64) {
         let Some(pos) = self.hit_test(x, y) else {
+            self.click_heading(y);
             return;
         };
         self.focus_clicked(pos);

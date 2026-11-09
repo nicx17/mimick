@@ -18,6 +18,22 @@ impl LibraryState {
         true
     }
 
+    /// The same view with other filters: Back still goes where it went before.
+    pub fn replace_location(&mut self, location: Location) {
+        self.location = location;
+    }
+
+    /// A phone's bottom-bar tab: switches in place, leaving only Photos for Back to return to.
+    pub fn switch_tab(&mut self, location: Location) {
+        let photos = Location::Source(LibrarySource::AllAssets);
+        self.forward_history.clear();
+        self.nav_history.clear();
+        if location != photos {
+            self.nav_history.push_back(photos);
+        }
+        self.location = location;
+    }
+
     pub fn previous_location(&self) -> Option<&Location> {
         self.nav_history.back()
     }
@@ -128,6 +144,22 @@ mod tests {
         );
         assert!(!state.can_go_back());
         assert!(state.navigate_back().is_none());
+    }
+
+    #[test]
+    fn bottom_bar_tabs_switch_in_place() {
+        let photos = source(LibrarySource::AllAssets);
+        let people = Location::Page(LibraryPage::People);
+        let mut state = LibraryState::new();
+        state.navigate_to(Location::Page(LibraryPage::Albums { shared_only: false }));
+        state.navigate_to(source(LibrarySource::Favorites));
+        state.switch_tab(people.clone());
+        assert_eq!(state.location, people);
+        assert!(!state.can_go_forward());
+        assert_eq!(state.navigate_back(), Some(photos.clone()));
+        assert!(!state.can_go_back());
+        state.switch_tab(photos);
+        assert!(!state.can_go_back());
     }
 
     #[test]
@@ -248,16 +280,16 @@ mod tests {
             })
         };
         let mut state = LibraryState::new();
-        state.navigate_to(Location::Page(LibraryPage::Map));
+        state.navigate_to(Location::Page(LibraryPage::Map { album: None }));
         state.navigate_to(area("Lisbon"));
         state.navigate_to(area("Porto"));
         assert_eq!(
             state.previous_location(),
-            Some(&Location::Page(LibraryPage::Map))
+            Some(&Location::Page(LibraryPage::Map { album: None }))
         );
         assert_eq!(
             state.navigate_back(),
-            Some(Location::Page(LibraryPage::Map))
+            Some(Location::Page(LibraryPage::Map { album: None }))
         );
     }
 }

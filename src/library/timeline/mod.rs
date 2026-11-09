@@ -1,10 +1,13 @@
-//! Photos as a month timeline: month bookkeeping, date labels, layout, and the scrubber.
+//! Photos, albums, and other collections as a timeline whose full height is known up front:
+//! month (or page) bookkeeping, date labels, layout, and the Photos scrubber.
 
 pub mod dates;
 pub mod index;
 pub mod layout;
+mod load_all;
 pub mod marks;
 pub mod nav;
+mod scope;
 pub mod scrubber;
 
 use std::cell::RefCell;
@@ -19,6 +22,8 @@ use super::state::{LibrarySortMode, LibrarySource};
 use crate::api_client::LibraryAsset;
 use index::{Month, TimelineIndex};
 use layout::section_at;
+pub(super) use load_all::load_all;
+use scope::Plan;
 
 /// Called once a month finishes loading: `(insert position, photos added)`, or `None` on failure.
 type Waiter = Box<dyn FnOnce(Option<(u32, u32)>)>;
@@ -26,26 +31,22 @@ type Waiter = Box<dyn FnOnce(Option<(u32, u32)>)>;
 pub(super) struct Timeline {
     index: Rc<RefCell<TimelineIndex>>,
     generation: u64,
-    user_id: Option<String>,
+    plan: Plan,
     waiters: RefCell<Vec<(usize, Waiter)>>,
 }
 
 pub(super) fn eligible(source: &LibrarySource, sort: &LibrarySortMode) -> bool {
-    matches!(
-        source,
-        LibrarySource::AllAssets | LibrarySource::Partner { .. }
-    ) && matches!(sort, LibrarySortMode::NewestFirst)
-}
-
-fn partner_id(source: &LibrarySource) -> Option<String> {
-    match source {
-        LibrarySource::Partner { id, .. } => Some(id.clone()),
-        _ => None,
-    }
+    scope::plan(source, sort).is_some()
 }
 
 pub(super) fn is_active(ui: &LibraryWindowUi) -> bool {
     ui.interaction.timeline.borrow().is_some()
+}
+
+/// Only Photos (and a partner's) shows a stack as its cover; elsewhere every photo shows.
+pub(super) fn groups_stacks(ui: &LibraryWindowUi) -> bool {
+    let timeline = ui.interaction.timeline.borrow();
+    timeline.as_ref().is_some_and(|t| t.plan.is_photos())
 }
 
 /// Scroll Photos to the next or previous day, month, or year; `false` when it isn't shown.
@@ -123,33 +124,22 @@ pub(super) fn connect(ui: &Rc<LibraryWindowUi>) {
     });
 }
 
-/// Fetch the month counts and show Photos as a timeline; page by page if that fails.
+/// Count every month (or page) and show the source as a timeline; page by page if that fails.
 pub(super) fn open(
     ui: &Rc<LibraryWindowUi>,
     request: (u64, LibrarySource, u32),
     keep: Option<(String, f32)>,
 ) {
+    let sort = ui.ctx.library_state.lock().sort_mode.clone();
+    let Some(plan) = scope::plan(&request.1, &sort) else {
+        return super::load_pages(ui.clone(), request, false);
+    };
     let ui = ui.clone();
-    let user_id = partner_id(&request.1);
     glib::MainContext::default().spawn_local(async move {
-        match ui
-            .ctx
-            .api_client
-            .fetch_time_buckets(user_id.as_deref())
-            .await
-        {
-            Ok(buckets) => {
-                let months = buckets
-                    .into_iter()
-                    .map(|bucket| Month {
-                        key: bucket.month,
-                        count: bucket.count,
-                    })
-                    .collect();
-                show(&ui, request.0, user_id, months, keep);
-            }
+        match scope::sections(&ui.ctx.api_client, &plan).await {
+            Ok(months) => show(&ui, request.0, plan, months, keep),
             Err(err) => {
-                log::warn!("Timeline unavailable, loading Photos page by page: {err}");
+                log::warn!("Timeline unavailable, loading page by page: {err}");
                 super::load_pages(ui, request, false);
             }
         }
@@ -159,7 +149,7 @@ pub(super) fn open(
 fn show(
     ui: &Rc<LibraryWindowUi>,
     generation: u64,
-    user_id: Option<String>,
+    plan: Plan,
     months: Vec<Month>,
     keep: Option<(String, f32)>,
 ) {
@@ -175,20 +165,22 @@ fn show(
     let anchor = keep.and_then(|(key, offset)| {
         Some((months.iter().position(|month| month.key == key)?, offset))
     });
+    let total: u32 = months.iter().map(|month| month.count).sum();
+    let (dated, photos) = (plan.dated(), plan.is_photos());
     let index = Rc::new(RefCell::new(TimelineIndex::new(months)));
     ui.interaction.timeline.replace(Some(Rc::new(Timeline {
         index: index.clone(),
         generation,
-        user_id,
+        plan,
         waiters: RefCell::default(),
     })));
     ui.grid.model.reset_with_objects(Vec::new());
-    ui.grid.canvas.set_timeline(Some(index.clone()));
-    ui.scrubber.set_index(Some(index));
-    ui.grid
-        .scrolled
-        .set_vscrollbar_policy(gtk::PolicyType::External);
+    ui.grid.canvas.set_timeline(Some(index.clone()), dated);
+    show_scrollbar(ui, photos.then_some(index));
     super::sync_content_state(ui);
+    if !dated {
+        super::source_header::set_loaded_count(ui, total as usize);
+    }
     if let Some((asset_id, month)) = ui.interaction.timeline_reveal.take() {
         reveal(ui, asset_id, &month);
     } else if let Some((month, offset)) = anchor {
@@ -250,14 +242,22 @@ fn reveal_failed(ui: &LibraryWindowUi) {
         )));
 }
 
+/// Photos scrolls by its month scrubber; everything else by the plain scrollbar.
+fn show_scrollbar(ui: &LibraryWindowUi, scrubber: Option<Rc<RefCell<TimelineIndex>>>) {
+    let policy = if scrubber.is_some() {
+        gtk::PolicyType::External
+    } else {
+        gtk::PolicyType::Automatic
+    };
+    ui.scrubber.set_index(scrubber);
+    ui.grid.scrolled.set_vscrollbar_policy(policy);
+}
+
 pub(super) fn close(ui: &LibraryWindowUi) {
     ui.interaction.timeline_reveal.take();
     if ui.interaction.timeline.take().is_some() {
-        ui.grid.canvas.set_timeline(None);
-        ui.scrubber.set_index(None);
-        ui.grid
-            .scrolled
-            .set_vscrollbar_policy(gtk::PolicyType::Automatic);
+        ui.grid.canvas.set_timeline(None, true);
+        show_scrollbar(ui, None);
     }
 }
 
@@ -316,11 +316,7 @@ fn load_month(ui: &Rc<LibraryWindowUi>, timeline: &Rc<Timeline>, month: usize) {
     };
     let (ui, timeline) = (ui.clone(), timeline.clone());
     glib::MainContext::default().spawn_local(async move {
-        let api = &ui.ctx.api_client;
-        let result = match &timeline.user_id {
-            Some(user_id) => api.fetch_user_month_assets(user_id, &key).await,
-            None => api.fetch_month_assets(&key).await,
-        };
+        let result = scope::fetch(&ui, &timeline.plan, month, &key).await;
         if !is_current(&ui, &timeline) {
             return;
         }
@@ -407,6 +403,16 @@ pub(super) fn has_unloaded_neighbor(ui: &LibraryWindowUi, position: u32, forward
 }
 
 /// Drop deleted or archived photos in place; false when Photos isn't a timeline.
+/// Drops the cached layout of the month holding `position`, after its photo was swapped.
+pub(super) fn forget_layout_at(ui: &LibraryWindowUi, position: u32) {
+    let Some(timeline) = ui.interaction.timeline.borrow().clone() else {
+        return;
+    };
+    if let Some(month) = timeline.index.borrow().month_at(position) {
+        ui.grid.canvas.invalidate_month(month);
+    }
+}
+
 pub(super) fn remove(ui: &Rc<LibraryWindowUi>, ids: &[String]) -> bool {
     let Some(timeline) = ui.interaction.timeline.borrow().clone() else {
         return false;
@@ -426,6 +432,10 @@ pub(super) fn remove(ui: &Rc<LibraryWindowUi>, ids: &[String]) -> bool {
         .lock()
         .assets
         .retain(|asset| !ids.contains(&asset.id));
+    // Later pages now start further on, so count again; an open lightbox keeps its place.
+    if !timeline.plan.dated() && ui.interaction.lightbox.borrow().is_none() {
+        reload(ui);
+    }
     true
 }
 
@@ -434,7 +444,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn only_newest_photos_use_the_timeline() {
+    fn date_sorted_collections_use_the_timeline() {
         assert!(eligible(
             &LibrarySource::AllAssets,
             &LibrarySortMode::NewestFirst
@@ -443,20 +453,18 @@ mod tests {
             &LibrarySource::AllAssets,
             &LibrarySortMode::Filename
         ));
-        assert!(!eligible(
+        assert!(eligible(
             &LibrarySource::Favorites,
-            &LibrarySortMode::NewestFirst
+            &LibrarySortMode::OldestFirst
         ));
     }
 
     #[test]
-    fn a_partners_photos_use_the_timeline_scoped_to_them() {
+    fn a_partners_photos_use_the_timeline() {
         let partner = LibrarySource::Partner {
             id: "u2".into(),
             name: "Ana".into(),
         };
         assert!(eligible(&partner, &LibrarySortMode::NewestFirst));
-        assert_eq!(partner_id(&partner).as_deref(), Some("u2"));
-        assert_eq!(partner_id(&LibrarySource::AllAssets), None);
     }
 }

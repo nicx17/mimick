@@ -10,9 +10,10 @@ use std::time::Duration;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
+use crate::config::Config;
 use crate::state_manager::{AppState, FolderSyncStatus};
 
-use super::status::StatusWidgets;
+use super::status::{StatusWidgets, show_pill};
 use super::{FolderRowData, format_sync_age};
 
 /// Values the status page shows, copied out so the state lock isn't held while touching GTK.
@@ -30,11 +31,14 @@ struct StatusSnapshot {
     last_successful_sync_at: Option<f64>,
     last_error: Option<String>,
     last_error_guidance: Option<String>,
+    /// No server is saved yet: first run, before Save and Connect.
+    needs_setup: bool,
 }
 
 impl StatusSnapshot {
-    fn from_state(s: &AppState) -> Self {
+    fn from_state(s: &AppState, needs_setup: bool) -> Self {
         Self {
+            needs_setup,
             status: s.status.clone(),
             progress: s.progress,
             processed: s.processed_count,
@@ -57,8 +61,10 @@ pub(super) fn start_status_poller(
     widgets: StatusWidgets,
     tracked_rows: Rc<RefCell<Vec<FolderRowData>>>,
     shared_state: Arc<parking_lot::Mutex<AppState>>,
+    config: Arc<parking_lot::RwLock<Config>>,
 ) {
-    let shown_paths: RefCell<Vec<String>> = RefCell::default();
+    // `None` so the first tick draws the list even when there are no folders yet.
+    let shown_paths: RefCell<Option<Vec<String>>> = RefCell::default();
     glib::timeout_add_local(Duration::from_millis(500), move || {
         if widgets.title.root().is_none() {
             return glib::ControlFlow::Break;
@@ -68,18 +74,19 @@ pub(super) fn start_status_poller(
             .iter()
             .map(|r| r.path.clone())
             .collect();
+        let needs_setup = !config.read().data.has_server();
         let (snapshot, folder_lines) = {
             let state = shared_state.lock();
             let lines: Vec<String> = paths
                 .iter()
                 .map(|path| folder_status_line(state.folder_statuses.get(path)))
                 .collect();
-            (StatusSnapshot::from_state(&state), lines)
+            (StatusSnapshot::from_state(&state, needs_setup), lines)
         };
         widgets.show(&snapshot);
-        if *shown_paths.borrow() != paths {
+        if shown_paths.borrow().as_ref() != Some(&paths) {
             rebuild_folder_rows(&widgets.folders_list, &paths);
-            *shown_paths.borrow_mut() = paths;
+            *shown_paths.borrow_mut() = Some(paths);
         }
         update_folder_rows(&widgets.folders_list, &folder_lines);
         glib::ControlFlow::Continue
@@ -97,6 +104,11 @@ impl StatusWidgets {
             self.progress_bar
                 .set_fraction(headline.progress.unwrap_or(0.0));
         }
+        // Before setup the sync actions have nothing to act on; Set Up leads to Settings.
+        for button in [&self.sync_now_btn, &self.pause_btn, &self.queue_btn] {
+            show_pill(button, !s.needs_setup);
+        }
+        show_pill(&self.setup_btn, s.needs_setup);
         self.pause_btn.set_label(&if s.paused {
             gettext("Resume")
         } else {
@@ -110,9 +122,12 @@ impl StatusWidgets {
         self.error_row
             .set_subtitle(s.last_error_guidance.as_deref().unwrap_or_default());
         self.attention_group
-            .set_visible(s.failed > 0 || s.last_error.is_some());
-        self.route_row
-            .set_subtitle(&route_subtitle(s.route.as_deref()));
+            .set_visible(!s.needs_setup && (s.failed > 0 || s.last_error.is_some()));
+        self.route_row.set_subtitle(&if s.needs_setup {
+            gettext("No server set up yet")
+        } else {
+            route_subtitle(s.route.as_deref())
+        });
         self.last_sync_row
             .set_subtitle(&format_sync_age(s.last_successful_sync_at));
     }
@@ -181,6 +196,14 @@ struct Headline {
 
 /// Headline for the current sync state; `None` for states that keep the last one.
 fn status_headline(s: &StatusSnapshot) -> Option<Headline> {
+    if s.needs_setup {
+        return Some(Headline {
+            icon: "network-server-symbolic",
+            title: gettext("Not Set Up Yet"),
+            subtitle: gettext("Connect Mimick to your Immich server to start."),
+            progress: None,
+        });
+    }
     if s.status == "paused" || s.paused {
         return Some(Headline {
             icon: "media-playback-pause-symbolic",
@@ -190,6 +213,13 @@ fn status_headline(s: &StatusSnapshot) -> Option<Headline> {
         });
     }
     match s.status.as_str() {
+        // Idle with no route and an error: nothing is being uploaded because Immich is unreachable.
+        "idle" if s.route.is_none() && s.last_error.is_some() => Some(Headline {
+            icon: "network-offline-symbolic",
+            title: gettext("Can't Reach Immich"),
+            subtitle: gettext("Check the server address and API key in Settings."),
+            progress: None,
+        }),
         "idle" if s.failed > 0 => Some(Headline {
             icon: "network-offline-symbolic",
             title: gettext("Waiting for Immich"),
@@ -333,6 +363,37 @@ mod tests {
             ..StatusSnapshot::default()
         };
         assert!(status_headline(&unknown).is_none());
+    }
+
+    #[test]
+    fn headline_says_when_immich_is_unreachable() {
+        let offline = StatusSnapshot {
+            status: "idle".into(),
+            last_error: Some("Could not reach the Immich server".into()),
+            ..StatusSnapshot::default()
+        };
+        assert_eq!(
+            status_headline(&offline).unwrap().title,
+            "Can't Reach Immich"
+        );
+        let connected = StatusSnapshot {
+            route: Some("LAN".into()),
+            ..offline
+        };
+        assert_eq!(status_headline(&connected).unwrap().title, "Up to Date");
+    }
+
+    #[test]
+    fn headline_asks_for_setup_before_anything_else() {
+        let first_run = StatusSnapshot {
+            status: "idle".into(),
+            last_error: Some("Could not reach the Immich server".into()),
+            needs_setup: true,
+            ..StatusSnapshot::default()
+        };
+        let headline = status_headline(&first_run).unwrap();
+        assert_eq!(headline.title, "Not Set Up Yet");
+        assert_eq!(headline.icon, "network-server-symbolic");
     }
 
     #[test]

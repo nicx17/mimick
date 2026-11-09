@@ -21,13 +21,21 @@ pub(super) const GROUPS: [(&str, &[&str]); 5] = [
         &["albums", "shared-albums", "shared-links", "sharing"],
     ),
     (gettext_noop("Browse"), &["tags", "folders"]),
-    (gettext_noop("Utilities"), &["duplicates"]),
+    (
+        gettext_noop("Utilities"),
+        &[
+            "duplicates",
+            "large-files",
+            "missing-location",
+            "unusual-dates",
+        ],
+    ),
 ];
 
 /// Fixed sidebar destinations: title, subtitle, icon, and the key the sidebar handler matches.
 pub(super) type FixedRow = (&'static str, &'static str, &'static str, &'static str);
 
-pub(super) const FIXED_ROWS: [FixedRow; 15] = [
+pub(super) const FIXED_ROWS: [FixedRow; 18] = [
     fixed_row(
         gettext_noop("Photos"),
         gettext_noop("Timeline of every photo and video"),
@@ -117,6 +125,24 @@ pub(super) const FIXED_ROWS: [FixedRow; 15] = [
         gettext_noop("Photos Immich found more than once"),
         "edit-copy-symbolic",
         "duplicates",
+    ),
+    fixed_row(
+        gettext_noop("Large Files"),
+        gettext_noop("The photos and videos taking the most space"),
+        "drive-harddisk-symbolic",
+        "large-files",
+    ),
+    fixed_row(
+        gettext_noop("Missing Location"),
+        gettext_noop("Photos and videos without a place"),
+        "find-location-symbolic",
+        "missing-location",
+    ),
+    fixed_row(
+        gettext_noop("Unusual Dates"),
+        gettext_noop("Dated in the future, or too long ago"),
+        "x-office-calendar-symbolic",
+        "unusual-dates",
     ),
 ];
 

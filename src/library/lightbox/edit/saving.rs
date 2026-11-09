@@ -176,10 +176,10 @@ impl Lightbox {
         let texture = crate::library::load_texture_oriented(&path)
             .await
             .ok_or_else(|| gettext("Couldn't open the original"))?;
-        let (pixels, stride, size) = texture_pixels(&texture);
+        let (pixels, stride, size, profile) = texture_pixels(&texture);
         drop(texture);
         let asset = asset.filter(|_| job.keeps_details());
-        let job = job.with_original(&path);
+        let job = job.with_original(&path).with_pixels_profile(profile);
         let copy = tokio::task::spawn_blocking(move || job.run(&pixels, stride, size))
             .await
             .map_err(|err| err.to_string())??;
@@ -228,13 +228,26 @@ impl Lightbox {
     }
 }
 
-/// The texture's pixels as straight RGBA, with the bytes per row and the size.
-fn texture_pixels(texture: &gtk::gdk::Texture) -> (glib::Bytes, usize, (usize, usize)) {
+/// What `texture_pixels` reads out: straight RGBA, the bytes per row, the size, and the
+/// colour profile of those pixels when it isn't the original's.
+type OriginalPixels = (glib::Bytes, usize, (usize, usize), Option<Vec<u8>>);
+
+/// sRGB textures come out as they were decoded, so the original's profile still describes
+/// them; a wider one comes out in Display P3, which the copy is then labelled as.
+fn texture_pixels(texture: &gtk::gdk::Texture) -> OriginalPixels {
     let mut downloader = gtk::gdk::TextureDownloader::new(texture);
     downloader.set_format(gtk::gdk::MemoryFormat::R8g8b8a8);
+    let wide = texture.color_state() != gtk::gdk::ColorState::srgb();
+    let profile = match (wide, crate::library::color::display_p3()) {
+        (true, Some(p3)) => {
+            downloader.set_color_state(&p3);
+            crate::library::color::display_p3_icc()
+        }
+        _ => None,
+    };
     let (bytes, stride) = downloader.download_bytes();
     let size = (texture.width() as usize, texture.height() as usize);
-    (bytes, stride, size)
+    (bytes, stride, size, profile)
 }
 
 /// With the original's details kept, gives the copy its record in Immich and its albums;

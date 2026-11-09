@@ -113,10 +113,12 @@ In the **Uploads** section you can also turn on:
 
 ### Background Sync
 
-The **Background Sync** switch controls whether Mimick continues running when the settings window is closed.
+The **Background Sync** switch controls whether Mimick keeps running when you close its last window, whether that's the library or Settings.
 
 * **Enabled**: closing the window hides it. Mimick keeps syncing in the background and remains accessible from the tray.
-* **Disabled (default)**: closing the window quits the application entirely if no upload is in progress. Mimick only runs while the window is open.
+* **Disabled (default)**: closing the last window quits Mimick. Mimick only runs while a window is open.
+
+Quitting doesn't lose uploads. An upload in progress gets a few seconds to finish; one that doesn't is saved and uploaded again the next time Mimick starts. Files that were still waiting their turn upload with the next **Sync Now**, since they aren't in the sync index yet.
 
 If you disable Background Sync and also enable Run on Startup, Mimick will launch on login but quit as soon as you close the window. Re-opening it from the launcher starts it again.
 
@@ -204,21 +206,22 @@ The export creates a timestamped `mimick-diagnostics-*` folder containing redact
 * `status.redacted.json`
 * `retries.redacted.json`
 * `synced_index.redacted.json`
+* `log.redacted.txt`
 * `privacy-note.txt`
 
-API keys, raw logs, full local paths, and raw server URLs are intentionally omitted.
+The API key, server addresses, and full local paths are left out. `log.redacted.txt` is the end of Mimick's log with the API key, server addresses, and your home folder replaced; read it before you share it. To capture more, switch on **Detailed Logs** in the same section, reproduce the problem, then export; switch it off afterwards, since the log grows faster.
 
 ---
 
-## Library View (Optional)
+## Library View
 
-Mimick includes an opt-in library browser for albums, Explore, and search.
+Mimick includes a library browser for albums, Explore, and search. It is on by default for new installs: until you connect to a server Mimick opens Settings on the setup steps, then opens the library once **Save and Connect** succeeds. After that, **Open Library** under Save and Connect, or **Ctrl+,** from the library for the other way, moves between the two.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/settings-uploads-and-app.png" width="60%" alt="Library View setting under App" />
 </div>
 
-Turn on **Settings → App → Library View** (the tray menu entry appears after a restart). See the [Library View user guide](Library-View-User-Guide) for full usage documentation.
+To switch it on or off, use **Settings → App → Library View** (the tray menu entry changes after a restart). See the [Library View user guide](Library-View-User-Guide) for full usage documentation.
 
 | Photos Page | Explore Page |
 | :---: | :---: |
@@ -282,7 +285,9 @@ The configuration is stored in a JSON file located at:
 | `run_on_startup` | Whether Mimick should register itself for automatic login startup. | `false` |
 | `pause_on_metered_network` | Whether uploads should pause while the active network connection appears metered. | `false` |
 | `pause_on_battery_power` | Whether uploads should pause while the system appears to be running on battery. | `false` |
-| `library_view_enabled` | Whether the in-app library view opens instead of the settings window. | `false` |
+| `library_view_enabled` | Whether the in-app library view opens instead of the settings window. | `true` |
+| `color_scheme` | `system` follows the desktop's light or dark style; `light` or `dark` overrides it. | `"system"` |
+| `detailed_logging` | Log Mimick's debug messages too, while diagnosing a problem. | `false` |
 | `download_target_path` | Target folder for library downloads (chosen on first download). | `"/home/user/Pictures/Downloads"` |
 | `library_preview_full_resolution` | Load full-resolution originals in the lightbox instead of previews. | `false` |
 | `video_volume` | Lightbox video playback volume (0.0–1.0), saved when the lightbox closes. | `1.0` |
@@ -356,12 +361,25 @@ When generating an API Key in the Immich Web UI (Account Settings → API Keys),
 | Rename albums, edit descriptions, set covers, and change album options | `album.update` |
 | Likes and comments on shared albums | `activity.read`, `activity.statistics`; liking and commenting also need `activity.create`, and deleting `activity.delete` |
 | Memories above Photos | `memory.read`; marking a memory seen needs `memory.update`, and removing photos from one `memoryAsset.delete` |
-| Stacks (view, make, change cover, unstack) | `stack.read`; changing stacks also needs `stack.create`, `stack.update`, and `stack.delete` |
+| Stacks (view, make, change cover, unstack) | `stack.read`; changing stacks also needs `stack.create`, `stack.update`, and `stack.delete`. **Keep This, Trash Others** also needs `asset.delete`, and **Upload and Create Stack** `asset.upload` |
 | Edit Photo (crop, rotate, flip, revert) | `asset.edit.get`, `asset.edit.create`, `asset.edit.delete` |
 | Edit Photo saved as a copy (Straighten, Adjust, Filters, Redact) | `asset.download`, `asset.upload`, `stack.create`, `album.read`, `albumAsset.create` |
 | Tag People (change, remove, or draw faces; cover photos) | `face.read`, `face.create`, `face.update`, `face.delete`; naming someone new needs `person.create`, and cover photos `person.update` |
 | Duplicates page | `duplicate.read`, `duplicate.delete` |
 | View Similar Photos | `asset.read` |
+| Map Settings and an album's map | `map.read`; **Show on Map** for an album needs `album.read` |
+| Place name under the pin in Set Location | `map.search` |
+| Refresh Faces, Metadata, Thumbnails, or Video | `job.create` (your own photos only) |
+| Add to several albums at once | `albumAsset.create` |
+| Album counts on the Albums page | `album.statistics` |
+| Camera and place lists in search filters | `asset.read` |
+| People search on the People page | `person.read` |
+| Shared link photos and QR codes | `sharedLink.read`; adding or taking out photos needs `sharedLink.update` |
+| Account → Profile (picture) | `user.read`, `userProfileImage.read`; changing or removing it needs `userProfileImage.update` or `userProfileImage.delete` |
+| Account → Devices | `session.read`; signing one out needs `session.delete` |
+| Account → API Keys | `apiKey.read`, `apiKey.delete`; **Rotate** needs `apiKey.rotate` (Immich 3.2 or newer) |
+| Notifications inbox | `notification.read`; marking read needs `notification.update`, and dismissing `notification.delete` |
+| Calendar on Explore | `user.read` |
 | Counts and details in view headers | `asset.statistics`, `album.read`, `person.statistics` |
 | Hide pages for features turned off in your account | `userPreference.read` (without it, every page stays visible) |
 | **Sync Method** set to **Full** or **Download Only** (folder rules) | `asset.read`, `asset.download` |

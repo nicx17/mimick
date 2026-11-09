@@ -15,6 +15,10 @@ use super::errors::{RequestContext, classify_http_issue, classify_network_issue}
 use super::{AlbumSummary, AlbumUpdate, ApiIssue, ImmichApiClient, LibraryAlbum};
 
 mod asset_lookup;
+mod several;
+pub use several::SeveralAdded;
+mod statistics;
+pub use statistics::AlbumStatistics;
 
 /// One asset's result from adding to or removing from an album.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize)]

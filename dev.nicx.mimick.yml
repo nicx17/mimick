@@ -73,7 +73,6 @@ modules:
       - install -Dm644 src/assets/512x512/apps/dev.nicx.mimick.png /app/share/icons/hicolor/512x512/apps/dev.nicx.mimick.png
       - install -Dm644 src/assets/symbolic/apps/dev.nicx.mimick-symbolic.svg /app/share/icons/hicolor/symbolic/apps/dev.nicx.mimick-symbolic.svg
       - scripts/i18n.sh merge setup/metainfo/dev.nicx.mimick.metainfo.xml /app/share/metainfo/dev.nicx.mimick.metainfo.xml
-      - install -Dm644 THIRD_PARTY_LICENSES.txt /app/share/licenses/dev.nicx.mimick/mimick/THIRD_PARTY_LICENSES.txt
 
     sources:
       - type: git

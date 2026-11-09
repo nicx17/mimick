@@ -123,15 +123,16 @@ fn build_dialog(content: &gtk::Box) -> libadwaita::Dialog {
         .orientation(gtk::Orientation::Horizontal)
         .spacing(10)
         .build();
+    // The server's icon and name, so it isn't mistaken for the main menu's About Mimick.
     title.append(
         &gtk::Image::builder()
-            .icon_name("dev.nicx.mimick")
+            .icon_name("network-server-symbolic")
             .pixel_size(28)
             .build(),
     );
     title.append(
         &gtk::Label::builder()
-            .label(gettext("About"))
+            .label(gettext("Immich Server"))
             .css_classes(["title-2"])
             .build(),
     );
@@ -146,7 +147,7 @@ fn build_dialog(content: &gtk::Box) -> libadwaita::Dialog {
     let toolbar = libadwaita::ToolbarView::builder().content(&scroll).build();
     toolbar.add_top_bar(&header);
     libadwaita::Dialog::builder()
-        .title(gettext("About"))
+        .title(gettext("Immich Server"))
         .content_width(640)
         // Fixed height: the dialog is sized before the details load, so its natural height
         // would only fit the spinner. Smaller windows still shrink it to fit.

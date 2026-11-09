@@ -51,9 +51,6 @@ cargo clippy --all-targets --all-features -- -D warnings
 # Refresh Flatpak Cargo sources
 python3 flatpak-cargo-generator.py Cargo.lock -o cargo-sources.json
 
-# Update third-party license summaries
-cargo about generate about.hbs --output-file THIRD_PARTY_LICENSES.txt
-cargo about generate about-summary.hbs --output-file THIRD_PARTY_LICENSES_SUMMARY.txt
 ```
 
 ## Release Flow

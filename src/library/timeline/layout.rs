@@ -14,6 +14,9 @@ pub struct Group<'a> {
 pub struct LaidHeading {
     pub y: f32,
     pub text: String,
+    /// The photos under the heading, as model positions, for selecting a whole day.
+    pub first: u32,
+    pub count: u32,
 }
 
 /// One month, or a run of months without headings, packed on its own:
@@ -63,6 +66,8 @@ pub fn pack_section(groups: &[Group<'_>], width: f32, cfg: LayoutConfig) -> Pack
             packed.headings.push(LaidHeading {
                 y: packed.height,
                 text: text.clone(),
+                first: first_index,
+                count: group.dims.len() as u32,
             });
             packed.height += HEADING_HEIGHT;
         }
@@ -145,6 +150,8 @@ pub fn compose(placed: &[Placed<'_>]) -> TimelineLayout {
                     .extend(section.headings.iter().map(|heading| LaidHeading {
                         y: heading.y + y,
                         text: heading.text.clone(),
+                        first: heading.first + model_offset,
+                        count: heading.count,
                     }));
                 let ends = section.starts.iter().skip(1).chain([&section.height]);
                 for (start, end) in section.starts.iter().zip(ends) {
@@ -236,6 +243,38 @@ mod tests {
         );
         assert_eq!(packed.headings[0].y, 0.0);
         assert_eq!(packed.rows[0].y, HEADING_HEIGHT);
+    }
+
+    #[test]
+    fn headings_know_their_photos_after_the_section_is_placed() {
+        let (first_day, second_day) = ([(4, 3), (4, 3), (4, 3)], [(4, 3), (4, 3)]);
+        let packed = pack_section(
+            &[
+                Group {
+                    heading: Some("Mon".into()),
+                    dims: &first_day,
+                },
+                Group {
+                    heading: Some("Tue".into()),
+                    dims: &second_day,
+                },
+            ],
+            1000.0,
+            cfg(),
+        );
+        assert_eq!((packed.headings[1].first, packed.headings[1].count), (3, 2));
+        let layout = compose(&[Placed::Packed {
+            section: &packed,
+            model_offset: 10,
+        }]);
+        assert_eq!(
+            (layout.headings[0].first, layout.headings[0].count),
+            (10, 3)
+        );
+        assert_eq!(
+            (layout.headings[1].first, layout.headings[1].count),
+            (13, 2)
+        );
     }
 
     #[test]

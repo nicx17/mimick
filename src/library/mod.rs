@@ -39,6 +39,7 @@ pub mod asset_model;
 pub mod asset_object;
 mod bottom_nav;
 mod bulk_date;
+mod bulk_more;
 mod bulk_overflow;
 pub mod explore_view;
 mod favorites;
@@ -48,10 +49,12 @@ pub mod masonry;
 pub mod sidebar;
 pub mod state;
 pub mod style;
+pub mod theme;
 pub mod thumbnail_cache;
 mod thumbnail_loader;
 
 mod about_dialog;
+mod account;
 mod actions;
 mod album_activity;
 mod album_assets;
@@ -64,10 +67,13 @@ mod album_picker;
 mod album_share_dialog;
 mod album_wiring;
 mod asset_edit;
+mod asset_jobs;
 mod asset_tags;
+mod color;
 mod content_state;
 mod context_menu;
 mod controls;
+mod day_row;
 mod dialogs;
 mod download;
 mod drop_target;
@@ -75,6 +81,7 @@ mod duplicates_view;
 mod features;
 mod folders_view;
 mod header_format;
+mod inbox;
 mod lightbox;
 mod map;
 mod memories;
@@ -87,9 +94,11 @@ mod photo_canvas;
 mod photo_editor;
 mod related;
 pub mod search_filters;
+mod search_options;
 mod search_panel;
 pub mod search_view;
 mod search_wiring;
+mod select_all;
 mod source_loading;
 use album_wiring::{
     connect_albums_create, refresh_albums_view, refresh_search_tags, search_by_tag,
@@ -103,8 +112,11 @@ use source_loading::{
     apply_source_ui_state, load_albums, load_explore_landing, load_pages, load_source_page,
     load_status,
 };
+mod clipboard;
 mod server_stats_dialog;
 mod shared_link_dialog;
+mod shared_link_photos;
+mod shared_link_qr;
 mod shared_links_view;
 mod sharing_view;
 mod shortcuts_dialog;
@@ -114,6 +126,8 @@ mod tags_view;
 mod trash_view;
 mod tree_page;
 mod upload_picker;
+mod upload_stack;
+mod utilities;
 mod video_player;
 mod window_layout;
 use search_wiring::{connect_lightweight_filters, connect_search_view};
@@ -121,21 +135,28 @@ use search_wiring::{connect_lightweight_filters, connect_search_view};
 const PAGE_SIZE: u32 = 50;
 /// Map areas load each photo by ID, so smaller pages show the first ones sooner.
 const MAP_AREA_PAGE_SIZE: u32 = 32;
+/// Large Files is one list from Immich, with no further pages; this many is plenty to clear.
+const LARGE_FILES_LIMIT: u32 = 250;
 
 mod texture_decode;
 mod time_zones;
 mod timeline;
 use texture_decode::{
-    decode_raw_thumbnail_texture, load_texture_blocking, load_texture_fitted_blocking,
+    decode_heif_thumbnail, decode_raw_thumbnail_texture, is_heif_path, load_texture_blocking,
+    load_texture_fitted_blocking,
 };
 pub use texture_decode::{set_raw_cache_enabled, set_raw_full_decode};
 
-/// Register application custom icons with the Gtk icon theme system.
+/// Register application custom icons with the Gtk icon theme system, once per process.
+/// Startup calls it, so the Settings window has them before any library window exists.
 pub(crate) fn register_app_icons() {
-    if let Some(display) = gtk::gdk::Display::default() {
-        let theme = gtk::IconTheme::for_display(&display);
-        theme.add_resource_path("/dev/nicx/mimick/icons");
-    }
+    static REGISTERED: std::sync::OnceLock<()> = std::sync::OnceLock::new();
+    REGISTERED.get_or_init(|| {
+        if let Some(display) = gtk::gdk::Display::default() {
+            let theme = gtk::IconTheme::for_display(&display);
+            theme.add_resource_path("/dev/nicx/mimick/icons");
+        }
+    });
 }
 
 /// Load a local texture, preferring decoders that cover formats outside the
@@ -178,9 +199,14 @@ struct LibraryWindowUi {
     sort_mode: gtk::DropDown,
     source_mode: gtk::DropDown,
     source_revealer: gtk::Revealer,
-    upload_button: gtk::Button,
+    /// Its menu holds Paste; shown wherever new photos can go.
+    upload_button: libadwaita::SplitButton,
     controls_row: gtk::Box,
     back_button: gtk::Button,
+    /// Header search on phones, which have no other one-tap way in; hidden when search is off.
+    search_button: gtk::Button,
+    /// Notifications from Immich; shown while some are unread.
+    bell: inbox::Bell,
     select_toggle: gtk::ToggleButton,
     bulk: window_layout::BulkParts,
     album_link: window_layout::AlbumLinkParts,
@@ -201,6 +227,8 @@ struct WindowInteractionState {
     lightbox: RefCell<Option<Rc<lightbox::Lightbox>>>,
     /// Photo for the next Photos timeline to scroll to: asset id and its `YYYY-MM`.
     timeline_reveal: RefCell<Option<(String, String)>>,
+    /// What Mimick last put on the clipboard, for Paste to recognise its own copy.
+    copied: RefCell<Option<clipboard::Copied>>,
 }
 
 /// Build and display the main library window application layout.
@@ -220,73 +248,65 @@ fn build_window_ui(
     let window = parts.window.clone();
     crate::debug_width::install(&window);
     crate::debug_width::trace_overflow_warnings(&window);
-    let bulk = &parts.content.bulk;
-    let controls = WindowControls {
-        album_link_listbox: parts.content.album_link.listbox.clone(),
-        bulk_delete: bulk.delete.clone(),
-        bulk_download: bulk.download.clone(),
-        bulk_clear: bulk.clear.clone(),
-        bulk_share_link: bulk.share_link.clone(),
-        bulk_location: bulk.location.clone(),
-        bulk_date: bulk.date.clone(),
-    };
     let ui = Rc::new(LibraryWindowUi::from_parts(ctx, app, parts));
-    connect_window_controls(&ui, controls);
+    connect_window_controls(&ui);
     install_close_handler(&ui, &window);
     (ui, window)
 }
 
-struct WindowControls {
-    album_link_listbox: gtk::ListBox,
-    bulk_delete: gtk::Button,
-    bulk_download: gtk::Button,
-    bulk_clear: gtk::Button,
-    bulk_share_link: gtk::Button,
-    bulk_location: gtk::Button,
-    bulk_date: gtk::Button,
-}
-
-fn connect_window_controls(ui: &Rc<LibraryWindowUi>, controls: WindowControls) {
+fn connect_window_controls(ui: &Rc<LibraryWindowUi>) {
+    let bulk = &ui.bulk;
     connect_menus(ui.clone());
-    connect_album_link_row(ui.clone(), controls.album_link_listbox);
+    connect_album_link_row(ui.clone(), ui.album_link.listbox.clone());
     connect_select_mode(ui.clone(), ui.select_toggle.clone());
     connect_bulk_actions(
         ui.clone(),
-        controls.bulk_delete,
-        controls.bulk_download,
-        controls.bulk_clear,
+        bulk.delete.clone(),
+        bulk.download.clone(),
+        bulk.clear.clone(),
     );
-    actions::connect_bulk_share_link(ui.clone(), &controls.bulk_share_link);
+    actions::connect_bulk_share_link(ui.clone(), &bulk.share_link);
     actions::connect_bulk_archive(ui.clone());
     actions::connect_bulk_stack(ui.clone());
-    actions::connect_bulk_location(ui.clone(), &controls.bulk_location);
-    actions::connect_bulk_date(ui.clone(), &controls.bulk_date);
+    actions::connect_bulk_location(ui.clone(), &bulk.location);
+    actions::connect_bulk_date(ui.clone(), &bulk.date);
     actions::connect_bulk_add_to_album(ui.clone());
     actions::connect_bulk_remove_from_album(ui.clone());
+    bulk_more::connect(ui);
     trash_view::connect_trash_controls(ui.clone());
     people_view::connect_people_view(ui.clone());
     tags_view::connect_tags_view(ui.clone());
+    folders_view::connect_folders_view(ui);
     sharing_view::connect_sharing_view(ui.clone());
     duplicates_view::connect_duplicates_view(ui.clone());
     shared_links_view::connect_shared_links_view(ui.clone());
     map::connect_map_view(ui);
     timeline::connect(ui);
+    utilities::connect(ui);
+    source_header::connect_slideshow(ui);
     bottom_nav::connect_bottom_nav(ui);
     connect_sidebar_handlers(ui.clone());
     connect_controls(ui.clone());
+    clipboard::connect_clipboard(ui);
     connect_grid_handlers(ui.clone());
     connect_search_view(ui.clone());
     connect_lightweight_filters(ui.clone());
     connect_drop_target(ui.clone());
 }
 
+/// Closing the library frees its memory; as the last window with background sync off, it
+/// quits Mimick too, as closing Settings does, instead of leaving it in the tray.
 fn install_close_handler(ui: &Rc<LibraryWindowUi>, window: &libadwaita::ApplicationWindow) {
-    let close_ctx = ui.ctx.clone();
+    let (close_ctx, app) = (ui.ctx.clone(), ui.app.clone());
     let weak = Rc::downgrade(ui);
     window.connect_close_request(move |_| {
         log::info!("Library window closing");
         if let Some(ui) = weak.upgrade() {
             lightbox::close_lightbox(&ui);
+        }
+        if crate::ui_lifecycle::quits_on_close(&app, &close_ctx) {
+            app.quit();
+            return glib::Propagation::Stop;
         }
         close_ctx.thumbnail_cache.clear_memory();
         glib::timeout_add_seconds_local_once(3, release_freed_memory);
@@ -354,9 +374,11 @@ fn bootstrap_window(ui: Rc<LibraryWindowUi>) {
     features::load(&ui);
     fetch_current_user(ui.clone());
     connect_albums_create(ui.clone());
+    account::connect(&ui);
     let timers = vec![
         spawn_server_ping_loop(ui.clone()),
         spawn_transfer_poll_loop(ui.clone()),
+        inbox::connect(&ui),
     ];
     stop_timers_on_close(&ui.window, timers);
     navigation::restore(&ui);

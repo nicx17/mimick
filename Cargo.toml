@@ -53,6 +53,8 @@ tokio = { version = "1.52.1", features = [
 ] }
 flexi_logger = "0.31.8"
 base64 = "0.22"
+# Reads photos' ICC colour profiles and converts the ones GTK can't describe.
+lcms2 = "6.2.0"
 nom-exif = "3.4.2"
 image = { version = "0.25.10", default-features = false, features = [
     "jpeg",
@@ -85,6 +87,7 @@ psd = "0.3.5"
 tempfile = "3.27.0"
 gstreamer = "0.25.4"
 gstreamer-play = "0.25.0"
+qrcode = { version = "0.14.1", default-features = false }
 
 [dev-dependencies]
 

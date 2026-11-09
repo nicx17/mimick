@@ -32,7 +32,9 @@ use super::schedule::{CancelFlag, LoadRequest, LoadScheduler, SETTLE_DELAY, is_f
 
 mod interaction;
 mod keyboard;
+mod size_badge;
 mod timeline;
+mod timeline_paint;
 
 mod imp {
     use std::cell::{Cell, OnceCell, RefCell};
@@ -112,6 +114,8 @@ mod imp {
         pub settle: RefCell<Option<glib::SourceId>>,
         pub timeline: RefCell<Option<Rc<RefCell<TimelineIndex>>>>,
         pub date_headings: Cell<DateHeadings>,
+        /// False when the timeline's sections are pages, which get no date headings.
+        pub timeline_dated: Cell<bool>,
         pub(super) section_cache: RefCell<HashMap<usize, CachedSection>>,
         pub headings: RefCell<Vec<LaidHeading>>,
         pub sections: RefCell<Vec<LaidSection>>,
@@ -152,6 +156,8 @@ mod imp {
         /// When each freshly loaded tile started fading in, in monotonic microseconds.
         pub reveals: RefCell<HashMap<String, i64>>,
         pub reveal_ticking: Cell<bool>,
+        /// Large Files labels each tile with its file size.
+        pub show_sizes: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -357,7 +363,8 @@ mod imp {
             stats: &SnapshotStats,
             queued: usize,
         ) {
-            if !log::log_enabled!(log::Level::Debug) {
+            // Frames that start no loads would log at the frame rate for nothing.
+            if queued == 0 || !log::log_enabled!(log::Level::Debug) {
                 return;
             }
             let (cache_n, cache_bytes, cache_max, cache_evicts) = cache.cache_stats();

@@ -1,4 +1,5 @@
-//! "Add to Album" picker: put the selected photos in one of your albums, or a new one.
+//! "Add to Album" picker: put the selected photos in one of your albums, several ticked ones,
+//! or a new one.
 
 use crate::i18n::{fill, plural_n};
 use gettextrs::{gettext, ngettext};
@@ -14,38 +15,71 @@ use crate::app_context::AppContext;
 
 use super::LibraryWindowUi;
 use super::album_assets::{open_album, refresh_albums, showing_album};
-use super::albums_view::spawn_thumbnail;
 use super::context_menu::{show_alert_on, show_error_toast};
 use super::dialogs::{TextPrompt, prompt_text_on, toast_with_action};
 use super::header_format::count_label;
 
-const COVER_SIZE: i32 = 40;
+mod several;
+#[cfg(test)]
+mod tests;
+mod widgets;
+
+use several::{OnSeveral, Several};
+pub(super) use widgets::{album_cover, asset_cover};
+use widgets::{cover_placeholder, no_matches_row, picker_dialog};
 
 type OnChosen = Rc<dyn Fn(String, String)>;
+
+/// What picking does: one album, and, where offered, every ticked album at once.
+struct Choices {
+    chosen: OnChosen,
+    several: Option<OnSeveral>,
+}
 
 pub(super) fn present(ui: &Rc<LibraryWindowUi>, asset_ids: Vec<String>, on_added: Rc<dyn Fn()>) {
     if asset_ids.is_empty() {
         return;
     }
     let count = asset_ids.len();
-    let ui_add = ui.clone();
-    choose(
+    let (ui_add, ids_add, on_added_one) = (ui.clone(), asset_ids.clone(), on_added.clone());
+    let ui_several = ui.clone();
+    let choices = Choices {
+        chosen: Rc::new(move |id, name| {
+            add_and_report(&ui_add, id, name, ids_add.clone(), on_added_one.clone());
+        }),
+        several: Some(Rc::new(move |albums| {
+            several::add_and_report(&ui_several, albums, asset_ids.clone(), on_added.clone());
+        })),
+    };
+    let title = gettext("Add to Album");
+    open_picker(
         ui.window.upcast_ref(),
         ui.ctx.clone(),
-        gettext("Add to Album"),
-        count,
-        Rc::new(move |id, name| {
-            add_and_report(&ui_add, id, name, asset_ids.clone(), on_added.clone());
-        }),
+        (title, count),
+        choices,
     );
 }
 
+/// The picker with one album to choose, as for uploads.
 pub(super) fn choose(
     parent: &gtk::Widget,
     ctx: Arc<AppContext>,
     title: String,
     count: usize,
     on_chosen: OnChosen,
+) {
+    let choices = Choices {
+        chosen: on_chosen,
+        several: None,
+    };
+    open_picker(parent, ctx, (title, count), choices);
+}
+
+fn open_picker(
+    parent: &gtk::Widget,
+    ctx: Arc<AppContext>,
+    (title, count): (String, usize),
+    choices: Choices,
 ) {
     let parent = parent.clone();
     glib::MainContext::default().spawn_local(async move {
@@ -57,7 +91,7 @@ pub(super) fn choose(
             "Album picker \"{title}\" opened with {} albums",
             albums.len()
         );
-        let picker = Picker::new(ctx, parent, on_chosen, albums, me, (&title, count));
+        let picker = Picker::new(ctx, parent, choices, albums, me, (&title, count));
         picker.render();
         let keep_alive = RefCell::new(Some(picker.clone()));
         picker.dialog.connect_closed(move |_| {
@@ -203,6 +237,8 @@ struct Picker {
     ctx: Arc<AppContext>,
     parent: gtk::Widget,
     on_chosen: OnChosen,
+    /// Ticked albums and their Add button, when the picker can add to several.
+    several: Option<Several>,
     albums: Vec<LibraryAlbum>,
     me: String,
     dialog: libadwaita::Dialog,
@@ -215,7 +251,7 @@ impl Picker {
     fn new(
         ctx: Arc<AppContext>,
         parent: gtk::Widget,
-        on_chosen: OnChosen,
+        choices: Choices,
         albums: Vec<LibraryAlbum>,
         me: String,
         (title, count): (&str, usize),
@@ -230,11 +266,14 @@ impl Picker {
             .valign(gtk::Align::Start)
             .hexpand(true)
             .build();
-        let dialog = picker_dialog(&filter, &list, title, count);
+        let several = choices.several.map(Several::new);
+        let add = several.as_ref().map(|several| &several.add);
+        let dialog = picker_dialog(&filter, &list, (title, count), add);
         let picker = Rc::new(Self {
             ctx,
             parent,
-            on_chosen,
+            on_chosen: choices.chosen,
+            several,
             albums,
             me,
             dialog,
@@ -243,7 +282,34 @@ impl Picker {
             first_pick: RefCell::default(),
         });
         picker.connect_filter();
+        picker.connect_add();
         picker
+    }
+
+    fn connect_add(self: &Rc<Self>) {
+        let Some(several) = &self.several else {
+            return;
+        };
+        let weak = Rc::downgrade(self);
+        several.add.connect_clicked(move |_| {
+            if let Some(picker) = weak.upgrade() {
+                picker.add_ticked();
+            }
+        });
+    }
+
+    /// Close and add to every ticked album; false when none is ticked.
+    fn add_ticked(&self) -> bool {
+        let Some(several) = self.several.as_ref().filter(|several| several.any()) else {
+            return false;
+        };
+        self.dialog.close();
+        several.commit();
+        true
+    }
+
+    fn ticking(&self) -> bool {
+        self.several.as_ref().is_some_and(Several::any)
     }
 
     fn connect_filter(self: &Rc<Self>) {
@@ -256,6 +322,7 @@ impl Picker {
         let weak = Rc::downgrade(self);
         self.filter.connect_activate(move |_| {
             if let Some(picker) = weak.upgrade()
+                && !picker.add_ticked()
                 && let Some(pick) = picker.first_pick.borrow().as_ref()
             {
                 pick();
@@ -315,12 +382,20 @@ impl Picker {
             .activatable(true)
             .build();
         row.add_prefix(&album_cover(&self.ctx, album));
+        let tick = self.several.as_ref().map(|several| several.tick(album));
+        if let Some(tick) = &tick {
+            row.add_suffix(tick);
+        }
         let (weak, id, name) = (
             Rc::downgrade(self),
             album.id.clone(),
             album.album_name.clone(),
         );
-        row.connect_activated(move |_| pick_album(&weak, id.clone(), name.clone()));
+        // Once an album is ticked, tapping rows ticks them too instead of adding right away.
+        row.connect_activated(move |_| match (&tick, weak.upgrade()) {
+            (Some(tick), Some(picker)) if picker.ticking() => tick.set_active(!tick.is_active()),
+            _ => pick_album(&weak, id.clone(), name.clone()),
+        });
         row
     }
 }
@@ -359,174 +434,4 @@ fn pick_new(picker: &Weak<Picker>, name: Option<String>) {
         },
         move |name| create_then(ctx.clone(), parent.clone(), name, on_chosen.clone()),
     );
-}
-
-fn picker_dialog(
-    filter: &gtk::SearchEntry,
-    list: &gtk::ListBox,
-    title: &str,
-    count: usize,
-) -> libadwaita::Dialog {
-    let header = libadwaita::HeaderBar::builder()
-        .title_widget(&libadwaita::WindowTitle::new(
-            title,
-            &count_label(count as u64),
-        ))
-        .build();
-    let search = gtk::Box::builder()
-        .margin_start(12)
-        .margin_end(12)
-        .margin_bottom(6)
-        .build();
-    search.append(filter);
-    let content = gtk::Box::builder()
-        .margin_top(6)
-        .margin_bottom(12)
-        .margin_start(12)
-        .margin_end(12)
-        .build();
-    content.append(list);
-    let clamp = libadwaita::Clamp::builder()
-        .maximum_size(600)
-        .child(&content)
-        .build();
-    let scroller = gtk::ScrolledWindow::builder()
-        .hscrollbar_policy(gtk::PolicyType::Never)
-        .vexpand(true)
-        .child(&clamp)
-        .build();
-    let toolbar = libadwaita::ToolbarView::builder()
-        .content(&scroller)
-        .build();
-    toolbar.add_top_bar(&header);
-    toolbar.add_top_bar(&search);
-    libadwaita::Dialog::builder()
-        .title(title)
-        .content_width(400)
-        .content_height(560)
-        .child(&toolbar)
-        .build()
-}
-
-fn no_matches_row() -> gtk::ListBoxRow {
-    let label = gtk::Label::builder()
-        .label(gettext("No matching albums"))
-        .margin_top(12)
-        .margin_bottom(12)
-        .css_classes(["dim-label"])
-        .build();
-    gtk::ListBoxRow::builder()
-        .child(&label)
-        .activatable(false)
-        .selectable(false)
-        .build()
-}
-
-fn cover_frame() -> gtk::Overlay {
-    let spacer = gtk::Box::builder()
-        .width_request(COVER_SIZE)
-        .height_request(COVER_SIZE)
-        .build();
-    gtk::Overlay::builder()
-        .child(&spacer)
-        .valign(gtk::Align::Center)
-        .overflow(gtk::Overflow::Hidden)
-        .css_classes(["mimick-picker-cover"])
-        .build()
-}
-
-fn cover_placeholder(icon: &str) -> gtk::Overlay {
-    let frame = cover_frame();
-    frame.add_overlay(&gtk::Image::from_icon_name(icon));
-    frame
-}
-
-pub(super) fn album_cover(ctx: &Arc<AppContext>, album: &LibraryAlbum) -> gtk::Overlay {
-    match album.thumbnail_asset_id.clone() {
-        Some(thumb_id) => asset_cover(ctx, thumb_id),
-        None => cover_placeholder("folder-pictures-symbolic"),
-    }
-}
-
-pub(super) fn asset_cover(ctx: &Arc<AppContext>, asset_id: String) -> gtk::Overlay {
-    let frame = cover_frame();
-    let picture = gtk::Picture::builder()
-        .content_fit(gtk::ContentFit::Cover)
-        .can_shrink(true)
-        .build();
-    frame.add_overlay(&picture);
-    spawn_thumbnail(ctx.clone(), asset_id, picture);
-    frame
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn album(id: &str, name: &str, role: &str, updated: &str) -> LibraryAlbum {
-        let owner = if role == "owner" { "me" } else { "boss" };
-        let mut users = vec![serde_json::json!({ "role": "owner", "user": { "id": owner } })];
-        if role != "owner" {
-            users.push(serde_json::json!({ "role": role, "user": { "id": "me" } }));
-        }
-        serde_json::from_value(serde_json::json!({
-            "id": id,
-            "albumName": name,
-            "assetCount": 1,
-            "albumThumbnailAssetId": null,
-            "createdAt": "2024-01-01T00:00:00.000Z",
-            "updatedAt": updated,
-            "albumUsers": users
-        }))
-        .unwrap()
-    }
-
-    fn fixture() -> Vec<LibraryAlbum> {
-        vec![
-            album("a", "Beach Trip", "owner", "2024-01-01T00:00:00.000Z"),
-            album("b", "Family", "editor", "2024-03-01T00:00:00.000Z"),
-            album("c", "Wedding", "viewer", "2024-04-01T00:00:00.000Z"),
-            album("d", "Garden", "owner", "2024-02-01T00:00:00.000Z"),
-        ]
-    }
-
-    #[test]
-    fn picker_lists_owned_and_editor_albums_newest_first() {
-        let albums = fixture();
-        let ids: Vec<&str> = pickable_albums(&albums, "me", "")
-            .iter()
-            .map(|a| a.id.as_str())
-            .collect();
-        assert_eq!(ids, ["b", "d", "a"]);
-    }
-
-    #[test]
-    fn picker_filter_ignores_case() {
-        let albums = fixture();
-        let names: Vec<&str> = pickable_albums(&albums, "me", "TRIP")
-            .iter()
-            .map(|a| a.album_name.as_str())
-            .collect();
-        assert_eq!(names, ["Beach Trip"]);
-    }
-
-    #[test]
-    fn added_message_variants() {
-        let o = |done, duplicate, denied| BulkOutcome {
-            done,
-            duplicate,
-            denied,
-        };
-        assert_eq!(added_message(o(1, 0, 0), "Trip"), "Added 1 item to “Trip”");
-        assert_eq!(
-            added_message(o(3, 2, 0), "Trip"),
-            "Added 3 items to “Trip” · 2 already there"
-        );
-        assert_eq!(added_message(o(0, 2, 0), "Trip"), "Already in “Trip”");
-        assert_eq!(
-            added_message(o(2, 0, 1), "Trip"),
-            "Added 2 items to “Trip” · 1 not allowed"
-        );
-        assert_eq!(added_message(o(0, 0, 3), "Trip"), "Couldn't add to “Trip”");
-    }
 }

@@ -128,7 +128,7 @@ KDE's "Restore previous session" feature re-launches the app independently of th
 
 ### Mimick Quits When I Close the Window
 
-**Background Sync** is off, which is the default. Turn on **Settings → App → Background Sync**; closing the window then hides it and Mimick keeps syncing.
+**Background Sync** is off, which is the default, so closing the last window, the library or Settings, quits Mimick. Turn on **Settings → App → Background Sync**; closing the window then hides it and Mimick keeps syncing from the tray. Uploads cut short by quitting aren't lost: an unfinished one is retried the next time Mimick starts, and files still waiting upload with the next **Sync Now**.
 
 ### Two Tray Icons Appear (Flatpak on KDE)
 
@@ -189,8 +189,9 @@ Use **Export Diagnostics** in **Settings → Troubleshooting** to collect:
 - `status.redacted.json`
 - `retries.redacted.json`
 - `synced_index.redacted.json`
+- `log.redacted.txt`, the end of the log with the API key, server addresses, and your home folder replaced
 
-API keys, raw logs, full local paths, and raw server URLs are intentionally omitted. The bundle is written to a timestamped `mimick-diagnostics-*` folder.
+The API key, server addresses, and full local paths are otherwise left out. The bundle is written to a timestamped `mimick-diagnostics-*` folder. For a bug report, switch on **Detailed Logs** first, reproduce the problem, export, and attach `log.redacted.txt` to the issue along with the debug info from **About Mimick → Troubleshooting**.
 
 ### Useful Logs
 

@@ -69,6 +69,30 @@ impl Lightbox {
         mine: bool,
         on_server: bool,
     ) {
+        self.show_rating_and_people(asset_id, &details, mine, on_server);
+        if on_server && self.ui.features.get().tags {
+            self.details.tags.show(asset_id, details.tags);
+        }
+        let projection = details
+            .exif_info
+            .as_ref()
+            .and_then(|e| e.projection_type.as_deref());
+        self.offer_panorama(projection);
+        let exif = details
+            .exif_info
+            .or_else(|| mine.then(crate::api_client::ExifInfo::default));
+        if let Some(exif) = exif {
+            self.show_remote_exif(&exif, mine);
+        }
+    }
+
+    fn show_rating_and_people(
+        &self,
+        asset_id: &str,
+        details: &AssetDetails,
+        mine: bool,
+        on_server: bool,
+    ) {
         let features = self.ui.features.get();
         if on_server && features.ratings {
             let rating = details.exif_info.as_ref().and_then(|exif| exif.rating);
@@ -80,15 +104,6 @@ impl Lightbox {
             self.details
                 .people
                 .show(&self.ui, &details.people, taken, true);
-        }
-        if on_server && features.tags {
-            self.details.tags.show(asset_id, details.tags);
-        }
-        let exif = details
-            .exif_info
-            .or_else(|| mine.then(crate::api_client::ExifInfo::default));
-        if let Some(exif) = exif {
-            self.show_remote_exif(&exif, mine);
         }
     }
 

@@ -213,6 +213,35 @@ picture.mimick-thumb-reveal.mimick-thumb-pending {
     background-color: alpha(@view_fg_color, 0.08);
 }
 
+/* A shared link's photos: square tiles, ringed and ticked when selected. */
+button.mimick-link-photo {
+    padding: 0;
+    border-radius: 8px;
+    background-color: alpha(@view_fg_color, 0.08);
+}
+
+button.mimick-link-photo > overlay {
+    border-radius: 8px;
+}
+
+button.mimick-link-photo:checked {
+    box-shadow: inset 0 0 0 3px @accent_bg_color;
+}
+
+.mimick-link-photo-tick {
+    padding: 3px;
+    border-radius: 999px;
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+}
+
+/* White behind the code in dark mode too, so phone cameras can read it. */
+.mimick-qr-code {
+    border-radius: 12px;
+    background-color: white;
+    padding: 8px;
+}
+
 @keyframes mimick-pop {
     0%   { transform: scale(0.6); }
     60%  { transform: scale(1.2); }
@@ -254,11 +283,18 @@ button.mimick-pop {
     background-color: alpha(@warning_bg_color, 0.22);
 }
 
-/* Tag pills in the details pane: a split chip. The left half (color dot + name)
-   searches the tag; the right half is a full-height 32 px remove target. */
-.mimick-transfer-mini > *,
-.mimick-transfer-mini > * > * {
-    min-height: 4px;
+/* Transfer progress in the header: as tall as a button's content, with slightly
+   rounded corners rather than Adwaita's thin pill. */
+.mimick-transfer-mini > trough,
+.mimick-transfer-mini > trough > progress {
+    min-height: 24px;
+    border-radius: 6px;
+}
+
+/* A fifth of a 360 px screen leaves "Explore" no room beside Adwaita's 10 px button sides. */
+.mimick-bottom-nav button {
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 image.mimick-person-favorite {
@@ -281,6 +317,60 @@ image.mimick-person-favorite {
     outline: none;
 }
 
+/* The main menu's style switcher, as GNOME apps draw it: a circle per style, ringed in the
+   accent colour when picked. The radio dot is hidden; the ring shows the choice. */
+.mimick-style-switcher checkbutton {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 3px;
+    border-radius: 999px;
+    background-clip: content-box;
+    box-shadow: inset 0 0 0 1px var(--border-color);
+}
+
+.mimick-style-switcher checkbutton:checked {
+    box-shadow: inset 0 0 0 2px var(--accent-bg-color);
+}
+
+.mimick-style-switcher checkbutton:focus-visible {
+    outline: 2px solid alpha(var(--accent-color), 0.5);
+    outline-offset: 1px;
+}
+
+.mimick-style-switcher checkbutton.system {
+    background-image: linear-gradient(to bottom right, #ffffff 49.99%, #202020 50.01%);
+}
+
+.mimick-style-switcher checkbutton.light {
+    background-color: #ffffff;
+}
+
+.mimick-style-switcher checkbutton.dark {
+    background-color: #202020;
+}
+
+.mimick-style-switcher checkbutton radio {
+    -gtk-icon-source: none;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    opacity: 0;
+}
+
+/* libadwaita styles an expander row's arrow from any expanded row around it, so a folder
+   nested in an open one looked open too. This path reaches only a row's own arrow. */
+row.expander:not(:checked) > box > list > row.header > box.header > box.suffixes > image.expander-row-arrow {
+    -gtk-icon-transform: rotate(0.5turn);
+    opacity: var(--dim-opacity);
+    color: inherit;
+}
+
+/* Tag pills in the details pane: a split chip. The left half (color dot + name)
+   searches the tag; the right half is a full-height 32 px remove target. */
 .mimick-tag-chip {
     border-radius: 999px;
     background-color: alpha(@accent_bg_color, 0.14);
@@ -353,6 +443,58 @@ picture.mimick-video-surface {
     border-radius: 12px;
 }
 
+/* Play, pause, or volume, flashed over the video. Hidden at rest; each flash runs one of
+   two identical animations, since switching names is what restarts one in GTK. It grows
+   as it fades, or, when the system asks for reduced motion, only fades. */
+.mimick-video-osd {
+    padding: 20px;
+    min-width: 40px;
+    border-radius: 999px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+}
+
+@keyframes mimick-osd-a {
+    from { opacity: 1; transform: scale(0.85); }
+    to   { opacity: 0; transform: scale(1.3); }
+}
+
+@keyframes mimick-osd-b {
+    from { opacity: 1; transform: scale(0.85); }
+    to   { opacity: 0; transform: scale(1.3); }
+}
+
+@keyframes mimick-osd-fade-a {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@keyframes mimick-osd-fade-b {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .mimick-video-osd.mimick-osd-flash-a {
+        animation: mimick-osd-a 650ms ease-out forwards;
+    }
+
+    .mimick-video-osd.mimick-osd-flash-b {
+        animation: mimick-osd-b 650ms ease-out forwards;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mimick-video-osd.mimick-osd-flash-a {
+        animation: mimick-osd-fade-a 650ms ease-out forwards;
+    }
+
+    .mimick-video-osd.mimick-osd-flash-b {
+        animation: mimick-osd-fade-b 650ms ease-out forwards;
+    }
+}
+
 /* A thick seek bar filled in the accent color; the padding keeps it easy to hit. */
 scale.mimick-video-seek {
     padding-top: 8px;
@@ -391,13 +533,20 @@ scale.mimick-video-seek:focus-visible > trough > slider {
 
 /* ── Live photos and slideshow ─────────────────────────────────── */
 
-button.mimick-live-button {
+button.mimick-live-button,
+button.mimick-panorama-button {
     min-height: 28px;
     padding: 2px 12px;
     font-weight: 600;
 }
 
-button.mimick-live-button:checked {
+/* The 360° view fills the photo's area edge to edge. */
+.mimick-panorama {
+    background-color: black;
+}
+
+button.mimick-live-button:checked,
+button.mimick-panorama-button:checked {
     background-color: alpha(@accent_bg_color, 0.85);
     color: @accent_fg_color;
 }
@@ -774,3 +923,52 @@ button.mimick-minimap {
     outline-offset: 2px;
     border-radius: 8px;
 }
+
+/* The unread count on the header's bell. */
+.mimick-bell-badge {
+    min-width: 14px;
+    padding: 0 3px;
+    margin: -4px -6px 0 0;
+    border-radius: 999px;
+    font-size: 0.7em;
+    font-weight: 700;
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+}
+
+/* Unread notifications in the inbox. */
+row.mimick-unread .title {
+    font-weight: 700;
+}
+
+/* The photo calendar's card, and its key's squares (the grid draws the same shades). */
+.mimick-calendar-card {
+    padding: 14px 16px;
+}
+
+.mimick-heat-cell {
+    min-width: 10px;
+    min-height: 10px;
+    border-radius: 3px;
+}
+
+.mimick-heat-0 {
+    background-color: alpha(@card_fg_color, 0.08);
+}
+
+.mimick-heat-1 {
+    background-color: alpha(@accent_bg_color, 0.35);
+}
+
+.mimick-heat-2 {
+    background-color: alpha(@accent_bg_color, 0.55);
+}
+
+.mimick-heat-3 {
+    background-color: alpha(@accent_bg_color, 0.78);
+}
+
+.mimick-heat-4 {
+    background-color: @accent_bg_color;
+}
+

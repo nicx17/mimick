@@ -27,9 +27,15 @@ const fn hint(title: &'static str, accelerator: &'static str, subtitle: &'static
 
 const GENERAL: &[Shortcut] = &[
     key(gettext_noop("Show keyboard shortcuts"), "<Control>question"),
+    key(gettext_noop("Open Settings"), "<Control>comma"),
     key(gettext_noop("Toggle sidebar"), "F9"),
     key(gettext_noop("Refresh"), "F5"),
     key(gettext_noop("Search"), "<Control>k"),
+    hint(
+        gettext_noop("Paste photos"),
+        "<Control>v",
+        gettext_noop("Into the open album, or Photos"),
+    ),
     hint(
         gettext_noop("Go back"),
         "<Alt>Left",
@@ -89,7 +95,17 @@ const SELECTION: &[Shortcut] = &[
     hint(
         gettext_noop("Select all"),
         "<Control>a",
-        gettext_noop("Every photo loaded in the grid"),
+        gettext_noop("Every photo in the view, loading the rest first"),
+    ),
+    hint(
+        gettext_noop("Select a whole day"),
+        "<Shift>space",
+        gettext_noop("The focused photo's day or month; or tap its date heading while selecting"),
+    ),
+    hint(
+        gettext_noop("Copy selection"),
+        "<Control>c",
+        gettext_noop("Paste into an album to add them; one photo copies as a picture"),
     ),
     key(gettext_noop("Exit selection mode"), "Escape"),
 ];
@@ -121,6 +137,11 @@ const LIGHTBOX: &[Shortcut] = &[
     ),
     key(gettext_noop("Edit info"), "e"),
     key(gettext_noop("Download"), "<Shift>d"),
+    hint(
+        gettext_noop("Copy the photo"),
+        "<Control>c",
+        gettext_noop("While recognized text shows, copies the text instead"),
+    ),
     hint(
         gettext_noop("Show or hide recognized text"),
         "t",
@@ -172,6 +193,24 @@ const SLIDESHOW: &[Shortcut] = &[
     ),
 ];
 
+const PANORAMA: &[Shortcut] = &[
+    hint(
+        gettext_noop("Switch the 360° view"),
+        "p",
+        gettext_noop("Only on 360° photos, which open in it"),
+    ),
+    key(gettext_noop("Tilt up or down"), "Up Down"),
+    key(
+        gettext_noop("Turn left or right"),
+        "<Shift>Left <Shift>Right",
+    ),
+    hint(
+        gettext_noop("Zoom in or out"),
+        "plus minus",
+        gettext_noop("Or scroll, or pinch"),
+    ),
+];
+
 const VIDEO: &[Shortcut] = &[
     key(gettext_noop("Play or pause"), "space"),
     key(gettext_noop("Back 10 seconds"), "j"),
@@ -187,7 +226,11 @@ const VIDEO: &[Shortcut] = &[
         gettext_noop("Pauses playback"),
     ),
     key(gettext_noop("Mute or unmute"), "m"),
+    key(gettext_noop("Volume up"), "Up"),
+    key(gettext_noop("Volume down"), "Down"),
 ];
+
+const FOLDERS: &[Shortcut] = &[key(gettext_noop("Enter a folder path"), "<Control>l")];
 
 const MAP: &[Shortcut] = &[
     key(gettext_noop("Search places"), "<Control>f"),
@@ -216,8 +259,10 @@ const SECTIONS: &[(&str, &[Shortcut])] = &[
     (gettext_noop("Selection"), SELECTION),
     (gettext_noop("Timeline"), TIMELINE),
     (gettext_noop("Map"), MAP),
+    (gettext_noop("Folders"), FOLDERS),
     (gettext_noop("Viewer"), LIGHTBOX),
     (gettext_noop("Slideshow"), SLIDESHOW),
+    (gettext_noop("360° Photos"), PANORAMA),
     (gettext_noop("Video"), VIDEO),
 ];
 

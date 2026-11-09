@@ -4,11 +4,14 @@ use crate::i18n::fill;
 use gettextrs::gettext;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
+use std::sync::Arc;
+use std::time::Duration;
 
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 use shumate::prelude::*;
 
+use crate::api_client::ImmichApiClient;
 use crate::library::LibraryWindowUi;
 use crate::library::context_menu::show_alert_dialog;
 
@@ -23,6 +26,8 @@ const WORLD_CENTRE: (f64, f64) = (20.0, 0.0);
 const MIN_MAP_HEIGHT: i32 = 200;
 const DIALOG_HEIGHT: i32 = 640;
 const MAX_RESULTS_HEIGHT: i32 = 220;
+/// Wait for typing in the coordinates to pause before naming the place.
+const GEOCODE_DELAY: Duration = Duration::from_millis(400);
 
 /// The assets to move and where the pin starts.
 pub struct LocationTarget {
@@ -30,6 +35,8 @@ pub struct LocationTarget {
     /// Dialog subtitle: a filename, or "3 photos".
     pub title: String,
     pub initial: Option<GeoPoint>,
+    /// When the photos were taken, earliest and latest, to suggest places from then.
+    pub around: Option<(String, String)>,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -58,6 +65,7 @@ pub fn set_location_for_asset(
             ids: vec![asset_id],
             title: filename,
             initial,
+            around: None,
         };
         set_location(ui, target, on_saved);
     });
@@ -69,10 +77,19 @@ pub fn set_location(ui: Rc<LibraryWindowUi>, target: LocationTarget, on_saved: R
         .sensitive(false)
         .css_classes(["suggested-action"])
         .build();
-    let picker = Picker::new(save.clone());
+    let picker = Picker::new(save.clone(), ui.ctx.api_client.clone());
     picker.connect(&ui);
     if let Some(point) = target.initial {
         picker.set_point(point, Origin::Place);
+    }
+    if let Some(around) = target.around.clone() {
+        let weak = Rc::downgrade(&picker);
+        let pick = move |point| {
+            if let Some(picker) = weak.upgrade() {
+                picker.set_point(point, Origin::Place);
+            }
+        };
+        super::nearby::offer(&ui, &picker.content, around, &target.ids, pick);
     }
     let dialog = dialog_shell(&target.title, &picker.content, &save);
     let dialog_ref = dialog.clone();
@@ -171,13 +188,18 @@ struct Picker {
     pin: RefCell<Option<shumate::Marker>>,
     coords: libadwaita::EntryRow,
     paste: gtk::Button,
+    /// Immich's name for the place under the pin.
+    place: libadwaita::ActionRow,
+    geocode: RefCell<Option<glib::SourceId>>,
+    geocode_generation: Cell<u32>,
+    api: Arc<ImmichApiClient>,
     save: gtk::Button,
     point: Cell<Option<GeoPoint>>,
     syncing_entry: Cell<bool>,
 }
 
 impl Picker {
-    fn new(save: gtk::Button) -> Rc<Self> {
+    fn new(save: gtk::Button, api: Arc<ImmichApiClient>) -> Rc<Self> {
         let search = gtk::SearchEntry::builder()
             .placeholder_text(gettext("Search places"))
             .search_delay(SEARCH_DELAY_MS)
@@ -187,6 +209,7 @@ impl Picker {
         footer.root.set_visible(false);
         let (map, layer) = picker_map();
         let (coords, paste) = coords_row();
+        let place = place_row();
         let content = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .spacing(12)
@@ -199,7 +222,7 @@ impl Picker {
         content.append(&results_scroller);
         content.append(&footer.root);
         content.append(&map);
-        content.append(&coords_list(&coords));
+        content.append(&coords_list(&coords, &place));
         Rc::new(Self {
             content,
             search,
@@ -213,6 +236,10 @@ impl Picker {
             pin: RefCell::default(),
             coords,
             paste,
+            place,
+            geocode: RefCell::default(),
+            geocode_generation: Cell::new(0),
+            api,
             save,
             point: Cell::new(None),
             syncing_entry: Cell::new(false),
@@ -227,9 +254,10 @@ impl Picker {
         self.connect_search(ui);
     }
 
-    fn set_point(&self, point: GeoPoint, origin: Origin) {
+    fn set_point(self: &Rc<Self>, point: GeoPoint, origin: Origin) {
         self.point.set(Some(point));
         self.move_pin(point);
+        self.name_place(point);
         if origin != Origin::Entry {
             self.syncing_entry.set(true);
             self.coords.set_text(&point.display());
@@ -246,6 +274,45 @@ impl Picker {
             }
             map.center_on(point.lat, point.lon);
         }
+    }
+
+    /// Name the place under the pin once the point stops changing; older answers are dropped.
+    fn name_place(self: &Rc<Self>, point: GeoPoint) {
+        let generation = self.geocode_generation.get().wrapping_add(1);
+        self.geocode_generation.set(generation);
+        if let Some(pending) = self.geocode.take() {
+            pending.remove();
+        }
+        self.place.set_visible(true);
+        self.place.set_subtitle(&gettext("Looking up…"));
+        let weak = Rc::downgrade(self);
+        let id = glib::timeout_add_local_once(GEOCODE_DELAY, move || {
+            let Some(picker) = weak.upgrade() else {
+                return;
+            };
+            picker.geocode.take();
+            let api = picker.api.clone();
+            glib::MainContext::default().spawn_local(async move {
+                let found = api.reverse_geocode(point.lat, point.lon).await;
+                if picker.geocode_generation.get() == generation {
+                    picker.show_place(found);
+                }
+            });
+        });
+        self.geocode.replace(Some(id));
+    }
+
+    fn show_place(&self, found: Result<Option<crate::api_client::PlaceName>, String>) {
+        let name = match found {
+            Ok(place) => place
+                .and_then(|place| place.display())
+                .unwrap_or_else(|| gettext("No place name here")),
+            Err(err) => {
+                log::debug!("Reverse geocoding failed: {err}");
+                gettext("Place name unavailable")
+            }
+        };
+        self.place.set_subtitle(&name);
     }
 
     fn move_pin(&self, point: GeoPoint) {
@@ -273,7 +340,7 @@ impl Picker {
         self.map.add_controller(click);
     }
 
-    fn place_at(&self, x: f64, y: f64) {
+    fn place_at(self: &Rc<Self>, x: f64, y: f64) {
         let Some(viewport) = self.map.viewport() else {
             return;
         };
@@ -300,7 +367,7 @@ impl Picker {
         });
     }
 
-    fn read_entry(&self) {
+    fn read_entry(self: &Rc<Self>) {
         let text = self.coords.text();
         match GeoPoint::parse(&text) {
             Some(point) => self.set_point(point, Origin::Entry),
@@ -380,7 +447,7 @@ impl Picker {
         self.places.replace(places);
     }
 
-    fn choose_place(&self, index: i32) {
+    fn choose_place(self: &Rc<Self>, index: i32) {
         let point = usize::try_from(index)
             .ok()
             .and_then(|i| self.places.borrow().get(i).map(|place| place.point));
@@ -439,11 +506,22 @@ fn coords_row() -> (libadwaita::EntryRow, gtk::Button) {
     (coords, paste)
 }
 
-fn coords_list(coords: &libadwaita::EntryRow) -> gtk::ListBox {
+/// Shows the subtitle as the row's main text, like a property.
+fn place_row() -> libadwaita::ActionRow {
+    libadwaita::ActionRow::builder()
+        .title(gettext("Place"))
+        .subtitle_selectable(true)
+        .css_classes(["property"])
+        .visible(false)
+        .build()
+}
+
+fn coords_list(coords: &libadwaita::EntryRow, place: &libadwaita::ActionRow) -> gtk::ListBox {
     let list = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .css_classes(["boxed-list"])
         .build();
     list.append(coords);
+    list.append(place);
     list
 }

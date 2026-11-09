@@ -13,10 +13,14 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::{Mutex, Semaphore};
 
+mod account;
+pub use account::{Account, ApiKey, Session};
 mod activities;
 pub use activities::{Activity, ActivityKind, ActivityStatistics, NewActivity};
 mod albums;
-pub use albums::{BulkIdResult, BulkOutcome};
+pub use albums::{AlbumStatistics, BulkIdResult, BulkOutcome, SeveralAdded};
+mod asset_jobs;
+pub use asset_jobs::AssetJob;
 mod download;
 pub use download::DownloadArchive;
 mod duplicates;
@@ -29,16 +33,19 @@ pub use faces::{AssetFace, NewFace};
 mod features;
 pub use features::LibraryFeatures;
 mod folders;
+mod heatmap;
 mod library;
 pub use library::DateChange;
 mod map;
-pub use map::{MAP_USER_AGENT, MapMarker, Place, TileFetch};
+pub use map::{MAP_USER_AGENT, MapMarker, MarkerFilter, Place, PlaceName, TileFetch};
 mod memories;
 pub use memories::Memory;
 #[cfg(test)]
 pub use memories::MemoryData;
 mod photon;
 pub use photon::{PhotonPlace, PhotonProperties, PhotonReply, SearchBias};
+mod notifications;
+pub use notifications::Notification;
 mod ocr;
 pub use ocr::OcrBox;
 mod partners;
@@ -46,6 +53,7 @@ pub use partners::{Partner, PartnerDirection};
 mod people;
 pub use people::PersonUpdate;
 mod search;
+pub use search::TakenRange;
 mod sharing;
 pub use sharing::AlbumRole;
 mod stacks;
@@ -54,8 +62,10 @@ mod shared_links;
 pub use shared_links::{SharedLink, SharedLinkOptions, SharedLinkTarget, share_url};
 mod models;
 mod suggestions;
+pub use suggestions::{SuggestionContext, SuggestionField};
 mod tags;
 mod timeline;
+pub use timeline::BucketScope;
 mod trash;
 mod upload;
 pub(super) use models::SearchResponse;
@@ -228,6 +238,11 @@ impl ImmichApiClient {
         *self.active_url.lock().await = None;
         self.refresh_album_cache().await;
         self.clear_issue().await;
+    }
+
+    /// Swap in a new secret for the same key; the connection stays as it is.
+    pub fn replace_api_key(&self, api_key: String) {
+        self.settings.write().api_key = api_key;
     }
 
     /// Set the last encountered API issue.

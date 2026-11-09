@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest something new, or a way to make Mimick better.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Describe the feature or change.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why?
+      description: What problem would it solve for you, or what would it make easier?
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else
+      description: Screenshots, mockups, or how another app does it.

@@ -50,6 +50,7 @@ macro_rules! settings_form {
 
 settings_form! {
     window: adw::ApplicationWindow,
+    open_library_btn: gtk::Button,
     internal_switch: gtk::Switch,
     external_switch: gtk::Switch,
     internal_entry: gtk::Entry,
@@ -194,6 +195,7 @@ impl SettingsForm {
     ) -> Self {
         Self {
             window: window.clone(),
+            open_library_btn: conn.open_library_btn.clone(),
             internal_switch: conn.internal_switch.clone(),
             external_switch: conn.external_switch.clone(),
             internal_entry: conn.internal_entry.clone(),

@@ -14,10 +14,10 @@ use glib::clone;
 use gtk::prelude::*;
 use libadwaita::prelude::*;
 
-use crate::api_client::{MetadataSearchFilters, Tag};
+use crate::api_client::{LibraryFeatures, MetadataSearchFilters, Tag};
 use crate::library::search_filters::{
-    FilterWidgets, FlagsGroup, build_camera_group, build_date_group, build_flags_group,
-    build_location_group, build_tag_group, build_text_group,
+    Choice, FilterWidgets, FlagsGroup, build_camera_group, build_date_group, build_flags_group,
+    build_location_group, build_picks_group, build_text_group,
 };
 use crate::library::search_panel::{active_filter_count, build_side_panel, filters_label};
 
@@ -84,24 +84,25 @@ fn available_modes(smart: bool, ocr: bool) -> Vec<u32> {
         .collect()
 }
 
-pub fn set_filter_features(view: &SearchViewParts, ocr: bool, ratings: bool, tags: bool) {
+/// Hide, and clear, the filters for what the server or account has turned off.
+pub fn set_filter_features(view: &SearchViewParts, features: &LibraryFeatures) {
     let filters = &view.filters;
-    filters.ocr_row.set_visible(ocr);
-    if !ocr {
+    filters.ocr_row.set_visible(features.ocr);
+    if !features.ocr {
         filters.ocr_row.set_text("");
     }
-    filters.rating_row.set_visible(ratings);
-    if !ratings {
+    filters.rating_row.set_visible(features.ratings);
+    if !features.ratings {
         filters.rating_row.set_selected(0);
     }
-    if let Some(group) = filters
-        .tag_row
-        .ancestor(libadwaita::PreferencesGroup::static_type())
-    {
-        group.set_visible(tags);
-    }
-    if !tags {
-        filters.tag_row.set_selected(0);
+    for (pick, shown) in [
+        (&filters.picks.tags, features.tags),
+        (&filters.picks.people, features.people),
+    ] {
+        pick.row.set_visible(shown);
+        if !shown {
+            pick.clear();
+        }
     }
 }
 
@@ -192,14 +193,14 @@ fn build_filter_panel() -> (FilterWidgets, gtk::Box) {
         rating,
     } = build_flags_group();
     let (date_group, taken_after, taken_before, created_after, created_before) = build_date_group();
-    let (camera_group, make_row, model_row, lens_row) = build_camera_group();
-    let (loc_group, country, state, city) = build_location_group();
-    let (tag_group, tag_row) = build_tag_group();
+    let (camera_group, camera) = build_camera_group();
+    let (loc_group, place) = build_location_group();
+    let (picks_group, picks) = build_picks_group();
 
     let filter_box = stack_groups(&[
         &text_group,
+        &picks_group,
         &flags_group,
-        &tag_group,
         &date_group,
         &camera_group,
         &loc_group,
@@ -220,14 +221,9 @@ fn build_filter_panel() -> (FilterWidgets, gtk::Box) {
         taken_before_row: taken_before,
         created_after_row: created_after,
         created_before_row: created_before,
-        make_row,
-        model_row,
-        lens_row,
-        country_row: country,
-        state_row: state,
-        city_row: city,
-        tag_row,
-        tag_ids: Rc::default(),
+        camera,
+        place,
+        picks,
     };
     (widgets, filter_box)
 }
@@ -352,47 +348,51 @@ fn wrap_in_scrolled_revealer(inner: &gtk::Box) -> gtk::Revealer {
 // Filter extraction helpers
 // ---------------------------------------------------------------------------
 
+/// What each position of the Asset type and Visibility rows sends; "Any" sends nothing.
+const ASSET_TYPES: [Option<&str>; 3] = [None, Some("IMAGE"), Some("VIDEO")];
+const VISIBILITIES: [Option<&str>; 5] = [
+    None,
+    Some("timeline"),
+    Some("archive"),
+    Some("hidden"),
+    Some("locked"),
+];
+
+fn picked(values: &[Option<&str>], row: &libadwaita::ComboRow) -> Option<String> {
+    values
+        .get(row.selected() as usize)
+        .copied()
+        .flatten()
+        .map(str::to_owned)
+}
+
 /// Collect all filter widget values into a `MetadataSearchFilters`.
 pub fn collect_filters(view: &SearchViewParts) -> MetadataSearchFilters {
     MetadataSearchFilters {
         original_file_name: opt_string(&view.filters.filename_row.text()),
         description: opt_string(&view.filters.description_row.text()),
         ocr: opt_string(&view.filters.ocr_row.text()),
-        asset_type: match view.filters.type_row.selected() {
-            1 => Some("IMAGE".into()),
-            2 => Some("VIDEO".into()),
-            _ => None,
-        },
+        asset_type: picked(&ASSET_TYPES, &view.filters.type_row),
         taken_after: normalise_iso_date(&view.filters.taken_after_row.text()),
         taken_before: normalise_iso_date(&view.filters.taken_before_row.text()),
         created_after: normalise_iso_date(&view.filters.created_after_row.text()),
         created_before: normalise_iso_date(&view.filters.created_before_row.text()),
-        make: opt_string(&view.filters.make_row.text()),
-        model: opt_string(&view.filters.model_row.text()),
-        lens_model: opt_string(&view.filters.lens_row.text()),
-        country: opt_string(&view.filters.country_row.text()),
-        state: opt_string(&view.filters.state_row.text()),
-        city: opt_string(&view.filters.city_row.text()),
+        make: view.filters.camera.make.value(),
+        model: view.filters.camera.model.value(),
+        lens_model: view.filters.camera.lens.value(),
+        country: view.filters.place.country.value(),
+        state: view.filters.place.state.value(),
+        city: view.filters.place.city.value(),
+        person_ids: view.filters.picks.people.ids(),
+        album_ids: view.filters.picks.albums.ids(),
         is_favorite: opt_true(view.filters.favorite_row.is_active()),
         is_motion: opt_true(view.filters.motion_row.is_active()),
         is_not_in_album: opt_true(view.filters.not_in_album_row.is_active()),
         with_deleted: opt_true(view.filters.with_deleted_row.is_active()),
-        visibility: match view.filters.visibility_row.selected() {
-            1 => Some("timeline".into()),
-            2 => Some("archive".into()),
-            3 => Some("hidden".into()),
-            4 => Some("locked".into()),
-            _ => None,
-        },
-        tag_ids: selected_tag_id(view).map(|id| vec![id]),
-        rating: match view.filters.rating_row.selected() {
-            1 => Some(1),
-            2 => Some(2),
-            3 => Some(3),
-            4 => Some(4),
-            5 => Some(5),
-            _ => None,
-        },
+        visibility: picked(&VISIBILITIES, &view.filters.visibility_row),
+        tag_ids: view.filters.picks.tags.ids(),
+        // The rows read Any, then 1+ to 5, so the position is the rating.
+        rating: Some(view.filters.rating_row.selected()).filter(|stars| (1..=5).contains(stars)),
         ..Default::default()
     }
 }
@@ -424,49 +424,43 @@ pub fn clear_filter_rows(view: &SearchViewParts) {
     view.filters.taken_before_row.set_text("");
     view.filters.created_after_row.set_text("");
     view.filters.created_before_row.set_text("");
-    view.filters.make_row.set_text("");
-    view.filters.model_row.set_text("");
-    view.filters.lens_row.set_text("");
-    view.filters.country_row.set_text("");
-    view.filters.state_row.set_text("");
-    view.filters.city_row.set_text("");
-    view.filters.tag_row.set_selected(0);
+    let filters = &view.filters;
+    for row in [
+        &filters.camera.make,
+        &filters.camera.model,
+        &filters.camera.lens,
+        &filters.place.country,
+        &filters.place.state,
+        &filters.place.city,
+    ] {
+        row.clear();
+    }
+    for pick in [
+        &filters.picks.people,
+        &filters.picks.tags,
+        &filters.picks.albums,
+    ] {
+        pick.clear();
+    }
     refresh_filter_count(view);
 }
 
-fn selected_tag_id(view: &SearchViewParts) -> Option<String> {
-    let index = view.filters.tag_row.selected().checked_sub(1)?;
-    view.filters.tag_ids.borrow().get(index as usize).cloned()
-}
-
-/// Fill the Tag dropdown from the server's tags, keeping the current choice if it still exists.
+/// List the server's tags under Tags, keeping the ones picked that still exist.
 pub fn set_available_tags(view: &SearchViewParts, tags: &[Tag]) {
-    let previous = selected_tag_id(view);
-    let any = gettext("Any");
-    let labels: Vec<&str> = std::iter::once(any.as_str())
-        .chain(tags.iter().map(|tag| tag.value.as_str()))
+    let choices = tags
+        .iter()
+        .map(|tag| Choice {
+            id: tag.id.clone(),
+            label: tag.value.clone(),
+            icon: None,
+        })
         .collect();
-    *view.filters.tag_ids.borrow_mut() = tags.iter().map(|tag| tag.id.clone()).collect();
-    view.filters
-        .tag_row
-        .set_model(Some(&gtk::StringList::new(&labels)));
-    let restored = previous
-        .and_then(|id| tags.iter().position(|tag| tag.id == id))
-        .map_or(0, |index| index as u32 + 1);
-    view.filters.tag_row.set_selected(restored);
+    view.filters.picks.tags.set_options(choices);
 }
 
-/// Select `tag_id` in the Tag dropdown, if it is listed.
+/// Pick only `tag_id` under Tags, if it is listed.
 pub fn select_tag(view: &SearchViewParts, tag_id: &str) {
-    let position = view
-        .filters
-        .tag_ids
-        .borrow()
-        .iter()
-        .position(|id| id == tag_id);
-    if let Some(index) = position {
-        view.filters.tag_row.set_selected(index as u32 + 1);
-    }
+    view.filters.picks.tags.choose_only(tag_id);
 }
 
 /// Convert a non-empty trimmed string to `Some`, otherwise `None`.

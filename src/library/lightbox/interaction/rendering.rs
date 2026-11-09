@@ -44,6 +44,7 @@ impl Lightbox {
 
         self.prepare_video(info.is_video());
         self.sync_live(&info);
+        self.sync_panorama();
         self.on_slide_shown();
         self.picture.ocr.clear();
         self.sync_ocr_controls();
@@ -163,6 +164,7 @@ impl Lightbox {
         let opacity = if shown { 1.0 } else { 0.0 };
         self.video_badge_button.set_opacity(opacity);
         self.live_button.set_opacity(opacity);
+        self.panorama.button.set_opacity(opacity);
         self.stack.root.set_opacity(opacity);
         self.unavailable.overlay.set_opacity(opacity);
         self.picture.ocr.area.set_opacity(opacity);
@@ -361,6 +363,7 @@ impl Lightbox {
                 load.asset_id,
                 temp.display(),
             );
+            crate::cache_manager::mark_used(&temp);
         } else if let Err(err) = self
             .download_original(&load.asset_id, &temp, load.edited)
             .await

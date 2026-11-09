@@ -60,6 +60,11 @@ pub fn send_connectivity_lost() {
     );
 }
 
+/// A notification from Immich's inbox, such as an album invite, passed on to the desktop.
+pub fn send_server_notification(title: &str, body: &str, notification_id: &str) {
+    send_gio(title, body, &format!("immich-{notification_id}"));
+}
+
 // ── Internal primitive ───────────────────────────────────────────────────────
 
 /// Send a desktop notification via `gio::Notification`.

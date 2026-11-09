@@ -83,6 +83,17 @@ pub(super) fn build_nav(
         .title(gettext("Library"))
         .can_pop(false)
         .build();
+    // AdwWindowTitle won't shrink below five characters (94 px), which overflows a 360 px
+    // header holding search, the bell, and upload progress; this label ellipsizes instead.
+    let title = gtk::Label::builder()
+        .ellipsize(gtk::pango::EllipsizeMode::End)
+        .css_classes(["heading"])
+        .build();
+    root_page
+        .bind_property("title", &title, "label")
+        .sync_create()
+        .build();
+    header.set_title_widget(Some(&title));
     nav.add(&root_page);
     let toasts = libadwaita::ToastOverlay::new();
     toasts.set_child(Some(&nav));
@@ -101,17 +112,27 @@ pub(super) fn add_narrow_breakpoint(
     window: &libadwaita::ApplicationWindow,
     narrow: Rc<Cell<bool>>,
     content: &ContentParts,
+    search_slot: &gtk::Box,
 ) {
     let narrow_bp = breakpoint("max-width: 600px");
     narrow_bp.add_setter(&content.bottom_nav.root, "visible", Some(&true.to_value()));
+    // Wide windows reach search from the sidebar, which phones keep folded away.
+    narrow_bp.add_setter(search_slot, "visible", Some(&true.to_value()));
+    // The bar's More menu takes over the secondary buttons while they're hidden.
     narrow_bp.add_setter(&content.bulk.secondary, "visible", Some(&false.to_value()));
     narrow_bp.add_setter(
-        &content.bulk.overflow_box,
-        "visible",
-        Some(&true.to_value()),
+        &content.map.split,
+        "orientation",
+        Some(&gtk::Orientation::Vertical.to_value()),
+    );
+    // Phones show Upload as its icon alone, leaving the row room beside Newest and Slideshow.
+    narrow_bp.add_setter(
+        &content.controls.upload_content,
+        "label",
+        Some(&"".to_value()),
     );
     narrow_bp.add_setter(
-        &content.map.split,
+        &content.header.top,
         "orientation",
         Some(&gtk::Orientation::Vertical.to_value()),
     );

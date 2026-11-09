@@ -32,6 +32,7 @@ pub(super) fn connect_lightweight_filters(ui: Rc<LibraryWindowUi>) {
 
 /// Wire the dedicated search view's interactive handlers.
 pub(super) fn connect_search_view(ui: Rc<LibraryWindowUi>) {
+    super::search_options::connect(&ui);
     connect_filter_panel_actions(ui.clone());
     connect_search_submit(&ui);
 }

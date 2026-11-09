@@ -108,6 +108,13 @@ impl TimelineIndex {
         }
     }
 
+    /// Months not in the grid yet, including any still on their way.
+    pub fn not_loaded(&self) -> Vec<usize> {
+        (0..self.states.len())
+            .filter(|&month| !matches!(self.states[month], MonthState::Loaded(_)))
+            .collect()
+    }
+
     pub fn remove_at(&mut self, position: u32) {
         let Some(month) = self.month_at(position) else {
             return;
@@ -188,5 +195,14 @@ mod tests {
         assert_eq!(idx.state(0), MonthState::Loaded(1));
         assert_eq!(idx.months()[0].count, 1);
         assert_eq!(idx.offset(1), 1);
+    }
+
+    #[test]
+    fn not_loaded_counts_months_still_loading() {
+        let mut idx = index(&[2, 3, 4]);
+        idx.begin_load(0);
+        idx.finish_load(0, 2);
+        idx.begin_load(1);
+        assert_eq!(idx.not_loaded(), [1, 2]);
     }
 }

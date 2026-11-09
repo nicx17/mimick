@@ -119,10 +119,10 @@ The settings window opens the first time you launch Mimick.
 
 Core sync needs only these API key permissions; `all` enables every feature:
 
-| Permission     | Why                                         |
-| -------------- | ------------------------------------------- |
-| `user.read`    | Establish current user session and identity |
-| `asset.upload` | Send media to the server                    |
+| Permission     | Why                                          |
+| -------------- | -------------------------------------------- |
+| `user.read`    | Establish current user session and identity  |
+| `asset.upload` | Send media to the server                     |
 | `asset.update` | Apply correct timezone metadata after upload |
 
 The [Configuration and First Run](https://github.com/nicx17/mimick/wiki/Configuration-and-First-Run) guide covers every setting and the [permissions each feature needs](https://github.com/nicx17/mimick/wiki/Configuration-and-First-Run#api-key-security--required-permissions).
@@ -175,8 +175,6 @@ Pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for commit and
 - **Place search:** [Photon](https://github.com/komoot/photon) by komoot, licensed under the [Apache License 2.0](https://github.com/komoot/photon/blob/master/LICENSE), searching OpenStreetMap data. Map searches are sent to the public server at [photon.komoot.io](https://photon.komoot.io).
 - **Special thanks:** [Immich](https://immich.app).
 - **Built with:** [GTK](https://www.gtk.org), [libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/), [libshumate](https://gitlab.gnome.org/GNOME/libshumate), [GStreamer](https://gstreamer.freedesktop.org), [libheif](https://github.com/strukturag/libheif), [LibRaw](https://www.libraw.org), [libjpeg-turbo](https://www.libjpeg-turbo.org), [libwebp](https://chromium.googlesource.com/webm/libwebp), and [OpenJPEG](https://www.openjpeg.org).
-
-Third-party license texts are in [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt).
 
 ## License
 

@@ -26,6 +26,7 @@ use ui_lifecycle::{
     run_tray,
 };
 
+mod about;
 mod api_client;
 mod app_context;
 mod autostart;
@@ -95,7 +96,8 @@ struct UiFlags {
 
 #[tokio::main]
 async fn main() {
-    let _logger = init_logging();
+    let logger = init_logging();
+    logging::keep_handle(&logger);
     i18n::init();
 
     gtk::gio::resources_register_include!("mimick.gresource")
@@ -233,7 +235,6 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
     let (tx, rx) = mpsc::channel(32);
     let monitor_handle = Arc::new(start_monitor(&config, tx));
     let (manual_sync_tx, manual_sync_rx) = tokio::sync::mpsc::unbounded_channel::<()>();
-    spawn_cache_prune(config.data.cache_disk_cap_mb);
 
     let tray_library_enabled = config.data.library_view_enabled;
     let date_headings = config.data.library_date_headings;
@@ -262,6 +263,7 @@ fn start_primary_instance(app: &adw::Application, shared_state: &Arc<Mutex<AppSt
         pending_deletions: Arc::new(app_context::PendingDeletions::default()),
     });
     let _ = APP_CONTEXT.set(ctx.clone());
+    spawn_cache_prune(ctx.config.clone());
 
     spawn_background_tasks(ctx, rx, manual_sync_rx, background_sync_enabled);
 
@@ -281,11 +283,9 @@ fn log_config(config: &Config) {
 
 /// Desktop styling, global CSS, and the hold that keeps the app running without windows.
 fn prepare_gtk(app: &adw::Application) {
-    // Always follow the desktop's light/dark preference.
-    adw::StyleManager::default().set_color_scheme(adw::ColorScheme::Default);
-
     // Register global CSS for button animations and UI components
     crate::library::style::ensure_registered();
+    crate::library::register_app_icons();
 
     thread_local! {
         static APP_HOLD: std::cell::RefCell<Option<gtk::gio::ApplicationHoldGuard>> = const { std::cell::RefCell::new(None) };
@@ -318,6 +318,9 @@ fn build_queue_manager(
 }
 
 fn apply_runtime_preferences(config: &Config) {
+    let data = &config.data;
+    crate::library::theme::apply(&data.color_scheme, &data.light_theme, &data.dark_theme);
+    crate::logging::set_detailed(config.data.detailed_logging);
     // Apply the user's notification preference before any notification can fire.
     crate::notifications::set_enabled(config.data.notifications_enabled);
 
@@ -400,13 +403,21 @@ fn start_monitor(config: &Config, tx: mpsc::Sender<MonitorEvent>) -> monitor::Mo
 
 /// One-shot startup prune across every cache directory, delayed so it does not
 /// contend with window setup or initial sync work.
-fn spawn_cache_prune(cache_cap_mb: u32) {
+/// Keep the disk cache under its limit: soon after startup, then every half hour, since a
+/// long session of browsing can fill it well past the limit. The limit is read each time.
+fn spawn_cache_prune(config: Arc<parking_lot::RwLock<Config>>) {
+    const FIRST: std::time::Duration = std::time::Duration::from_secs(5);
+    const EVERY: std::time::Duration = std::time::Duration::from_secs(30 * 60);
     tokio::spawn(async move {
-        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
-        let cap_bytes = (cache_cap_mb as u64).saturating_mul(1024 * 1024);
-        let _ = tokio::task::spawn_blocking(move || {
-            cache_manager::prune_all_blocking(cap_bytes);
-        })
-        .await;
+        tokio::time::sleep(FIRST).await;
+        loop {
+            let cap_mb = u64::from(config.read().data.cache_disk_cap_mb);
+            let cap_bytes = cap_mb.saturating_mul(1024 * 1024);
+            let _ = tokio::task::spawn_blocking(move || {
+                cache_manager::prune_all_blocking(cap_bytes);
+            })
+            .await;
+            tokio::time::sleep(EVERY).await;
+        }
     });
 }
