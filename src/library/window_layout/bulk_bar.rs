@@ -121,7 +121,9 @@ pub(super) fn build_bulk_bar() -> BulkParts {
         .ellipsize(gtk::pango::EllipsizeMode::End)
         .build();
     let actions = build_bulk_actions();
-    let task_content = libadwaita::ButtonContent::new();
+    let task_content = libadwaita::ButtonContent::builder()
+        .can_shrink(true)
+        .build();
     let task = gtk::Button::builder()
         .child(&task_content)
         .css_classes(["suggested-action"])

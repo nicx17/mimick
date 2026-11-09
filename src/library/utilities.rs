@@ -84,6 +84,9 @@ pub(super) fn sync(ui: &LibraryWindowUi, location: &Location) {
     if let Some((icon, label)) = main {
         ui.bulk.task_content.set_icon_name(icon);
         ui.bulk.task_content.set_label(&label);
+        // With them the labelled task overflows a 360 px phone; trash mode shows them again.
+        ui.bulk.download.set_visible(false);
+        ui.bulk.delete.set_visible(false);
     }
 }
 
@@ -129,6 +132,7 @@ fn main_button(ui: &Rc<LibraryWindowUi>, utility: Utility) -> Option<gtk::Widget
             &libadwaita::ButtonContent::builder()
                 .icon_name(icon)
                 .label(label)
+                .can_shrink(true)
                 .build(),
         )
         .valign(gtk::Align::Center)

@@ -82,6 +82,7 @@ pub(super) fn dates_button(ui: &Rc<LibraryWindowUi>, range: &DayRange) -> gtk::W
             &libadwaita::ButtonContent::builder()
                 .icon_name("x-office-calendar-symbolic")
                 .label(gettext("Dates"))
+                .can_shrink(true)
                 .build(),
         )
         .tooltip_text(gettext("Show only photos taken between two days"))
