@@ -118,6 +118,27 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="9.14.0" date="2026-11-10">
+      <description translate="no">
+        <p>Manage your albums and account, explore photos on a calendar and in 360°, customize Mimick with themes and palettes</p>
+        <ul>
+          <li>Account management: update profile picture with cropping, manage signed-in devices, and rotate or delete API keys.</li>
+          <li>Notifications inbox with desktop alerts for album invites and system messages.</li>
+          <li>Explore calendar showing a year of photo activity by capture or upload date.</li>
+          <li>View 360° photos with interactive pan, tilt, and zoom controls.</li>
+          <li>Map Settings: filter by favorites, archive, partners, shared albums, and custom date ranges, plus show any album on the map.</li>
+          <li>Multi-album selection: add photos to several albums at once, and view album counts.</li>
+          <li>Advanced search filters: filter by multiple people, tags, albums, cameras, lenses, and places.</li>
+          <li>Shared links improvements: generate QR codes and manage photos in existing links.</li>
+          <li>Remote asset jobs: refresh faces, metadata, thumbnails, and video transcoding directly from Mimick.</li>
+          <li>Bulk selection actions: Ctrl+A across all views, bulk favorite, description editing, and refresh actions.</li>
+          <li>Theme and style switcher: Follow System, Light, and Dark styles with Warm White, Lavender, Mint, Black, Midnight, and Mocha palettes.</li>
+          <li>New and enhanced utilities: Large Files size filters, Missing Location with nearby suggestions, and Unusual Dates fixer.</li>
+          <li>Copy, paste, and stack uploads: paste files and screenshots into albums, and upload files directly into photo stacks.</li>
+          <li>Full RAW decoding with accurate previews, contrast, and color rendition.</li>
+        </ul>
+      </description>
+    </release>
     <release version="9.13.0" date="2026-11-08">
       <description translate="no">
         <p>Edit your photos, tag the people in them, and relive them with memories and slideshows, all without leaving Mimick.</p>
