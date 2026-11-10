@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.14.0] - 2026-11-10
+
 ### Added
 
 - **Ctrl+A** now selects every photo in the view, in Photos, albums, and every other grid, instead of only the ones already loaded: Mimick loads the rest first, with a note while it does.
