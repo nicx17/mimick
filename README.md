@@ -45,11 +45,13 @@ Mimick is an unofficial Immich desktop client for Linux. It syncs your photo and
 
 ## Screenshots
 
-|                    Library View (Light)                    |                                    Explore View                                     |
-| :--------------------------------------------------------: | :---------------------------------------------------------------------------------: |
-| ![Photos page light](docs/screenshots/photos-timeline.png) |                 ![Explore View](docs/screenshots/explore-page.png)                  |
-|                 **Sync Status Dashboard**                  |                            **Settings & Watch Folders**                             |
-|   ![Status dashboard](docs/screenshots/status-page.png)    | ![Settings & Watch Folders](docs/screenshots/settings-server-and-watch-folders.png) |
+|                    Library View (Light)                    |                    Library View (Black)                    |
+| :--------------------------------------------------------: | :--------------------------------------------------------: |
+| ![Photos page light](docs/screenshots/photos-timeline.png) | ![Photos page black](docs/screenshots/photos-timeline-black.png) |
+|                        Explore View                        |                 Sync Status Dashboard                      |
+|     ![Explore View](docs/screenshots/explore-page.png)     |   ![Status dashboard](docs/screenshots/status-page.png)    |
+|                Settings & Watch Folders                    |                    Mobile View (Phone)                     |
+| ![Settings & Watch Folders](docs/screenshots/settings-server-and-watch-folders.png) |     ![Mobile view](docs/screenshots/photos-phone.png)      |
 
 <div align="center">
 
@@ -167,6 +169,20 @@ Mimick uses gettext, so anyone can add a language: see [Translations](CONTRIBUTI
 ## Contributing
 
 Pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for commit and style guidelines. Releases ship with checksums, and CI runs formatting, linting, tests, dependency audits, and CodeQL analysis.
+
+## Support
+
+If you find Mimick useful and want to support ongoing development, donations are welcome via UPI.
+
+<div align="center">
+  <img src="assets/donate-upi.png" width="220" alt="Donate via UPI QR Code" />
+  <br />
+  <code>nick14@ptyes</code>
+  <br /><br />
+  <a href="upi://pay?pa=nick14@ptyes&pn=Nick&tn=Do%20care%20to%20donate%20%3A)&cu=INR">
+    <img src="assets/donate-upi-button.svg" width="204" alt="Donate with UPI" />
+  </a>
+</div>
 
 ## Credits
 

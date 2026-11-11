@@ -48,6 +48,8 @@ jobs:
           cp site/og-image.jpg public/og-image.jpg
           cp site/robots.txt public/robots.txt
           cp site/sitemap.xml public/sitemap.xml
+          cp site/donate-upi-button.svg public/donate-upi-button.svg
+          cp site/donate-upi.png public/donate-upi.png
           cp -r docs/screenshots public/screenshots
           cp -r site/fonts public/fonts
 
