@@ -37,78 +37,8 @@
     <link rel="icon" href="icon.png" sizes="192x192" type="image/png" />
     <link rel="apple-touch-icon" href="icon.png" />
     <link rel="stylesheet" href="styles.css" />
-    <style>
-      .pay-page {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 2.5rem 1.25rem;
-      }
-      .pay-card {
-        max-width: 480px;
-        width: 100%;
-        text-align: center;
-        padding: 2.4rem 2rem;
-        border: 1.2px solid var(--border-color);
-        border-radius: 20px;
-        background: var(--surface);
-        box-shadow: var(--shadow-soft);
-      }
-      .pay-icon {
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 1.2rem;
-        display: block;
-      }
-      .pay-title {
-        font-family: var(--font-serif);
-        font-size: 2.1rem;
-        font-weight: 500;
-        margin: 0 0 0.5rem;
-        color: var(--text-main);
-      }
-      .pay-subtitle {
-        color: var(--text-muted);
-        font-size: 0.98rem;
-        line-height: 1.55;
-        margin: 0 0 1.5rem;
-      }
-      .pay-qr-wrap {
-        display: inline-block;
-        padding: 0.75rem;
-        background: #ffffff;
-        border-radius: 14px;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-      }
-      .pay-qr-img {
-        display: block;
-        max-width: 180px;
-        height: auto;
-      }
-      .pay-actions {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.75rem;
-        margin-top: 0.6rem;
-      }
-      .pay-back {
-        margin-top: 1.6rem;
-        display: inline-block;
-        color: var(--text-soft);
-        text-decoration: none;
-        font-size: 0.92rem;
-        font-weight: 600;
-        transition: color 0.2s ease;
-      }
-      .pay-back:hover {
-        color: var(--accent);
-      }
-    </style>
     <script>
+      document.documentElement.classList.add("js");
       const upiUrl = "upi://pay?pa=nick14@ptyes&pn=Nick&tn=Do%20care%20to%20donate%20%3A)&cu=INR";
       // Auto-launch UPI payment app on mobile devices
       if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
@@ -117,54 +47,127 @@
     </script>
   </head>
   <body class="pay-page">
-    <main class="pay-card">
-      <img src="icon.png" alt="Mimick Icon" class="pay-icon" />
-      <h1 class="pay-title">Donate with UPI</h1>
-      <p class="pay-subtitle">
-        Scan the QR code with any UPI app on desktop, or tap the button below on mobile.
-      </p>
+    <main>
+      <div class="container" style="max-width: 680px;">
+        <div class="top-controls page-nav">
+          <a class="back-link" href="./">&larr; Mimick</a>
+          <button
+            id="theme-toggle"
+            class="theme-toggle"
+            type="button"
+            aria-pressed="false"
+          >
+            Light Mode
+          </button>
+        </div>
 
-      <div class="pay-qr-wrap">
-        <img
-          src="donate-upi.png"
-          alt="UPI Donation QR Code"
-          class="pay-qr-img"
-          width="180"
-          height="235"
-        />
+        <header>
+          <div class="icon-frame">
+            <img class="hero-icon" src="icon.png" alt="Mimick app icon" />
+          </div>
+          <p class="eyebrow">Support Mimick</p>
+          <h1>Donate with UPI</h1>
+          <p class="subtitle">
+            Scan the QR code with any UPI app on desktop, or tap the button below on mobile.
+          </p>
+        </header>
+
+        <section class="support-card" id="donate" aria-labelledby="donate-title">
+          <div class="support-header">
+            <p class="install-label" id="donate-title">UPI Payment</p>
+          </div>
+          <div class="support-body">
+            <div class="support-qr-frame">
+              <img
+                src="donate-upi.png"
+                alt="UPI Donation QR Code"
+                class="support-qr-img"
+                width="170"
+                height="222"
+              />
+            </div>
+            <div class="support-info">
+              <h3>Support the Project</h3>
+              <p>
+                Mimick is free and open-source software. If it saves you time and you'd like to support ongoing development, donations are welcome via UPI.
+              </p>
+              <div class="upi-box">
+                <code id="upi-id">nick14@ptyes</code>
+                <button
+                  class="copy-button"
+                  type="button"
+                  data-copy-target="upi-id"
+                  aria-label="Copy UPI ID"
+                >
+                  Copy
+                </button>
+              </div>
+              <div class="upi-actions">
+                <a
+                  class="upi-action-btn"
+                  href="upi://pay?pa=nick14@ptyes&amp;pn=Nick&amp;tn=Do%20care%20to%20donate%20%3A)&amp;cu=INR"
+                  aria-label="Open in UPI App"
+                >
+                  <img
+                    src="donate-upi-button.svg"
+                    width="204"
+                    height="44"
+                    alt="Donate with UPI"
+                  />
+                </a>
+              </div>
+              <span class="upi-hint">Scan with any UPI app on desktop, or tap above on mobile.</span>
+            </div>
+          </div>
+        </section>
       </div>
-
-      <div class="upi-box">
-        <code id="upi-id">nick14@ptyes</code>
-        <button
-          class="copy-button"
-          type="button"
-          data-copy-target="upi-id"
-          aria-label="Copy UPI ID"
-        >
-          Copy
-        </button>
-      </div>
-
-      <div class="pay-actions">
-        <a
-          class="upi-action-btn"
-          href="upi://pay?pa=nick14@ptyes&amp;pn=Nick&amp;tn=Do%20care%20to%20donate%20%3A)&amp;cu=INR"
-          aria-label="Open in UPI App"
-        >
-          <img
-            src="donate-upi-button.svg"
-            width="204"
-            height="44"
-            alt="Donate with UPI"
-          />
-        </a>
-      </div>
-
-      <a href="./" class="pay-back">&larr; Back to Mimick</a>
     </main>
 
+    <footer>
+      <div class="footer-inner" style="max-width: 680px;">
+        <p class="footer-copy">
+          Mimick is an unofficial community project for Immich.
+        </p>
+        <p class="footer-meta">
+          <span class="footer-label">App ID</span> <code>dev.nicx.mimick</code>
+        </p>
+        <a class="footer-link" href="https://mimick.nicx.dev/">mimick.nicx.dev</a>
+      </div>
+    </footer>
+
     <script>
+      const root = document.documentElement;
+      const themeToggle = document.getElementById("theme-toggle");
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      const themeKey = "mimick-theme";
+
+      const setTheme = (theme) => {
+        const isLight = theme === "light";
+        root.dataset.theme = isLight ? "light" : "dark";
+        if (themeMeta) {
+          themeMeta.setAttribute("content", isLight ? "#f8f5ef" : "#000000");
+        }
+        themeToggle.textContent = isLight ? "Dark Mode" : "Light Mode";
+        themeToggle.setAttribute("aria-pressed", isLight ? "true" : "false");
+      };
+
+      const savedTheme = localStorage.getItem(themeKey);
+      if (savedTheme) {
+        setTheme(savedTheme);
+      } else if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: light)").matches
+      ) {
+        setTheme("light");
+      }
+
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = root.dataset.theme === "light" ? "light" : "dark";
+        const nextTheme = currentTheme === "light" ? "dark" : "light";
+        localStorage.setItem(themeKey, nextTheme);
+        setTheme(nextTheme);
+      });
+
       document.querySelectorAll(".copy-button").forEach((btn) => {
         btn.addEventListener("click", async () => {
           const targetId = btn.dataset.copyTarget;
