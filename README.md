@@ -179,7 +179,7 @@ If you find Mimick useful and want to support ongoing development, donations are
   <br />
   <code>nick14@ptyes</code>
   <br /><br />
-  <a href="upi://pay?pa=nick14@ptyes&pn=Nick&tn=Do%20care%20to%20donate%20%3A)&cu=INR">
+  <a href="https://mimick.nicx.dev/pay.html">
     <img src="assets/donate-upi-button.svg" width="204" alt="Donate with UPI" />
   </a>
 </div>

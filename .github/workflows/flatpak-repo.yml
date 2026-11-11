@@ -43,6 +43,7 @@ jobs:
           cp site/index.html public/index.html
           cp site/roadmap.html public/roadmap.html
           cp site/screenshots.html public/screenshots.html
+          cp site/pay.html public/pay.html
           cp site/styles.css public/styles.css
           cp site/icon.png public/icon.png
           cp site/og-image.jpg public/og-image.jpg

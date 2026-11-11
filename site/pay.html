@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Donate with UPI – Mimick</title>
+    <meta
+      name="description"
+      content="Support Mimick development with a donation via UPI."
+    />
+    <link rel="canonical" href="https://mimick.nicx.dev/pay.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mimick" />
+    <meta property="og:title" content="Donate with UPI – Mimick" />
+    <meta
+      property="og:description"
+      content="Support Mimick development with a donation via UPI."
+    />
+    <meta property="og:url" content="https://mimick.nicx.dev/pay.html" />
+    <meta property="og:image" content="https://mimick.nicx.dev/og-image.jpg" />
+    <meta name="twitter:card" content="summary" />
+    <link
+      rel="preload"
+      href="fonts/manrope-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="fonts/newsreader-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" href="icon.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .pay-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2.5rem 1.25rem;
+      }
+      .pay-card {
+        max-width: 480px;
+        width: 100%;
+        text-align: center;
+        padding: 2.4rem 2rem;
+        border: 1.2px solid var(--border-color);
+        border-radius: 20px;
+        background: var(--surface);
+        box-shadow: var(--shadow-soft);
+      }
+      .pay-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1.2rem;
+        display: block;
+      }
+      .pay-title {
+        font-family: var(--font-serif);
+        font-size: 2.1rem;
+        font-weight: 500;
+        margin: 0 0 0.5rem;
+        color: var(--text-main);
+      }
+      .pay-subtitle {
+        color: var(--text-muted);
+        font-size: 0.98rem;
+        line-height: 1.55;
+        margin: 0 0 1.5rem;
+      }
+      .pay-qr-wrap {
+        display: inline-block;
+        padding: 0.75rem;
+        background: #ffffff;
+        border-radius: 14px;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      }
+      .pay-qr-img {
+        display: block;
+        max-width: 180px;
+        height: auto;
+      }
+      .pay-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.6rem;
+      }
+      .pay-back {
+        margin-top: 1.6rem;
+        display: inline-block;
+        color: var(--text-soft);
+        text-decoration: none;
+        font-size: 0.92rem;
+        font-weight: 600;
+        transition: color 0.2s ease;
+      }
+      .pay-back:hover {
+        color: var(--accent);
+      }
+    </style>
+    <script>
+      const upiUrl = "upi://pay?pa=nick14@ptyes&pn=Nick&tn=Do%20care%20to%20donate%20%3A)&cu=INR";
+      // Auto-launch UPI payment app on mobile devices
+      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        window.location.href = upiUrl;
+      }
+    </script>
+  </head>
+  <body class="pay-page">
+    <main class="pay-card">
+      <img src="icon.png" alt="Mimick Icon" class="pay-icon" />
+      <h1 class="pay-title">Donate with UPI</h1>
+      <p class="pay-subtitle">
+        Scan the QR code with any UPI app on desktop, or tap the button below on mobile.
+      </p>
+
+      <div class="pay-qr-wrap">
+        <img
+          src="donate-upi.png"
+          alt="UPI Donation QR Code"
+          class="pay-qr-img"
+          width="180"
+          height="235"
+        />
+      </div>
+
+      <div class="upi-box">
+        <code id="upi-id">nick14@ptyes</code>
+        <button
+          class="copy-button"
+          type="button"
+          data-copy-target="upi-id"
+          aria-label="Copy UPI ID"
+        >
+          Copy
+        </button>
+      </div>
+
+      <div class="pay-actions">
+        <a
+          class="upi-action-btn"
+          href="upi://pay?pa=nick14@ptyes&amp;pn=Nick&amp;tn=Do%20care%20to%20donate%20%3A)&amp;cu=INR"
+          aria-label="Open in UPI App"
+        >
+          <img
+            src="donate-upi-button.svg"
+            width="204"
+            height="44"
+            alt="Donate with UPI"
+          />
+        </a>
+      </div>
+
+      <a href="./" class="pay-back">&larr; Back to Mimick</a>
+    </main>
+
+    <script>
+      document.querySelectorAll(".copy-button").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const targetId = btn.dataset.copyTarget;
+          const el = targetId ? document.getElementById(targetId) : null;
+          if (!el) return;
+          try {
+            await navigator.clipboard.writeText(el.textContent.trim());
+            const orig = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(() => {
+              btn.textContent = orig;
+            }, 1800);
+          } catch (err) {
+            console.error(err);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
