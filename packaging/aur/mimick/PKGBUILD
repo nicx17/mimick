@@ -37,7 +37,7 @@ optdepends=(
 )
 options=('!lto' '!debug')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/nicx17/mimick/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('acca00ef5ce7a3b9c5570e4f91584b0c7fbe6b9d2f185a4d5e36ae93295d29af')
+sha256sums=('9d37aba4c12bfbaecffeb9f907e564f9935c03f91607046a85698f7f121a496a')
 
 prepare() {
   cd "$pkgname-$pkgver"

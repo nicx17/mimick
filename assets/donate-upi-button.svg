@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="204" height="44" viewBox="0 0 204 44" fill="none">
+  <defs>
+    <!-- Dark titanium obsidian surface -->
+    <linearGradient id="btn-bg" x1="0" y1="0" x2="0" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#181a20"/>
+      <stop offset="55%" stop-color="#0f1115"/>
+      <stop offset="100%" stop-color="#07080a"/>
+    </linearGradient>
+
+    <!-- Beveled border: fine specular top highlight -->
+    <linearGradient id="btn-border" x1="0" y1="0" x2="0" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.03"/>
+    </linearGradient>
+
+    <!-- Subtle upper glass reflection -->
+    <linearGradient id="btn-sheen" x1="0" y1="0" x2="0" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0"/>
+    </linearGradient>
+
+    <!-- Ambient drop shadow -->
+    <filter id="btn-shadow" x="-10%" y="-10%" width="120%" height="135%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <a href="https://mimick.nicx.dev/pay.html" xlink:href="https://mimick.nicx.dev/pay.html" style="cursor: pointer;">
+    <!-- Button Shell -->
+    <g filter="url(#btn-shadow)">
+      <rect x="0.5" y="0.5" width="203" height="43" rx="21.5" fill="url(#btn-bg)" stroke="url(#btn-border)" stroke-width="1"/>
+      <!-- Upper sheen -->
+      <path d="M22 1.5 C10.68 1.5 1.5 10.68 1.5 22 L202.5 22 C202.5 10.68 193.32 1.5 182 1.5 Z" fill="url(#btn-sheen)"/>
+    </g>
+
+    <!-- Official UPI Fast-Forward Mark -->
+    <g transform="translate(18, 13)">
+      <!-- Saffron Solid Triangle -->
+      <polygon points="5.5,0 10.5,9 0,18" fill="#FF7900"/>
+      <!-- Emerald Green Chevron -->
+      <polygon points="8.5,0 13.5,9 3,18 5.5,18 16,9 11,0" fill="#00A859"/>
+    </g>
+
+    <!-- Clean Minimalist Typography -->
+    <text x="46" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="500" fill="#f3f4f6" letter-spacing="0.01em">
+      Donate with <tspan font-weight="700" fill="#ffffff">UPI</tspan>
+    </text>
+
+    <!-- Action Arrow -->
+    <path d="M181 22 L173 22 M177 18 L181 22 L177 26" stroke="#9ca3af" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+  </a>
+</svg>

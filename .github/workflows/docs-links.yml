@@ -45,6 +45,7 @@ jobs:
             --exclude 'https://img.shields.io/.*'
             --exclude 'https://unsplash.com/.*'
             --exclude '^file:///.*/wiki/[^/.]+$'
+            --exclude '^upi://.*'
             README.md docs wiki
           fail: true
           jobSummary: true

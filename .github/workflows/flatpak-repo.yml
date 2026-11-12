@@ -43,11 +43,14 @@ jobs:
           cp site/index.html public/index.html
           cp site/roadmap.html public/roadmap.html
           cp site/screenshots.html public/screenshots.html
+          cp site/pay.html public/pay.html
           cp site/styles.css public/styles.css
           cp site/icon.png public/icon.png
           cp site/og-image.jpg public/og-image.jpg
           cp site/robots.txt public/robots.txt
           cp site/sitemap.xml public/sitemap.xml
+          cp site/donate-upi-button.svg public/donate-upi-button.svg
+          cp site/donate-upi.png public/donate-upi.png
           cp -r docs/screenshots public/screenshots
           cp -r site/fonts public/fonts
 
