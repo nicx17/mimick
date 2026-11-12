@@ -88,6 +88,8 @@ add_app_data() {
     mkdir -p "$APPDIR/usr/share/metainfo"
     cp "$APPDIR/share/metainfo/dev.nicx.mimick.metainfo.xml" "$APPDIR/usr/share/metainfo/dev.nicx.mimick.metainfo.xml"
     cp "$APPDIR/share/metainfo/dev.nicx.mimick.metainfo.xml" "$APPDIR/usr/share/metainfo/dev.nicx.mimick.appdata.xml"
+    # appstreamcli validates the <launchable> desktop-id against usr/share/applications/.
+    install -Dm644 "$DESKTOP" "$APPDIR/usr/share/applications/dev.nicx.mimick.desktop"
     install -Dm644 src/assets/256x256/apps/dev.nicx.mimick.png -t "$icons/hicolor/256x256/apps/"
     install -Dm644 src/assets/512x512/apps/dev.nicx.mimick.png -t "$icons/hicolor/512x512/apps/"
     install -Dm644 src/assets/scalable/apps/dev.nicx.mimick.svg -t "$icons/hicolor/scalable/apps/"
