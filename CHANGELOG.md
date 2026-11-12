@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.15.1] - 2026-11-12
+
+### Added
+
+- Added a dedicated UPI donation page (`pay.html`) and responsive support card for desktop and mobile devices (#333).
+- Added dark mode screenshots showcasing the pure black OLED appearance on the project website (#333).
+
+### Fixed
+
+- Switched AppImage builds to AppImageKit's SquashFS-based `appimagetool` with automatic zsync delta updates (#295, #335).
+- Fixed destination directory creation and AppStream metadata validation in AppImage builds (#335).
+- Installed desktop launcher in AppDir for AppStream launchable desktop-id compliance (#335).
+- Enabled extract-and-run mode globally during AppImage builds so post-build test runs succeed in FUSE-less container environments (#335).
+
 ## [9.15.0] - 2026-11-10
 
 ### Added
