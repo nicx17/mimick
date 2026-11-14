@@ -1,0 +1,6430 @@
+# Chinese (Traditional) translations for mimick package.
+# Copyright (C) 2026 THE mimick'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the mimick package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: mimick\n"
+"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
+"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"PO-Revision-Date: 2026-11-09 20:57+0530\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Chinese (Traditional)\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: src/about.rs:49
+msgid "Documentation"
+msgstr "說明文件"
+
+#: src/about.rs:51
+msgid "Attribution"
+msgstr "致謝"
+
+#: src/about.rs:53
+msgid "Special Thanks"
+msgstr "特別鳴謝"
+
+#: src/about.rs:56
+msgid "Built With"
+msgstr "組建基於"
+
+#: src/api_client/albums.rs:70
+msgid "Album list is unavailable"
+msgstr "相簿清單無法使用"
+
+#: src/api_client/albums.rs:71
+msgid "Reconnect to the Immich server before refreshing albums."
+msgstr "在重新整理相簿前請先重新連線至 Immich 伺服器。"
+
+#: src/api_client/albums.rs:180
+msgid "Failed to fetch albums"
+msgstr "取得相簿失敗"
+
+#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+msgid "Cannot fetch albums to verify existence"
+msgstr "無法取得相簿以驗證其是否存在"
+
+#: src/api_client/errors.rs:35
+#, rust-format
+msgid ""
+"The server responded with HTTP {status}. Check the server logs and retry "
+"after confirming the current configuration."
+msgstr "伺服器回應了 HTTP {status}。請檢查伺服器記錄並在確認目前的設定後重試。"
+
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+msgid "Immich rejected the API key"
+msgstr "Immich 拒絕了此 API 金鑰"
+
+#: src/api_client/errors.rs:45
+msgid ""
+"Update the API key in Settings and confirm it still has the required Asset "
+"and Album permissions (see README for the full list)."
+msgstr "請在「設定」中更新 API 金鑰，並確認其仍具有所需的資產與相簿權限（完整清單請參閱 README）。"
+
+#: src/api_client/errors.rs:54
+msgid "An album reference is no longer valid"
+msgstr "相簿參照已失效"
+
+#: src/api_client/errors.rs:55
+msgid "Refresh the album list or choose a different album before retrying."
+msgstr "重試前請先重新整理相簿清單或選擇其他相簿。"
+
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+msgid "Immich rejected a file as too large"
+msgstr "Immich 因檔案過大而拒絕了該檔案"
+
+#: src/api_client/errors.rs:61
+msgid ""
+"Reduce the file size, raise the server upload limit, or skip oversized files "
+"with folder rules."
+msgstr "請縮小檔案大小、提高伺服器上傳限制，或使用資料夾規則略過過大的檔案。"
+
+#: src/api_client/errors.rs:65
+msgid "Immich rate-limited the request"
+msgstr "Immich 對請求進行了速率限制"
+
+#: src/api_client/errors.rs:67
+msgid ""
+"Wait a moment and retry. If this happens often, lower upload concurrency or "
+"check reverse proxy limits."
+msgstr "請稍候重試。如果經常發生此情況，請降低並行上傳數或檢查反向代理伺服器限制。"
+
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+msgid "Immich is temporarily unavailable"
+msgstr "Immich 暫時無法使用"
+
+#: src/api_client/errors.rs:73
+msgid ""
+"Wait a moment and retry. If it keeps happening, inspect the server and "
+"reverse proxy logs."
+msgstr "請稍候重試。如果問題持續發生，請檢查伺服器與反向代理伺服器記錄。"
+
+#: src/api_client/errors.rs:88
+msgid "the upload"
+msgstr "上傳"
+
+#: src/api_client/errors.rs:90
+#, rust-format
+msgid "Immich could not accept {subject}"
+msgstr "Immich 無法接受 {subject}"
+
+#: src/api_client/errors.rs:95 src/library/explore_view/tiles.rs:116
+#: src/library/explore_view/tiles.rs:138 src/library/people_view.rs:236
+#: src/library/source_header/enrichment.rs:242
+msgid "Unnamed"
+msgstr "未命名"
+
+#: src/api_client/errors.rs:97
+#, rust-format
+msgid "Immich could not create album '{album}'"
+msgstr "Immich 無法建立相簿 '{album}'"
+
+#: src/api_client/errors.rs:101
+msgid "Immich could not load the album list"
+msgstr "Immich 無法載入相簿清單"
+
+#: src/api_client/errors.rs:103
+msgid "Immich could not add the asset to the selected album"
+msgstr "Immich 無法將資產加入所選相簿"
+
+#: src/api_client/errors.rs:105
+msgid "Immich could not load a library thumbnail"
+msgstr "Immich 無法載入媒體庫縮圖"
+
+#: src/api_client/errors.rs:106
+msgid "Immich could not load library assets"
+msgstr "Immich 無法載入媒體庫資產"
+
+#: src/api_client/errors.rs:107
+msgid "Immich could not run the smart library search"
+msgstr "Immich 無法執行媒體庫智慧搜尋"
+
+#: src/api_client/errors.rs:109
+msgid "Immich could not run the metadata library search"
+msgstr "Immich 無法執行媒體庫中繼資料搜尋"
+
+#: src/api_client/errors.rs:111
+msgid "Immich could not download the selected asset"
+msgstr "Immich 無法下載所選資產"
+
+#: src/api_client/errors.rs:112
+msgid "Immich could not load library statistics"
+msgstr "Immich 無法載入媒體庫統計資料"
+
+#: src/api_client/errors.rs:113
+msgid "Immich could not load server version information"
+msgstr "Immich 無法載入伺服器版本資訊"
+
+#: src/api_client/errors.rs:121
+msgid "The Immich request timed out"
+msgstr "Immich 請求逾時"
+
+#: src/api_client/errors.rs:122
+msgid "Check network quality and server responsiveness, then retry."
+msgstr "請檢查網路連線品質與伺服器回應速度，然後重試。"
+
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+msgid "Could not reach the Immich server"
+msgstr "無法連線至 Immich 伺服器"
+
+#: src/api_client/errors.rs:128
+msgid ""
+"Check the configured URLs, your network connection, and whether the server "
+"is online."
+msgstr "請檢查設定的網址、您的網路連線，以及伺服器是否在線上。"
+
+#: src/api_client/errors.rs:135
+msgid ""
+"Retry the request after checking network connectivity and server health."
+msgstr "在檢查網路連線與伺服器健康狀態後重試請求。"
+
+#: src/api_client/errors.rs:144
+msgid "The upload request failed before completion"
+msgstr "上傳請求在完成前失敗"
+
+#: src/api_client/errors.rs:145
+msgid "The album request failed before completion"
+msgstr "相簿請求在完成前失敗"
+
+#: src/api_client/errors.rs:147
+msgid "The album creation request failed before completion"
+msgstr "建立相簿請求在完成前失敗"
+
+#: src/api_client/errors.rs:150
+msgid "The album assignment request failed before completion"
+msgstr "指派相簿請求在完成前失敗"
+
+#: src/api_client/errors.rs:152
+msgid "The thumbnail request failed before completion"
+msgstr "縮圖請求在完成前失敗"
+
+#: src/api_client/errors.rs:153
+msgid "The library asset request failed before completion"
+msgstr "媒體庫資產請求在完成前失敗"
+
+#: src/api_client/errors.rs:154
+msgid "The smart search request failed before completion"
+msgstr "智慧搜尋請求在完成前失敗"
+
+#: src/api_client/errors.rs:156
+msgid "The metadata search request failed before completion"
+msgstr "中繼資料搜尋請求在完成前失敗"
+
+#: src/api_client/errors.rs:159
+msgid "The asset download request failed before completion"
+msgstr "資產下載請求在完成前失敗"
+
+#: src/api_client/errors.rs:162
+msgid "The library statistics request failed before completion"
+msgstr "媒體庫統計資料請求在完成前失敗"
+
+#: src/api_client/errors.rs:165
+msgid "The server version request failed before completion"
+msgstr "伺服器版本請求在完成前失敗"
+
+#: src/api_client/mod.rs:387
+msgid "No active connection"
+msgstr "沒有使用中的連線"
+
+#: src/api_client/search.rs:358
+msgid "Immich can't count by file name or deleted photos"
+msgstr "Immich 無法依檔案名稱或已刪除相片進行統計"
+
+#: src/api_client/tags.rs:76
+#, rust-format
+msgid "Immich did not return the tag \"{value}\""
+msgstr "Immich 未傳回標籤 \"{value}\""
+
+#: src/api_client/tags.rs:87
+msgid "Renaming tags needs a newer version of Immich."
+msgstr "重新命名標籤需要較新版本的 Immich。"
+
+#: src/api_client/timeline.rs:194
+#, rust-format
+msgid "Invalid month {month}"
+msgstr "無效的月份 {month}"
+
+#: src/api_client/upload.rs:301
+msgid "A queued file is no longer available"
+msgstr "佇列中的檔案已無法使用"
+
+#: src/api_client/upload.rs:303
+msgid "Mimick could not read a queued file"
+msgstr "Mimick 無法讀取佇列中的檔案"
+
+#: src/api_client/upload.rs:306
+msgid ""
+"Check that the watched folder still exists and that the file was not moved "
+"or deleted before upload."
+msgstr "請檢查監控的資料夾是否仍然存在，且檔案在上傳前未被移動或刪除。"
+
+#: src/api_client/upload.rs:308
+msgid ""
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr "請驗證資料夾權限，並確保應用程式仍可存取該檔案。"
+
+#: src/api_client/upload.rs:322
+msgid "Mimick could not open a queued file"
+msgstr "Mimick 無法開啟佇列中的檔案"
+
+#: src/api_client/upload.rs:323
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr "該檔案可能已被鎖定、刪除或超出應用程式允許存取的資料夾範圍。"
+
+#: src/api_client/upload.rs:336
+msgid "No active server connection"
+msgstr "沒有使用中的伺服器連線"
+
+#: src/api_client/upload.rs:337
+msgid ""
+"Test the server connection in Settings and confirm at least one Immich URL "
+"is reachable."
+msgstr "請在「設定」中測試伺服器連線，並確認至少有一個 Immich 網址可連線。"
+
+#: src/api_client/upload.rs:393
+msgid ""
+"Reduce the file size, raise the server's upload limits, or use a folder rule "
+"to skip oversized files."
+msgstr "請縮小檔案大小、提高伺服器的上傳限制，或使用資料夾規則略過過大的檔案。"
+
+#: src/api_client/upload.rs:410
+msgid ""
+"Wait a moment and retry. If it keeps happening, check the server logs and "
+"reverse proxy."
+msgstr "請稍候重試。如果問題持續發生，請檢查伺服器記錄與反向代理伺服器。"
+
+#: src/autostart.rs:50
+msgid ""
+"Reason for requesting background access: Mimick must run in the background "
+"to automatically sync media to Immich."
+msgstr "請求背景存取權限的原因：Mimick 必須在背景執行才能自動將媒體同步至 Immich。"
+
+#: src/autostart.rs:57
+#, rust-format
+msgid "Failed to contact the background portal: {err}"
+msgstr "無法連繫背景入口：{err}"
+
+#: src/autostart.rs:59
+#, rust-format
+msgid "The desktop rejected the autostart request: {err}"
+msgstr "桌面環境拒絕了自動啟動請求：{err}"
+
+#: src/autostart.rs:74
+#, rust-format
+msgid "Failed to create autostart directory: {err}"
+msgstr "無法建立自動啟動目錄：{err}"
+
+#: src/autostart.rs:88
+#, rust-format
+msgid "Failed to write autostart entry: {err}"
+msgstr "無法寫入自動啟動項目：{err}"
+
+#: src/autostart.rs:114
+#, rust-format
+msgid "Failed to remove autostart entry: {err}"
+msgstr "無法移除自動啟動項目：{err}"
+
+#: src/autostart.rs:126 src/autostart.rs:133
+msgid "Could not locate the user config directory."
+msgstr "找不到使用者設定目錄。"
+
+#: src/library/about_dialog.rs:40
+msgid "Repository"
+msgstr "程式碼庫"
+
+#: src/library/about_dialog.rs:45
+msgid "Source"
+msgstr "原始碼"
+
+#: src/library/about_dialog.rs:50
+msgid "Build"
+msgstr "組建"
+
+#: src/library/about_dialog.rs:55
+msgid "Build Image"
+msgstr "組建映像檔"
+
+#. Translators: strftime date, e.g. "9 Oct 2026".
+#: src/library/about_dialog.rs:78 src/library/day_row.rs:63
+#: src/library/duplicates_view/cards.rs:217
+#: src/library/explore_view/calendar.rs:36 src/library/header_format.rs:64
+#: src/library/header_format.rs:77 src/library/utilities/controls.rs:138
+msgid "%-d %b %Y"
+msgstr "%Y年%-m月%-d日"
+
+#: src/library/about_dialog.rs:81
+#, rust-format
+msgid "Installed {version} on {date}"
+msgstr "已於 {date} 安裝 {version}"
+
+#: src/library/about_dialog.rs:135 src/library/about_dialog.rs:150
+msgid "Immich Server"
+msgstr "Immich 伺服器"
+
+#: src/library/about_dialog.rs:214
+msgid "Version History"
+msgstr "版本歷程"
+
+#: src/library/about_dialog.rs:234
+msgid "Server details unavailable"
+msgstr "伺服器詳細資訊無法使用"
+
+#: src/library/about_dialog.rs:235
+#, rust-format
+msgid ""
+"Your API key needs the 'server.about' and 'server.versionCheck' "
+"permissions.\n"
+"\n"
+"{err}"
+msgstr ""
+"您的 API 金鑰需要「server.about」與「server.versionCheck」權限。\n"
+"\n"
+"{err}"
+
+#: src/library/account.rs:34 src/library/window_layout.rs:332
+msgid "Account"
+msgstr "帳號"
+
+#: src/library/account.rs:66
+#, rust-format
+msgid "Couldn't load this. Your API key needs the “{permission}” permission."
+msgstr "無法載入此項目。您的 API 金鑰需要「{permission}」權限。"
+
+#: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
+#: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
+#: src/library/album_link.rs:187 src/library/album_wiring.rs:35
+#: src/library/asset_edit.rs:253 src/library/bulk_date.rs:316
+#: src/library/dialogs.rs:40 src/library/dialogs.rs:85
+#: src/library/dialogs.rs:110 src/library/lightbox/edit/panel.rs:101
+#: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
+#: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
+#: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/watch_folders/rules_dialog.rs:120
+msgid "Cancel"
+msgstr "取消"
+
+#: src/library/account/avatar_crop.rs:130
+msgid "Picture to crop; drag or use the arrow keys to move it"
+msgstr "要裁切的圖片；請拖曳或使用方向鍵移動"
+
+#: src/library/account/avatar_crop.rs:407 src/library/bulk_date.rs:274
+msgid "Set"
+msgstr "設定"
+
+#: src/library/account/avatar_crop.rs:420
+msgid "Zoom"
+msgstr "縮放"
+
+#: src/library/account/avatar_crop.rs:440
+msgid "Crop Picture"
+msgstr "裁切圖片"
+
+#: src/library/account/devices.rs:20
+msgid "Signed-in Devices"
+msgstr "已登入的裝置"
+
+#: src/library/account/devices.rs:22
+msgid ""
+"Browsers and apps signed in to your account. Mimick uses an API key, so it "
+"isn't listed."
+msgstr "已登入您帳號的瀏覽器與應用程式。Mimick 使用 API 金鑰，因此未列在此處。"
+
+#: src/library/account/devices.rs:28
+msgid "Devices"
+msgstr "裝置"
+
+#: src/library/account/devices.rs:42
+msgid "No browsers or apps are signed in."
+msgstr "沒有已登入的瀏覽器或應用程式。"
+
+#: src/library/account/devices.rs:72
+msgid "Sign out"
+msgstr "登出"
+
+#: src/library/account/devices.rs:84
+#, rust-format
+msgid "Sign out {device}?"
+msgstr "要登出 {device} 嗎？"
+
+#: src/library/account/devices.rs:85
+msgid "It will have to sign in to Immich again."
+msgstr "該裝置將必須重新登入 Immich。"
+
+#: src/library/account/devices.rs:86
+msgid "Sign Out"
+msgstr "登出"
+
+#: src/library/account/devices.rs:105
+#, rust-format
+msgid "Couldn't sign it out: {err}"
+msgstr "無法登出該裝置：{err}"
+
+#: src/library/account/devices.rs:118
+msgid "Unknown device"
+msgstr "未知裝置"
+
+#: src/library/account/devices.rs:126
+#, rust-format
+msgid "Last used {date}"
+msgstr "上次使用於 {date}"
+
+#: src/library/account/keys.rs:34
+msgid "This App"
+msgstr "此應用程式"
+
+#: src/library/account/keys.rs:35
+msgid "The key Mimick signs in to Immich with."
+msgstr "Mimick 用來登入 Immich 的金鑰。"
+
+#: src/library/account/keys.rs:39
+msgid "Other Keys"
+msgstr "其他金鑰"
+
+#: src/library/account/keys.rs:40
+msgid "Make new keys in Immich's web app."
+msgstr "在 Immich 網頁應用程式中建立新金鑰。"
+
+#: src/library/account/keys.rs:44
+msgid "API Keys"
+msgstr "API 金鑰"
+
+#: src/library/account/keys.rs:92
+msgid "No other keys."
+msgstr "沒有其他金鑰。"
+
+#: src/library/account/keys.rs:101
+msgid "Unnamed key"
+msgstr "未命名金鑰"
+
+#: src/library/account/keys.rs:115 src/library/shared_link_photos.rs:297
+#, rust-format
+msgid "Made {date}"
+msgstr "建立於 {date}"
+
+#: src/library/account/keys.rs:119
+msgid "All permissions"
+msgstr "所有權限"
+
+#: src/library/account/keys.rs:123
+#, rust-format
+msgid "{n} permission"
+msgid_plural "{n} permissions"
+msgstr[0] "{n} 項權限"
+
+#: src/library/account/keys.rs:144
+msgid "Rotate…"
+msgstr "輪替…"
+
+#: src/library/account/keys.rs:145
+msgid "Get a new secret for this key"
+msgstr "取得此金鑰的新密鑰"
+
+#: src/library/account/keys.rs:155
+msgid "Get a new secret for this key?"
+msgstr "要取得此金鑰的新密鑰嗎？"
+
+#: src/library/account/keys.rs:157
+msgid ""
+"Mimick saves the new secret and keeps working. Anything else using this key "
+"stops working until you give it the new secret."
+msgstr "Mimick 會儲存新密鑰並繼續運作。任何使用此金鑰的其他程式都將停止運作，直到為其提供新密鑰為止。"
+
+#: src/library/account/keys.rs:159
+msgid "Rotate"
+msgstr "輪替"
+
+#: src/library/account/keys.rs:176
+#, rust-format
+msgid "Couldn't rotate the key: {err}"
+msgstr "無法輪替金鑰：{err}"
+
+#: src/library/account/keys.rs:184
+msgid "New secret saved"
+msgstr "已儲存新密鑰"
+
+#: src/library/account/keys.rs:192
+msgid "Copy Your New Secret"
+msgstr "複製您的新密鑰"
+
+#: src/library/account/keys.rs:194
+#, rust-format
+msgid ""
+"Mimick is using it now but couldn't save it ({err}). Paste it in Settings so "
+"it's kept:\n"
+"\n"
+"{secret}"
+msgstr ""
+"Mimick 目前正在使用它，但無法儲存（{err}）。請將其貼到「設定」中以保留：\n"
+"\n"
+"{secret}"
+
+#: src/library/account/keys.rs:199 src/library/context_menu.rs:321
+#: src/library/context_menu.rs:336 src/library/masonry/canvas_helpers.rs:141
+#: src/settings_window/mod.rs:65
+msgid "OK"
+msgstr "確定"
+
+#: src/library/account/keys.rs:212
+msgid "Delete key"
+msgstr "刪除金鑰"
+
+#: src/library/account/keys.rs:223
+msgid "Delete this key?"
+msgstr "要刪除此金鑰嗎？"
+
+#: src/library/account/keys.rs:224
+msgid "Anything signing in with it stops working. This can't be undone."
+msgstr "任何使用此金鑰登入的程式都將停止運作。此操作無法復原。"
+
+#: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
+#: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
+#: src/library/shared_links_view.rs:361 src/library/tags_view.rs:184
+#: src/library/tags_view.rs:305
+msgid "Delete"
+msgstr "刪除"
+
+#: src/library/account/keys.rs:244
+#, rust-format
+msgid "Couldn't delete the key: {err}"
+msgstr "無法刪除金鑰：{err}"
+
+#: src/library/account/profile.rs:36
+msgid "Profile"
+msgstr "個人檔案"
+
+#: src/library/account/profile.rs:61
+msgid "Change Picture…"
+msgstr "變更相片…"
+
+#: src/library/account/profile.rs:65
+msgid "Remove Picture"
+msgstr "移除相片"
+
+#: src/library/account/profile.rs:109
+msgid "Remove your profile picture?"
+msgstr "要移除您的個人相片嗎？"
+
+#: src/library/account/profile.rs:110
+msgid "Immich shows your initials instead."
+msgstr "Immich 將改為顯示您的姓名縮寫。"
+
+#: src/library/account/profile.rs:111 src/library/lightbox/edit/pages.rs:138
+#: src/library/people_view.rs:458
+msgid "Remove"
+msgstr "移除"
+
+#: src/library/account/profile.rs:124
+#, rust-format
+msgid "Couldn't load your account: {err}"
+msgstr "無法載入您的帳號：{err}"
+
+#: src/library/account/profile.rs:152
+msgid "To use one of your photos, choose Set as Profile Picture in its menu."
+msgstr "若要使用您的其中一張相片，請在其選單中選擇「設為個人相片」。"
+
+#: src/library/account/profile.rs:163
+msgid "Images"
+msgstr "圖片"
+
+#: src/library/account/profile.rs:178
+msgid "Choose a Profile Picture"
+msgstr "選擇個人相片"
+
+#: src/library/account/profile.rs:193 src/library/account/profile.rs:222
+msgid "That file isn't a JPEG, PNG, or WebP picture."
+msgstr "該檔案不是 JPEG、PNG 或 WebP 圖片。"
+
+#: src/library/account/profile.rs:203
+#, rust-format
+msgid "Couldn't open the picture: {err}"
+msgstr "無法開啟圖片：{err}"
+
+#: src/library/account/profile.rs:232
+#, rust-format
+msgid "Couldn't change it: {err}"
+msgstr "無法變更：{err}"
+
+#: src/library/account/profile.rs:242
+msgid "Couldn't remove the picture"
+msgstr "無法移除相片"
+
+#: src/library/account/profile.rs:282
+msgid "Profile picture changed"
+msgstr "已變更個人相片"
+
+#: src/library/account/profile.rs:284
+msgid "Couldn't change your picture"
+msgstr "無法變更您的相片"
+
+#: src/library/account/profile.rs:298
+msgid "Immich's preview of this photo isn't a JPEG or WebP."
+msgstr "Immich 對此相片的預覽不是 JPEG 或 WebP 格式。"
+
+#: src/library/actions.rs:222
+msgid "New Link…"
+msgstr "新增連結…"
+
+#: src/library/actions.rs:229
+msgid "Add to Existing Link…"
+msgstr "加入至現有連結…"
+
+#: src/library/actions.rs:270 src/library/utilities.rs:194
+#, rust-format
+msgid "{n} selected"
+msgid_plural "{n} selected"
+msgstr[0] "已選取 {n} 項"
+
+#: src/library/actions.rs:276
+#, rust-format
+msgid "{owned} of {n} selected, only yours change"
+msgid_plural "{owned} of {n} selected, only yours change"
+msgstr[0] "已選取 {n} 項中的 {owned} 項，僅會修改屬於您的項目"
+
+#: src/library/actions.rs:318 src/library/actions.rs:351
+msgid "Not Your Photos"
+msgstr "不是您的相片"
+
+#: src/library/actions.rs:319
+msgid ""
+"Only the owner can change where a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "只有擁有者才能變更相片的拍攝地點，而所選相片屬於其他人。"
+
+#: src/library/actions.rs:352
+msgid ""
+"Only the owner can change when a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "只有擁有者才能變更相片的拍攝時間，而所選相片屬於其他人。"
+
+#: src/library/actions/trash.rs:60
+#, rust-format
+msgid "Move “{filename}” to trash?"
+msgstr "要將「{filename}」移至垃圾桶嗎？"
+
+#: src/library/actions/trash.rs:65
+#, rust-format
+msgid "Move {count} item to trash?"
+msgid_plural "Move {count} items to trash?"
+msgstr[0] "將 {count} 個項目移至垃圾桶？"
+
+#: src/library/actions/trash.rs:72
+#, rust-format
+msgid "Delete “{filename}” permanently?"
+msgstr "永久刪除「{filename}」？"
+
+#: src/library/actions/trash.rs:77 src/library/trash_view.rs:179
+#, rust-format
+msgid "Delete {count} item permanently?"
+msgid_plural "Delete {count} items permanently?"
+msgstr[0] "永久刪除 {count} 個項目？"
+
+#: src/library/actions/trash.rs:89
+msgid "Items can be restored from the Immich trash."
+msgstr "項目可以從 Immich 垃圾桶還原。"
+
+#: src/library/actions/trash.rs:91
+msgid "The Immich trash is turned off, so this can't be undone."
+msgstr "Immich 垃圾桶功能已關閉，因此此操作無法復原。"
+
+#: src/library/actions/trash.rs:95
+msgid "Local copies in your watch folders are kept."
+msgstr "監控資料夾中的本機複本將會保留。"
+
+#: src/library/actions/trash.rs:101
+#, rust-format
+msgid "{n} local-only item is not on the server and will be skipped."
+msgid_plural "{n} local-only items are not on the server and will be skipped."
+msgstr[0] "{n} 個僅存在於本機的項目不在伺服器上，將會略過。"
+
+#: src/library/actions/trash.rs:159
+msgid "Could Not Move to Trash"
+msgstr "無法移至垃圾桶"
+
+#: src/library/actions/trash.rs:161 src/library/album_assets.rs:125
+#: src/library/album_assets.rs:226 src/library/album_delete.rs:218
+#: src/library/album_picker.rs:194 src/library/album_picker.rs:228
+#: src/library/album_picker/several.rs:101
+#, rust-format
+msgid "Immich rejected the request: {err}"
+msgstr "Immich 拒絕了請求：{err}"
+
+#: src/library/actions/trash.rs:185 src/library/shortcuts_dialog.rs:160
+msgid "Move to trash"
+msgstr "移至垃圾桶"
+
+#: src/library/album_activity.rs:60
+#, rust-format
+msgid "{n} like"
+msgid_plural "{n} likes"
+msgstr[0] "{n} 個讚"
+
+#: src/library/album_activity.rs:64
+#, rust-format
+msgid "{n} comment"
+msgid_plural "{n} comments"
+msgstr[0] "{n} 則留言"
+
+#: src/library/album_activity/dialog.rs:23
+msgid "Likes and comments"
+msgstr "讚與留言"
+
+#: src/library/album_activity/dialog.rs:77 src/library/album_options.rs:34
+#: src/library/lightbox/activity.rs:22
+msgid "Activity"
+msgstr "近期動態"
+
+#: src/library/album_activity/feed.rs:42 src/library/album_activity/feed.rs:126
+msgid "Like"
+msgstr "讚"
+
+#: src/library/album_activity/feed.rs:43
+msgid "Send"
+msgstr "傳送"
+
+#: src/library/album_activity/feed.rs:46
+msgid "Add a comment…"
+msgstr "新增留言…"
+
+#: src/library/album_activity/feed.rs:108
+msgid "Couldn't load likes and comments"
+msgstr "無法載入讚與留言"
+
+#: src/library/album_activity/feed.rs:117
+msgid "No likes or comments yet"
+msgstr "尚無任何讚或留言"
+
+#: src/library/album_activity/feed.rs:124
+msgid "Unlike"
+msgstr "收回讚"
+
+#: src/library/album_activity/feed.rs:166
+msgid "Couldn't update the like"
+msgstr "無法更新讚狀態"
+
+#: src/library/album_activity/feed.rs:191
+msgid "Couldn't post the comment"
+msgstr "無法發布留言"
+
+#: src/library/album_activity/feed.rs:202
+msgid "Couldn't delete"
+msgstr "無法刪除"
+
+#: src/library/album_activity/feed.rs:260 src/library/content_state.rs:213
+#: src/library/server_stats_dialog.rs:42
+msgid "Loading…"
+msgstr "載入中…"
+
+#: src/library/album_assets.rs:79
+#, rust-format
+msgid "Only the owner can remove these from “{album}”"
+msgstr "只有擁有者才能從「{album}」中移除這些項目"
+
+#: src/library/album_assets.rs:84
+#, rust-format
+msgid "Removed {items} from “{album}”"
+msgstr "已從「{album}」中移除 {items}"
+
+#: src/library/album_assets.rs:94
+#, rust-format
+msgid "{n} belongs to someone else"
+msgid_plural "{n} belong to someone else"
+msgstr[0] "{n} 個項目屬於其他人"
+
+#: src/library/album_assets.rs:123
+msgid "Couldn't remove from the album"
+msgstr "無法從相簿中移除"
+
+#: src/library/album_assets.rs:155
+msgid "Undo"
+msgstr "復原"
+
+#: src/library/album_assets.rs:183
+msgid "Album cover updated"
+msgstr "相簿封面已更新"
+
+#: src/library/album_assets.rs:186 src/library/album_edit.rs:91
+msgid "Couldn't update the album"
+msgstr "無法更新相簿"
+
+#: src/library/album_assets.rs:194
+#, rust-format
+msgid "Leave “{album_name}”?"
+msgstr "要退出「{album_name}」嗎？"
+
+#: src/library/album_assets.rs:200
+msgid ""
+"You'll stop seeing its photos unless the owner shares it with you again."
+msgstr "除非擁有者再次與您共用，否則您將無法再看到該相簿的相片。"
+
+#: src/library/album_assets.rs:201
+msgid "Leave"
+msgstr "退出"
+
+#: src/library/album_assets.rs:212
+#, rust-format
+msgid "Left “{album_name}”"
+msgstr "已退出「{album_name}」"
+
+#: src/library/album_assets.rs:224
+msgid "Couldn't leave the album"
+msgstr "無法退出相簿"
+
+#: src/library/album_delete.rs:28
+#, rust-format
+msgid ""
+"Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
+"they don't create it again."
+msgstr "Mimick 仍在進行上傳。請在上傳完成後再刪除「{album_name}」，以免被再次建立。"
+
+#: src/library/album_delete.rs:29
+msgid "Uploads in Progress"
+msgstr "上傳進行中"
+
+#: src/library/album_delete.rs:35
+msgid "Close Settings First"
+msgstr "請先關閉設定"
+
+#: src/library/album_delete.rs:36
+msgid ""
+"Deleting this album changes your watch folders, and saving the open Settings "
+"window would undo that. Close Settings, then delete the album."
+msgstr "刪除此相簿會變更您的監控資料夾，而儲存已開啟的「設定」視窗會復原該變更。請先關閉「設定」，然後再刪除此相簿。"
+
+#: src/library/album_delete.rs:45
+msgid "Its photos stay in your library."
+msgstr "其中的相片仍會保留在您的圖庫中。"
+
+#: src/library/album_delete.rs:49
+msgid "It's also removed for the person it's shared with."
+msgstr "與其共用此相簿的使用者也將無法再存取。"
+
+#: src/library/album_delete.rs:53
+#, rust-format
+msgid "It's also removed for the {n} person it's shared with."
+msgid_plural "It's also removed for the {n} people it's shared with."
+msgstr[0] "與其共用此相簿的 {n} 位使用者也將無法再存取。"
+
+#: src/library/album_delete.rs:61
+msgid "Its shared links stop working."
+msgstr "其共用連結將失效。"
+
+#: src/library/album_delete.rs:117
+#, rust-format
+msgid "Delete “{album_name}”?"
+msgstr "要刪除「{album_name}」嗎？"
+
+#: src/library/album_delete.rs:124
+msgid "Delete Album"
+msgstr "刪除相簿"
+
+#: src/library/album_delete.rs:153
+msgid "These folders sync with this album:"
+msgstr "下列資料夾會與此相簿同步："
+
+#: src/library/album_delete.rs:156
+msgid "Keep backing them up to your library"
+msgstr "繼續將它們備份至您的圖庫"
+
+#: src/library/album_delete.rs:160
+msgid "Stop watching these folders"
+msgstr "停止監控這些資料夾"
+
+#: src/library/album_delete.rs:169
+msgid ""
+"So the album doesn't come back, photos in these folders go to your library "
+"instead of an album named after the folder:"
+msgstr "為了避免相簿重新被建立，這些資料夾中的相片將會存入您的圖庫，而不是以資料夾命名的相簿："
+
+#: src/library/album_delete.rs:221
+msgid "Could Not Delete Album"
+msgstr "無法刪除相簿"
+
+#: src/library/album_delete.rs:256
+#, rust-format
+msgid "Deleted “{album_name}”"
+msgstr "已刪除「{album_name}」"
+
+#: src/library/album_download.rs:20 src/library/controls.rs:377
+#: src/library/staging_view.rs:148
+msgid "Album"
+msgstr "相簿"
+
+#: src/library/album_download.rs:34
+#, rust-format
+msgid "Immich couldn't prepare the album: {err}"
+msgstr "Immich 無法準備相簿：{err}"
+
+#: src/library/album_download.rs:37 src/library/album_download.rs:54
+msgid "Download Failed"
+msgstr "下載失敗"
+
+#: src/library/album_download.rs:42
+#, rust-format
+msgid "“{album}” has nothing to download"
+msgstr "「{album}」中沒有可下載的內容"
+
+#: src/library/album_download.rs:90
+#, rust-format
+msgid "Saved {file_name}"
+msgstr "已儲存 {file_name}"
+
+#: src/library/album_download.rs:101
+#, rust-format
+msgid "Saved {count} zip file"
+msgid_plural "Saved {count} zip files"
+msgstr[0] "已儲存 {count} 個 zip 檔案"
+
+#: src/library/album_download.rs:111 src/library/download.rs:287
+msgid "Open Folder"
+msgstr "開啟資料夾"
+
+#: src/library/album_edit.rs:21 src/library/albums_view.rs:66
+#: src/library/people_view.rs:322 src/library/tags_view.rs:205
+msgid "Rename…"
+msgstr "重新命名…"
+
+#: src/library/album_edit.rs:25 src/library/albums_view.rs:68
+#: src/library/window_layout/bulk_bar.rs:215
+msgid "Edit Description…"
+msgstr "編輯描述…"
+
+#: src/library/album_edit.rs:29
+msgid "Options…"
+msgstr "選項…"
+
+#: src/library/album_edit.rs:33 src/library/albums_view.rs:72
+msgid "Delete Album…"
+msgstr "刪除相簿…"
+
+#: src/library/album_edit.rs:44
+msgid "Rename Album"
+msgstr "重新命名相簿"
+
+#: src/library/album_edit.rs:45
+msgid "Folders linked to this album stay linked."
+msgstr "已連結至此相簿的資料夾仍會保持連結。"
+
+#: src/library/album_edit.rs:47 src/library/album_picker.rs:432
+#: src/library/album_wiring.rs:31
+msgid "Album name"
+msgstr "相簿名稱"
+
+#: src/library/album_edit.rs:48 src/library/download.rs:357
+#: src/library/tags_view.rs:182 src/library/tags_view.rs:277
+msgid "Rename"
+msgstr "重新命名"
+
+#: src/library/album_edit.rs:76
+msgid "Album Description"
+msgstr "相簿描述"
+
+#: src/library/album_link.rs:42
+msgid "Linked folder"
+msgstr "已連結的資料夾"
+
+#: src/library/album_link.rs:48
+msgid "Unlink"
+msgstr "取消連結"
+
+#: src/library/album_link.rs:54 src/library/window_layout.rs:492
+msgid "No local folder linked"
+msgstr "未連結本機資料夾"
+
+#: src/library/album_link.rs:56 src/library/window_layout.rs:494
+msgid "Drop files in the linked folder to sync this album"
+msgstr "將檔案拖放到已連結的資料夾以同步此相簿"
+
+#: src/library/album_link.rs:60 src/library/window_layout/responsive.rs:178
+msgid "Link folder…"
+msgstr "連結資料夾…"
+
+#: src/library/album_link.rs:184
+msgid "Sync album"
+msgstr "同步相簿"
+
+#: src/library/album_link.rs:185
+msgid "Pick which directions to apply."
+msgstr "選擇要套用的同步方向。"
+
+#: src/library/album_link.rs:188
+msgid "Apply"
+msgstr "套用"
+
+#: src/library/album_link.rs:200
+#, rust-format
+msgid "Upload {n} item to album"
+msgid_plural "Upload {n} items to album"
+msgstr[0] "上傳 {n} 個項目至相簿"
+
+#: src/library/album_link.rs:209
+#, rust-format
+msgid "Download {n} item to folder"
+msgid_plural "Download {n} items to folder"
+msgstr[0] "下載 {n} 個項目至資料夾"
+
+#: src/library/album_link.rs:218
+#, rust-format
+msgid "Move {n} album item to trash"
+msgid_plural "Move {n} album items to trash"
+msgstr[0] "將 {n} 個相簿項目移至垃圾桶"
+
+#: src/library/album_link.rs:227
+#, rust-format
+msgid "Move {n} local item to trash"
+msgid_plural "Move {n} local items to trash"
+msgstr[0] "將 {n} 個本機項目移至垃圾桶"
+
+#: src/library/album_link.rs:292
+#, rust-format
+msgid ""
+"Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
+msgid_plural ""
+"Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
+msgstr[0] "已處於同步狀態。（{n} 個遠端項目因缺少校驗碼而無法比對。）"
+
+#: src/library/album_link.rs:299
+msgid "Already in sync."
+msgstr "已處於同步狀態。"
+
+#: src/library/album_link.rs:307
+#, rust-format
+msgid "{n} remote item couldn't be matched (missing checksum)."
+msgid_plural "{n} remote items couldn't be matched (missing checksum)."
+msgstr[0] "{n} 個遠端項目無法比對（缺少校驗碼）。"
+
+#: src/library/album_link.rs:430
+#, rust-format
+msgid "Link folder for album '{album_name}'"
+msgstr "為相簿「{album_name}」連結資料夾"
+
+#: src/library/album_options.rs:19
+msgid "Album Options"
+msgstr "相簿選項"
+
+#: src/library/album_options.rs:25
+msgid "Comments and Likes"
+msgstr "留言與讚"
+
+#: src/library/album_options.rs:26
+msgid "Let people in this album like and comment"
+msgstr "允許相簿中的成員按讚與留言"
+
+#: src/library/album_options.rs:30
+msgid "Display"
+msgstr "顯示"
+
+#: src/library/album_options.rs:48
+msgid "Display Order"
+msgstr "顯示順序"
+
+#: src/library/album_options.rs:50
+msgid "Newest First"
+msgstr "最新的排在最前"
+
+#: src/library/album_options.rs:51
+msgid "Oldest First"
+msgstr "最舊的排在最前"
+
+#: src/library/album_options.rs:92 src/library/album_options.rs:149
+#, rust-format
+msgid "Couldn't save: {err}"
+msgstr "無法儲存：{err}"
+
+#: src/library/album_picker.rs:54
+msgid "Add to Album"
+msgstr "加入相簿"
+
+#: src/library/album_picker.rs:136
+#, rust-format
+msgid "Couldn't add to “{album}”"
+msgstr "無法加入至「{album}」"
+
+#: src/library/album_picker.rs:138
+#, rust-format
+msgid "Already in “{album}”"
+msgstr "已在「{album}」中"
+
+#: src/library/album_picker.rs:140
+#, rust-format
+msgid "Added {items} to “{album}”"
+msgstr "已將 {items} 加入至「{album}」"
+
+#: src/library/album_picker.rs:144
+#, rust-format
+msgid "Added {items} to “{album}” · {duplicate} already there"
+msgstr "已將 {items} 加入至「{album}」· {duplicate} 已存在"
+
+#: src/library/album_picker.rs:156
+#, rust-format
+msgid "{n} not allowed"
+msgid_plural "{n} not allowed"
+msgstr[0] "{n} 項不允許"
+
+#: src/library/album_picker.rs:192
+msgid "Couldn't add to the album"
+msgstr "無法加入至相簿"
+
+#: src/library/album_picker.rs:206
+msgid "Open"
+msgstr "開啟"
+
+#: src/library/album_picker.rs:221 src/library/album_picker.rs:226
+msgid "Could Not Create Album"
+msgstr "無法建立相簿"
+
+#: src/library/album_picker.rs:222
+msgid "Immich didn't return the new album."
+msgstr "Immich 未傳回新相簿。"
+
+#: src/library/album_picker.rs:260 src/library/albums_view.rs:187
+msgid "Filter albums"
+msgstr "篩選相簿"
+
+#: src/library/album_picker.rs:358
+#, rust-format
+msgid "New Album “{name}”"
+msgstr "新增相簿「{name}」"
+
+#: src/library/album_picker.rs:359
+msgid "New Album…"
+msgstr "新增相簿…"
+
+#: src/library/album_picker.rs:429
+msgid "New Album"
+msgstr "新增相簿"
+
+#: src/library/album_picker.rs:430
+msgid "The selected items will be added to it."
+msgstr "所選項目將會加入其中。"
+
+#: src/library/album_picker.rs:433 src/library/album_wiring.rs:36
+#: src/library/tags_view.rs:253
+msgid "Create"
+msgstr "建立"
+
+#: src/library/album_picker/several.rs:49
+msgid "Add to this album too"
+msgstr "也加入至此相簿"
+
+#: src/library/album_picker/several.rs:72
+#, rust-format
+msgid "Add to {n} Album"
+msgid_plural "Add to {n} Albums"
+msgstr[0] "加入至 {n} 個相簿"
+
+#: src/library/album_picker/several.rs:99
+msgid "Couldn't add to the albums"
+msgstr "無法加入至相簿"
+
+#: src/library/album_picker/several.rs:114
+#, rust-format
+msgid "Added {items} to {n} album"
+msgid_plural "Added {items} to {n} albums"
+msgstr[0] "已將 {items} 加入至 {n} 個相簿"
+
+#: src/library/album_picker/several.rs:123
+msgid "Already in those albums"
+msgstr "已存在於這些相簿中"
+
+#: src/library/album_picker/several.rs:124
+msgid "You can't add these to those albums"
+msgstr "您無法將這些項目加入至這些相簿"
+
+#: src/library/album_picker/widgets.rs:87
+msgid "No matching albums"
+msgstr "沒有相符的相簿"
+
+#: src/library/album_share_dialog.rs:37
+msgid "Shared with"
+msgstr "共用對象"
+
+#: src/library/album_share_dialog.rs:40 src/library/sharing_view.rs:271
+msgid "Find people by name or email"
+msgstr "依姓名或電子郵件尋找人員"
+
+#: src/library/album_share_dialog.rs:43
+msgid "Add people"
+msgstr "新增成員"
+
+#: src/library/album_share_dialog.rs:53
+#, rust-format
+msgid "Share “{album_name}”"
+msgstr "共用「{album_name}」"
+
+#: src/library/album_share_dialog.rs:89
+msgid "Could Not Load Album"
+msgstr "無法載入相簿"
+
+#: src/library/album_share_dialog.rs:150
+msgid "Editor"
+msgstr "編輯者"
+
+#: src/library/album_share_dialog.rs:150 src/library/shortcuts_dialog.rs:263
+msgid "Viewer"
+msgstr "檢視者"
+
+#: src/library/album_share_dialog.rs:162
+msgid "Could Not Change Role"
+msgstr "無法變更角色"
+
+#: src/library/album_share_dialog.rs:174
+msgid "Stop sharing with this person"
+msgstr "停止與此人共用"
+
+#: src/library/album_share_dialog.rs:181
+msgid "Could Not Remove Person"
+msgstr "無法移除成員"
+
+#: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+msgid "Add"
+msgstr "新增"
+
+#: src/library/album_share_dialog.rs:198
+msgid "Could Not Share Album"
+msgstr "無法共用相簿"
+
+#: src/library/album_sync.rs:85
+#, rust-format
+msgid "{n} album item"
+msgid_plural "{n} album items"
+msgstr[0] "{n} 個相簿項目"
+
+#: src/library/album_wiring.rs:27 src/library/albums_view.rs:183
+msgid "Create album"
+msgstr "建立相簿"
+
+#: src/library/album_wiring.rs:28
+msgid "Choose a name for the new album."
+msgstr "為新相簿選擇一個名稱。"
+
+#: src/library/album_wiring.rs:88 src/library/source_loading.rs:96
+#, rust-format
+msgid "Could not load albums: {err}"
+msgstr "無法載入相簿：{err}"
+
+#: src/library/albums_view.rs:64
+msgid "Share…"
+msgstr "共用…"
+
+#: src/library/albums_view.rs:65 src/library/context_menu/manage.rs:58
+msgid "Create Share Link…"
+msgstr "建立共用連結…"
+
+#: src/library/albums_view.rs:71 src/library/albums_view.rs:76
+#: src/library/context_menu.rs:139 src/library/shared_links_view.rs:415
+#: src/library/shortcuts_dialog.rs:139
+msgid "Download"
+msgstr "下載"
+
+#: src/library/albums_view.rs:77 src/library/source_header/enrichment.rs:221
+msgid "Leave Album…"
+msgstr "退出相簿…"
+
+#: src/library/albums_view.rs:137
+msgid "Recent"
+msgstr "最近"
+
+#: src/library/albums_view.rs:138 src/library/albums_view.rs:220
+msgid "Your albums"
+msgstr "您的相簿"
+
+#: src/library/albums_view.rs:139
+msgid "Shared with you"
+msgstr "與您共用"
+
+#: src/library/albums_view.rs:218
+msgid "Shared by you"
+msgstr "由您共用"
+
+#: src/library/albums_view.rs:352
+msgid "Couldn't Tell Which Albums Are Yours"
+msgstr "無法判斷哪些相簿屬於您"
+
+#: src/library/albums_view.rs:353
+msgid "Your API key needs the 'user.read' permission."
+msgstr "您的 API 金鑰需要「user.read」權限。"
+
+#: src/library/albums_view.rs:357
+msgid "No Shared Albums"
+msgstr "沒有共用相簿"
+
+#: src/library/albums_view.rs:358
+msgid "Share one of your albums, or ask someone to share one with you."
+msgstr "共用您的其中一個相簿，或請他人與您共用相簿。"
+
+#: src/library/albums_view/stats.rs:40
+#, rust-format
+msgid "{owned} owned · {shared} shared · {not_shared} not shared"
+msgstr "{owned} 個自己擁有 · {shared} 個已共用 · {not_shared} 個未共用"
+
+#: src/library/albums_view/tile.rs:58 src/library/download.rs:177
+#: src/library/header_format.rs:34
+#, rust-format
+msgid "{n} item"
+msgid_plural "{n} items"
+msgstr[0] "{n} 個項目"
+
+#: src/library/archive.rs:24
+msgid "Unarchive"
+msgstr "取消封存"
+
+#: src/library/archive.rs:26 src/library/search_filters.rs:137
+#: src/library/shortcuts_dialog.rs:62 src/library/sidebar/rows.rs:112
+#: src/library/source_header.rs:311
+msgid "Archive"
+msgstr "封存"
+
+#: src/library/archive.rs:32
+msgid "Unarchive (A)"
+msgstr "取消封存 (A)"
+
+#: src/library/archive.rs:34
+msgid "Archive (A)"
+msgstr "封存 (A)"
+
+#: src/library/archive.rs:62
+msgid "Could Not Archive"
+msgstr "無法封存"
+
+#: src/library/archive.rs:64
+msgid "Could Not Unarchive"
+msgstr "無法取消封存"
+
+#: src/library/archive.rs:88
+msgid "Unarchive selected"
+msgstr "取消封存所選項"
+
+#: src/library/archive.rs:90 src/library/window_layout/bulk_bar.rs:64
+msgid "Archive selected"
+msgstr "封存所選項"
+
+#: src/library/asset_edit.rs:131 src/library/map/location_dialog.rs:59
+msgid "Could Not Load Info"
+msgstr "無法載入資訊"
+
+#: src/library/asset_edit.rs:156
+msgid "Date taken"
+msgstr "拍攝日期"
+
+#: src/library/asset_edit.rs:161
+msgid "Pick date and time"
+msgstr "選擇日期與時間"
+
+#: src/library/asset_edit.rs:182 src/library/people_view.rs:226
+msgid "Favorite"
+msgstr "最愛"
+
+#: src/library/asset_edit.rs:192 src/library/bulk_more.rs:138
+#: src/library/lightbox/details.rs:147 src/library/shared_link_dialog.rs:106
+msgid "Description"
+msgstr "描述"
+
+#: src/library/asset_edit.rs:255 src/library/bulk_date.rs:318
+#: src/library/bulk_more.rs:139 src/library/dialogs.rs:86
+#: src/library/lightbox/edit/panel.rs:103 src/library/map/location_dialog.rs:76
+#: src/library/people_view.rs:429 src/library/people_view.rs:461
+#: src/library/shared_link_dialog.rs:202 src/library/tags_view.rs:335
+#: src/settings_window/watch_folders/rules_dialog.rs:122
+msgid "Save"
+msgstr "儲存"
+
+#: src/library/asset_edit.rs:275
+msgid "Edit Info"
+msgstr "編輯資訊"
+
+#: src/library/asset_edit.rs:349
+msgid "Could Not Save Info"
+msgstr "無法儲存資訊"
+
+#: src/library/asset_edit.rs:351 src/library/map/location_dialog.rs:167
+#, rust-format
+msgid "Immich rejected the update: {err}"
+msgstr "Immich 拒絕了更新：{err}"
+
+#: src/library/asset_edit/date_picker.rs:78
+msgid "Set Date"
+msgstr "設定日期"
+
+#: src/library/asset_edit/date_picker.rs:137
+#: src/library/lightbox/details.rs:260
+msgid "Not set"
+msgstr "未設定"
+
+#: src/library/asset_jobs.rs:35
+msgid "Refresh Faces"
+msgstr "重新整理人臉"
+
+#: src/library/asset_jobs.rs:36
+msgid "Immich is looking for faces again"
+msgstr "Immich 正在重新尋找人臉"
+
+#: src/library/asset_jobs.rs:43
+msgid "Refresh Metadata"
+msgstr "重新整理中繼資料"
+
+#: src/library/asset_jobs.rs:44
+msgid "Immich is reading the metadata again"
+msgstr "Immich 正在重新讀取中繼資料"
+
+#: src/library/asset_jobs.rs:51
+msgid "Refresh Thumbnails"
+msgstr "重新整理縮圖"
+
+#: src/library/asset_jobs.rs:52
+msgid "Immich is making new thumbnails"
+msgstr "Immich 正在重新產生縮圖"
+
+#: src/library/asset_jobs.rs:59
+msgid "Refresh Video"
+msgstr "重新整理影片"
+
+#: src/library/asset_jobs.rs:60
+msgid "Immich is converting the video again"
+msgstr "Immich 正在重新轉碼影片"
+
+#: src/library/asset_jobs.rs:114
+msgid "Couldn't refresh"
+msgstr "無法重新整理"
+
+#: src/library/asset_jobs.rs:116
+#, rust-format
+msgid "Immich didn't start the job: {err}"
+msgstr "Immich 未啟動作業：{err}"
+
+#: src/library/asset_tags.rs:46
+msgid "Add tag"
+msgstr "新增標籤"
+
+#: src/library/asset_tags.rs:51 src/library/navigation.rs:204
+#: src/library/search_filters.rs:84 src/library/sidebar/rows.rs:100
+msgid "Tags"
+msgstr "標籤"
+
+#: src/library/asset_tags.rs:63
+msgid "No tags yet"
+msgstr "尚無標籤"
+
+#: src/library/asset_tags.rs:139
+#, rust-format
+msgid "Show photos tagged “{value}”"
+msgstr "顯示帶有標籤「{value}」的相片"
+
+#: src/library/asset_tags.rs:150
+#, rust-format
+msgid "Remove “{value}”"
+msgstr "移除「{value}」"
+
+#: src/library/asset_tags.rs:189
+msgid "Couldn't remove the tag"
+msgstr "無法移除標籤"
+
+#: src/library/asset_tags.rs:219
+msgid "Couldn't add the tag"
+msgstr "無法新增標籤"
+
+#: src/library/asset_tags.rs:227
+msgid "Find or create a tag"
+msgstr "尋找或建立標籤"
+
+#: src/library/asset_tags.rs:307
+#, rust-format
+msgid "Create “{query}”"
+msgstr "建立「{query}」"
+
+#: src/library/bottom_nav.rs:10 src/library/server_stats_dialog.rs:94
+#: src/library/server_stats_dialog.rs:126 src/library/shortcuts_dialog.rs:57
+#: src/library/sidebar/rows.rs:40 src/library/source_header.rs:276
+#: src/library/utilities/controls.rs:29
+msgid "Photos"
+msgstr "相片"
+
+#: src/library/bottom_nav.rs:11 src/library/shortcuts_dialog.rs:58
+#: src/library/sidebar/rows.rs:52 src/library/source_header.rs:309
+msgid "Explore"
+msgstr "探索"
+
+#: src/library/bottom_nav.rs:12 src/library/navigation.rs:177
+#: src/library/shortcuts_dialog.rs:59 src/library/shortcuts_dialog.rs:261
+#: src/library/sidebar/rows.rs:58
+msgid "Map"
+msgstr "地圖"
+
+#: src/library/bottom_nav.rs:13 src/library/navigation.rs:200
+#: src/library/search_filters.rs:85 src/library/shortcuts_dialog.rs:64
+#: src/library/sidebar/rows.rs:70
+msgid "Albums"
+msgstr "相簿"
+
+#: src/library/bottom_nav.rs:14 src/library/explore_view.rs:217
+#: src/library/lightbox/people.rs:47 src/library/navigation.rs:203
+#: src/library/search_filters.rs:83 src/library/shortcuts_dialog.rs:60
+#: src/library/sidebar/rows.rs:64
+msgid "People"
+msgstr "人物"
+
+#: src/library/bulk_date.rs:27
+msgid "No change"
+msgstr "無變更"
+
+#: src/library/bulk_date.rs:36
+#, rust-format
+msgid "{n} day"
+msgid_plural "{n} days"
+msgstr[0] "{n} 天"
+
+#: src/library/bulk_date.rs:37
+#, rust-format
+msgid "{n} hour"
+msgid_plural "{n} hours"
+msgstr[0] "{n} 小時"
+
+#: src/library/bulk_date.rs:38
+#, rust-format
+msgid "{n} minute"
+msgid_plural "{n} minutes"
+msgstr[0] "{n} 分鐘"
+
+#: src/library/bulk_date.rs:46
+#, rust-format
+msgid "Later by {amount}"
+msgstr "延後 {amount}"
+
+#: src/library/bulk_date.rs:48
+#, rust-format
+msgid "Earlier by {amount}"
+msgstr "提前 {amount}"
+
+#: src/library/bulk_date.rs:90
+#, rust-format
+msgid "Changed the date of {items}"
+msgstr "已變更 {items} 的日期"
+
+#: src/library/bulk_date.rs:101
+msgid "Could Not Change Date"
+msgstr "無法變更日期"
+
+#: src/library/bulk_date.rs:103
+#, rust-format
+msgid "Immich rejected the change: {err}"
+msgstr "Immich 拒絕了變更：{err}"
+
+#: src/library/bulk_date.rs:151
+msgid "Days"
+msgstr "天"
+
+#: src/library/bulk_date.rs:152
+msgid "Hours"
+msgstr "小時"
+
+#: src/library/bulk_date.rs:153
+msgid "Minutes"
+msgstr "分鐘"
+
+#: src/library/bulk_date.rs:160
+msgid "Date and time"
+msgstr "日期與時間"
+
+#: src/library/bulk_date.rs:230
+#, rust-format
+msgid "Saved as {date} UTC{offset}"
+msgstr "已儲存為 {date} UTC{offset}"
+
+#: src/library/bulk_date.rs:274
+msgid "Shift"
+msgstr "平移"
+
+#: src/library/bulk_date.rs:325 src/library/bulk_date.rs:345
+msgid "Change Date and Time"
+msgstr "變更日期與時間"
+
+#: src/library/bulk_more.rs:39
+msgid "Only the owner can change these photos"
+msgstr "只有擁有者才能變更這些相片"
+
+#: src/library/bulk_more.rs:71
+msgid "Unfavorite selected"
+msgstr "取消最愛所選項"
+
+#: src/library/bulk_more.rs:76 src/library/window_layout/bulk_bar.rs:211
+msgid "Favorite selected"
+msgstr "設為最愛所選項"
+
+#: src/library/bulk_more.rs:91
+msgid "Couldn't update favorites"
+msgstr "無法更新最愛"
+
+#: src/library/bulk_more.rs:103
+#, rust-format
+msgid "Added {n} photo to favorites"
+msgid_plural "Added {n} photos to favorites"
+msgstr[0] "已將 {n} 張相片加入最愛"
+
+#: src/library/bulk_more.rs:109
+#, rust-format
+msgid "Removed {n} photo from favorites"
+msgid_plural "Removed {n} photos from favorites"
+msgstr[0] "已從最愛中移除 {n} 張相片"
+
+#: src/library/bulk_more.rs:125
+#, rust-format
+msgid "Describe {n} Photo"
+msgid_plural "Describe {n} Photos"
+msgstr[0] "為 {n} 張相片新增描述"
+
+#: src/library/bulk_more.rs:136
+msgid "Each photo gets this description in place of its own."
+msgstr "每張相片都將以此描述取代其原有的描述。"
+
+#: src/library/bulk_more.rs:151
+msgid "Description saved"
+msgstr "描述已儲存"
+
+#: src/library/bulk_more.rs:152
+msgid "Couldn't save the description"
+msgstr "無法儲存描述"
+
+#: src/library/bulk_overflow.rs:32
+msgid "More actions"
+msgstr "更多動作"
+
+#: src/library/clipboard.rs:141
+#, rust-format
+msgid "Copied {n} photo"
+msgid_plural "Copied {n} photos"
+msgstr[0] "已複製 {n} 張相片"
+
+#: src/library/clipboard.rs:151
+#, rust-format
+msgid ""
+"Pasting into an album here adds all {count}. Only {local} are on this "
+"computer, so other apps such as Files paste those; use Download for the rest."
+msgstr "在此處貼上至相簿將加入全部 {count} 項。此電腦上只有 {local} 項，因此「檔案」等其他應用程式只會貼上這些項目；其餘項目請使用「下載」。"
+
+#: src/library/clipboard.rs:162
+msgid "Paste in Photos or albums"
+msgstr "貼上至「相片」或相簿"
+
+#: src/library/clipboard.rs:177 src/library/clipboard.rs:187
+msgid "Couldn't paste"
+msgstr "無法貼上"
+
+#: src/library/clipboard.rs:186 src/library/clipboard.rs:191
+#: src/library/clipboard.rs:226
+msgid "No photos to paste"
+msgstr "沒有可貼上的相片"
+
+#: src/library/clipboard.rs:233 src/library/upload_stack.rs:74
+#, rust-format
+msgid "Uploading {n} file…"
+msgid_plural "Uploading {n} files…"
+msgstr[0] "正在上傳 {n} 個檔案…"
+
+#: src/library/clipboard.rs:262
+msgid "Already in your library"
+msgstr "已存在於您的媒體庫中"
+
+#: src/library/clipboard.rs:273
+msgid "Uploading pasted image…"
+msgstr "正在上傳貼上的圖片…"
+
+#: src/library/clipboard.rs:279
+msgid "Pasted image"
+msgstr "貼上的圖片"
+
+#: src/library/clipboard.rs:290
+msgid "Pasted image uploaded"
+msgstr "已上傳貼上的圖片"
+
+#: src/library/clipboard.rs:294
+msgid "Couldn't paste the image"
+msgstr "無法貼上圖片"
+
+#: src/library/content_state.rs:24
+#, rust-format
+msgid "{n} asset"
+msgid_plural "{n} assets"
+msgstr[0] "{n} 項資產"
+
+#: src/library/content_state.rs:119 src/library/explore_view/calendar.rs:43
+#: src/library/header_format.rs:177 src/library/map/markers.rs:125
+#: src/library/memories.rs:134 src/library/server_stats_dialog.rs:227
+#: src/library/source_header.rs:268
+#, rust-format
+msgid "{n} photo"
+msgid_plural "{n} photos"
+msgstr[0] "{n} 張相片"
+
+#: src/library/content_state.rs:123 src/library/server_stats_dialog.rs:231
+#: src/library/source_header.rs:272
+#, rust-format
+msgid "{n} video"
+msgid_plural "{n} videos"
+msgstr[0] "{n} 部影片"
+
+#: src/library/content_state.rs:128 src/library/sidebar.rs:36
+msgid "Statistics unavailable"
+msgstr "統計資料無法使用"
+
+#: src/library/content_state.rs:133 src/library/server_stats_dialog.rs:80
+#, rust-format
+msgid "Immich {version}"
+msgstr "Immich {version}"
+
+#: src/library/content_state.rs:134
+msgid "Version unavailable"
+msgstr "版本資訊無法使用"
+
+#: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
+#: src/settings_window/wiring.rs:215
+msgid "Connected through LAN"
+msgstr "已透過區域網路連線"
+
+#: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
+#: src/settings_window/wiring.rs:217
+msgid "Connected through WAN"
+msgstr "已透過廣域網路連線"
+
+#: src/library/content_state.rs:142 src/settings_window/status_poll.rs:183
+msgid "Connected through configured server"
+msgstr "已透過設定的伺服器連線"
+
+#: src/library/content_state.rs:144 src/library/sidebar.rs:35
+msgid "Offline"
+msgstr "離線"
+
+#: src/library/content_state.rs:175
+msgid "queued asset"
+msgstr "佇列中的資產"
+
+#: src/library/content_state.rs:176
+msgid "selected asset"
+msgstr "選取的資產"
+
+#: src/library/content_state.rs:217
+msgid "Fetching library data from the Immich server"
+msgstr "正在從 Immich 伺服器取得媒體庫資料"
+
+#: src/library/content_state.rs:366 src/library/masonry/canvas_helpers.rs:138
+#: src/library/server_stats_dialog.rs:161
+msgid "Missing API Permissions"
+msgstr "缺少 API 權限"
+
+#: src/library/content_state.rs:367
+msgid ""
+"Your API key is missing permissions required for the Library view. Please "
+"ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
+"'person.read' enabled."
+msgstr "您的 API 金鑰缺少媒體庫檢視所需的權限。請確保該金鑰已啟用 'asset.read'、'asset.view'、'asset.download' 與 'person.read'。"
+
+#: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
+#: src/library/shortcuts_dialog.rs:179
+msgid "Close"
+msgstr "關閉"
+
+#: src/library/context_menu.rs:131
+msgid "Copy"
+msgstr "複製"
+
+#: src/library/context_menu.rs:148
+msgid "Open In"
+msgstr "以其他應用程式開啟"
+
+#: src/library/context_menu.rs:174 src/library/shortcuts_dialog.rs:264
+msgid "Slideshow"
+msgstr "投影片放映"
+
+#: src/library/context_menu.rs:181
+msgid "Leave Fullscreen"
+msgstr "結束全螢幕"
+
+#: src/library/context_menu.rs:183
+msgid "Fullscreen"
+msgstr "全螢幕"
+
+#: src/library/context_menu.rs:229 src/library/context_menu.rs:236
+msgid "Couldn't copy the photo"
+msgstr "無法複製相片"
+
+#: src/library/context_menu.rs:237
+msgid "Could not decode the original image."
+msgstr "無法解碼原始圖片。"
+
+#: src/library/context_menu.rs:256
+msgid "Couldn't open the file"
+msgstr "無法開啟檔案"
+
+#: src/library/context_menu.rs:288
+msgid "Could not locate a cache directory."
+msgstr "找不到快取目錄。"
+
+#: src/library/context_menu.rs:316 src/library/lightbox/details.rs:205
+msgid "Details"
+msgstr "詳細資訊"
+
+#: src/library/context_menu/manage.rs:73
+msgid "Add to Share Link…"
+msgstr "加入至分享連結…"
+
+#: src/library/context_menu/manage.rs:84 src/library/lightbox/widgets.rs:434
+msgid "Add to Album…"
+msgstr "加入相簿…"
+
+#: src/library/context_menu/manage.rs:92
+msgid "Set as Album Cover"
+msgstr "設為相簿封面"
+
+#: src/library/context_menu/manage.rs:108
+msgid "Remove from Album"
+msgstr "從相簿中移除"
+
+#: src/library/context_menu/manage.rs:130 src/library/lightbox/widgets.rs:432
+msgid "Edit Info…"
+msgstr "編輯資訊…"
+
+#: src/library/context_menu/manage.rs:149
+msgid "Edit Photo…"
+msgstr "編輯相片…"
+
+#: src/library/context_menu/manage.rs:158 src/library/lightbox/people.rs:59
+msgid "Tag People…"
+msgstr "標記人物…"
+
+#: src/library/context_menu/manage.rs:176
+msgid "Set as Profile Picture"
+msgstr "設為個人相片"
+
+#: src/library/context_menu/manage.rs:186
+msgid "Set Location…"
+msgstr "設定位置…"
+
+#: src/library/context_menu/manage.rs:208
+msgid "Move to Trash"
+msgstr "移至垃圾桶"
+
+#: src/library/context_menu/manage.rs:210 src/library/shared_links_view.rs:222
+#: src/library/tags_view.rs:213
+msgid "Delete…"
+msgstr "刪除…"
+
+#: src/library/context_menu/manage.rs:231 src/library/people_view.rs:330
+msgid "Remove from Favorites"
+msgstr "從最愛中移除"
+
+#: src/library/context_menu/manage.rs:233 src/library/people_view.rs:332
+msgid "Add to Favorites"
+msgstr "加入最愛"
+
+#: src/library/context_menu/manage.rs:283
+msgid "Restore"
+msgstr "還原"
+
+#: src/library/context_menu/manage.rs:293 src/library/trash_view.rs:207
+msgid "Delete Permanently"
+msgstr "永久刪除"
+
+#: src/library/context_menu/menu.rs:62
+msgid "Photo Actions"
+msgstr "相片動作"
+
+#: src/library/controls/sort.rs:57
+msgid "Most assets"
+msgstr "資產最多"
+
+#: src/library/controls/sort.rs:57 src/library/people_view.rs:428
+#: src/library/person_picker.rs:163
+msgid "Name"
+msgstr "名稱"
+
+#: src/library/controls/sort.rs:57 src/library/controls/sort.rs:60
+#: src/library/window_layout.rs:360
+msgid "Newest"
+msgstr "最新"
+
+#: src/library/controls/sort.rs:58 src/library/theme/palettes.rs:54
+#: src/library/theme/palettes.rs:82
+msgid "Default"
+msgstr "預設"
+
+#: src/library/controls/sort.rs:61
+msgid "Oldest"
+msgstr "最舊"
+
+#: src/library/controls/sort.rs:62 src/library/window_layout.rs:361
+msgid "Filename"
+msgstr "檔案名稱"
+
+#: src/library/controls/sort.rs:63 src/library/window_layout.rs:362
+msgid "File Type"
+msgstr "檔案類型"
+
+#: src/library/day_row.rs:37 src/library/day_row.rs:69
+msgid "Any Day"
+msgstr "任何日期"
+
+#: src/library/download.rs:153
+#, rust-format
+msgid "Saved {safe_name}"
+msgstr "已儲存 {safe_name}"
+
+#: src/library/download.rs:159
+msgid "Download failed"
+msgstr "下載失敗"
+
+#: src/library/download.rs:258
+msgid "Nothing downloaded"
+msgstr "未下載任何內容"
+
+#: src/library/download.rs:261
+#, rust-format
+msgid "Downloaded {items}"
+msgstr "已下載 {items}"
+
+#: src/library/download.rs:270
+#, rust-format
+msgid "{n} skipped"
+msgid_plural "{n} skipped"
+msgstr[0] "{n} 項已略過"
+
+#: src/library/download.rs:276
+#, rust-format
+msgid "{n} failed"
+msgid_plural "{n} failed"
+msgstr[0] "{n} 項失敗"
+
+#: src/library/download.rs:321 src/library/download.rs:346
+msgid "File already exists"
+msgstr "檔案已存在"
+
+#: src/library/download.rs:323
+#, rust-format
+msgid "\"{name}\" already exists. Overwrite?"
+msgstr "「{name}」已存在。要覆寫嗎？"
+
+#: src/library/download.rs:327 src/library/download.rs:356
+msgid "Skip"
+msgstr "略過"
+
+#: src/library/download.rs:328 src/library/download.rs:358
+msgid "Overwrite"
+msgstr "覆寫"
+
+#: src/library/download.rs:348
+#, rust-format
+msgid "\"{name}\" already exists in the download folder."
+msgstr "下載資料夾中已存在「{name}」。"
+
+#: src/library/download.rs:353
+msgid "Apply to all remaining conflicts"
+msgstr "套用至所有剩餘的衝突"
+
+#: src/library/download.rs:409 src/settings_window/wiring/folder_wiring.rs:38
+msgid "Choose Download Folder"
+msgstr "選擇下載資料夾"
+
+#: src/library/download.rs:423
+msgid "Save as default?"
+msgstr "要儲存為預設值嗎？"
+
+#: src/library/download.rs:425
+#, rust-format
+msgid "Always download to {path}?"
+msgstr "一律下載至 {path} 嗎？"
+
+#: src/library/download.rs:429
+msgid "Just Once"
+msgstr "僅此一次"
+
+#: src/library/download.rs:430
+msgid "Always"
+msgstr "一律"
+
+#: src/library/drop_target.rs:82
+msgid "No supported media files in drop"
+msgstr "拖放的項目中沒有受支援的媒體檔案"
+
+#: src/library/duplicates_view.rs:43
+msgid "Previous group"
+msgstr "上一組"
+
+#: src/library/duplicates_view.rs:44
+msgid "Next group"
+msgstr "下一組"
+
+#: src/library/duplicates_view.rs:86
+msgid "Not Duplicates"
+msgstr "非重複項目"
+
+#: src/library/duplicates_view.rs:87
+msgid "Keep every photo and stop showing this group"
+msgstr "保留所有相片且不再顯示此組"
+
+#: src/library/duplicates_view.rs:96
+msgid "No Duplicates"
+msgstr "沒有重複項目"
+
+#: src/library/duplicates_view.rs:98
+msgid ""
+"Immich hasn't found any duplicate photos. It looks for them when its "
+"duplicate detection job runs."
+msgstr "Immich 未發現任何重複相片。在執行重複相片偵測作業時會尋找它們。"
+
+#: src/library/duplicates_view.rs:123
+msgid "Tap a photo to keep it or trash it."
+msgstr "點選相片以保留或移至垃圾桶。"
+
+#: src/library/duplicates_view.rs:212
+msgid "Could Not Load Duplicates"
+msgstr "無法載入重複項目"
+
+#: src/library/duplicates_view.rs:214 src/library/folders_view.rs:71
+#: src/library/people_view.rs:139 src/library/shared_links_view.rs:103
+#: src/library/sharing_view.rs:96 src/library/sharing_view.rs:181
+#: src/library/tags_view.rs:76
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the '{permission}' permission."
+msgstr ""
+"{err}\n"
+"\n"
+"您的 API 金鑰需要「{permission}」權限。"
+
+#: src/library/duplicates_view.rs:261
+#, rust-format
+msgid "Group {n} of {total}"
+msgstr "第 {n} 組，共 {total} 組"
+
+#: src/library/duplicates_view.rs:280
+#, rust-format
+msgid "Trash {n} Photo"
+msgid_plural "Trash {n} Photos"
+msgstr[0] "將 {n} 張相片移至垃圾桶"
+
+#: src/library/duplicates_view.rs:282
+#, rust-format
+msgid "Delete {n} Photo"
+msgid_plural "Delete {n} Photos"
+msgstr[0] "刪除 {n} 張相片"
+
+#: src/library/duplicates_view.rs:323
+#, rust-format
+msgid "Delete {n} photo permanently?"
+msgid_plural "Delete {n} photos permanently?"
+msgstr[0] "要永久刪除 {n} 張相片嗎？"
+
+#: src/library/duplicates_view.rs:333
+msgid "Trash is turned off on this server, so this can't be undone."
+msgstr "此伺服器已關閉垃圾桶功能，因此此操作無法復原。"
+
+#: src/library/duplicates_view.rs:352
+#, rust-format
+msgid "Kept {kept}, trashed {n}"
+msgid_plural "Kept {kept}, trashed {n}"
+msgstr[0] "已保留 {kept} 張，已將 {n} 張移至垃圾桶"
+
+#: src/library/duplicates_view.rs:374
+msgid "Marked as not duplicates"
+msgstr "已標記為非重複項目"
+
+#: src/library/duplicates_view.rs:404
+msgid "Couldn't update the duplicates"
+msgstr "無法更新重複項目"
+
+#: src/library/duplicates_view/cards.rs:178
+msgid "Keep"
+msgstr "保留"
+
+#: src/library/duplicates_view/cards.rs:181 src/library/shortcuts_dialog.rs:63
+#: src/library/sidebar/rows.rs:118 src/library/source_header.rs:312
+msgid "Trash"
+msgstr "移至垃圾桶"
+
+#: src/library/duplicates_view/cards.rs:202
+#, rust-format
+msgid "{size}, largest"
+msgstr "{size}，最大"
+
+#: src/library/explore_view.rs:146
+msgid "Recently Added"
+msgstr "最近新增"
+
+#: src/library/explore_view.rs:147
+msgid "Places"
+msgstr "地點"
+
+#: src/library/explore_view.rs:148 src/library/source_header/enrichment.rs:46
+msgid "Things"
+msgstr "事物"
+
+#: src/library/explore_view.rs:151
+msgid "Filter people and places"
+msgstr "篩選人物與地點"
+
+#: src/library/explore_view.rs:227
+msgid "Filter people"
+msgstr "篩選人物"
+
+#: src/library/explore_view.rs:530
+#, rust-format
+msgid "See {remaining} more"
+msgstr "查看另外 {remaining} 個"
+
+#: src/library/explore_view.rs:539
+msgid "Show Less"
+msgstr "顯示較少"
+
+#. Translators: strftime short month, e.g. "Oct 2026".
+#: src/library/explore_view/calendar.rs:28 src/library/timeline/dates.rs:30
+msgid "%b %Y"
+msgstr "%Y年%b"
+
+#: src/library/explore_view/calendar.rs:83
+msgid "Earlier year"
+msgstr "上一年"
+
+#: src/library/explore_view/calendar.rs:84
+msgid "Later year"
+msgstr "下一年"
+
+#: src/library/explore_view/calendar.rs:86 src/library/lightbox/details.rs:453
+#: src/library/map/settings.rs:76
+msgid "Taken"
+msgstr "拍攝時間"
+
+#: src/library/explore_view/calendar.rs:87
+msgid "By when the photos were taken"
+msgstr "依相片拍攝時間"
+
+#: src/library/explore_view/calendar.rs:92 src/library/folders_view/rows.rs:154
+msgid "Show Photos"
+msgstr "顯示相片"
+
+#: src/library/explore_view/calendar.rs:109
+msgid "Calendar"
+msgstr "日曆"
+
+#: src/library/explore_view/calendar.rs:135
+msgid "Uploaded"
+msgstr "上傳時間"
+
+#: src/library/explore_view/calendar.rs:136
+msgid "By when the photos reached Immich"
+msgstr "依相片上傳至 Immich 的時間"
+
+#: src/library/explore_view/calendar.rs:202
+msgid "Pick a day to see its photos."
+msgstr "選擇某一天以查看該天的相片。"
+
+#: src/library/explore_view/calendar.rs:335
+msgid "Less"
+msgstr "較少"
+
+#: src/library/explore_view/calendar.rs:336
+#: src/library/lightbox/edit/panel.rs:248 src/library/people_view.rs:306
+#: src/library/shared_links_view.rs:172
+#: src/library/source_header/enrichment.rs:227
+#: src/library/source_header/enrichment.rs:256
+#: src/library/source_header/enrichment.rs:311
+msgid "More"
+msgstr "較多"
+
+#: src/library/explore_view/calendar/grid.rs:106
+msgid "Photos per day; use the arrow keys to pick a day"
+msgstr "每日相片數量；請使用方向鍵選擇日期"
+
+#: src/library/explore_view/people.rs:119
+msgid "Show unnamed"
+msgstr "顯示未命名"
+
+#: src/library/explore_view/people.rs:123
+msgid "Show hidden"
+msgstr "顯示已隱藏"
+
+#: src/library/explore_view/tiles.rs:77
+msgid "Just now"
+msgstr "剛剛"
+
+#: src/library/explore_view/tiles.rs:81
+#, rust-format
+msgid "{n} min ago"
+msgid_plural "{n} min ago"
+msgstr[0] "{n} 分鐘前"
+
+#: src/library/explore_view/tiles.rs:87
+#, rust-format
+msgid "{n}h ago"
+msgid_plural "{n}h ago"
+msgstr[0] "{n} 小時前"
+
+#: src/library/explore_view/tiles.rs:93
+#, rust-format
+msgid "{n}d ago"
+msgid_plural "{n}d ago"
+msgstr[0] "{n} 天前"
+
+#: src/library/favorites.rs:30
+msgid "Remove from favorites (F)"
+msgstr "從最愛中移除 (F)"
+
+#: src/library/favorites.rs:32
+msgid "Add to favorites (F)"
+msgstr "加入最愛 (F)"
+
+#: src/library/favorites.rs:63
+msgid "Couldn't update the favorite"
+msgstr "無法更新最愛狀態"
+
+#: src/library/folders_view.rs:69
+msgid "Could Not Load Folders"
+msgstr "無法載入資料夾"
+
+#: src/library/folders_view.rs:87
+msgid "Path copied"
+msgstr "路徑已複製"
+
+#: src/library/folders_view.rs:115 src/library/navigation.rs:205
+#: src/library/shortcuts_dialog.rs:262 src/library/sidebar/rows.rs:106
+msgid "Folders"
+msgstr "資料夾"
+
+#: src/library/folders_view.rs:131
+msgid "No Folders"
+msgstr "沒有資料夾"
+
+#: src/library/folders_view.rs:132
+msgid "Folders appear once Immich has photos from them."
+msgstr "當 Immich 包含來自這些資料夾的相片時，資料夾便會顯示。"
+
+#: src/library/folders_view/path_bar.rs:30
+msgid "Folder path"
+msgstr "資料夾路徑"
+
+#: src/library/folders_view/path_bar.rs:36
+msgid "Enter a path (Ctrl+L)"
+msgstr "輸入路徑 (Ctrl+L)"
+
+#: src/library/folders_view/path_bar.rs:40
+msgid "Copy path"
+msgstr "複製路徑"
+
+#: src/library/folders_view/path_bar.rs:219
+#, rust-format
+msgid "No folder at {path}"
+msgstr "{path} 處沒有資料夾"
+
+#: src/library/folders_view/rows.rs:32
+#, rust-format
+msgid "Photos in {folder}"
+msgstr "{folder} 中的相片"
+
+#: src/library/folders_view/rows.rs:52
+msgid "Show photos"
+msgstr "顯示相片"
+
+#: src/library/folders_view/rows.rs:65
+#, rust-format
+msgid "{n} folder"
+msgid_plural "{n} folders"
+msgstr[0] "{n} 個資料夾"
+
+#: src/library/folders_view/rows.rs:72 src/library/tags_view.rs:155
+#, rust-format
+msgid "Open {name}"
+msgstr "開啟 {name}"
+
+#: src/library/folders_view/rows.rs:144
+msgid "Copy Path"
+msgstr "複製路徑"
+
+#: src/library/header_format.rs:58 src/library/lightbox/people.rs:242
+#, rust-format
+msgid "Age {age}"
+msgstr "年齡 {age} 歲"
+
+#: src/library/header_format.rs:62
+#, rust-format
+msgid "Born {date}"
+msgstr "出生於 {date}"
+
+#. Translators: strftime day and month that start a date range, e.g. "30 Dec".
+#: src/library/header_format.rs:84 src/library/map/nearby.rs:129
+msgid "%-d %b"
+msgstr "%b%-d日"
+
+#: src/library/header_format.rs:106
+#, rust-format
+msgid "Shared with {n} person"
+msgid_plural "Shared with {n} people"
+msgstr[0] "已與 {n} 人共用"
+
+#: src/library/header_format.rs:122
+#, rust-format
+msgid "Shared by {owner}"
+msgstr "由 {owner} 共用"
+
+#: src/library/inbox.rs:56 src/library/inbox.rs:364
+#: src/library/window_layout.rs:329 src/settings_window/behavior.rs:116
+msgid "Notifications"
+msgstr "通知"
+
+#: src/library/inbox.rs:76
+#, rust-format
+msgid "Notifications ({count} unread)"
+msgstr "通知 ({count} 則未讀)"
+
+#: src/library/inbox.rs:180
+msgid "No Notifications"
+msgstr "沒有通知"
+
+#: src/library/inbox.rs:182
+msgid "Album invites and messages from Immich show up here."
+msgstr "來自 Immich 的相簿邀請與訊息會顯示在此處。"
+
+#: src/library/inbox.rs:188
+msgid "Mark All Read"
+msgstr "全部標為已讀"
+
+#: src/library/inbox.rs:235
+msgid "Couldn't Load Notifications"
+msgstr "無法載入通知"
+
+#: src/library/inbox.rs:237
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the “{permission}” permission."
+msgstr ""
+"{err}\n"
+"\n"
+"您的 API 金鑰需要「{permission}」權限。"
+
+#: src/library/inbox.rs:273
+msgid "Dismiss"
+msgstr "忽略"
+
+#: src/library/lightbox/albums.rs:29
+msgid "Appears In"
+msgstr "出現於"
+
+#: src/library/lightbox/albums.rs:65
+#, rust-format
+msgid "Open “{album_name}”"
+msgstr "開啟「{album_name}」"
+
+#: src/library/lightbox/details.rs:156 src/library/search_filters.rs:204
+msgid "Camera"
+msgstr "相機"
+
+#: src/library/lightbox/details.rs:163
+msgid "Body"
+msgstr "機身"
+
+#: src/library/lightbox/details.rs:174
+msgid "Lens"
+msgstr "鏡頭"
+
+#: src/library/lightbox/details.rs:183 src/library/photo_editor/look.rs:37
+msgid "Exposure"
+msgstr "曝光"
+
+#: src/library/lightbox/details.rs:223
+msgid "Dimensions"
+msgstr "尺寸"
+
+#: src/library/lightbox/details.rs:232
+msgid "Size"
+msgstr "大小"
+
+#: src/library/lightbox/details.rs:245 src/library/search_filters.rs:219
+msgid "Location"
+msgstr "位置"
+
+#: src/library/lightbox/details.rs:252 src/library/map/location_dialog.rs:512
+msgid "Place"
+msgstr "地點"
+
+#: src/library/lightbox/details.rs:266
+msgid "Coordinates"
+msgstr "座標"
+
+#: src/library/lightbox/details.rs:328
+#, rust-format
+msgid "ISO {iso}"
+msgstr "ISO {iso}"
+
+#: src/library/lightbox/details.rs:358 src/settings_window/library.rs:278
+#, rust-format
+msgid "{size} GB"
+msgstr "{size} GB"
+
+#: src/library/lightbox/details.rs:363 src/settings_window/library.rs:283
+#, rust-format
+msgid "{size} MB"
+msgstr "{size} MB"
+
+#: src/library/lightbox/details.rs:368
+#, rust-format
+msgid "{size} KB"
+msgstr "{size} KB"
+
+#: src/library/lightbox/details.rs:372
+#, rust-format
+msgid "{size} B"
+msgstr "{size} B"
+
+#: src/library/lightbox/details.rs:451
+msgid "Modified"
+msgstr "修改時間"
+
+#: src/library/lightbox/edit.rs:43
+msgid "Crop"
+msgstr "裁切"
+
+#: src/library/lightbox/edit.rs:49
+msgid "Adjust"
+msgstr "調整"
+
+#: src/library/lightbox/edit.rs:55 src/library/search_panel.rs:48
+#: src/library/search_panel.rs:105
+msgid "Filters"
+msgstr "濾鏡"
+
+#: src/library/lightbox/edit.rs:61
+msgid "Redact"
+msgstr "遮蔽"
+
+#: src/library/lightbox/edit.rs:276
+msgid "Couldn't load the photo"
+msgstr "無法載入相片"
+
+#: src/library/lightbox/edit.rs:438
+msgid "Saving a copy…"
+msgstr "正在儲存複本…"
+
+#: src/library/lightbox/edit.rs:440
+msgid "Saves a copy stacked with the original"
+msgstr "儲存與原圖堆疊的複本"
+
+#: src/library/lightbox/edit.rs:441
+msgid "Saves as a new photo"
+msgstr "另存為新相片"
+
+#: src/library/lightbox/edit/looks.rs:160
+#, rust-format
+msgid "{degrees}°"
+msgstr "{degrees}°"
+
+#: src/library/lightbox/edit/looks.rs:168
+#, rust-format
+msgid "{percent}%"
+msgstr "{percent}%"
+
+#: src/library/lightbox/edit/pages.rs:53
+msgid "Pixelate"
+msgstr "像素化"
+
+#: src/library/lightbox/edit/pages.rs:54
+msgid "Blur"
+msgstr "模糊"
+
+#: src/library/lightbox/edit/pages.rs:55
+msgid "Frosted"
+msgstr "毛玻璃"
+
+#: src/library/lightbox/edit/pages.rs:56
+msgid "Bar"
+msgstr "遮條"
+
+#: src/library/lightbox/edit/pages.rs:64
+msgid "Straighten"
+msgstr "校正"
+
+#: src/library/lightbox/edit/pages.rs:110
+msgid "Strength"
+msgstr "強度"
+
+#: src/library/lightbox/edit/pages.rs:125
+msgid "Drag over what to hide. Tap a box to move, resize, or change it."
+msgstr "在要隱藏的區域上拖曳。點選方框可移動、調整大小或變更設定。"
+
+#: src/library/lightbox/edit/pages.rs:135
+msgid "Hide Faces"
+msgstr "隱藏人臉"
+
+#: src/library/lightbox/edit/pages.rs:136
+msgid "Hide Text"
+msgstr "隱藏文字"
+
+#: src/library/lightbox/edit/pages.rs:143
+msgid "Clear All"
+msgstr "全部清除"
+
+#: src/library/lightbox/edit/pages.rs:171
+#: src/library/lightbox/edit/pages.rs:177
+msgid "Bar Colour"
+msgstr "遮條顏色"
+
+#: src/library/lightbox/edit/pages.rs:255
+msgid "Rotate Left"
+msgstr "向左旋轉"
+
+#: src/library/lightbox/edit/pages.rs:260
+msgid "Rotate Right"
+msgstr "向右旋轉"
+
+#: src/library/lightbox/edit/pages.rs:263
+msgid "Mirror"
+msgstr "水平鏡像"
+
+#: src/library/lightbox/edit/pages.rs:266
+msgid "Flip"
+msgstr "垂直翻轉"
+
+#: src/library/lightbox/edit/panel.rs:54 src/library/search_panel.rs:72
+msgid "Reset"
+msgstr "重設"
+
+#: src/library/lightbox/edit/panel.rs:107
+msgid "Reset All"
+msgstr "全部重設"
+
+#: src/library/lightbox/edit/panel.rs:108
+msgid "Revert to Original…"
+msgstr "還原為原圖…"
+
+#: src/library/lightbox/edit/panel.rs:111 src/library/lightbox/widgets.rs:294
+msgid "Edit Photo"
+msgstr "編輯相片"
+
+#: src/library/lightbox/edit/panel.rs:169
+msgid "Keep Original Details"
+msgstr "保留原始詳細資訊"
+
+#: src/library/lightbox/edit/panel.rs:171
+msgid ""
+"A saved copy keeps the original's camera details, date, place, caption, "
+"rating, and albums. Off, the copy is a new photo of its own."
+msgstr "儲存的複本將保留原圖的相機詳細資訊、日期、地點、說明、評分與相簿。若關閉，複本將作為一張獨立的新相片。"
+
+#: src/library/lightbox/edit/panel.rs:176
+msgid "Stack with Original"
+msgstr "與原圖堆疊"
+
+#: src/library/lightbox/edit/panel.rs:177
+msgid "A saved copy becomes the cover of a stack, with the original under it."
+msgstr "儲存的複本將作為堆疊的封面，原圖位於其下方。"
+
+#: src/library/lightbox/edit/saving.rs:73
+msgid "Revert to the Original?"
+msgstr "要還原為原圖嗎？"
+
+#: src/library/lightbox/edit/saving.rs:74
+msgid "Every crop, turn, and flip made in Immich is removed."
+msgstr "在 Immich 中所做的所有裁切、旋轉與翻轉都將被移除。"
+
+#: src/library/lightbox/edit/saving.rs:75
+msgid "Revert"
+msgstr "還原"
+
+#: src/library/lightbox/edit/saving.rs:96
+msgid "Immich didn't save the edit"
+msgstr "Immich 未能儲存所做的編輯"
+
+#: src/library/lightbox/edit/saving.rs:104
+msgid "Saved. Immich is updating the photo."
+msgstr "已儲存。Immich 正在更新相片。"
+
+#: src/library/lightbox/edit/saving.rs:153
+msgid "Couldn't save the copy"
+msgstr "無法儲存複本"
+
+#: src/library/lightbox/edit/saving.rs:178
+msgid "Couldn't open the original"
+msgstr "無法開啟原圖"
+
+#: src/library/lightbox/edit/saving.rs:220
+msgid "Saved as a new photo, but not everything carried over"
+msgstr "已另存為新相片，但部分資訊未能一併移轉"
+
+#: src/library/lightbox/edit/saving.rs:224
+msgid "Saved as a new photo, stacked with the original"
+msgstr "已另存為新相片，並與原圖堆疊"
+
+#: src/library/lightbox/edit/saving.rs:225
+msgid "Saved as a new photo"
+msgstr "已另存為新相片"
+
+#: src/library/lightbox/edit/saving.rs:270
+msgid "Couldn't add it to the original's albums"
+msgstr "無法將其加入原圖所在的相簿"
+
+#: src/library/lightbox/face_people.rs:185 src/library/lightbox/faces.rs:296
+msgid "Change Person…"
+msgstr "變更人物…"
+
+#: src/library/lightbox/face_people.rs:196
+msgid "Remove from Photo"
+msgstr "從相片中移除"
+
+#: src/library/lightbox/face_people.rs:221 src/library/lightbox/faces.rs:305
+msgid "Face moved"
+msgstr "人臉位置已移動"
+
+#: src/library/lightbox/face_people.rs:240 src/library/lightbox/faces.rs:336
+msgid "Face removed"
+msgstr "人臉已移除"
+
+#: src/library/lightbox/faces.rs:43
+msgid "Drag around a face to tag it"
+msgstr "在人臉周圍拖曳以進行標記"
+
+#: src/library/lightbox/faces.rs:48
+msgid "Done"
+msgstr "完成"
+
+#: src/library/lightbox/faces.rs:217
+msgid "Couldn't load the faces"
+msgstr "無法載入人臉"
+
+#: src/library/lightbox/faces.rs:227
+msgid "No faces yet. Drag around one to tag it."
+msgstr "目前沒有人臉。請在人臉周圍拖曳以進行標記。"
+
+#: src/library/lightbox/faces.rs:298
+msgid "Choose Person…"
+msgstr "選擇人物…"
+
+#: src/library/lightbox/faces.rs:315
+msgid "Use as Cover Photo"
+msgstr "設為封面相片"
+
+#: src/library/lightbox/faces.rs:323
+msgid "Cover photo changed"
+msgstr "已變更封面相片"
+
+#: src/library/lightbox/faces.rs:332
+msgid "Remove Face"
+msgstr "移除人臉"
+
+#: src/library/lightbox/faces.rs:375
+msgid "Face tagged"
+msgstr "已標記人臉"
+
+#: src/library/lightbox/faces.rs:398
+msgid "Immich didn't accept the change"
+msgstr "Immich 未接受此變更"
+
+#: src/library/lightbox/faces.rs:426
+msgid "Unknown Person"
+msgstr "未知人物"
+
+#: src/library/lightbox/interaction.rs:225 src/library/lightbox/widgets.rs:343
+msgid "Raw"
+msgstr "RAW"
+
+#: src/library/lightbox/interaction.rs:227 src/library/lightbox/widgets.rs:345
+msgid "Prev"
+msgstr "上一張"
+
+#: src/library/lightbox/interaction.rs:329
+msgid "Add a description"
+msgstr "新增描述"
+
+#: src/library/lightbox/interaction/rendering.rs:92
+msgid "On Immich and locally"
+msgstr "同時存在於 Immich 與本機"
+
+#: src/library/lightbox/interaction/rendering.rs:93
+msgid "Local only"
+msgstr "僅存於本機"
+
+#: src/library/lightbox/interaction/rendering.rs:94
+msgid "On Immich only"
+msgstr "僅存於 Immich"
+
+#: src/library/lightbox/interaction/rendering.rs:100
+#, rust-format
+msgid "Created: {date}"
+msgstr "建立時間：{date}"
+
+#: src/library/lightbox/live.rs:16
+msgid "Live"
+msgstr "原況"
+
+#: src/library/lightbox/live.rs:19
+msgid "Play motion (Space)"
+msgstr "播放動作 (空白鍵)"
+
+#: src/library/lightbox/live.rs:86 src/library/lightbox/video.rs:87
+msgid "Playback isn't available"
+msgstr "無法播放"
+
+#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/video.rs:108
+msgid "Playback failed"
+msgstr "播放失敗"
+
+#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+msgid "Not connected to the Immich server."
+msgstr "未連線至 Immich 伺服器。"
+
+#: src/library/lightbox/location.rs:32
+msgid "Set location"
+msgstr "設定位置"
+
+#: src/library/lightbox/location.rs:66
+msgid "Copy coordinates"
+msgstr "複製座標"
+
+#: src/library/lightbox/ocr.rs:21 src/library/lightbox/ocr.rs:292
+msgid "Copy All Text"
+msgstr "複製全部文字"
+
+#: src/library/lightbox/ocr.rs:64
+msgid "Hide recognized text (T)"
+msgstr "隱藏辨識的文字 (T)"
+
+#: src/library/lightbox/ocr.rs:66 src/library/lightbox/widgets.rs:352
+msgid "Show recognized text (T)"
+msgstr "顯示辨識的文字 (T)"
+
+#: src/library/lightbox/ocr.rs:250 src/library/shared_link_qr.rs:125
+msgid "Copied"
+msgstr "已複製"
+
+#: src/library/lightbox/ocr.rs:290
+msgid "Copy Selected Text"
+msgstr "複製選取的文字"
+
+#: src/library/lightbox/panorama.rs:265
+msgid "360°"
+msgstr "360°"
+
+#: src/library/lightbox/panorama.rs:266
+msgid "Look around (P)"
+msgstr "環顧四周 (P)"
+
+#: src/library/lightbox/people.rs:65
+msgid "No one is tagged yet."
+msgstr "尚未標記任何人。"
+
+#: src/library/lightbox/people.rs:215 src/library/people_view.rs:262
+#, rust-format
+msgid "Show photos of {name}"
+msgstr "顯示包含 {name} 的相片"
+
+#: src/library/lightbox/people.rs:237
+#, rust-format
+msgid "Age {months}"
+msgstr "年齡 {months}"
+
+#: src/library/lightbox/people.rs:239
+#, rust-format
+msgid "Age 1 year, {months}"
+msgstr "年齡 1 歲 {months}"
+
+#: src/library/lightbox/people.rs:255
+#, rust-format
+msgid "{n} month"
+msgid_plural "{n} months"
+msgstr[0] "{n} 個月"
+
+#: src/library/lightbox/rating.rs:28 src/library/search_filters/choices.rs:134
+#: src/library/search_view.rs:162 src/settings_window/library.rs:224
+#: src/settings_window/queue_inspector.rs:43
+msgid "Clear"
+msgstr "清除"
+
+#: src/library/lightbox/rating.rs:33
+msgid "Rating"
+msgstr "評分"
+
+#: src/library/lightbox/rating.rs:128
+msgid "Couldn't save the rating"
+msgstr "無法儲存評分"
+
+#: src/library/lightbox/slideshow.rs:85 src/library/lightbox/slideshow.rs:251
+#: src/library/video_player.rs:315
+msgid "Pause (Space)"
+msgstr "暫停 (空白鍵)"
+
+#: src/library/lightbox/slideshow.rs:86 src/library/lightbox/widgets.rs:150
+msgid "Previous (Left)"
+msgstr "上一張 (向左鍵)"
+
+#: src/library/lightbox/slideshow.rs:87 src/library/lightbox/widgets.rs:151
+msgid "Next (Right)"
+msgstr "下一張 (向右鍵)"
+
+#: src/library/lightbox/slideshow.rs:90
+msgid "Slideshow Settings"
+msgstr "投影片放映設定"
+
+#: src/library/lightbox/slideshow.rs:93
+msgid "End Slideshow (Esc)"
+msgstr "結束放映 (Esc)"
+
+#: src/library/lightbox/slideshow.rs:249
+msgid "Resume (Space)"
+msgstr "繼續播放 (空白鍵)"
+
+#: src/library/lightbox/slideshow.rs:422
+msgid "End of slideshow"
+msgstr "放映結束"
+
+#: src/library/lightbox/slideshow/options.rs:40
+msgid "Crossfade"
+msgstr "淡入淡出"
+
+#: src/library/lightbox/slideshow/options.rs:41
+msgid "Slide"
+msgstr "滑動"
+
+#: src/library/lightbox/slideshow/options.rs:42
+msgid "None"
+msgstr "無"
+
+#: src/library/lightbox/slideshow/settings.rs:19
+msgid "Shuffle"
+msgstr "隨機播放"
+
+#: src/library/lightbox/slideshow/settings.rs:20
+msgid "Repeat"
+msgstr "循環播放"
+
+#: src/library/lightbox/slideshow/settings.rs:65
+msgid "Seconds per Photo"
+msgstr "每張相片停留秒數"
+
+#: src/library/lightbox/slideshow/settings.rs:80
+msgid "Transition"
+msgstr "轉場效果"
+
+#: src/library/lightbox/stack.rs:46
+msgid "Stack Actions"
+msgstr "堆疊動作"
+
+#: src/library/lightbox/stack.rs:273
+msgid "Set as Stack Cover"
+msgstr "設為堆疊封面"
+
+#: src/library/lightbox/stack.rs:280
+msgid "Remove from Stack"
+msgstr "從堆疊中移除"
+
+#: src/library/lightbox/stack.rs:288 src/library/lightbox/stack.rs:465
+msgid "Unstack"
+msgstr "取消堆疊"
+
+#: src/library/lightbox/stack.rs:299
+msgid "Keep This, Trash Others"
+msgstr "保留此項，其餘移至垃圾桶"
+
+#: src/library/lightbox/stack.rs:301
+msgid "Keep This, Delete Others"
+msgstr "保留此項，其餘刪除"
+
+#: src/library/lightbox/stack.rs:348 src/library/lightbox/stack.rs:388
+#: src/library/lightbox/stack.rs:476
+msgid "Couldn't change the stack"
+msgstr "無法變更堆疊"
+
+#: src/library/lightbox/stack.rs:403
+msgid "Stack cover changed"
+msgstr "堆疊封面已變更"
+
+#: src/library/lightbox/stack.rs:408
+msgid "Removed from the stack"
+msgstr "已從堆疊中移除"
+
+#: src/library/lightbox/stack.rs:412 src/library/lightbox/stack.rs:473
+msgid "Unstacked"
+msgstr "已取消堆疊"
+
+#: src/library/lightbox/stack.rs:424
+#, rust-format
+msgid "Trashed {n} other photo"
+msgid_plural "Trashed {n} other photos"
+msgstr[0] "已將其他 {n} 張相片移至垃圾桶"
+
+#: src/library/lightbox/stack.rs:430
+#, rust-format
+msgid "Deleted {n} other photo"
+msgid_plural "Deleted {n} other photos"
+msgstr[0] "已刪除其他 {n} 張相片"
+
+#: src/library/lightbox/stack.rs:501 src/library/upload_stack.rs:122
+msgid "Couldn't stack the photos"
+msgstr "無法堆疊相片"
+
+#: src/library/lightbox/stack.rs:510
+msgid "Stacked, see the timeline"
+msgstr "已堆疊，可在時間軸中查看"
+
+#: src/library/lightbox/stack.rs:513
+#, rust-format
+msgid "Stacked {n} photo"
+msgid_plural "Stacked {n} photos"
+msgstr[0] "已堆疊 {n} 張相片"
+
+#: src/library/lightbox/video.rs:121
+msgid "The video file is no longer on disk."
+msgstr "影片檔案已不在磁碟上。"
+
+#: src/library/lightbox/widgets.rs:142
+msgid "Back to library"
+msgstr "返回圖庫"
+
+#: src/library/lightbox/widgets.rs:154
+msgid "Toggle details (I)"
+msgstr "切換詳細資訊 (I)"
+
+#: src/library/lightbox/widgets.rs:161
+msgid "More (Shift+F10)"
+msgstr "更多 (Shift+F10)"
+
+#: src/library/lightbox/widgets.rs:242
+msgid "Preview unavailable"
+msgstr "預覽無法使用"
+
+#: src/library/lightbox/widgets.rs:252
+msgid "Open in external app"
+msgstr "在外部應用程式中開啟"
+
+#: src/library/lightbox/widgets.rs:286
+msgid "Play video (Space)"
+msgstr "播放影片 (空白鍵)"
+
+#: src/library/lightbox/widgets.rs:297
+msgid "Download asset"
+msgstr "下載資產"
+
+#: src/library/lightbox/widgets.rs:298
+msgid "Open with…"
+msgstr "以此開啟…"
+
+#: src/library/lightbox/widgets.rs:299
+msgid "Move to trash (Delete)"
+msgstr "移至垃圾桶 (Delete)"
+
+#: src/library/lightbox/widgets.rs:347
+msgid "Toggle preview vs original full-resolution image"
+msgstr "在預覽圖與原始全解析度圖片之間切換"
+
+#: src/library/lightbox/widgets.rs:359
+msgid "Zoom out (Ctrl+-)"
+msgstr "縮小 (Ctrl+-)"
+
+#: src/library/lightbox/widgets.rs:360
+msgid "Zoom in (Ctrl++)"
+msgstr "放大 (Ctrl++)"
+
+#: src/library/lightbox/widgets.rs:363
+msgid "Reset zoom (Ctrl+0)"
+msgstr "重設縮放 (Ctrl+0)"
+
+#: src/library/lightbox/widgets.rs:452
+msgid "Loading details…"
+msgstr "正在載入詳細資訊…"
+
+#: src/library/map/album.rs:35
+msgid "Show all photos"
+msgstr "顯示所有相片"
+
+#: src/library/map/controls.rs:41 src/library/shortcuts_dialog.rs:162
+#: src/library/shortcuts_dialog.rs:237
+msgid "Zoom in"
+msgstr "放大"
+
+#: src/library/map/controls.rs:42 src/library/shortcuts_dialog.rs:166
+#: src/library/shortcuts_dialog.rs:238
+msgid "Zoom out"
+msgstr "縮小"
+
+#: src/library/map/controls.rs:45 src/library/shortcuts_dialog.rs:239
+msgid "Rotate left"
+msgstr "向左旋轉"
+
+#: src/library/map/controls.rs:46 src/library/shortcuts_dialog.rs:240
+msgid "Rotate right"
+msgstr "向右旋轉"
+
+#: src/library/map/controls.rs:51
+msgid "Show photos in this area"
+msgstr "顯示此區域的相片"
+
+#: src/library/map/controls.rs:53 src/library/shortcuts_dialog.rs:242
+msgid "Show my location"
+msgstr "顯示我的位置"
+
+#: src/library/map/controls.rs:55
+msgid "Map settings"
+msgstr "地圖設定"
+
+#: src/library/map/controls.rs:104
+msgid "Map style"
+msgstr "地圖樣式"
+
+#: src/library/map/controls.rs:130 src/library/shortcuts_dialog.rs:241
+msgid "Point north"
+msgstr "正北朝上"
+
+#: src/library/map/controls.rs:153
+msgid "More Styles"
+msgstr "更多樣式"
+
+#: src/library/map/controls.rs:158 src/settings_window/appearance.rs:18
+msgid "Appearance"
+msgstr "外觀"
+
+#: src/library/map/controls.rs:289
+msgid "No photos in this area"
+msgstr "此區域沒有相片"
+
+#: src/library/map/controls.rs:300
+msgid "Your location isn't available"
+msgstr "無法取得您的位置"
+
+#: src/library/map/locate.rs:19
+msgid "The location service did not answer in time."
+msgstr "定位服務未及時回應。"
+
+#: src/library/map/locate.rs:43
+#, rust-format
+msgid "Location access was not allowed ({err})."
+msgstr "未被允許存取位置（{err}）。"
+
+#: src/library/map/locate.rs:49
+msgid "The location service stopped before finding you."
+msgstr "定位服務在找到您的位置前已停止。"
+
+#: src/library/map/locate.rs:51
+msgid "The location service returned an invalid position."
+msgstr "定位服務傳回了無效的位置。"
+
+#: src/library/map/locate.rs:56
+#, rust-format
+msgid ""
+"Location services are unavailable ({err}). Check that they are turned on."
+msgstr "定位服務無法使用（{err}）。請確認其是否已開啟。"
+
+#: src/library/map/location_dialog.rs:118
+#: src/library/map/location_dialog.rs:127
+msgid "Set Location"
+msgstr "設定位置"
+
+#: src/library/map/location_dialog.rs:165
+msgid "Could Not Set Location"
+msgstr "無法設定位置"
+
+#: src/library/map/location_dialog.rs:204 src/library/map/search.rs:34
+#: src/library/shortcuts_dialog.rs:236
+msgid "Search places"
+msgstr "搜尋地點"
+
+#: src/library/map/location_dialog.rs:287
+msgid "Looking up…"
+msgstr "正在查詢…"
+
+#: src/library/map/location_dialog.rs:309
+msgid "No place name here"
+msgstr "此處無地名"
+
+#: src/library/map/location_dialog.rs:312
+msgid "Place name unavailable"
+msgstr "地名無法使用"
+
+#: src/library/map/location_dialog.rs:497
+msgid "Latitude, Longitude"
+msgstr "緯度，經度"
+
+#: src/library/map/location_dialog.rs:501
+msgid "Paste coordinates"
+msgstr "貼上座標"
+
+#: src/library/map/markers.rs:92
+msgid "You are here"
+msgstr "您的目前位置"
+
+#: src/library/map/markers.rs:118
+#, rust-format
+msgid "{n} photo in {place}"
+msgid_plural "{n} photos in {place}"
+msgstr[0] "{place} 中的 {n} 張相片"
+
+#: src/library/map/minimap.rs:60
+msgid "Show on map"
+msgstr "在地圖上顯示"
+
+#: src/library/map/minimap.rs:99
+msgid "Photo location"
+msgstr "相片位置"
+
+#: src/library/map/nearby.rs:141
+msgid "Taken Nearby"
+msgstr "在附近拍攝"
+
+#: src/library/map/place_search.rs:172
+#, rust-format
+msgid "Photon asked to wait {seconds} s"
+msgstr "Photon 要求等待 {seconds} 秒"
+
+#: src/library/map/place_search.rs:267
+msgid "Searching…"
+msgstr "正在搜尋…"
+
+#: src/library/map/place_search.rs:335
+msgid "Address"
+msgstr "地址"
+
+#: src/library/map/satellite.rs:31 src/library/map/styles.rs:115
+msgid "Satellite"
+msgstr "衛星"
+
+#: src/library/map/satellite.rs:155
+msgid "No satellite imagery here"
+msgstr "此處無衛星影像"
+
+#: src/library/map/satellite.rs:239
+msgid "Cancelled"
+msgstr "已取消"
+
+#: src/library/map/satellite.rs:277
+#, rust-format
+msgid "VersaTiles asked to wait {seconds} s"
+msgstr "VersaTiles 要求等待 {seconds} 秒"
+
+#: src/library/map/search.rs:213
+msgid "No places found"
+msgstr "找不到地點"
+
+#: src/library/map/settings.rs:50
+msgid "All Time"
+msgstr "所有時間"
+
+#: src/library/map/settings.rs:51
+msgid "Past 24 Hours"
+msgstr "過去 24 小時"
+
+#: src/library/map/settings.rs:52
+msgid "Past 7 Days"
+msgstr "過去 7 天"
+
+#: src/library/map/settings.rs:53
+msgid "Past 30 Days"
+msgstr "過去 30 天"
+
+#: src/library/map/settings.rs:54
+msgid "Past Year"
+msgstr "過去 1 年"
+
+#: src/library/map/settings.rs:55
+msgid "Past 3 Years"
+msgstr "過去 3 年"
+
+#: src/library/map/settings.rs:56
+msgid "Custom Range"
+msgstr "自訂範圍"
+
+#: src/library/map/settings.rs:84
+msgid "Only Favorites"
+msgstr "僅限最愛"
+
+#: src/library/map/settings.rs:86
+msgid "Include Archived"
+msgstr "包含已封存"
+
+#: src/library/map/settings.rs:87
+msgid "Your archived photos"
+msgstr "您已封存的相片"
+
+#: src/library/map/settings.rs:91
+msgid "Include Partners"
+msgstr "包含共用夥伴"
+
+#: src/library/map/settings.rs:92
+msgid "Photos partners share with you"
+msgstr "夥伴與您共用的相片"
+
+#: src/library/map/settings.rs:96
+msgid "Include Shared Albums"
+msgstr "包含共用相簿"
+
+#: src/library/map/settings.rs:97
+msgid "Photos in albums shared with you"
+msgstr "與您共用的相簿中的相片"
+
+#: src/library/map/settings.rs:101 src/library/utilities/controls.rs:97
+#: src/settings_window/behavior.rs:140
+msgid "From"
+msgstr "從"
+
+#: src/library/map/settings.rs:102 src/library/utilities/controls.rs:98
+#: src/settings_window/behavior.rs:141
+msgid "Until"
+msgstr "至"
+
+#: src/library/map/settings.rs:149
+msgid "Map Settings"
+msgstr "地圖設定"
+
+#: src/library/map/settings.rs:173 src/library/utilities/controls.rs:109
+msgid "Show"
+msgstr "顯示"
+
+#: src/library/map/settings.rs:180
+msgid "Date Range"
+msgstr "日期範圍"
+
+#: src/library/map/status.rs:29
+msgid "Loading Map…"
+msgstr "正在載入地圖…"
+
+#: src/library/map/status.rs:31
+msgid "No Photos With a Location"
+msgstr "沒有包含位置資訊的相片"
+
+#: src/library/map/status.rs:32
+msgid "Photos with GPS data, or a location you set, appear here"
+msgstr "包含 GPS 資料或您設定位置的相片會顯示在此處"
+
+#: src/library/map/status.rs:34
+msgid "Could Not Load the Map"
+msgstr "無法載入地圖"
+
+#: src/library/map/styles.rs:99
+msgid "Colorful"
+msgstr "色彩繽紛"
+
+#: src/library/map/styles.rs:100
+msgid "Natural"
+msgstr "自然"
+
+#: src/library/map/styles.rs:101
+msgid "Muted"
+msgstr "柔和"
+
+#: src/library/map/styles.rs:102
+msgid "Gray"
+msgstr "灰色"
+
+#: src/library/map/styles.rs:118
+msgid "Humanitarian"
+msgstr "人道主義"
+
+#: src/library/map/styles.rs:181 src/library/theme.rs:20
+#: src/settings_window/appearance.rs:21
+msgid "Follow System"
+msgstr "依隨系統"
+
+#: src/library/map/styles.rs:182 src/library/theme.rs:21
+#: src/settings_window/appearance.rs:21
+msgid "Light"
+msgstr "淺色"
+
+#: src/library/map/styles.rs:183 src/library/theme.rs:22
+#: src/settings_window/appearance.rs:21
+msgid "Dark"
+msgstr "深色"
+
+#: src/library/map/view.rs:230
+msgid "This Area"
+msgstr "此區域"
+
+#: src/library/map/view.rs:494
+msgid "Map Area"
+msgstr "地圖區域"
+
+#: src/library/masonry/canvas.rs:532 src/library/server_stats_dialog.rs:156
+#: src/library/server_stats_dialog.rs:157
+#: src/library/source_loading/explore.rs:56
+msgid "HTTP 403"
+msgstr "HTTP 403"
+
+#: src/library/masonry/canvas/interaction.rs:272
+#, rust-format
+msgid "{n} file"
+msgid_plural "{n} files"
+msgstr[0] "{n} 個檔案"
+
+#: src/library/masonry/canvas_helpers.rs:139
+msgid ""
+"Your API key is missing permissions required to view thumbnails. Please "
+"ensure the key has 'asset.view' enabled."
+msgstr "您的 API 金鑰缺少檢視縮圖所需的權限。請確保該金鑰已啟用「asset.view」。"
+
+#: src/library/memories.rs:154
+#, rust-format
+msgid "{name}'s birthday"
+msgstr "{name} 的生日"
+
+#: src/library/memories.rs:162
+#, rust-format
+msgid "{n} year ago"
+msgid_plural "{n} years ago"
+msgstr[0] "{n} 年前"
+
+#: src/library/memories.rs:165
+msgid "This year"
+msgstr "今年"
+
+#: src/library/memories.rs:166
+msgid "Memory"
+msgstr "回憶"
+
+#: src/library/memories.rs:277
+msgid "Remove from Memory"
+msgstr "從回憶中移除"
+
+#: src/library/memories.rs:306
+msgid "Removed from this memory"
+msgstr "已從此回憶中移除"
+
+#: src/library/memories.rs:308
+msgid "Couldn't change the memory"
+msgstr "無法變更此回憶"
+
+#: src/library/mod.rs:407
+msgid "Drop files to upload"
+msgstr "拖放檔案以上傳"
+
+#: src/library/navigation.rs:201 src/library/sidebar/rows.rs:76
+msgid "Shared Albums"
+msgstr "共用相簿"
+
+#: src/library/navigation.rs:202 src/library/sidebar/rows.rs:82
+msgid "Shared Links"
+msgstr "共用連結"
+
+#: src/library/navigation.rs:206 src/library/shortcuts_dialog.rs:65
+#: src/library/sidebar/rows.rs:88
+msgid "Sharing"
+msgstr "共用"
+
+#: src/library/navigation.rs:207 src/library/search_panel.rs:77
+#: src/library/search_view.rs:166 src/library/shortcuts_dialog.rs:33
+#: src/library/sidebar/rows.rs:46
+msgid "Search"
+msgstr "搜尋"
+
+#: src/library/navigation.rs:209 src/library/sidebar/rows.rs:124
+msgid "Duplicates"
+msgstr "重複項目"
+
+#: src/library/people_view.rs:68 src/library/person_merge_dialog.rs:67
+msgid "Search people"
+msgstr "搜尋人物"
+
+#: src/library/people_view.rs:73 src/library/people_view.rs:117
+msgid "Show hidden people"
+msgstr "顯示隱藏的人物"
+
+#: src/library/people_view.rs:115
+msgid "Hide hidden people"
+msgstr "隱藏已隱藏的人物"
+
+#: src/library/people_view.rs:137 src/library/person_merge_dialog.rs:31
+msgid "Could Not Load People"
+msgstr "無法載入人物"
+
+#: src/library/people_view.rs:161
+msgid "No People"
+msgstr "沒有人物"
+
+#: src/library/people_view.rs:162
+msgid "People appear here once Immich has recognized faces in your photos."
+msgstr "當 Immich 辨識出相片中的人臉後，人物就會顯示在此處。"
+
+#: src/library/people_view.rs:166
+msgid "No Matches"
+msgstr "沒有相符項目"
+
+#: src/library/people_view.rs:167 src/library/sharing_view.rs:323
+msgid "No one matches your search."
+msgstr "沒有人符合您的搜尋條件。"
+
+#: src/library/people_view.rs:320
+msgid "Add Name…"
+msgstr "新增姓名…"
+
+#: src/library/people_view.rs:325
+msgid "Unhide"
+msgstr "取消隱藏"
+
+#: src/library/people_view.rs:327
+msgid "Hide"
+msgstr "隱藏"
+
+#: src/library/people_view.rs:339
+msgid "Set Birthday…"
+msgstr "設定生日…"
+
+#: src/library/people_view.rs:346
+msgid "Merge People…"
+msgstr "合併人物…"
+
+#: src/library/people_view.rs:375
+msgid "Could Not Update Person"
+msgstr "無法更新人物"
+
+#: src/library/people_view.rs:422
+msgid "Add Name"
+msgstr "新增姓名"
+
+#: src/library/people_view.rs:424
+msgid "Rename Person"
+msgstr "重新命名人物"
+
+#: src/library/people_view.rs:426
+msgid "This name is used in search and on the People page."
+msgstr "此姓名將用於搜尋以及「人物」頁面中。"
+
+#: src/library/people_view.rs:449
+msgid "Set Birthday"
+msgstr "設定生日"
+
+#: src/library/people_view.rs:451
+#, rust-format
+msgid "Immich shows {name}'s age on photos."
+msgstr "Immich 會在相片上顯示 {name} 的年齡。"
+
+#: src/library/person_merge_dialog.rs:47 src/library/person_merge_dialog.rs:157
+msgid "Merge"
+msgstr "合併"
+
+#: src/library/person_merge_dialog.rs:95
+#, rust-format
+msgid ""
+"Pick the people who are really {name}. Their faces move to {name} and "
+"they're removed. This can't be undone."
+msgstr "選取實際上是 {name} 的人物。他們的人臉將移至 {name} 並移除其項目。此操作無法復原。"
+
+#: src/library/person_merge_dialog.rs:124
+#, rust-format
+msgid "Merge Into {name}"
+msgstr "合併至 {name}"
+
+#: src/library/person_merge_dialog.rs:146
+#, rust-format
+msgid "Merge {count} person into {name}?"
+msgid_plural "Merge {count} people into {name}?"
+msgstr[0] "將 {count} 個人物合併至 {name}？"
+
+#: src/library/person_merge_dialog.rs:156
+msgid "This can't be undone."
+msgstr "此操作無法復原。"
+
+#: src/library/person_merge_dialog.rs:202
+msgid "Could Not Merge People"
+msgstr "無法合併人物"
+
+#: src/library/person_picker.rs:122
+msgid "Search or type a new name"
+msgstr "搜尋或輸入新姓名"
+
+#: src/library/person_picker.rs:138
+msgid "Create Person…"
+msgstr "建立人物…"
+
+#: src/library/person_picker.rs:140
+msgid "Who Is This?"
+msgstr "這是誰？"
+
+#: src/library/person_picker.rs:156
+msgid "Back"
+msgstr "返回"
+
+#: src/library/person_picker.rs:161
+msgid "Create Person"
+msgstr "建立人物"
+
+#: src/library/person_picker.rs:166
+msgid "Tag Face"
+msgstr "標記人臉"
+
+#: src/library/photo_editor.rs:37
+msgid "Free"
+msgstr "自由比例"
+
+#: src/library/photo_editor.rs:38 src/library/photo_editor/look.rs:130
+msgid "Original"
+msgstr "原始比例"
+
+#: src/library/photo_editor.rs:39
+msgid "Square"
+msgstr "正方形"
+
+#: src/library/photo_editor/look.rs:38
+msgid "Brightness"
+msgstr "亮度"
+
+#: src/library/photo_editor/look.rs:39
+msgid "Contrast"
+msgstr "對比度"
+
+#: src/library/photo_editor/look.rs:40
+msgid "Highlights"
+msgstr "亮部"
+
+#: src/library/photo_editor/look.rs:41
+msgid "Shadows"
+msgstr "陰影"
+
+#: src/library/photo_editor/look.rs:42
+msgid "Saturation"
+msgstr "飽和度"
+
+#: src/library/photo_editor/look.rs:43
+msgid "Warmth"
+msgstr "色溫"
+
+#: src/library/photo_editor/look.rs:44
+msgid "Tint"
+msgstr "色調"
+
+#: src/library/photo_editor/look.rs:45
+msgid "Vignette"
+msgstr "暗角"
+
+#: src/library/photo_editor/look.rs:46
+msgid "Sharpen"
+msgstr "銳化"
+
+#: src/library/photo_editor/look.rs:133
+msgid "Vivid"
+msgstr "鮮豔"
+
+#: src/library/photo_editor/look.rs:142
+msgid "Warm"
+msgstr "暖色"
+
+#: src/library/photo_editor/look.rs:151
+msgid "Cool"
+msgstr "冷色"
+
+#: src/library/photo_editor/look.rs:159
+msgid "Dramatic"
+msgstr "戲劇"
+
+#: src/library/photo_editor/look.rs:171
+msgid "Fade"
+msgstr "褪色"
+
+#: src/library/photo_editor/look.rs:181
+msgid "Vintage"
+msgstr "復古"
+
+#: src/library/photo_editor/look.rs:192
+msgid "Mono"
+msgstr "單色"
+
+#: src/library/photo_editor/look.rs:200
+msgid "Noir"
+msgstr "黑白電影"
+
+#: src/library/photo_editor/look.rs:211
+msgid "Sepia"
+msgstr "懷舊棕"
+
+#: src/library/related.rs:20
+msgid "View Similar Photos"
+msgstr "檢視相似相片"
+
+#: src/library/related.rs:29
+msgid "View in Timeline"
+msgstr "在時間軸中檢視"
+
+#: src/library/search_filters.rs:59
+msgid "Text"
+msgstr "文字"
+
+#: src/library/search_filters.rs:62
+msgid "Filename contains"
+msgstr "檔案名稱包含"
+
+#: src/library/search_filters.rs:65
+msgid "Description contains"
+msgstr "描述包含"
+
+#: src/library/search_filters.rs:68
+msgid "OCR text contains"
+msgstr "OCR 文字包含"
+
+#: src/library/search_filters.rs:79
+msgid "People, Tags, and Albums"
+msgstr "人物、標籤與相簿"
+
+#: src/library/search_filters.rs:80
+msgid "Photos have to have everything you pick"
+msgstr "相片必須符合您選取的所有條件"
+
+#: src/library/search_filters.rs:83
+msgid "Anyone"
+msgstr "任何人"
+
+#: src/library/search_filters.rs:84 src/library/search_filters.rs:85
+#: src/library/search_filters.rs:123 src/library/search_filters.rs:135
+#: src/library/search_filters.rs:144 src/library/search_filters/suggest.rs:22
+#: src/library/search_filters/suggest.rs:47
+msgid "Any"
+msgstr "任何"
+
+#: src/library/search_filters.rs:118
+msgid "Type and flags"
+msgstr "類型與旗標"
+
+#: src/library/search_filters.rs:121
+msgid "Asset type"
+msgstr "資產類型"
+
+#: src/library/search_filters.rs:124
+msgid "Image only"
+msgstr "僅限圖片"
+
+#: src/library/search_filters.rs:125
+msgid "Video only"
+msgstr "僅限影片"
+
+#: src/library/search_filters.rs:128
+msgid "Favourites only"
+msgstr "僅限最愛"
+
+#: src/library/search_filters.rs:129
+msgid "Motion photos only"
+msgstr "僅限動態相片"
+
+#: src/library/search_filters.rs:130
+msgid "Not in any album"
+msgstr "不在任何相簿中"
+
+#: src/library/search_filters.rs:131
+msgid "Include deleted"
+msgstr "包含已刪除"
+
+#: src/library/search_filters.rs:133
+msgid "Visibility"
+msgstr "可見度"
+
+#: src/library/search_filters.rs:136 src/library/shortcuts_dialog.rs:260
+msgid "Timeline"
+msgstr "時間軸"
+
+#: src/library/search_filters.rs:138
+#: src/library/source_header/enrichment.rs:251
+msgid "Hidden"
+msgstr "已隱藏"
+
+#: src/library/search_filters.rs:139
+msgid "Locked"
+msgstr "已鎖定"
+
+#: src/library/search_filters.rs:143
+msgid "Minimum rating"
+msgstr "最低評分"
+
+#: src/library/search_filters.rs:173
+msgid "Date range"
+msgstr "日期範圍"
+
+#: src/library/search_filters.rs:177
+msgid "Taken after"
+msgstr "拍攝時間晚於"
+
+#: src/library/search_filters.rs:180
+msgid "Taken before"
+msgstr "拍攝時間早於"
+
+#: src/library/search_filters.rs:183
+msgid "Created after"
+msgstr "建立時間晚於"
+
+#: src/library/search_filters.rs:186
+msgid "Created before"
+msgstr "建立時間早於"
+
+#: src/library/search_filters.rs:207
+msgid "Make"
+msgstr "製造商"
+
+#: src/library/search_filters.rs:208
+msgid "Model"
+msgstr "型號"
+
+#: src/library/search_filters.rs:209
+msgid "Lens model"
+msgstr "鏡頭型號"
+
+#: src/library/search_filters.rs:222
+msgid "Country"
+msgstr "國家/地區"
+
+#: src/library/search_filters.rs:223
+msgid "State / region"
+msgstr "州/省/地區"
+
+#: src/library/search_filters.rs:224
+msgid "City"
+msgstr "城市"
+
+#: src/library/search_filters/choices.rs:119
+#, rust-format
+msgid "Filter {what}"
+msgstr "篩選 {what}"
+
+#: src/library/search_filters/choices.rs:207
+msgid "Nothing to choose from"
+msgstr "沒有可選擇的項目"
+
+#: src/library/search_panel.rs:55
+msgid "Close filters"
+msgstr "關閉篩選條件"
+
+#: src/library/search_panel.rs:73
+msgid "Clear every filter, keeping the search text"
+msgstr "清除所有篩選條件，保留搜尋文字"
+
+#: src/library/search_panel.rs:108
+#, rust-format
+msgid "Filters · {count}"
+msgstr "篩選條件 · {count}"
+
+#: src/library/search_view.rs:116
+msgid ""
+"Smart: CLIP-based semantic search.\n"
+"Filename: matches against file names.\n"
+"OCR: matches text inside images."
+msgstr ""
+"智慧：以 CLIP 為基礎的語意搜尋。\n"
+"檔案名稱：比對檔案名稱。\n"
+"OCR：比對圖片內的文字。"
+
+#: src/library/search_view.rs:123 src/library/search_view.rs:315
+msgid "Describe what you're looking for…"
+msgstr "描述您正在尋找的內容…"
+
+#: src/library/search_view.rs:157
+msgid "Show search filters"
+msgstr "顯示搜尋篩選條件"
+
+#: src/library/search_view.rs:313
+msgid "Search filenames"
+msgstr "搜尋檔案名稱"
+
+#: src/library/search_view.rs:314
+msgid "Find words shown inside images"
+msgstr "尋找圖片中顯示的文字"
+
+#: src/library/select_all.rs:29
+msgid "Loading every photo to select…"
+msgstr "正在載入所有相片以供選取…"
+
+#: src/library/select_all.rs:48
+msgid "Some photos couldn't be loaded, so not all are selected"
+msgstr "部分相片無法載入，因此未能全部選取"
+
+#: src/library/server_stats_dialog.rs:23
+msgid "Server statistics"
+msgstr "伺服器統計資料"
+
+#: src/library/server_stats_dialog.rs:99 src/library/server_stats_dialog.rs:131
+#: src/library/utilities/controls.rs:29
+msgid "Videos"
+msgstr "影片"
+
+#: src/library/server_stats_dialog.rs:104 src/settings_window/library.rs:190
+msgid "Storage"
+msgstr "儲存空間"
+
+#: src/library/server_stats_dialog.rs:113
+msgid "By user"
+msgstr "依使用者"
+
+#: src/library/server_stats_dialog.rs:136
+msgid "Total"
+msgstr "總計"
+
+#: src/library/server_stats_dialog.rs:145
+msgid "Server-wide statistics require administrator access."
+msgstr "全伺服器統計資料需要管理員權限。"
+
+#: src/library/server_stats_dialog.rs:163
+msgid ""
+"Your API key must include the 'server.about', 'server.versionCheck', "
+"'server.statistics', and 'asset.statistics' permissions to view stats."
+msgstr "您的 API 金鑰必須包含「server.about」、「server.versionCheck」、「server.statistics」與「asset.statistics」權限才能檢視統計資料。"
+
+#: src/library/server_stats_dialog.rs:168
+msgid "Unable to load statistics"
+msgstr "無法載入統計資料"
+
+#: src/library/server_stats_dialog.rs:169
+msgid "Check your connection and try again."
+msgstr "請檢查您的網路連線並重試。"
+
+#: src/library/server_stats_dialog.rs:247
+#, rust-format
+msgid "{used} of {quota}"
+msgstr "{used} / {quota}"
+
+#: src/library/shared_link_dialog.rs:20
+msgid "Never"
+msgstr "永不"
+
+#: src/library/shared_link_dialog.rs:21
+msgid "1 hour"
+msgstr "1 小時"
+
+#: src/library/shared_link_dialog.rs:22
+msgid "1 day"
+msgstr "1 天"
+
+#: src/library/shared_link_dialog.rs:23
+msgid "7 days"
+msgstr "7 天"
+
+#: src/library/shared_link_dialog.rs:24
+msgid "30 days"
+msgstr "30 天"
+
+#: src/library/shared_link_dialog.rs:31
+#, rust-format
+msgid "Keep current ({date})"
+msgstr "保持目前設定（{date}）"
+
+#. Translators: strftime date and time, e.g. "9 Oct 2026, 14:30".
+#: src/library/shared_link_dialog.rs:57
+msgid "%-d %b %Y, %H:%M"
+msgstr "%Y年%-m月%-d日 %H:%M"
+
+#: src/library/shared_link_dialog.rs:114
+msgid "Expires"
+msgstr "到期日"
+
+#: src/library/shared_link_dialog.rs:119
+msgid "Password (leave empty to keep)"
+msgstr "密碼（留空以保持不變）"
+
+#: src/library/shared_link_dialog.rs:121
+msgid "Password (optional)"
+msgstr "密碼（選填）"
+
+#: src/library/shared_link_dialog.rs:125
+msgid "Allow downloads"
+msgstr "允許下載"
+
+#: src/library/shared_link_dialog.rs:126
+msgid "Visitors can download originals"
+msgstr "訪客可以下載原始檔案"
+
+#: src/library/shared_link_dialog.rs:130
+msgid "Allow uploads"
+msgstr "允許上傳"
+
+#: src/library/shared_link_dialog.rs:131
+msgid "Visitors can add photos to the album"
+msgstr "訪客可以將相片加入相簿"
+
+#: src/library/shared_link_dialog.rs:135
+msgid "Show metadata"
+msgstr "顯示中繼資料"
+
+#: src/library/shared_link_dialog.rs:136
+msgid "Visitors can see EXIF details and location"
+msgstr "訪客可以查看 EXIF 詳細資訊與位置"
+
+#: src/library/shared_link_dialog.rs:177
+msgid "Create Share Link"
+msgstr "建立共用連結"
+
+#: src/library/shared_link_dialog.rs:178
+msgid "Edit Share Link"
+msgstr "編輯共用連結"
+
+#: src/library/shared_link_dialog.rs:237
+msgid "Share link created and copied"
+msgstr "已建立共用連結並複製"
+
+#: src/library/shared_link_dialog.rs:243
+msgid "Could Not Save Share Link"
+msgstr "無法儲存共用連結"
+
+#: src/library/shared_link_dialog.rs:253 src/library/shared_link_photos.rs:343
+#: src/library/shared_links_view.rs:325
+msgid "Couldn't copy the link"
+msgstr "無法複製連結"
+
+#: src/library/shared_link_photos.rs:56 src/library/shared_link_photos.rs:239
+msgid "Photos in Link"
+msgstr "連結中的相片"
+
+#: src/library/shared_link_photos.rs:77
+msgid ""
+"Tap photos to take them out. To add some, select them in your library and "
+"choose Add to Share Link."
+msgstr "點選相片可將其移出。若要新增相片，請在媒體庫中選取它們並選擇「加入至分享連結」。"
+
+#: src/library/shared_link_photos.rs:111
+#, rust-format
+msgid "Couldn't load the photos: {err}"
+msgstr "無法載入相片：{err}"
+
+#: src/library/shared_link_photos.rs:154
+msgid "Select"
+msgstr "選取"
+
+#: src/library/shared_link_photos.rs:183
+#, rust-format
+msgid "Remove {n} Photo"
+msgid_plural "Remove {n} Photos"
+msgstr[0] "移除 {n} 張相片"
+
+#: src/library/shared_link_photos.rs:202
+#, rust-format
+msgid "Couldn't take them out: {err}"
+msgstr "無法將其移出：{err}"
+
+#: src/library/shared_link_photos.rs:255
+msgid "Couldn't load your links"
+msgstr "無法載入您的連結"
+
+#: src/library/shared_link_photos.rs:293 src/library/shared_links_view.rs:384
+msgid "Individual share"
+msgstr "個別共用"
+
+#: src/library/shared_link_photos.rs:311 src/library/shared_link_photos.rs:327
+msgid "Add to Share Link"
+msgstr "加入至分享連結"
+
+#: src/library/shared_link_photos.rs:318
+msgid "No Links to Add To"
+msgstr "沒有可加入的連結"
+
+#: src/library/shared_link_photos.rs:320
+msgid ""
+"Albums' links always show the whole album. Make a link for some photos with "
+"Create Share Link first."
+msgstr "相簿連結一律會顯示整個相簿。請先使用「建立共用連結」為部分相片建立連結。"
+
+#: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
+#: src/library/shared_link_qr.rs:129
+msgid "Copy Link"
+msgstr "複製連結"
+
+#: src/library/shared_link_photos.rs:349
+msgid "Couldn't add to the link"
+msgstr "無法加入至該連結"
+
+#: src/library/shared_link_photos.rs:356
+msgid "Already in the link"
+msgstr "已在該連結中"
+
+#: src/library/shared_link_photos.rs:359
+#, rust-format
+msgid "Added {items} to the link"
+msgstr "已將 {items} 加入至連結"
+
+#: src/library/shared_link_photos.rs:366
+#, rust-format
+msgid "{n} wasn't added"
+msgid_plural "{n} weren't added"
+msgstr[0] "{n} 項未加入"
+
+#: src/library/shared_link_qr.rs:35 src/library/shared_link_qr.rs:42
+msgid "Couldn't make the QR code"
+msgstr "無法產生 QR 碼"
+
+#: src/library/shared_link_qr.rs:43
+msgid "The link is too long for a QR code."
+msgstr "連結過長，無法產生 QR 碼。"
+
+#: src/library/shared_link_qr.rs:64 src/library/shared_links_view.rs:192
+msgid "QR Code"
+msgstr "QR 碼"
+
+#: src/library/shared_link_qr.rs:80
+msgid "QR code of the link"
+msgstr "該連結的 QR 碼"
+
+#: src/library/shared_links_view.rs:35
+msgid "Anyone with a link can view what it shares."
+msgstr "任何擁有連結的人都可以查看其分享的內容。"
+
+#: src/library/shared_links_view.rs:44
+msgid "No Shared Links"
+msgstr "沒有共用連結"
+
+#: src/library/shared_links_view.rs:46
+msgid ""
+"Create one from an album's or a photo's right-click menu, or from a "
+"selection."
+msgstr "可從相簿或相片的右鍵選單建立，或是從選取項目建立。"
+
+#: src/library/shared_links_view.rs:101
+msgid "Could Not Load Shared Links"
+msgstr "無法載入共用連結"
+
+#: src/library/shared_links_view.rs:200
+msgid "Photos…"
+msgstr "相片…"
+
+#: src/library/shared_links_view.rs:215
+msgid "Edit…"
+msgstr "編輯…"
+
+#: src/library/shared_links_view.rs:311
+msgid "Show QR code"
+msgstr "顯示 QR 碼"
+
+#: src/library/shared_links_view.rs:318
+msgid "Copy link"
+msgstr "複製連結"
+
+#: src/library/shared_links_view.rs:355
+msgid "Delete this link?"
+msgstr "要刪除此連結嗎？"
+
+#: src/library/shared_links_view.rs:357
+msgid "Anyone using it will lose access. This can't be undone."
+msgstr "任何使用此連結的人都將失去存取權限。此操作無法復原。"
+
+#: src/library/shared_links_view.rs:373
+msgid "Could Not Delete Link"
+msgstr "無法刪除連結"
+
+#: src/library/shared_links_view.rs:404
+msgid "Expired"
+msgstr "已過期"
+
+#: src/library/shared_links_view.rs:407
+#, rust-format
+msgid "Expires {date}"
+msgstr "到期時間：{date}"
+
+#: src/library/shared_links_view.rs:408
+msgid "Never expires"
+msgstr "永不過期"
+
+#: src/library/shared_links_view.rs:414 src/library/staging_view.rs:143
+#: src/library/window_layout.rs:413
+msgid "Upload"
+msgstr "上傳"
+
+#: src/library/shared_links_view.rs:416
+msgid "Exif"
+msgstr "EXIF"
+
+#: src/library/shared_links_view.rs:417
+msgid "Password"
+msgstr "密碼"
+
+#: src/library/sharing_view.rs:29
+msgid "Add partner"
+msgstr "新增共用夥伴"
+
+#: src/library/sharing_view.rs:34
+msgid "You Share With"
+msgstr "您共用的對象"
+
+#: src/library/sharing_view.rs:35
+msgid "Partners can see all your photos and videos."
+msgstr "共用夥伴可以看到您的所有相片與影片。"
+
+#: src/library/sharing_view.rs:39
+msgid "Sharing With You"
+msgstr "與您共用的對象"
+
+#: src/library/sharing_view.rs:41
+msgid ""
+"People who added you as a partner. Switch one on to see their photos in "
+"Photos."
+msgstr "將您新增為夥伴的人。開啟任一人即可在「相片」中查看其相片。"
+
+#: src/library/sharing_view.rs:94
+msgid "Could Not Load Partners"
+msgstr "無法載入共用夥伴"
+
+#: src/library/sharing_view.rs:117
+msgid "Use + to share your library with someone."
+msgstr "使用 + 與他人共用您的媒體庫。"
+
+#: src/library/sharing_view.rs:127
+msgid "No one is sharing with you."
+msgstr "目前沒有人與您共用。"
+
+#: src/library/sharing_view.rs:169
+msgid "Show in Photos"
+msgstr "在「相片」中顯示"
+
+#: src/library/sharing_view.rs:179
+msgid "Could Not Change Partner"
+msgstr "無法變更共用夥伴"
+
+#: src/library/sharing_view.rs:203
+msgid "Stop sharing"
+msgstr "停止共用"
+
+#: src/library/sharing_view.rs:214
+#, rust-format
+msgid "Stop sharing with {name}?"
+msgstr "要停止與 {name} 共用嗎？"
+
+#: src/library/sharing_view.rs:217
+msgid "They'll no longer see your photos and videos."
+msgstr "他們將無法再看到您的相片與影片。"
+
+#: src/library/sharing_view.rs:218
+msgid "Stop Sharing"
+msgstr "停止共用"
+
+#: src/library/sharing_view.rs:222
+msgid "Could Not Remove Partner"
+msgstr "無法移除共用夥伴"
+
+#: src/library/sharing_view.rs:279
+msgid "Loading people…"
+msgstr "正在載入人物…"
+
+#: src/library/sharing_view.rs:321
+msgid "No other people found. Listing people needs the 'user.read' permission."
+msgstr "未找到其他人物。列出人物需要「user.read」權限。"
+
+#: src/library/sharing_view.rs:354
+msgid "Add Partner"
+msgstr "新增共用夥伴"
+
+#: src/library/sharing_view.rs:377
+#, rust-format
+msgid "Share your library with {name}?"
+msgstr "要與 {name} 共用您的媒體庫嗎？"
+
+#: src/library/sharing_view.rs:378
+msgid ""
+"They'll be able to see all your photos and videos. You can stop sharing at "
+"any time."
+msgstr "他們將能看到您的所有相片與影片。您可以隨時停止共用。"
+
+#: src/library/sharing_view.rs:381
+msgid "Share"
+msgstr "共用"
+
+#: src/library/sharing_view.rs:388
+msgid "Could Not Add Partner"
+msgstr "無法新增共用夥伴"
+
+#: src/library/shortcuts_dialog.rs:29
+msgid "Show keyboard shortcuts"
+msgstr "顯示鍵盤快速鍵"
+
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+msgid "Open Settings"
+msgstr "開啟設定"
+
+#: src/library/shortcuts_dialog.rs:31
+msgid "Toggle sidebar"
+msgstr "切換側邊欄"
+
+#: src/library/shortcuts_dialog.rs:32 src/library/window_layout.rs:328
+msgid "Refresh"
+msgstr "重新整理"
+
+#: src/library/shortcuts_dialog.rs:35
+msgid "Paste photos"
+msgstr "貼上相片"
+
+#: src/library/shortcuts_dialog.rs:37
+msgid "Into the open album, or Photos"
+msgstr "貼至目前開啟的相簿或「相片」中"
+
+#: src/library/shortcuts_dialog.rs:40
+msgid "Go back"
+msgstr "返回"
+
+#: src/library/shortcuts_dialog.rs:42
+msgid "Or the mouse back button"
+msgstr "或滑鼠上一頁鍵"
+
+#: src/library/shortcuts_dialog.rs:45
+msgid "Go forward"
+msgstr "前進"
+
+#: src/library/shortcuts_dialog.rs:47
+msgid "Or the mouse forward button"
+msgstr "或滑鼠下一頁鍵"
+
+#: src/library/shortcuts_dialog.rs:50
+msgid "Open context menu"
+msgstr "開啟快顯功能表"
+
+#: src/library/shortcuts_dialog.rs:52
+msgid "Or the Menu key; in the grid, the viewer, and on album tiles"
+msgstr "或使用 Menu 鍵；在網格、檢視器與相簿圖塊中可用"
+
+#: src/library/shortcuts_dialog.rs:61 src/library/sidebar/rows.rs:94
+#: src/library/source_header.rs:310
+msgid "Favorites"
+msgstr "最愛"
+
+#: src/library/shortcuts_dialog.rs:70
+msgid "Move between photos"
+msgstr "在相片之間切換"
+
+#: src/library/shortcuts_dialog.rs:72
+msgid "After clicking a photo or tabbing to the grid"
+msgstr "點按相片或按 Tab 鍵切換至網格後"
+
+#: src/library/shortcuts_dialog.rs:74
+msgid "First or last photo"
+msgstr "第一張或最後一張相片"
+
+#: src/library/shortcuts_dialog.rs:75
+msgid "Open photo"
+msgstr "開啟相片"
+
+#: src/library/shortcuts_dialog.rs:76
+msgid "Select or deselect photo"
+msgstr "選取或取消選取相片"
+
+#: src/library/shortcuts_dialog.rs:81
+msgid "Select assets"
+msgstr "選取資產"
+
+#: src/library/shortcuts_dialog.rs:83
+msgid "Hold and click to add or remove assets"
+msgstr "按住並點按以加入或移除資產"
+
+#: src/library/shortcuts_dialog.rs:86
+msgid "Select a range"
+msgstr "選取連續範圍"
+
+#: src/library/shortcuts_dialog.rs:88
+msgid "Hold and click; add Ctrl to extend the selection"
+msgstr "按住並點按；加按 Ctrl 鍵以擴充選取範圍"
+
+#: src/library/shortcuts_dialog.rs:91
+msgid "Move selection to trash"
+msgstr "將選取項目移至垃圾桶"
+
+#: src/library/shortcuts_dialog.rs:93
+msgid "Deletes permanently in the Trash view"
+msgstr "在垃圾桶檢視中永久刪除"
+
+#: src/library/shortcuts_dialog.rs:96 src/library/staging_view.rs:193
+msgid "Select all"
+msgstr "全選"
+
+#: src/library/shortcuts_dialog.rs:98
+msgid "Every photo in the view, loading the rest first"
+msgstr "檢視中的所有相片，會先載入其餘相片"
+
+#: src/library/shortcuts_dialog.rs:101
+msgid "Select a whole day"
+msgstr "選取整天"
+
+#: src/library/shortcuts_dialog.rs:103
+msgid ""
+"The focused photo's day or month; or tap its date heading while selecting"
+msgstr "焦點相片所在的日期或月份；或在選取時點按其日期標題"
+
+#: src/library/shortcuts_dialog.rs:106
+msgid "Copy selection"
+msgstr "複製選取項目"
+
+#: src/library/shortcuts_dialog.rs:108
+msgid "Paste into an album to add them; one photo copies as a picture"
+msgstr "貼上至相簿以加入它們；單張相片將作為圖片複製"
+
+#: src/library/shortcuts_dialog.rs:110
+msgid "Exit selection mode"
+msgstr "結束選取模式"
+
+#: src/library/shortcuts_dialog.rs:115
+msgid "Next or previous day"
+msgstr "下一天或前一天"
+
+#: src/library/shortcuts_dialog.rs:117
+msgid "In Photos, sorted newest first"
+msgstr "在「相片」中，按最新的排在最前排序"
+
+#: src/library/shortcuts_dialog.rs:119
+msgid "Next or previous month"
+msgstr "下個月或上個月"
+
+#: src/library/shortcuts_dialog.rs:120
+msgid "Next or previous year"
+msgstr "下一年或上一年"
+
+#: src/library/shortcuts_dialog.rs:124
+msgid "Previous asset"
+msgstr "上一項資產"
+
+#: src/library/shortcuts_dialog.rs:125
+msgid "Next asset"
+msgstr "下一項資產"
+
+#: src/library/shortcuts_dialog.rs:126
+msgid "Toggle details"
+msgstr "切換詳細資訊"
+
+#: src/library/shortcuts_dialog.rs:128
+msgid "Show or hide all actions for the photo"
+msgstr "顯示或隱藏相片的所有動作"
+
+#: src/library/shortcuts_dialog.rs:131
+msgid "Toggle favorite"
+msgstr "切換最愛狀態"
+
+#: src/library/shortcuts_dialog.rs:132
+msgid "Archive or unarchive"
+msgstr "封存或取消封存"
+
+#: src/library/shortcuts_dialog.rs:134
+msgid "Rate"
+msgstr "評分"
+
+#: src/library/shortcuts_dialog.rs:136
+msgid "0 clears the rating"
+msgstr "0 可清除評分"
+
+#: src/library/shortcuts_dialog.rs:138
+msgid "Edit info"
+msgstr "編輯資訊"
+
+#: src/library/shortcuts_dialog.rs:141
+msgid "Copy the photo"
+msgstr "複製相片"
+
+#: src/library/shortcuts_dialog.rs:143
+msgid "While recognized text shows, copies the text instead"
+msgstr "顯示辨識文字時，改為複製文字"
+
+#: src/library/shortcuts_dialog.rs:146
+msgid "Show or hide recognized text"
+msgstr "顯示或隱藏辨識文字"
+
+#: src/library/shortcuts_dialog.rs:148
+msgid "Only when Immich found text in the photo"
+msgstr "僅限 Immich 在相片中發現文字時"
+
+#: src/library/shortcuts_dialog.rs:151
+msgid "Select all recognized text"
+msgstr "全選辨識文字"
+
+#: src/library/shortcuts_dialog.rs:153
+msgid "Drag across text to select it; Ctrl-click adds or removes a box"
+msgstr "在文字上拖曳以選取；按住 Ctrl 點選可加入或移除選取方塊"
+
+#: src/library/shortcuts_dialog.rs:156
+msgid "Copy recognized text"
+msgstr "複製辨識文字"
+
+#: src/library/shortcuts_dialog.rs:158
+msgid "Copies the selection, or all text when nothing is selected"
+msgstr "複製選取內容；未選取任何內容時則複製全部文字"
+
+#: src/library/shortcuts_dialog.rs:164
+msgid "Or hold Ctrl and scroll"
+msgstr "或按住 Ctrl 並滾動滾輪"
+
+#: src/library/shortcuts_dialog.rs:167
+msgid "Reset zoom"
+msgstr "重設縮放"
+
+#: src/library/shortcuts_dialog.rs:169
+msgid "Toggle fullscreen"
+msgstr "切換全螢幕"
+
+#: src/library/shortcuts_dialog.rs:171
+msgid "Or the header button; double-click a video; Esc exits"
+msgstr "或使用標題列按鈕；連按兩下影片；按 Esc 離開"
+
+#: src/library/shortcuts_dialog.rs:174
+msgid "Play or stop a live photo"
+msgstr "播放或停止原況相片"
+
+#: src/library/shortcuts_dialog.rs:176
+msgid "Only on live and motion photos"
+msgstr "僅適用於原況與動態相片"
+
+#: src/library/shortcuts_dialog.rs:178
+msgid "Start slideshow"
+msgstr "開始投影片放映"
+
+#: src/library/shortcuts_dialog.rs:183
+msgid "Pause or resume"
+msgstr "暫停或繼續"
+
+#: src/library/shortcuts_dialog.rs:185
+msgid "Previous or next photo"
+msgstr "上一張或下一張相片"
+
+#: src/library/shortcuts_dialog.rs:187
+msgid "The next photo then gets the full interval"
+msgstr "下一張相片隨後獲得完整的播放間隔"
+
+#: src/library/shortcuts_dialog.rs:190
+msgid "End slideshow"
+msgstr "結束投影片放映"
+
+#: src/library/shortcuts_dialog.rs:192
+msgid "Or S, or leave fullscreen"
+msgstr "或按 S，或離開全螢幕"
+
+#: src/library/shortcuts_dialog.rs:198
+msgid "Switch the 360° view"
+msgstr "切換 360° 檢視"
+
+#: src/library/shortcuts_dialog.rs:200
+msgid "Only on 360° photos, which open in it"
+msgstr "僅適用於 360° 全景相片（會在此檢視中開啟）"
+
+#: src/library/shortcuts_dialog.rs:202
+msgid "Tilt up or down"
+msgstr "向上或向下傾斜"
+
+#: src/library/shortcuts_dialog.rs:204
+msgid "Turn left or right"
+msgstr "向左或向右旋轉"
+
+#: src/library/shortcuts_dialog.rs:208
+msgid "Zoom in or out"
+msgstr "放大或縮小"
+
+#: src/library/shortcuts_dialog.rs:210
+msgid "Or scroll, or pinch"
+msgstr "或滾動滾輪、雙指捏合縮放"
+
+#: src/library/shortcuts_dialog.rs:215
+msgid "Play or pause"
+msgstr "播放或暫停"
+
+#: src/library/shortcuts_dialog.rs:216
+msgid "Back 10 seconds"
+msgstr "倒轉 10 秒"
+
+#: src/library/shortcuts_dialog.rs:217
+msgid "Forward 10 seconds"
+msgstr "快轉 10 秒"
+
+#: src/library/shortcuts_dialog.rs:219
+msgid "Previous frame"
+msgstr "上一影格"
+
+#: src/library/shortcuts_dialog.rs:221 src/library/shortcuts_dialog.rs:226
+msgid "Pauses playback"
+msgstr "暫停播放"
+
+#: src/library/shortcuts_dialog.rs:224
+msgid "Next frame"
+msgstr "下一影格"
+
+#: src/library/shortcuts_dialog.rs:228
+msgid "Mute or unmute"
+msgstr "靜音或取消靜音"
+
+#: src/library/shortcuts_dialog.rs:229
+msgid "Volume up"
+msgstr "提高音量"
+
+#: src/library/shortcuts_dialog.rs:230
+msgid "Volume down"
+msgstr "降低音量"
+
+#: src/library/shortcuts_dialog.rs:233
+msgid "Enter a folder path"
+msgstr "輸入資料夾路徑"
+
+#: src/library/shortcuts_dialog.rs:244
+msgid "Clear the search"
+msgstr "清除搜尋"
+
+#: src/library/shortcuts_dialog.rs:246
+msgid "While typing in the search field"
+msgstr "在搜尋欄位中鍵入時"
+
+#: src/library/shortcuts_dialog.rs:249
+msgid "Move the map"
+msgstr "移動地圖"
+
+#: src/library/shortcuts_dialog.rs:251
+msgid "After clicking the map"
+msgstr "點按地圖後"
+
+#: src/library/shortcuts_dialog.rs:256
+msgid "General"
+msgstr "一般"
+
+#: src/library/shortcuts_dialog.rs:257
+msgid "Go To"
+msgstr "前往"
+
+#: src/library/shortcuts_dialog.rs:258
+msgid "Grid"
+msgstr "網格"
+
+#: src/library/shortcuts_dialog.rs:259
+msgid "Selection"
+msgstr "選取"
+
+#: src/library/shortcuts_dialog.rs:265
+msgid "360° Photos"
+msgstr "360° 全景相片"
+
+#: src/library/shortcuts_dialog.rs:266
+msgid "Video"
+msgstr "影片"
+
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/settings_window/status.rs:48
+msgid "Connection"
+msgstr "連線"
+
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/settings_window/status.rs:50
+msgid "Server"
+msgstr "伺服器"
+
+#: src/library/sidebar.rs:206
+msgid "Show recent albums"
+msgstr "顯示最近相簿"
+
+#: src/library/sidebar.rs:232
+msgid "All Albums"
+msgstr "所有相簿"
+
+#: src/library/sidebar/rows.rs:8 src/library/window_layout/responsive.rs:83
+#: src/settings_window/library.rs:86 src/tray_icon.rs:62
+msgid "Library"
+msgstr "圖庫"
+
+#: src/library/sidebar/rows.rs:20
+msgid "Albums & Sharing"
+msgstr "相簿與共用"
+
+#: src/library/sidebar/rows.rs:23
+msgid "Browse"
+msgstr "瀏覽"
+
+#: src/library/sidebar/rows.rs:25
+msgid "Utilities"
+msgstr "實用工具"
+
+#: src/library/sidebar/rows.rs:41
+msgid "Timeline of every photo and video"
+msgstr "所有相片與影片的時間軸"
+
+#: src/library/sidebar/rows.rs:47
+msgid "Find photos, videos, and text"
+msgstr "尋找相片、影片與文字"
+
+#: src/library/sidebar/rows.rs:53
+msgid "People, places, and things"
+msgstr "人物、地點與事物"
+
+#: src/library/sidebar/rows.rs:59
+msgid "Photos by where they were taken"
+msgstr "依拍攝地點分類的相片"
+
+#: src/library/sidebar/rows.rs:65
+msgid "Faces Immich has recognized"
+msgstr "Immich 辨識出的人臉"
+
+#: src/library/sidebar/rows.rs:71
+msgid "Recent, owned, and shared"
+msgstr "最近、我擁有的與共用的"
+
+#: src/library/sidebar/rows.rs:77
+msgid "Shared with you and by you"
+msgstr "與您共用及由您共用"
+
+#: src/library/sidebar/rows.rs:83
+msgid "Public links you've created"
+msgstr "您建立的公開連結"
+
+#: src/library/sidebar/rows.rs:89
+msgid "Partners who share libraries"
+msgstr "共用圖庫的夥伴"
+
+#: src/library/sidebar/rows.rs:95
+msgid "Photos and videos you've marked"
+msgstr "您已標記的相片與影片"
+
+#: src/library/sidebar/rows.rs:101
+msgid "Browse and organize tags"
+msgstr "瀏覽並整理標籤"
+
+#: src/library/sidebar/rows.rs:107
+msgid "Browse by folder on the server"
+msgstr "依伺服器上的資料夾瀏覽"
+
+#: src/library/sidebar/rows.rs:113
+msgid "Hidden from Photos"
+msgstr "已從「相片」中隱藏"
+
+#: src/library/sidebar/rows.rs:119
+msgid "Restore or permanently delete"
+msgstr "還原或永久刪除"
+
+#: src/library/sidebar/rows.rs:125
+msgid "Photos Immich found more than once"
+msgstr "Immich 發現的重複相片"
+
+#: src/library/sidebar/rows.rs:130 src/library/source_header.rs:298
+msgid "Large Files"
+msgstr "大型檔案"
+
+#: src/library/sidebar/rows.rs:131
+msgid "The photos and videos taking the most space"
+msgstr "占用最多空間的相片與影片"
+
+#: src/library/sidebar/rows.rs:136 src/library/source_header.rs:299
+msgid "Missing Location"
+msgstr "缺少位置資訊"
+
+#: src/library/sidebar/rows.rs:137
+msgid "Photos and videos without a place"
+msgstr "沒有記錄地點的相片與影片"
+
+#: src/library/sidebar/rows.rs:142 src/library/source_header.rs:300
+msgid "Unusual Dates"
+msgstr "異常日期"
+
+#: src/library/sidebar/rows.rs:143
+msgid "Dated in the future, or too long ago"
+msgstr "日期在未來或距今過於久遠"
+
+#: src/library/source_header.rs:77
+msgid "Play Slideshow"
+msgstr "放映投影片"
+
+#: src/library/source_header.rs:172 src/library/window_layout.rs:449
+msgid "Library data unavailable"
+msgstr "圖庫資料無法使用"
+
+#: src/library/source_header.rs:173 src/library/window_layout.rs:450
+msgid "Could not load library assets"
+msgstr "無法載入圖庫資產"
+
+#: src/library/source_header.rs:188
+msgid "Nothing Here"
+msgstr "此處沒有內容"
+
+#: src/library/source_header.rs:189
+msgid "There are no photos or videos to show."
+msgstr "沒有可顯示的相片或影片。"
+
+#: src/library/source_header.rs:255
+msgid "Nothing to show yet"
+msgstr "尚無內容可顯示"
+
+#: src/library/source_header.rs:308
+msgid "On This Computer"
+msgstr "在此電腦上"
+
+#: src/library/source_header.rs:331
+#, rust-format
+msgid "Similar to {name}"
+msgstr "與 {name} 相似"
+
+#: src/library/source_header.rs:338
+msgid "Search Results"
+msgstr "搜尋結果"
+
+#: src/library/source_header/enrichment.rs:47
+msgid "Smart search"
+msgstr "智慧搜尋"
+
+#: src/library/source_header/enrichment.rs:49
+msgid "Most similar first"
+msgstr "最相似的排在最前"
+
+#: src/library/source_header/enrichment.rs:73
+msgid "Back to the map"
+msgstr "返回地圖"
+
+#: src/library/source_header/enrichment.rs:82
+msgid "Full Grid"
+msgstr "完整網格"
+
+#: src/library/source_header/enrichment.rs:154
+msgid "Show on Map"
+msgstr "在地圖上顯示"
+
+#: src/library/source_header/enrichment.rs:170
+msgid "Share album"
+msgstr "共用相簿"
+
+#: src/library/source_header/enrichment.rs:180
+msgid "Download album"
+msgstr "下載相簿"
+
+#: src/library/source_header/enrichment.rs:193
+msgid "Create share link"
+msgstr "建立共用連結"
+
+#: src/library/source_header/enrichment.rs:273
+msgid "Remove from favorites"
+msgstr "從最愛中移除"
+
+#: src/library/source_header/enrichment.rs:275
+msgid "Add to favorites"
+msgstr "加入最愛"
+
+#: src/library/source_header/enrichment.rs:290
+#, rust-format
+msgid "In {path}"
+msgstr "位於 {path}"
+
+#: src/library/source_loading.rs:52 src/library/upload_picker.rs:30
+msgid "Upload to album"
+msgstr "上傳至相簿"
+
+#: src/library/source_loading.rs:55 src/library/upload_picker.rs:32
+#: src/library/window_layout.rs:422
+msgid "Upload to library"
+msgstr "上傳至圖庫"
+
+#: src/library/source_loading.rs:413
+#, rust-format
+msgid "Could not load library assets: {err}"
+msgstr "無法載入圖庫資產：{err}"
+
+#: src/library/staging_view.rs:44
+msgid "Mimick - Upload"
+msgstr "Mimick - 上傳"
+
+#: src/library/staging_view.rs:144
+msgid "Upload selected files to library"
+msgstr "將選取的檔案上傳至圖庫"
+
+#: src/library/staging_view.rs:149
+msgid "Upload selected files to an album"
+msgstr "將選取的檔案上傳至相簿"
+
+#: src/library/staging_view.rs:154
+msgid "Select all / Deselect all"
+msgstr "全選 / 取消全選"
+
+#: src/library/staging_view.rs:199
+msgid "Deselect all"
+msgstr "取消全選"
+
+#: src/library/staging_view.rs:220
+#, rust-format
+msgid "{n} file staged"
+msgid_plural "{n} files staged"
+msgstr[0] "已暫存 {n} 個檔案"
+
+#: src/library/staging_view.rs:226
+#, rust-format
+msgid "{selected} of {n} selected"
+msgid_plural "{selected} of {n} selected"
+msgstr[0] "已選取 {selected} / {n} 個"
+
+#: src/library/staging_view/album_picker.rs:28
+msgid "Upload to Album"
+msgstr "上傳至相簿"
+
+#: src/library/staging_view/album_picker.rs:50
+msgid "Upload Queued"
+msgstr "上傳已加入佇列"
+
+#: src/library/staging_view/album_picker.rs:53
+#, rust-format
+msgid "{n} file queued for upload. Progress is visible in the queue inspector."
+msgid_plural ""
+"{n} files queued for upload. Progress is visible in the queue inspector."
+msgstr[0] "{n} 個檔案已加入上傳佇列。進度可在佇列檢查器中檢視。"
+
+#: src/library/staging_view/album_picker.rs:62
+msgid "Upload Failed"
+msgstr "上傳失敗"
+
+#: src/library/staging_view/album_picker.rs:65
+#, rust-format
+msgid "{n} file failed to enqueue. Check the logs for details."
+msgid_plural "All {n} files failed to enqueue. Check the logs for details."
+msgstr[0] "{n} 個檔案加入佇列失敗。請查看記錄以了解詳細資訊。"
+
+#: src/library/staging_view/album_picker.rs:74
+msgid "Upload Partially Queued"
+msgstr "部分上傳已加入佇列"
+
+#: src/library/staging_view/album_picker.rs:77
+#, rust-format
+msgid "{n} file queued, {skipped} skipped (hash or path errors)."
+msgid_plural "{n} files queued, {skipped} skipped (hash or path errors)."
+msgstr[0] "已將 {n} 個檔案加入佇列，略過了 {skipped} 個（雜湊或路徑錯誤）。"
+
+#: src/library/tags_view.rs:38 src/library/tags_view.rs:249
+msgid "New Tag"
+msgstr "新增標籤"
+
+#: src/library/tags_view.rs:74
+msgid "Could Not Load Tags"
+msgstr "無法載入標籤"
+
+#: src/library/tags_view.rs:100
+msgid "All Tags"
+msgstr "所有標籤"
+
+#: src/library/tags_view.rs:114
+msgid "No Tags"
+msgstr "沒有標籤"
+
+#: src/library/tags_view.rs:115
+msgid ""
+"Create a tag with New Tag, or tag photos from the lightbox details pane."
+msgstr "透過「新增標籤」建立標籤，或在燈箱詳細資訊窗格中為相片新增標籤。"
+
+#: src/library/tags_view.rs:118
+msgid "No Tags Inside"
+msgstr "內部沒有標籤"
+
+#: src/library/tags_view.rs:119
+msgid "Use New Tag to add one here."
+msgstr "使用「新增標籤」在此加入標籤。"
+
+#: src/library/tags_view.rs:137
+#, rust-format
+msgid "Show photos tagged {value}"
+msgstr "顯示帶有 {value} 標籤的相片"
+
+#: src/library/tags_view.rs:143
+#, rust-format
+msgid "{n} tag inside"
+msgid_plural "{n} tags inside"
+msgstr[0] "內含 {n} 個標籤"
+
+#: src/library/tags_view.rs:183
+msgid "Change color"
+msgstr "變更色彩"
+
+#: src/library/tags_view.rs:209
+msgid "Change Color…"
+msgstr "變更色彩…"
+
+#: src/library/tags_view.rs:240
+#, rust-format
+msgid "The tag is created inside {parent}."
+msgstr "將在 {parent} 內建立該標籤。"
+
+#: src/library/tags_view.rs:252 src/library/tags_view.rs:276
+msgid "Tag name"
+msgstr "標籤名稱"
+
+#: src/library/tags_view.rs:261
+msgid "Could Not Create Tag"
+msgstr "無法建立標籤"
+
+#: src/library/tags_view.rs:273
+msgid "Rename Tag"
+msgstr "重新命名標籤"
+
+#: src/library/tags_view.rs:274
+msgid "Photos keep the tag under its new name."
+msgstr "相片將保留新名稱下的標籤。"
+
+#: src/library/tags_view.rs:283
+msgid "Couldn't rename the tag"
+msgstr "無法重新命名該標籤"
+
+#: src/library/tags_view.rs:289
+msgid "Could Not Rename Tag"
+msgstr "無法重新命名標籤"
+
+#: src/library/tags_view.rs:301
+#, rust-format
+msgid "Delete “{name}”?"
+msgstr "要刪除「{name}」嗎？"
+
+#: src/library/tags_view.rs:304
+msgid "The tag is removed from every photo. This can't be undone."
+msgstr "該標籤將從所有相片中移除。此操作無法復原。"
+
+#: src/library/tags_view.rs:309
+msgid "Could Not Delete Tag"
+msgstr "無法刪除標籤"
+
+#: src/library/tags_view.rs:330
+#, rust-format
+msgid "Color for “{name}”"
+msgstr "「{name}」的顏色"
+
+#: src/library/tags_view.rs:356
+msgid "Could Not Change Color"
+msgstr "無法變更顏色"
+
+#: src/library/tags_view.rs:413
+msgid "Custom color"
+msgstr "自訂顏色"
+
+#: src/library/tags_view.rs:435
+msgid "Custom"
+msgstr "自訂"
+
+#: src/library/theme/palettes.rs:61
+msgid "Warm White"
+msgstr "暖白"
+
+#: src/library/theme/palettes.rs:68
+msgid "Lavender"
+msgstr "薰衣草紫"
+
+#: src/library/theme/palettes.rs:75
+msgid "Mint"
+msgstr "薄荷綠"
+
+#: src/library/theme/palettes.rs:91
+msgid "Black"
+msgstr "黑色"
+
+#: src/library/theme/palettes.rs:99
+msgid "Midnight"
+msgstr "午夜藍"
+
+#: src/library/theme/palettes.rs:106
+msgid "Mocha"
+msgstr "摩卡棕"
+
+#: src/library/thumbnail_cache.rs:68 src/library/thumbnail_cache.rs:69
+msgid "Thumbnail load cancelled"
+msgstr "縮圖載入已取消"
+
+#: src/library/thumbnail_cache.rs:576
+msgid "MemTotal:"
+msgstr "MemTotal:"
+
+#: src/library/thumbnail_cache/decode.rs:122
+msgid "Failed to scale video thumbnail"
+msgstr "縮放影片縮圖失敗"
+
+#: src/library/thumbnail_cache/decode.rs:134
+#, rust-format
+msgid "No decoder succeeded for {path}"
+msgstr "沒有解碼器能成功處理 {path}"
+
+#: src/library/thumbnail_cache/decode.rs:158
+msgid "Failed to scale pixbuf"
+msgstr "縮放 pixbuf 失敗"
+
+#: src/library/thumbnail_cache/screen.rs:40
+msgid "No decoder could read the file"
+msgstr "沒有解碼器能讀取該檔案"
+
+#: src/library/time_zones.rs:82
+msgid "Time zone"
+msgstr "時區"
+
+#. Translators: strftime day heading in the photo timeline, e.g. "Fri, Oct 9".
+#: src/library/timeline/dates.rs:15
+msgid "%a, %b %-d"
+msgstr "%-m月%-d日，%a"
+
+#. Translators: strftime day heading for another year, e.g. "Fri, Oct 9, 2025".
+#: src/library/timeline/dates.rs:18
+msgid "%a, %b %-d, %Y"
+msgstr "%Y年%-m月%-d日，%a"
+
+#. Translators: strftime month heading, e.g. "October 2026"; %OB is the standalone month name.
+#: src/library/timeline/dates.rs:25
+msgid "%B %Y"
+msgstr "%Y年%-m月"
+
+#: src/library/timeline/mod.rs:241
+msgid "This photo isn't in your Photos timeline"
+msgstr "此相片不在您的「相片」時間軸中"
+
+#: src/library/trash_view.rs:35
+msgid ""
+"Immich permanently deletes trashed items after its retention period (30 days "
+"by default)."
+msgstr "Immich 會在保留期限（預設為 30 天）過後永久刪除垃圾桶中的項目。"
+
+#: src/library/trash_view.rs:66
+msgid "Restore All"
+msgstr "全部還原"
+
+#: src/library/trash_view.rs:68 src/library/trash_view.rs:238
+msgid "Empty Trash"
+msgstr "清理垃圾桶"
+
+#: src/library/trash_view.rs:74
+msgid "Restore selected"
+msgstr "還原選取項目"
+
+#: src/library/trash_view.rs:79
+msgid "Delete selected permanently"
+msgstr "永久刪除選取項目"
+
+#: src/library/trash_view.rs:167 src/library/trash_view.rs:228
+msgid "Could Not Restore"
+msgstr "無法還原"
+
+#: src/library/trash_view.rs:175
+msgid "Delete this item permanently?"
+msgstr "要永久刪除此項目嗎？"
+
+#: src/library/trash_view.rs:188
+msgid "This can't be undone. Local copies in your watch folders are kept."
+msgstr "此操作無法復原。監控資料夾中的本機複本將會保留。"
+
+#: src/library/trash_view.rs:217
+msgid "Could Not Delete"
+msgstr "無法刪除"
+
+#: src/library/trash_view.rs:236
+msgid "Empty the trash?"
+msgstr "要清空垃圾桶嗎？"
+
+#: src/library/trash_view.rs:237
+msgid ""
+"Everything in the Immich trash is deleted permanently. This can't be undone."
+msgstr "Immich 垃圾桶中的所有內容都將被永久刪除。此操作無法復原。"
+
+#: src/library/trash_view.rs:243
+msgid "Could Not Empty Trash"
+msgstr "無法清空垃圾桶"
+
+#: src/library/upload_stack.rs:33
+msgid "Upload and Create Stack…"
+msgstr "上傳並建立堆疊…"
+
+#: src/library/upload_stack.rs:35
+msgid "Upload and Add to Stack…"
+msgstr "上傳並加入堆疊…"
+
+#: src/library/upload_stack.rs:50
+msgid "Upload and Stack"
+msgstr "上傳並堆疊"
+
+#: src/library/upload_stack.rs:107
+msgid "Stack created"
+msgstr "已建立堆疊"
+
+#: src/library/upload_stack.rs:109
+msgid "Added to the stack"
+msgstr "已加入至堆疊"
+
+#: src/library/upload_stack.rs:130
+#, rust-format
+msgid "Couldn't upload {n} file"
+msgid_plural "Couldn't upload {n} files"
+msgstr[0] "無法上傳 {n} 個檔案"
+
+#: src/library/upload_stack.rs:138
+msgid "Immich didn't accept the upload."
+msgstr "Immich 未接受上傳。"
+
+#: src/library/utilities.rs:58
+msgid "Add Location"
+msgstr "新增位置"
+
+#: src/library/utilities.rs:59
+msgid "Change Date"
+msgstr "變更日期"
+
+#: src/library/utilities.rs:127
+msgid "Select photos, then Change Date"
+msgstr "選取相片，然後按「變更日期」"
+
+#: src/library/utilities.rs:128
+msgid "Select photos, then Add Location"
+msgstr "選取相片，然後按「新增位置」"
+
+#: src/library/utilities.rs:185
+#, rust-format
+msgid "{size} in all"
+msgstr "總共 {size}"
+
+#: src/library/utilities/controls.rs:29 src/settings_window/behavior.rs:182
+msgid "All Files"
+msgstr "所有檔案"
+
+#: src/library/utilities/controls.rs:31
+msgid "Kind of file"
+msgstr "檔案類型"
+
+#: src/library/utilities/controls.rs:36
+msgid "Smallest size"
+msgstr "最小大小"
+
+#: src/library/utilities/controls.rs:72
+msgid "Any Size"
+msgstr "任何大小"
+
+#: src/library/utilities/controls.rs:73
+#, rust-format
+msgid "Over {n} GB"
+msgstr "大於 {n} GB"
+
+#: src/library/utilities/controls.rs:74
+#, rust-format
+msgid "Over {n} MB"
+msgstr "大於 {n} MB"
+
+#: src/library/utilities/controls.rs:84 src/library/utilities/controls.rs:117
+msgid "Dates"
+msgstr "日期"
+
+#: src/library/utilities/controls.rs:88
+msgid "Show only photos taken between two days"
+msgstr "僅顯示在兩個日期之間拍攝的相片"
+
+#: src/library/utilities/controls.rs:101
+msgid "Show the photos without a place taken between these days."
+msgstr "顯示在這些日期之間拍攝且沒有記錄地點的相片。"
+
+#: src/library/utilities/controls.rs:142
+#, rust-format
+msgid "From {from} to {until}"
+msgstr "從 {from} 至 {until}"
+
+#: src/library/utilities/controls.rs:145
+#, rust-format
+msgid "From {from}"
+msgstr "從 {from} 起"
+
+#: src/library/utilities/controls.rs:146
+#, rust-format
+msgid "Until {until}"
+msgstr "至 {until}"
+
+#: src/library/utilities/controls.rs:157
+#, rust-format
+msgid "Before {year}"
+msgstr "{year} 年之前"
+
+#: src/library/utilities/controls.rs:160
+msgid "Future"
+msgstr "未來"
+
+#: src/library/utilities/controls.rs:187
+msgid "Dated after today"
+msgstr "日期在今天之後"
+
+#: src/library/utilities/controls.rs:189
+#, rust-format
+msgid "Dated before {year}"
+msgstr "日期早於 {year} 年"
+
+#: src/library/video_player.rs:240
+msgid "Exit fullscreen (F11)"
+msgstr "離開全螢幕 (F11)"
+
+#: src/library/video_player.rs:242 src/library/video_player/controls.rs:61
+msgid "Fullscreen (F11)"
+msgstr "全螢幕 (F11)"
+
+#: src/library/video_player.rs:317 src/library/video_player/controls.rs:41
+msgid "Play (Space)"
+msgstr "播放 (空白鍵)"
+
+#: src/library/video_player/controls.rs:35
+msgid "Audio and subtitles"
+msgstr "音訊與字幕"
+
+#: src/library/video_player/controls.rs:42
+msgid "Stop"
+msgstr "停止"
+
+#: src/library/video_player/controls.rs:45
+msgid "Back 10 seconds (J)"
+msgstr "倒轉 10 秒 (J)"
+
+#: src/library/video_player/controls.rs:49
+msgid "Forward 10 seconds (L)"
+msgstr "快轉 10 秒 (L)"
+
+#: src/library/video_player/controls.rs:149
+#, rust-format
+msgid "Track {n} ({lang})"
+msgstr "音軌 {n} ({lang})"
+
+#: src/library/video_player/controls.rs:152
+#, rust-format
+msgid "Track {n}"
+msgstr "軌道 {n}"
+
+#: src/library/video_player/controls.rs:197
+msgid "Loop"
+msgstr "循環播放"
+
+#: src/library/video_player/controls.rs:261
+msgid "Playback speed"
+msgstr "播放速度"
+
+#: src/library/video_player/controls.rs:275
+msgid "Mute (M)"
+msgstr "靜音 (M)"
+
+#: src/library/video_player/controls.rs:282
+msgid "Volume"
+msgstr "音量"
+
+#: src/library/video_player/pipeline.rs:44
+msgid "The GStreamer GTK 4 video sink (gst-plugin-gtk4) is not installed."
+msgstr "未安裝 GStreamer GTK 4 影片接收端 (gst-plugin-gtk4)。"
+
+#: src/library/video_player/tracks.rs:34
+msgid "Audio"
+msgstr "音訊"
+
+#: src/library/video_player/tracks.rs:49 src/settings_window/library.rs:129
+msgid "Off"
+msgstr "關閉"
+
+#: src/library/video_player/tracks.rs:57
+msgid "Subtitles"
+msgstr "字幕"
+
+#: src/library/window_layout.rs:106
+msgid "Mimick Library"
+msgstr "Mimick 圖庫"
+
+#: src/library/window_layout.rs:280
+msgid "Toggle sidebar (F9)"
+msgstr "切換側邊欄 (F9)"
+
+#: src/library/window_layout.rs:284
+msgid "Back (Alt+Left)"
+msgstr "返回 (Alt+Left)"
+
+#: src/library/window_layout.rs:289
+msgid "Menu"
+msgstr "選單"
+
+#: src/library/window_layout.rs:297
+msgid "Search (Ctrl+K)"
+msgstr "搜尋 (Ctrl+K)"
+
+#: src/library/window_layout.rs:303
+msgid "Select assets (Esc to exit)"
+msgstr "選取資產 (按 Esc 退出)"
+
+#: src/library/window_layout.rs:333 src/settings_window/queue_inspector.rs:61
+msgid "Queue Inspector"
+msgstr "佇列檢查器"
+
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/tray_icon.rs:73
+msgid "Settings"
+msgstr "設定"
+
+#: src/library/window_layout.rs:337
+msgid "Keyboard Shortcuts"
+msgstr "鍵盤快速鍵"
+
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+msgid "About Mimick"
+msgstr "關於 Mimick"
+
+#: src/library/window_layout.rs:393
+msgid "Remote"
+msgstr "遠端"
+
+#: src/library/window_layout.rs:394
+msgid "Local"
+msgstr "本機"
+
+#: src/library/window_layout.rs:395
+msgid "Unified"
+msgstr "整合"
+
+#: src/library/window_layout.rs:398
+msgid "Asset source"
+msgstr "資產來源"
+
+#: src/library/window_layout.rs:415
+msgid "Paste from Clipboard"
+msgstr "從剪貼簿貼上"
+
+#: src/library/window_layout.rs:423
+msgid "More ways to upload"
+msgstr "更多上傳方式"
+
+#: src/library/window_layout.rs:444
+msgid "Nothing to show"
+msgstr "沒有可顯示的內容"
+
+#: src/library/window_layout.rs:445
+msgid "No assets match the current view"
+msgstr "沒有資產符合目前的檢視條件"
+
+#: src/library/window_layout.rs:500
+#: src/settings_window/watch_folders/rules_dialog.rs:238
+msgid "Sync"
+msgstr "同步"
+
+#: src/library/window_layout.rs:506
+msgid "Link"
+msgstr "連結"
+
+#: src/library/window_layout/bulk_bar.rs:65
+msgid "Add to album"
+msgstr "加入相簿"
+
+#: src/library/window_layout/bulk_bar.rs:66
+msgid "Stack selected"
+msgstr "堆疊所選項目"
+
+#: src/library/window_layout/bulk_bar.rs:68
+msgid "Remove from album"
+msgstr "從相簿中移除"
+
+#: src/library/window_layout/bulk_bar.rs:203
+msgid "Set location for selected"
+msgstr "為所選項目設定位置"
+
+#: src/library/window_layout/bulk_bar.rs:207
+msgid "Change date for selected"
+msgstr "變更所選項目的日期"
+
+#: src/library/window_layout/bulk_bar.rs:224
+msgid "Delete selected"
+msgstr "刪除所選項目"
+
+#: src/library/window_layout/bulk_bar.rs:229
+msgid "Download selected"
+msgstr "下載所選項目"
+
+#: src/library/window_layout/bulk_bar.rs:233
+msgid "Clear selection"
+msgstr "清除選取"
+
+#: src/library/window_layout/bulk_bar.rs:238
+msgid "Share selected"
+msgstr "共用所選項目"
+
+#: src/library/window_layout/responsive.rs:173
+msgid "Sync…"
+msgstr "同步…"
+
+#: src/main/ui_lifecycle.rs:56 src/queue_manager.rs:481
+msgid "Paused by user"
+msgstr "使用者已暫停"
+
+#: src/notifications.rs:28
+msgid "Sync complete"
+msgstr "同步完成"
+
+#: src/notifications.rs:32
+#, rust-format
+msgid "All {n} file processed. Idle."
+msgid_plural "All {n} files processed. Idle."
+msgstr[0] "已處理全部 {n} 個檔案。閒置。"
+
+#: src/notifications.rs:42
+#, rust-format
+msgid "{n} failed and will be retried."
+msgid_plural "{n} failed and will be retried."
+msgstr[0] "{n} 項失敗，將會重試。"
+
+#: src/notifications.rs:55
+msgid "Mimick: Connection lost"
+msgstr "Mimick：連線中斷"
+
+#: src/notifications.rs:57
+msgid ""
+"Could not reach the Immich server. Uploads will resume automatically when "
+"connectivity is restored."
+msgstr "無法連線至 Immich 伺服器。連線恢復後將自動繼續上傳。"
+
+#: src/queue_manager.rs:241
+#, rust-format
+msgid "Target album: {name}"
+msgstr "目標相簿：{name}"
+
+#: src/queue_manager.rs:326
+msgid "Removed from retry queue"
+msgstr "已從重試佇列中移除"
+
+#: src/queue_manager.rs:339 src/queue_manager.rs:350
+msgid "Manual retry"
+msgstr "手動重試"
+
+#: src/queue_manager.rs:484
+msgid "Deferred on metered network"
+msgstr "因使用計費網路而延後"
+
+#: src/queue_manager.rs:486
+msgid "Deferred while on battery power"
+msgstr "因使用電池電源而延後"
+
+#: src/queue_manager.rs:488
+msgid "Deferred during quiet hours"
+msgstr "因處於勿擾時段而延後"
+
+#: src/queue_manager/progress.rs:319
+#, rust-format
+msgid "Finished in {elapsed}s"
+msgstr "在 {elapsed} 秒內完成"
+
+#: src/queue_manager/progress.rs:357
+#, rust-format
+msgid "Upload failed for {path}"
+msgstr "{path} 上傳失敗"
+
+#: src/queue_manager/progress.rs:366
+msgid ""
+"Review the latest server and permission settings, then retry the failed item."
+msgstr "請檢查最新的伺服器與權限設定，然後重試失敗的項目。"
+
+#: src/queue_manager/progress.rs:379
+msgid "Queued for retry"
+msgstr "已排入重試佇列"
+
+#: src/sanitize.rs:47
+msgid "URL is empty"
+msgstr "網址為空"
+
+#: src/sanitize.rs:51
+#, rust-format
+msgid "Invalid URL: {err}"
+msgstr "無效的網址：{err}"
+
+#: src/settings_window/actions_ui.rs:17
+msgid "Troubleshooting"
+msgstr "疑難排解"
+
+#: src/settings_window/actions_ui.rs:21
+msgid "Detailed Logs"
+msgstr "詳細記錄"
+
+#: src/settings_window/actions_ui.rs:23
+msgid ""
+"Record more while you reproduce a problem, then export. The log grows faster."
+msgstr "在重現問題時記錄更多資訊，然後匯出。記錄檔增長速度會更快。"
+
+#: src/settings_window/actions_ui.rs:28
+msgid "Export…"
+msgstr "匯出…"
+
+#: src/settings_window/actions_ui.rs:32
+msgid "Export Diagnostics"
+msgstr "匯出診斷資訊"
+
+#: src/settings_window/actions_ui.rs:34
+msgid ""
+"For bug reports: settings, status, and the end of the log, with private "
+"details removed."
+msgstr "用於錯誤回報：包含設定、狀態與記錄檔末尾內容，且已移除隱私資訊。"
+
+#: src/settings_window/appearance.rs:22
+msgid "Style"
+msgstr "樣式"
+
+#: src/settings_window/appearance.rs:23
+msgid "Light Theme"
+msgstr "淺色主題"
+
+#: src/settings_window/appearance.rs:24
+msgid "Dark Theme"
+msgstr "深色主題"
+
+#: src/settings_window/apply.rs:164
+msgid "API Key Stored in a File"
+msgstr "API 金鑰已儲存在檔案中"
+
+#: src/settings_window/apply.rs:170
+msgid "Settings Saved"
+msgstr "設定已儲存"
+
+#: src/settings_window/apply.rs:171
+msgid "Mimick saved the updated settings successfully."
+msgstr "Mimick 已成功儲存更新的設定。"
+
+#: src/settings_window/apply.rs:207
+msgid "Startup Permission Needed"
+msgstr "需要自動啟動權限"
+
+#: src/settings_window/apply.rs:208
+msgid "Mimick was not allowed to start automatically at login."
+msgstr "Mimick 未獲允許在登入時自動啟動。"
+
+#: src/settings_window/apply.rs:210
+msgid "Could Not Update Startup Setting"
+msgstr "無法更新自動啟動設定"
+
+#: src/settings_window/apply.rs:241
+msgid "Could Not Save API Key"
+msgstr "無法儲存 API 金鑰"
+
+#: src/settings_window/apply.rs:249
+msgid "Could Not Save Settings"
+msgstr "無法儲存設定"
+
+#: src/settings_window/apply.rs:250
+msgid "Mimick could not write the updated configuration to disk."
+msgstr "Mimick 無法將更新的設定寫入磁碟。"
+
+#: src/settings_window/behavior.rs:53
+msgid "Uploads"
+msgstr "上傳"
+
+#: src/settings_window/behavior.rs:54
+msgid "How and when your watched folders are backed up."
+msgstr "如何及何時備份監控的資料夾。"
+
+#: src/settings_window/behavior.rs:59
+msgid "Parallel Uploads"
+msgstr "並行上傳數"
+
+#: src/settings_window/behavior.rs:60
+msgid "Higher is faster but uses more bandwidth."
+msgstr "數值越高速度越快，但會使用更多頻寬。"
+
+#: src/settings_window/behavior.rs:65
+#: src/settings_window/watch_folders/rules_dialog.rs:304
+msgid "Upload XMP Sidecars"
+msgstr "上傳 XMP 附屬檔案"
+
+#: src/settings_window/behavior.rs:66
+#: src/settings_window/watch_folders/rules_dialog.rs:305
+msgid "Send .xmp edit files along with their photos."
+msgstr "隨相片一起傳送 .xmp 編輯檔案。"
+
+#: src/settings_window/behavior.rs:71
+msgid "Pause on Metered Networks"
+msgstr "使用計費網路時暫停"
+
+#: src/settings_window/behavior.rs:72
+msgid "Wait for an unmetered connection, such as home Wi-Fi."
+msgstr "等待非計費連線，例如家用 Wi-Fi。"
+
+#: src/settings_window/behavior.rs:76
+msgid "Pause on Battery"
+msgstr "使用電池時暫停"
+
+#: src/settings_window/behavior.rs:77
+msgid "Wait until the computer is plugged in."
+msgstr "等待電腦接上電源。"
+
+#: src/settings_window/behavior.rs:101
+msgid "App"
+msgstr "應用程式"
+
+#: src/settings_window/behavior.rs:106
+msgid "Run on Startup"
+msgstr "登入時自動啟動"
+
+#: src/settings_window/behavior.rs:107
+msgid "Start Mimick when you log in."
+msgstr "在您登入時啟動 Mimick。"
+
+#: src/settings_window/behavior.rs:111
+msgid "Background Sync"
+msgstr "背景同步"
+
+#: src/settings_window/behavior.rs:112
+msgid "Keep watching folders after you close this window."
+msgstr "關閉此視窗後繼續監控資料夾。"
+
+#: src/settings_window/behavior.rs:117
+msgid "Tell me when uploads finish or something goes wrong."
+msgstr "在完成上傳或發生錯誤時通知我。"
+
+#: src/settings_window/behavior.rs:121
+msgid "Library View"
+msgstr "圖庫檢視"
+
+#: src/settings_window/behavior.rs:122
+msgid "The tray menu updates after a restart."
+msgstr "系統匣選單將在重新啟動後更新。"
+
+#: src/settings_window/behavior.rs:137
+msgid "Quiet Hours"
+msgstr "勿擾時段"
+
+#: src/settings_window/behavior.rs:138
+msgid "Don't upload during these hours each day."
+msgstr "每天在這些時段內不進行上傳。"
+
+#: src/settings_window/behavior.rs:183
+msgid "Changed in the Last 7 Days"
+msgstr "過去 7 天內變更的檔案"
+
+#: src/settings_window/behavior.rs:184
+msgid "New Files Only"
+msgstr "僅限新檔案"
+
+#: src/settings_window/behavior.rs:190
+#: src/settings_window/watch_folders/rules_dialog.rs:194
+msgid "When Mimick Starts, Check"
+msgstr "Mimick 啟動時檢查"
+
+#: src/settings_window/behavior.rs:191
+msgid "Folders can choose their own in Folder Rules."
+msgstr "各資料夾可在「資料夾規則」中個別設定。"
+
+#: src/settings_window/connectivity.rs:29
+msgid "Internal URL (LAN)"
+msgstr "內部網址 (LAN)"
+
+#: src/settings_window/connectivity.rs:31
+msgid "External URL (WAN)"
+msgstr "外部網址 (WAN)"
+
+#: src/settings_window/connectivity.rs:35
+msgid "Not tested yet"
+msgstr "尚未測試"
+
+#: src/settings_window/connectivity.rs:38
+msgid "Test Connection"
+msgstr "測試連線"
+
+#: src/settings_window/connectivity.rs:41
+msgid "Save and Connect"
+msgstr "儲存並連線"
+
+#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+msgid "Open Library"
+msgstr "開啟圖庫"
+
+#: src/settings_window/connectivity.rs:89
+msgid "API Key"
+msgstr "API 金鑰"
+
+#: src/settings_window/connectivity.rs:137
+msgid "LAN URL"
+msgstr "區域網路 (LAN) 網址"
+
+#: src/settings_window/connectivity.rs:138
+msgid "WAN URL"
+msgstr "廣域網路 (WAN) 網址"
+
+#: src/settings_window/form.rs:127
+msgid "Invalid Internal URL"
+msgstr "無效的內部網址"
+
+#: src/settings_window/form.rs:132
+msgid "Invalid External URL"
+msgstr "無效的外部網址"
+
+#: src/settings_window/library.rs:70
+msgid "Open Map Places in a Full Grid"
+msgstr "在完整網格中開啟地圖地點"
+
+#: src/settings_window/library.rs:71
+msgid "Otherwise their photos open beside the map."
+msgstr "否則其相片將在地圖旁開啟。"
+
+#: src/settings_window/library.rs:88
+msgid "Open Originals in Lightbox"
+msgstr "在燈箱中開啟原圖"
+
+#: src/settings_window/library.rs:89
+msgid "Slower to open."
+msgstr "開啟速度較慢。"
+
+#: src/settings_window/library.rs:93
+msgid "Thumbnail Quality"
+msgstr "縮圖品質"
+
+#: src/settings_window/library.rs:94
+msgid "Sharper thumbnails use more memory."
+msgstr "更清晰的縮圖會使用更多記憶體。"
+
+#: src/settings_window/library.rs:96
+msgid "Automatic"
+msgstr "自動"
+
+#: src/settings_window/library.rs:97
+msgid "Thumbnail"
+msgstr "縮圖"
+
+#: src/settings_window/library.rs:98
+msgid "Preview"
+msgstr "預覽圖"
+
+#: src/settings_window/library.rs:99
+msgid "Full Size"
+msgstr "完整尺寸"
+
+#: src/settings_window/library.rs:104
+msgid "Fit Thumbnails to Tiles"
+msgstr "讓縮圖符合圖塊大小"
+
+#: src/settings_window/library.rs:106
+msgid "Preview and Full Size thumbnails use far less memory."
+msgstr "預覽圖與完整尺寸縮圖所使用的記憶體少得多。"
+
+#: src/settings_window/library.rs:122
+msgid "Date Headings"
+msgstr "日期標題"
+
+#: src/settings_window/library.rs:124
+msgid "Dates between photos in Photos, albums, and other timelines."
+msgstr "在「相片」、相簿與其他時間軸中，相片之間顯示的日期。"
+
+#: src/settings_window/library.rs:127
+msgid "By Day"
+msgstr "依日期"
+
+#: src/settings_window/library.rs:128
+msgid "By Month"
+msgstr "依月份"
+
+#: src/settings_window/library.rs:139
+msgid "Grid Appearance"
+msgstr "網格外觀"
+
+#: src/settings_window/library.rs:141
+msgid "Border Width"
+msgstr "邊框寬度"
+
+#: src/settings_window/library.rs:142
+msgid "Gap between photos, in pixels. 0 for none."
+msgstr "相片之間的間距（像素）。0 代表無間距。"
+
+#: src/settings_window/library.rs:148
+msgid "Border Color"
+msgstr "邊框顏色"
+
+#: src/settings_window/library.rs:163
+msgid "RAW Files"
+msgstr "RAW 檔案"
+
+#: src/settings_window/library.rs:165
+msgid "Full RAW Decoding"
+msgstr "完整 RAW 解碼"
+
+#: src/settings_window/library.rs:167
+msgid ""
+"Uses the sensor data, not the embedded preview, with every colour the camera "
+"recorded. Slower, and uses more memory."
+msgstr "使用感光元件資料而非內嵌預覽圖，以呈現相機記錄的每一種色彩。速度較慢，且使用更多記憶體。"
+
+#: src/settings_window/library.rs:172
+msgid "Keep Decoded RAW Files"
+msgstr "保留已解碼的 RAW 檔案"
+
+#: src/settings_window/library.rs:173
+msgid "Reopen instantly, using disk space."
+msgstr "可即時重新開啟，但會占用磁碟空間。"
+
+#: src/settings_window/library.rs:192
+msgid "Cache Limit (MB)"
+msgstr "快取上限 (MB)"
+
+#: src/settings_window/library.rs:193
+msgid "Trimmed when Mimick starts."
+msgstr "在 Mimick 啟動時清理。"
+
+#: src/settings_window/library.rs:200
+msgid "Memory Limit (MB)"
+msgstr "記憶體上限 (MB)"
+
+#: src/settings_window/library.rs:201
+msgid "At most half your RAM."
+msgstr "最多為您記憶體的一半。"
+
+#: src/settings_window/library.rs:228
+msgid "Clear Cache"
+msgstr "清除快取"
+
+#: src/settings_window/library.rs:230
+msgid "Free the space now. Thumbnails reload as you browse."
+msgstr "立即釋放空間。縮圖將在您瀏覽時重新載入。"
+
+#: src/settings_window/library.rs:243
+msgid "Download Folder"
+msgstr "下載資料夾"
+
+#: src/settings_window/library.rs:244 src/settings_window/library.rs:253
+#: src/settings_window/wiring/folder_wiring.rs:58
+msgid "Ask each time"
+msgstr "每次詢問"
+
+#: src/settings_window/library.rs:248
+msgid "Change…"
+msgstr "變更…"
+
+#: src/settings_window/library.rs:267
+#, rust-format
+msgid "Using {used} of {limit}"
+msgstr "已使用 {used}，上限為 {limit}"
+
+#: src/settings_window/mod.rs:52
+msgid "Default (Folder Name)"
+msgstr "預設（資料夾名稱）"
+
+#: src/settings_window/mod.rs:56
+msgid "Library (No Album)"
+msgstr "圖庫（無相簿）"
+
+#: src/settings_window/mod.rs:127
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so the API key "
+"was stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"設定已儲存，但系統鑰匙圈無法使用，因此 API 金鑰已儲存於 {path}。\n"
+"\n"
+"該檔案僅可由您的使用者帳號讀取，但未加密。\n"
+"\n"
+"請參閱：{url}"
+
+#: src/settings_window/mod.rs:141
+msgid "No successful sync yet"
+msgstr "尚無成功的同步紀錄"
+
+#: src/settings_window/mod.rs:151
+msgid "Less than a minute ago"
+msgstr "不到 1 分鐘前"
+
+#: src/settings_window/mod.rs:157
+#, rust-format
+msgid "{n} minute ago"
+msgid_plural "{n} minutes ago"
+msgstr[0] "{n} 分鐘前"
+
+#: src/settings_window/mod.rs:161
+#, rust-format
+msgid "{n} hour ago"
+msgid_plural "{n} hours ago"
+msgstr[0] "{n} 小時前"
+
+#: src/settings_window/mod.rs:164
+#, rust-format
+msgid "{n} day ago"
+msgid_plural "{n} days ago"
+msgstr[0] "{n} 天前"
+
+#: src/settings_window/queue_inspector.rs:38
+msgid "Retry All"
+msgstr "全部重試"
+
+#: src/settings_window/queue_inspector.rs:86
+msgid "Failed Retry Queue"
+msgstr "失敗重試佇列"
+
+#: src/settings_window/queue_inspector.rs:90
+msgid "Recent Queue Activity"
+msgstr "最近的佇列活動"
+
+#: src/settings_window/queue_inspector.rs:114
+msgid "Retry All Failed"
+msgstr "重試所有失敗項目"
+
+#: src/settings_window/queue_inspector.rs:116
+msgid "Clear Failed Queue"
+msgstr "清空失敗佇列"
+
+#: src/settings_window/queue_inspector.rs:233
+msgid "No failed items"
+msgstr "沒有失敗的項目"
+
+#: src/settings_window/queue_inspector.rs:234
+msgid "The retry queue is currently empty."
+msgstr "重試佇列目前是空的。"
+
+#: src/settings_window/queue_inspector.rs:252 src/settings_window/status.rs:231
+msgid "Retry"
+msgstr "重試"
+
+#: src/settings_window/queue_inspector.rs:258
+msgid "Retrying…"
+msgstr "正在重試…"
+
+#: src/settings_window/status.rs:38
+msgid "Watched Folders"
+msgstr "監控資料夾"
+
+#: src/settings_window/status.rs:50
+msgid "Checking…"
+msgstr "正在檢查…"
+
+#: src/settings_window/status.rs:51
+msgid "Last Upload"
+msgstr "上次上傳"
+
+#: src/settings_window/status.rs:51
+msgid "Nothing uploaded yet"
+msgstr "尚未上傳任何內容"
+
+#: src/settings_window/status.rs:92
+msgid "Set Up…"
+msgstr "設定…"
+
+#: src/settings_window/status.rs:129 src/settings_window/status_poll.rs:243
+msgid "Up to Date"
+msgstr "已是最新"
+
+#: src/settings_window/status.rs:153 src/tray_icon.rs:95
+msgid "Sync Now"
+msgstr "立即同步"
+
+#: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
+#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+msgid "Pause"
+msgstr "暫停"
+
+#: src/settings_window/status.rs:155
+msgid "Queue…"
+msgstr "佇列…"
+
+#: src/settings_window/status.rs:222
+msgid "Needs Attention"
+msgstr "需要注意"
+
+#: src/settings_window/status.rs:226
+msgid "Failed uploads"
+msgstr "失敗的上傳項目"
+
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
+#: src/settings_window/wiring.rs:368
+msgid "Resume"
+msgstr "繼續"
+
+#: src/settings_window/status_poll.rs:127
+msgid "No server set up yet"
+msgstr "尚未設定伺服器"
+
+#: src/settings_window/status_poll.rs:138
+#, rust-format
+msgid "{n} upload failed"
+msgid_plural "{n} uploads failed"
+msgstr[0] "{n} 項上傳失敗"
+
+#: src/settings_window/status_poll.rs:149
+msgid "No folders yet"
+msgstr "尚無資料夾"
+
+#: src/settings_window/status_poll.rs:150
+msgid "Add one under Settings → Watch Folders."
+msgstr "請在「設定 → 監控資料夾」中新增資料夾。"
+
+#: src/settings_window/status_poll.rs:184
+msgid "Waiting for a successful connection check"
+msgstr "正在等待連線檢查成功"
+
+#: src/settings_window/status_poll.rs:202
+msgid "Not Set Up Yet"
+msgstr "尚未設定"
+
+#: src/settings_window/status_poll.rs:203
+msgid "Connect Mimick to your Immich server to start."
+msgstr "將 Mimick 連線至您的 Immich 伺服器以開始使用。"
+
+#: src/settings_window/status_poll.rs:210
+msgid "Paused"
+msgstr "已暫停"
+
+#: src/settings_window/status_poll.rs:228
+msgid "Can't Reach Immich"
+msgstr "無法連線至 Immich"
+
+#: src/settings_window/status_poll.rs:229
+msgid "Check the server address and API key in Settings."
+msgstr "請在「設定」中檢查伺服器位址與 API 金鑰。"
+
+#: src/settings_window/status_poll.rs:236
+msgid "Waiting for Immich"
+msgstr "正在等待 Immich"
+
+#: src/settings_window/status_poll.rs:237
+msgid "Failed uploads retry when the server is reachable."
+msgstr "伺服器可連線時將會重試失敗的上傳。"
+
+#: src/settings_window/status_poll.rs:246
+#, rust-format
+msgid "Last upload {when}"
+msgstr "上次上傳於 {when}"
+
+#: src/settings_window/status_poll.rs:263
+#, rust-format
+msgid "Uploading {done} of {total}"
+msgstr "正在上傳 {done} / {total}"
+
+#: src/settings_window/status_poll.rs:289
+#: src/settings_window/status_poll.rs:295
+msgid "Up to date"
+msgstr "已是最新"
+
+#: src/settings_window/status_poll.rs:292
+#, rust-format
+msgid "Problem: {err}"
+msgstr "問題：{err}"
+
+#: src/settings_window/status_poll.rs:298
+#, rust-format
+msgid "{n} waiting to upload"
+msgid_plural "{n} waiting to upload"
+msgstr[0] "{n} 項等待上傳"
+
+#: src/settings_window/status_poll.rs:308
+#, rust-format
+msgid "last upload {when}"
+msgstr "上次上傳於 {when}"
+
+#: src/settings_window/watch_folders.rs:123
+msgid "Upload Target"
+msgstr "上傳目標"
+
+#: src/settings_window/watch_folders.rs:156
+msgid "Select a library or album upload target"
+msgstr "選取圖庫或相簿作為上傳目標"
+
+#: src/settings_window/watch_folders.rs:192
+msgid "Remove Folder"
+msgstr "移除資料夾"
+
+#: src/settings_window/watch_folders/album_picker.rs:88
+#, rust-format
+msgid "Create new: \"{name}\""
+msgstr "新增：\"{name}\""
+
+#: src/settings_window/watch_folders/album_picker.rs:95
+msgid "No album sync or deletion mirroring"
+msgstr "不進行相簿同步或刪除鏡像"
+
+#: src/settings_window/watch_folders/album_picker.rs:96
+msgid "Creates album dynamically per-folder"
+msgstr "依每個資料夾動態建立相簿"
+
+#: src/settings_window/watch_folders/album_picker.rs:188
+msgid "Select Upload Target"
+msgstr "選取上傳目標"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:29
+msgid "Rules"
+msgstr "規則"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:30
+msgid "Edit folder rules"
+msgstr "編輯資料夾規則"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:33
+#: src/settings_window/watch_folders/rules_dialog.rs:83
+msgid "Folder Rules"
+msgstr "資料夾規則"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:172
+msgid "Uploads new photos and downloads new album photos."
+msgstr "上傳新相片並下載相簿新相片。"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:184
+msgid "Sync Method"
+msgstr "同步方式"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:187
+msgid "Full Sync"
+msgstr "完整同步"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:188
+msgid "Upload Only"
+msgstr "僅上傳"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:189
+msgid "Download Only"
+msgstr "僅下載"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:195
+msgid "Which files in this folder are checked at startup."
+msgstr "在啟動時檢查此資料夾中的哪些檔案。"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:220
+msgid "Library uploads can only upload from this folder."
+msgstr "圖庫上傳只能從此資料夾上傳。"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:224
+msgid "Not available for library uploads."
+msgstr "不適用於圖庫上傳。"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:245
+msgid "Deletions"
+msgstr "刪除操作"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:252
+msgid "Files"
+msgstr "檔案"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:280
+msgid "Delete from Immich Too"
+msgstr "同時從 Immich 中刪除"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:281
+msgid "Moves the Immich copy to the Immich trash."
+msgstr "將 Immich 中的複本移至 Immich 垃圾桶。"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:287
+msgid "Delete from This Folder Too"
+msgstr "同時從此資料夾中刪除"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:288
+msgid "Waiting on a Flatpak trash portal fix."
+msgstr "正在等待 Flatpak 垃圾桶入口修復。"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:298
+msgid "Skip Hidden Files"
+msgstr "略過隱藏檔案"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:299
+msgid "Names starting with a dot, like .thumbnails"
+msgstr "以圓點開頭的名稱，例如 .thumbnails"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:321
+msgid "Largest File in MB (empty for no limit)"
+msgstr "最大檔案大小 (MB)（留空表示無限制）"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:325
+msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
+msgstr "僅限這些類型，例如 jpg, png, mp4（留空表示全部）"
+
+#: src/settings_window/wiring.rs:72
+msgid "Status"
+msgstr "狀態"
+
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+msgid "Quit Mimick"
+msgstr "結束 Mimick"
+
+#: src/settings_window/wiring.rs:101
+msgid "Main Menu"
+msgstr "主選單"
+
+#: src/settings_window/wiring.rs:148
+msgid "Get Started"
+msgstr "開始使用"
+
+#: src/settings_window/wiring.rs:150
+msgid "Three steps to connect Mimick to your Immich server."
+msgstr "只需三個步驟即可將 Mimick 連線至您的 Immich 伺服器。"
+
+#: src/settings_window/wiring.rs:155
+msgid "1. Enter your server"
+msgstr "1. 輸入您的伺服器"
+
+#: src/settings_window/wiring.rs:156
+msgid "Your Immich address under Server, below."
+msgstr "在下方的「伺服器」處輸入您的 Immich 位址。"
+
+#: src/settings_window/wiring.rs:159
+msgid "2. Add an API key"
+msgstr "2. 新增 API 金鑰"
+
+#: src/settings_window/wiring.rs:160
+msgid ""
+"In Immich: Account Settings → API Keys. The guide lists the permissions."
+msgstr "在 Immich 中：「帳號設定 → API 金鑰」。指南中列出了所需權限。"
+
+#: src/settings_window/wiring.rs:163
+msgid "3. Save and Connect"
+msgstr "3. 儲存並連線"
+
+#: src/settings_window/wiring.rs:165
+msgid ""
+"Your library opens next. To back up a folder too, add it under Watch Folders."
+msgstr "接下來將開啟您的圖庫。如需一併備份資料夾，請在「監控資料夾」下新增。"
+
+#: src/settings_window/wiring.rs:177
+msgid "Guide"
+msgstr "指南"
+
+#: src/settings_window/wiring.rs:207
+#, rust-format
+msgid "{name} also works"
+msgstr "{name} 也可正常運作"
+
+#: src/settings_window/wiring.rs:211
+#, rust-format
+msgid "{name} unreachable"
+msgstr "無法連線至 {name}"
+
+#: src/settings_window/wiring.rs:219
+msgid "Couldn't reach Immich at either address"
+msgstr "無法透過任一位址連線至 Immich"
+
+#: src/settings_window/wiring.rs:252
+msgid "Testing…"
+msgstr "正在測試…"
+
+#: src/settings_window/wiring.rs:366
+msgid "Paused by you"
+msgstr "已由您暫停"
+
+#: src/settings_window/wiring.rs:425
+msgid "Invalid Selection"
+msgstr "無效的選取"
+
+#: src/settings_window/wiring.rs:426
+msgid "At least one URL (Internal or External) must be enabled."
+msgstr "必須啟用至少一個網址（內部或外部）。"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:16
+msgid "Choose Diagnostics Export Folder"
+msgstr "選擇診斷資訊匯出資料夾"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:49
+msgid "Diagnostics Exported"
+msgstr "已匯出診斷資訊"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:51
+#, rust-format
+msgid "Saved diagnostics bundle to {path}"
+msgstr "已將診斷套件儲存至 {path}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:61
+#: src/settings_window/wiring/diagnostics_wiring.rs:68
+msgid "Diagnostics Export Failed"
+msgstr "診斷資訊匯出失敗"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:63
+#, rust-format
+msgid "Could not write diagnostics bundle: {err}"
+msgstr "無法寫入診斷套件：{err}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:70
+#, rust-format
+msgid "Diagnostics task could not complete: {err}"
+msgstr "診斷作業無法完成：{err}"
+
+#: src/settings_window/wiring/folder_wiring.rs:91
+msgid "Watch Folders"
+msgstr "監控資料夾"
+
+#: src/settings_window/wiring/folder_wiring.rs:92
+msgid "Expand a folder to pick its album and rules."
+msgstr "展開資料夾以選取其相簿與規則。"
+
+#: src/settings_window/wiring/folder_wiring.rs:114
+msgid "Add Folder…"
+msgstr "新增資料夾…"
+
+#: src/settings_window/wiring/folder_wiring.rs:152
+msgid "Select Watch Folder"
+msgstr "選取監控資料夾"
+
+#: src/settings_window/wiring/library_wiring.rs:86
+msgid "Could Not Clear Cache"
+msgstr "無法清除快取"
+
+#: src/startup_scan/enumeration.rs:114
+msgid "Permission lost or folder missing"
+msgstr "權限遺失或資料夾不存在"
+
+#: src/tray_icon.rs:41
+msgid "Mimick Sync"
+msgstr "Mimick 同步"
+
+#: src/tray_icon.rs:84
+msgid "Pause / Resume"
+msgstr "暫停 / 繼續"
+
+#: src/tray_icon.rs:106
+msgid "Quit"
+msgstr "結束"
+
+#: src/watch_path_display.rs:18
+msgid "Selected Folder"
+msgstr "所選資料夾"
+
+#: setup/dev.nicx.mimick.desktop:2
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:4
+msgid "Mimick"
+msgstr "Mimick"
+
+#: setup/dev.nicx.mimick.desktop:3
+msgid "Unofficial Immich desktop client and auto-sync agent"
+msgstr "非官方 Immich 桌面端與自動同步工具"
+
+#: setup/dev.nicx.mimick.desktop:10
+msgid ""
+"Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
+msgstr "相片;圖片;影片;同步;備份;上傳;Immich;相簿;圖庫;自架;自託管;"
+
+#: setup/dev.nicx.mimick.desktop:25
+msgid "Upload with Mimick"
+msgstr "使用 Mimick 上傳"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:5
+msgid "Back up and browse your photos"
+msgstr "備份並瀏覽您的相片"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:17
+msgid ""
+"Mimick is a native Linux desktop client for self-hosted Immich servers. It "
+"monitors your folders in the background and automatically syncs photos and "
+"videos to your server."
+msgstr "Mimick 是一款適用於自架 Immich 伺服器的原生 Linux 桌面用戶端。它會在背景監控您的資料夾，並自動將相片與影片同步至您的伺服器。"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
+msgid ""
+"Per-folder sync methods: upload only, download only, or full bidirectional "
+"sync with optional deletion mirroring."
+msgstr "支援依個別資料夾設定同步方式：僅上傳、僅下載或完整的雙向同步（可選刪除鏡像）。"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
+msgid ""
+"Built-in Library View for browsing your timeline, managing albums, and "
+"searching with Smart Search, OCR, and metadata filters."
+msgstr "內建圖庫檢視，可瀏覽時間軸、管理相簿，並透過智慧搜尋、OCR 與中繼資料篩選條件進行搜尋。"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
+msgid ""
+"SHA-1 deduplication, parallel upload workers, and offline retry queue for "
+"reliable transfers."
+msgstr "具備 SHA-1 重複資料刪除、平行上傳工作執行緒與離線重試佇列，確保傳輸可靠穩定。"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
+msgid ""
+"Environment-aware: automatically pauses on battery or metered connections. "
+"Configurable quiet hours and per-folder rules."
+msgstr "環境感知：使用電池或計費連線時自動暫停。支援可自訂的勿擾時段與個別資料夾規則。"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
+msgid ""
+"Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
+"sandbox support."
+msgstr "使用 Rust 搭配 GTK4 與 Libadwaita 建置。支援系統匣整合與 Flatpak 沙盒環境。"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
+msgid ""
+"Mimick is a community-developed client and is not affiliated with or "
+"endorsed by the Immich project."
+msgstr "Mimick 是一款由社群開發的用戶端，與 Immich 專案無附屬關係，亦未獲得其官方背書。"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
+msgid "Library View - Photos page with sidebar"
+msgstr "圖庫檢視 - 帶有側邊欄的相片頁面"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:43
+msgid "Explore page showing People, Places, and Things"
+msgstr "「探索」頁面，顯示人物、地點與事物"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:48
+msgid "Selected album view in dark mode"
+msgstr "深色模式下的選定相簿檢視"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:53
+msgid "Lightbox viewer with details pane"
+msgstr "帶有詳細資訊面板的燈箱檢視器"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:58
+msgid "OCR search for text inside images"
+msgstr "搜尋圖片內文字的 OCR 搜尋"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:63
+msgid "Album sync dialog with upload and download actions"
+msgstr "包含上傳與下載動作的相簿同步對話框"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:68
+msgid "Settings - Server connection and watch folders"
+msgstr "設定 - 伺服器連線與監控資料夾"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
+msgid "Status page with sync health dashboard"
+msgstr "帶有同步健康狀態儀表板的狀態頁面"

@@ -1,0 +1,6498 @@
+# Norwegian Bokmål translations for mimick package.
+# Copyright (C) 2026 THE mimick'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the mimick package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: mimick\n"
+"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
+"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"PO-Revision-Date: 2026-11-09 20:57+0530\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Norwegian Bokmål\n"
+"Language: nb\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/about.rs:49
+msgid "Documentation"
+msgstr "Dokumentasjon"
+
+#: src/about.rs:51
+msgid "Attribution"
+msgstr "Anerkjennelse"
+
+#: src/about.rs:53
+msgid "Special Thanks"
+msgstr "Spesiell takk"
+
+#: src/about.rs:56
+msgid "Built With"
+msgstr "Bygget med"
+
+#: src/api_client/albums.rs:70
+msgid "Album list is unavailable"
+msgstr "Albumlisten er ikke tilgjengelig"
+
+#: src/api_client/albums.rs:71
+msgid "Reconnect to the Immich server before refreshing albums."
+msgstr "Koble til Immich-tjeneren på nytt før du oppdaterer albumer."
+
+#: src/api_client/albums.rs:180
+msgid "Failed to fetch albums"
+msgstr "Kunne ikke hente albumer"
+
+#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+msgid "Cannot fetch albums to verify existence"
+msgstr "Kan ikke hente albumer for å bekrefte at de finnes"
+
+#: src/api_client/errors.rs:35
+#, rust-format
+msgid ""
+"The server responded with HTTP {status}. Check the server logs and retry "
+"after confirming the current configuration."
+msgstr "Tjeneren svarte med HTTP {status}. Sjekk tjenerloggene og prøv igjen etter å ha bekreftet gjeldende konfigurasjon."
+
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+msgid "Immich rejected the API key"
+msgstr "Immich avviste API-nøkkelen"
+
+#: src/api_client/errors.rs:45
+msgid ""
+"Update the API key in Settings and confirm it still has the required Asset "
+"and Album permissions (see README for the full list)."
+msgstr "Oppdater API-nøkkelen i Innstillinger og bekreft at den fortsatt har de nødvendige tillatelsene for elementer og albumer (se README for fullstendig liste)."
+
+#: src/api_client/errors.rs:54
+msgid "An album reference is no longer valid"
+msgstr "En albumreferanse er ikke lenger gyldig"
+
+#: src/api_client/errors.rs:55
+msgid "Refresh the album list or choose a different album before retrying."
+msgstr "Oppdater albumlisten eller velg et annet album før du prøver igjen."
+
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+msgid "Immich rejected a file as too large"
+msgstr "Immich avviste en fil fordi den er for stor"
+
+#: src/api_client/errors.rs:61
+msgid ""
+"Reduce the file size, raise the server upload limit, or skip oversized files "
+"with folder rules."
+msgstr "Reduser filstørrelsen, øk tjenerens opplastingsgrense, eller hopp over for store filer med mapperegler."
+
+#: src/api_client/errors.rs:65
+msgid "Immich rate-limited the request"
+msgstr "Immich hastighetsbegrenset forespørselen"
+
+#: src/api_client/errors.rs:67
+msgid ""
+"Wait a moment and retry. If this happens often, lower upload concurrency or "
+"check reverse proxy limits."
+msgstr "Vent et øyeblikk og prøv igjen. Hvis dette skjer ofte, bør du redusere antall samtidige opplastinger eller sjekke grensene for omvendt proxy."
+
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+msgid "Immich is temporarily unavailable"
+msgstr "Immich er midlertidig utilgjengelig"
+
+#: src/api_client/errors.rs:73
+msgid ""
+"Wait a moment and retry. If it keeps happening, inspect the server and "
+"reverse proxy logs."
+msgstr "Vent et øyeblikk og prøv igjen. Hvis det fortsetter å skje, kan du undersøke loggene for tjeneren og den omvendte proxyen."
+
+#: src/api_client/errors.rs:88
+msgid "the upload"
+msgstr "opplastingen"
+
+#: src/api_client/errors.rs:90
+#, rust-format
+msgid "Immich could not accept {subject}"
+msgstr "Immich kunne ikke godta {subject}"
+
+#: src/api_client/errors.rs:95 src/library/explore_view/tiles.rs:116
+#: src/library/explore_view/tiles.rs:138 src/library/people_view.rs:236
+#: src/library/source_header/enrichment.rs:242
+msgid "Unnamed"
+msgstr "Uten navn"
+
+#: src/api_client/errors.rs:97
+#, rust-format
+msgid "Immich could not create album '{album}'"
+msgstr "Immich kunne ikke opprette albumet '{album}'"
+
+#: src/api_client/errors.rs:101
+msgid "Immich could not load the album list"
+msgstr "Immich kunne ikke laste inn albumlisten"
+
+#: src/api_client/errors.rs:103
+msgid "Immich could not add the asset to the selected album"
+msgstr "Immich kunne ikke legge til elementet i det valgte albumet"
+
+#: src/api_client/errors.rs:105
+msgid "Immich could not load a library thumbnail"
+msgstr "Immich kunne ikke laste inn et miniatyrbilde fra biblioteket"
+
+#: src/api_client/errors.rs:106
+msgid "Immich could not load library assets"
+msgstr "Immich kunne ikke laste inn bibliotekelementer"
+
+#: src/api_client/errors.rs:107
+msgid "Immich could not run the smart library search"
+msgstr "Immich kunne ikke utføre smart søk i biblioteket"
+
+#: src/api_client/errors.rs:109
+msgid "Immich could not run the metadata library search"
+msgstr "Immich kunne ikke utføre metadatasøk i biblioteket"
+
+#: src/api_client/errors.rs:111
+msgid "Immich could not download the selected asset"
+msgstr "Immich kunne ikke laste ned det valgte elementet"
+
+#: src/api_client/errors.rs:112
+msgid "Immich could not load library statistics"
+msgstr "Immich kunne ikke laste inn bibliotekstatistikk"
+
+#: src/api_client/errors.rs:113
+msgid "Immich could not load server version information"
+msgstr "Immich kunne ikke laste inn informasjon om tjenerversjon"
+
+#: src/api_client/errors.rs:121
+msgid "The Immich request timed out"
+msgstr "Immich-forespørselen ble tidsavbrutt"
+
+#: src/api_client/errors.rs:122
+msgid "Check network quality and server responsiveness, then retry."
+msgstr "Sjekk nettverkskvaliteten og tjenerens responstid, og prøv deretter igjen."
+
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+msgid "Could not reach the Immich server"
+msgstr "Kunne ikke nå Immich-tjeneren"
+
+#: src/api_client/errors.rs:128
+msgid ""
+"Check the configured URLs, your network connection, and whether the server "
+"is online."
+msgstr "Sjekk de konfigurerte URL-ene, nettverkstilkoblingen og om tjeneren er påkoblet."
+
+#: src/api_client/errors.rs:135
+msgid ""
+"Retry the request after checking network connectivity and server health."
+msgstr "Prøv forespørselen igjen etter å ha sjekket nettverkstilkoblingen og tjenerstatusen."
+
+#: src/api_client/errors.rs:144
+msgid "The upload request failed before completion"
+msgstr "Opplastingsforespørselen mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:145
+msgid "The album request failed before completion"
+msgstr "Albumforespørselen mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:147
+msgid "The album creation request failed before completion"
+msgstr "Forespørselen om opprettelse av album mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:150
+msgid "The album assignment request failed before completion"
+msgstr "Forespørselen om albumtilordning mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:152
+msgid "The thumbnail request failed before completion"
+msgstr "Miniatyrbildeforespørselen mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:153
+msgid "The library asset request failed before completion"
+msgstr "Forespørselen om bibliotekelement mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:154
+msgid "The smart search request failed before completion"
+msgstr "Forespørselen om smart søk mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:156
+msgid "The metadata search request failed before completion"
+msgstr "Forespørselen om metadatasøk mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:159
+msgid "The asset download request failed before completion"
+msgstr "Forespørselen om nedlasting av element mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:162
+msgid "The library statistics request failed before completion"
+msgstr "Forespørselen om bibliotekstatistikk mislyktes før den ble fullført"
+
+#: src/api_client/errors.rs:165
+msgid "The server version request failed before completion"
+msgstr "Forespørselen om tjenerversjon mislyktes før den ble fullført"
+
+#: src/api_client/mod.rs:387
+msgid "No active connection"
+msgstr "Ingen aktiv tilkobling"
+
+#: src/api_client/search.rs:358
+msgid "Immich can't count by file name or deleted photos"
+msgstr "Immich kan ikke telle etter filnavn eller slettede bilder"
+
+#: src/api_client/tags.rs:76
+#, rust-format
+msgid "Immich did not return the tag \"{value}\""
+msgstr "Immich returnerte ikke etiketten \"{value}\""
+
+#: src/api_client/tags.rs:87
+msgid "Renaming tags needs a newer version of Immich."
+msgstr "Omdøping av etiketter krever en nyere versjon av Immich."
+
+#: src/api_client/timeline.rs:194
+#, rust-format
+msgid "Invalid month {month}"
+msgstr "Ugyldig måned {month}"
+
+#: src/api_client/upload.rs:301
+msgid "A queued file is no longer available"
+msgstr "En fil i køen er ikke lenger tilgjengelig"
+
+#: src/api_client/upload.rs:303
+msgid "Mimick could not read a queued file"
+msgstr "Mimick kunne ikke lese en fil i køen"
+
+#: src/api_client/upload.rs:306
+msgid ""
+"Check that the watched folder still exists and that the file was not moved "
+"or deleted before upload."
+msgstr "Sjekk at den overvåkede mappen fortsatt finnes og at filen ikke ble flyttet eller slettet før opplasting."
+
+#: src/api_client/upload.rs:308
+msgid ""
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr "Bekreft mappetillatelser og sørg for at filen fortsatt er tilgjengelig for appen."
+
+#: src/api_client/upload.rs:322
+msgid "Mimick could not open a queued file"
+msgstr "Mimick kunne ikke åpne en fil i køen"
+
+#: src/api_client/upload.rs:323
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr "Filen kan være låst, slettet eller utenfor appens tillatte mappetilgang."
+
+#: src/api_client/upload.rs:336
+msgid "No active server connection"
+msgstr "Ingen aktiv tjenertilkobling"
+
+#: src/api_client/upload.rs:337
+msgid ""
+"Test the server connection in Settings and confirm at least one Immich URL "
+"is reachable."
+msgstr "Test tjenertilkoblingen i Innstillinger og bekreft at minst én Immich-URL kan nås."
+
+#: src/api_client/upload.rs:393
+msgid ""
+"Reduce the file size, raise the server's upload limits, or use a folder rule "
+"to skip oversized files."
+msgstr "Reduser filstørrelsen, øk tjenerens opplastingsgrenser, eller bruk en mapperegel for å hoppe over for store filer."
+
+#: src/api_client/upload.rs:410
+msgid ""
+"Wait a moment and retry. If it keeps happening, check the server logs and "
+"reverse proxy."
+msgstr "Vent et øyeblikk og prøv igjen. Hvis det fortsetter å skje, kan du sjekke tjenerloggene og den omvendte proxyen."
+
+#: src/autostart.rs:50
+msgid ""
+"Reason for requesting background access: Mimick must run in the background "
+"to automatically sync media to Immich."
+msgstr "Årsak til forespørsel om bakgrunnstilgang: Mimick må kjøre i bakgrunnen for automatisk å synkronisere medier til Immich."
+
+#: src/autostart.rs:57
+#, rust-format
+msgid "Failed to contact the background portal: {err}"
+msgstr "Kunne ikke kontakte bakgrunnsportalen: {err}"
+
+#: src/autostart.rs:59
+#, rust-format
+msgid "The desktop rejected the autostart request: {err}"
+msgstr "Skrivebordsmiljøet avviste autostart-forespørselen: {err}"
+
+#: src/autostart.rs:74
+#, rust-format
+msgid "Failed to create autostart directory: {err}"
+msgstr "Kunne ikke opprette autostart-mappe: {err}"
+
+#: src/autostart.rs:88
+#, rust-format
+msgid "Failed to write autostart entry: {err}"
+msgstr "Kunne ikke skrive autostart-oppføring: {err}"
+
+#: src/autostart.rs:114
+#, rust-format
+msgid "Failed to remove autostart entry: {err}"
+msgstr "Kunne ikke fjerne autostart-oppføring: {err}"
+
+#: src/autostart.rs:126 src/autostart.rs:133
+msgid "Could not locate the user config directory."
+msgstr "Kunne ikke finne brukerens konfigurasjonsmappe."
+
+#: src/library/about_dialog.rs:40
+msgid "Repository"
+msgstr "Kodelager"
+
+#: src/library/about_dialog.rs:45
+msgid "Source"
+msgstr "Kildekode"
+
+#: src/library/about_dialog.rs:50
+msgid "Build"
+msgstr "Bygg"
+
+#: src/library/about_dialog.rs:55
+msgid "Build Image"
+msgstr "Bygg-avbildning"
+
+#. Translators: strftime date, e.g. "9 Oct 2026".
+#: src/library/about_dialog.rs:78 src/library/day_row.rs:63
+#: src/library/duplicates_view/cards.rs:217
+#: src/library/explore_view/calendar.rs:36 src/library/header_format.rs:64
+#: src/library/header_format.rs:77 src/library/utilities/controls.rs:138
+msgid "%-d %b %Y"
+msgstr "%-d. %b %Y"
+
+#: src/library/about_dialog.rs:81
+#, rust-format
+msgid "Installed {version} on {date}"
+msgstr "Installert {version} den {date}"
+
+#: src/library/about_dialog.rs:135 src/library/about_dialog.rs:150
+msgid "Immich Server"
+msgstr "Immich-tjener"
+
+#: src/library/about_dialog.rs:214
+msgid "Version History"
+msgstr "Versjonshistorikk"
+
+#: src/library/about_dialog.rs:234
+msgid "Server details unavailable"
+msgstr "Tjenerdetaljer er ikke tilgjengelige"
+
+#: src/library/about_dialog.rs:235
+#, rust-format
+msgid ""
+"Your API key needs the 'server.about' and 'server.versionCheck' "
+"permissions.\n"
+"\n"
+"{err}"
+msgstr ""
+"API-nøkkelen din trenger tillatelsene 'server.about' og 'server.versionCheck'.\n"
+"\n"
+"{err}"
+
+#: src/library/account.rs:34 src/library/window_layout.rs:332
+msgid "Account"
+msgstr "Konto"
+
+#: src/library/account.rs:66
+#, rust-format
+msgid "Couldn't load this. Your API key needs the “{permission}” permission."
+msgstr "Kunne ikke laste inn dette. API-nøkkelen din trenger tillatelsen «{permission}»."
+
+#: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
+#: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
+#: src/library/album_link.rs:187 src/library/album_wiring.rs:35
+#: src/library/asset_edit.rs:253 src/library/bulk_date.rs:316
+#: src/library/dialogs.rs:40 src/library/dialogs.rs:85
+#: src/library/dialogs.rs:110 src/library/lightbox/edit/panel.rs:101
+#: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
+#: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
+#: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/watch_folders/rules_dialog.rs:120
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: src/library/account/avatar_crop.rs:130
+msgid "Picture to crop; drag or use the arrow keys to move it"
+msgstr "Bilde som skal beskjæres; dra eller bruk piltastene for å flytte det"
+
+#: src/library/account/avatar_crop.rs:407 src/library/bulk_date.rs:274
+msgid "Set"
+msgstr "Bruk"
+
+#: src/library/account/avatar_crop.rs:420
+msgid "Zoom"
+msgstr "Zoom"
+
+#: src/library/account/avatar_crop.rs:440
+msgid "Crop Picture"
+msgstr "Beskjær bilde"
+
+#: src/library/account/devices.rs:20
+msgid "Signed-in Devices"
+msgstr "Innloggede enheter"
+
+#: src/library/account/devices.rs:22
+msgid ""
+"Browsers and apps signed in to your account. Mimick uses an API key, so it "
+"isn't listed."
+msgstr "Nettlesere og apper som er logget inn på kontoen din. Mimick bruker en API-nøkkel, så den er ikke oppført."
+
+#: src/library/account/devices.rs:28
+msgid "Devices"
+msgstr "Enheter"
+
+#: src/library/account/devices.rs:42
+msgid "No browsers or apps are signed in."
+msgstr "Ingen nettlesere eller apper er logget inn."
+
+#: src/library/account/devices.rs:72
+msgid "Sign out"
+msgstr "Logg ut"
+
+#: src/library/account/devices.rs:84
+#, rust-format
+msgid "Sign out {device}?"
+msgstr "Logge ut {device}?"
+
+#: src/library/account/devices.rs:85
+msgid "It will have to sign in to Immich again."
+msgstr "Den må logge inn på Immich på nytt."
+
+#: src/library/account/devices.rs:86
+msgid "Sign Out"
+msgstr "Logg ut"
+
+#: src/library/account/devices.rs:105
+#, rust-format
+msgid "Couldn't sign it out: {err}"
+msgstr "Kunne ikke logge den ut: {err}"
+
+#: src/library/account/devices.rs:118
+msgid "Unknown device"
+msgstr "Ukjent enhet"
+
+#: src/library/account/devices.rs:126
+#, rust-format
+msgid "Last used {date}"
+msgstr "Sist brukt {date}"
+
+#: src/library/account/keys.rs:34
+msgid "This App"
+msgstr "Denne appen"
+
+#: src/library/account/keys.rs:35
+msgid "The key Mimick signs in to Immich with."
+msgstr "Nøkkelen Mimick logger inn på Immich med."
+
+#: src/library/account/keys.rs:39
+msgid "Other Keys"
+msgstr "Andre nøkler"
+
+#: src/library/account/keys.rs:40
+msgid "Make new keys in Immich's web app."
+msgstr "Opprett nye nøkler i Immichs nettapp."
+
+#: src/library/account/keys.rs:44
+msgid "API Keys"
+msgstr "API-nøkler"
+
+#: src/library/account/keys.rs:92
+msgid "No other keys."
+msgstr "Ingen andre nøkler."
+
+#: src/library/account/keys.rs:101
+msgid "Unnamed key"
+msgstr "Navnløs nøkkel"
+
+#: src/library/account/keys.rs:115 src/library/shared_link_photos.rs:297
+#, rust-format
+msgid "Made {date}"
+msgstr "Opprettet {date}"
+
+#: src/library/account/keys.rs:119
+msgid "All permissions"
+msgstr "Alle tillatelser"
+
+#: src/library/account/keys.rs:123
+#, rust-format
+msgid "{n} permission"
+msgid_plural "{n} permissions"
+msgstr[0] "{n} tillatelse"
+msgstr[1] "{n} tillatelser"
+
+#: src/library/account/keys.rs:144
+msgid "Rotate…"
+msgstr "Roter…"
+
+#: src/library/account/keys.rs:145
+msgid "Get a new secret for this key"
+msgstr "Få en ny hemmelighet for denne nøkkelen"
+
+#: src/library/account/keys.rs:155
+msgid "Get a new secret for this key?"
+msgstr "Få en ny hemmelighet for denne nøkkelen?"
+
+#: src/library/account/keys.rs:157
+msgid ""
+"Mimick saves the new secret and keeps working. Anything else using this key "
+"stops working until you give it the new secret."
+msgstr "Mimick lagrer den nye hemmeligheten og fortsetter å fungere. Alt annet som bruker denne nøkkelen slutter å fungere til du gir den den nye hemmeligheten."
+
+#: src/library/account/keys.rs:159
+msgid "Rotate"
+msgstr "Roter"
+
+#: src/library/account/keys.rs:176
+#, rust-format
+msgid "Couldn't rotate the key: {err}"
+msgstr "Kunne ikke rotere nøkkelen: {err}"
+
+#: src/library/account/keys.rs:184
+msgid "New secret saved"
+msgstr "Ny hemmelighet lagret"
+
+#: src/library/account/keys.rs:192
+msgid "Copy Your New Secret"
+msgstr "Kopier den nye hemmeligheten din"
+
+#: src/library/account/keys.rs:194
+#, rust-format
+msgid ""
+"Mimick is using it now but couldn't save it ({err}). Paste it in Settings so "
+"it's kept:\n"
+"\n"
+"{secret}"
+msgstr ""
+"Mimick bruker den nå, men kunne ikke lagre den ({err}). Lim den inn i Innstillinger slik at den beholdes:\n"
+"\n"
+"{secret}"
+
+#: src/library/account/keys.rs:199 src/library/context_menu.rs:321
+#: src/library/context_menu.rs:336 src/library/masonry/canvas_helpers.rs:141
+#: src/settings_window/mod.rs:65
+msgid "OK"
+msgstr "OK"
+
+#: src/library/account/keys.rs:212
+msgid "Delete key"
+msgstr "Slett nøkkel"
+
+#: src/library/account/keys.rs:223
+msgid "Delete this key?"
+msgstr "Slette denne nøkkelen?"
+
+#: src/library/account/keys.rs:224
+msgid "Anything signing in with it stops working. This can't be undone."
+msgstr "Alt som logger inn med den slutter å fungere. Dette kan ikke angres."
+
+#: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
+#: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
+#: src/library/shared_links_view.rs:361 src/library/tags_view.rs:184
+#: src/library/tags_view.rs:305
+msgid "Delete"
+msgstr "Slett"
+
+#: src/library/account/keys.rs:244
+#, rust-format
+msgid "Couldn't delete the key: {err}"
+msgstr "Kunne ikke slette nøkkelen: {err}"
+
+#: src/library/account/profile.rs:36
+msgid "Profile"
+msgstr "Profil"
+
+#: src/library/account/profile.rs:61
+msgid "Change Picture…"
+msgstr "Endre bilde…"
+
+#: src/library/account/profile.rs:65
+msgid "Remove Picture"
+msgstr "Fjern bilde"
+
+#: src/library/account/profile.rs:109
+msgid "Remove your profile picture?"
+msgstr "Fjerne profilbildet ditt?"
+
+#: src/library/account/profile.rs:110
+msgid "Immich shows your initials instead."
+msgstr "Immich viser initialene dine i stedet."
+
+#: src/library/account/profile.rs:111 src/library/lightbox/edit/pages.rs:138
+#: src/library/people_view.rs:458
+msgid "Remove"
+msgstr "Fjern"
+
+#: src/library/account/profile.rs:124
+#, rust-format
+msgid "Couldn't load your account: {err}"
+msgstr "Kunne ikke laste inn kontoen din: {err}"
+
+#: src/library/account/profile.rs:152
+msgid "To use one of your photos, choose Set as Profile Picture in its menu."
+msgstr "For å bruke et av bildene dine, velg «Bruk som profilbilde» i menyen."
+
+#: src/library/account/profile.rs:163
+msgid "Images"
+msgstr "Bilder"
+
+#: src/library/account/profile.rs:178
+msgid "Choose a Profile Picture"
+msgstr "Velg et profilbilde"
+
+#: src/library/account/profile.rs:193 src/library/account/profile.rs:222
+msgid "That file isn't a JPEG, PNG, or WebP picture."
+msgstr "Den filen er ikke et JPEG-, PNG- eller WebP-bilde."
+
+#: src/library/account/profile.rs:203
+#, rust-format
+msgid "Couldn't open the picture: {err}"
+msgstr "Kunne ikke åpne bildet: {err}"
+
+#: src/library/account/profile.rs:232
+#, rust-format
+msgid "Couldn't change it: {err}"
+msgstr "Kunne ikke endre det: {err}"
+
+#: src/library/account/profile.rs:242
+msgid "Couldn't remove the picture"
+msgstr "Kunne ikke fjerne bildet"
+
+#: src/library/account/profile.rs:282
+msgid "Profile picture changed"
+msgstr "Profilbilde endret"
+
+#: src/library/account/profile.rs:284
+msgid "Couldn't change your picture"
+msgstr "Kunne ikke endre bildet ditt"
+
+#: src/library/account/profile.rs:298
+msgid "Immich's preview of this photo isn't a JPEG or WebP."
+msgstr "Immichs forhåndsvisning av dette bildet er ikke JPEG eller WebP."
+
+#: src/library/actions.rs:222
+msgid "New Link…"
+msgstr "Ny lenke…"
+
+#: src/library/actions.rs:229
+msgid "Add to Existing Link…"
+msgstr "Legg til i eksisterende lenke…"
+
+#: src/library/actions.rs:270 src/library/utilities.rs:194
+#, rust-format
+msgid "{n} selected"
+msgid_plural "{n} selected"
+msgstr[0] "{n} valgt"
+msgstr[1] "{n} valgt"
+
+#: src/library/actions.rs:276
+#, rust-format
+msgid "{owned} of {n} selected, only yours change"
+msgid_plural "{owned} of {n} selected, only yours change"
+msgstr[0] "{owned} av {n} valgt, bare dine endres"
+msgstr[1] "{owned} av {n} valgt, bare dine endres"
+
+#: src/library/actions.rs:318 src/library/actions.rs:351
+msgid "Not Your Photos"
+msgstr "Ikke dine bilder"
+
+#: src/library/actions.rs:319
+msgid ""
+"Only the owner can change where a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "Bare eieren kan endre hvor et bilde ble tatt, og de valgte bildene tilhører andre personer."
+
+#: src/library/actions.rs:352
+msgid ""
+"Only the owner can change when a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "Bare eieren kan endre når et bilde ble tatt, og de valgte bildene tilhører andre personer."
+
+#: src/library/actions/trash.rs:60
+#, rust-format
+msgid "Move “{filename}” to trash?"
+msgstr "Flytte «{filename}» til papirkurven?"
+
+#: src/library/actions/trash.rs:65
+#, rust-format
+msgid "Move {count} item to trash?"
+msgid_plural "Move {count} items to trash?"
+msgstr[0] "Flytt {count} element til papirkurven?"
+msgstr[1] "Flytt {count} elementer til papirkurven?"
+
+#: src/library/actions/trash.rs:72
+#, rust-format
+msgid "Delete “{filename}” permanently?"
+msgstr "Slette «{filename}» permanent?"
+
+#: src/library/actions/trash.rs:77 src/library/trash_view.rs:179
+#, rust-format
+msgid "Delete {count} item permanently?"
+msgid_plural "Delete {count} items permanently?"
+msgstr[0] "Slett {count} element permanent?"
+msgstr[1] "Slett {count} elementer permanent?"
+
+#: src/library/actions/trash.rs:89
+msgid "Items can be restored from the Immich trash."
+msgstr "Elementer kan gjenopprettes fra papirkurven i Immich."
+
+#: src/library/actions/trash.rs:91
+msgid "The Immich trash is turned off, so this can't be undone."
+msgstr "Papirkurven i Immich er slått av, så dette kan ikke angres."
+
+#: src/library/actions/trash.rs:95
+msgid "Local copies in your watch folders are kept."
+msgstr "Lokale kopier i de overvåkede mappene dine beholdes."
+
+#: src/library/actions/trash.rs:101
+#, rust-format
+msgid "{n} local-only item is not on the server and will be skipped."
+msgid_plural "{n} local-only items are not on the server and will be skipped."
+msgstr[0] "{n} lokalt element finnes ikke på tjeneren og vil bli hoppet over."
+msgstr[1] "{n} lokale elementer finnes ikke på tjeneren og vil bli hoppet over."
+
+#: src/library/actions/trash.rs:159
+msgid "Could Not Move to Trash"
+msgstr "Kunne ikke flytte til papirkurven"
+
+#: src/library/actions/trash.rs:161 src/library/album_assets.rs:125
+#: src/library/album_assets.rs:226 src/library/album_delete.rs:218
+#: src/library/album_picker.rs:194 src/library/album_picker.rs:228
+#: src/library/album_picker/several.rs:101
+#, rust-format
+msgid "Immich rejected the request: {err}"
+msgstr "Immich avviste forespørselen: {err}"
+
+#: src/library/actions/trash.rs:185 src/library/shortcuts_dialog.rs:160
+msgid "Move to trash"
+msgstr "Flytt til papirkurven"
+
+#: src/library/album_activity.rs:60
+#, rust-format
+msgid "{n} like"
+msgid_plural "{n} likes"
+msgstr[0] "{n} likerklikk"
+msgstr[1] "{n} likerklikk"
+
+#: src/library/album_activity.rs:64
+#, rust-format
+msgid "{n} comment"
+msgid_plural "{n} comments"
+msgstr[0] "{n} kommentar"
+msgstr[1] "{n} kommentarer"
+
+#: src/library/album_activity/dialog.rs:23
+msgid "Likes and comments"
+msgstr "Likerklikk og kommentarer"
+
+#: src/library/album_activity/dialog.rs:77 src/library/album_options.rs:34
+#: src/library/lightbox/activity.rs:22
+msgid "Activity"
+msgstr "Aktivitet"
+
+#: src/library/album_activity/feed.rs:42 src/library/album_activity/feed.rs:126
+msgid "Like"
+msgstr "Liker"
+
+#: src/library/album_activity/feed.rs:43
+msgid "Send"
+msgstr "Send"
+
+#: src/library/album_activity/feed.rs:46
+msgid "Add a comment…"
+msgstr "Legg til en kommentar…"
+
+#: src/library/album_activity/feed.rs:108
+msgid "Couldn't load likes and comments"
+msgstr "Kunne ikke laste inn likerklikk og kommentarer"
+
+#: src/library/album_activity/feed.rs:117
+msgid "No likes or comments yet"
+msgstr "Ingen likerklikk eller kommentarer ennå"
+
+#: src/library/album_activity/feed.rs:124
+msgid "Unlike"
+msgstr "Fjern likerklikk"
+
+#: src/library/album_activity/feed.rs:166
+msgid "Couldn't update the like"
+msgstr "Kunne ikke oppdatere likerklikk"
+
+#: src/library/album_activity/feed.rs:191
+msgid "Couldn't post the comment"
+msgstr "Kunne ikke publisere kommentaren"
+
+#: src/library/album_activity/feed.rs:202
+msgid "Couldn't delete"
+msgstr "Kunne ikke slette"
+
+#: src/library/album_activity/feed.rs:260 src/library/content_state.rs:213
+#: src/library/server_stats_dialog.rs:42
+msgid "Loading…"
+msgstr "Laster inn…"
+
+#: src/library/album_assets.rs:79
+#, rust-format
+msgid "Only the owner can remove these from “{album}”"
+msgstr "Bare eieren kan fjerne disse fra «{album}»"
+
+#: src/library/album_assets.rs:84
+#, rust-format
+msgid "Removed {items} from “{album}”"
+msgstr "Fjernet {items} fra «{album}»"
+
+#: src/library/album_assets.rs:94
+#, rust-format
+msgid "{n} belongs to someone else"
+msgid_plural "{n} belong to someone else"
+msgstr[0] "{n} tilhører noen andre"
+msgstr[1] "{n} tilhører noen andre"
+
+#: src/library/album_assets.rs:123
+msgid "Couldn't remove from the album"
+msgstr "Kunne ikke fjerne fra albumet"
+
+#: src/library/album_assets.rs:155
+msgid "Undo"
+msgstr "Angre"
+
+#: src/library/album_assets.rs:183
+msgid "Album cover updated"
+msgstr "Albumomslag oppdatert"
+
+#: src/library/album_assets.rs:186 src/library/album_edit.rs:91
+msgid "Couldn't update the album"
+msgstr "Kunne ikke oppdatere albumet"
+
+#: src/library/album_assets.rs:194
+#, rust-format
+msgid "Leave “{album_name}”?"
+msgstr "Forlate «{album_name}»?"
+
+#: src/library/album_assets.rs:200
+msgid ""
+"You'll stop seeing its photos unless the owner shares it with you again."
+msgstr "Du vil ikke lenger se bildene i det med mindre eieren deler det med deg på nytt."
+
+#: src/library/album_assets.rs:201
+msgid "Leave"
+msgstr "Forlat"
+
+#: src/library/album_assets.rs:212
+#, rust-format
+msgid "Left “{album_name}”"
+msgstr "Forlot «{album_name}»"
+
+#: src/library/album_assets.rs:224
+msgid "Couldn't leave the album"
+msgstr "Kunne ikke forlate albumet"
+
+#: src/library/album_delete.rs:28
+#, rust-format
+msgid ""
+"Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
+"they don't create it again."
+msgstr "Mimick laster fortsatt opp. Slett «{album_name}» når opplastingen er fullført, slik at det ikke opprettes på nytt."
+
+#: src/library/album_delete.rs:29
+msgid "Uploads in Progress"
+msgstr "Opplastinger pågår"
+
+#: src/library/album_delete.rs:35
+msgid "Close Settings First"
+msgstr "Lukk Innstillinger først"
+
+#: src/library/album_delete.rs:36
+msgid ""
+"Deleting this album changes your watch folders, and saving the open Settings "
+"window would undo that. Close Settings, then delete the album."
+msgstr "Sletting av dette albumet endrer de overvåkede mappene dine, og lagring av det åpne Innstillinger-vinduet ville angre dette. Lukk Innstillinger, og slett deretter albumet."
+
+#: src/library/album_delete.rs:45
+msgid "Its photos stay in your library."
+msgstr "Bildene forblir i biblioteket ditt."
+
+#: src/library/album_delete.rs:49
+msgid "It's also removed for the person it's shared with."
+msgstr "Det fjernes også for personen det er delt med."
+
+#: src/library/album_delete.rs:53
+#, rust-format
+msgid "It's also removed for the {n} person it's shared with."
+msgid_plural "It's also removed for the {n} people it's shared with."
+msgstr[0] "Det fjernes også for den {n} personen det er delt med."
+msgstr[1] "Det fjernes også for de {n} personene det er delt med."
+
+#: src/library/album_delete.rs:61
+msgid "Its shared links stop working."
+msgstr "De delte lenkene slutter å fungere."
+
+#: src/library/album_delete.rs:117
+#, rust-format
+msgid "Delete “{album_name}”?"
+msgstr "Slette «{album_name}»?"
+
+#: src/library/album_delete.rs:124
+msgid "Delete Album"
+msgstr "Slett album"
+
+#: src/library/album_delete.rs:153
+msgid "These folders sync with this album:"
+msgstr "Disse mappene synkroniseres med dette albumet:"
+
+#: src/library/album_delete.rs:156
+msgid "Keep backing them up to your library"
+msgstr "Fortsett å sikkerhetskopiere dem til biblioteket ditt"
+
+#: src/library/album_delete.rs:160
+msgid "Stop watching these folders"
+msgstr "Stopp overvåking av disse mappene"
+
+#: src/library/album_delete.rs:169
+msgid ""
+"So the album doesn't come back, photos in these folders go to your library "
+"instead of an album named after the folder:"
+msgstr "For at albumet ikke skal gjenoppstå, legges bildene i disse mappene til i biblioteket ditt i stedet for et album oppkalt etter mappen:"
+
+#: src/library/album_delete.rs:221
+msgid "Could Not Delete Album"
+msgstr "Kunne ikke slette albumet"
+
+#: src/library/album_delete.rs:256
+#, rust-format
+msgid "Deleted “{album_name}”"
+msgstr "Slettet «{album_name}»"
+
+#: src/library/album_download.rs:20 src/library/controls.rs:377
+#: src/library/staging_view.rs:148
+msgid "Album"
+msgstr "Album"
+
+#: src/library/album_download.rs:34
+#, rust-format
+msgid "Immich couldn't prepare the album: {err}"
+msgstr "Immich kunne ikke klargjøre albumet: {err}"
+
+#: src/library/album_download.rs:37 src/library/album_download.rs:54
+msgid "Download Failed"
+msgstr "Nedlasting mislyktes"
+
+#: src/library/album_download.rs:42
+#, rust-format
+msgid "“{album}” has nothing to download"
+msgstr "«{album}» har ingenting å laste ned"
+
+#: src/library/album_download.rs:90
+#, rust-format
+msgid "Saved {file_name}"
+msgstr "Lagret {file_name}"
+
+#: src/library/album_download.rs:101
+#, rust-format
+msgid "Saved {count} zip file"
+msgid_plural "Saved {count} zip files"
+msgstr[0] "Lagret {count} zip-fil"
+msgstr[1] "Lagret {count} zip-filer"
+
+#: src/library/album_download.rs:111 src/library/download.rs:287
+msgid "Open Folder"
+msgstr "Åpne mappe"
+
+#: src/library/album_edit.rs:21 src/library/albums_view.rs:66
+#: src/library/people_view.rs:322 src/library/tags_view.rs:205
+msgid "Rename…"
+msgstr "Endre navn…"
+
+#: src/library/album_edit.rs:25 src/library/albums_view.rs:68
+#: src/library/window_layout/bulk_bar.rs:215
+msgid "Edit Description…"
+msgstr "Rediger beskrivelse…"
+
+#: src/library/album_edit.rs:29
+msgid "Options…"
+msgstr "Alternativer…"
+
+#: src/library/album_edit.rs:33 src/library/albums_view.rs:72
+msgid "Delete Album…"
+msgstr "Slett album…"
+
+#: src/library/album_edit.rs:44
+msgid "Rename Album"
+msgstr "Endre navn på album"
+
+#: src/library/album_edit.rs:45
+msgid "Folders linked to this album stay linked."
+msgstr "Mapper som er koblet til dette albumet forblir koblet."
+
+#: src/library/album_edit.rs:47 src/library/album_picker.rs:432
+#: src/library/album_wiring.rs:31
+msgid "Album name"
+msgstr "Albumnavn"
+
+#: src/library/album_edit.rs:48 src/library/download.rs:357
+#: src/library/tags_view.rs:182 src/library/tags_view.rs:277
+msgid "Rename"
+msgstr "Endre navn"
+
+#: src/library/album_edit.rs:76
+msgid "Album Description"
+msgstr "Albumbeskrivelse"
+
+#: src/library/album_link.rs:42
+msgid "Linked folder"
+msgstr "Koblet mappe"
+
+#: src/library/album_link.rs:48
+msgid "Unlink"
+msgstr "Fjern kobling"
+
+#: src/library/album_link.rs:54 src/library/window_layout.rs:492
+msgid "No local folder linked"
+msgstr "Ingen lokal mappe er koblet"
+
+#: src/library/album_link.rs:56 src/library/window_layout.rs:494
+msgid "Drop files in the linked folder to sync this album"
+msgstr "Slipp filer i den koblede mappen for å synkronisere dette albumet"
+
+#: src/library/album_link.rs:60 src/library/window_layout/responsive.rs:178
+msgid "Link folder…"
+msgstr "Koble til mappe…"
+
+#: src/library/album_link.rs:184
+msgid "Sync album"
+msgstr "Synkroniser album"
+
+#: src/library/album_link.rs:185
+msgid "Pick which directions to apply."
+msgstr "Velg hvilke retninger som skal tas i bruk."
+
+#: src/library/album_link.rs:188
+msgid "Apply"
+msgstr "Bruk"
+
+#: src/library/album_link.rs:200
+#, rust-format
+msgid "Upload {n} item to album"
+msgid_plural "Upload {n} items to album"
+msgstr[0] "Last opp {n} element til album"
+msgstr[1] "Last opp {n} elementer til album"
+
+#: src/library/album_link.rs:209
+#, rust-format
+msgid "Download {n} item to folder"
+msgid_plural "Download {n} items to folder"
+msgstr[0] "Last ned {n} element til mappe"
+msgstr[1] "Last ned {n} elementer til mappe"
+
+#: src/library/album_link.rs:218
+#, rust-format
+msgid "Move {n} album item to trash"
+msgid_plural "Move {n} album items to trash"
+msgstr[0] "Flytt {n} albumelement til papirkurven"
+msgstr[1] "Flytt {n} albumelementer til papirkurven"
+
+#: src/library/album_link.rs:227
+#, rust-format
+msgid "Move {n} local item to trash"
+msgid_plural "Move {n} local items to trash"
+msgstr[0] "Flytt {n} lokalt element til papirkurven"
+msgstr[1] "Flytt {n} lokale elementer til papirkurven"
+
+#: src/library/album_link.rs:292
+#, rust-format
+msgid ""
+"Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
+msgid_plural ""
+"Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
+msgstr[0] "Allerede synkronisert. ({n} eksternt element kunne ikke matches – mangler kontrollsum.)"
+msgstr[1] "Allerede synkronisert. ({n} eksterne elementer kunne ikke matches – mangler kontrollsum.)"
+
+#: src/library/album_link.rs:299
+msgid "Already in sync."
+msgstr "Allerede synkronisert."
+
+#: src/library/album_link.rs:307
+#, rust-format
+msgid "{n} remote item couldn't be matched (missing checksum)."
+msgid_plural "{n} remote items couldn't be matched (missing checksum)."
+msgstr[0] "{n} eksternt element kunne ikke matches (mangler kontrollsum)."
+msgstr[1] "{n} eksterne elementer kunne ikke matches (mangler kontrollsum)."
+
+#: src/library/album_link.rs:430
+#, rust-format
+msgid "Link folder for album '{album_name}'"
+msgstr "Koble mappe for album '{album_name}'"
+
+#: src/library/album_options.rs:19
+msgid "Album Options"
+msgstr "Albumalternativer"
+
+#: src/library/album_options.rs:25
+msgid "Comments and Likes"
+msgstr "Kommentarer og likerklikk"
+
+#: src/library/album_options.rs:26
+msgid "Let people in this album like and comment"
+msgstr "Tillat personer i dette albumet å like og kommentere"
+
+#: src/library/album_options.rs:30
+msgid "Display"
+msgstr "Visning"
+
+#: src/library/album_options.rs:48
+msgid "Display Order"
+msgstr "Visningsrekkefølge"
+
+#: src/library/album_options.rs:50
+msgid "Newest First"
+msgstr "Nyeste først"
+
+#: src/library/album_options.rs:51
+msgid "Oldest First"
+msgstr "Eldste først"
+
+#: src/library/album_options.rs:92 src/library/album_options.rs:149
+#, rust-format
+msgid "Couldn't save: {err}"
+msgstr "Kunne ikke lagre: {err}"
+
+#: src/library/album_picker.rs:54
+msgid "Add to Album"
+msgstr "Legg til i album"
+
+#: src/library/album_picker.rs:136
+#, rust-format
+msgid "Couldn't add to “{album}”"
+msgstr "Kunne ikke legge til i «{album}»"
+
+#: src/library/album_picker.rs:138
+#, rust-format
+msgid "Already in “{album}”"
+msgstr "Allerede i «{album}»"
+
+#: src/library/album_picker.rs:140
+#, rust-format
+msgid "Added {items} to “{album}”"
+msgstr "La til {items} i «{album}»"
+
+#: src/library/album_picker.rs:144
+#, rust-format
+msgid "Added {items} to “{album}” · {duplicate} already there"
+msgstr "La til {items} i «{album}» · {duplicate} finnes der allerede"
+
+#: src/library/album_picker.rs:156
+#, rust-format
+msgid "{n} not allowed"
+msgid_plural "{n} not allowed"
+msgstr[0] "{n} ikke tillatt"
+msgstr[1] "{n} ikke tillatt"
+
+#: src/library/album_picker.rs:192
+msgid "Couldn't add to the album"
+msgstr "Kunne ikke legge til i albumet"
+
+#: src/library/album_picker.rs:206
+msgid "Open"
+msgstr "Åpne"
+
+#: src/library/album_picker.rs:221 src/library/album_picker.rs:226
+msgid "Could Not Create Album"
+msgstr "Kunne ikke opprette album"
+
+#: src/library/album_picker.rs:222
+msgid "Immich didn't return the new album."
+msgstr "Immich returnerte ikke det nye albumet."
+
+#: src/library/album_picker.rs:260 src/library/albums_view.rs:187
+msgid "Filter albums"
+msgstr "Filtrer albumer"
+
+#: src/library/album_picker.rs:358
+#, rust-format
+msgid "New Album “{name}”"
+msgstr "Nytt album «{name}»"
+
+#: src/library/album_picker.rs:359
+msgid "New Album…"
+msgstr "Nytt album…"
+
+#: src/library/album_picker.rs:429
+msgid "New Album"
+msgstr "Nytt album"
+
+#: src/library/album_picker.rs:430
+msgid "The selected items will be added to it."
+msgstr "De valgte elementene vil bli lagt til i det."
+
+#: src/library/album_picker.rs:433 src/library/album_wiring.rs:36
+#: src/library/tags_view.rs:253
+msgid "Create"
+msgstr "Opprett"
+
+#: src/library/album_picker/several.rs:49
+msgid "Add to this album too"
+msgstr "Legg til i dette albumet også"
+
+#: src/library/album_picker/several.rs:72
+#, rust-format
+msgid "Add to {n} Album"
+msgid_plural "Add to {n} Albums"
+msgstr[0] "Legg til i {n} album"
+msgstr[1] "Legg til i {n} albumer"
+
+#: src/library/album_picker/several.rs:99
+msgid "Couldn't add to the albums"
+msgstr "Kunne ikke legge til i albumene"
+
+#: src/library/album_picker/several.rs:114
+#, rust-format
+msgid "Added {items} to {n} album"
+msgid_plural "Added {items} to {n} albums"
+msgstr[0] "La til {items} i {n} album"
+msgstr[1] "La til {items} i {n} albumer"
+
+#: src/library/album_picker/several.rs:123
+msgid "Already in those albums"
+msgstr "Allerede i disse albumene"
+
+#: src/library/album_picker/several.rs:124
+msgid "You can't add these to those albums"
+msgstr "Du kan ikke legge til disse i de albumene"
+
+#: src/library/album_picker/widgets.rs:87
+msgid "No matching albums"
+msgstr "Ingen matchende albumer"
+
+#: src/library/album_share_dialog.rs:37
+msgid "Shared with"
+msgstr "Delt med"
+
+#: src/library/album_share_dialog.rs:40 src/library/sharing_view.rs:271
+msgid "Find people by name or email"
+msgstr "Finn personer etter navn eller e-postadresse"
+
+#: src/library/album_share_dialog.rs:43
+msgid "Add people"
+msgstr "Legg til personer"
+
+#: src/library/album_share_dialog.rs:53
+#, rust-format
+msgid "Share “{album_name}”"
+msgstr "Del «{album_name}»"
+
+#: src/library/album_share_dialog.rs:89
+msgid "Could Not Load Album"
+msgstr "Kunne ikke laste inn album"
+
+#: src/library/album_share_dialog.rs:150
+msgid "Editor"
+msgstr "Redaktør"
+
+#: src/library/album_share_dialog.rs:150 src/library/shortcuts_dialog.rs:263
+msgid "Viewer"
+msgstr "Leser"
+
+#: src/library/album_share_dialog.rs:162
+msgid "Could Not Change Role"
+msgstr "Kunne ikke endre rolle"
+
+#: src/library/album_share_dialog.rs:174
+msgid "Stop sharing with this person"
+msgstr "Stopp deling med denne personen"
+
+#: src/library/album_share_dialog.rs:181
+msgid "Could Not Remove Person"
+msgstr "Kunne ikke fjerne person"
+
+#: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+msgid "Add"
+msgstr "Legg til"
+
+#: src/library/album_share_dialog.rs:198
+msgid "Could Not Share Album"
+msgstr "Kunne ikke dele album"
+
+#: src/library/album_sync.rs:85
+#, rust-format
+msgid "{n} album item"
+msgid_plural "{n} album items"
+msgstr[0] "{n} albumelement"
+msgstr[1] "{n} albumelementer"
+
+#: src/library/album_wiring.rs:27 src/library/albums_view.rs:183
+msgid "Create album"
+msgstr "Opprett album"
+
+#: src/library/album_wiring.rs:28
+msgid "Choose a name for the new album."
+msgstr "Velg et navn for det nye albumet."
+
+#: src/library/album_wiring.rs:88 src/library/source_loading.rs:96
+#, rust-format
+msgid "Could not load albums: {err}"
+msgstr "Kunne ikke laste inn albumer: {err}"
+
+#: src/library/albums_view.rs:64
+msgid "Share…"
+msgstr "Del…"
+
+#: src/library/albums_view.rs:65 src/library/context_menu/manage.rs:58
+msgid "Create Share Link…"
+msgstr "Opprett delelenke…"
+
+#: src/library/albums_view.rs:71 src/library/albums_view.rs:76
+#: src/library/context_menu.rs:139 src/library/shared_links_view.rs:415
+#: src/library/shortcuts_dialog.rs:139
+msgid "Download"
+msgstr "Last ned"
+
+#: src/library/albums_view.rs:77 src/library/source_header/enrichment.rs:221
+msgid "Leave Album…"
+msgstr "Forlat album…"
+
+#: src/library/albums_view.rs:137
+msgid "Recent"
+msgstr "Nylige"
+
+#: src/library/albums_view.rs:138 src/library/albums_view.rs:220
+msgid "Your albums"
+msgstr "Dine albumer"
+
+#: src/library/albums_view.rs:139
+msgid "Shared with you"
+msgstr "Delt med deg"
+
+#: src/library/albums_view.rs:218
+msgid "Shared by you"
+msgstr "Delt av deg"
+
+#: src/library/albums_view.rs:352
+msgid "Couldn't Tell Which Albums Are Yours"
+msgstr "Kunne ikke avgjøre hvilke albumer som er dine"
+
+#: src/library/albums_view.rs:353
+msgid "Your API key needs the 'user.read' permission."
+msgstr "API-nøkkelen din trenger tillatelsen 'user.read'."
+
+#: src/library/albums_view.rs:357
+msgid "No Shared Albums"
+msgstr "Ingen delte albumer"
+
+#: src/library/albums_view.rs:358
+msgid "Share one of your albums, or ask someone to share one with you."
+msgstr "Del et av albumene dine, eller be noen om å dele et med deg."
+
+#: src/library/albums_view/stats.rs:40
+#, rust-format
+msgid "{owned} owned · {shared} shared · {not_shared} not shared"
+msgstr "{owned} egne · {shared} delt · {not_shared} ikke delt"
+
+#: src/library/albums_view/tile.rs:58 src/library/download.rs:177
+#: src/library/header_format.rs:34
+#, rust-format
+msgid "{n} item"
+msgid_plural "{n} items"
+msgstr[0] "{n} element"
+msgstr[1] "{n} elementer"
+
+#: src/library/archive.rs:24
+msgid "Unarchive"
+msgstr "Fjern fra arkiv"
+
+#: src/library/archive.rs:26 src/library/search_filters.rs:137
+#: src/library/shortcuts_dialog.rs:62 src/library/sidebar/rows.rs:112
+#: src/library/source_header.rs:311
+msgid "Archive"
+msgstr "Arkiver"
+
+#: src/library/archive.rs:32
+msgid "Unarchive (A)"
+msgstr "Fjern fra arkiv (A)"
+
+#: src/library/archive.rs:34
+msgid "Archive (A)"
+msgstr "Arkiver (A)"
+
+#: src/library/archive.rs:62
+msgid "Could Not Archive"
+msgstr "Kunne ikke arkivere"
+
+#: src/library/archive.rs:64
+msgid "Could Not Unarchive"
+msgstr "Kunne ikke fjerne fra arkiv"
+
+#: src/library/archive.rs:88
+msgid "Unarchive selected"
+msgstr "Fjern valgte fra arkiv"
+
+#: src/library/archive.rs:90 src/library/window_layout/bulk_bar.rs:64
+msgid "Archive selected"
+msgstr "Arkiver valgte"
+
+#: src/library/asset_edit.rs:131 src/library/map/location_dialog.rs:59
+msgid "Could Not Load Info"
+msgstr "Kunne ikke laste inn informasjon"
+
+#: src/library/asset_edit.rs:156
+msgid "Date taken"
+msgstr "Dato tatt"
+
+#: src/library/asset_edit.rs:161
+msgid "Pick date and time"
+msgstr "Velg dato og klokkeslett"
+
+#: src/library/asset_edit.rs:182 src/library/people_view.rs:226
+msgid "Favorite"
+msgstr "Favoritt"
+
+#: src/library/asset_edit.rs:192 src/library/bulk_more.rs:138
+#: src/library/lightbox/details.rs:147 src/library/shared_link_dialog.rs:106
+msgid "Description"
+msgstr "Beskrivelse"
+
+#: src/library/asset_edit.rs:255 src/library/bulk_date.rs:318
+#: src/library/bulk_more.rs:139 src/library/dialogs.rs:86
+#: src/library/lightbox/edit/panel.rs:103 src/library/map/location_dialog.rs:76
+#: src/library/people_view.rs:429 src/library/people_view.rs:461
+#: src/library/shared_link_dialog.rs:202 src/library/tags_view.rs:335
+#: src/settings_window/watch_folders/rules_dialog.rs:122
+msgid "Save"
+msgstr "Lagre"
+
+#: src/library/asset_edit.rs:275
+msgid "Edit Info"
+msgstr "Rediger informasjon"
+
+#: src/library/asset_edit.rs:349
+msgid "Could Not Save Info"
+msgstr "Kunne ikke lagre informasjon"
+
+#: src/library/asset_edit.rs:351 src/library/map/location_dialog.rs:167
+#, rust-format
+msgid "Immich rejected the update: {err}"
+msgstr "Immich avviste oppdateringen: {err}"
+
+#: src/library/asset_edit/date_picker.rs:78
+msgid "Set Date"
+msgstr "Angi dato"
+
+#: src/library/asset_edit/date_picker.rs:137
+#: src/library/lightbox/details.rs:260
+msgid "Not set"
+msgstr "Ikke angitt"
+
+#: src/library/asset_jobs.rs:35
+msgid "Refresh Faces"
+msgstr "Oppdater ansikter"
+
+#: src/library/asset_jobs.rs:36
+msgid "Immich is looking for faces again"
+msgstr "Immich leter etter ansikter igjen"
+
+#: src/library/asset_jobs.rs:43
+msgid "Refresh Metadata"
+msgstr "Oppdater metadata"
+
+#: src/library/asset_jobs.rs:44
+msgid "Immich is reading the metadata again"
+msgstr "Immich leser metadataene på nytt"
+
+#: src/library/asset_jobs.rs:51
+msgid "Refresh Thumbnails"
+msgstr "Oppdater miniatyrbilder"
+
+#: src/library/asset_jobs.rs:52
+msgid "Immich is making new thumbnails"
+msgstr "Immich lager nye miniatyrbilder"
+
+#: src/library/asset_jobs.rs:59
+msgid "Refresh Video"
+msgstr "Oppdater video"
+
+#: src/library/asset_jobs.rs:60
+msgid "Immich is converting the video again"
+msgstr "Immich konverterer videoen på nytt"
+
+#: src/library/asset_jobs.rs:114
+msgid "Couldn't refresh"
+msgstr "Kunne ikke oppdatere"
+
+#: src/library/asset_jobs.rs:116
+#, rust-format
+msgid "Immich didn't start the job: {err}"
+msgstr "Immich startet ikke jobben: {err}"
+
+#: src/library/asset_tags.rs:46
+msgid "Add tag"
+msgstr "Legg til etikett"
+
+#: src/library/asset_tags.rs:51 src/library/navigation.rs:204
+#: src/library/search_filters.rs:84 src/library/sidebar/rows.rs:100
+msgid "Tags"
+msgstr "Etiketter"
+
+#: src/library/asset_tags.rs:63
+msgid "No tags yet"
+msgstr "Ingen etiketter ennå"
+
+#: src/library/asset_tags.rs:139
+#, rust-format
+msgid "Show photos tagged “{value}”"
+msgstr "Vis bilder merket med «{value}»"
+
+#: src/library/asset_tags.rs:150
+#, rust-format
+msgid "Remove “{value}”"
+msgstr "Fjern «{value}»"
+
+#: src/library/asset_tags.rs:189
+msgid "Couldn't remove the tag"
+msgstr "Kunne ikke fjerne etiketten"
+
+#: src/library/asset_tags.rs:219
+msgid "Couldn't add the tag"
+msgstr "Kunne ikke legge til etiketten"
+
+#: src/library/asset_tags.rs:227
+msgid "Find or create a tag"
+msgstr "Finn eller opprett en etikett"
+
+#: src/library/asset_tags.rs:307
+#, rust-format
+msgid "Create “{query}”"
+msgstr "Opprett «{query}»"
+
+#: src/library/bottom_nav.rs:10 src/library/server_stats_dialog.rs:94
+#: src/library/server_stats_dialog.rs:126 src/library/shortcuts_dialog.rs:57
+#: src/library/sidebar/rows.rs:40 src/library/source_header.rs:276
+#: src/library/utilities/controls.rs:29
+msgid "Photos"
+msgstr "Bilder"
+
+#: src/library/bottom_nav.rs:11 src/library/shortcuts_dialog.rs:58
+#: src/library/sidebar/rows.rs:52 src/library/source_header.rs:309
+msgid "Explore"
+msgstr "Utforsk"
+
+#: src/library/bottom_nav.rs:12 src/library/navigation.rs:177
+#: src/library/shortcuts_dialog.rs:59 src/library/shortcuts_dialog.rs:261
+#: src/library/sidebar/rows.rs:58
+msgid "Map"
+msgstr "Kart"
+
+#: src/library/bottom_nav.rs:13 src/library/navigation.rs:200
+#: src/library/search_filters.rs:85 src/library/shortcuts_dialog.rs:64
+#: src/library/sidebar/rows.rs:70
+msgid "Albums"
+msgstr "Albumer"
+
+#: src/library/bottom_nav.rs:14 src/library/explore_view.rs:217
+#: src/library/lightbox/people.rs:47 src/library/navigation.rs:203
+#: src/library/search_filters.rs:83 src/library/shortcuts_dialog.rs:60
+#: src/library/sidebar/rows.rs:64
+msgid "People"
+msgstr "Personer"
+
+#: src/library/bulk_date.rs:27
+msgid "No change"
+msgstr "Ingen endring"
+
+#: src/library/bulk_date.rs:36
+#, rust-format
+msgid "{n} day"
+msgid_plural "{n} days"
+msgstr[0] "{n} dag"
+msgstr[1] "{n} dager"
+
+#: src/library/bulk_date.rs:37
+#, rust-format
+msgid "{n} hour"
+msgid_plural "{n} hours"
+msgstr[0] "{n} time"
+msgstr[1] "{n} timer"
+
+#: src/library/bulk_date.rs:38
+#, rust-format
+msgid "{n} minute"
+msgid_plural "{n} minutes"
+msgstr[0] "{n} minutt"
+msgstr[1] "{n} minutter"
+
+#: src/library/bulk_date.rs:46
+#, rust-format
+msgid "Later by {amount}"
+msgstr "{amount} senere"
+
+#: src/library/bulk_date.rs:48
+#, rust-format
+msgid "Earlier by {amount}"
+msgstr "{amount} tidligere"
+
+#: src/library/bulk_date.rs:90
+#, rust-format
+msgid "Changed the date of {items}"
+msgstr "Endret datoen for {items}"
+
+#: src/library/bulk_date.rs:101
+msgid "Could Not Change Date"
+msgstr "Kunne ikke endre dato"
+
+#: src/library/bulk_date.rs:103
+#, rust-format
+msgid "Immich rejected the change: {err}"
+msgstr "Immich avviste endringen: {err}"
+
+#: src/library/bulk_date.rs:151
+msgid "Days"
+msgstr "Dager"
+
+#: src/library/bulk_date.rs:152
+msgid "Hours"
+msgstr "Timer"
+
+#: src/library/bulk_date.rs:153
+msgid "Minutes"
+msgstr "Minutter"
+
+#: src/library/bulk_date.rs:160
+msgid "Date and time"
+msgstr "Dato og klokkeslett"
+
+#: src/library/bulk_date.rs:230
+#, rust-format
+msgid "Saved as {date} UTC{offset}"
+msgstr "Lagret som {date} UTC{offset}"
+
+#: src/library/bulk_date.rs:274
+msgid "Shift"
+msgstr "Forskyv"
+
+#: src/library/bulk_date.rs:325 src/library/bulk_date.rs:345
+msgid "Change Date and Time"
+msgstr "Endre dato og klokkeslett"
+
+#: src/library/bulk_more.rs:39
+msgid "Only the owner can change these photos"
+msgstr "Bare eieren kan endre disse bildene"
+
+#: src/library/bulk_more.rs:71
+msgid "Unfavorite selected"
+msgstr "Fjern valgte fra favoritter"
+
+#: src/library/bulk_more.rs:76 src/library/window_layout/bulk_bar.rs:211
+msgid "Favorite selected"
+msgstr "Legg til valgte i favoritter"
+
+#: src/library/bulk_more.rs:91
+msgid "Couldn't update favorites"
+msgstr "Kunne ikke oppdatere favoritter"
+
+#: src/library/bulk_more.rs:103
+#, rust-format
+msgid "Added {n} photo to favorites"
+msgid_plural "Added {n} photos to favorites"
+msgstr[0] "La til {n} bilde i favoritter"
+msgstr[1] "La til {n} bilder i favoritter"
+
+#: src/library/bulk_more.rs:109
+#, rust-format
+msgid "Removed {n} photo from favorites"
+msgid_plural "Removed {n} photos from favorites"
+msgstr[0] "Fjernet {n} bilde fra favoritter"
+msgstr[1] "Fjernet {n} bilder fra favoritter"
+
+#: src/library/bulk_more.rs:125
+#, rust-format
+msgid "Describe {n} Photo"
+msgid_plural "Describe {n} Photos"
+msgstr[0] "Beskriv {n} bilde"
+msgstr[1] "Beskriv {n} bilder"
+
+#: src/library/bulk_more.rs:136
+msgid "Each photo gets this description in place of its own."
+msgstr "Hvert bilde får denne beskrivelsen i stedet for sin egen."
+
+#: src/library/bulk_more.rs:151
+msgid "Description saved"
+msgstr "Beskrivelse lagret"
+
+#: src/library/bulk_more.rs:152
+msgid "Couldn't save the description"
+msgstr "Kunne ikke lagre beskrivelsen"
+
+#: src/library/bulk_overflow.rs:32
+msgid "More actions"
+msgstr "Flere handlinger"
+
+#: src/library/clipboard.rs:141
+#, rust-format
+msgid "Copied {n} photo"
+msgid_plural "Copied {n} photos"
+msgstr[0] "Kopierte {n} bilde"
+msgstr[1] "Kopierte {n} bilder"
+
+#: src/library/clipboard.rs:151
+#, rust-format
+msgid ""
+"Pasting into an album here adds all {count}. Only {local} are on this "
+"computer, so other apps such as Files paste those; use Download for the rest."
+msgstr "Liming inn i et album her legger til alle {count}. Bare {local} finnes på denne datamaskinen, så andre apper som Filer limer inn disse; bruk Last ned for resten."
+
+#: src/library/clipboard.rs:162
+msgid "Paste in Photos or albums"
+msgstr "Lim inn i Bilder eller albumer"
+
+#: src/library/clipboard.rs:177 src/library/clipboard.rs:187
+msgid "Couldn't paste"
+msgstr "Kunne ikke lime inn"
+
+#: src/library/clipboard.rs:186 src/library/clipboard.rs:191
+#: src/library/clipboard.rs:226
+msgid "No photos to paste"
+msgstr "Ingen bilder å lime inn"
+
+#: src/library/clipboard.rs:233 src/library/upload_stack.rs:74
+#, rust-format
+msgid "Uploading {n} file…"
+msgid_plural "Uploading {n} files…"
+msgstr[0] "Laster opp {n} fil…"
+msgstr[1] "Laster opp {n} filer…"
+
+#: src/library/clipboard.rs:262
+msgid "Already in your library"
+msgstr "Allerede i biblioteket ditt"
+
+#: src/library/clipboard.rs:273
+msgid "Uploading pasted image…"
+msgstr "Laster opp innlimt bilde…"
+
+#: src/library/clipboard.rs:279
+msgid "Pasted image"
+msgstr "Innlimt bilde"
+
+#: src/library/clipboard.rs:290
+msgid "Pasted image uploaded"
+msgstr "Innlimt bilde lastet opp"
+
+#: src/library/clipboard.rs:294
+msgid "Couldn't paste the image"
+msgstr "Kunne ikke lime inn bildet"
+
+#: src/library/content_state.rs:24
+#, rust-format
+msgid "{n} asset"
+msgid_plural "{n} assets"
+msgstr[0] "{n} element"
+msgstr[1] "{n} elementer"
+
+#: src/library/content_state.rs:119 src/library/explore_view/calendar.rs:43
+#: src/library/header_format.rs:177 src/library/map/markers.rs:125
+#: src/library/memories.rs:134 src/library/server_stats_dialog.rs:227
+#: src/library/source_header.rs:268
+#, rust-format
+msgid "{n} photo"
+msgid_plural "{n} photos"
+msgstr[0] "{n} bilde"
+msgstr[1] "{n} bilder"
+
+#: src/library/content_state.rs:123 src/library/server_stats_dialog.rs:231
+#: src/library/source_header.rs:272
+#, rust-format
+msgid "{n} video"
+msgid_plural "{n} videos"
+msgstr[0] "{n} video"
+msgstr[1] "{n} videoer"
+
+#: src/library/content_state.rs:128 src/library/sidebar.rs:36
+msgid "Statistics unavailable"
+msgstr "Statistikk er ikke tilgjengelig"
+
+#: src/library/content_state.rs:133 src/library/server_stats_dialog.rs:80
+#, rust-format
+msgid "Immich {version}"
+msgstr "Immich {version}"
+
+#: src/library/content_state.rs:134
+msgid "Version unavailable"
+msgstr "Versjon er ikke tilgjengelig"
+
+#: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
+#: src/settings_window/wiring.rs:215
+msgid "Connected through LAN"
+msgstr "Tilkoblet via LAN"
+
+#: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
+#: src/settings_window/wiring.rs:217
+msgid "Connected through WAN"
+msgstr "Tilkoblet via WAN"
+
+#: src/library/content_state.rs:142 src/settings_window/status_poll.rs:183
+msgid "Connected through configured server"
+msgstr "Tilkoblet via konfigurert tjener"
+
+#: src/library/content_state.rs:144 src/library/sidebar.rs:35
+msgid "Offline"
+msgstr "Frakoblet"
+
+#: src/library/content_state.rs:175
+msgid "queued asset"
+msgstr "element i kø"
+
+#: src/library/content_state.rs:176
+msgid "selected asset"
+msgstr "valgt element"
+
+#: src/library/content_state.rs:217
+msgid "Fetching library data from the Immich server"
+msgstr "Henter bibliotekdata fra Immich-tjeneren"
+
+#: src/library/content_state.rs:366 src/library/masonry/canvas_helpers.rs:138
+#: src/library/server_stats_dialog.rs:161
+msgid "Missing API Permissions"
+msgstr "Mangler API-tillatelser"
+
+#: src/library/content_state.rs:367
+msgid ""
+"Your API key is missing permissions required for the Library view. Please "
+"ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
+"'person.read' enabled."
+msgstr "API-nøkkelen din mangler tillatelser som kreves for bibliotekvisningen. Sørg for at nøkkelen har 'asset.read', 'asset.view', 'asset.download' og 'person.read' aktivert."
+
+#: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
+#: src/library/shortcuts_dialog.rs:179
+msgid "Close"
+msgstr "Lukk"
+
+#: src/library/context_menu.rs:131
+msgid "Copy"
+msgstr "Kopier"
+
+#: src/library/context_menu.rs:148
+msgid "Open In"
+msgstr "Åpne i"
+
+#: src/library/context_menu.rs:174 src/library/shortcuts_dialog.rs:264
+msgid "Slideshow"
+msgstr "Lysbildefremvisning"
+
+#: src/library/context_menu.rs:181
+msgid "Leave Fullscreen"
+msgstr "Forlat fullskjerm"
+
+#: src/library/context_menu.rs:183
+msgid "Fullscreen"
+msgstr "Fullskjerm"
+
+#: src/library/context_menu.rs:229 src/library/context_menu.rs:236
+msgid "Couldn't copy the photo"
+msgstr "Kunne ikke kopiere bildet"
+
+#: src/library/context_menu.rs:237
+msgid "Could not decode the original image."
+msgstr "Kunne ikke dekode det opprinnelige bildet."
+
+#: src/library/context_menu.rs:256
+msgid "Couldn't open the file"
+msgstr "Kunne ikke åpne filen"
+
+#: src/library/context_menu.rs:288
+msgid "Could not locate a cache directory."
+msgstr "Kunne ikke finne en mellomlagringsmappe."
+
+#: src/library/context_menu.rs:316 src/library/lightbox/details.rs:205
+msgid "Details"
+msgstr "Detaljer"
+
+#: src/library/context_menu/manage.rs:73
+msgid "Add to Share Link…"
+msgstr "Legg til i delelenke…"
+
+#: src/library/context_menu/manage.rs:84 src/library/lightbox/widgets.rs:434
+msgid "Add to Album…"
+msgstr "Legg til i album…"
+
+#: src/library/context_menu/manage.rs:92
+msgid "Set as Album Cover"
+msgstr "Bruk som albumomslag"
+
+#: src/library/context_menu/manage.rs:108
+msgid "Remove from Album"
+msgstr "Fjern fra album"
+
+#: src/library/context_menu/manage.rs:130 src/library/lightbox/widgets.rs:432
+msgid "Edit Info…"
+msgstr "Rediger informasjon…"
+
+#: src/library/context_menu/manage.rs:149
+msgid "Edit Photo…"
+msgstr "Rediger bilde…"
+
+#: src/library/context_menu/manage.rs:158 src/library/lightbox/people.rs:59
+msgid "Tag People…"
+msgstr "Tagg personer…"
+
+#: src/library/context_menu/manage.rs:176
+msgid "Set as Profile Picture"
+msgstr "Bruk som profilbilde"
+
+#: src/library/context_menu/manage.rs:186
+msgid "Set Location…"
+msgstr "Angi plassering…"
+
+#: src/library/context_menu/manage.rs:208
+msgid "Move to Trash"
+msgstr "Flytt til papirkurven"
+
+#: src/library/context_menu/manage.rs:210 src/library/shared_links_view.rs:222
+#: src/library/tags_view.rs:213
+msgid "Delete…"
+msgstr "Slett…"
+
+#: src/library/context_menu/manage.rs:231 src/library/people_view.rs:330
+msgid "Remove from Favorites"
+msgstr "Fjern fra favoritter"
+
+#: src/library/context_menu/manage.rs:233 src/library/people_view.rs:332
+msgid "Add to Favorites"
+msgstr "Legg til i favoritter"
+
+#: src/library/context_menu/manage.rs:283
+msgid "Restore"
+msgstr "Gjenopprett"
+
+#: src/library/context_menu/manage.rs:293 src/library/trash_view.rs:207
+msgid "Delete Permanently"
+msgstr "Slett permanent"
+
+#: src/library/context_menu/menu.rs:62
+msgid "Photo Actions"
+msgstr "Bildehandlinger"
+
+#: src/library/controls/sort.rs:57
+msgid "Most assets"
+msgstr "Flest elementer"
+
+#: src/library/controls/sort.rs:57 src/library/people_view.rs:428
+#: src/library/person_picker.rs:163
+msgid "Name"
+msgstr "Navn"
+
+#: src/library/controls/sort.rs:57 src/library/controls/sort.rs:60
+#: src/library/window_layout.rs:360
+msgid "Newest"
+msgstr "Nyeste"
+
+#: src/library/controls/sort.rs:58 src/library/theme/palettes.rs:54
+#: src/library/theme/palettes.rs:82
+msgid "Default"
+msgstr "Standard"
+
+#: src/library/controls/sort.rs:61
+msgid "Oldest"
+msgstr "Eldste"
+
+#: src/library/controls/sort.rs:62 src/library/window_layout.rs:361
+msgid "Filename"
+msgstr "Filnavn"
+
+#: src/library/controls/sort.rs:63 src/library/window_layout.rs:362
+msgid "File Type"
+msgstr "Filtype"
+
+#: src/library/day_row.rs:37 src/library/day_row.rs:69
+msgid "Any Day"
+msgstr "Hvilken som helst dag"
+
+#: src/library/download.rs:153
+#, rust-format
+msgid "Saved {safe_name}"
+msgstr "Lagret {safe_name}"
+
+#: src/library/download.rs:159
+msgid "Download failed"
+msgstr "Nedlasting mislyktes"
+
+#: src/library/download.rs:258
+msgid "Nothing downloaded"
+msgstr "Ingenting ble lastet ned"
+
+#: src/library/download.rs:261
+#, rust-format
+msgid "Downloaded {items}"
+msgstr "Lastet ned {items}"
+
+#: src/library/download.rs:270
+#, rust-format
+msgid "{n} skipped"
+msgid_plural "{n} skipped"
+msgstr[0] "{n} hoppet over"
+msgstr[1] "{n} hoppet over"
+
+#: src/library/download.rs:276
+#, rust-format
+msgid "{n} failed"
+msgid_plural "{n} failed"
+msgstr[0] "{n} mislyktes"
+msgstr[1] "{n} mislyktes"
+
+#: src/library/download.rs:321 src/library/download.rs:346
+msgid "File already exists"
+msgstr "Filen finnes allerede"
+
+#: src/library/download.rs:323
+#, rust-format
+msgid "\"{name}\" already exists. Overwrite?"
+msgstr "«{name}» finnes allerede. Vil du overskrive?"
+
+#: src/library/download.rs:327 src/library/download.rs:356
+msgid "Skip"
+msgstr "Hopp over"
+
+#: src/library/download.rs:328 src/library/download.rs:358
+msgid "Overwrite"
+msgstr "Overskriv"
+
+#: src/library/download.rs:348
+#, rust-format
+msgid "\"{name}\" already exists in the download folder."
+msgstr "«{name}» finnes allerede i nedlastingsmappen."
+
+#: src/library/download.rs:353
+msgid "Apply to all remaining conflicts"
+msgstr "Bruk for alle gjenstående konflikter"
+
+#: src/library/download.rs:409 src/settings_window/wiring/folder_wiring.rs:38
+msgid "Choose Download Folder"
+msgstr "Velg nedlastingsmappe"
+
+#: src/library/download.rs:423
+msgid "Save as default?"
+msgstr "Lagre som standard?"
+
+#: src/library/download.rs:425
+#, rust-format
+msgid "Always download to {path}?"
+msgstr "Alltid laste ned til {path}?"
+
+#: src/library/download.rs:429
+msgid "Just Once"
+msgstr "Bare én gang"
+
+#: src/library/download.rs:430
+msgid "Always"
+msgstr "Alltid"
+
+#: src/library/drop_target.rs:82
+msgid "No supported media files in drop"
+msgstr "Ingen støttede mediefiler ble sluppet"
+
+#: src/library/duplicates_view.rs:43
+msgid "Previous group"
+msgstr "Forrige gruppe"
+
+#: src/library/duplicates_view.rs:44
+msgid "Next group"
+msgstr "Neste gruppe"
+
+#: src/library/duplicates_view.rs:86
+msgid "Not Duplicates"
+msgstr "Ikke duplikater"
+
+#: src/library/duplicates_view.rs:87
+msgid "Keep every photo and stop showing this group"
+msgstr "Behold alle bildene og slutt å vise denne gruppen"
+
+#: src/library/duplicates_view.rs:96
+msgid "No Duplicates"
+msgstr "Ingen duplikater"
+
+#: src/library/duplicates_view.rs:98
+msgid ""
+"Immich hasn't found any duplicate photos. It looks for them when its "
+"duplicate detection job runs."
+msgstr "Immich har ikke funnet noen like bilder. Den leter etter dem når duplikatgjenkjenningen kjører."
+
+#: src/library/duplicates_view.rs:123
+msgid "Tap a photo to keep it or trash it."
+msgstr "Trykk på et bilde for å beholde det eller flytte det til papirkurven."
+
+#: src/library/duplicates_view.rs:212
+msgid "Could Not Load Duplicates"
+msgstr "Kunne ikke laste inn duplikater"
+
+#: src/library/duplicates_view.rs:214 src/library/folders_view.rs:71
+#: src/library/people_view.rs:139 src/library/shared_links_view.rs:103
+#: src/library/sharing_view.rs:96 src/library/sharing_view.rs:181
+#: src/library/tags_view.rs:76
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the '{permission}' permission."
+msgstr ""
+"{err}\n"
+"\n"
+"API-nøkkelen din trenger tillatelsen '{permission}'."
+
+#: src/library/duplicates_view.rs:261
+#, rust-format
+msgid "Group {n} of {total}"
+msgstr "Gruppe {n} av {total}"
+
+#: src/library/duplicates_view.rs:280
+#, rust-format
+msgid "Trash {n} Photo"
+msgid_plural "Trash {n} Photos"
+msgstr[0] "Flytt {n} bilde til papirkurven"
+msgstr[1] "Flytt {n} bilder til papirkurven"
+
+#: src/library/duplicates_view.rs:282
+#, rust-format
+msgid "Delete {n} Photo"
+msgid_plural "Delete {n} Photos"
+msgstr[0] "Slett {n} bilde"
+msgstr[1] "Slett {n} bilder"
+
+#: src/library/duplicates_view.rs:323
+#, rust-format
+msgid "Delete {n} photo permanently?"
+msgid_plural "Delete {n} photos permanently?"
+msgstr[0] "Slett {n} bilde permanent?"
+msgstr[1] "Slett {n} bilder permanent?"
+
+#: src/library/duplicates_view.rs:333
+msgid "Trash is turned off on this server, so this can't be undone."
+msgstr "Papirkurven er slått av på denne tjeneren, så dette kan ikke angres."
+
+#: src/library/duplicates_view.rs:352
+#, rust-format
+msgid "Kept {kept}, trashed {n}"
+msgid_plural "Kept {kept}, trashed {n}"
+msgstr[0] "Beholdt {kept}, flyttet {n} til papirkurven"
+msgstr[1] "Beholdt {kept}, flyttet {n} til papirkurven"
+
+#: src/library/duplicates_view.rs:374
+msgid "Marked as not duplicates"
+msgstr "Markert som ikke-duplikater"
+
+#: src/library/duplicates_view.rs:404
+msgid "Couldn't update the duplicates"
+msgstr "Kunne ikke oppdatere duplikatene"
+
+#: src/library/duplicates_view/cards.rs:178
+msgid "Keep"
+msgstr "Behold"
+
+#: src/library/duplicates_view/cards.rs:181 src/library/shortcuts_dialog.rs:63
+#: src/library/sidebar/rows.rs:118 src/library/source_header.rs:312
+msgid "Trash"
+msgstr "Flytt til papirkurv"
+
+#: src/library/duplicates_view/cards.rs:202
+#, rust-format
+msgid "{size}, largest"
+msgstr "{size}, størst"
+
+#: src/library/explore_view.rs:146
+msgid "Recently Added"
+msgstr "Nylig lagt til"
+
+#: src/library/explore_view.rs:147
+msgid "Places"
+msgstr "Steder"
+
+#: src/library/explore_view.rs:148 src/library/source_header/enrichment.rs:46
+msgid "Things"
+msgstr "Ting"
+
+#: src/library/explore_view.rs:151
+msgid "Filter people and places"
+msgstr "Filtrer personer og steder"
+
+#: src/library/explore_view.rs:227
+msgid "Filter people"
+msgstr "Filtrer personer"
+
+#: src/library/explore_view.rs:530
+#, rust-format
+msgid "See {remaining} more"
+msgstr "Se {remaining} til"
+
+#: src/library/explore_view.rs:539
+msgid "Show Less"
+msgstr "Vis mindre"
+
+#. Translators: strftime short month, e.g. "Oct 2026".
+#: src/library/explore_view/calendar.rs:28 src/library/timeline/dates.rs:30
+msgid "%b %Y"
+msgstr "%b %Y"
+
+#: src/library/explore_view/calendar.rs:83
+msgid "Earlier year"
+msgstr "Tidligere år"
+
+#: src/library/explore_view/calendar.rs:84
+msgid "Later year"
+msgstr "Senere år"
+
+#: src/library/explore_view/calendar.rs:86 src/library/lightbox/details.rs:453
+#: src/library/map/settings.rs:76
+msgid "Taken"
+msgstr "Tatt"
+
+#: src/library/explore_view/calendar.rs:87
+msgid "By when the photos were taken"
+msgstr "Etter når bildene ble tatt"
+
+#: src/library/explore_view/calendar.rs:92 src/library/folders_view/rows.rs:154
+msgid "Show Photos"
+msgstr "Vis bilder"
+
+#: src/library/explore_view/calendar.rs:109
+msgid "Calendar"
+msgstr "Kalender"
+
+#: src/library/explore_view/calendar.rs:135
+msgid "Uploaded"
+msgstr "Lastet opp"
+
+#: src/library/explore_view/calendar.rs:136
+msgid "By when the photos reached Immich"
+msgstr "Etter når bildene nådde Immich"
+
+#: src/library/explore_view/calendar.rs:202
+msgid "Pick a day to see its photos."
+msgstr "Velg en dag for å se bildene."
+
+#: src/library/explore_view/calendar.rs:335
+msgid "Less"
+msgstr "Mindre"
+
+#: src/library/explore_view/calendar.rs:336
+#: src/library/lightbox/edit/panel.rs:248 src/library/people_view.rs:306
+#: src/library/shared_links_view.rs:172
+#: src/library/source_header/enrichment.rs:227
+#: src/library/source_header/enrichment.rs:256
+#: src/library/source_header/enrichment.rs:311
+msgid "More"
+msgstr "Mer"
+
+#: src/library/explore_view/calendar/grid.rs:106
+msgid "Photos per day; use the arrow keys to pick a day"
+msgstr "Bilder per dag; bruk piltastene til å velge en dag"
+
+#: src/library/explore_view/people.rs:119
+msgid "Show unnamed"
+msgstr "Vis uten navn"
+
+#: src/library/explore_view/people.rs:123
+msgid "Show hidden"
+msgstr "Vis skjulte"
+
+#: src/library/explore_view/tiles.rs:77
+msgid "Just now"
+msgstr "Akkurat nå"
+
+#: src/library/explore_view/tiles.rs:81
+#, rust-format
+msgid "{n} min ago"
+msgid_plural "{n} min ago"
+msgstr[0] "{n} min siden"
+msgstr[1] "{n} min siden"
+
+#: src/library/explore_view/tiles.rs:87
+#, rust-format
+msgid "{n}h ago"
+msgid_plural "{n}h ago"
+msgstr[0] "{n} t siden"
+msgstr[1] "{n} t siden"
+
+#: src/library/explore_view/tiles.rs:93
+#, rust-format
+msgid "{n}d ago"
+msgid_plural "{n}d ago"
+msgstr[0] "{n} dag siden"
+msgstr[1] "{n} dager siden"
+
+#: src/library/favorites.rs:30
+msgid "Remove from favorites (F)"
+msgstr "Fjern fra favoritter (F)"
+
+#: src/library/favorites.rs:32
+msgid "Add to favorites (F)"
+msgstr "Legg til i favoritter (F)"
+
+#: src/library/favorites.rs:63
+msgid "Couldn't update the favorite"
+msgstr "Kunne ikke oppdatere favoritten"
+
+#: src/library/folders_view.rs:69
+msgid "Could Not Load Folders"
+msgstr "Kunne ikke laste inn mapper"
+
+#: src/library/folders_view.rs:87
+msgid "Path copied"
+msgstr "Bane kopiert"
+
+#: src/library/folders_view.rs:115 src/library/navigation.rs:205
+#: src/library/shortcuts_dialog.rs:262 src/library/sidebar/rows.rs:106
+msgid "Folders"
+msgstr "Mapper"
+
+#: src/library/folders_view.rs:131
+msgid "No Folders"
+msgstr "Ingen mapper"
+
+#: src/library/folders_view.rs:132
+msgid "Folders appear once Immich has photos from them."
+msgstr "Mapper vises når Immich har bilder fra dem."
+
+#: src/library/folders_view/path_bar.rs:30
+msgid "Folder path"
+msgstr "Mappebane"
+
+#: src/library/folders_view/path_bar.rs:36
+msgid "Enter a path (Ctrl+L)"
+msgstr "Angi en bane (Ctrl+L)"
+
+#: src/library/folders_view/path_bar.rs:40
+msgid "Copy path"
+msgstr "Kopier bane"
+
+#: src/library/folders_view/path_bar.rs:219
+#, rust-format
+msgid "No folder at {path}"
+msgstr "Ingen mappe på {path}"
+
+#: src/library/folders_view/rows.rs:32
+#, rust-format
+msgid "Photos in {folder}"
+msgstr "Bilder i {folder}"
+
+#: src/library/folders_view/rows.rs:52
+msgid "Show photos"
+msgstr "Vis bilder"
+
+#: src/library/folders_view/rows.rs:65
+#, rust-format
+msgid "{n} folder"
+msgid_plural "{n} folders"
+msgstr[0] "{n} mappe"
+msgstr[1] "{n} mapper"
+
+#: src/library/folders_view/rows.rs:72 src/library/tags_view.rs:155
+#, rust-format
+msgid "Open {name}"
+msgstr "Åpne {name}"
+
+#: src/library/folders_view/rows.rs:144
+msgid "Copy Path"
+msgstr "Kopier bane"
+
+#: src/library/header_format.rs:58 src/library/lightbox/people.rs:242
+#, rust-format
+msgid "Age {age}"
+msgstr "Alder {age}"
+
+#: src/library/header_format.rs:62
+#, rust-format
+msgid "Born {date}"
+msgstr "Født {date}"
+
+#. Translators: strftime day and month that start a date range, e.g. "30 Dec".
+#: src/library/header_format.rs:84 src/library/map/nearby.rs:129
+msgid "%-d %b"
+msgstr "%-d. %b"
+
+#: src/library/header_format.rs:106
+#, rust-format
+msgid "Shared with {n} person"
+msgid_plural "Shared with {n} people"
+msgstr[0] "Delt med {n} person"
+msgstr[1] "Delt med {n} personer"
+
+#: src/library/header_format.rs:122
+#, rust-format
+msgid "Shared by {owner}"
+msgstr "Delt av {owner}"
+
+#: src/library/inbox.rs:56 src/library/inbox.rs:364
+#: src/library/window_layout.rs:329 src/settings_window/behavior.rs:116
+msgid "Notifications"
+msgstr "Varsler"
+
+#: src/library/inbox.rs:76
+#, rust-format
+msgid "Notifications ({count} unread)"
+msgstr "Varsler ({count} uleste)"
+
+#: src/library/inbox.rs:180
+msgid "No Notifications"
+msgstr "Ingen varsler"
+
+#: src/library/inbox.rs:182
+msgid "Album invites and messages from Immich show up here."
+msgstr "Albuminvitasjoner og meldinger fra Immich vises her."
+
+#: src/library/inbox.rs:188
+msgid "Mark All Read"
+msgstr "Merk alle som lest"
+
+#: src/library/inbox.rs:235
+msgid "Couldn't Load Notifications"
+msgstr "Kunne ikke laste inn varsler"
+
+#: src/library/inbox.rs:237
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the “{permission}” permission."
+msgstr ""
+"{err}\n"
+"\n"
+"API-nøkkelen din trenger tillatelsen «{permission}»."
+
+#: src/library/inbox.rs:273
+msgid "Dismiss"
+msgstr "Avvis"
+
+#: src/library/lightbox/albums.rs:29
+msgid "Appears In"
+msgstr "Vises i"
+
+#: src/library/lightbox/albums.rs:65
+#, rust-format
+msgid "Open “{album_name}”"
+msgstr "Åpne «{album_name}»"
+
+#: src/library/lightbox/details.rs:156 src/library/search_filters.rs:204
+msgid "Camera"
+msgstr "Kamera"
+
+#: src/library/lightbox/details.rs:163
+msgid "Body"
+msgstr "Kamerahus"
+
+#: src/library/lightbox/details.rs:174
+msgid "Lens"
+msgstr "Objektiv"
+
+#: src/library/lightbox/details.rs:183 src/library/photo_editor/look.rs:37
+msgid "Exposure"
+msgstr "Eksponering"
+
+#: src/library/lightbox/details.rs:223
+msgid "Dimensions"
+msgstr "Dimensjoner"
+
+#: src/library/lightbox/details.rs:232
+msgid "Size"
+msgstr "Størrelse"
+
+#: src/library/lightbox/details.rs:245 src/library/search_filters.rs:219
+msgid "Location"
+msgstr "Plassering"
+
+#: src/library/lightbox/details.rs:252 src/library/map/location_dialog.rs:512
+msgid "Place"
+msgstr "Sted"
+
+#: src/library/lightbox/details.rs:266
+msgid "Coordinates"
+msgstr "Koordinater"
+
+#: src/library/lightbox/details.rs:328
+#, rust-format
+msgid "ISO {iso}"
+msgstr "ISO {iso}"
+
+#: src/library/lightbox/details.rs:358 src/settings_window/library.rs:278
+#, rust-format
+msgid "{size} GB"
+msgstr "{size} GB"
+
+#: src/library/lightbox/details.rs:363 src/settings_window/library.rs:283
+#, rust-format
+msgid "{size} MB"
+msgstr "{size} MB"
+
+#: src/library/lightbox/details.rs:368
+#, rust-format
+msgid "{size} KB"
+msgstr "{size} KB"
+
+#: src/library/lightbox/details.rs:372
+#, rust-format
+msgid "{size} B"
+msgstr "{size} B"
+
+#: src/library/lightbox/details.rs:451
+msgid "Modified"
+msgstr "Endret"
+
+#: src/library/lightbox/edit.rs:43
+msgid "Crop"
+msgstr "Beskjær"
+
+#: src/library/lightbox/edit.rs:49
+msgid "Adjust"
+msgstr "Juster"
+
+#: src/library/lightbox/edit.rs:55 src/library/search_panel.rs:48
+#: src/library/search_panel.rs:105
+msgid "Filters"
+msgstr "Filtre"
+
+#: src/library/lightbox/edit.rs:61
+msgid "Redact"
+msgstr "Sensurer"
+
+#: src/library/lightbox/edit.rs:276
+msgid "Couldn't load the photo"
+msgstr "Kunne ikke laste inn bildet"
+
+#: src/library/lightbox/edit.rs:438
+msgid "Saving a copy…"
+msgstr "Lagrer en kopi…"
+
+#: src/library/lightbox/edit.rs:440
+msgid "Saves a copy stacked with the original"
+msgstr "Lagrer en kopi stablet med originalen"
+
+#: src/library/lightbox/edit.rs:441
+msgid "Saves as a new photo"
+msgstr "Lagrer som et nytt bilde"
+
+#: src/library/lightbox/edit/looks.rs:160
+#, rust-format
+msgid "{degrees}°"
+msgstr "{degrees}°"
+
+#: src/library/lightbox/edit/looks.rs:168
+#, rust-format
+msgid "{percent}%"
+msgstr "{percent} %"
+
+#: src/library/lightbox/edit/pages.rs:53
+msgid "Pixelate"
+msgstr "Pikseler"
+
+#: src/library/lightbox/edit/pages.rs:54
+msgid "Blur"
+msgstr "Gjør uskarp"
+
+#: src/library/lightbox/edit/pages.rs:55
+msgid "Frosted"
+msgstr "Frostet"
+
+#: src/library/lightbox/edit/pages.rs:56
+msgid "Bar"
+msgstr "Bjelke"
+
+#: src/library/lightbox/edit/pages.rs:64
+msgid "Straighten"
+msgstr "Rett opp"
+
+#: src/library/lightbox/edit/pages.rs:110
+msgid "Strength"
+msgstr "Styrke"
+
+#: src/library/lightbox/edit/pages.rs:125
+msgid "Drag over what to hide. Tap a box to move, resize, or change it."
+msgstr "Dra over det du vil skjule. Trykk på en boks for å flytte, endre størrelse eller endre den."
+
+#: src/library/lightbox/edit/pages.rs:135
+msgid "Hide Faces"
+msgstr "Skjul ansikter"
+
+#: src/library/lightbox/edit/pages.rs:136
+msgid "Hide Text"
+msgstr "Skjul tekst"
+
+#: src/library/lightbox/edit/pages.rs:143
+msgid "Clear All"
+msgstr "Tøm alle"
+
+#: src/library/lightbox/edit/pages.rs:171
+#: src/library/lightbox/edit/pages.rs:177
+msgid "Bar Colour"
+msgstr "Bjelkefarge"
+
+#: src/library/lightbox/edit/pages.rs:255
+msgid "Rotate Left"
+msgstr "Roter til venstre"
+
+#: src/library/lightbox/edit/pages.rs:260
+msgid "Rotate Right"
+msgstr "Roter til høyre"
+
+#: src/library/lightbox/edit/pages.rs:263
+msgid "Mirror"
+msgstr "Speilvend"
+
+#: src/library/lightbox/edit/pages.rs:266
+msgid "Flip"
+msgstr "Vend"
+
+#: src/library/lightbox/edit/panel.rs:54 src/library/search_panel.rs:72
+msgid "Reset"
+msgstr "Tilbakestill"
+
+#: src/library/lightbox/edit/panel.rs:107
+msgid "Reset All"
+msgstr "Tilbakestill alt"
+
+#: src/library/lightbox/edit/panel.rs:108
+msgid "Revert to Original…"
+msgstr "Tilbakestill til original…"
+
+#: src/library/lightbox/edit/panel.rs:111 src/library/lightbox/widgets.rs:294
+msgid "Edit Photo"
+msgstr "Rediger bilde"
+
+#: src/library/lightbox/edit/panel.rs:169
+msgid "Keep Original Details"
+msgstr "Behold opprinnelige detaljer"
+
+#: src/library/lightbox/edit/panel.rs:171
+msgid ""
+"A saved copy keeps the original's camera details, date, place, caption, "
+"rating, and albums. Off, the copy is a new photo of its own."
+msgstr "En lagret kopi beholder originalens kameradetaljer, dato, sted, bildetekst, vurdering og albumer. Når den er av, er kopien et helt nytt bilde."
+
+#: src/library/lightbox/edit/panel.rs:176
+msgid "Stack with Original"
+msgstr "Stabl med originalen"
+
+#: src/library/lightbox/edit/panel.rs:177
+msgid "A saved copy becomes the cover of a stack, with the original under it."
+msgstr "En lagret kopi blir omslaget til en stabel, med originalen under."
+
+#: src/library/lightbox/edit/saving.rs:73
+msgid "Revert to the Original?"
+msgstr "Tilbakestille til originalen?"
+
+#: src/library/lightbox/edit/saving.rs:74
+msgid "Every crop, turn, and flip made in Immich is removed."
+msgstr "Hver beskjæring, rotering og vending gjort i Immich fjernes."
+
+#: src/library/lightbox/edit/saving.rs:75
+msgid "Revert"
+msgstr "Tilbakestill"
+
+#: src/library/lightbox/edit/saving.rs:96
+msgid "Immich didn't save the edit"
+msgstr "Immich lagret ikke redigeringen"
+
+#: src/library/lightbox/edit/saving.rs:104
+msgid "Saved. Immich is updating the photo."
+msgstr "Lagret. Immich oppdaterer bildet."
+
+#: src/library/lightbox/edit/saving.rs:153
+msgid "Couldn't save the copy"
+msgstr "Kunne ikke lagre kopien"
+
+#: src/library/lightbox/edit/saving.rs:178
+msgid "Couldn't open the original"
+msgstr "Kunne ikke åpne originalen"
+
+#: src/library/lightbox/edit/saving.rs:220
+msgid "Saved as a new photo, but not everything carried over"
+msgstr "Lagret som et nytt bilde, men ikke alt ble overført"
+
+#: src/library/lightbox/edit/saving.rs:224
+msgid "Saved as a new photo, stacked with the original"
+msgstr "Lagret som et nytt bilde, stablet med originalen"
+
+#: src/library/lightbox/edit/saving.rs:225
+msgid "Saved as a new photo"
+msgstr "Lagret som et nytt bilde"
+
+#: src/library/lightbox/edit/saving.rs:270
+msgid "Couldn't add it to the original's albums"
+msgstr "Kunne ikke legge det til i originalens albumer"
+
+#: src/library/lightbox/face_people.rs:185 src/library/lightbox/faces.rs:296
+msgid "Change Person…"
+msgstr "Endre person…"
+
+#: src/library/lightbox/face_people.rs:196
+msgid "Remove from Photo"
+msgstr "Fjern fra bilde"
+
+#: src/library/lightbox/face_people.rs:221 src/library/lightbox/faces.rs:305
+msgid "Face moved"
+msgstr "Ansikt flyttet"
+
+#: src/library/lightbox/face_people.rs:240 src/library/lightbox/faces.rs:336
+msgid "Face removed"
+msgstr "Ansikt fjernet"
+
+#: src/library/lightbox/faces.rs:43
+msgid "Drag around a face to tag it"
+msgstr "Dra rundt et ansikt for å tagge det"
+
+#: src/library/lightbox/faces.rs:48
+msgid "Done"
+msgstr "Ferdig"
+
+#: src/library/lightbox/faces.rs:217
+msgid "Couldn't load the faces"
+msgstr "Kunne ikke laste inn ansiktene"
+
+#: src/library/lightbox/faces.rs:227
+msgid "No faces yet. Drag around one to tag it."
+msgstr "Ingen ansikter ennå. Dra rundt et for å tagge det."
+
+#: src/library/lightbox/faces.rs:298
+msgid "Choose Person…"
+msgstr "Velg person…"
+
+#: src/library/lightbox/faces.rs:315
+msgid "Use as Cover Photo"
+msgstr "Bruk som omslagsbilde"
+
+#: src/library/lightbox/faces.rs:323
+msgid "Cover photo changed"
+msgstr "Omslagsbilde endret"
+
+#: src/library/lightbox/faces.rs:332
+msgid "Remove Face"
+msgstr "Fjern ansikt"
+
+#: src/library/lightbox/faces.rs:375
+msgid "Face tagged"
+msgstr "Ansikt tagget"
+
+#: src/library/lightbox/faces.rs:398
+msgid "Immich didn't accept the change"
+msgstr "Immich godtok ikke endringen"
+
+#: src/library/lightbox/faces.rs:426
+msgid "Unknown Person"
+msgstr "Ukjent person"
+
+#: src/library/lightbox/interaction.rs:225 src/library/lightbox/widgets.rs:343
+msgid "Raw"
+msgstr "Raw"
+
+#: src/library/lightbox/interaction.rs:227 src/library/lightbox/widgets.rs:345
+msgid "Prev"
+msgstr "Forrige"
+
+#: src/library/lightbox/interaction.rs:329
+msgid "Add a description"
+msgstr "Legg til en beskrivelse"
+
+#: src/library/lightbox/interaction/rendering.rs:92
+msgid "On Immich and locally"
+msgstr "På Immich og lokalt"
+
+#: src/library/lightbox/interaction/rendering.rs:93
+msgid "Local only"
+msgstr "Bare lokalt"
+
+#: src/library/lightbox/interaction/rendering.rs:94
+msgid "On Immich only"
+msgstr "Bare på Immich"
+
+#: src/library/lightbox/interaction/rendering.rs:100
+#, rust-format
+msgid "Created: {date}"
+msgstr "Opprettet: {date}"
+
+#: src/library/lightbox/live.rs:16
+msgid "Live"
+msgstr "Live"
+
+#: src/library/lightbox/live.rs:19
+msgid "Play motion (Space)"
+msgstr "Spill av bevegelse (Mellomrom)"
+
+#: src/library/lightbox/live.rs:86 src/library/lightbox/video.rs:87
+msgid "Playback isn't available"
+msgstr "Avspilling er ikke tilgjengelig"
+
+#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/video.rs:108
+msgid "Playback failed"
+msgstr "Avspilling mislyktes"
+
+#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+msgid "Not connected to the Immich server."
+msgstr "Ikke tilkoblet Immich-tjeneren."
+
+#: src/library/lightbox/location.rs:32
+msgid "Set location"
+msgstr "Angi plassering"
+
+#: src/library/lightbox/location.rs:66
+msgid "Copy coordinates"
+msgstr "Kopier koordinater"
+
+#: src/library/lightbox/ocr.rs:21 src/library/lightbox/ocr.rs:292
+msgid "Copy All Text"
+msgstr "Kopier all tekst"
+
+#: src/library/lightbox/ocr.rs:64
+msgid "Hide recognized text (T)"
+msgstr "Skjul gjenkjent tekst (T)"
+
+#: src/library/lightbox/ocr.rs:66 src/library/lightbox/widgets.rs:352
+msgid "Show recognized text (T)"
+msgstr "Vis gjenkjent tekst (T)"
+
+#: src/library/lightbox/ocr.rs:250 src/library/shared_link_qr.rs:125
+msgid "Copied"
+msgstr "Kopiert"
+
+#: src/library/lightbox/ocr.rs:290
+msgid "Copy Selected Text"
+msgstr "Kopier valgt tekst"
+
+#: src/library/lightbox/panorama.rs:265
+msgid "360°"
+msgstr "360°"
+
+#: src/library/lightbox/panorama.rs:266
+msgid "Look around (P)"
+msgstr "Se deg rundt (P)"
+
+#: src/library/lightbox/people.rs:65
+msgid "No one is tagged yet."
+msgstr "Ingen er tagget ennå."
+
+#: src/library/lightbox/people.rs:215 src/library/people_view.rs:262
+#, rust-format
+msgid "Show photos of {name}"
+msgstr "Vis bilder av {name}"
+
+#: src/library/lightbox/people.rs:237
+#, rust-format
+msgid "Age {months}"
+msgstr "Alder {months}"
+
+#: src/library/lightbox/people.rs:239
+#, rust-format
+msgid "Age 1 year, {months}"
+msgstr "Alder 1 år, {months}"
+
+#: src/library/lightbox/people.rs:255
+#, rust-format
+msgid "{n} month"
+msgid_plural "{n} months"
+msgstr[0] "{n} måned"
+msgstr[1] "{n} måneder"
+
+#: src/library/lightbox/rating.rs:28 src/library/search_filters/choices.rs:134
+#: src/library/search_view.rs:162 src/settings_window/library.rs:224
+#: src/settings_window/queue_inspector.rs:43
+msgid "Clear"
+msgstr "Tøm"
+
+#: src/library/lightbox/rating.rs:33
+msgid "Rating"
+msgstr "Vurdering"
+
+#: src/library/lightbox/rating.rs:128
+msgid "Couldn't save the rating"
+msgstr "Kunne ikke lagre vurderingen"
+
+#: src/library/lightbox/slideshow.rs:85 src/library/lightbox/slideshow.rs:251
+#: src/library/video_player.rs:315
+msgid "Pause (Space)"
+msgstr "Pause (Mellomrom)"
+
+#: src/library/lightbox/slideshow.rs:86 src/library/lightbox/widgets.rs:150
+msgid "Previous (Left)"
+msgstr "Forrige (Venstre)"
+
+#: src/library/lightbox/slideshow.rs:87 src/library/lightbox/widgets.rs:151
+msgid "Next (Right)"
+msgstr "Neste (Høyre)"
+
+#: src/library/lightbox/slideshow.rs:90
+msgid "Slideshow Settings"
+msgstr "Innstillinger for lysbildefremvisning"
+
+#: src/library/lightbox/slideshow.rs:93
+msgid "End Slideshow (Esc)"
+msgstr "Avslutt lysbildefremvisning (Esc)"
+
+#: src/library/lightbox/slideshow.rs:249
+msgid "Resume (Space)"
+msgstr "Gjenoppta (Mellomrom)"
+
+#: src/library/lightbox/slideshow.rs:422
+msgid "End of slideshow"
+msgstr "Slutt på lysbildefremvisningen"
+
+#: src/library/lightbox/slideshow/options.rs:40
+msgid "Crossfade"
+msgstr "Krysstoning"
+
+#: src/library/lightbox/slideshow/options.rs:41
+msgid "Slide"
+msgstr "Skyv"
+
+#: src/library/lightbox/slideshow/options.rs:42
+msgid "None"
+msgstr "Ingen"
+
+#: src/library/lightbox/slideshow/settings.rs:19
+msgid "Shuffle"
+msgstr "Bland"
+
+#: src/library/lightbox/slideshow/settings.rs:20
+msgid "Repeat"
+msgstr "Gjenta"
+
+#: src/library/lightbox/slideshow/settings.rs:65
+msgid "Seconds per Photo"
+msgstr "Sekunder per bilde"
+
+#: src/library/lightbox/slideshow/settings.rs:80
+msgid "Transition"
+msgstr "Overgang"
+
+#: src/library/lightbox/stack.rs:46
+msgid "Stack Actions"
+msgstr "Stabelhandlinger"
+
+#: src/library/lightbox/stack.rs:273
+msgid "Set as Stack Cover"
+msgstr "Bruk som stabelomslag"
+
+#: src/library/lightbox/stack.rs:280
+msgid "Remove from Stack"
+msgstr "Fjern fra stabel"
+
+#: src/library/lightbox/stack.rs:288 src/library/lightbox/stack.rs:465
+msgid "Unstack"
+msgstr "Oppløs stabel"
+
+#: src/library/lightbox/stack.rs:299
+msgid "Keep This, Trash Others"
+msgstr "Behold dette, flytt andre til papirkurven"
+
+#: src/library/lightbox/stack.rs:301
+msgid "Keep This, Delete Others"
+msgstr "Behold dette, slett andre"
+
+#: src/library/lightbox/stack.rs:348 src/library/lightbox/stack.rs:388
+#: src/library/lightbox/stack.rs:476
+msgid "Couldn't change the stack"
+msgstr "Kunne ikke endre stabelen"
+
+#: src/library/lightbox/stack.rs:403
+msgid "Stack cover changed"
+msgstr "Stabelomslag endret"
+
+#: src/library/lightbox/stack.rs:408
+msgid "Removed from the stack"
+msgstr "Fjernet fra stabelen"
+
+#: src/library/lightbox/stack.rs:412 src/library/lightbox/stack.rs:473
+msgid "Unstacked"
+msgstr "Stabel oppløst"
+
+#: src/library/lightbox/stack.rs:424
+#, rust-format
+msgid "Trashed {n} other photo"
+msgid_plural "Trashed {n} other photos"
+msgstr[0] "Flyttet {n} annet bilde til papirkurven"
+msgstr[1] "Flyttet {n} andre bilder til papirkurven"
+
+#: src/library/lightbox/stack.rs:430
+#, rust-format
+msgid "Deleted {n} other photo"
+msgid_plural "Deleted {n} other photos"
+msgstr[0] "Slettet {n} annet bilde"
+msgstr[1] "Slettet {n} andre bilder"
+
+#: src/library/lightbox/stack.rs:501 src/library/upload_stack.rs:122
+msgid "Couldn't stack the photos"
+msgstr "Kunne ikke stable bildene"
+
+#: src/library/lightbox/stack.rs:510
+msgid "Stacked, see the timeline"
+msgstr "Stablet, se tidslinjen"
+
+#: src/library/lightbox/stack.rs:513
+#, rust-format
+msgid "Stacked {n} photo"
+msgid_plural "Stacked {n} photos"
+msgstr[0] "Stablet {n} bilde"
+msgstr[1] "Stablet {n} bilder"
+
+#: src/library/lightbox/video.rs:121
+msgid "The video file is no longer on disk."
+msgstr "Videofilen finnes ikke lenger på disken."
+
+#: src/library/lightbox/widgets.rs:142
+msgid "Back to library"
+msgstr "Tilbake til biblioteket"
+
+#: src/library/lightbox/widgets.rs:154
+msgid "Toggle details (I)"
+msgstr "Vis/skjul detaljer (I)"
+
+#: src/library/lightbox/widgets.rs:161
+msgid "More (Shift+F10)"
+msgstr "Mer (Skift+F10)"
+
+#: src/library/lightbox/widgets.rs:242
+msgid "Preview unavailable"
+msgstr "Forhåndsvisning er ikke tilgjengelig"
+
+#: src/library/lightbox/widgets.rs:252
+msgid "Open in external app"
+msgstr "Åpne i ekstern app"
+
+#: src/library/lightbox/widgets.rs:286
+msgid "Play video (Space)"
+msgstr "Spill av video (Mellomrom)"
+
+#: src/library/lightbox/widgets.rs:297
+msgid "Download asset"
+msgstr "Last ned element"
+
+#: src/library/lightbox/widgets.rs:298
+msgid "Open with…"
+msgstr "Åpne med…"
+
+#: src/library/lightbox/widgets.rs:299
+msgid "Move to trash (Delete)"
+msgstr "Flytt til papirkurven (Delete)"
+
+#: src/library/lightbox/widgets.rs:347
+msgid "Toggle preview vs original full-resolution image"
+msgstr "Veksle mellom forhåndsvisning og originalbilde i full oppløsning"
+
+#: src/library/lightbox/widgets.rs:359
+msgid "Zoom out (Ctrl+-)"
+msgstr "Zoom ut (Ctrl+-)"
+
+#: src/library/lightbox/widgets.rs:360
+msgid "Zoom in (Ctrl++)"
+msgstr "Zoom inn (Ctrl++)"
+
+#: src/library/lightbox/widgets.rs:363
+msgid "Reset zoom (Ctrl+0)"
+msgstr "Tilbakestill zoom (Ctrl+0)"
+
+#: src/library/lightbox/widgets.rs:452
+msgid "Loading details…"
+msgstr "Laster inn detaljer…"
+
+#: src/library/map/album.rs:35
+msgid "Show all photos"
+msgstr "Vis alle bilder"
+
+#: src/library/map/controls.rs:41 src/library/shortcuts_dialog.rs:162
+#: src/library/shortcuts_dialog.rs:237
+msgid "Zoom in"
+msgstr "Zoom inn"
+
+#: src/library/map/controls.rs:42 src/library/shortcuts_dialog.rs:166
+#: src/library/shortcuts_dialog.rs:238
+msgid "Zoom out"
+msgstr "Zoom ut"
+
+#: src/library/map/controls.rs:45 src/library/shortcuts_dialog.rs:239
+msgid "Rotate left"
+msgstr "Roter mot venstre"
+
+#: src/library/map/controls.rs:46 src/library/shortcuts_dialog.rs:240
+msgid "Rotate right"
+msgstr "Roter mot høyre"
+
+#: src/library/map/controls.rs:51
+msgid "Show photos in this area"
+msgstr "Vis bilder i dette området"
+
+#: src/library/map/controls.rs:53 src/library/shortcuts_dialog.rs:242
+msgid "Show my location"
+msgstr "Vis min posisjon"
+
+#: src/library/map/controls.rs:55
+msgid "Map settings"
+msgstr "Kartinnstillinger"
+
+#: src/library/map/controls.rs:104
+msgid "Map style"
+msgstr "Kartstil"
+
+#: src/library/map/controls.rs:130 src/library/shortcuts_dialog.rs:241
+msgid "Point north"
+msgstr "Pek mot nord"
+
+#: src/library/map/controls.rs:153
+msgid "More Styles"
+msgstr "Flere stiler"
+
+#: src/library/map/controls.rs:158 src/settings_window/appearance.rs:18
+msgid "Appearance"
+msgstr "Utseende"
+
+#: src/library/map/controls.rs:289
+msgid "No photos in this area"
+msgstr "Ingen bilder i dette området"
+
+#: src/library/map/controls.rs:300
+msgid "Your location isn't available"
+msgstr "Posisjonen din er ikke tilgjengelig"
+
+#: src/library/map/locate.rs:19
+msgid "The location service did not answer in time."
+msgstr "Posisjonstjenesten svarte ikke i tide."
+
+#: src/library/map/locate.rs:43
+#, rust-format
+msgid "Location access was not allowed ({err})."
+msgstr "Posisjonstilgang ble ikke tillatt ({err})."
+
+#: src/library/map/locate.rs:49
+msgid "The location service stopped before finding you."
+msgstr "Posisjonstjenesten stoppet før den fant deg."
+
+#: src/library/map/locate.rs:51
+msgid "The location service returned an invalid position."
+msgstr "Posisjonstjenesten returnerte en ugyldig posisjon."
+
+#: src/library/map/locate.rs:56
+#, rust-format
+msgid ""
+"Location services are unavailable ({err}). Check that they are turned on."
+msgstr "Posisjonstjenester er utilgjengelige ({err}). Sjekk at de er slått på."
+
+#: src/library/map/location_dialog.rs:118
+#: src/library/map/location_dialog.rs:127
+msgid "Set Location"
+msgstr "Angi plassering"
+
+#: src/library/map/location_dialog.rs:165
+msgid "Could Not Set Location"
+msgstr "Kunne ikke angi plassering"
+
+#: src/library/map/location_dialog.rs:204 src/library/map/search.rs:34
+#: src/library/shortcuts_dialog.rs:236
+msgid "Search places"
+msgstr "Søk etter steder"
+
+#: src/library/map/location_dialog.rs:287
+msgid "Looking up…"
+msgstr "Slår opp…"
+
+#: src/library/map/location_dialog.rs:309
+msgid "No place name here"
+msgstr "Ingen stedsnavn her"
+
+#: src/library/map/location_dialog.rs:312
+msgid "Place name unavailable"
+msgstr "Stedsnavn er ikke tilgjengelig"
+
+#: src/library/map/location_dialog.rs:497
+msgid "Latitude, Longitude"
+msgstr "Breddegrad, lengdegrad"
+
+#: src/library/map/location_dialog.rs:501
+msgid "Paste coordinates"
+msgstr "Lim inn koordinater"
+
+#: src/library/map/markers.rs:92
+msgid "You are here"
+msgstr "Du er her"
+
+#: src/library/map/markers.rs:118
+#, rust-format
+msgid "{n} photo in {place}"
+msgid_plural "{n} photos in {place}"
+msgstr[0] "{n} bilde i {place}"
+msgstr[1] "{n} bilder i {place}"
+
+#: src/library/map/minimap.rs:60
+msgid "Show on map"
+msgstr "Vis på kart"
+
+#: src/library/map/minimap.rs:99
+msgid "Photo location"
+msgstr "Bildeplassering"
+
+#: src/library/map/nearby.rs:141
+msgid "Taken Nearby"
+msgstr "Tatt i nærheten"
+
+#: src/library/map/place_search.rs:172
+#, rust-format
+msgid "Photon asked to wait {seconds} s"
+msgstr "Photon ba om å vente i {seconds} s"
+
+#: src/library/map/place_search.rs:267
+msgid "Searching…"
+msgstr "Søker…"
+
+#: src/library/map/place_search.rs:335
+msgid "Address"
+msgstr "Adresse"
+
+#: src/library/map/satellite.rs:31 src/library/map/styles.rs:115
+msgid "Satellite"
+msgstr "Satellitt"
+
+#: src/library/map/satellite.rs:155
+msgid "No satellite imagery here"
+msgstr "Ingen satellittbilder her"
+
+#: src/library/map/satellite.rs:239
+msgid "Cancelled"
+msgstr "Avbrutt"
+
+#: src/library/map/satellite.rs:277
+#, rust-format
+msgid "VersaTiles asked to wait {seconds} s"
+msgstr "VersaTiles ba om å vente i {seconds} s"
+
+#: src/library/map/search.rs:213
+msgid "No places found"
+msgstr "Ingen steder funnet"
+
+#: src/library/map/settings.rs:50
+msgid "All Time"
+msgstr "Hele tiden"
+
+#: src/library/map/settings.rs:51
+msgid "Past 24 Hours"
+msgstr "Siste 24 timer"
+
+#: src/library/map/settings.rs:52
+msgid "Past 7 Days"
+msgstr "Siste 7 dager"
+
+#: src/library/map/settings.rs:53
+msgid "Past 30 Days"
+msgstr "Siste 30 dager"
+
+#: src/library/map/settings.rs:54
+msgid "Past Year"
+msgstr "Siste år"
+
+#: src/library/map/settings.rs:55
+msgid "Past 3 Years"
+msgstr "Siste 3 år"
+
+#: src/library/map/settings.rs:56
+msgid "Custom Range"
+msgstr "Egendefinert tidsrom"
+
+#: src/library/map/settings.rs:84
+msgid "Only Favorites"
+msgstr "Bare favoritter"
+
+#: src/library/map/settings.rs:86
+msgid "Include Archived"
+msgstr "Inkluder arkiverte"
+
+#: src/library/map/settings.rs:87
+msgid "Your archived photos"
+msgstr "Dine arkiverte bilder"
+
+#: src/library/map/settings.rs:91
+msgid "Include Partners"
+msgstr "Inkluder partnere"
+
+#: src/library/map/settings.rs:92
+msgid "Photos partners share with you"
+msgstr "Bilder partnere deler med deg"
+
+#: src/library/map/settings.rs:96
+msgid "Include Shared Albums"
+msgstr "Inkluder delte albumer"
+
+#: src/library/map/settings.rs:97
+msgid "Photos in albums shared with you"
+msgstr "Bilder i albumer delt med deg"
+
+#: src/library/map/settings.rs:101 src/library/utilities/controls.rs:97
+#: src/settings_window/behavior.rs:140
+msgid "From"
+msgstr "Fra"
+
+#: src/library/map/settings.rs:102 src/library/utilities/controls.rs:98
+#: src/settings_window/behavior.rs:141
+msgid "Until"
+msgstr "Til"
+
+#: src/library/map/settings.rs:149
+msgid "Map Settings"
+msgstr "Kartinnstillinger"
+
+#: src/library/map/settings.rs:173 src/library/utilities/controls.rs:109
+msgid "Show"
+msgstr "Vis"
+
+#: src/library/map/settings.rs:180
+msgid "Date Range"
+msgstr "Datointervall"
+
+#: src/library/map/status.rs:29
+msgid "Loading Map…"
+msgstr "Laster inn kart…"
+
+#: src/library/map/status.rs:31
+msgid "No Photos With a Location"
+msgstr "Ingen bilder med en plassering"
+
+#: src/library/map/status.rs:32
+msgid "Photos with GPS data, or a location you set, appear here"
+msgstr "Bilder med GPS-data eller en plassering du angir, vises her"
+
+#: src/library/map/status.rs:34
+msgid "Could Not Load the Map"
+msgstr "Kunne ikke laste inn kartet"
+
+#: src/library/map/styles.rs:99
+msgid "Colorful"
+msgstr "Fargerik"
+
+#: src/library/map/styles.rs:100
+msgid "Natural"
+msgstr "Naturlig"
+
+#: src/library/map/styles.rs:101
+msgid "Muted"
+msgstr "Dempet"
+
+#: src/library/map/styles.rs:102
+msgid "Gray"
+msgstr "Grå"
+
+#: src/library/map/styles.rs:118
+msgid "Humanitarian"
+msgstr "Humanitær"
+
+#: src/library/map/styles.rs:181 src/library/theme.rs:20
+#: src/settings_window/appearance.rs:21
+msgid "Follow System"
+msgstr "Følg systemet"
+
+#: src/library/map/styles.rs:182 src/library/theme.rs:21
+#: src/settings_window/appearance.rs:21
+msgid "Light"
+msgstr "Lys"
+
+#: src/library/map/styles.rs:183 src/library/theme.rs:22
+#: src/settings_window/appearance.rs:21
+msgid "Dark"
+msgstr "Mørk"
+
+#: src/library/map/view.rs:230
+msgid "This Area"
+msgstr "Dette området"
+
+#: src/library/map/view.rs:494
+msgid "Map Area"
+msgstr "Kartområde"
+
+#: src/library/masonry/canvas.rs:532 src/library/server_stats_dialog.rs:156
+#: src/library/server_stats_dialog.rs:157
+#: src/library/source_loading/explore.rs:56
+msgid "HTTP 403"
+msgstr "HTTP 403"
+
+#: src/library/masonry/canvas/interaction.rs:272
+#, rust-format
+msgid "{n} file"
+msgid_plural "{n} files"
+msgstr[0] "{n} fil"
+msgstr[1] "{n} filer"
+
+#: src/library/masonry/canvas_helpers.rs:139
+msgid ""
+"Your API key is missing permissions required to view thumbnails. Please "
+"ensure the key has 'asset.view' enabled."
+msgstr "API-nøkkelen din mangler tillatelser som kreves for å vise miniatyrbilder. Sørg for at nøkkelen har 'asset.view' aktivert."
+
+#: src/library/memories.rs:154
+#, rust-format
+msgid "{name}'s birthday"
+msgstr "{name}s fødselsdag"
+
+#: src/library/memories.rs:162
+#, rust-format
+msgid "{n} year ago"
+msgid_plural "{n} years ago"
+msgstr[0] "{n} år siden"
+msgstr[1] "{n} år siden"
+
+#: src/library/memories.rs:165
+msgid "This year"
+msgstr "I år"
+
+#: src/library/memories.rs:166
+msgid "Memory"
+msgstr "Minne"
+
+#: src/library/memories.rs:277
+msgid "Remove from Memory"
+msgstr "Fjern fra minne"
+
+#: src/library/memories.rs:306
+msgid "Removed from this memory"
+msgstr "Fjernet fra dette minnet"
+
+#: src/library/memories.rs:308
+msgid "Couldn't change the memory"
+msgstr "Kunne ikke endre minnet"
+
+#: src/library/mod.rs:407
+msgid "Drop files to upload"
+msgstr "Slipp filer for å laste opp"
+
+#: src/library/navigation.rs:201 src/library/sidebar/rows.rs:76
+msgid "Shared Albums"
+msgstr "Delte albumer"
+
+#: src/library/navigation.rs:202 src/library/sidebar/rows.rs:82
+msgid "Shared Links"
+msgstr "Delte lenker"
+
+#: src/library/navigation.rs:206 src/library/shortcuts_dialog.rs:65
+#: src/library/sidebar/rows.rs:88
+msgid "Sharing"
+msgstr "Deling"
+
+#: src/library/navigation.rs:207 src/library/search_panel.rs:77
+#: src/library/search_view.rs:166 src/library/shortcuts_dialog.rs:33
+#: src/library/sidebar/rows.rs:46
+msgid "Search"
+msgstr "Søk"
+
+#: src/library/navigation.rs:209 src/library/sidebar/rows.rs:124
+msgid "Duplicates"
+msgstr "Duplikater"
+
+#: src/library/people_view.rs:68 src/library/person_merge_dialog.rs:67
+msgid "Search people"
+msgstr "Søk etter personer"
+
+#: src/library/people_view.rs:73 src/library/people_view.rs:117
+msgid "Show hidden people"
+msgstr "Vis skjulte personer"
+
+#: src/library/people_view.rs:115
+msgid "Hide hidden people"
+msgstr "Skjul skjulte personer"
+
+#: src/library/people_view.rs:137 src/library/person_merge_dialog.rs:31
+msgid "Could Not Load People"
+msgstr "Kunne ikke laste inn personer"
+
+#: src/library/people_view.rs:161
+msgid "No People"
+msgstr "Ingen personer"
+
+#: src/library/people_view.rs:162
+msgid "People appear here once Immich has recognized faces in your photos."
+msgstr "Personer vises her når Immich har gjenkjent ansikter i bildene dine."
+
+#: src/library/people_view.rs:166
+msgid "No Matches"
+msgstr "Ingen treff"
+
+#: src/library/people_view.rs:167 src/library/sharing_view.rs:323
+msgid "No one matches your search."
+msgstr "Ingen passer til søket ditt."
+
+#: src/library/people_view.rs:320
+msgid "Add Name…"
+msgstr "Legg til navn…"
+
+#: src/library/people_view.rs:325
+msgid "Unhide"
+msgstr "Gjør synlig"
+
+#: src/library/people_view.rs:327
+msgid "Hide"
+msgstr "Skjul"
+
+#: src/library/people_view.rs:339
+msgid "Set Birthday…"
+msgstr "Angi fødselsdag…"
+
+#: src/library/people_view.rs:346
+msgid "Merge People…"
+msgstr "Slå sammen personer…"
+
+#: src/library/people_view.rs:375
+msgid "Could Not Update Person"
+msgstr "Kunne ikke oppdatere person"
+
+#: src/library/people_view.rs:422
+msgid "Add Name"
+msgstr "Legg til navn"
+
+#: src/library/people_view.rs:424
+msgid "Rename Person"
+msgstr "Endre navn på person"
+
+#: src/library/people_view.rs:426
+msgid "This name is used in search and on the People page."
+msgstr "Dette navnet brukes i søk og på Personer-siden."
+
+#: src/library/people_view.rs:449
+msgid "Set Birthday"
+msgstr "Angi fødselsdag"
+
+#: src/library/people_view.rs:451
+#, rust-format
+msgid "Immich shows {name}'s age on photos."
+msgstr "Immich viser alderen til {name} på bilder."
+
+#: src/library/person_merge_dialog.rs:47 src/library/person_merge_dialog.rs:157
+msgid "Merge"
+msgstr "Slå sammen"
+
+#: src/library/person_merge_dialog.rs:95
+#, rust-format
+msgid ""
+"Pick the people who are really {name}. Their faces move to {name} and "
+"they're removed. This can't be undone."
+msgstr "Velg personene som egentlig er {name}. Ansiktene deres flyttes til {name} og de fjernes. Dette kan ikke angres."
+
+#: src/library/person_merge_dialog.rs:124
+#, rust-format
+msgid "Merge Into {name}"
+msgstr "Slå sammen med {name}"
+
+#: src/library/person_merge_dialog.rs:146
+#, rust-format
+msgid "Merge {count} person into {name}?"
+msgid_plural "Merge {count} people into {name}?"
+msgstr[0] "Slå sammen {count} person med {name}?"
+msgstr[1] "Slå sammen {count} personer med {name}?"
+
+#: src/library/person_merge_dialog.rs:156
+msgid "This can't be undone."
+msgstr "Dette kan ikke angres."
+
+#: src/library/person_merge_dialog.rs:202
+msgid "Could Not Merge People"
+msgstr "Kunne ikke slå sammen personer"
+
+#: src/library/person_picker.rs:122
+msgid "Search or type a new name"
+msgstr "Søk eller skriv inn et nytt navn"
+
+#: src/library/person_picker.rs:138
+msgid "Create Person…"
+msgstr "Opprett person…"
+
+#: src/library/person_picker.rs:140
+msgid "Who Is This?"
+msgstr "Hvem er dette?"
+
+#: src/library/person_picker.rs:156
+msgid "Back"
+msgstr "Tilbake"
+
+#: src/library/person_picker.rs:161
+msgid "Create Person"
+msgstr "Opprett person"
+
+#: src/library/person_picker.rs:166
+msgid "Tag Face"
+msgstr "Tagg ansikt"
+
+#: src/library/photo_editor.rs:37
+msgid "Free"
+msgstr "Fritt"
+
+#: src/library/photo_editor.rs:38 src/library/photo_editor/look.rs:130
+msgid "Original"
+msgstr "Original"
+
+#: src/library/photo_editor.rs:39
+msgid "Square"
+msgstr "Kvadratisk"
+
+#: src/library/photo_editor/look.rs:38
+msgid "Brightness"
+msgstr "Lysstyrke"
+
+#: src/library/photo_editor/look.rs:39
+msgid "Contrast"
+msgstr "Kontrast"
+
+#: src/library/photo_editor/look.rs:40
+msgid "Highlights"
+msgstr "Høylys"
+
+#: src/library/photo_editor/look.rs:41
+msgid "Shadows"
+msgstr "Skygger"
+
+#: src/library/photo_editor/look.rs:42
+msgid "Saturation"
+msgstr "Metning"
+
+#: src/library/photo_editor/look.rs:43
+msgid "Warmth"
+msgstr "Varme"
+
+#: src/library/photo_editor/look.rs:44
+msgid "Tint"
+msgstr "Fargetone"
+
+#: src/library/photo_editor/look.rs:45
+msgid "Vignette"
+msgstr "Vignettering"
+
+#: src/library/photo_editor/look.rs:46
+msgid "Sharpen"
+msgstr "Skarphet"
+
+#: src/library/photo_editor/look.rs:133
+msgid "Vivid"
+msgstr "Livlig"
+
+#: src/library/photo_editor/look.rs:142
+msgid "Warm"
+msgstr "Varm"
+
+#: src/library/photo_editor/look.rs:151
+msgid "Cool"
+msgstr "Kjølig"
+
+#: src/library/photo_editor/look.rs:159
+msgid "Dramatic"
+msgstr "Dramatisk"
+
+#: src/library/photo_editor/look.rs:171
+msgid "Fade"
+msgstr "Falmet"
+
+#: src/library/photo_editor/look.rs:181
+msgid "Vintage"
+msgstr "Vintage"
+
+#: src/library/photo_editor/look.rs:192
+msgid "Mono"
+msgstr "Mono"
+
+#: src/library/photo_editor/look.rs:200
+msgid "Noir"
+msgstr "Noir"
+
+#: src/library/photo_editor/look.rs:211
+msgid "Sepia"
+msgstr "Sepia"
+
+#: src/library/related.rs:20
+msgid "View Similar Photos"
+msgstr "Vis lignende bilder"
+
+#: src/library/related.rs:29
+msgid "View in Timeline"
+msgstr "Vis i tidslinje"
+
+#: src/library/search_filters.rs:59
+msgid "Text"
+msgstr "Tekst"
+
+#: src/library/search_filters.rs:62
+msgid "Filename contains"
+msgstr "Filnavn inneholder"
+
+#: src/library/search_filters.rs:65
+msgid "Description contains"
+msgstr "Beskrivelse inneholder"
+
+#: src/library/search_filters.rs:68
+msgid "OCR text contains"
+msgstr "OCR-tekst inneholder"
+
+#: src/library/search_filters.rs:79
+msgid "People, Tags, and Albums"
+msgstr "Personer, etiketter og albumer"
+
+#: src/library/search_filters.rs:80
+msgid "Photos have to have everything you pick"
+msgstr "Bildene må inneholde alt du velger"
+
+#: src/library/search_filters.rs:83
+msgid "Anyone"
+msgstr "Hvem som helst"
+
+#: src/library/search_filters.rs:84 src/library/search_filters.rs:85
+#: src/library/search_filters.rs:123 src/library/search_filters.rs:135
+#: src/library/search_filters.rs:144 src/library/search_filters/suggest.rs:22
+#: src/library/search_filters/suggest.rs:47
+msgid "Any"
+msgstr "Hvilken som helst"
+
+#: src/library/search_filters.rs:118
+msgid "Type and flags"
+msgstr "Type og flagg"
+
+#: src/library/search_filters.rs:121
+msgid "Asset type"
+msgstr "Elementtype"
+
+#: src/library/search_filters.rs:124
+msgid "Image only"
+msgstr "Bare bilder"
+
+#: src/library/search_filters.rs:125
+msgid "Video only"
+msgstr "Bare videoer"
+
+#: src/library/search_filters.rs:128
+msgid "Favourites only"
+msgstr "Bare favoritter"
+
+#: src/library/search_filters.rs:129
+msgid "Motion photos only"
+msgstr "Bare bevegelsesbilder"
+
+#: src/library/search_filters.rs:130
+msgid "Not in any album"
+msgstr "Ikke i noe album"
+
+#: src/library/search_filters.rs:131
+msgid "Include deleted"
+msgstr "Inkluder slettede"
+
+#: src/library/search_filters.rs:133
+msgid "Visibility"
+msgstr "Synlighet"
+
+#: src/library/search_filters.rs:136 src/library/shortcuts_dialog.rs:260
+msgid "Timeline"
+msgstr "Tidslinje"
+
+#: src/library/search_filters.rs:138
+#: src/library/source_header/enrichment.rs:251
+msgid "Hidden"
+msgstr "Skjult"
+
+#: src/library/search_filters.rs:139
+msgid "Locked"
+msgstr "Låst"
+
+#: src/library/search_filters.rs:143
+msgid "Minimum rating"
+msgstr "Laveste vurdering"
+
+#: src/library/search_filters.rs:173
+msgid "Date range"
+msgstr "Datointervall"
+
+#: src/library/search_filters.rs:177
+msgid "Taken after"
+msgstr "Tatt etter"
+
+#: src/library/search_filters.rs:180
+msgid "Taken before"
+msgstr "Tatt før"
+
+#: src/library/search_filters.rs:183
+msgid "Created after"
+msgstr "Opprettet etter"
+
+#: src/library/search_filters.rs:186
+msgid "Created before"
+msgstr "Opprettet før"
+
+#: src/library/search_filters.rs:207
+msgid "Make"
+msgstr "Produsent"
+
+#: src/library/search_filters.rs:208
+msgid "Model"
+msgstr "Modell"
+
+#: src/library/search_filters.rs:209
+msgid "Lens model"
+msgstr "Objektivmodell"
+
+#: src/library/search_filters.rs:222
+msgid "Country"
+msgstr "Land"
+
+#: src/library/search_filters.rs:223
+msgid "State / region"
+msgstr "Fylke / region"
+
+#: src/library/search_filters.rs:224
+msgid "City"
+msgstr "By"
+
+#: src/library/search_filters/choices.rs:119
+#, rust-format
+msgid "Filter {what}"
+msgstr "Filtrer {what}"
+
+#: src/library/search_filters/choices.rs:207
+msgid "Nothing to choose from"
+msgstr "Ingenting å velge mellom"
+
+#: src/library/search_panel.rs:55
+msgid "Close filters"
+msgstr "Lukk filtre"
+
+#: src/library/search_panel.rs:73
+msgid "Clear every filter, keeping the search text"
+msgstr "Fjern alle filtre, men behold søketeksten"
+
+#: src/library/search_panel.rs:108
+#, rust-format
+msgid "Filters · {count}"
+msgstr "Filtre · {count}"
+
+#: src/library/search_view.rs:116
+msgid ""
+"Smart: CLIP-based semantic search.\n"
+"Filename: matches against file names.\n"
+"OCR: matches text inside images."
+msgstr ""
+"Smart: CLIP-basert semantisk søk.\n"
+"Filnavn: søker i filnavn.\n"
+"OCR: søker etter tekst i bilder."
+
+#: src/library/search_view.rs:123 src/library/search_view.rs:315
+msgid "Describe what you're looking for…"
+msgstr "Beskriv det du leter etter…"
+
+#: src/library/search_view.rs:157
+msgid "Show search filters"
+msgstr "Vis søkefiltre"
+
+#: src/library/search_view.rs:313
+msgid "Search filenames"
+msgstr "Søk i filnavn"
+
+#: src/library/search_view.rs:314
+msgid "Find words shown inside images"
+msgstr "Finn ord som vises i bilder"
+
+#: src/library/select_all.rs:29
+msgid "Loading every photo to select…"
+msgstr "Laster inn alle bilder som skal velges…"
+
+#: src/library/select_all.rs:48
+msgid "Some photos couldn't be loaded, so not all are selected"
+msgstr "Noen bilder kunne ikke lastes inn, så ikke alle er valgt"
+
+#: src/library/server_stats_dialog.rs:23
+msgid "Server statistics"
+msgstr "Tjenerstatistikk"
+
+#: src/library/server_stats_dialog.rs:99 src/library/server_stats_dialog.rs:131
+#: src/library/utilities/controls.rs:29
+msgid "Videos"
+msgstr "Videoer"
+
+#: src/library/server_stats_dialog.rs:104 src/settings_window/library.rs:190
+msgid "Storage"
+msgstr "Lagringsplass"
+
+#: src/library/server_stats_dialog.rs:113
+msgid "By user"
+msgstr "Etter bruker"
+
+#: src/library/server_stats_dialog.rs:136
+msgid "Total"
+msgstr "Totalt"
+
+#: src/library/server_stats_dialog.rs:145
+msgid "Server-wide statistics require administrator access."
+msgstr "Tjeneromfattende statistikk krever administratortilgang."
+
+#: src/library/server_stats_dialog.rs:163
+msgid ""
+"Your API key must include the 'server.about', 'server.versionCheck', "
+"'server.statistics', and 'asset.statistics' permissions to view stats."
+msgstr "API-nøkkelen din må inneholde tillatelsene 'server.about', 'server.versionCheck', 'server.statistics' og 'asset.statistics' for å vise statistikk."
+
+#: src/library/server_stats_dialog.rs:168
+msgid "Unable to load statistics"
+msgstr "Kunne ikke laste inn statistikk"
+
+#: src/library/server_stats_dialog.rs:169
+msgid "Check your connection and try again."
+msgstr "Sjekk tilkoblingen din og prøv igjen."
+
+#: src/library/server_stats_dialog.rs:247
+#, rust-format
+msgid "{used} of {quota}"
+msgstr "{used} av {quota}"
+
+#: src/library/shared_link_dialog.rs:20
+msgid "Never"
+msgstr "Aldri"
+
+#: src/library/shared_link_dialog.rs:21
+msgid "1 hour"
+msgstr "1 time"
+
+#: src/library/shared_link_dialog.rs:22
+msgid "1 day"
+msgstr "1 dag"
+
+#: src/library/shared_link_dialog.rs:23
+msgid "7 days"
+msgstr "7 dager"
+
+#: src/library/shared_link_dialog.rs:24
+msgid "30 days"
+msgstr "30 dager"
+
+#: src/library/shared_link_dialog.rs:31
+#, rust-format
+msgid "Keep current ({date})"
+msgstr "Behold gjeldende ({date})"
+
+#. Translators: strftime date and time, e.g. "9 Oct 2026, 14:30".
+#: src/library/shared_link_dialog.rs:57
+msgid "%-d %b %Y, %H:%M"
+msgstr "%-d. %b %Y, %H:%M"
+
+#: src/library/shared_link_dialog.rs:114
+msgid "Expires"
+msgstr "Utløper"
+
+#: src/library/shared_link_dialog.rs:119
+msgid "Password (leave empty to keep)"
+msgstr "Passord (la stå tomt for å beholde)"
+
+#: src/library/shared_link_dialog.rs:121
+msgid "Password (optional)"
+msgstr "Passord (valgfritt)"
+
+#: src/library/shared_link_dialog.rs:125
+msgid "Allow downloads"
+msgstr "Tillat nedlastinger"
+
+#: src/library/shared_link_dialog.rs:126
+msgid "Visitors can download originals"
+msgstr "Besøkende kan laste ned originaler"
+
+#: src/library/shared_link_dialog.rs:130
+msgid "Allow uploads"
+msgstr "Tillat opplastinger"
+
+#: src/library/shared_link_dialog.rs:131
+msgid "Visitors can add photos to the album"
+msgstr "Besøkende kan legge til bilder i albumet"
+
+#: src/library/shared_link_dialog.rs:135
+msgid "Show metadata"
+msgstr "Vis metadata"
+
+#: src/library/shared_link_dialog.rs:136
+msgid "Visitors can see EXIF details and location"
+msgstr "Besøkende kan se EXIF-detaljer og plassering"
+
+#: src/library/shared_link_dialog.rs:177
+msgid "Create Share Link"
+msgstr "Opprett delelenke"
+
+#: src/library/shared_link_dialog.rs:178
+msgid "Edit Share Link"
+msgstr "Rediger delelenke"
+
+#: src/library/shared_link_dialog.rs:237
+msgid "Share link created and copied"
+msgstr "Delelenke opprettet og kopiert"
+
+#: src/library/shared_link_dialog.rs:243
+msgid "Could Not Save Share Link"
+msgstr "Kunne ikke lagre delelenke"
+
+#: src/library/shared_link_dialog.rs:253 src/library/shared_link_photos.rs:343
+#: src/library/shared_links_view.rs:325
+msgid "Couldn't copy the link"
+msgstr "Kunne ikke kopiere lenken"
+
+#: src/library/shared_link_photos.rs:56 src/library/shared_link_photos.rs:239
+msgid "Photos in Link"
+msgstr "Bilder i lenken"
+
+#: src/library/shared_link_photos.rs:77
+msgid ""
+"Tap photos to take them out. To add some, select them in your library and "
+"choose Add to Share Link."
+msgstr "Trykk på bilder for å ta dem ut. For å legge til noen, velg dem i biblioteket og velg «Legg til i delelenke»."
+
+#: src/library/shared_link_photos.rs:111
+#, rust-format
+msgid "Couldn't load the photos: {err}"
+msgstr "Kunne ikke laste inn bildene: {err}"
+
+#: src/library/shared_link_photos.rs:154
+msgid "Select"
+msgstr "Velg"
+
+#: src/library/shared_link_photos.rs:183
+#, rust-format
+msgid "Remove {n} Photo"
+msgid_plural "Remove {n} Photos"
+msgstr[0] "Fjern {n} bilde"
+msgstr[1] "Fjern {n} bilder"
+
+#: src/library/shared_link_photos.rs:202
+#, rust-format
+msgid "Couldn't take them out: {err}"
+msgstr "Kunne ikke ta dem ut: {err}"
+
+#: src/library/shared_link_photos.rs:255
+msgid "Couldn't load your links"
+msgstr "Kunne ikke laste inn lenkene dine"
+
+#: src/library/shared_link_photos.rs:293 src/library/shared_links_view.rs:384
+msgid "Individual share"
+msgstr "Individuell deling"
+
+#: src/library/shared_link_photos.rs:311 src/library/shared_link_photos.rs:327
+msgid "Add to Share Link"
+msgstr "Legg til i delelenke"
+
+#: src/library/shared_link_photos.rs:318
+msgid "No Links to Add To"
+msgstr "Ingen lenker å legge til i"
+
+#: src/library/shared_link_photos.rs:320
+msgid ""
+"Albums' links always show the whole album. Make a link for some photos with "
+"Create Share Link first."
+msgstr "Albumlenker viser alltid hele albumet. Lag en lenke for utvalgte bilder med «Opprett delelenke» først."
+
+#: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
+#: src/library/shared_link_qr.rs:129
+msgid "Copy Link"
+msgstr "Kopier lenke"
+
+#: src/library/shared_link_photos.rs:349
+msgid "Couldn't add to the link"
+msgstr "Kunne ikke legge til i lenken"
+
+#: src/library/shared_link_photos.rs:356
+msgid "Already in the link"
+msgstr "Allerede i lenken"
+
+#: src/library/shared_link_photos.rs:359
+#, rust-format
+msgid "Added {items} to the link"
+msgstr "La til {items} i lenken"
+
+#: src/library/shared_link_photos.rs:366
+#, rust-format
+msgid "{n} wasn't added"
+msgid_plural "{n} weren't added"
+msgstr[0] "{n} ble ikke lagt til"
+msgstr[1] "{n} ble ikke lagt til"
+
+#: src/library/shared_link_qr.rs:35 src/library/shared_link_qr.rs:42
+msgid "Couldn't make the QR code"
+msgstr "Kunne ikke lage QR-koden"
+
+#: src/library/shared_link_qr.rs:43
+msgid "The link is too long for a QR code."
+msgstr "Lenken er for lang for en QR-kode."
+
+#: src/library/shared_link_qr.rs:64 src/library/shared_links_view.rs:192
+msgid "QR Code"
+msgstr "QR-kode"
+
+#: src/library/shared_link_qr.rs:80
+msgid "QR code of the link"
+msgstr "QR-kode for lenken"
+
+#: src/library/shared_links_view.rs:35
+msgid "Anyone with a link can view what it shares."
+msgstr "Alle med lenken kan se det som deles."
+
+#: src/library/shared_links_view.rs:44
+msgid "No Shared Links"
+msgstr "Ingen delte lenker"
+
+#: src/library/shared_links_view.rs:46
+msgid ""
+"Create one from an album's or a photo's right-click menu, or from a "
+"selection."
+msgstr "Opprett en fra høyreklikkmenyen til et album eller et bilde, eller fra et utvalg."
+
+#: src/library/shared_links_view.rs:101
+msgid "Could Not Load Shared Links"
+msgstr "Kunne ikke laste inn delte lenker"
+
+#: src/library/shared_links_view.rs:200
+msgid "Photos…"
+msgstr "Bilder…"
+
+#: src/library/shared_links_view.rs:215
+msgid "Edit…"
+msgstr "Rediger…"
+
+#: src/library/shared_links_view.rs:311
+msgid "Show QR code"
+msgstr "Vis QR-kode"
+
+#: src/library/shared_links_view.rs:318
+msgid "Copy link"
+msgstr "Kopier lenke"
+
+#: src/library/shared_links_view.rs:355
+msgid "Delete this link?"
+msgstr "Slette denne lenken?"
+
+#: src/library/shared_links_view.rs:357
+msgid "Anyone using it will lose access. This can't be undone."
+msgstr "Alle som bruker den vil miste tilgangen. Dette kan ikke angres."
+
+#: src/library/shared_links_view.rs:373
+msgid "Could Not Delete Link"
+msgstr "Kunne ikke slette lenke"
+
+#: src/library/shared_links_view.rs:404
+msgid "Expired"
+msgstr "Utløpt"
+
+#: src/library/shared_links_view.rs:407
+#, rust-format
+msgid "Expires {date}"
+msgstr "Utløper {date}"
+
+#: src/library/shared_links_view.rs:408
+msgid "Never expires"
+msgstr "Utløper aldri"
+
+#: src/library/shared_links_view.rs:414 src/library/staging_view.rs:143
+#: src/library/window_layout.rs:413
+msgid "Upload"
+msgstr "Last opp"
+
+#: src/library/shared_links_view.rs:416
+msgid "Exif"
+msgstr "EXIF"
+
+#: src/library/shared_links_view.rs:417
+msgid "Password"
+msgstr "Passord"
+
+#: src/library/sharing_view.rs:29
+msgid "Add partner"
+msgstr "Legg til partner"
+
+#: src/library/sharing_view.rs:34
+msgid "You Share With"
+msgstr "Du deler med"
+
+#: src/library/sharing_view.rs:35
+msgid "Partners can see all your photos and videos."
+msgstr "Partnere kan se alle bildene og videoene dine."
+
+#: src/library/sharing_view.rs:39
+msgid "Sharing With You"
+msgstr "Deler med deg"
+
+#: src/library/sharing_view.rs:41
+msgid ""
+"People who added you as a partner. Switch one on to see their photos in "
+"Photos."
+msgstr "Personer som har lagt deg til som partner. Slå på en for å se bildene deres i Bilder."
+
+#: src/library/sharing_view.rs:94
+msgid "Could Not Load Partners"
+msgstr "Kunne ikke laste inn partnere"
+
+#: src/library/sharing_view.rs:117
+msgid "Use + to share your library with someone."
+msgstr "Bruk + for å dele biblioteket ditt med noen."
+
+#: src/library/sharing_view.rs:127
+msgid "No one is sharing with you."
+msgstr "Ingen deler med deg."
+
+#: src/library/sharing_view.rs:169
+msgid "Show in Photos"
+msgstr "Vis i Bilder"
+
+#: src/library/sharing_view.rs:179
+msgid "Could Not Change Partner"
+msgstr "Kunne ikke endre partner"
+
+#: src/library/sharing_view.rs:203
+msgid "Stop sharing"
+msgstr "Stopp deling"
+
+#: src/library/sharing_view.rs:214
+#, rust-format
+msgid "Stop sharing with {name}?"
+msgstr "Stoppe deling med {name}?"
+
+#: src/library/sharing_view.rs:217
+msgid "They'll no longer see your photos and videos."
+msgstr "De vil ikke lenger se bildene og videoene dine."
+
+#: src/library/sharing_view.rs:218
+msgid "Stop Sharing"
+msgstr "Stopp deling"
+
+#: src/library/sharing_view.rs:222
+msgid "Could Not Remove Partner"
+msgstr "Kunne ikke fjerne partner"
+
+#: src/library/sharing_view.rs:279
+msgid "Loading people…"
+msgstr "Laster inn personer…"
+
+#: src/library/sharing_view.rs:321
+msgid "No other people found. Listing people needs the 'user.read' permission."
+msgstr "Ingen andre personer ble funnet. Å vise personer krever tillatelsen 'user.read'."
+
+#: src/library/sharing_view.rs:354
+msgid "Add Partner"
+msgstr "Legg til partner"
+
+#: src/library/sharing_view.rs:377
+#, rust-format
+msgid "Share your library with {name}?"
+msgstr "Dele biblioteket ditt med {name}?"
+
+#: src/library/sharing_view.rs:378
+msgid ""
+"They'll be able to see all your photos and videos. You can stop sharing at "
+"any time."
+msgstr "De vil kunne se alle bildene og videoene dine. Du kan stoppe delingen når som helst."
+
+#: src/library/sharing_view.rs:381
+msgid "Share"
+msgstr "Del"
+
+#: src/library/sharing_view.rs:388
+msgid "Could Not Add Partner"
+msgstr "Kunne ikke legge til partner"
+
+#: src/library/shortcuts_dialog.rs:29
+msgid "Show keyboard shortcuts"
+msgstr "Vis tastatursnarveier"
+
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+msgid "Open Settings"
+msgstr "Åpne Innstillinger"
+
+#: src/library/shortcuts_dialog.rs:31
+msgid "Toggle sidebar"
+msgstr "Vis/skjul sidepanel"
+
+#: src/library/shortcuts_dialog.rs:32 src/library/window_layout.rs:328
+msgid "Refresh"
+msgstr "Oppdater"
+
+#: src/library/shortcuts_dialog.rs:35
+msgid "Paste photos"
+msgstr "Lim inn bilder"
+
+#: src/library/shortcuts_dialog.rs:37
+msgid "Into the open album, or Photos"
+msgstr "I det åpne albumet eller Bilder"
+
+#: src/library/shortcuts_dialog.rs:40
+msgid "Go back"
+msgstr "Gå tilbake"
+
+#: src/library/shortcuts_dialog.rs:42
+msgid "Or the mouse back button"
+msgstr "Eller tilbakeknappen på musen"
+
+#: src/library/shortcuts_dialog.rs:45
+msgid "Go forward"
+msgstr "Gå frem"
+
+#: src/library/shortcuts_dialog.rs:47
+msgid "Or the mouse forward button"
+msgstr "Eller fremknappen på musen"
+
+#: src/library/shortcuts_dialog.rs:50
+msgid "Open context menu"
+msgstr "Åpne kontekstmeny"
+
+#: src/library/shortcuts_dialog.rs:52
+msgid "Or the Menu key; in the grid, the viewer, and on album tiles"
+msgstr "Eller Meny-tasten; i rutenettet, viseren og på albumfliser"
+
+#: src/library/shortcuts_dialog.rs:61 src/library/sidebar/rows.rs:94
+#: src/library/source_header.rs:310
+msgid "Favorites"
+msgstr "Favoritter"
+
+#: src/library/shortcuts_dialog.rs:70
+msgid "Move between photos"
+msgstr "Flytt mellom bilder"
+
+#: src/library/shortcuts_dialog.rs:72
+msgid "After clicking a photo or tabbing to the grid"
+msgstr "Etter å ha klikket på et bilde eller tabba til rutenettet"
+
+#: src/library/shortcuts_dialog.rs:74
+msgid "First or last photo"
+msgstr "Første eller siste bilde"
+
+#: src/library/shortcuts_dialog.rs:75
+msgid "Open photo"
+msgstr "Åpne bilde"
+
+#: src/library/shortcuts_dialog.rs:76
+msgid "Select or deselect photo"
+msgstr "Velg eller fravælg bilde"
+
+#: src/library/shortcuts_dialog.rs:81
+msgid "Select assets"
+msgstr "Velg elementer"
+
+#: src/library/shortcuts_dialog.rs:83
+msgid "Hold and click to add or remove assets"
+msgstr "Hold inne og klikk for å legge til eller fjerne elementer"
+
+#: src/library/shortcuts_dialog.rs:86
+msgid "Select a range"
+msgstr "Velg et område"
+
+#: src/library/shortcuts_dialog.rs:88
+msgid "Hold and click; add Ctrl to extend the selection"
+msgstr "Hold inne og klikk; legg til Ctrl for å utvide utvalget"
+
+#: src/library/shortcuts_dialog.rs:91
+msgid "Move selection to trash"
+msgstr "Flytt utvalg til papirkurven"
+
+#: src/library/shortcuts_dialog.rs:93
+msgid "Deletes permanently in the Trash view"
+msgstr "Sletter permanent i Papirkurv-visningen"
+
+#: src/library/shortcuts_dialog.rs:96 src/library/staging_view.rs:193
+msgid "Select all"
+msgstr "Velg alle"
+
+#: src/library/shortcuts_dialog.rs:98
+msgid "Every photo in the view, loading the rest first"
+msgstr "Hvert bilde i visningen, laster inn resten først"
+
+#: src/library/shortcuts_dialog.rs:101
+msgid "Select a whole day"
+msgstr "Velg en hel dag"
+
+#: src/library/shortcuts_dialog.rs:103
+msgid ""
+"The focused photo's day or month; or tap its date heading while selecting"
+msgstr "Dagen eller måneden til det fokuserte bildet; eller trykk på datooverskriften under merking"
+
+#: src/library/shortcuts_dialog.rs:106
+msgid "Copy selection"
+msgstr "Kopier utvalg"
+
+#: src/library/shortcuts_dialog.rs:108
+msgid "Paste into an album to add them; one photo copies as a picture"
+msgstr "Lim inn i et album for å legge dem til; ett bilde kopieres som et bilde"
+
+#: src/library/shortcuts_dialog.rs:110
+msgid "Exit selection mode"
+msgstr "Avslutt utvalgsmodus"
+
+#: src/library/shortcuts_dialog.rs:115
+msgid "Next or previous day"
+msgstr "Neste eller forrige dag"
+
+#: src/library/shortcuts_dialog.rs:117
+msgid "In Photos, sorted newest first"
+msgstr "I Bilder, sortert nyeste først"
+
+#: src/library/shortcuts_dialog.rs:119
+msgid "Next or previous month"
+msgstr "Neste eller forrige måned"
+
+#: src/library/shortcuts_dialog.rs:120
+msgid "Next or previous year"
+msgstr "Neste eller forrige år"
+
+#: src/library/shortcuts_dialog.rs:124
+msgid "Previous asset"
+msgstr "Forrige element"
+
+#: src/library/shortcuts_dialog.rs:125
+msgid "Next asset"
+msgstr "Neste element"
+
+#: src/library/shortcuts_dialog.rs:126
+msgid "Toggle details"
+msgstr "Vis/skjul detaljer"
+
+#: src/library/shortcuts_dialog.rs:128
+msgid "Show or hide all actions for the photo"
+msgstr "Vis eller skjul alle handlinger for bildet"
+
+#: src/library/shortcuts_dialog.rs:131
+msgid "Toggle favorite"
+msgstr "Slå av/på favoritt"
+
+#: src/library/shortcuts_dialog.rs:132
+msgid "Archive or unarchive"
+msgstr "Arkiver eller fjern fra arkiv"
+
+#: src/library/shortcuts_dialog.rs:134
+msgid "Rate"
+msgstr "Vurder"
+
+#: src/library/shortcuts_dialog.rs:136
+msgid "0 clears the rating"
+msgstr "0 fjerner vurderingen"
+
+#: src/library/shortcuts_dialog.rs:138
+msgid "Edit info"
+msgstr "Rediger informasjon"
+
+#: src/library/shortcuts_dialog.rs:141
+msgid "Copy the photo"
+msgstr "Kopier bildet"
+
+#: src/library/shortcuts_dialog.rs:143
+msgid "While recognized text shows, copies the text instead"
+msgstr "Når gjenkjent tekst vises, kopieres teksten i stedet"
+
+#: src/library/shortcuts_dialog.rs:146
+msgid "Show or hide recognized text"
+msgstr "Vis eller skjul gjenkjent tekst"
+
+#: src/library/shortcuts_dialog.rs:148
+msgid "Only when Immich found text in the photo"
+msgstr "Bare når Immich fant tekst i bildet"
+
+#: src/library/shortcuts_dialog.rs:151
+msgid "Select all recognized text"
+msgstr "Velg all gjenkjent tekst"
+
+#: src/library/shortcuts_dialog.rs:153
+msgid "Drag across text to select it; Ctrl-click adds or removes a box"
+msgstr "Dra over tekst for å velge den; Ctrl-klikk legger til eller fjerner en boks"
+
+#: src/library/shortcuts_dialog.rs:156
+msgid "Copy recognized text"
+msgstr "Kopier gjenkjent tekst"
+
+#: src/library/shortcuts_dialog.rs:158
+msgid "Copies the selection, or all text when nothing is selected"
+msgstr "Kopierer utvalget, eller all tekst hvis ingenting er valgt"
+
+#: src/library/shortcuts_dialog.rs:164
+msgid "Or hold Ctrl and scroll"
+msgstr "Eller hold Ctrl og rull"
+
+#: src/library/shortcuts_dialog.rs:167
+msgid "Reset zoom"
+msgstr "Tilbakestill zoom"
+
+#: src/library/shortcuts_dialog.rs:169
+msgid "Toggle fullscreen"
+msgstr "Slå av/på fullskjerm"
+
+#: src/library/shortcuts_dialog.rs:171
+msgid "Or the header button; double-click a video; Esc exits"
+msgstr "Eller overskriftsknappen; dobbeltklikk på en video; Esc avslutter"
+
+#: src/library/shortcuts_dialog.rs:174
+msgid "Play or stop a live photo"
+msgstr "Spill av eller stopp et levende bilde"
+
+#: src/library/shortcuts_dialog.rs:176
+msgid "Only on live and motion photos"
+msgstr "Bare på levende bilder og bevegelsesbilder"
+
+#: src/library/shortcuts_dialog.rs:178
+msgid "Start slideshow"
+msgstr "Start lysbildefremvisning"
+
+#: src/library/shortcuts_dialog.rs:183
+msgid "Pause or resume"
+msgstr "Sett på pause eller fortsett"
+
+#: src/library/shortcuts_dialog.rs:185
+msgid "Previous or next photo"
+msgstr "Forrige eller neste bilde"
+
+#: src/library/shortcuts_dialog.rs:187
+msgid "The next photo then gets the full interval"
+msgstr "Det neste bildet får da hele intervallet"
+
+#: src/library/shortcuts_dialog.rs:190
+msgid "End slideshow"
+msgstr "Avslutt lysbildefremvisning"
+
+#: src/library/shortcuts_dialog.rs:192
+msgid "Or S, or leave fullscreen"
+msgstr "Eller S, eller forlat fullskjerm"
+
+#: src/library/shortcuts_dialog.rs:198
+msgid "Switch the 360° view"
+msgstr "Bytt 360°-visning"
+
+#: src/library/shortcuts_dialog.rs:200
+msgid "Only on 360° photos, which open in it"
+msgstr "Bare på 360°-bilder, som åpnes i den"
+
+#: src/library/shortcuts_dialog.rs:202
+msgid "Tilt up or down"
+msgstr "Vipp opp eller ned"
+
+#: src/library/shortcuts_dialog.rs:204
+msgid "Turn left or right"
+msgstr "Drei til venstre eller høyre"
+
+#: src/library/shortcuts_dialog.rs:208
+msgid "Zoom in or out"
+msgstr "Zoom inn eller ut"
+
+#: src/library/shortcuts_dialog.rs:210
+msgid "Or scroll, or pinch"
+msgstr "Eller rull, eller knip"
+
+#: src/library/shortcuts_dialog.rs:215
+msgid "Play or pause"
+msgstr "Spill av eller pause"
+
+#: src/library/shortcuts_dialog.rs:216
+msgid "Back 10 seconds"
+msgstr "10 sekunder tilbake"
+
+#: src/library/shortcuts_dialog.rs:217
+msgid "Forward 10 seconds"
+msgstr "10 sekunder frem"
+
+#: src/library/shortcuts_dialog.rs:219
+msgid "Previous frame"
+msgstr "Forrige bilde"
+
+#: src/library/shortcuts_dialog.rs:221 src/library/shortcuts_dialog.rs:226
+msgid "Pauses playback"
+msgstr "Pauser avspilling"
+
+#: src/library/shortcuts_dialog.rs:224
+msgid "Next frame"
+msgstr "Neste bilde"
+
+#: src/library/shortcuts_dialog.rs:228
+msgid "Mute or unmute"
+msgstr "Demp eller opphev demping"
+
+#: src/library/shortcuts_dialog.rs:229
+msgid "Volume up"
+msgstr "Volum opp"
+
+#: src/library/shortcuts_dialog.rs:230
+msgid "Volume down"
+msgstr "Volum ned"
+
+#: src/library/shortcuts_dialog.rs:233
+msgid "Enter a folder path"
+msgstr "Angi en mappebane"
+
+#: src/library/shortcuts_dialog.rs:244
+msgid "Clear the search"
+msgstr "Tøm søket"
+
+#: src/library/shortcuts_dialog.rs:246
+msgid "While typing in the search field"
+msgstr "Mens du skriver i søkefeltet"
+
+#: src/library/shortcuts_dialog.rs:249
+msgid "Move the map"
+msgstr "Flytt kartet"
+
+#: src/library/shortcuts_dialog.rs:251
+msgid "After clicking the map"
+msgstr "Etter å ha klikket på kartet"
+
+#: src/library/shortcuts_dialog.rs:256
+msgid "General"
+msgstr "Generelt"
+
+#: src/library/shortcuts_dialog.rs:257
+msgid "Go To"
+msgstr "Gå til"
+
+#: src/library/shortcuts_dialog.rs:258
+msgid "Grid"
+msgstr "Rutenett"
+
+#: src/library/shortcuts_dialog.rs:259
+msgid "Selection"
+msgstr "Utvalg"
+
+#: src/library/shortcuts_dialog.rs:265
+msgid "360° Photos"
+msgstr "360°-bilder"
+
+#: src/library/shortcuts_dialog.rs:266
+msgid "Video"
+msgstr "Video"
+
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/settings_window/status.rs:48
+msgid "Connection"
+msgstr "Tilkobling"
+
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/settings_window/status.rs:50
+msgid "Server"
+msgstr "Tjener"
+
+#: src/library/sidebar.rs:206
+msgid "Show recent albums"
+msgstr "Vis nylige albumer"
+
+#: src/library/sidebar.rs:232
+msgid "All Albums"
+msgstr "Alle albumer"
+
+#: src/library/sidebar/rows.rs:8 src/library/window_layout/responsive.rs:83
+#: src/settings_window/library.rs:86 src/tray_icon.rs:62
+msgid "Library"
+msgstr "Bibliotek"
+
+#: src/library/sidebar/rows.rs:20
+msgid "Albums & Sharing"
+msgstr "Albumer og deling"
+
+#: src/library/sidebar/rows.rs:23
+msgid "Browse"
+msgstr "Bla gjennom"
+
+#: src/library/sidebar/rows.rs:25
+msgid "Utilities"
+msgstr "Verktøy"
+
+#: src/library/sidebar/rows.rs:41
+msgid "Timeline of every photo and video"
+msgstr "Tidslinje for alle bilder og videoer"
+
+#: src/library/sidebar/rows.rs:47
+msgid "Find photos, videos, and text"
+msgstr "Finn bilder, videoer og tekst"
+
+#: src/library/sidebar/rows.rs:53
+msgid "People, places, and things"
+msgstr "Personer, steder og ting"
+
+#: src/library/sidebar/rows.rs:59
+msgid "Photos by where they were taken"
+msgstr "Bilder etter hvor de ble tatt"
+
+#: src/library/sidebar/rows.rs:65
+msgid "Faces Immich has recognized"
+msgstr "Ansikter Immich har gjenkjent"
+
+#: src/library/sidebar/rows.rs:71
+msgid "Recent, owned, and shared"
+msgstr "Nylige, egne og delte"
+
+#: src/library/sidebar/rows.rs:77
+msgid "Shared with you and by you"
+msgstr "Delt med deg og av deg"
+
+#: src/library/sidebar/rows.rs:83
+msgid "Public links you've created"
+msgstr "Offentlige lenker du har opprettet"
+
+#: src/library/sidebar/rows.rs:89
+msgid "Partners who share libraries"
+msgstr "Partnere som deler biblioteker"
+
+#: src/library/sidebar/rows.rs:95
+msgid "Photos and videos you've marked"
+msgstr "Bilder og videoer du har merket"
+
+#: src/library/sidebar/rows.rs:101
+msgid "Browse and organize tags"
+msgstr "Bla gjennom og organiser etiketter"
+
+#: src/library/sidebar/rows.rs:107
+msgid "Browse by folder on the server"
+msgstr "Bla gjennom etter mappe på tjeneren"
+
+#: src/library/sidebar/rows.rs:113
+msgid "Hidden from Photos"
+msgstr "Skjult fra Bilder"
+
+#: src/library/sidebar/rows.rs:119
+msgid "Restore or permanently delete"
+msgstr "Gjenopprett eller slett permanent"
+
+#: src/library/sidebar/rows.rs:125
+msgid "Photos Immich found more than once"
+msgstr "Bilder Immich fant mer enn én gang"
+
+#: src/library/sidebar/rows.rs:130 src/library/source_header.rs:298
+msgid "Large Files"
+msgstr "Store filer"
+
+#: src/library/sidebar/rows.rs:131
+msgid "The photos and videos taking the most space"
+msgstr "Bildene og videoene som tar mest plass"
+
+#: src/library/sidebar/rows.rs:136 src/library/source_header.rs:299
+msgid "Missing Location"
+msgstr "Mangler plassering"
+
+#: src/library/sidebar/rows.rs:137
+msgid "Photos and videos without a place"
+msgstr "Bilder og videoer uten sted"
+
+#: src/library/sidebar/rows.rs:142 src/library/source_header.rs:300
+msgid "Unusual Dates"
+msgstr "Uvanlige datoer"
+
+#: src/library/sidebar/rows.rs:143
+msgid "Dated in the future, or too long ago"
+msgstr "Datert i fremtiden eller for lenge siden"
+
+#: src/library/source_header.rs:77
+msgid "Play Slideshow"
+msgstr "Start lysbildefremvisning"
+
+#: src/library/source_header.rs:172 src/library/window_layout.rs:449
+msgid "Library data unavailable"
+msgstr "Bibliotekdata er ikke tilgjengelig"
+
+#: src/library/source_header.rs:173 src/library/window_layout.rs:450
+msgid "Could not load library assets"
+msgstr "Kunne ikke laste inn bibliotekelementer"
+
+#: src/library/source_header.rs:188
+msgid "Nothing Here"
+msgstr "Ingenting her"
+
+#: src/library/source_header.rs:189
+msgid "There are no photos or videos to show."
+msgstr "Det er ingen bilder eller videoer å vise."
+
+#: src/library/source_header.rs:255
+msgid "Nothing to show yet"
+msgstr "Ingenting å vise ennå"
+
+#: src/library/source_header.rs:308
+msgid "On This Computer"
+msgstr "På denne datamaskinen"
+
+#: src/library/source_header.rs:331
+#, rust-format
+msgid "Similar to {name}"
+msgstr "Ligner på {name}"
+
+#: src/library/source_header.rs:338
+msgid "Search Results"
+msgstr "Søkeresultater"
+
+#: src/library/source_header/enrichment.rs:47
+msgid "Smart search"
+msgstr "Smart søk"
+
+#: src/library/source_header/enrichment.rs:49
+msgid "Most similar first"
+msgstr "Mest like først"
+
+#: src/library/source_header/enrichment.rs:73
+msgid "Back to the map"
+msgstr "Tilbake til kartet"
+
+#: src/library/source_header/enrichment.rs:82
+msgid "Full Grid"
+msgstr "Fullt rutenett"
+
+#: src/library/source_header/enrichment.rs:154
+msgid "Show on Map"
+msgstr "Vis på kart"
+
+#: src/library/source_header/enrichment.rs:170
+msgid "Share album"
+msgstr "Del album"
+
+#: src/library/source_header/enrichment.rs:180
+msgid "Download album"
+msgstr "Last ned album"
+
+#: src/library/source_header/enrichment.rs:193
+msgid "Create share link"
+msgstr "Opprett delelenke"
+
+#: src/library/source_header/enrichment.rs:273
+msgid "Remove from favorites"
+msgstr "Fjern fra favoritter"
+
+#: src/library/source_header/enrichment.rs:275
+msgid "Add to favorites"
+msgstr "Legg til i favoritter"
+
+#: src/library/source_header/enrichment.rs:290
+#, rust-format
+msgid "In {path}"
+msgstr "I {path}"
+
+#: src/library/source_loading.rs:52 src/library/upload_picker.rs:30
+msgid "Upload to album"
+msgstr "Last opp til album"
+
+#: src/library/source_loading.rs:55 src/library/upload_picker.rs:32
+#: src/library/window_layout.rs:422
+msgid "Upload to library"
+msgstr "Last opp til bibliotek"
+
+#: src/library/source_loading.rs:413
+#, rust-format
+msgid "Could not load library assets: {err}"
+msgstr "Kunne ikke laste inn bibliotekelementer: {err}"
+
+#: src/library/staging_view.rs:44
+msgid "Mimick - Upload"
+msgstr "Mimick - Opplasting"
+
+#: src/library/staging_view.rs:144
+msgid "Upload selected files to library"
+msgstr "Last opp valgte filer til biblioteket"
+
+#: src/library/staging_view.rs:149
+msgid "Upload selected files to an album"
+msgstr "Last opp valgte filer til et album"
+
+#: src/library/staging_view.rs:154
+msgid "Select all / Deselect all"
+msgstr "Velg alle / Fravælg alle"
+
+#: src/library/staging_view.rs:199
+msgid "Deselect all"
+msgstr "Fravælg alle"
+
+#: src/library/staging_view.rs:220
+#, rust-format
+msgid "{n} file staged"
+msgid_plural "{n} files staged"
+msgstr[0] "{n} fil klargjort"
+msgstr[1] "{n} filer klargjort"
+
+#: src/library/staging_view.rs:226
+#, rust-format
+msgid "{selected} of {n} selected"
+msgid_plural "{selected} of {n} selected"
+msgstr[0] "{selected} av {n} valgt"
+msgstr[1] "{selected} av {n} valgt"
+
+#: src/library/staging_view/album_picker.rs:28
+msgid "Upload to Album"
+msgstr "Last opp til album"
+
+#: src/library/staging_view/album_picker.rs:50
+msgid "Upload Queued"
+msgstr "Opplasting satt i kø"
+
+#: src/library/staging_view/album_picker.rs:53
+#, rust-format
+msgid "{n} file queued for upload. Progress is visible in the queue inspector."
+msgid_plural ""
+"{n} files queued for upload. Progress is visible in the queue inspector."
+msgstr[0] "{n} fil lagt i kø for opplasting. Fremdriften vises i køinspektøren."
+msgstr[1] "{n} filer lagt i kø for opplasting. Fremdriften vises i køinspektøren."
+
+#: src/library/staging_view/album_picker.rs:62
+msgid "Upload Failed"
+msgstr "Opplasting mislyktes"
+
+#: src/library/staging_view/album_picker.rs:65
+#, rust-format
+msgid "{n} file failed to enqueue. Check the logs for details."
+msgid_plural "All {n} files failed to enqueue. Check the logs for details."
+msgstr[0] "{n} fil kunne ikke legges i kø. Sjekk loggene for detaljer."
+msgstr[1] "Ingen av de {n} filene kunne legges i kø. Sjekk loggene for detaljer."
+
+#: src/library/staging_view/album_picker.rs:74
+msgid "Upload Partially Queued"
+msgstr "Opplasting delvis satt i kø"
+
+#: src/library/staging_view/album_picker.rs:77
+#, rust-format
+msgid "{n} file queued, {skipped} skipped (hash or path errors)."
+msgid_plural "{n} files queued, {skipped} skipped (hash or path errors)."
+msgstr[0] "{n} fil lagt i kø, {skipped} hoppet over (feil med kontrollsum eller filbane)."
+msgstr[1] "{n} filer lagt i kø, {skipped} hoppet over (feil med kontrollsum eller filbane)."
+
+#: src/library/tags_view.rs:38 src/library/tags_view.rs:249
+msgid "New Tag"
+msgstr "Ny etikett"
+
+#: src/library/tags_view.rs:74
+msgid "Could Not Load Tags"
+msgstr "Kunne ikke laste inn etiketter"
+
+#: src/library/tags_view.rs:100
+msgid "All Tags"
+msgstr "Alle etiketter"
+
+#: src/library/tags_view.rs:114
+msgid "No Tags"
+msgstr "Ingen etiketter"
+
+#: src/library/tags_view.rs:115
+msgid ""
+"Create a tag with New Tag, or tag photos from the lightbox details pane."
+msgstr "Opprett en etikett med Ny etikett, eller tagg bilder fra detaljpanelet i lysbordet."
+
+#: src/library/tags_view.rs:118
+msgid "No Tags Inside"
+msgstr "Ingen etiketter inni"
+
+#: src/library/tags_view.rs:119
+msgid "Use New Tag to add one here."
+msgstr "Bruk Ny etikett for å legge til en her."
+
+#: src/library/tags_view.rs:137
+#, rust-format
+msgid "Show photos tagged {value}"
+msgstr "Vis bilder merket med {value}"
+
+#: src/library/tags_view.rs:143
+#, rust-format
+msgid "{n} tag inside"
+msgid_plural "{n} tags inside"
+msgstr[0] "{n} etikett inni"
+msgstr[1] "{n} etiketter inni"
+
+#: src/library/tags_view.rs:183
+msgid "Change color"
+msgstr "Endre farge"
+
+#: src/library/tags_view.rs:209
+msgid "Change Color…"
+msgstr "Endre farge…"
+
+#: src/library/tags_view.rs:240
+#, rust-format
+msgid "The tag is created inside {parent}."
+msgstr "Etiketten opprettes inni {parent}."
+
+#: src/library/tags_view.rs:252 src/library/tags_view.rs:276
+msgid "Tag name"
+msgstr "Etikettnavn"
+
+#: src/library/tags_view.rs:261
+msgid "Could Not Create Tag"
+msgstr "Kunne ikke opprette etikett"
+
+#: src/library/tags_view.rs:273
+msgid "Rename Tag"
+msgstr "Endre navn på etikett"
+
+#: src/library/tags_view.rs:274
+msgid "Photos keep the tag under its new name."
+msgstr "Bilder beholder etiketten under det nye navnet."
+
+#: src/library/tags_view.rs:283
+msgid "Couldn't rename the tag"
+msgstr "Kunne ikke endre navn på etiketten"
+
+#: src/library/tags_view.rs:289
+msgid "Could Not Rename Tag"
+msgstr "Kunne ikke endre navn på etikett"
+
+#: src/library/tags_view.rs:301
+#, rust-format
+msgid "Delete “{name}”?"
+msgstr "Slette «{name}»?"
+
+#: src/library/tags_view.rs:304
+msgid "The tag is removed from every photo. This can't be undone."
+msgstr "Etiketten fjernes fra alle bilder. Dette kan ikke angres."
+
+#: src/library/tags_view.rs:309
+msgid "Could Not Delete Tag"
+msgstr "Kunne ikke slette etikett"
+
+#: src/library/tags_view.rs:330
+#, rust-format
+msgid "Color for “{name}”"
+msgstr "Farge for «{name}»"
+
+#: src/library/tags_view.rs:356
+msgid "Could Not Change Color"
+msgstr "Kunne ikke endre farge"
+
+#: src/library/tags_view.rs:413
+msgid "Custom color"
+msgstr "Egendefinert farge"
+
+#: src/library/tags_view.rs:435
+msgid "Custom"
+msgstr "Egendefinert"
+
+#: src/library/theme/palettes.rs:61
+msgid "Warm White"
+msgstr "Varmhvit"
+
+#: src/library/theme/palettes.rs:68
+msgid "Lavender"
+msgstr "Lavendel"
+
+#: src/library/theme/palettes.rs:75
+msgid "Mint"
+msgstr "Mynte"
+
+#: src/library/theme/palettes.rs:91
+msgid "Black"
+msgstr "Svart"
+
+#: src/library/theme/palettes.rs:99
+msgid "Midnight"
+msgstr "Midnatt"
+
+#: src/library/theme/palettes.rs:106
+msgid "Mocha"
+msgstr "Mokka"
+
+#: src/library/thumbnail_cache.rs:68 src/library/thumbnail_cache.rs:69
+msgid "Thumbnail load cancelled"
+msgstr "Innlasting av miniatyrbilde avbrutt"
+
+#: src/library/thumbnail_cache.rs:576
+msgid "MemTotal:"
+msgstr "MemTotal:"
+
+#: src/library/thumbnail_cache/decode.rs:122
+msgid "Failed to scale video thumbnail"
+msgstr "Kunne ikke skalere videominiatyrbilde"
+
+#: src/library/thumbnail_cache/decode.rs:134
+#, rust-format
+msgid "No decoder succeeded for {path}"
+msgstr "Ingen dekoder lyktes for {path}"
+
+#: src/library/thumbnail_cache/decode.rs:158
+msgid "Failed to scale pixbuf"
+msgstr "Kunne ikke skalere pixbuf"
+
+#: src/library/thumbnail_cache/screen.rs:40
+msgid "No decoder could read the file"
+msgstr "Ingen dekoder kunne lese filen"
+
+#: src/library/time_zones.rs:82
+msgid "Time zone"
+msgstr "Tidssone"
+
+#. Translators: strftime day heading in the photo timeline, e.g. "Fri, Oct 9".
+#: src/library/timeline/dates.rs:15
+msgid "%a, %b %-d"
+msgstr "%a, %-d. %b"
+
+#. Translators: strftime day heading for another year, e.g. "Fri, Oct 9, 2025".
+#: src/library/timeline/dates.rs:18
+msgid "%a, %b %-d, %Y"
+msgstr "%a, %-d. %b %Y"
+
+#. Translators: strftime month heading, e.g. "October 2026"; %OB is the standalone month name.
+#: src/library/timeline/dates.rs:25
+msgid "%B %Y"
+msgstr "%B %Y"
+
+#: src/library/timeline/mod.rs:241
+msgid "This photo isn't in your Photos timeline"
+msgstr "Dette bildet er ikke i tidslinjen i Bilder"
+
+#: src/library/trash_view.rs:35
+msgid ""
+"Immich permanently deletes trashed items after its retention period (30 days "
+"by default)."
+msgstr "Immich sletter elementer i papirkurven permanent etter oppbevaringsperioden (30 dager som standard)."
+
+#: src/library/trash_view.rs:66
+msgid "Restore All"
+msgstr "Gjenopprett alle"
+
+#: src/library/trash_view.rs:68 src/library/trash_view.rs:238
+msgid "Empty Trash"
+msgstr "Tøm papirkurv"
+
+#: src/library/trash_view.rs:74
+msgid "Restore selected"
+msgstr "Gjenopprett valgte"
+
+#: src/library/trash_view.rs:79
+msgid "Delete selected permanently"
+msgstr "Slett valgte permanent"
+
+#: src/library/trash_view.rs:167 src/library/trash_view.rs:228
+msgid "Could Not Restore"
+msgstr "Kunne ikke gjenopprette"
+
+#: src/library/trash_view.rs:175
+msgid "Delete this item permanently?"
+msgstr "Slette dette elementet permanent?"
+
+#: src/library/trash_view.rs:188
+msgid "This can't be undone. Local copies in your watch folders are kept."
+msgstr "Dette kan ikke angres. Lokale kopier i de overvåkede mappene dine beholdes."
+
+#: src/library/trash_view.rs:217
+msgid "Could Not Delete"
+msgstr "Kunne ikke slette"
+
+#: src/library/trash_view.rs:236
+msgid "Empty the trash?"
+msgstr "Tømme papirkurven?"
+
+#: src/library/trash_view.rs:237
+msgid ""
+"Everything in the Immich trash is deleted permanently. This can't be undone."
+msgstr "Alt i papirkurven i Immich slettes permanent. Dette kan ikke angres."
+
+#: src/library/trash_view.rs:243
+msgid "Could Not Empty Trash"
+msgstr "Kunne ikke tømme papirkurv"
+
+#: src/library/upload_stack.rs:33
+msgid "Upload and Create Stack…"
+msgstr "Last opp og opprett stabel…"
+
+#: src/library/upload_stack.rs:35
+msgid "Upload and Add to Stack…"
+msgstr "Last opp og legg til i stabel…"
+
+#: src/library/upload_stack.rs:50
+msgid "Upload and Stack"
+msgstr "Last opp og stabl"
+
+#: src/library/upload_stack.rs:107
+msgid "Stack created"
+msgstr "Stabel opprettet"
+
+#: src/library/upload_stack.rs:109
+msgid "Added to the stack"
+msgstr "Lagt til i stabelen"
+
+#: src/library/upload_stack.rs:130
+#, rust-format
+msgid "Couldn't upload {n} file"
+msgid_plural "Couldn't upload {n} files"
+msgstr[0] "Kunne ikke laste opp {n} fil"
+msgstr[1] "Kunne ikke laste opp {n} filer"
+
+#: src/library/upload_stack.rs:138
+msgid "Immich didn't accept the upload."
+msgstr "Immich godtok ikke opplastingen."
+
+#: src/library/utilities.rs:58
+msgid "Add Location"
+msgstr "Legg til plassering"
+
+#: src/library/utilities.rs:59
+msgid "Change Date"
+msgstr "Endre dato"
+
+#: src/library/utilities.rs:127
+msgid "Select photos, then Change Date"
+msgstr "Velg bilder, deretter Endre dato"
+
+#: src/library/utilities.rs:128
+msgid "Select photos, then Add Location"
+msgstr "Velg bilder, deretter Legg til plassering"
+
+#: src/library/utilities.rs:185
+#, rust-format
+msgid "{size} in all"
+msgstr "{size} totalt"
+
+#: src/library/utilities/controls.rs:29 src/settings_window/behavior.rs:182
+msgid "All Files"
+msgstr "Alle filer"
+
+#: src/library/utilities/controls.rs:31
+msgid "Kind of file"
+msgstr "Filtype"
+
+#: src/library/utilities/controls.rs:36
+msgid "Smallest size"
+msgstr "Minste størrelse"
+
+#: src/library/utilities/controls.rs:72
+msgid "Any Size"
+msgstr "Alle størrelser"
+
+#: src/library/utilities/controls.rs:73
+#, rust-format
+msgid "Over {n} GB"
+msgstr "Over {n} GB"
+
+#: src/library/utilities/controls.rs:74
+#, rust-format
+msgid "Over {n} MB"
+msgstr "Over {n} MB"
+
+#: src/library/utilities/controls.rs:84 src/library/utilities/controls.rs:117
+msgid "Dates"
+msgstr "Datoer"
+
+#: src/library/utilities/controls.rs:88
+msgid "Show only photos taken between two days"
+msgstr "Vis bare bilder tatt mellom to dager"
+
+#: src/library/utilities/controls.rs:101
+msgid "Show the photos without a place taken between these days."
+msgstr "Vis bildene uten sted tatt mellom disse dagene."
+
+#: src/library/utilities/controls.rs:142
+#, rust-format
+msgid "From {from} to {until}"
+msgstr "Fra {from} til {until}"
+
+#: src/library/utilities/controls.rs:145
+#, rust-format
+msgid "From {from}"
+msgstr "Fra {from}"
+
+#: src/library/utilities/controls.rs:146
+#, rust-format
+msgid "Until {until}"
+msgstr "Til {until}"
+
+#: src/library/utilities/controls.rs:157
+#, rust-format
+msgid "Before {year}"
+msgstr "Før {year}"
+
+#: src/library/utilities/controls.rs:160
+msgid "Future"
+msgstr "Fremtid"
+
+#: src/library/utilities/controls.rs:187
+msgid "Dated after today"
+msgstr "Datert etter i dag"
+
+#: src/library/utilities/controls.rs:189
+#, rust-format
+msgid "Dated before {year}"
+msgstr "Datert før {year}"
+
+#: src/library/video_player.rs:240
+msgid "Exit fullscreen (F11)"
+msgstr "Avslutt fullskjerm (F11)"
+
+#: src/library/video_player.rs:242 src/library/video_player/controls.rs:61
+msgid "Fullscreen (F11)"
+msgstr "Fullskjerm (F11)"
+
+#: src/library/video_player.rs:317 src/library/video_player/controls.rs:41
+msgid "Play (Space)"
+msgstr "Spill av (Mellomrom)"
+
+#: src/library/video_player/controls.rs:35
+msgid "Audio and subtitles"
+msgstr "Lyd og undertekster"
+
+#: src/library/video_player/controls.rs:42
+msgid "Stop"
+msgstr "Stopp"
+
+#: src/library/video_player/controls.rs:45
+msgid "Back 10 seconds (J)"
+msgstr "10 sekunder tilbake (J)"
+
+#: src/library/video_player/controls.rs:49
+msgid "Forward 10 seconds (L)"
+msgstr "10 sekunder frem (L)"
+
+#: src/library/video_player/controls.rs:149
+#, rust-format
+msgid "Track {n} ({lang})"
+msgstr "Spor {n} ({lang})"
+
+#: src/library/video_player/controls.rs:152
+#, rust-format
+msgid "Track {n}"
+msgstr "Spor {n}"
+
+#: src/library/video_player/controls.rs:197
+msgid "Loop"
+msgstr "Gjenta"
+
+#: src/library/video_player/controls.rs:261
+msgid "Playback speed"
+msgstr "Avspillingshastighet"
+
+#: src/library/video_player/controls.rs:275
+msgid "Mute (M)"
+msgstr "Demp (M)"
+
+#: src/library/video_player/controls.rs:282
+msgid "Volume"
+msgstr "Volum"
+
+#: src/library/video_player/pipeline.rs:44
+msgid "The GStreamer GTK 4 video sink (gst-plugin-gtk4) is not installed."
+msgstr "GStreamer GTK 4-videomottakeren (gst-plugin-gtk4) er ikke installert."
+
+#: src/library/video_player/tracks.rs:34
+msgid "Audio"
+msgstr "Lyd"
+
+#: src/library/video_player/tracks.rs:49 src/settings_window/library.rs:129
+msgid "Off"
+msgstr "Av"
+
+#: src/library/video_player/tracks.rs:57
+msgid "Subtitles"
+msgstr "Undertekster"
+
+#: src/library/window_layout.rs:106
+msgid "Mimick Library"
+msgstr "Mimick-bibliotek"
+
+#: src/library/window_layout.rs:280
+msgid "Toggle sidebar (F9)"
+msgstr "Vis/skjul sidepanel (F9)"
+
+#: src/library/window_layout.rs:284
+msgid "Back (Alt+Left)"
+msgstr "Tilbake (Alt+Venstre)"
+
+#: src/library/window_layout.rs:289
+msgid "Menu"
+msgstr "Meny"
+
+#: src/library/window_layout.rs:297
+msgid "Search (Ctrl+K)"
+msgstr "Søk (Ctrl+K)"
+
+#: src/library/window_layout.rs:303
+msgid "Select assets (Esc to exit)"
+msgstr "Velg elementer (Esc for å avslutte)"
+
+#: src/library/window_layout.rs:333 src/settings_window/queue_inspector.rs:61
+msgid "Queue Inspector"
+msgstr "Køinspektør"
+
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/tray_icon.rs:73
+msgid "Settings"
+msgstr "Innstillinger"
+
+#: src/library/window_layout.rs:337
+msgid "Keyboard Shortcuts"
+msgstr "Tastatursnarveier"
+
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+msgid "About Mimick"
+msgstr "Om Mimick"
+
+#: src/library/window_layout.rs:393
+msgid "Remote"
+msgstr "Ekstern"
+
+#: src/library/window_layout.rs:394
+msgid "Local"
+msgstr "Lokal"
+
+#: src/library/window_layout.rs:395
+msgid "Unified"
+msgstr "Felles"
+
+#: src/library/window_layout.rs:398
+msgid "Asset source"
+msgstr "Elementkilde"
+
+#: src/library/window_layout.rs:415
+msgid "Paste from Clipboard"
+msgstr "Lim inn fra utklippstavlen"
+
+#: src/library/window_layout.rs:423
+msgid "More ways to upload"
+msgstr "Flere måter å laste opp på"
+
+#: src/library/window_layout.rs:444
+msgid "Nothing to show"
+msgstr "Ingenting å vise"
+
+#: src/library/window_layout.rs:445
+msgid "No assets match the current view"
+msgstr "Ingen elementer samsvarer med gjeldende visning"
+
+#: src/library/window_layout.rs:500
+#: src/settings_window/watch_folders/rules_dialog.rs:238
+msgid "Sync"
+msgstr "Synkroniser"
+
+#: src/library/window_layout.rs:506
+msgid "Link"
+msgstr "Lenke"
+
+#: src/library/window_layout/bulk_bar.rs:65
+msgid "Add to album"
+msgstr "Legg til i album"
+
+#: src/library/window_layout/bulk_bar.rs:66
+msgid "Stack selected"
+msgstr "Stabl valgte"
+
+#: src/library/window_layout/bulk_bar.rs:68
+msgid "Remove from album"
+msgstr "Fjern fra album"
+
+#: src/library/window_layout/bulk_bar.rs:203
+msgid "Set location for selected"
+msgstr "Angi plassering for valgte"
+
+#: src/library/window_layout/bulk_bar.rs:207
+msgid "Change date for selected"
+msgstr "Endre dato for valgte"
+
+#: src/library/window_layout/bulk_bar.rs:224
+msgid "Delete selected"
+msgstr "Slett valgte"
+
+#: src/library/window_layout/bulk_bar.rs:229
+msgid "Download selected"
+msgstr "Last ned valgte"
+
+#: src/library/window_layout/bulk_bar.rs:233
+msgid "Clear selection"
+msgstr "Tøm utvalg"
+
+#: src/library/window_layout/bulk_bar.rs:238
+msgid "Share selected"
+msgstr "Del valgte"
+
+#: src/library/window_layout/responsive.rs:173
+msgid "Sync…"
+msgstr "Synkroniser…"
+
+#: src/main/ui_lifecycle.rs:56 src/queue_manager.rs:481
+msgid "Paused by user"
+msgstr "Satt på pause av bruker"
+
+#: src/notifications.rs:28
+msgid "Sync complete"
+msgstr "Synkronisering fullført"
+
+#: src/notifications.rs:32
+#, rust-format
+msgid "All {n} file processed. Idle."
+msgid_plural "All {n} files processed. Idle."
+msgstr[0] "{n} fil behandlet. Inaktiv."
+msgstr[1] "Alle {n} filer behandlet. Inaktiv."
+
+#: src/notifications.rs:42
+#, rust-format
+msgid "{n} failed and will be retried."
+msgid_plural "{n} failed and will be retried."
+msgstr[0] "{n} mislyktes og prøves igjen."
+msgstr[1] "{n} mislyktes og prøves igjen."
+
+#: src/notifications.rs:55
+msgid "Mimick: Connection lost"
+msgstr "Mimick: Tilkobling brutt"
+
+#: src/notifications.rs:57
+msgid ""
+"Could not reach the Immich server. Uploads will resume automatically when "
+"connectivity is restored."
+msgstr "Kunne ikke nå Immich-tjeneren. Opplastinger gjenopptas automatisk når tilkoblingen er gjenopprettet."
+
+#: src/queue_manager.rs:241
+#, rust-format
+msgid "Target album: {name}"
+msgstr "Målalbum: {name}"
+
+#: src/queue_manager.rs:326
+msgid "Removed from retry queue"
+msgstr "Fjernet fra prøv igjen-kø"
+
+#: src/queue_manager.rs:339 src/queue_manager.rs:350
+msgid "Manual retry"
+msgstr "Manuelt nytt forsøk"
+
+#: src/queue_manager.rs:484
+msgid "Deferred on metered network"
+msgstr "Utsatt på forbruksmålt nettverk"
+
+#: src/queue_manager.rs:486
+msgid "Deferred while on battery power"
+msgstr "Utsatt på batteristrøm"
+
+#: src/queue_manager.rs:488
+msgid "Deferred during quiet hours"
+msgstr "Utsatt i stille timer"
+
+#: src/queue_manager/progress.rs:319
+#, rust-format
+msgid "Finished in {elapsed}s"
+msgstr "Fullført på {elapsed} s"
+
+#: src/queue_manager/progress.rs:357
+#, rust-format
+msgid "Upload failed for {path}"
+msgstr "Opplasting mislyktes for {path}"
+
+#: src/queue_manager/progress.rs:366
+msgid ""
+"Review the latest server and permission settings, then retry the failed item."
+msgstr "Gå gjennom de nyeste tjener- og tillatelsesinnstillingene, og prøv det mislykkede elementet på nytt."
+
+#: src/queue_manager/progress.rs:379
+msgid "Queued for retry"
+msgstr "Lagt i kø for nytt forsøk"
+
+#: src/sanitize.rs:47
+msgid "URL is empty"
+msgstr "URL er tom"
+
+#: src/sanitize.rs:51
+#, rust-format
+msgid "Invalid URL: {err}"
+msgstr "Ugyldig URL: {err}"
+
+#: src/settings_window/actions_ui.rs:17
+msgid "Troubleshooting"
+msgstr "Feilsøking"
+
+#: src/settings_window/actions_ui.rs:21
+msgid "Detailed Logs"
+msgstr "Detaljerte logger"
+
+#: src/settings_window/actions_ui.rs:23
+msgid ""
+"Record more while you reproduce a problem, then export. The log grows faster."
+msgstr "Registrer mer mens du gjenskaper et problem, og eksporter deretter. Loggen vokser raskere."
+
+#: src/settings_window/actions_ui.rs:28
+msgid "Export…"
+msgstr "Eksporter…"
+
+#: src/settings_window/actions_ui.rs:32
+msgid "Export Diagnostics"
+msgstr "Eksporter diagnostikk"
+
+#: src/settings_window/actions_ui.rs:34
+msgid ""
+"For bug reports: settings, status, and the end of the log, with private "
+"details removed."
+msgstr "For feilrapporter: innstillinger, status og slutten av loggen, med private opplysninger fjernet."
+
+#: src/settings_window/appearance.rs:22
+msgid "Style"
+msgstr "Stil"
+
+#: src/settings_window/appearance.rs:23
+msgid "Light Theme"
+msgstr "Lyst tema"
+
+#: src/settings_window/appearance.rs:24
+msgid "Dark Theme"
+msgstr "Mørkt tema"
+
+#: src/settings_window/apply.rs:164
+msgid "API Key Stored in a File"
+msgstr "API-nøkkel lagret i en fil"
+
+#: src/settings_window/apply.rs:170
+msgid "Settings Saved"
+msgstr "Innstillinger lagret"
+
+#: src/settings_window/apply.rs:171
+msgid "Mimick saved the updated settings successfully."
+msgstr "Mimick lagret de oppdaterte innstillingene."
+
+#: src/settings_window/apply.rs:207
+msgid "Startup Permission Needed"
+msgstr "Oppstartstillatelse nødvendig"
+
+#: src/settings_window/apply.rs:208
+msgid "Mimick was not allowed to start automatically at login."
+msgstr "Mimick fikk ikke tillatelse til å starte automatisk ved innlogging."
+
+#: src/settings_window/apply.rs:210
+msgid "Could Not Update Startup Setting"
+msgstr "Kunne ikke oppdatere oppstartsinnstilling"
+
+#: src/settings_window/apply.rs:241
+msgid "Could Not Save API Key"
+msgstr "Kunne ikke lagre API-nøkkel"
+
+#: src/settings_window/apply.rs:249
+msgid "Could Not Save Settings"
+msgstr "Kunne ikke lagre innstillinger"
+
+#: src/settings_window/apply.rs:250
+msgid "Mimick could not write the updated configuration to disk."
+msgstr "Mimick kunne ikke skrive den oppdaterte konfigurasjonen til disk."
+
+#: src/settings_window/behavior.rs:53
+msgid "Uploads"
+msgstr "Opplastinger"
+
+#: src/settings_window/behavior.rs:54
+msgid "How and when your watched folders are backed up."
+msgstr "Hvordan og når de overvåkede mappene dine sikkerhetskopieres."
+
+#: src/settings_window/behavior.rs:59
+msgid "Parallel Uploads"
+msgstr "Parallelle opplastinger"
+
+#: src/settings_window/behavior.rs:60
+msgid "Higher is faster but uses more bandwidth."
+msgstr "Høyere er raskere, men bruker mer båndbredde."
+
+#: src/settings_window/behavior.rs:65
+#: src/settings_window/watch_folders/rules_dialog.rs:304
+msgid "Upload XMP Sidecars"
+msgstr "Last opp XMP-følgefiler"
+
+#: src/settings_window/behavior.rs:66
+#: src/settings_window/watch_folders/rules_dialog.rs:305
+msgid "Send .xmp edit files along with their photos."
+msgstr "Send .xmp-redigeringsfiler sammen med bildene."
+
+#: src/settings_window/behavior.rs:71
+msgid "Pause on Metered Networks"
+msgstr "Sett på pause på forbruksmålte nettverk"
+
+#: src/settings_window/behavior.rs:72
+msgid "Wait for an unmetered connection, such as home Wi-Fi."
+msgstr "Vent på en ubegrenset tilkobling, som Wi-Fi hjemme."
+
+#: src/settings_window/behavior.rs:76
+msgid "Pause on Battery"
+msgstr "Sett på pause på batteristrøm"
+
+#: src/settings_window/behavior.rs:77
+msgid "Wait until the computer is plugged in."
+msgstr "Vent til datamaskinen er koblet til strøm."
+
+#: src/settings_window/behavior.rs:101
+msgid "App"
+msgstr "App"
+
+#: src/settings_window/behavior.rs:106
+msgid "Run on Startup"
+msgstr "Kjør ved oppstart"
+
+#: src/settings_window/behavior.rs:107
+msgid "Start Mimick when you log in."
+msgstr "Start Mimick når du logger inn."
+
+#: src/settings_window/behavior.rs:111
+msgid "Background Sync"
+msgstr "Bakgrunnssynkronisering"
+
+#: src/settings_window/behavior.rs:112
+msgid "Keep watching folders after you close this window."
+msgstr "Fortsett å overvåke mapper etter at du lukker dette vinduet."
+
+#: src/settings_window/behavior.rs:117
+msgid "Tell me when uploads finish or something goes wrong."
+msgstr "Varsle meg når opplastinger er fullført eller noe går galt."
+
+#: src/settings_window/behavior.rs:121
+msgid "Library View"
+msgstr "Bibliotekvisning"
+
+#: src/settings_window/behavior.rs:122
+msgid "The tray menu updates after a restart."
+msgstr "Menyen i systemstatusfeltet oppdateres etter en omstart."
+
+#: src/settings_window/behavior.rs:137
+msgid "Quiet Hours"
+msgstr "Stille timer"
+
+#: src/settings_window/behavior.rs:138
+msgid "Don't upload during these hours each day."
+msgstr "Ikke last opp i disse timene hver dag."
+
+#: src/settings_window/behavior.rs:183
+msgid "Changed in the Last 7 Days"
+msgstr "Endret de siste 7 dagene"
+
+#: src/settings_window/behavior.rs:184
+msgid "New Files Only"
+msgstr "Bare nye filer"
+
+#: src/settings_window/behavior.rs:190
+#: src/settings_window/watch_folders/rules_dialog.rs:194
+msgid "When Mimick Starts, Check"
+msgstr "Når Mimick starter, sjekk"
+
+#: src/settings_window/behavior.rs:191
+msgid "Folders can choose their own in Folder Rules."
+msgstr "Mapper kan velge sine egne under Mapperegler."
+
+#: src/settings_window/connectivity.rs:29
+msgid "Internal URL (LAN)"
+msgstr "Intern URL (LAN)"
+
+#: src/settings_window/connectivity.rs:31
+msgid "External URL (WAN)"
+msgstr "Ekstern URL (WAN)"
+
+#: src/settings_window/connectivity.rs:35
+msgid "Not tested yet"
+msgstr "Ikke testet ennå"
+
+#: src/settings_window/connectivity.rs:38
+msgid "Test Connection"
+msgstr "Test tilkobling"
+
+#: src/settings_window/connectivity.rs:41
+msgid "Save and Connect"
+msgstr "Lagre og koble til"
+
+#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+msgid "Open Library"
+msgstr "Åpne bibliotek"
+
+#: src/settings_window/connectivity.rs:89
+msgid "API Key"
+msgstr "API-nøkkel"
+
+#: src/settings_window/connectivity.rs:137
+msgid "LAN URL"
+msgstr "LAN-URL"
+
+#: src/settings_window/connectivity.rs:138
+msgid "WAN URL"
+msgstr "WAN-URL"
+
+#: src/settings_window/form.rs:127
+msgid "Invalid Internal URL"
+msgstr "Ugyldig intern URL"
+
+#: src/settings_window/form.rs:132
+msgid "Invalid External URL"
+msgstr "Ugyldig ekstern URL"
+
+#: src/settings_window/library.rs:70
+msgid "Open Map Places in a Full Grid"
+msgstr "Åpne steder på kartet i fullt rutenett"
+
+#: src/settings_window/library.rs:71
+msgid "Otherwise their photos open beside the map."
+msgstr "Ellers åpnes bildene deres ved siden av kartet."
+
+#: src/settings_window/library.rs:88
+msgid "Open Originals in Lightbox"
+msgstr "Åpne originaler i lysbord"
+
+#: src/settings_window/library.rs:89
+msgid "Slower to open."
+msgstr "Tregere å åpne."
+
+#: src/settings_window/library.rs:93
+msgid "Thumbnail Quality"
+msgstr "Miniatyrbildekvalitet"
+
+#: src/settings_window/library.rs:94
+msgid "Sharper thumbnails use more memory."
+msgstr "Skarpere miniatyrbilder bruker mer minne."
+
+#: src/settings_window/library.rs:96
+msgid "Automatic"
+msgstr "Automatisk"
+
+#: src/settings_window/library.rs:97
+msgid "Thumbnail"
+msgstr "Miniatyrbilde"
+
+#: src/settings_window/library.rs:98
+msgid "Preview"
+msgstr "Forhåndsvisning"
+
+#: src/settings_window/library.rs:99
+msgid "Full Size"
+msgstr "Full størrelse"
+
+#: src/settings_window/library.rs:104
+msgid "Fit Thumbnails to Tiles"
+msgstr "Tilpass miniatyrbilder til fliser"
+
+#: src/settings_window/library.rs:106
+msgid "Preview and Full Size thumbnails use far less memory."
+msgstr "Forhåndsvisninger og miniatyrbilder i full størrelse bruker mye mindre minne."
+
+#: src/settings_window/library.rs:122
+msgid "Date Headings"
+msgstr "Datooverskrifter"
+
+#: src/settings_window/library.rs:124
+msgid "Dates between photos in Photos, albums, and other timelines."
+msgstr "Datoer mellom bilder i Bilder, albumer og andre tidslinjer."
+
+#: src/settings_window/library.rs:127
+msgid "By Day"
+msgstr "Etter dag"
+
+#: src/settings_window/library.rs:128
+msgid "By Month"
+msgstr "Etter måned"
+
+#: src/settings_window/library.rs:139
+msgid "Grid Appearance"
+msgstr "Rutenettutseende"
+
+#: src/settings_window/library.rs:141
+msgid "Border Width"
+msgstr "Kantbredde"
+
+#: src/settings_window/library.rs:142
+msgid "Gap between photos, in pixels. 0 for none."
+msgstr "Mellomrom mellom bilder, i piksler. 0 for ingen."
+
+#: src/settings_window/library.rs:148
+msgid "Border Color"
+msgstr "Kantfarge"
+
+#: src/settings_window/library.rs:163
+msgid "RAW Files"
+msgstr "RAW-filer"
+
+#: src/settings_window/library.rs:165
+msgid "Full RAW Decoding"
+msgstr "Full RAW-dekoding"
+
+#: src/settings_window/library.rs:167
+msgid ""
+"Uses the sensor data, not the embedded preview, with every colour the camera "
+"recorded. Slower, and uses more memory."
+msgstr "Bruker sensordataene, ikke den innebygde forhåndsvisningen, med alle fargene kameraet tok opp. Tregere, og bruker mer minne."
+
+#: src/settings_window/library.rs:172
+msgid "Keep Decoded RAW Files"
+msgstr "Behold dekodede RAW-filer"
+
+#: src/settings_window/library.rs:173
+msgid "Reopen instantly, using disk space."
+msgstr "Åpne på nytt umiddelbart, men bruker diskplass."
+
+#: src/settings_window/library.rs:192
+msgid "Cache Limit (MB)"
+msgstr "Hurtigbuffergrense (MB)"
+
+#: src/settings_window/library.rs:193
+msgid "Trimmed when Mimick starts."
+msgstr "Beskjæres når Mimick starter."
+
+#: src/settings_window/library.rs:200
+msgid "Memory Limit (MB)"
+msgstr "Minnegrense (MB)"
+
+#: src/settings_window/library.rs:201
+msgid "At most half your RAM."
+msgstr "Høyst halvparten av minnet (RAM)."
+
+#: src/settings_window/library.rs:228
+msgid "Clear Cache"
+msgstr "Tøm hurtigbuffer"
+
+#: src/settings_window/library.rs:230
+msgid "Free the space now. Thumbnails reload as you browse."
+msgstr "Frigjør plassen nå. Miniatyrbilder lastes inn på nytt mens du blar."
+
+#: src/settings_window/library.rs:243
+msgid "Download Folder"
+msgstr "Nedlastingsmappe"
+
+#: src/settings_window/library.rs:244 src/settings_window/library.rs:253
+#: src/settings_window/wiring/folder_wiring.rs:58
+msgid "Ask each time"
+msgstr "Spør hver gang"
+
+#: src/settings_window/library.rs:248
+msgid "Change…"
+msgstr "Endre…"
+
+#: src/settings_window/library.rs:267
+#, rust-format
+msgid "Using {used} of {limit}"
+msgstr "Bruker {used} av {limit}"
+
+#: src/settings_window/mod.rs:52
+msgid "Default (Folder Name)"
+msgstr "Standard (mappenavn)"
+
+#: src/settings_window/mod.rs:56
+msgid "Library (No Album)"
+msgstr "Bibliotek (ikke i album)"
+
+#: src/settings_window/mod.rs:127
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so the API key "
+"was stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"Innstillingene ble lagret, men systemets nøkkelring er utilgjengelig, så API-nøkkelen ble lagret i {path}.\n"
+"\n"
+"Filen kan bare leses av brukerkontoen din, men er ikke kryptert.\n"
+"\n"
+"Se: {url}"
+
+#: src/settings_window/mod.rs:141
+msgid "No successful sync yet"
+msgstr "Ingen vellykket synkronisering ennå"
+
+#: src/settings_window/mod.rs:151
+msgid "Less than a minute ago"
+msgstr "Under ett minutt siden"
+
+#: src/settings_window/mod.rs:157
+#, rust-format
+msgid "{n} minute ago"
+msgid_plural "{n} minutes ago"
+msgstr[0] "For {n} minutt siden"
+msgstr[1] "For {n} minutter siden"
+
+#: src/settings_window/mod.rs:161
+#, rust-format
+msgid "{n} hour ago"
+msgid_plural "{n} hours ago"
+msgstr[0] "For {n} time siden"
+msgstr[1] "For {n} timer siden"
+
+#: src/settings_window/mod.rs:164
+#, rust-format
+msgid "{n} day ago"
+msgid_plural "{n} days ago"
+msgstr[0] "For {n} dag siden"
+msgstr[1] "For {n} dager siden"
+
+#: src/settings_window/queue_inspector.rs:38
+msgid "Retry All"
+msgstr "Prøv alle på nytt"
+
+#: src/settings_window/queue_inspector.rs:86
+msgid "Failed Retry Queue"
+msgstr "Mislykket prøv igjen-kø"
+
+#: src/settings_window/queue_inspector.rs:90
+msgid "Recent Queue Activity"
+msgstr "Nylig køaktivitet"
+
+#: src/settings_window/queue_inspector.rs:114
+msgid "Retry All Failed"
+msgstr "Prøv alle mislykkede på nytt"
+
+#: src/settings_window/queue_inspector.rs:116
+msgid "Clear Failed Queue"
+msgstr "Tøm mislykket-kø"
+
+#: src/settings_window/queue_inspector.rs:233
+msgid "No failed items"
+msgstr "Ingen mislykkede elementer"
+
+#: src/settings_window/queue_inspector.rs:234
+msgid "The retry queue is currently empty."
+msgstr "Prøv igjen-køen er for øyeblikket tom."
+
+#: src/settings_window/queue_inspector.rs:252 src/settings_window/status.rs:231
+msgid "Retry"
+msgstr "Prøv på nytt"
+
+#: src/settings_window/queue_inspector.rs:258
+msgid "Retrying…"
+msgstr "Prøver på nytt…"
+
+#: src/settings_window/status.rs:38
+msgid "Watched Folders"
+msgstr "Overvåkede mapper"
+
+#: src/settings_window/status.rs:50
+msgid "Checking…"
+msgstr "Sjekker…"
+
+#: src/settings_window/status.rs:51
+msgid "Last Upload"
+msgstr "Siste opplasting"
+
+#: src/settings_window/status.rs:51
+msgid "Nothing uploaded yet"
+msgstr "Ingenting er lastet opp ennå"
+
+#: src/settings_window/status.rs:92
+msgid "Set Up…"
+msgstr "Sett opp…"
+
+#: src/settings_window/status.rs:129 src/settings_window/status_poll.rs:243
+msgid "Up to Date"
+msgstr "Oppdatert"
+
+#: src/settings_window/status.rs:153 src/tray_icon.rs:95
+msgid "Sync Now"
+msgstr "Synkroniser nå"
+
+#: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
+#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+msgid "Pause"
+msgstr "Pause"
+
+#: src/settings_window/status.rs:155
+msgid "Queue…"
+msgstr "Kø…"
+
+#: src/settings_window/status.rs:222
+msgid "Needs Attention"
+msgstr "Krever oppmerksomhet"
+
+#: src/settings_window/status.rs:226
+msgid "Failed uploads"
+msgstr "Mislykkede opplastinger"
+
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
+#: src/settings_window/wiring.rs:368
+msgid "Resume"
+msgstr "Fortsett"
+
+#: src/settings_window/status_poll.rs:127
+msgid "No server set up yet"
+msgstr "Ingen tjener er satt opp ennå"
+
+#: src/settings_window/status_poll.rs:138
+#, rust-format
+msgid "{n} upload failed"
+msgid_plural "{n} uploads failed"
+msgstr[0] "{n} opplasting mislyktes"
+msgstr[1] "{n} opplastinger mislyktes"
+
+#: src/settings_window/status_poll.rs:149
+msgid "No folders yet"
+msgstr "Ingen mapper ennå"
+
+#: src/settings_window/status_poll.rs:150
+msgid "Add one under Settings → Watch Folders."
+msgstr "Legg til en under Innstillinger → Overvåkede mapper."
+
+#: src/settings_window/status_poll.rs:184
+msgid "Waiting for a successful connection check"
+msgstr "Venter på en vellykket tilkoblingstest"
+
+#: src/settings_window/status_poll.rs:202
+msgid "Not Set Up Yet"
+msgstr "Ikke satt opp ennå"
+
+#: src/settings_window/status_poll.rs:203
+msgid "Connect Mimick to your Immich server to start."
+msgstr "Koble Mimick til Immich-tjeneren din for å starte."
+
+#: src/settings_window/status_poll.rs:210
+msgid "Paused"
+msgstr "Satt på pause"
+
+#: src/settings_window/status_poll.rs:228
+msgid "Can't Reach Immich"
+msgstr "Kan ikke nå Immich"
+
+#: src/settings_window/status_poll.rs:229
+msgid "Check the server address and API key in Settings."
+msgstr "Sjekk tjeneradressen og API-nøkkelen i Innstillinger."
+
+#: src/settings_window/status_poll.rs:236
+msgid "Waiting for Immich"
+msgstr "Venter på Immich"
+
+#: src/settings_window/status_poll.rs:237
+msgid "Failed uploads retry when the server is reachable."
+msgstr "Mislykkede opplastinger prøves på nytt når tjeneren er tilgjengelig."
+
+#: src/settings_window/status_poll.rs:246
+#, rust-format
+msgid "Last upload {when}"
+msgstr "Siste opplasting {when}"
+
+#: src/settings_window/status_poll.rs:263
+#, rust-format
+msgid "Uploading {done} of {total}"
+msgstr "Laster opp {done} av {total}"
+
+#: src/settings_window/status_poll.rs:289
+#: src/settings_window/status_poll.rs:295
+msgid "Up to date"
+msgstr "Oppdatert"
+
+#: src/settings_window/status_poll.rs:292
+#, rust-format
+msgid "Problem: {err}"
+msgstr "Problem: {err}"
+
+#: src/settings_window/status_poll.rs:298
+#, rust-format
+msgid "{n} waiting to upload"
+msgid_plural "{n} waiting to upload"
+msgstr[0] "{n} venter på opplasting"
+msgstr[1] "{n} venter på opplasting"
+
+#: src/settings_window/status_poll.rs:308
+#, rust-format
+msgid "last upload {when}"
+msgstr "siste opplasting {when}"
+
+#: src/settings_window/watch_folders.rs:123
+msgid "Upload Target"
+msgstr "Opplastingsmål"
+
+#: src/settings_window/watch_folders.rs:156
+msgid "Select a library or album upload target"
+msgstr "Velg et bibliotek eller album som opplastingsmål"
+
+#: src/settings_window/watch_folders.rs:192
+msgid "Remove Folder"
+msgstr "Fjern mappe"
+
+#: src/settings_window/watch_folders/album_picker.rs:88
+#, rust-format
+msgid "Create new: \"{name}\""
+msgstr "Opprett nytt: «{name}»"
+
+#: src/settings_window/watch_folders/album_picker.rs:95
+msgid "No album sync or deletion mirroring"
+msgstr "Ingen albumsynkronisering eller speiling av sletting"
+
+#: src/settings_window/watch_folders/album_picker.rs:96
+msgid "Creates album dynamically per-folder"
+msgstr "Oppretter album dynamisk per mappe"
+
+#: src/settings_window/watch_folders/album_picker.rs:188
+msgid "Select Upload Target"
+msgstr "Velg opplastingsmål"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:29
+msgid "Rules"
+msgstr "Regler"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:30
+msgid "Edit folder rules"
+msgstr "Rediger mapperegler"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:33
+#: src/settings_window/watch_folders/rules_dialog.rs:83
+msgid "Folder Rules"
+msgstr "Mapperegler"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:172
+msgid "Uploads new photos and downloads new album photos."
+msgstr "Laster opp nye bilder og laster ned nye albumbilder."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:184
+msgid "Sync Method"
+msgstr "Synkroniseringsmetode"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:187
+msgid "Full Sync"
+msgstr "Full synkronisering"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:188
+msgid "Upload Only"
+msgstr "Bare opplasting"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:189
+msgid "Download Only"
+msgstr "Bare nedlasting"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:195
+msgid "Which files in this folder are checked at startup."
+msgstr "Hvilke filer i denne mappen som sjekkes ved oppstart."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:220
+msgid "Library uploads can only upload from this folder."
+msgstr "Bibliotekopplastinger kan bare laste opp fra denne mappen."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:224
+msgid "Not available for library uploads."
+msgstr "Ikke tilgjengelig for bibliotekopplastinger."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:245
+msgid "Deletions"
+msgstr "Slettinger"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:252
+msgid "Files"
+msgstr "Filer"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:280
+msgid "Delete from Immich Too"
+msgstr "Slett fra Immich også"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:281
+msgid "Moves the Immich copy to the Immich trash."
+msgstr "Flytter Immich-kopien til papirkurven i Immich."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:287
+msgid "Delete from This Folder Too"
+msgstr "Slett fra denne mappen også"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:288
+msgid "Waiting on a Flatpak trash portal fix."
+msgstr "Venter på en feilretting i Flatpaks papirkurvportal."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:298
+msgid "Skip Hidden Files"
+msgstr "Hopp over skjulte filer"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:299
+msgid "Names starting with a dot, like .thumbnails"
+msgstr "Navn som starter med et punktum, som .thumbnails"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:321
+msgid "Largest File in MB (empty for no limit)"
+msgstr "Største fil i MB (tomt for ubegrenset)"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:325
+msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
+msgstr "Bare disse typene, f.eks. jpg, png, mp4 (tomt for alle)"
+
+#: src/settings_window/wiring.rs:72
+msgid "Status"
+msgstr "Status"
+
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+msgid "Quit Mimick"
+msgstr "Avslutt Mimick"
+
+#: src/settings_window/wiring.rs:101
+msgid "Main Menu"
+msgstr "Hovedmeny"
+
+#: src/settings_window/wiring.rs:148
+msgid "Get Started"
+msgstr "Kom i gang"
+
+#: src/settings_window/wiring.rs:150
+msgid "Three steps to connect Mimick to your Immich server."
+msgstr "Tre steg for å koble Mimick til Immich-tjeneren din."
+
+#: src/settings_window/wiring.rs:155
+msgid "1. Enter your server"
+msgstr "1. Angi tjeneren din"
+
+#: src/settings_window/wiring.rs:156
+msgid "Your Immich address under Server, below."
+msgstr "Immich-adressen din under Tjener nedenfor."
+
+#: src/settings_window/wiring.rs:159
+msgid "2. Add an API key"
+msgstr "2. Legg til en API-nøkkel"
+
+#: src/settings_window/wiring.rs:160
+msgid ""
+"In Immich: Account Settings → API Keys. The guide lists the permissions."
+msgstr "I Immich: Kontoinnstillinger → API-nøkler. Veiledningen viser tillatelsene."
+
+#: src/settings_window/wiring.rs:163
+msgid "3. Save and Connect"
+msgstr "3. Lagre og koble til"
+
+#: src/settings_window/wiring.rs:165
+msgid ""
+"Your library opens next. To back up a folder too, add it under Watch Folders."
+msgstr "Biblioteket ditt åpnes deretter. For å sikkerhetskopiere en mappe også, legg den til under Overvåkede mapper."
+
+#: src/settings_window/wiring.rs:177
+msgid "Guide"
+msgstr "Veiledning"
+
+#: src/settings_window/wiring.rs:207
+#, rust-format
+msgid "{name} also works"
+msgstr "{name} fungerer også"
+
+#: src/settings_window/wiring.rs:211
+#, rust-format
+msgid "{name} unreachable"
+msgstr "{name} kan ikke nås"
+
+#: src/settings_window/wiring.rs:219
+msgid "Couldn't reach Immich at either address"
+msgstr "Kunne ikke nå Immich på noen av adressene"
+
+#: src/settings_window/wiring.rs:252
+msgid "Testing…"
+msgstr "Tester…"
+
+#: src/settings_window/wiring.rs:366
+msgid "Paused by you"
+msgstr "Satt på pause av deg"
+
+#: src/settings_window/wiring.rs:425
+msgid "Invalid Selection"
+msgstr "Ugyldig utvalg"
+
+#: src/settings_window/wiring.rs:426
+msgid "At least one URL (Internal or External) must be enabled."
+msgstr "Minst én URL (intern eller ekstern) må være aktivert."
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:16
+msgid "Choose Diagnostics Export Folder"
+msgstr "Velg mappe for diagnostikkeksport"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:49
+msgid "Diagnostics Exported"
+msgstr "Diagnostikk eksportert"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:51
+#, rust-format
+msgid "Saved diagnostics bundle to {path}"
+msgstr "Lagret diagnostikkpakke til {path}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:61
+#: src/settings_window/wiring/diagnostics_wiring.rs:68
+msgid "Diagnostics Export Failed"
+msgstr "Diagnostikkeksport mislyktes"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:63
+#, rust-format
+msgid "Could not write diagnostics bundle: {err}"
+msgstr "Kunne ikke skrive diagnostikkpakke: {err}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:70
+#, rust-format
+msgid "Diagnostics task could not complete: {err}"
+msgstr "Diagnostikkoppgaven kunne ikke fullføres: {err}"
+
+#: src/settings_window/wiring/folder_wiring.rs:91
+msgid "Watch Folders"
+msgstr "Overvåkede mapper"
+
+#: src/settings_window/wiring/folder_wiring.rs:92
+msgid "Expand a folder to pick its album and rules."
+msgstr "Utvid en mappe for å velge album og regler."
+
+#: src/settings_window/wiring/folder_wiring.rs:114
+msgid "Add Folder…"
+msgstr "Legg til mappe…"
+
+#: src/settings_window/wiring/folder_wiring.rs:152
+msgid "Select Watch Folder"
+msgstr "Velg overvåket mappe"
+
+#: src/settings_window/wiring/library_wiring.rs:86
+msgid "Could Not Clear Cache"
+msgstr "Kunne ikke tømme hurtigbuffer"
+
+#: src/startup_scan/enumeration.rs:114
+msgid "Permission lost or folder missing"
+msgstr "Tillatelse tapt eller mappe mangler"
+
+#: src/tray_icon.rs:41
+msgid "Mimick Sync"
+msgstr "Mimick-synkronisering"
+
+#: src/tray_icon.rs:84
+msgid "Pause / Resume"
+msgstr "Pause / Fortsett"
+
+#: src/tray_icon.rs:106
+msgid "Quit"
+msgstr "Avslutt"
+
+#: src/watch_path_display.rs:18
+msgid "Selected Folder"
+msgstr "Valgt mappe"
+
+#: setup/dev.nicx.mimick.desktop:2
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:4
+msgid "Mimick"
+msgstr "Mimick"
+
+#: setup/dev.nicx.mimick.desktop:3
+msgid "Unofficial Immich desktop client and auto-sync agent"
+msgstr "Uoffisiell Immich-skrivebordsklient og agent for automatisk synkronisering"
+
+#: setup/dev.nicx.mimick.desktop:10
+msgid ""
+"Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
+msgstr "Foto;Bilde;Bilder;Video;Synkronisering;Sikkerhetskopi;Last opp;Immich;Galleri;Egenhostet;"
+
+#: setup/dev.nicx.mimick.desktop:25
+msgid "Upload with Mimick"
+msgstr "Last opp med Mimick"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:5
+msgid "Back up and browse your photos"
+msgstr "Sikkerhetskopier og bla gjennom bildene dine"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:17
+msgid ""
+"Mimick is a native Linux desktop client for self-hosted Immich servers. It "
+"monitors your folders in the background and automatically syncs photos and "
+"videos to your server."
+msgstr "Mimick er en opprinnelig Linux-skrivebordsklient for egenhostede Immich-tjenere. Den overvåker mappene dine i bakgrunnen og synkroniserer automatisk bilder og videoer til tjeneren din."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
+msgid ""
+"Per-folder sync methods: upload only, download only, or full bidirectional "
+"sync with optional deletion mirroring."
+msgstr "Synkroniseringsmetoder per mappe: bare opplasting, bare nedlasting, eller full toveissynkronisering med valgfri speiling av slettinger."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
+msgid ""
+"Built-in Library View for browsing your timeline, managing albums, and "
+"searching with Smart Search, OCR, and metadata filters."
+msgstr "Innebygd bibliotekvisning for å bla gjennom tidslinjen, administrere albumer og søke med smart søk, OCR og metadatafiltre."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
+msgid ""
+"SHA-1 deduplication, parallel upload workers, and offline retry queue for "
+"reliable transfers."
+msgstr "SHA-1-deduplisering, parallelle opplastingsarbeidere og frakoblet prøv igjen-kø for pålitelige overføringer."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
+msgid ""
+"Environment-aware: automatically pauses on battery or metered connections. "
+"Configurable quiet hours and per-folder rules."
+msgstr "Miljøbevisst: settes automatisk på pause på batteristrøm eller forbruksmålte tilkoblinger. Konfigurerbare stille timer og regler per mappe."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
+msgid ""
+"Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
+"sandbox support."
+msgstr "Bygget i Rust med GTK4 og Libadwaita. Integrasjon med systemstatusfelt og støtte for Flatpak-sandkasse."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
+msgid ""
+"Mimick is a community-developed client and is not affiliated with or "
+"endorsed by the Immich project."
+msgstr "Mimick er en fellesskapsutviklet klient og er ikke tilknyttet eller godkjent av Immich-prosjektet."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
+msgid "Library View - Photos page with sidebar"
+msgstr "Bibliotekvisning – Bilder-side med sidepanel"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:43
+msgid "Explore page showing People, Places, and Things"
+msgstr "Utforsk-side som viser personer, steder og ting"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:48
+msgid "Selected album view in dark mode"
+msgstr "Visning av valgt album i mørk modus"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:53
+msgid "Lightbox viewer with details pane"
+msgstr "Lysbordviser med detaljpanel"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:58
+msgid "OCR search for text inside images"
+msgstr "OCR-søk etter tekst i bilder"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:63
+msgid "Album sync dialog with upload and download actions"
+msgstr "Dialogvindu for albumsynkronisering med opplastings- og nedlastingshandlinger"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:68
+msgid "Settings - Server connection and watch folders"
+msgstr "Innstillinger – Tjenertilkobling og overvåkede mapper"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
+msgid "Status page with sync health dashboard"
+msgstr "Statusside med oversikt over synkroniseringstilstand"
