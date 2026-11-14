@@ -337,19 +337,19 @@ msgstr "उपयोगकर्ता कॉन्फ़िग निर्द�
 
 #: src/library/about_dialog.rs:40
 msgid "Repository"
-msgstr ""
+msgstr "रिपॉजिटरी"
 
 #: src/library/about_dialog.rs:45
 msgid "Source"
-msgstr ""
+msgstr "स्रोत"
 
 #: src/library/about_dialog.rs:50
 msgid "Build"
-msgstr ""
+msgstr "बिल्ड"
 
 #: src/library/about_dialog.rs:55
 msgid "Build Image"
-msgstr ""
+msgstr "बिल्ड छवि"
 
 #. Translators: strftime date, e.g. "9 Oct 2026".
 #: src/library/about_dialog.rs:78 src/library/day_row.rs:63
@@ -357,24 +357,24 @@ msgstr ""
 #: src/library/explore_view/calendar.rs:36 src/library/header_format.rs:64
 #: src/library/header_format.rs:77 src/library/utilities/controls.rs:138
 msgid "%-d %b %Y"
-msgstr ""
+msgstr "%-d %b %Y"
 
 #: src/library/about_dialog.rs:81
 #, rust-format
 msgid "Installed {version} on {date}"
-msgstr ""
+msgstr "{date} को {version} स्थापित किया गया"
 
 #: src/library/about_dialog.rs:135 src/library/about_dialog.rs:150
 msgid "Immich Server"
-msgstr ""
+msgstr "Immich सर्वर"
 
 #: src/library/about_dialog.rs:214
 msgid "Version History"
-msgstr ""
+msgstr "संस्करण इतिहास"
 
 #: src/library/about_dialog.rs:234
 msgid "Server details unavailable"
-msgstr ""
+msgstr "सर्वर विवरण अनुपलब्ध"
 
 #: src/library/about_dialog.rs:235
 #, rust-format
@@ -384,15 +384,18 @@ msgid ""
 "\n"
 "{err}"
 msgstr ""
+"आपकी API कुंजी के लिए 'server.about' और 'server.versionCheck' अनुमतियाँ आवश्यक हैं।\n"
+"\n"
+"{err}"
 
 #: src/library/account.rs:34 src/library/window_layout.rs:332
 msgid "Account"
-msgstr ""
+msgstr "खाता"
 
 #: src/library/account.rs:66
 #, rust-format
 msgid "Couldn't load this. Your API key needs the “{permission}” permission."
-msgstr ""
+msgstr "इसे लोड नहीं किया जा सका। आपकी API कुंजी के लिए “{permission}” अनुमति आवश्यक है।"
 
 #: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
 #: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
@@ -409,147 +412,147 @@ msgstr "रद्द करें"
 
 #: src/library/account/avatar_crop.rs:130
 msgid "Picture to crop; drag or use the arrow keys to move it"
-msgstr ""
+msgstr "क्रॉप करने के लिए चित्र; इसे स्थानांतरित करने के लिए खींचें या तीर कुंजियों का उपयोग करें"
 
 #: src/library/account/avatar_crop.rs:407 src/library/bulk_date.rs:274
 msgid "Set"
-msgstr ""
+msgstr "सेट करें"
 
 #: src/library/account/avatar_crop.rs:420
 msgid "Zoom"
-msgstr ""
+msgstr "ज़ूम"
 
 #: src/library/account/avatar_crop.rs:440
 msgid "Crop Picture"
-msgstr ""
+msgstr "चित्र क्रॉप करें"
 
 #: src/library/account/devices.rs:20
 msgid "Signed-in Devices"
-msgstr ""
+msgstr "साइन-इन किए गए डिवाइस"
 
 #: src/library/account/devices.rs:22
 msgid ""
 "Browsers and apps signed in to your account. Mimick uses an API key, so it "
 "isn't listed."
-msgstr ""
+msgstr "आपके खाते में साइन इन किए गए ब्राउज़र और ऐप। Mimick एक API कुंजी का उपयोग करता है, इसलिए यह सूचीबद्ध नहीं है।"
 
 #: src/library/account/devices.rs:28
 msgid "Devices"
-msgstr ""
+msgstr "डिवाइस"
 
 #: src/library/account/devices.rs:42
 msgid "No browsers or apps are signed in."
-msgstr ""
+msgstr "कोई ब्राउज़र या ऐप साइन इन नहीं है।"
 
 #: src/library/account/devices.rs:72
 msgid "Sign out"
-msgstr ""
+msgstr "साइन आउट करें"
 
 #: src/library/account/devices.rs:84
 #, rust-format
 msgid "Sign out {device}?"
-msgstr ""
+msgstr "{device} से साइन आउट करें?"
 
 #: src/library/account/devices.rs:85
 msgid "It will have to sign in to Immich again."
-msgstr ""
+msgstr "इसे फिर से Immich में साइन इन करना होगा।"
 
 #: src/library/account/devices.rs:86
 msgid "Sign Out"
-msgstr ""
+msgstr "साइन आउट करें"
 
 #: src/library/account/devices.rs:105
 #, rust-format
 msgid "Couldn't sign it out: {err}"
-msgstr ""
+msgstr "साइन आउट नहीं किया जा सका: {err}"
 
 #: src/library/account/devices.rs:118
 msgid "Unknown device"
-msgstr ""
+msgstr "अज्ञात डिवाइस"
 
 #: src/library/account/devices.rs:126
 #, rust-format
 msgid "Last used {date}"
-msgstr ""
+msgstr "अंतिम बार {date} को उपयोग किया गया"
 
 #: src/library/account/keys.rs:34
 msgid "This App"
-msgstr ""
+msgstr "यह ऐप"
 
 #: src/library/account/keys.rs:35
 msgid "The key Mimick signs in to Immich with."
-msgstr ""
+msgstr "वह कुंजी जिससे Mimick, Immich में साइन इन करता है।"
 
 #: src/library/account/keys.rs:39
 msgid "Other Keys"
-msgstr ""
+msgstr "अन्य कुंजियाँ"
 
 #: src/library/account/keys.rs:40
 msgid "Make new keys in Immich's web app."
-msgstr ""
+msgstr "Immich के वेब ऐप में नई कुंजियाँ बनाएँ।"
 
 #: src/library/account/keys.rs:44
 msgid "API Keys"
-msgstr ""
+msgstr "API कुंजियाँ"
 
 #: src/library/account/keys.rs:92
 msgid "No other keys."
-msgstr ""
+msgstr "कोई अन्य कुंजी नहीं है।"
 
 #: src/library/account/keys.rs:101
 msgid "Unnamed key"
-msgstr ""
+msgstr "अनाम कुंजी"
 
 #: src/library/account/keys.rs:115 src/library/shared_link_photos.rs:297
 #, rust-format
 msgid "Made {date}"
-msgstr ""
+msgstr "{date} को बनाई गई"
 
 #: src/library/account/keys.rs:119
 msgid "All permissions"
-msgstr ""
+msgstr "सभी अनुमतियाँ"
 
 #: src/library/account/keys.rs:123
 #, rust-format
 msgid "{n} permission"
 msgid_plural "{n} permissions"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} अनुमति"
+msgstr[1] "{n} अनुमतियाँ"
 
 #: src/library/account/keys.rs:144
 msgid "Rotate…"
-msgstr ""
+msgstr "रोटेट करें…"
 
 #: src/library/account/keys.rs:145
 msgid "Get a new secret for this key"
-msgstr ""
+msgstr "इस कुंजी के लिए एक नया सीक्रेट प्राप्त करें"
 
 #: src/library/account/keys.rs:155
 msgid "Get a new secret for this key?"
-msgstr ""
+msgstr "इस कुंजी के लिए एक नया सीक्रेट प्राप्त करें?"
 
 #: src/library/account/keys.rs:157
 msgid ""
 "Mimick saves the new secret and keeps working. Anything else using this key "
 "stops working until you give it the new secret."
-msgstr ""
+msgstr "Mimick नया सीक्रेट सहेज लेगा और काम करता रहेगा। इस कुंजी का उपयोग करने वाली कोई भी अन्य चीज़ तब तक काम करना बंद कर देगी जब तक आप उसे नया सीक्रेट नहीं देते।"
 
 #: src/library/account/keys.rs:159
 msgid "Rotate"
-msgstr ""
+msgstr "रोटेट करें"
 
 #: src/library/account/keys.rs:176
 #, rust-format
 msgid "Couldn't rotate the key: {err}"
-msgstr ""
+msgstr "कुंजी रोटेट नहीं की जा सकी: {err}"
 
 #: src/library/account/keys.rs:184
 msgid "New secret saved"
-msgstr ""
+msgstr "नया सीक्रेट सहेजा गया"
 
 #: src/library/account/keys.rs:192
 msgid "Copy Your New Secret"
-msgstr ""
+msgstr "अपना नया सीक्रेट कॉपी करें"
 
 #: src/library/account/keys.rs:194
 #, rust-format
@@ -559,6 +562,9 @@ msgid ""
 "\n"
 "{secret}"
 msgstr ""
+"Mimick अब इसका उपयोग कर रहा है लेकिन इसे सहेज नहीं सका ({err})। इसे सेटिंग्स में पेस्ट करें ताकि यह सुरक्षित रहे:\n"
+"\n"
+"{secret}"
 
 #: src/library/account/keys.rs:199 src/library/context_menu.rs:321
 #: src/library/context_menu.rs:336 src/library/masonry/canvas_helpers.rs:141
@@ -568,184 +574,184 @@ msgstr "ठीक है"
 
 #: src/library/account/keys.rs:212
 msgid "Delete key"
-msgstr ""
+msgstr "कुंजी हटाएँ"
 
 #: src/library/account/keys.rs:223
 msgid "Delete this key?"
-msgstr ""
+msgstr "यह कुंजी हटाएँ?"
 
 #: src/library/account/keys.rs:224
 msgid "Anything signing in with it stops working. This can't be undone."
-msgstr ""
+msgstr "इसके साथ साइन इन करने वाली कोई भी चीज़ काम करना बंद कर देगी। इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
 #: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
 #: src/library/shared_links_view.rs:361 src/library/tags_view.rs:184
 #: src/library/tags_view.rs:305
 msgid "Delete"
-msgstr ""
+msgstr "हटाएँ"
 
 #: src/library/account/keys.rs:244
 #, rust-format
 msgid "Couldn't delete the key: {err}"
-msgstr ""
+msgstr "कुंजी हटाई नहीं जा सकी: {err}"
 
 #: src/library/account/profile.rs:36
 msgid "Profile"
-msgstr ""
+msgstr "प्रोफ़ाइल"
 
 #: src/library/account/profile.rs:61
 msgid "Change Picture…"
-msgstr ""
+msgstr "चित्र बदलें…"
 
 #: src/library/account/profile.rs:65
 msgid "Remove Picture"
-msgstr ""
+msgstr "चित्र हटाएँ"
 
 #: src/library/account/profile.rs:109
 msgid "Remove your profile picture?"
-msgstr ""
+msgstr "अपना प्रोफ़ाइल चित्र हटाएँ?"
 
 #: src/library/account/profile.rs:110
 msgid "Immich shows your initials instead."
-msgstr ""
+msgstr "Immich इसके स्थान पर आपके आद्याक्षर दिखाएगा।"
 
 #: src/library/account/profile.rs:111 src/library/lightbox/edit/pages.rs:138
 #: src/library/people_view.rs:458
 msgid "Remove"
-msgstr ""
+msgstr "हटाएँ"
 
 #: src/library/account/profile.rs:124
 #, rust-format
 msgid "Couldn't load your account: {err}"
-msgstr ""
+msgstr "आपका खाता लोड नहीं किया जा सका: {err}"
 
 #: src/library/account/profile.rs:152
 msgid "To use one of your photos, choose Set as Profile Picture in its menu."
-msgstr ""
+msgstr "अपनी किसी फ़ोटो का उपयोग करने के लिए, उसके मेनू में 'प्रोफ़ाइल चित्र के रूप में सेट करें' चुनें।"
 
 #: src/library/account/profile.rs:163
 msgid "Images"
-msgstr ""
+msgstr "छवियाँ"
 
 #: src/library/account/profile.rs:178
 msgid "Choose a Profile Picture"
-msgstr ""
+msgstr "एक प्रोफ़ाइल चित्र चुनें"
 
 #: src/library/account/profile.rs:193 src/library/account/profile.rs:222
 msgid "That file isn't a JPEG, PNG, or WebP picture."
-msgstr ""
+msgstr "वह फ़ाइल JPEG, PNG, या WebP चित्र नहीं है।"
 
 #: src/library/account/profile.rs:203
 #, rust-format
 msgid "Couldn't open the picture: {err}"
-msgstr ""
+msgstr "चित्र खोला नहीं जा सका: {err}"
 
 #: src/library/account/profile.rs:232
 #, rust-format
 msgid "Couldn't change it: {err}"
-msgstr ""
+msgstr "इसे बदला नहीं जा सका: {err}"
 
 #: src/library/account/profile.rs:242
 msgid "Couldn't remove the picture"
-msgstr ""
+msgstr "चित्र हटाया नहीं जा सका"
 
 #: src/library/account/profile.rs:282
 msgid "Profile picture changed"
-msgstr ""
+msgstr "प्रोफ़ाइल चित्र बदल दिया गया"
 
 #: src/library/account/profile.rs:284
 msgid "Couldn't change your picture"
-msgstr ""
+msgstr "आपका चित्र बदला नहीं जा सका"
 
 #: src/library/account/profile.rs:298
 msgid "Immich's preview of this photo isn't a JPEG or WebP."
-msgstr ""
+msgstr "इस फ़ोटो का Immich पूर्वावलोकन JPEG या WebP नहीं है।"
 
 #: src/library/actions.rs:222
 msgid "New Link…"
-msgstr ""
+msgstr "नया लिंक…"
 
 #: src/library/actions.rs:229
 msgid "Add to Existing Link…"
-msgstr ""
+msgstr "मौजूदा लिंक में जोड़ें…"
 
 #: src/library/actions.rs:270 src/library/utilities.rs:194
 #, rust-format
 msgid "{n} selected"
 msgid_plural "{n} selected"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} चयनित"
+msgstr[1] "{n} चयनित"
 
 #: src/library/actions.rs:276
 #, rust-format
 msgid "{owned} of {n} selected, only yours change"
 msgid_plural "{owned} of {n} selected, only yours change"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} में से {owned} चयनित, केवल आपकी फ़ोटो बदलेंगी"
+msgstr[1] "{n} में से {owned} चयनित, केवल आपकी फ़ोटो बदलेंगी"
 
 #: src/library/actions.rs:318 src/library/actions.rs:351
 msgid "Not Your Photos"
-msgstr ""
+msgstr "आपकी फ़ोटो नहीं हैं"
 
 #: src/library/actions.rs:319
 msgid ""
 "Only the owner can change where a photo was taken, and the selected photos "
 "belong to other people."
-msgstr ""
+msgstr "केवल स्वामी ही यह बदल सकता है कि फ़ोटो कहाँ ली गई थी, और चयनित फ़ोटो अन्य लोगों की हैं।"
 
 #: src/library/actions.rs:352
 msgid ""
 "Only the owner can change when a photo was taken, and the selected photos "
 "belong to other people."
-msgstr ""
+msgstr "केवल स्वामी ही यह बदल सकता है कि फ़ोटो कब ली गई थी, और चयनित फ़ोटो अन्य लोगों की हैं।"
 
 #: src/library/actions/trash.rs:60
 #, rust-format
 msgid "Move “{filename}” to trash?"
-msgstr ""
+msgstr "“{filename}” को ट्रैश में भेजें?"
 
 #: src/library/actions/trash.rs:65
 #, rust-format
 msgid "Move {count} item to trash?"
 msgid_plural "Move {count} items to trash?"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} आइटम ट्रैश में भेजें?"
+msgstr[1] "{count} आइटम ट्रैश में भेजें?"
 
 #: src/library/actions/trash.rs:72
 #, rust-format
 msgid "Delete “{filename}” permanently?"
-msgstr ""
+msgstr "“{filename}” को स्थायी रूप से हटाएँ?"
 
 #: src/library/actions/trash.rs:77 src/library/trash_view.rs:179
 #, rust-format
 msgid "Delete {count} item permanently?"
 msgid_plural "Delete {count} items permanently?"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} आइटम स्थायी रूप से हटाएँ?"
+msgstr[1] "{count} आइटम स्थायी रूप से हटाएँ?"
 
 #: src/library/actions/trash.rs:89
 msgid "Items can be restored from the Immich trash."
-msgstr ""
+msgstr "Immich ट्रैश से आइटम पुनर्स्थापित किए जा सकते हैं।"
 
 #: src/library/actions/trash.rs:91
 msgid "The Immich trash is turned off, so this can't be undone."
-msgstr ""
+msgstr "Immich ट्रैश बंद है, इसलिए इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/actions/trash.rs:95
 msgid "Local copies in your watch folders are kept."
-msgstr ""
+msgstr "आपके वॉच फ़ोल्डर में स्थानीय प्रतियाँ सुरक्षित रखी जाती हैं।"
 
 #: src/library/actions/trash.rs:101
 #, rust-format
 msgid "{n} local-only item is not on the server and will be skipped."
 msgid_plural "{n} local-only items are not on the server and will be skipped."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} केवल-स्थानीय आइटम सर्वर पर नहीं है और छोड़ दिया जाएगा।"
+msgstr[1] "{n} केवल-स्थानीय आइटम सर्वर पर नहीं हैं और छोड़ दिए जाएँगे।"
 
 #: src/library/actions/trash.rs:159
 msgid "Could Not Move to Trash"
-msgstr ""
+msgstr "ट्रैश में नहीं भेजा जा सका"
 
 #: src/library/actions/trash.rs:161 src/library/album_assets.rs:125
 #: src/library/album_assets.rs:226 src/library/album_delete.rs:218
@@ -753,342 +759,342 @@ msgstr ""
 #: src/library/album_picker/several.rs:101
 #, rust-format
 msgid "Immich rejected the request: {err}"
-msgstr ""
+msgstr "Immich ने अनुरोध अस्वीकार कर दिया: {err}"
 
 #: src/library/actions/trash.rs:185 src/library/shortcuts_dialog.rs:160
 msgid "Move to trash"
-msgstr ""
+msgstr "ट्रैश में भेजें"
 
 #: src/library/album_activity.rs:60
 #, rust-format
 msgid "{n} like"
 msgid_plural "{n} likes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} पसंद"
+msgstr[1] "{n} पसंद"
 
 #: src/library/album_activity.rs:64
 #, rust-format
 msgid "{n} comment"
 msgid_plural "{n} comments"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} टिप्पणी"
+msgstr[1] "{n} टिप्पणियाँ"
 
 #: src/library/album_activity/dialog.rs:23
 msgid "Likes and comments"
-msgstr ""
+msgstr "पसंद और टिप्पणियाँ"
 
 #: src/library/album_activity/dialog.rs:77 src/library/album_options.rs:34
 #: src/library/lightbox/activity.rs:22
 msgid "Activity"
-msgstr ""
+msgstr "गतिविधि"
 
 #: src/library/album_activity/feed.rs:42 src/library/album_activity/feed.rs:126
 msgid "Like"
-msgstr ""
+msgstr "पसंद करें"
 
 #: src/library/album_activity/feed.rs:43
 msgid "Send"
-msgstr ""
+msgstr "भेजें"
 
 #: src/library/album_activity/feed.rs:46
 msgid "Add a comment…"
-msgstr ""
+msgstr "एक टिप्पणी जोड़ें…"
 
 #: src/library/album_activity/feed.rs:108
 msgid "Couldn't load likes and comments"
-msgstr ""
+msgstr "पसंद और टिप्पणियाँ लोड नहीं की जा सकीं"
 
 #: src/library/album_activity/feed.rs:117
 msgid "No likes or comments yet"
-msgstr ""
+msgstr "अभी तक कोई पसंद या टिप्पणी नहीं है"
 
 #: src/library/album_activity/feed.rs:124
 msgid "Unlike"
-msgstr ""
+msgstr "पसंद हटाएं"
 
 #: src/library/album_activity/feed.rs:166
 msgid "Couldn't update the like"
-msgstr ""
+msgstr "पसंद अपडेट नहीं की जा सकी"
 
 #: src/library/album_activity/feed.rs:191
 msgid "Couldn't post the comment"
-msgstr ""
+msgstr "टिप्पणी पोस्ट नहीं की जा सकी"
 
 #: src/library/album_activity/feed.rs:202
 msgid "Couldn't delete"
-msgstr ""
+msgstr "हटाया नहीं जा सका"
 
 #: src/library/album_activity/feed.rs:260 src/library/content_state.rs:213
 #: src/library/server_stats_dialog.rs:42
 msgid "Loading…"
-msgstr ""
+msgstr "लोड हो रहा है…"
 
 #: src/library/album_assets.rs:79
 #, rust-format
 msgid "Only the owner can remove these from “{album}”"
-msgstr ""
+msgstr "केवल स्वामी ही इन्हें “{album}” से हटा सकता है"
 
 #: src/library/album_assets.rs:84
 #, rust-format
 msgid "Removed {items} from “{album}”"
-msgstr ""
+msgstr "“{album}” से {items} हटा दिए गए"
 
 #: src/library/album_assets.rs:94
 #, rust-format
 msgid "{n} belongs to someone else"
 msgid_plural "{n} belong to someone else"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} किसी अन्य का है"
+msgstr[1] "{n} दूसरों के हैं"
 
 #: src/library/album_assets.rs:123
 msgid "Couldn't remove from the album"
-msgstr ""
+msgstr "एल्बम से हटाया नहीं जा सका"
 
 #: src/library/album_assets.rs:155
 msgid "Undo"
-msgstr ""
+msgstr "पूर्ववत करें"
 
 #: src/library/album_assets.rs:183
 msgid "Album cover updated"
-msgstr ""
+msgstr "एल्बम कवर अपडेट किया गया"
 
 #: src/library/album_assets.rs:186 src/library/album_edit.rs:91
 msgid "Couldn't update the album"
-msgstr ""
+msgstr "एल्बम अपडेट नहीं किया जा सका"
 
 #: src/library/album_assets.rs:194
 #, rust-format
 msgid "Leave “{album_name}”?"
-msgstr ""
+msgstr "“{album_name}” छोड़ें?"
 
 #: src/library/album_assets.rs:200
 msgid ""
 "You'll stop seeing its photos unless the owner shares it with you again."
-msgstr ""
+msgstr "जब तक स्वामी इसे आपके साथ फिर से साझा नहीं करता, तब तक आपको इसकी फ़ोटो नहीं दिखेंगी।"
 
 #: src/library/album_assets.rs:201
 msgid "Leave"
-msgstr ""
+msgstr "छोड़ें"
 
 #: src/library/album_assets.rs:212
 #, rust-format
 msgid "Left “{album_name}”"
-msgstr ""
+msgstr "“{album_name}” छोड़ दिया गया"
 
 #: src/library/album_assets.rs:224
 msgid "Couldn't leave the album"
-msgstr ""
+msgstr "एल्बम छोड़ा नहीं जा सका"
 
 #: src/library/album_delete.rs:28
 #, rust-format
 msgid ""
 "Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
 "they don't create it again."
-msgstr ""
+msgstr "Mimick अभी भी अपलोड कर रहा है। अपलोड पूरा होने पर “{album_name}” हटाएँ, ताकि वे इसे फिर से न बनाएँ।"
 
 #: src/library/album_delete.rs:29
 msgid "Uploads in Progress"
-msgstr ""
+msgstr "अपलोड प्रगति पर है"
 
 #: src/library/album_delete.rs:35
 msgid "Close Settings First"
-msgstr ""
+msgstr "पहले सेटिंग्स बंद करें"
 
 #: src/library/album_delete.rs:36
 msgid ""
 "Deleting this album changes your watch folders, and saving the open Settings "
 "window would undo that. Close Settings, then delete the album."
-msgstr ""
+msgstr "इस एल्बम को हटाने से आपके वॉच फ़ोल्डर बदल जाते हैं, और खुली हुई सेटिंग्स विंडो को सहेजने से वह पूर्ववत हो जाएगा। सेटिंग्स बंद करें, फिर एल्बम हटाएँ।"
 
 #: src/library/album_delete.rs:45
 msgid "Its photos stay in your library."
-msgstr ""
+msgstr "इसकी फ़ोटो आपकी लाइब्रेरी में रहेंगी।"
 
 #: src/library/album_delete.rs:49
 msgid "It's also removed for the person it's shared with."
-msgstr ""
+msgstr "यह उस व्यक्ति के लिए भी हटा दिया जाएगा जिसके साथ इसे साझा किया गया है।"
 
 #: src/library/album_delete.rs:53
 #, rust-format
 msgid "It's also removed for the {n} person it's shared with."
 msgid_plural "It's also removed for the {n} people it's shared with."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "यह उस {n} व्यक्ति के लिए भी हटा दिया जाएगा जिसके साथ इसे साझा किया गया है।"
+msgstr[1] "यह उन {n} लोगों के लिए भी हटा दिया जाएगा जिनके साथ इसे साझा किया गया है।"
 
 #: src/library/album_delete.rs:61
 msgid "Its shared links stop working."
-msgstr ""
+msgstr "इसके साझा लिंक काम करना बंद कर देंगे।"
 
 #: src/library/album_delete.rs:117
 #, rust-format
 msgid "Delete “{album_name}”?"
-msgstr ""
+msgstr "“{album_name}” हटाएँ?"
 
 #: src/library/album_delete.rs:124
 msgid "Delete Album"
-msgstr ""
+msgstr "एल्बम हटाएँ"
 
 #: src/library/album_delete.rs:153
 msgid "These folders sync with this album:"
-msgstr ""
+msgstr "ये फ़ोल्डर इस एल्बम के साथ सिंक होते हैं:"
 
 #: src/library/album_delete.rs:156
 msgid "Keep backing them up to your library"
-msgstr ""
+msgstr "उन्हें अपनी लाइब्रेरी में बैकअप लेते रहें"
 
 #: src/library/album_delete.rs:160
 msgid "Stop watching these folders"
-msgstr ""
+msgstr "इन फ़ोल्डरों पर नज़र रखना बंद करें"
 
 #: src/library/album_delete.rs:169
 msgid ""
 "So the album doesn't come back, photos in these folders go to your library "
 "instead of an album named after the folder:"
-msgstr ""
+msgstr "ताकि एल्बम वापस न आए, इन फ़ोल्डरों की फ़ोटो फ़ोल्डर के नाम वाले एल्बम के बजाय आपकी लाइब्रेरी में जाएँगी:"
 
 #: src/library/album_delete.rs:221
 msgid "Could Not Delete Album"
-msgstr ""
+msgstr "एल्बम हटाया नहीं जा सका"
 
 #: src/library/album_delete.rs:256
 #, rust-format
 msgid "Deleted “{album_name}”"
-msgstr ""
+msgstr "“{album_name}” हटा दिया गया"
 
 #: src/library/album_download.rs:20 src/library/controls.rs:377
 #: src/library/staging_view.rs:148
 msgid "Album"
-msgstr ""
+msgstr "एल्बम"
 
 #: src/library/album_download.rs:34
 #, rust-format
 msgid "Immich couldn't prepare the album: {err}"
-msgstr ""
+msgstr "Immich एल्बम तैयार नहीं कर सका: {err}"
 
 #: src/library/album_download.rs:37 src/library/album_download.rs:54
 msgid "Download Failed"
-msgstr ""
+msgstr "डाउनलोड विफल रहा"
 
 #: src/library/album_download.rs:42
 #, rust-format
 msgid "“{album}” has nothing to download"
-msgstr ""
+msgstr "“{album}” में डाउनलोड करने के लिए कुछ नहीं है"
 
 #: src/library/album_download.rs:90
 #, rust-format
 msgid "Saved {file_name}"
-msgstr ""
+msgstr "{file_name} सहेजा गया"
 
 #: src/library/album_download.rs:101
 #, rust-format
 msgid "Saved {count} zip file"
 msgid_plural "Saved {count} zip files"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} ज़िप फ़ाइल सहेजी गई"
+msgstr[1] "{count} ज़िप फ़ाइलें सहेजी गईं"
 
 #: src/library/album_download.rs:111 src/library/download.rs:287
 msgid "Open Folder"
-msgstr ""
+msgstr "फ़ोल्डर खोलें"
 
 #: src/library/album_edit.rs:21 src/library/albums_view.rs:66
 #: src/library/people_view.rs:322 src/library/tags_view.rs:205
 msgid "Rename…"
-msgstr ""
+msgstr "नाम बदलें…"
 
 #: src/library/album_edit.rs:25 src/library/albums_view.rs:68
 #: src/library/window_layout/bulk_bar.rs:215
 msgid "Edit Description…"
-msgstr ""
+msgstr "विवरण संपादित करें…"
 
 #: src/library/album_edit.rs:29
 msgid "Options…"
-msgstr ""
+msgstr "विकल्प…"
 
 #: src/library/album_edit.rs:33 src/library/albums_view.rs:72
 msgid "Delete Album…"
-msgstr ""
+msgstr "एल्बम हटाएँ…"
 
 #: src/library/album_edit.rs:44
 msgid "Rename Album"
-msgstr ""
+msgstr "एल्बम का नाम बदलें"
 
 #: src/library/album_edit.rs:45
 msgid "Folders linked to this album stay linked."
-msgstr ""
+msgstr "इस एल्बम से लिंक किए गए फ़ोल्डर लिंक रहेंगे।"
 
 #: src/library/album_edit.rs:47 src/library/album_picker.rs:432
 #: src/library/album_wiring.rs:31
 msgid "Album name"
-msgstr ""
+msgstr "एल्बम का नाम"
 
 #: src/library/album_edit.rs:48 src/library/download.rs:357
 #: src/library/tags_view.rs:182 src/library/tags_view.rs:277
 msgid "Rename"
-msgstr ""
+msgstr "नाम बदलें"
 
 #: src/library/album_edit.rs:76
 msgid "Album Description"
-msgstr ""
+msgstr "एल्बम विवरण"
 
 #: src/library/album_link.rs:42
 msgid "Linked folder"
-msgstr ""
+msgstr "लिंक किया गया फ़ोल्डर"
 
 #: src/library/album_link.rs:48
 msgid "Unlink"
-msgstr ""
+msgstr "अनलिंक करें"
 
 #: src/library/album_link.rs:54 src/library/window_layout.rs:492
 msgid "No local folder linked"
-msgstr ""
+msgstr "कोई स्थानीय फ़ोल्डर लिंक नहीं है"
 
 #: src/library/album_link.rs:56 src/library/window_layout.rs:494
 msgid "Drop files in the linked folder to sync this album"
-msgstr ""
+msgstr "इस एल्बम को सिंक करने के लिए लिंक किए गए फ़ोल्डर में फ़ाइलें डालें"
 
 #: src/library/album_link.rs:60 src/library/window_layout/responsive.rs:178
 msgid "Link folder…"
-msgstr ""
+msgstr "फ़ोल्डर लिंक करें…"
 
 #: src/library/album_link.rs:184
 msgid "Sync album"
-msgstr ""
+msgstr "एल्बम सिंक करें"
 
 #: src/library/album_link.rs:185
 msgid "Pick which directions to apply."
-msgstr ""
+msgstr "चुनें कि कौन सी दिशाएँ लागू करनी हैं।"
 
 #: src/library/album_link.rs:188
 msgid "Apply"
-msgstr ""
+msgstr "लागू करें"
 
 #: src/library/album_link.rs:200
 #, rust-format
 msgid "Upload {n} item to album"
 msgid_plural "Upload {n} items to album"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} आइटम एल्बम में अपलोड करें"
+msgstr[1] "{n} आइटम एल्बम में अपलोड करें"
 
 #: src/library/album_link.rs:209
 #, rust-format
 msgid "Download {n} item to folder"
 msgid_plural "Download {n} items to folder"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} आइटम फ़ोल्डर में डाउनलोड करें"
+msgstr[1] "{n} आइटम फ़ोल्डर में डाउनलोड करें"
 
 #: src/library/album_link.rs:218
 #, rust-format
 msgid "Move {n} album item to trash"
 msgid_plural "Move {n} album items to trash"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} एल्बम आइटम ट्रैश में भेजें"
+msgstr[1] "{n} एल्बम आइटम ट्रैश में भेजें"
 
 #: src/library/album_link.rs:227
 #, rust-format
 msgid "Move {n} local item to trash"
 msgid_plural "Move {n} local items to trash"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} स्थानीय आइटम ट्रैश में भेजें"
+msgstr[1] "{n} स्थानीय आइटम ट्रैश में भेजें"
 
 #: src/library/album_link.rs:292
 #, rust-format
@@ -1096,351 +1102,351 @@ msgid ""
 "Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
 msgid_plural ""
 "Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "पहले से सिंक में है। ({n} रिमोट आइटम का मिलान नहीं किया जा सका — गुम चेकसम।)"
+msgstr[1] "पहले से सिंक में है। ({n} रिमोट आइटमों का मिलान नहीं किया जा सका — गुम चेकसम।)"
 
 #: src/library/album_link.rs:299
 msgid "Already in sync."
-msgstr ""
+msgstr "पहले से सिंक में है।"
 
 #: src/library/album_link.rs:307
 #, rust-format
 msgid "{n} remote item couldn't be matched (missing checksum)."
 msgid_plural "{n} remote items couldn't be matched (missing checksum)."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} रिमोट आइटम का मिलान नहीं किया जा सका (गुम चेकसम)।"
+msgstr[1] "{n} रिमोट आइटमों का मिलान नहीं किया जा सका (गुम चेकसम)।"
 
 #: src/library/album_link.rs:430
 #, rust-format
 msgid "Link folder for album '{album_name}'"
-msgstr ""
+msgstr "एल्बम '{album_name}' के लिए फ़ोल्डर लिंक करें"
 
 #: src/library/album_options.rs:19
 msgid "Album Options"
-msgstr ""
+msgstr "एल्बम विकल्प"
 
 #: src/library/album_options.rs:25
 msgid "Comments and Likes"
-msgstr ""
+msgstr "टिप्पणियाँ और पसंद"
 
 #: src/library/album_options.rs:26
 msgid "Let people in this album like and comment"
-msgstr ""
+msgstr "इस एल्बम के लोगों को पसंद और टिप्पणी करने दें"
 
 #: src/library/album_options.rs:30
 msgid "Display"
-msgstr ""
+msgstr "प्रदर्शन"
 
 #: src/library/album_options.rs:48
 msgid "Display Order"
-msgstr ""
+msgstr "प्रदर्शन क्रम"
 
 #: src/library/album_options.rs:50
 msgid "Newest First"
-msgstr ""
+msgstr "नवीनतम पहले"
 
 #: src/library/album_options.rs:51
 msgid "Oldest First"
-msgstr ""
+msgstr "सबसे पुराने पहले"
 
 #: src/library/album_options.rs:92 src/library/album_options.rs:149
 #, rust-format
 msgid "Couldn't save: {err}"
-msgstr ""
+msgstr "सहेजा नहीं जा सका: {err}"
 
 #: src/library/album_picker.rs:54
 msgid "Add to Album"
-msgstr ""
+msgstr "एल्बम में जोड़ें"
 
 #: src/library/album_picker.rs:136
 #, rust-format
 msgid "Couldn't add to “{album}”"
-msgstr ""
+msgstr "“{album}” में जोड़ा नहीं जा सका"
 
 #: src/library/album_picker.rs:138
 #, rust-format
 msgid "Already in “{album}”"
-msgstr ""
+msgstr "पहले से “{album}” में है"
 
 #: src/library/album_picker.rs:140
 #, rust-format
 msgid "Added {items} to “{album}”"
-msgstr ""
+msgstr "“{album}” में {items} जोड़े गए"
 
 #: src/library/album_picker.rs:144
 #, rust-format
 msgid "Added {items} to “{album}” · {duplicate} already there"
-msgstr ""
+msgstr "“{album}” में {items} जोड़े गए · {duplicate} पहले से मौजूद हैं"
 
 #: src/library/album_picker.rs:156
 #, rust-format
 msgid "{n} not allowed"
 msgid_plural "{n} not allowed"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} की अनुमति नहीं है"
+msgstr[1] "{n} की अनुमति नहीं है"
 
 #: src/library/album_picker.rs:192
 msgid "Couldn't add to the album"
-msgstr ""
+msgstr "एल्बम में जोड़ा नहीं जा सका"
 
 #: src/library/album_picker.rs:206
 msgid "Open"
-msgstr ""
+msgstr "खोलें"
 
 #: src/library/album_picker.rs:221 src/library/album_picker.rs:226
 msgid "Could Not Create Album"
-msgstr ""
+msgstr "एल्बम नहीं बनाया जा सका"
 
 #: src/library/album_picker.rs:222
 msgid "Immich didn't return the new album."
-msgstr ""
+msgstr "Immich ने नया एल्बम वापस नहीं किया।"
 
 #: src/library/album_picker.rs:260 src/library/albums_view.rs:187
 msgid "Filter albums"
-msgstr ""
+msgstr "एल्बम फ़िल्टर करें"
 
 #: src/library/album_picker.rs:358
 #, rust-format
 msgid "New Album “{name}”"
-msgstr ""
+msgstr "नया एल्बम “{name}”"
 
 #: src/library/album_picker.rs:359
 msgid "New Album…"
-msgstr ""
+msgstr "नया एल्बम…"
 
 #: src/library/album_picker.rs:429
 msgid "New Album"
-msgstr ""
+msgstr "नया एल्बम"
 
 #: src/library/album_picker.rs:430
 msgid "The selected items will be added to it."
-msgstr ""
+msgstr "चयनित आइटम इसमें जोड़ दिए जाएँगे।"
 
 #: src/library/album_picker.rs:433 src/library/album_wiring.rs:36
 #: src/library/tags_view.rs:253
 msgid "Create"
-msgstr ""
+msgstr "बनाएँ"
 
 #: src/library/album_picker/several.rs:49
 msgid "Add to this album too"
-msgstr ""
+msgstr "इस एल्बम में भी जोड़ें"
 
 #: src/library/album_picker/several.rs:72
 #, rust-format
 msgid "Add to {n} Album"
 msgid_plural "Add to {n} Albums"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} एल्बम में जोड़ें"
+msgstr[1] "{n} एल्बमों में जोड़ें"
 
 #: src/library/album_picker/several.rs:99
 msgid "Couldn't add to the albums"
-msgstr ""
+msgstr "एल्बमों में जोड़ा नहीं जा सका"
 
 #: src/library/album_picker/several.rs:114
 #, rust-format
 msgid "Added {items} to {n} album"
 msgid_plural "Added {items} to {n} albums"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} एल्बम में {items} जोड़े गए"
+msgstr[1] "{n} एल्बमों में {items} जोड़े गए"
 
 #: src/library/album_picker/several.rs:123
 msgid "Already in those albums"
-msgstr ""
+msgstr "पहले से ही उन एल्बमों में हैं"
 
 #: src/library/album_picker/several.rs:124
 msgid "You can't add these to those albums"
-msgstr ""
+msgstr "आप इन्हें उन एल्बमों में नहीं जोड़ सकते"
 
 #: src/library/album_picker/widgets.rs:87
 msgid "No matching albums"
-msgstr ""
+msgstr "कोई मेल खाते एल्बम नहीं"
 
 #: src/library/album_share_dialog.rs:37
 msgid "Shared with"
-msgstr ""
+msgstr "इनके साथ साझा किया गया"
 
 #: src/library/album_share_dialog.rs:40 src/library/sharing_view.rs:271
 msgid "Find people by name or email"
-msgstr ""
+msgstr "नाम या ईमेल द्वारा लोगों को खोजें"
 
 #: src/library/album_share_dialog.rs:43
 msgid "Add people"
-msgstr ""
+msgstr "लोगों को जोड़ें"
 
 #: src/library/album_share_dialog.rs:53
 #, rust-format
 msgid "Share “{album_name}”"
-msgstr ""
+msgstr "“{album_name}” साझा करें"
 
 #: src/library/album_share_dialog.rs:89
 msgid "Could Not Load Album"
-msgstr ""
+msgstr "एल्बम लोड नहीं किया जा सका"
 
 #: src/library/album_share_dialog.rs:150
 msgid "Editor"
-msgstr ""
+msgstr "संपादक"
 
 #: src/library/album_share_dialog.rs:150 src/library/shortcuts_dialog.rs:263
 msgid "Viewer"
-msgstr ""
+msgstr "दर्शक"
 
 #: src/library/album_share_dialog.rs:162
 msgid "Could Not Change Role"
-msgstr ""
+msgstr "भूमिका नहीं बदली जा सकी"
 
 #: src/library/album_share_dialog.rs:174
 msgid "Stop sharing with this person"
-msgstr ""
+msgstr "इस व्यक्ति के साथ साझा करना बंद करें"
 
 #: src/library/album_share_dialog.rs:181
 msgid "Could Not Remove Person"
-msgstr ""
+msgstr "व्यक्ति को हटाया नहीं जा सका"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
 msgid "Add"
-msgstr ""
+msgstr "जोड़ें"
 
 #: src/library/album_share_dialog.rs:198
 msgid "Could Not Share Album"
-msgstr ""
+msgstr "एल्बम साझा नहीं किया जा सका"
 
 #: src/library/album_sync.rs:85
 #, rust-format
 msgid "{n} album item"
 msgid_plural "{n} album items"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} एल्बम आइटम"
+msgstr[1] "{n} एल्बम आइटम"
 
 #: src/library/album_wiring.rs:27 src/library/albums_view.rs:183
 msgid "Create album"
-msgstr ""
+msgstr "एल्बम बनाएँ"
 
 #: src/library/album_wiring.rs:28
 msgid "Choose a name for the new album."
-msgstr ""
+msgstr "नए एल्बम के लिए एक नाम चुनें।"
 
 #: src/library/album_wiring.rs:88 src/library/source_loading.rs:96
 #, rust-format
 msgid "Could not load albums: {err}"
-msgstr ""
+msgstr "एल्बम लोड नहीं किए जा सके: {err}"
 
 #: src/library/albums_view.rs:64
 msgid "Share…"
-msgstr ""
+msgstr "साझा करें…"
 
 #: src/library/albums_view.rs:65 src/library/context_menu/manage.rs:58
 msgid "Create Share Link…"
-msgstr ""
+msgstr "साझा लिंक बनाएँ…"
 
 #: src/library/albums_view.rs:71 src/library/albums_view.rs:76
 #: src/library/context_menu.rs:139 src/library/shared_links_view.rs:415
 #: src/library/shortcuts_dialog.rs:139
 msgid "Download"
-msgstr ""
+msgstr "डाउनलोड करें"
 
 #: src/library/albums_view.rs:77 src/library/source_header/enrichment.rs:221
 msgid "Leave Album…"
-msgstr ""
+msgstr "एल्बम छोड़ें…"
 
 #: src/library/albums_view.rs:137
 msgid "Recent"
-msgstr ""
+msgstr "हालिया"
 
 #: src/library/albums_view.rs:138 src/library/albums_view.rs:220
 msgid "Your albums"
-msgstr ""
+msgstr "आपके एल्बम"
 
 #: src/library/albums_view.rs:139
 msgid "Shared with you"
-msgstr ""
+msgstr "आपके साथ साझा किए गए"
 
 #: src/library/albums_view.rs:218
 msgid "Shared by you"
-msgstr ""
+msgstr "आपके द्वारा साझा किए गए"
 
 #: src/library/albums_view.rs:352
 msgid "Couldn't Tell Which Albums Are Yours"
-msgstr ""
+msgstr "पता नहीं चल सका कि कौन से एल्बम आपके हैं"
 
 #: src/library/albums_view.rs:353
 msgid "Your API key needs the 'user.read' permission."
-msgstr ""
+msgstr "आपकी API कुंजी के लिए 'user.read' अनुमति आवश्यक है।"
 
 #: src/library/albums_view.rs:357
 msgid "No Shared Albums"
-msgstr ""
+msgstr "कोई साझा एल्बम नहीं"
 
 #: src/library/albums_view.rs:358
 msgid "Share one of your albums, or ask someone to share one with you."
-msgstr ""
+msgstr "अपने किसी एल्बम को साझा करें, या किसी से आपके साथ साझा करने के लिए कहें।"
 
 #: src/library/albums_view/stats.rs:40
 #, rust-format
 msgid "{owned} owned · {shared} shared · {not_shared} not shared"
-msgstr ""
+msgstr "{owned} स्वामित्व वाले · {shared} साझा किए गए · {not_shared} साझा नहीं किए गए"
 
 #: src/library/albums_view/tile.rs:58 src/library/download.rs:177
 #: src/library/header_format.rs:34
 #, rust-format
 msgid "{n} item"
 msgid_plural "{n} items"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} आइटम"
+msgstr[1] "{n} आइटम"
 
 #: src/library/archive.rs:24
 msgid "Unarchive"
-msgstr ""
+msgstr "पुरालेख से निकालें"
 
 #: src/library/archive.rs:26 src/library/search_filters.rs:137
 #: src/library/shortcuts_dialog.rs:62 src/library/sidebar/rows.rs:112
 #: src/library/source_header.rs:311
 msgid "Archive"
-msgstr ""
+msgstr "पुरालेख में रखें"
 
 #: src/library/archive.rs:32
 msgid "Unarchive (A)"
-msgstr ""
+msgstr "पुरालेख से निकालें (A)"
 
 #: src/library/archive.rs:34
 msgid "Archive (A)"
-msgstr ""
+msgstr "पुरालेख में रखें (A)"
 
 #: src/library/archive.rs:62
 msgid "Could Not Archive"
-msgstr ""
+msgstr "पुरालेख में नहीं रखा जा सका"
 
 #: src/library/archive.rs:64
 msgid "Could Not Unarchive"
-msgstr ""
+msgstr "पुरालेख से नहीं निकाला जा सका"
 
 #: src/library/archive.rs:88
 msgid "Unarchive selected"
-msgstr ""
+msgstr "चयनित को पुरालेख से निकालें"
 
 #: src/library/archive.rs:90 src/library/window_layout/bulk_bar.rs:64
 msgid "Archive selected"
-msgstr ""
+msgstr "चयनित को पुरालेख में रखें"
 
 #: src/library/asset_edit.rs:131 src/library/map/location_dialog.rs:59
 msgid "Could Not Load Info"
-msgstr ""
+msgstr "जानकारी लोड नहीं की जा सकी"
 
 #: src/library/asset_edit.rs:156
 msgid "Date taken"
-msgstr ""
+msgstr "फ़ोटो लेने की तारीख"
 
 #: src/library/asset_edit.rs:161
 msgid "Pick date and time"
-msgstr ""
+msgstr "दिनांक और समय चुनें"
 
 #: src/library/asset_edit.rs:182 src/library/people_view.rs:226
 msgid "Favorite"
-msgstr ""
+msgstr "पसंदीदा"
 
 #: src/library/asset_edit.rs:192 src/library/bulk_more.rs:138
 #: src/library/lightbox/details.rs:147 src/library/shared_link_dialog.rs:106
 msgid "Description"
-msgstr ""
+msgstr "विवरण"
 
 #: src/library/asset_edit.rs:255 src/library/bulk_date.rs:318
 #: src/library/bulk_more.rs:139 src/library/dialogs.rs:86
@@ -1453,329 +1459,329 @@ msgstr "सहेजें"
 
 #: src/library/asset_edit.rs:275
 msgid "Edit Info"
-msgstr ""
+msgstr "जानकारी संपादित करें"
 
 #: src/library/asset_edit.rs:349
 msgid "Could Not Save Info"
-msgstr ""
+msgstr "जानकारी सहेजी नहीं जा सकी"
 
 #: src/library/asset_edit.rs:351 src/library/map/location_dialog.rs:167
 #, rust-format
 msgid "Immich rejected the update: {err}"
-msgstr ""
+msgstr "Immich ने अपडेट अस्वीकार कर दिया: {err}"
 
 #: src/library/asset_edit/date_picker.rs:78
 msgid "Set Date"
-msgstr ""
+msgstr "तारीख सेट करें"
 
 #: src/library/asset_edit/date_picker.rs:137
 #: src/library/lightbox/details.rs:260
 msgid "Not set"
-msgstr ""
+msgstr "सेट नहीं है"
 
 #: src/library/asset_jobs.rs:35
 msgid "Refresh Faces"
-msgstr ""
+msgstr "चेहरे रीफ़्रेश करें"
 
 #: src/library/asset_jobs.rs:36
 msgid "Immich is looking for faces again"
-msgstr ""
+msgstr "Immich फिर से चेहरों की तलाश कर रहा है"
 
 #: src/library/asset_jobs.rs:43
 msgid "Refresh Metadata"
-msgstr ""
+msgstr "मेटाडेटा रीफ़्रेश करें"
 
 #: src/library/asset_jobs.rs:44
 msgid "Immich is reading the metadata again"
-msgstr ""
+msgstr "Immich मेटाडेटा फिर से पढ़ रहा है"
 
 #: src/library/asset_jobs.rs:51
 msgid "Refresh Thumbnails"
-msgstr ""
+msgstr "थंबनेल रीफ़्रेश करें"
 
 #: src/library/asset_jobs.rs:52
 msgid "Immich is making new thumbnails"
-msgstr ""
+msgstr "Immich नए थंबनेल बना रहा है"
 
 #: src/library/asset_jobs.rs:59
 msgid "Refresh Video"
-msgstr ""
+msgstr "वीडियो रीफ़्रेश करें"
 
 #: src/library/asset_jobs.rs:60
 msgid "Immich is converting the video again"
-msgstr ""
+msgstr "Immich वीडियो को फिर से बदल रहा है"
 
 #: src/library/asset_jobs.rs:114
 msgid "Couldn't refresh"
-msgstr ""
+msgstr "रीफ़्रेश नहीं किया जा सका"
 
 #: src/library/asset_jobs.rs:116
 #, rust-format
 msgid "Immich didn't start the job: {err}"
-msgstr ""
+msgstr "Immich ने कार्य प्रारंभ नहीं किया: {err}"
 
 #: src/library/asset_tags.rs:46
 msgid "Add tag"
-msgstr ""
+msgstr "टैग जोड़ें"
 
 #: src/library/asset_tags.rs:51 src/library/navigation.rs:204
 #: src/library/search_filters.rs:84 src/library/sidebar/rows.rs:100
 msgid "Tags"
-msgstr ""
+msgstr "टैग"
 
 #: src/library/asset_tags.rs:63
 msgid "No tags yet"
-msgstr ""
+msgstr "अभी तक कोई टैग नहीं है"
 
 #: src/library/asset_tags.rs:139
 #, rust-format
 msgid "Show photos tagged “{value}”"
-msgstr ""
+msgstr "“{value}” टैग वाली फ़ोटो दिखाएँ"
 
 #: src/library/asset_tags.rs:150
 #, rust-format
 msgid "Remove “{value}”"
-msgstr ""
+msgstr "“{value}” हटाएँ"
 
 #: src/library/asset_tags.rs:189
 msgid "Couldn't remove the tag"
-msgstr ""
+msgstr "टैग हटाया नहीं जा सका"
 
 #: src/library/asset_tags.rs:219
 msgid "Couldn't add the tag"
-msgstr ""
+msgstr "टैग जोड़ा नहीं जा सका"
 
 #: src/library/asset_tags.rs:227
 msgid "Find or create a tag"
-msgstr ""
+msgstr "टैग खोजें या बनाएँ"
 
 #: src/library/asset_tags.rs:307
 #, rust-format
 msgid "Create “{query}”"
-msgstr ""
+msgstr "“{query}” बनाएँ"
 
 #: src/library/bottom_nav.rs:10 src/library/server_stats_dialog.rs:94
 #: src/library/server_stats_dialog.rs:126 src/library/shortcuts_dialog.rs:57
 #: src/library/sidebar/rows.rs:40 src/library/source_header.rs:276
 #: src/library/utilities/controls.rs:29
 msgid "Photos"
-msgstr ""
+msgstr "फ़ोटो"
 
 #: src/library/bottom_nav.rs:11 src/library/shortcuts_dialog.rs:58
 #: src/library/sidebar/rows.rs:52 src/library/source_header.rs:309
 msgid "Explore"
-msgstr ""
+msgstr "अन्वेषण"
 
 #: src/library/bottom_nav.rs:12 src/library/navigation.rs:177
 #: src/library/shortcuts_dialog.rs:59 src/library/shortcuts_dialog.rs:261
 #: src/library/sidebar/rows.rs:58
 msgid "Map"
-msgstr ""
+msgstr "मानचित्र"
 
 #: src/library/bottom_nav.rs:13 src/library/navigation.rs:200
 #: src/library/search_filters.rs:85 src/library/shortcuts_dialog.rs:64
 #: src/library/sidebar/rows.rs:70
 msgid "Albums"
-msgstr ""
+msgstr "एल्बम"
 
 #: src/library/bottom_nav.rs:14 src/library/explore_view.rs:217
 #: src/library/lightbox/people.rs:47 src/library/navigation.rs:203
 #: src/library/search_filters.rs:83 src/library/shortcuts_dialog.rs:60
 #: src/library/sidebar/rows.rs:64
 msgid "People"
-msgstr ""
+msgstr "लोग"
 
 #: src/library/bulk_date.rs:27
 msgid "No change"
-msgstr ""
+msgstr "कोई बदलाव नहीं"
 
 #: src/library/bulk_date.rs:36
 #, rust-format
 msgid "{n} day"
 msgid_plural "{n} days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} दिन"
+msgstr[1] "{n} दिन"
 
 #: src/library/bulk_date.rs:37
 #, rust-format
 msgid "{n} hour"
 msgid_plural "{n} hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} घंटा"
+msgstr[1] "{n} घंटे"
 
 #: src/library/bulk_date.rs:38
 #, rust-format
 msgid "{n} minute"
 msgid_plural "{n} minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} मिनट"
+msgstr[1] "{n} मिनट"
 
 #: src/library/bulk_date.rs:46
 #, rust-format
 msgid "Later by {amount}"
-msgstr ""
+msgstr "{amount} बाद में"
 
 #: src/library/bulk_date.rs:48
 #, rust-format
 msgid "Earlier by {amount}"
-msgstr ""
+msgstr "{amount} पहले"
 
 #: src/library/bulk_date.rs:90
 #, rust-format
 msgid "Changed the date of {items}"
-msgstr ""
+msgstr "{items} की तारीख बदल दी गई"
 
 #: src/library/bulk_date.rs:101
 msgid "Could Not Change Date"
-msgstr ""
+msgstr "तारीख नहीं बदली जा सकी"
 
 #: src/library/bulk_date.rs:103
 #, rust-format
 msgid "Immich rejected the change: {err}"
-msgstr ""
+msgstr "Immich ने बदलाव अस्वीकार कर दिया: {err}"
 
 #: src/library/bulk_date.rs:151
 msgid "Days"
-msgstr ""
+msgstr "दिन"
 
 #: src/library/bulk_date.rs:152
 msgid "Hours"
-msgstr ""
+msgstr "घंटे"
 
 #: src/library/bulk_date.rs:153
 msgid "Minutes"
-msgstr ""
+msgstr "मिनट"
 
 #: src/library/bulk_date.rs:160
 msgid "Date and time"
-msgstr ""
+msgstr "तारीख और समय"
 
 #: src/library/bulk_date.rs:230
 #, rust-format
 msgid "Saved as {date} UTC{offset}"
-msgstr ""
+msgstr "{date} UTC{offset} के रूप में सहेजा गया"
 
 #: src/library/bulk_date.rs:274
 msgid "Shift"
-msgstr ""
+msgstr "खिसकाएँ"
 
 #: src/library/bulk_date.rs:325 src/library/bulk_date.rs:345
 msgid "Change Date and Time"
-msgstr ""
+msgstr "तारीख और समय बदलें"
 
 #: src/library/bulk_more.rs:39
 msgid "Only the owner can change these photos"
-msgstr ""
+msgstr "केवल स्वामी ही इन फ़ोटो को बदल सकता है"
 
 #: src/library/bulk_more.rs:71
 msgid "Unfavorite selected"
-msgstr ""
+msgstr "चयनित को पसंदीदा से हटाएँ"
 
 #: src/library/bulk_more.rs:76 src/library/window_layout/bulk_bar.rs:211
 msgid "Favorite selected"
-msgstr ""
+msgstr "चयनित को पसंदीदा बनाएँ"
 
 #: src/library/bulk_more.rs:91
 msgid "Couldn't update favorites"
-msgstr ""
+msgstr "पसंदीदा अपडेट नहीं किया जा सका"
 
 #: src/library/bulk_more.rs:103
 #, rust-format
 msgid "Added {n} photo to favorites"
 msgid_plural "Added {n} photos to favorites"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो पसंदीदा में जोड़ी गई"
+msgstr[1] "{n} फ़ोटो पसंदीदा में जोड़ी गईं"
 
 #: src/library/bulk_more.rs:109
 #, rust-format
 msgid "Removed {n} photo from favorites"
 msgid_plural "Removed {n} photos from favorites"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो पसंदीदा से हटाई गई"
+msgstr[1] "{n} फ़ोटो पसंदीदा से हटाई गईं"
 
 #: src/library/bulk_more.rs:125
 #, rust-format
 msgid "Describe {n} Photo"
 msgid_plural "Describe {n} Photos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो का विवरण दें"
+msgstr[1] "{n} फ़ोटो का विवरण दें"
 
 #: src/library/bulk_more.rs:136
 msgid "Each photo gets this description in place of its own."
-msgstr ""
+msgstr "प्रत्येक फ़ोटो को अपने स्वयं के विवरण के स्थान पर यह विवरण मिलता है।"
 
 #: src/library/bulk_more.rs:151
 msgid "Description saved"
-msgstr ""
+msgstr "विवरण सहेजा गया"
 
 #: src/library/bulk_more.rs:152
 msgid "Couldn't save the description"
-msgstr ""
+msgstr "विवरण सहेजा नहीं जा सका"
 
 #: src/library/bulk_overflow.rs:32
 msgid "More actions"
-msgstr ""
+msgstr "अधिक क्रियाएँ"
 
 #: src/library/clipboard.rs:141
 #, rust-format
 msgid "Copied {n} photo"
 msgid_plural "Copied {n} photos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो कॉपी की गई"
+msgstr[1] "{n} फ़ोटो कॉपी की गईं"
 
 #: src/library/clipboard.rs:151
 #, rust-format
 msgid ""
 "Pasting into an album here adds all {count}. Only {local} are on this "
 "computer, so other apps such as Files paste those; use Download for the rest."
-msgstr ""
+msgstr "यहाँ किसी एल्बम में पेस्ट करने पर सभी {count} जुड़ जाती हैं। केवल {local} इस कंप्यूटर पर हैं, इसलिए Files जैसे अन्य ऐप उन्हें ही पेस्ट करते हैं; बाकियों के लिए डाउनलोड का उपयोग करें।"
 
 #: src/library/clipboard.rs:162
 msgid "Paste in Photos or albums"
-msgstr ""
+msgstr "फ़ोटो या एल्बम में पेस्ट करें"
 
 #: src/library/clipboard.rs:177 src/library/clipboard.rs:187
 msgid "Couldn't paste"
-msgstr ""
+msgstr "पेस्ट नहीं किया जा सका"
 
 #: src/library/clipboard.rs:186 src/library/clipboard.rs:191
 #: src/library/clipboard.rs:226
 msgid "No photos to paste"
-msgstr ""
+msgstr "पेस्ट करने के लिए कोई फ़ोटो नहीं है"
 
 #: src/library/clipboard.rs:233 src/library/upload_stack.rs:74
 #, rust-format
 msgid "Uploading {n} file…"
 msgid_plural "Uploading {n} files…"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ाइल अपलोड की जा रही है…"
+msgstr[1] "{n} फ़ाइलें अपलोड की जा रही हैं…"
 
 #: src/library/clipboard.rs:262
 msgid "Already in your library"
-msgstr ""
+msgstr "पहले से आपकी लाइब्रेरी में है"
 
 #: src/library/clipboard.rs:273
 msgid "Uploading pasted image…"
-msgstr ""
+msgstr "पेस्ट की गई छवि अपलोड की जा रही है…"
 
 #: src/library/clipboard.rs:279
 msgid "Pasted image"
-msgstr ""
+msgstr "पेस्ट की गई छवि"
 
 #: src/library/clipboard.rs:290
 msgid "Pasted image uploaded"
-msgstr ""
+msgstr "पेस्ट की गई छवि अपलोड हो गई"
 
 #: src/library/clipboard.rs:294
 msgid "Couldn't paste the image"
-msgstr ""
+msgstr "छवि चिपकाई नहीं जा सकी"
 
 #: src/library/content_state.rs:24
 #, rust-format
 msgid "{n} asset"
 msgid_plural "{n} assets"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} एसेट"
+msgstr[1] "{n} एसेट"
 
 #: src/library/content_state.rs:119 src/library/explore_view/calendar.rs:43
 #: src/library/header_format.rs:177 src/library/map/markers.rs:125
@@ -1784,29 +1790,29 @@ msgstr[1] ""
 #, rust-format
 msgid "{n} photo"
 msgid_plural "{n} photos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो"
+msgstr[1] "{n} फ़ोटो"
 
 #: src/library/content_state.rs:123 src/library/server_stats_dialog.rs:231
 #: src/library/source_header.rs:272
 #, rust-format
 msgid "{n} video"
 msgid_plural "{n} videos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} वीडियो"
+msgstr[1] "{n} वीडियो"
 
 #: src/library/content_state.rs:128 src/library/sidebar.rs:36
 msgid "Statistics unavailable"
-msgstr ""
+msgstr "आँकड़े अनुपलब्ध हैं"
 
 #: src/library/content_state.rs:133 src/library/server_stats_dialog.rs:80
 #, rust-format
 msgid "Immich {version}"
-msgstr ""
+msgstr "Immich {version}"
 
 #: src/library/content_state.rs:134
 msgid "Version unavailable"
-msgstr ""
+msgstr "संस्करण अनुपलब्ध है"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
 #: src/settings_window/wiring.rs:215
@@ -1824,234 +1830,234 @@ msgstr "कॉन्फ़िगर किए गए सर्वर के म�
 
 #: src/library/content_state.rs:144 src/library/sidebar.rs:35
 msgid "Offline"
-msgstr ""
+msgstr "ऑफ़लाइन"
 
 #: src/library/content_state.rs:175
 msgid "queued asset"
-msgstr ""
+msgstr "कतारबद्ध एसेट"
 
 #: src/library/content_state.rs:176
 msgid "selected asset"
-msgstr ""
+msgstr "चयनित एसेट"
 
 #: src/library/content_state.rs:217
 msgid "Fetching library data from the Immich server"
-msgstr ""
+msgstr "Immich सर्वर से लाइब्रेरी डेटा लाया जा रहा है"
 
 #: src/library/content_state.rs:366 src/library/masonry/canvas_helpers.rs:138
 #: src/library/server_stats_dialog.rs:161
 msgid "Missing API Permissions"
-msgstr ""
+msgstr "अनुपलब्ध API अनुमतियाँ"
 
 #: src/library/content_state.rs:367
 msgid ""
 "Your API key is missing permissions required for the Library view. Please "
 "ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
 "'person.read' enabled."
-msgstr ""
+msgstr "आपकी API कुंजी में लाइब्रेरी दृश्य के लिए आवश्यक अनुमतियों की कमी है। कृपया सुनिश्चित करें कि कुंजी में 'asset.read', 'asset.view', 'asset.download', और 'person.read' सक्षम हैं।"
 
 #: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
 #: src/library/shortcuts_dialog.rs:179
 msgid "Close"
-msgstr ""
+msgstr "बंद करें"
 
 #: src/library/context_menu.rs:131
 msgid "Copy"
-msgstr ""
+msgstr "कॉपी करें"
 
 #: src/library/context_menu.rs:148
 msgid "Open In"
-msgstr ""
+msgstr "इसमें खोलें"
 
 #: src/library/context_menu.rs:174 src/library/shortcuts_dialog.rs:264
 msgid "Slideshow"
-msgstr ""
+msgstr "स्लाइडशो"
 
 #: src/library/context_menu.rs:181
 msgid "Leave Fullscreen"
-msgstr ""
+msgstr "फ़ुलस्क्रीन छोड़ें"
 
 #: src/library/context_menu.rs:183
 msgid "Fullscreen"
-msgstr ""
+msgstr "फ़ुलस्क्रीन"
 
 #: src/library/context_menu.rs:229 src/library/context_menu.rs:236
 msgid "Couldn't copy the photo"
-msgstr ""
+msgstr "फ़ोटो कॉपी नहीं की जा सकी"
 
 #: src/library/context_menu.rs:237
 msgid "Could not decode the original image."
-msgstr ""
+msgstr "मूल छवि को डिकोड नहीं किया जा सका।"
 
 #: src/library/context_menu.rs:256
 msgid "Couldn't open the file"
-msgstr ""
+msgstr "फ़ाइल खोली नहीं जा सकी"
 
 #: src/library/context_menu.rs:288
 msgid "Could not locate a cache directory."
-msgstr ""
+msgstr "कैश डायरेक्टरी नहीं खोजी जा सकी।"
 
 #: src/library/context_menu.rs:316 src/library/lightbox/details.rs:205
 msgid "Details"
-msgstr ""
+msgstr "विवरण"
 
 #: src/library/context_menu/manage.rs:73
 msgid "Add to Share Link…"
-msgstr ""
+msgstr "शेयर लिंक में जोड़ें…"
 
 #: src/library/context_menu/manage.rs:84 src/library/lightbox/widgets.rs:434
 msgid "Add to Album…"
-msgstr ""
+msgstr "एल्बम में जोड़ें…"
 
 #: src/library/context_menu/manage.rs:92
 msgid "Set as Album Cover"
-msgstr ""
+msgstr "एल्बम कवर के रूप में सेट करें"
 
 #: src/library/context_menu/manage.rs:108
 msgid "Remove from Album"
-msgstr ""
+msgstr "एल्बम से हटाएँ"
 
 #: src/library/context_menu/manage.rs:130 src/library/lightbox/widgets.rs:432
 msgid "Edit Info…"
-msgstr ""
+msgstr "जानकारी संपादित करें…"
 
 #: src/library/context_menu/manage.rs:149
 msgid "Edit Photo…"
-msgstr ""
+msgstr "फ़ोटो संपादित करें…"
 
 #: src/library/context_menu/manage.rs:158 src/library/lightbox/people.rs:59
 msgid "Tag People…"
-msgstr ""
+msgstr "लोगों को टैग करें…"
 
 #: src/library/context_menu/manage.rs:176
 msgid "Set as Profile Picture"
-msgstr ""
+msgstr "प्रोफ़ाइल चित्र के रूप में सेट करें"
 
 #: src/library/context_menu/manage.rs:186
 msgid "Set Location…"
-msgstr ""
+msgstr "स्थान सेट करें…"
 
 #: src/library/context_menu/manage.rs:208
 msgid "Move to Trash"
-msgstr ""
+msgstr "ट्रैश में भेजें"
 
 #: src/library/context_menu/manage.rs:210 src/library/shared_links_view.rs:222
 #: src/library/tags_view.rs:213
 msgid "Delete…"
-msgstr ""
+msgstr "हटाएँ…"
 
 #: src/library/context_menu/manage.rs:231 src/library/people_view.rs:330
 msgid "Remove from Favorites"
-msgstr ""
+msgstr "पसंदीदा से हटाएँ"
 
 #: src/library/context_menu/manage.rs:233 src/library/people_view.rs:332
 msgid "Add to Favorites"
-msgstr ""
+msgstr "पसंदीदा में जोड़ें"
 
 #: src/library/context_menu/manage.rs:283
 msgid "Restore"
-msgstr ""
+msgstr "पुनर्स्थापित करें"
 
 #: src/library/context_menu/manage.rs:293 src/library/trash_view.rs:207
 msgid "Delete Permanently"
-msgstr ""
+msgstr "स्थायी रूप से हटाएँ"
 
 #: src/library/context_menu/menu.rs:62
 msgid "Photo Actions"
-msgstr ""
+msgstr "फ़ोटो क्रियाएँ"
 
 #: src/library/controls/sort.rs:57
 msgid "Most assets"
-msgstr ""
+msgstr "सर्वाधिक एसेट"
 
 #: src/library/controls/sort.rs:57 src/library/people_view.rs:428
 #: src/library/person_picker.rs:163
 msgid "Name"
-msgstr ""
+msgstr "नाम"
 
 #: src/library/controls/sort.rs:57 src/library/controls/sort.rs:60
 #: src/library/window_layout.rs:360
 msgid "Newest"
-msgstr ""
+msgstr "नवीनतम"
 
 #: src/library/controls/sort.rs:58 src/library/theme/palettes.rs:54
 #: src/library/theme/palettes.rs:82
 msgid "Default"
-msgstr ""
+msgstr "डिफ़ॉल्ट"
 
 #: src/library/controls/sort.rs:61
 msgid "Oldest"
-msgstr ""
+msgstr "सबसे पुराना"
 
 #: src/library/controls/sort.rs:62 src/library/window_layout.rs:361
 msgid "Filename"
-msgstr ""
+msgstr "फ़ाइल नाम"
 
 #: src/library/controls/sort.rs:63 src/library/window_layout.rs:362
 msgid "File Type"
-msgstr ""
+msgstr "फ़ाइल प्रकार"
 
 #: src/library/day_row.rs:37 src/library/day_row.rs:69
 msgid "Any Day"
-msgstr ""
+msgstr "कोई भी दिन"
 
 #: src/library/download.rs:153
 #, rust-format
 msgid "Saved {safe_name}"
-msgstr ""
+msgstr "{safe_name} सहेजा गया"
 
 #: src/library/download.rs:159
 msgid "Download failed"
-msgstr ""
+msgstr "डाउनलोड विफल रहा"
 
 #: src/library/download.rs:258
 msgid "Nothing downloaded"
-msgstr ""
+msgstr "कुछ भी डाउनलोड नहीं हुआ"
 
 #: src/library/download.rs:261
 #, rust-format
 msgid "Downloaded {items}"
-msgstr ""
+msgstr "{items} डाउनलोड किया गया"
 
 #: src/library/download.rs:270
 #, rust-format
 msgid "{n} skipped"
 msgid_plural "{n} skipped"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} छोड़ा गया"
+msgstr[1] "{n} छोड़े गए"
 
 #: src/library/download.rs:276
 #, rust-format
 msgid "{n} failed"
 msgid_plural "{n} failed"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} विफल रहा"
+msgstr[1] "{n} विफल रहे"
 
 #: src/library/download.rs:321 src/library/download.rs:346
 msgid "File already exists"
-msgstr ""
+msgstr "फ़ाइल पहले से मौजूद है"
 
 #: src/library/download.rs:323
 #, rust-format
 msgid "\"{name}\" already exists. Overwrite?"
-msgstr ""
+msgstr "\"{name}\" पहले से मौजूद है। ओवरराइट करें?"
 
 #: src/library/download.rs:327 src/library/download.rs:356
 msgid "Skip"
-msgstr ""
+msgstr "छोड़ें"
 
 #: src/library/download.rs:328 src/library/download.rs:358
 msgid "Overwrite"
-msgstr ""
+msgstr "ओवरराइट करें"
 
 #: src/library/download.rs:348
 #, rust-format
 msgid "\"{name}\" already exists in the download folder."
-msgstr ""
+msgstr "\"{name}\" डाउनलोड फ़ोल्डर में पहले से मौजूद है।"
 
 #: src/library/download.rs:353
 msgid "Apply to all remaining conflicts"
-msgstr ""
+msgstr "शेष सभी विरोधों पर लागू करें"
 
 #: src/library/download.rs:409 src/settings_window/wiring/folder_wiring.rs:38
 msgid "Choose Download Folder"
@@ -2059,58 +2065,58 @@ msgstr "डाउनलोड फ़ोल्डर चुनें"
 
 #: src/library/download.rs:423
 msgid "Save as default?"
-msgstr ""
+msgstr "डिफ़ॉल्ट के रूप में सहेजें?"
 
 #: src/library/download.rs:425
 #, rust-format
 msgid "Always download to {path}?"
-msgstr ""
+msgstr "हमेशा {path} में डाउनलोड करें?"
 
 #: src/library/download.rs:429
 msgid "Just Once"
-msgstr ""
+msgstr "केवल एक बार"
 
 #: src/library/download.rs:430
 msgid "Always"
-msgstr ""
+msgstr "हमेशा"
 
 #: src/library/drop_target.rs:82
 msgid "No supported media files in drop"
-msgstr ""
+msgstr "ड्रॉप में कोई समर्थित मीडिया फ़ाइल नहीं है"
 
 #: src/library/duplicates_view.rs:43
 msgid "Previous group"
-msgstr ""
+msgstr "पिछला समूह"
 
 #: src/library/duplicates_view.rs:44
 msgid "Next group"
-msgstr ""
+msgstr "अगला समूह"
 
 #: src/library/duplicates_view.rs:86
 msgid "Not Duplicates"
-msgstr ""
+msgstr "डुप्लिकेट नहीं हैं"
 
 #: src/library/duplicates_view.rs:87
 msgid "Keep every photo and stop showing this group"
-msgstr ""
+msgstr "प्रत्येक फ़ोटो रखें और इस समूह को दिखाना बंद करें"
 
 #: src/library/duplicates_view.rs:96
 msgid "No Duplicates"
-msgstr ""
+msgstr "कोई डुप्लिकेट नहीं"
 
 #: src/library/duplicates_view.rs:98
 msgid ""
 "Immich hasn't found any duplicate photos. It looks for them when its "
 "duplicate detection job runs."
-msgstr ""
+msgstr "Immich को कोई डुप्लिकेट फ़ोटो नहीं मिली है। यह तब इनकी खोज करता है जब इसका डुप्लिकेट पहचान कार्य चलता है।"
 
 #: src/library/duplicates_view.rs:123
 msgid "Tap a photo to keep it or trash it."
-msgstr ""
+msgstr "फ़ोटो को रखने या ट्रैश में भेजने के लिए उस पर टैप करें।"
 
 #: src/library/duplicates_view.rs:212
 msgid "Could Not Load Duplicates"
-msgstr ""
+msgstr "डुप्लिकेट लोड नहीं किए जा सके"
 
 #: src/library/duplicates_view.rs:214 src/library/folders_view.rs:71
 #: src/library/people_view.rs:139 src/library/shared_links_view.rs:103
@@ -2122,140 +2128,143 @@ msgid ""
 "\n"
 "Your API key needs the '{permission}' permission."
 msgstr ""
+"{err}\n"
+"\n"
+"आपकी API कुंजी को '{permission}' अनुमति की आवश्यकता है।"
 
 #: src/library/duplicates_view.rs:261
 #, rust-format
 msgid "Group {n} of {total}"
-msgstr ""
+msgstr "{total} में से समूह {n}"
 
 #: src/library/duplicates_view.rs:280
 #, rust-format
 msgid "Trash {n} Photo"
 msgid_plural "Trash {n} Photos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो ट्रैश में भेजें"
+msgstr[1] "{n} फ़ोटो ट्रैश में भेजें"
 
 #: src/library/duplicates_view.rs:282
 #, rust-format
 msgid "Delete {n} Photo"
 msgid_plural "Delete {n} Photos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो हटाएँ"
+msgstr[1] "{n} फ़ोटो हटाएँ"
 
 #: src/library/duplicates_view.rs:323
 #, rust-format
 msgid "Delete {n} photo permanently?"
 msgid_plural "Delete {n} photos permanently?"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो स्थायी रूप से हटाएँ?"
+msgstr[1] "{n} फ़ोटो स्थायी रूप से हटाएँ?"
 
 #: src/library/duplicates_view.rs:333
 msgid "Trash is turned off on this server, so this can't be undone."
-msgstr ""
+msgstr "इस सर्वर पर ट्रैश बंद है, इसलिए इसे वापस नहीं किया जा सकता।"
 
 #: src/library/duplicates_view.rs:352
 #, rust-format
 msgid "Kept {kept}, trashed {n}"
 msgid_plural "Kept {kept}, trashed {n}"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{kept} रखी गई, {n} ट्रैश में भेजी गई"
+msgstr[1] "{kept} रखी गईं, {n} ट्रैश में भेजी गईं"
 
 #: src/library/duplicates_view.rs:374
 msgid "Marked as not duplicates"
-msgstr ""
+msgstr "डुप्लिकेट नहीं के रूप में चिह्नित किया गया"
 
 #: src/library/duplicates_view.rs:404
 msgid "Couldn't update the duplicates"
-msgstr ""
+msgstr "डुप्लिकेट अपडेट नहीं किए जा सके"
 
 #: src/library/duplicates_view/cards.rs:178
 msgid "Keep"
-msgstr ""
+msgstr "रखें"
 
 #: src/library/duplicates_view/cards.rs:181 src/library/shortcuts_dialog.rs:63
 #: src/library/sidebar/rows.rs:118 src/library/source_header.rs:312
 msgid "Trash"
-msgstr ""
+msgstr "ट्रैश करें"
 
 #: src/library/duplicates_view/cards.rs:202
 #, rust-format
 msgid "{size}, largest"
-msgstr ""
+msgstr "{size}, सबसे बड़ा"
 
 #: src/library/explore_view.rs:146
 msgid "Recently Added"
-msgstr ""
+msgstr "हाल ही में जोड़ा गया"
 
 #: src/library/explore_view.rs:147
 msgid "Places"
-msgstr ""
+msgstr "स्थान"
 
 #: src/library/explore_view.rs:148 src/library/source_header/enrichment.rs:46
 msgid "Things"
-msgstr ""
+msgstr "वस्तुएँ"
 
 #: src/library/explore_view.rs:151
 msgid "Filter people and places"
-msgstr ""
+msgstr "लोगों और स्थानों को फ़िल्टर करें"
 
 #: src/library/explore_view.rs:227
 msgid "Filter people"
-msgstr ""
+msgstr "लोगों को फ़िल्टर करें"
 
 #: src/library/explore_view.rs:530
 #, rust-format
 msgid "See {remaining} more"
-msgstr ""
+msgstr "{remaining} और देखें"
 
 #: src/library/explore_view.rs:539
 msgid "Show Less"
-msgstr ""
+msgstr "कम दिखाएँ"
 
 #. Translators: strftime short month, e.g. "Oct 2026".
 #: src/library/explore_view/calendar.rs:28 src/library/timeline/dates.rs:30
 msgid "%b %Y"
-msgstr ""
+msgstr "%b %Y"
 
 #: src/library/explore_view/calendar.rs:83
 msgid "Earlier year"
-msgstr ""
+msgstr "पिछला वर्ष"
 
 #: src/library/explore_view/calendar.rs:84
 msgid "Later year"
-msgstr ""
+msgstr "अगला वर्ष"
 
 #: src/library/explore_view/calendar.rs:86 src/library/lightbox/details.rs:453
 #: src/library/map/settings.rs:76
 msgid "Taken"
-msgstr ""
+msgstr "खींची गई"
 
 #: src/library/explore_view/calendar.rs:87
 msgid "By when the photos were taken"
-msgstr ""
+msgstr "फ़ोटो कब खींची गई थीं, इसके अनुसार"
 
 #: src/library/explore_view/calendar.rs:92 src/library/folders_view/rows.rs:154
 msgid "Show Photos"
-msgstr ""
+msgstr "फ़ोटो दिखाएँ"
 
 #: src/library/explore_view/calendar.rs:109
 msgid "Calendar"
-msgstr ""
+msgstr "कैलेंडर"
 
 #: src/library/explore_view/calendar.rs:135
 msgid "Uploaded"
-msgstr ""
+msgstr "अपलोड की गई"
 
 #: src/library/explore_view/calendar.rs:136
 msgid "By when the photos reached Immich"
-msgstr ""
+msgstr "फ़ोटो कब Immich पर पहुँची थीं, इसके अनुसार"
 
 #: src/library/explore_view/calendar.rs:202
 msgid "Pick a day to see its photos."
-msgstr ""
+msgstr "उसकी फ़ोटो देखने के लिए कोई दिन चुनें।"
 
 #: src/library/explore_view/calendar.rs:335
 msgid "Less"
-msgstr ""
+msgstr "कम"
 
 #: src/library/explore_view/calendar.rs:336
 #: src/library/lightbox/edit/panel.rs:248 src/library/people_view.rs:306
@@ -2264,146 +2273,146 @@ msgstr ""
 #: src/library/source_header/enrichment.rs:256
 #: src/library/source_header/enrichment.rs:311
 msgid "More"
-msgstr ""
+msgstr "अधिक"
 
 #: src/library/explore_view/calendar/grid.rs:106
 msgid "Photos per day; use the arrow keys to pick a day"
-msgstr ""
+msgstr "प्रति दिन फ़ोटो; कोई दिन चुनने के लिए तीर कुंजियों का उपयोग करें"
 
 #: src/library/explore_view/people.rs:119
 msgid "Show unnamed"
-msgstr ""
+msgstr "अनाम दिखाएँ"
 
 #: src/library/explore_view/people.rs:123
 msgid "Show hidden"
-msgstr ""
+msgstr "छिपे हुए दिखाएँ"
 
 #: src/library/explore_view/tiles.rs:77
 msgid "Just now"
-msgstr ""
+msgstr "अभी-अभी"
 
 #: src/library/explore_view/tiles.rs:81
 #, rust-format
 msgid "{n} min ago"
 msgid_plural "{n} min ago"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} मिनट पहले"
+msgstr[1] "{n} मिनट पहले"
 
 #: src/library/explore_view/tiles.rs:87
 #, rust-format
 msgid "{n}h ago"
 msgid_plural "{n}h ago"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} घंटा पहले"
+msgstr[1] "{n} घंटे पहले"
 
 #: src/library/explore_view/tiles.rs:93
 #, rust-format
 msgid "{n}d ago"
 msgid_plural "{n}d ago"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} दिन पहले"
+msgstr[1] "{n} दिन पहले"
 
 #: src/library/favorites.rs:30
 msgid "Remove from favorites (F)"
-msgstr ""
+msgstr "पसंदीदा से हटाएँ (F)"
 
 #: src/library/favorites.rs:32
 msgid "Add to favorites (F)"
-msgstr ""
+msgstr "पसंदीदा में जोड़ें (F)"
 
 #: src/library/favorites.rs:63
 msgid "Couldn't update the favorite"
-msgstr ""
+msgstr "पसंदीदा अपडेट नहीं किया जा सका"
 
 #: src/library/folders_view.rs:69
 msgid "Could Not Load Folders"
-msgstr ""
+msgstr "फ़ोल्डर लोड नहीं किए जा सके"
 
 #: src/library/folders_view.rs:87
 msgid "Path copied"
-msgstr ""
+msgstr "पथ कॉपी किया गया"
 
 #: src/library/folders_view.rs:115 src/library/navigation.rs:205
 #: src/library/shortcuts_dialog.rs:262 src/library/sidebar/rows.rs:106
 msgid "Folders"
-msgstr ""
+msgstr "फ़ोल्डर"
 
 #: src/library/folders_view.rs:131
 msgid "No Folders"
-msgstr ""
+msgstr "कोई फ़ोल्डर नहीं"
 
 #: src/library/folders_view.rs:132
 msgid "Folders appear once Immich has photos from them."
-msgstr ""
+msgstr "फ़ोल्डर तब दिखाई देते हैं जब Immich में उनसे फ़ोटो आ जाती हैं।"
 
 #: src/library/folders_view/path_bar.rs:30
 msgid "Folder path"
-msgstr ""
+msgstr "फ़ोल्डर पथ"
 
 #: src/library/folders_view/path_bar.rs:36
 msgid "Enter a path (Ctrl+L)"
-msgstr ""
+msgstr "पथ दर्ज करें (Ctrl+L)"
 
 #: src/library/folders_view/path_bar.rs:40
 msgid "Copy path"
-msgstr ""
+msgstr "पथ कॉपी करें"
 
 #: src/library/folders_view/path_bar.rs:219
 #, rust-format
 msgid "No folder at {path}"
-msgstr ""
+msgstr "{path} पर कोई फ़ोल्डर नहीं है"
 
 #: src/library/folders_view/rows.rs:32
 #, rust-format
 msgid "Photos in {folder}"
-msgstr ""
+msgstr "{folder} में फ़ोटो"
 
 #: src/library/folders_view/rows.rs:52
 msgid "Show photos"
-msgstr ""
+msgstr "फ़ोटो दिखाएँ"
 
 #: src/library/folders_view/rows.rs:65
 #, rust-format
 msgid "{n} folder"
 msgid_plural "{n} folders"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोल्डर"
+msgstr[1] "{n} फ़ोल्डर"
 
 #: src/library/folders_view/rows.rs:72 src/library/tags_view.rs:155
 #, rust-format
 msgid "Open {name}"
-msgstr ""
+msgstr "{name} खोलें"
 
 #: src/library/folders_view/rows.rs:144
 msgid "Copy Path"
-msgstr ""
+msgstr "पथ कॉपी करें"
 
 #: src/library/header_format.rs:58 src/library/lightbox/people.rs:242
 #, rust-format
 msgid "Age {age}"
-msgstr ""
+msgstr "आयु {age}"
 
 #: src/library/header_format.rs:62
 #, rust-format
 msgid "Born {date}"
-msgstr ""
+msgstr "जन्म {date}"
 
 #. Translators: strftime day and month that start a date range, e.g. "30 Dec".
 #: src/library/header_format.rs:84 src/library/map/nearby.rs:129
 msgid "%-d %b"
-msgstr ""
+msgstr "%-d %b"
 
 #: src/library/header_format.rs:106
 #, rust-format
 msgid "Shared with {n} person"
 msgid_plural "Shared with {n} people"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} व्यक्ति के साथ साझा किया गया"
+msgstr[1] "{n} लोगों के साथ साझा किया गया"
 
 #: src/library/header_format.rs:122
 #, rust-format
 msgid "Shared by {owner}"
-msgstr ""
+msgstr "{owner} द्वारा साझा किया गया"
 
 #: src/library/inbox.rs:56 src/library/inbox.rs:364
 #: src/library/window_layout.rs:329 src/settings_window/behavior.rs:116
@@ -2413,23 +2422,23 @@ msgstr "सूचनाएं"
 #: src/library/inbox.rs:76
 #, rust-format
 msgid "Notifications ({count} unread)"
-msgstr ""
+msgstr "सूचनाएँ ({count} बिना पढ़ी)"
 
 #: src/library/inbox.rs:180
 msgid "No Notifications"
-msgstr ""
+msgstr "कोई सूचना नहीं"
 
 #: src/library/inbox.rs:182
 msgid "Album invites and messages from Immich show up here."
-msgstr ""
+msgstr "एल्बम आमंत्रण और Immich के संदेश यहाँ दिखाई देते हैं।"
 
 #: src/library/inbox.rs:188
 msgid "Mark All Read"
-msgstr ""
+msgstr "सभी को पढ़ा हुआ चिह्नित करें"
 
 #: src/library/inbox.rs:235
 msgid "Couldn't Load Notifications"
-msgstr ""
+msgstr "सूचनाएँ लोड नहीं की जा सकीं"
 
 #: src/library/inbox.rs:237
 #, rust-format
@@ -2438,60 +2447,63 @@ msgid ""
 "\n"
 "Your API key needs the “{permission}” permission."
 msgstr ""
+"{err}\n"
+"\n"
+"आपकी API कुंजी को “{permission}” अनुमति की आवश्यकता है।"
 
 #: src/library/inbox.rs:273
 msgid "Dismiss"
-msgstr ""
+msgstr "खारिज करें"
 
 #: src/library/lightbox/albums.rs:29
 msgid "Appears In"
-msgstr ""
+msgstr "इसमें दिखाई देता है"
 
 #: src/library/lightbox/albums.rs:65
 #, rust-format
 msgid "Open “{album_name}”"
-msgstr ""
+msgstr "“{album_name}” खोलें"
 
 #: src/library/lightbox/details.rs:156 src/library/search_filters.rs:204
 msgid "Camera"
-msgstr ""
+msgstr "कैमरा"
 
 #: src/library/lightbox/details.rs:163
 msgid "Body"
-msgstr ""
+msgstr "बॉडी"
 
 #: src/library/lightbox/details.rs:174
 msgid "Lens"
-msgstr ""
+msgstr "लेंस"
 
 #: src/library/lightbox/details.rs:183 src/library/photo_editor/look.rs:37
 msgid "Exposure"
-msgstr ""
+msgstr "एक्सपोज़र"
 
 #: src/library/lightbox/details.rs:223
 msgid "Dimensions"
-msgstr ""
+msgstr "आयाम"
 
 #: src/library/lightbox/details.rs:232
 msgid "Size"
-msgstr ""
+msgstr "आकार"
 
 #: src/library/lightbox/details.rs:245 src/library/search_filters.rs:219
 msgid "Location"
-msgstr ""
+msgstr "स्थान"
 
 #: src/library/lightbox/details.rs:252 src/library/map/location_dialog.rs:512
 msgid "Place"
-msgstr ""
+msgstr "जगह"
 
 #: src/library/lightbox/details.rs:266
 msgid "Coordinates"
-msgstr ""
+msgstr "निर्देशांक"
 
 #: src/library/lightbox/details.rs:328
 #, rust-format
 msgid "ISO {iso}"
-msgstr ""
+msgstr "ISO {iso}"
 
 #: src/library/lightbox/details.rs:358 src/settings_window/library.rs:278
 #, rust-format
@@ -2506,370 +2518,370 @@ msgstr "{size} MB"
 #: src/library/lightbox/details.rs:368
 #, rust-format
 msgid "{size} KB"
-msgstr ""
+msgstr "{size} KB"
 
 #: src/library/lightbox/details.rs:372
 #, rust-format
 msgid "{size} B"
-msgstr ""
+msgstr "{size} B"
 
 #: src/library/lightbox/details.rs:451
 msgid "Modified"
-msgstr ""
+msgstr "संशोधित"
 
 #: src/library/lightbox/edit.rs:43
 msgid "Crop"
-msgstr ""
+msgstr "क्रॉप करें"
 
 #: src/library/lightbox/edit.rs:49
 msgid "Adjust"
-msgstr ""
+msgstr "समायोजित करें"
 
 #: src/library/lightbox/edit.rs:55 src/library/search_panel.rs:48
 #: src/library/search_panel.rs:105
 msgid "Filters"
-msgstr ""
+msgstr "फ़िल्टर"
 
 #: src/library/lightbox/edit.rs:61
 msgid "Redact"
-msgstr ""
+msgstr "छिपाएँ"
 
 #: src/library/lightbox/edit.rs:276
 msgid "Couldn't load the photo"
-msgstr ""
+msgstr "फ़ोटो लोड नहीं की जा सकी"
 
 #: src/library/lightbox/edit.rs:438
 msgid "Saving a copy…"
-msgstr ""
+msgstr "प्रतिलिपि सहेजी जा रही है…"
 
 #: src/library/lightbox/edit.rs:440
 msgid "Saves a copy stacked with the original"
-msgstr ""
+msgstr "मूल के साथ स्टैक की गई प्रतिलिपि सहेजता है"
 
 #: src/library/lightbox/edit.rs:441
 msgid "Saves as a new photo"
-msgstr ""
+msgstr "नई फ़ोटो के रूप में सहेजता है"
 
 #: src/library/lightbox/edit/looks.rs:160
 #, rust-format
 msgid "{degrees}°"
-msgstr ""
+msgstr "{degrees}°"
 
 #: src/library/lightbox/edit/looks.rs:168
 #, rust-format
 msgid "{percent}%"
-msgstr ""
+msgstr "{percent}%"
 
 #: src/library/lightbox/edit/pages.rs:53
 msgid "Pixelate"
-msgstr ""
+msgstr "पिक्सेलेट करें"
 
 #: src/library/lightbox/edit/pages.rs:54
 msgid "Blur"
-msgstr ""
+msgstr "धुंधला करें"
 
 #: src/library/lightbox/edit/pages.rs:55
 msgid "Frosted"
-msgstr ""
+msgstr "फ़्रॉस्टेड"
 
 #: src/library/lightbox/edit/pages.rs:56
 msgid "Bar"
-msgstr ""
+msgstr "पट्टी"
 
 #: src/library/lightbox/edit/pages.rs:64
 msgid "Straighten"
-msgstr ""
+msgstr "सीधा करें"
 
 #: src/library/lightbox/edit/pages.rs:110
 msgid "Strength"
-msgstr ""
+msgstr "तीव्रता"
 
 #: src/library/lightbox/edit/pages.rs:125
 msgid "Drag over what to hide. Tap a box to move, resize, or change it."
-msgstr ""
+msgstr "जिसे छिपाना है उस पर खींचें (ड्रैग करें)। किसी बॉक्स को स्थानांतरित करने, आकार बदलने या बदलने के लिए उस पर टैप करें।"
 
 #: src/library/lightbox/edit/pages.rs:135
 msgid "Hide Faces"
-msgstr ""
+msgstr "चेहरे छिपाएँ"
 
 #: src/library/lightbox/edit/pages.rs:136
 msgid "Hide Text"
-msgstr ""
+msgstr "टेक्स्ट छिपाएँ"
 
 #: src/library/lightbox/edit/pages.rs:143
 msgid "Clear All"
-msgstr ""
+msgstr "सभी साफ़ करें"
 
 #: src/library/lightbox/edit/pages.rs:171
 #: src/library/lightbox/edit/pages.rs:177
 msgid "Bar Colour"
-msgstr ""
+msgstr "पट्टी का रंग"
 
 #: src/library/lightbox/edit/pages.rs:255
 msgid "Rotate Left"
-msgstr ""
+msgstr "बाएँ घुमाएँ"
 
 #: src/library/lightbox/edit/pages.rs:260
 msgid "Rotate Right"
-msgstr ""
+msgstr "दाएँ घुमाएँ"
 
 #: src/library/lightbox/edit/pages.rs:263
 msgid "Mirror"
-msgstr ""
+msgstr "मिरर करें"
 
 #: src/library/lightbox/edit/pages.rs:266
 msgid "Flip"
-msgstr ""
+msgstr "पलटें"
 
 #: src/library/lightbox/edit/panel.rs:54 src/library/search_panel.rs:72
 msgid "Reset"
-msgstr ""
+msgstr "रीसेट करें"
 
 #: src/library/lightbox/edit/panel.rs:107
 msgid "Reset All"
-msgstr ""
+msgstr "सभी रीसेट करें"
 
 #: src/library/lightbox/edit/panel.rs:108
 msgid "Revert to Original…"
-msgstr ""
+msgstr "मूल स्थिति में वापस लाएँ…"
 
 #: src/library/lightbox/edit/panel.rs:111 src/library/lightbox/widgets.rs:294
 msgid "Edit Photo"
-msgstr ""
+msgstr "फ़ोटो संपादित करें"
 
 #: src/library/lightbox/edit/panel.rs:169
 msgid "Keep Original Details"
-msgstr ""
+msgstr "मूल विवरण बनाए रखें"
 
 #: src/library/lightbox/edit/panel.rs:171
 msgid ""
 "A saved copy keeps the original's camera details, date, place, caption, "
 "rating, and albums. Off, the copy is a new photo of its own."
-msgstr ""
+msgstr "सहेजी गई प्रतिलिपि में मूल के कैमरा विवरण, तिथि, स्थान, शीर्षक, रेटिंग और एल्बम सुरक्षित रहते हैं। बंद होने पर, प्रतिलिपि अपने आप में एक नई फ़ोटो होती है।"
 
 #: src/library/lightbox/edit/panel.rs:176
 msgid "Stack with Original"
-msgstr ""
+msgstr "मूल के साथ स्टैक करें"
 
 #: src/library/lightbox/edit/panel.rs:177
 msgid "A saved copy becomes the cover of a stack, with the original under it."
-msgstr ""
+msgstr "सहेजी गई प्रतिलिपि स्टैक का कवर बन जाती है, और मूल उसके नीचे होती है।"
 
 #: src/library/lightbox/edit/saving.rs:73
 msgid "Revert to the Original?"
-msgstr ""
+msgstr "मूल स्थिति में वापस लाएँ?"
 
 #: src/library/lightbox/edit/saving.rs:74
 msgid "Every crop, turn, and flip made in Immich is removed."
-msgstr ""
+msgstr "Immich में किया गया प्रत्येक क्रॉप, घुमाव और पलट हटा दिया जाता है।"
 
 #: src/library/lightbox/edit/saving.rs:75
 msgid "Revert"
-msgstr ""
+msgstr "वापस लाएँ"
 
 #: src/library/lightbox/edit/saving.rs:96
 msgid "Immich didn't save the edit"
-msgstr ""
+msgstr "Immich ने संपादन को नहीं सहेजा"
 
 #: src/library/lightbox/edit/saving.rs:104
 msgid "Saved. Immich is updating the photo."
-msgstr ""
+msgstr "सहेजा गया। Immich फ़ोटो को अपडेट कर रहा है।"
 
 #: src/library/lightbox/edit/saving.rs:153
 msgid "Couldn't save the copy"
-msgstr ""
+msgstr "प्रतिलिपि सहेजी नहीं जा सकी"
 
 #: src/library/lightbox/edit/saving.rs:178
 msgid "Couldn't open the original"
-msgstr ""
+msgstr "मूल फ़ाइल खोली नहीं जा सकी"
 
 #: src/library/lightbox/edit/saving.rs:220
 msgid "Saved as a new photo, but not everything carried over"
-msgstr ""
+msgstr "नई फ़ोटो के रूप में सहेजा गया, लेकिन सब कुछ स्थानांतरित नहीं हुआ"
 
 #: src/library/lightbox/edit/saving.rs:224
 msgid "Saved as a new photo, stacked with the original"
-msgstr ""
+msgstr "नई फ़ोटो के रूप में सहेजा गया, मूल के साथ स्टैक किया गया"
 
 #: src/library/lightbox/edit/saving.rs:225
 msgid "Saved as a new photo"
-msgstr ""
+msgstr "नई फ़ोटो के रूप में सहेजा गया"
 
 #: src/library/lightbox/edit/saving.rs:270
 msgid "Couldn't add it to the original's albums"
-msgstr ""
+msgstr "इसे मूल के एल्बम में जोड़ा नहीं जा सका"
 
 #: src/library/lightbox/face_people.rs:185 src/library/lightbox/faces.rs:296
 msgid "Change Person…"
-msgstr ""
+msgstr "व्यक्ति बदलें…"
 
 #: src/library/lightbox/face_people.rs:196
 msgid "Remove from Photo"
-msgstr ""
+msgstr "फ़ोटो से हटाएँ"
 
 #: src/library/lightbox/face_people.rs:221 src/library/lightbox/faces.rs:305
 msgid "Face moved"
-msgstr ""
+msgstr "चेहरा स्थानांतरित किया गया"
 
 #: src/library/lightbox/face_people.rs:240 src/library/lightbox/faces.rs:336
 msgid "Face removed"
-msgstr ""
+msgstr "चेहरा हटाया गया"
 
 #: src/library/lightbox/faces.rs:43
 msgid "Drag around a face to tag it"
-msgstr ""
+msgstr "चेहरे को टैग करने के लिए उसके चारों ओर खींचें"
 
 #: src/library/lightbox/faces.rs:48
 msgid "Done"
-msgstr ""
+msgstr "पूर्ण"
 
 #: src/library/lightbox/faces.rs:217
 msgid "Couldn't load the faces"
-msgstr ""
+msgstr "चेहरे लोड नहीं किए जा सके"
 
 #: src/library/lightbox/faces.rs:227
 msgid "No faces yet. Drag around one to tag it."
-msgstr ""
+msgstr "अभी तक कोई चेहरा नहीं है। किसी को टैग करने के लिए उसके चारों ओर खींचें।"
 
 #: src/library/lightbox/faces.rs:298
 msgid "Choose Person…"
-msgstr ""
+msgstr "व्यक्ति चुनें…"
 
 #: src/library/lightbox/faces.rs:315
 msgid "Use as Cover Photo"
-msgstr ""
+msgstr "कवर फ़ोटो के रूप में उपयोग करें"
 
 #: src/library/lightbox/faces.rs:323
 msgid "Cover photo changed"
-msgstr ""
+msgstr "कवर फ़ोटो बदल दी गई"
 
 #: src/library/lightbox/faces.rs:332
 msgid "Remove Face"
-msgstr ""
+msgstr "चेहरा हटाएँ"
 
 #: src/library/lightbox/faces.rs:375
 msgid "Face tagged"
-msgstr ""
+msgstr "चेहरा टैग किया गया"
 
 #: src/library/lightbox/faces.rs:398
 msgid "Immich didn't accept the change"
-msgstr ""
+msgstr "Immich ने बदलाव स्वीकार नहीं किया"
 
 #: src/library/lightbox/faces.rs:426
 msgid "Unknown Person"
-msgstr ""
+msgstr "अज्ञात व्यक्ति"
 
 #: src/library/lightbox/interaction.rs:225 src/library/lightbox/widgets.rs:343
 msgid "Raw"
-msgstr ""
+msgstr "रॉ"
 
 #: src/library/lightbox/interaction.rs:227 src/library/lightbox/widgets.rs:345
 msgid "Prev"
-msgstr ""
+msgstr "पिछला"
 
 #: src/library/lightbox/interaction.rs:329
 msgid "Add a description"
-msgstr ""
+msgstr "विवरण जोड़ें"
 
 #: src/library/lightbox/interaction/rendering.rs:92
 msgid "On Immich and locally"
-msgstr ""
+msgstr "Immich पर और स्थानीय रूप से"
 
 #: src/library/lightbox/interaction/rendering.rs:93
 msgid "Local only"
-msgstr ""
+msgstr "केवल स्थानीय"
 
 #: src/library/lightbox/interaction/rendering.rs:94
 msgid "On Immich only"
-msgstr ""
+msgstr "केवल Immich पर"
 
 #: src/library/lightbox/interaction/rendering.rs:100
 #, rust-format
 msgid "Created: {date}"
-msgstr ""
+msgstr "निर्मित: {date}"
 
 #: src/library/lightbox/live.rs:16
 msgid "Live"
-msgstr ""
+msgstr "लाइव"
 
 #: src/library/lightbox/live.rs:19
 msgid "Play motion (Space)"
-msgstr ""
+msgstr "मोशन चलाएँ (Space)"
 
 #: src/library/lightbox/live.rs:86 src/library/lightbox/video.rs:87
 msgid "Playback isn't available"
-msgstr ""
+msgstr "प्लेबैक उपलब्ध नहीं है"
 
 #: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
 #: src/library/lightbox/video.rs:108
 msgid "Playback failed"
-msgstr ""
+msgstr "प्लेबैक विफल रहा"
 
 #: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
 msgid "Not connected to the Immich server."
-msgstr ""
+msgstr "Immich सर्वर से कनेक्ट नहीं है।"
 
 #: src/library/lightbox/location.rs:32
 msgid "Set location"
-msgstr ""
+msgstr "स्थान सेट करें"
 
 #: src/library/lightbox/location.rs:66
 msgid "Copy coordinates"
-msgstr ""
+msgstr "निर्देशांक कॉपी करें"
 
 #: src/library/lightbox/ocr.rs:21 src/library/lightbox/ocr.rs:292
 msgid "Copy All Text"
-msgstr ""
+msgstr "सभी टेक्स्ट कॉपी करें"
 
 #: src/library/lightbox/ocr.rs:64
 msgid "Hide recognized text (T)"
-msgstr ""
+msgstr "पहचाना गया टेक्स्ट छिपाएँ (T)"
 
 #: src/library/lightbox/ocr.rs:66 src/library/lightbox/widgets.rs:352
 msgid "Show recognized text (T)"
-msgstr ""
+msgstr "पहचाना गया टेक्स्ट दिखाएँ (T)"
 
 #: src/library/lightbox/ocr.rs:250 src/library/shared_link_qr.rs:125
 msgid "Copied"
-msgstr ""
+msgstr "कॉपी किया गया"
 
 #: src/library/lightbox/ocr.rs:290
 msgid "Copy Selected Text"
-msgstr ""
+msgstr "चयनित टेक्स्ट कॉपी करें"
 
 #: src/library/lightbox/panorama.rs:265
 msgid "360°"
-msgstr ""
+msgstr "360°"
 
 #: src/library/lightbox/panorama.rs:266
 msgid "Look around (P)"
-msgstr ""
+msgstr "चारों ओर देखें (P)"
 
 #: src/library/lightbox/people.rs:65
 msgid "No one is tagged yet."
-msgstr ""
+msgstr "अभी तक किसी को टैग नहीं किया गया है।"
 
 #: src/library/lightbox/people.rs:215 src/library/people_view.rs:262
 #, rust-format
 msgid "Show photos of {name}"
-msgstr ""
+msgstr "{name} की फ़ोटो दिखाएँ"
 
 #: src/library/lightbox/people.rs:237
 #, rust-format
 msgid "Age {months}"
-msgstr ""
+msgstr "आयु {months}"
 
 #: src/library/lightbox/people.rs:239
 #, rust-format
 msgid "Age 1 year, {months}"
-msgstr ""
+msgstr "आयु 1 वर्ष, {months}"
 
 #: src/library/lightbox/people.rs:255
 #, rust-format
 msgid "{n} month"
 msgid_plural "{n} months"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} महीना"
+msgstr[1] "{n} महीने"
 
 #: src/library/lightbox/rating.rs:28 src/library/search_filters/choices.rs:134
 #: src/library/search_view.rs:162 src/settings_window/library.rs:224
@@ -2879,244 +2891,244 @@ msgstr "साफ़ करें"
 
 #: src/library/lightbox/rating.rs:33
 msgid "Rating"
-msgstr ""
+msgstr "रेटिंग"
 
 #: src/library/lightbox/rating.rs:128
 msgid "Couldn't save the rating"
-msgstr ""
+msgstr "रेटिंग सहेजी नहीं जा सकी"
 
 #: src/library/lightbox/slideshow.rs:85 src/library/lightbox/slideshow.rs:251
 #: src/library/video_player.rs:315
 msgid "Pause (Space)"
-msgstr ""
+msgstr "रोकें (Space)"
 
 #: src/library/lightbox/slideshow.rs:86 src/library/lightbox/widgets.rs:150
 msgid "Previous (Left)"
-msgstr ""
+msgstr "पिछला (Left)"
 
 #: src/library/lightbox/slideshow.rs:87 src/library/lightbox/widgets.rs:151
 msgid "Next (Right)"
-msgstr ""
+msgstr "अगला (Right)"
 
 #: src/library/lightbox/slideshow.rs:90
 msgid "Slideshow Settings"
-msgstr ""
+msgstr "स्लाइडशो सेटिंग्स"
 
 #: src/library/lightbox/slideshow.rs:93
 msgid "End Slideshow (Esc)"
-msgstr ""
+msgstr "स्लाइडशो समाप्त करें (Esc)"
 
 #: src/library/lightbox/slideshow.rs:249
 msgid "Resume (Space)"
-msgstr ""
+msgstr "फिर से शुरू करें (Space)"
 
 #: src/library/lightbox/slideshow.rs:422
 msgid "End of slideshow"
-msgstr ""
+msgstr "स्लाइडशो का अंत"
 
 #: src/library/lightbox/slideshow/options.rs:40
 msgid "Crossfade"
-msgstr ""
+msgstr "क्रॉसफ़ेड"
 
 #: src/library/lightbox/slideshow/options.rs:41
 msgid "Slide"
-msgstr ""
+msgstr "स्लाइड"
 
 #: src/library/lightbox/slideshow/options.rs:42
 msgid "None"
-msgstr ""
+msgstr "कोई नहीं"
 
 #: src/library/lightbox/slideshow/settings.rs:19
 msgid "Shuffle"
-msgstr ""
+msgstr "शफ़ल"
 
 #: src/library/lightbox/slideshow/settings.rs:20
 msgid "Repeat"
-msgstr ""
+msgstr "दोहराएँ"
 
 #: src/library/lightbox/slideshow/settings.rs:65
 msgid "Seconds per Photo"
-msgstr ""
+msgstr "प्रति फ़ोटो सेकंड"
 
 #: src/library/lightbox/slideshow/settings.rs:80
 msgid "Transition"
-msgstr ""
+msgstr "ट्रांज़िशन"
 
 #: src/library/lightbox/stack.rs:46
 msgid "Stack Actions"
-msgstr ""
+msgstr "स्टैक क्रियाएँ"
 
 #: src/library/lightbox/stack.rs:273
 msgid "Set as Stack Cover"
-msgstr ""
+msgstr "स्टैक कवर के रूप में सेट करें"
 
 #: src/library/lightbox/stack.rs:280
 msgid "Remove from Stack"
-msgstr ""
+msgstr "स्टैक से हटाएँ"
 
 #: src/library/lightbox/stack.rs:288 src/library/lightbox/stack.rs:465
 msgid "Unstack"
-msgstr ""
+msgstr "अनस्टैक करें"
 
 #: src/library/lightbox/stack.rs:299
 msgid "Keep This, Trash Others"
-msgstr ""
+msgstr "इसे रखें, अन्य को ट्रैश में भेजें"
 
 #: src/library/lightbox/stack.rs:301
 msgid "Keep This, Delete Others"
-msgstr ""
+msgstr "इसे रखें, अन्य को हटाएँ"
 
 #: src/library/lightbox/stack.rs:348 src/library/lightbox/stack.rs:388
 #: src/library/lightbox/stack.rs:476
 msgid "Couldn't change the stack"
-msgstr ""
+msgstr "स्टैक बदला नहीं जा सका"
 
 #: src/library/lightbox/stack.rs:403
 msgid "Stack cover changed"
-msgstr ""
+msgstr "स्टैक कवर बदल दिया गया"
 
 #: src/library/lightbox/stack.rs:408
 msgid "Removed from the stack"
-msgstr ""
+msgstr "स्टैक से हटा दिया गया"
 
 #: src/library/lightbox/stack.rs:412 src/library/lightbox/stack.rs:473
 msgid "Unstacked"
-msgstr ""
+msgstr "अनस्टैक किया गया"
 
 #: src/library/lightbox/stack.rs:424
 #, rust-format
 msgid "Trashed {n} other photo"
 msgid_plural "Trashed {n} other photos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "अन्य {n} फ़ोटो ट्रैश में भेजी गई"
+msgstr[1] "अन्य {n} फ़ोटो ट्रैश में भेजी गईं"
 
 #: src/library/lightbox/stack.rs:430
 #, rust-format
 msgid "Deleted {n} other photo"
 msgid_plural "Deleted {n} other photos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "अन्य {n} फ़ोटो हटाई गई"
+msgstr[1] "अन्य {n} फ़ोटो हटाई गईं"
 
 #: src/library/lightbox/stack.rs:501 src/library/upload_stack.rs:122
 msgid "Couldn't stack the photos"
-msgstr ""
+msgstr "फ़ोटो को स्टैक नहीं किया जा सका"
 
 #: src/library/lightbox/stack.rs:510
 msgid "Stacked, see the timeline"
-msgstr ""
+msgstr "स्टैक किया गया, टाइमलाइन देखें"
 
 #: src/library/lightbox/stack.rs:513
 #, rust-format
 msgid "Stacked {n} photo"
 msgid_plural "Stacked {n} photos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो स्टैक की गई"
+msgstr[1] "{n} फ़ोटो स्टैक की गईं"
 
 #: src/library/lightbox/video.rs:121
 msgid "The video file is no longer on disk."
-msgstr ""
+msgstr "वीडियो फ़ाइल अब डिस्क पर मौजूद नहीं है।"
 
 #: src/library/lightbox/widgets.rs:142
 msgid "Back to library"
-msgstr ""
+msgstr "लाइब्रेरी पर वापस जाएँ"
 
 #: src/library/lightbox/widgets.rs:154
 msgid "Toggle details (I)"
-msgstr ""
+msgstr "विवरण टॉगल करें (I)"
 
 #: src/library/lightbox/widgets.rs:161
 msgid "More (Shift+F10)"
-msgstr ""
+msgstr "अधिक (Shift+F10)"
 
 #: src/library/lightbox/widgets.rs:242
 msgid "Preview unavailable"
-msgstr ""
+msgstr "पूर्वावलोकन अनुपलब्ध है"
 
 #: src/library/lightbox/widgets.rs:252
 msgid "Open in external app"
-msgstr ""
+msgstr "बाहरी ऐप में खोलें"
 
 #: src/library/lightbox/widgets.rs:286
 msgid "Play video (Space)"
-msgstr ""
+msgstr "वीडियो चलाएँ (Space)"
 
 #: src/library/lightbox/widgets.rs:297
 msgid "Download asset"
-msgstr ""
+msgstr "एसेट डाउनलोड करें"
 
 #: src/library/lightbox/widgets.rs:298
 msgid "Open with…"
-msgstr ""
+msgstr "इसके साथ खोलें…"
 
 #: src/library/lightbox/widgets.rs:299
 msgid "Move to trash (Delete)"
-msgstr ""
+msgstr "ट्रैश में भेजें (Delete)"
 
 #: src/library/lightbox/widgets.rs:347
 msgid "Toggle preview vs original full-resolution image"
-msgstr ""
+msgstr "पूर्वावलोकन बनाम मूल पूर्ण-रिज़ॉल्यूशन छवि टॉगल करें"
 
 #: src/library/lightbox/widgets.rs:359
 msgid "Zoom out (Ctrl+-)"
-msgstr ""
+msgstr "ज़ूम आउट (Ctrl+-)"
 
 #: src/library/lightbox/widgets.rs:360
 msgid "Zoom in (Ctrl++)"
-msgstr ""
+msgstr "ज़ूम इन (Ctrl++)"
 
 #: src/library/lightbox/widgets.rs:363
 msgid "Reset zoom (Ctrl+0)"
-msgstr ""
+msgstr "ज़ूम रीसेट करें (Ctrl+0)"
 
 #: src/library/lightbox/widgets.rs:452
 msgid "Loading details…"
-msgstr ""
+msgstr "विवरण लोड हो रहा है…"
 
 #: src/library/map/album.rs:35
 msgid "Show all photos"
-msgstr ""
+msgstr "सभी फ़ोटो दिखाएँ"
 
 #: src/library/map/controls.rs:41 src/library/shortcuts_dialog.rs:162
 #: src/library/shortcuts_dialog.rs:237
 msgid "Zoom in"
-msgstr ""
+msgstr "ज़ूम इन"
 
 #: src/library/map/controls.rs:42 src/library/shortcuts_dialog.rs:166
 #: src/library/shortcuts_dialog.rs:238
 msgid "Zoom out"
-msgstr ""
+msgstr "ज़ूम आउट"
 
 #: src/library/map/controls.rs:45 src/library/shortcuts_dialog.rs:239
 msgid "Rotate left"
-msgstr ""
+msgstr "बाएँ घुमाएँ"
 
 #: src/library/map/controls.rs:46 src/library/shortcuts_dialog.rs:240
 msgid "Rotate right"
-msgstr ""
+msgstr "दाएँ घुमाएँ"
 
 #: src/library/map/controls.rs:51
 msgid "Show photos in this area"
-msgstr ""
+msgstr "इस क्षेत्र में फ़ोटो दिखाएँ"
 
 #: src/library/map/controls.rs:53 src/library/shortcuts_dialog.rs:242
 msgid "Show my location"
-msgstr ""
+msgstr "मेरा स्थान दिखाएँ"
 
 #: src/library/map/controls.rs:55
 msgid "Map settings"
-msgstr ""
+msgstr "मानचित्र सेटिंग्स"
 
 #: src/library/map/controls.rs:104
 msgid "Map style"
-msgstr ""
+msgstr "मानचित्र शैली"
 
 #: src/library/map/controls.rs:130 src/library/shortcuts_dialog.rs:241
 msgid "Point north"
-msgstr ""
+msgstr "उत्तर की ओर इंगित करें"
 
 #: src/library/map/controls.rs:153
 msgid "More Styles"
-msgstr ""
+msgstr "अधिक शैलियाँ"
 
 #: src/library/map/controls.rs:158 src/settings_window/appearance.rs:18
 msgid "Appearance"
@@ -3124,181 +3136,181 @@ msgstr "रूप-रंग"
 
 #: src/library/map/controls.rs:289
 msgid "No photos in this area"
-msgstr ""
+msgstr "इस क्षेत्र में कोई फ़ोटो नहीं है"
 
 #: src/library/map/controls.rs:300
 msgid "Your location isn't available"
-msgstr ""
+msgstr "आपका स्थान उपलब्ध नहीं है"
 
 #: src/library/map/locate.rs:19
 msgid "The location service did not answer in time."
-msgstr ""
+msgstr "स्थान सेवा ने समय पर उत्तर नहीं दिया।"
 
 #: src/library/map/locate.rs:43
 #, rust-format
 msgid "Location access was not allowed ({err})."
-msgstr ""
+msgstr "स्थान एक्सेस की अनुमति नहीं थी ({err})।"
 
 #: src/library/map/locate.rs:49
 msgid "The location service stopped before finding you."
-msgstr ""
+msgstr "आपको ढूँढने से पहले स्थान सेवा बंद हो गई।"
 
 #: src/library/map/locate.rs:51
 msgid "The location service returned an invalid position."
-msgstr ""
+msgstr "स्थान सेवा ने एक अमान्य स्थिति दी।"
 
 #: src/library/map/locate.rs:56
 #, rust-format
 msgid ""
 "Location services are unavailable ({err}). Check that they are turned on."
-msgstr ""
+msgstr "स्थान सेवाएँ अनुपलब्ध हैं ({err})। जाँचें कि वे चालू हैं।"
 
 #: src/library/map/location_dialog.rs:118
 #: src/library/map/location_dialog.rs:127
 msgid "Set Location"
-msgstr ""
+msgstr "स्थान सेट करें"
 
 #: src/library/map/location_dialog.rs:165
 msgid "Could Not Set Location"
-msgstr ""
+msgstr "स्थान सेट नहीं किया जा सका"
 
 #: src/library/map/location_dialog.rs:204 src/library/map/search.rs:34
 #: src/library/shortcuts_dialog.rs:236
 msgid "Search places"
-msgstr ""
+msgstr "स्थान खोजें"
 
 #: src/library/map/location_dialog.rs:287
 msgid "Looking up…"
-msgstr ""
+msgstr "खोजा जा रहा है…"
 
 #: src/library/map/location_dialog.rs:309
 msgid "No place name here"
-msgstr ""
+msgstr "यहाँ कोई स्थान नाम नहीं है"
 
 #: src/library/map/location_dialog.rs:312
 msgid "Place name unavailable"
-msgstr ""
+msgstr "स्थान का नाम अनुपलब्ध है"
 
 #: src/library/map/location_dialog.rs:497
 msgid "Latitude, Longitude"
-msgstr ""
+msgstr "अक्षांश, रेखांश"
 
 #: src/library/map/location_dialog.rs:501
 msgid "Paste coordinates"
-msgstr ""
+msgstr "निर्देशांक पेस्ट करें"
 
 #: src/library/map/markers.rs:92
 msgid "You are here"
-msgstr ""
+msgstr "आप यहाँ हैं"
 
 #: src/library/map/markers.rs:118
 #, rust-format
 msgid "{n} photo in {place}"
 msgid_plural "{n} photos in {place}"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{place} में {n} फ़ोटो"
+msgstr[1] "{place} में {n} फ़ोटो"
 
 #: src/library/map/minimap.rs:60
 msgid "Show on map"
-msgstr ""
+msgstr "मानचित्र पर दिखाएँ"
 
 #: src/library/map/minimap.rs:99
 msgid "Photo location"
-msgstr ""
+msgstr "फ़ोटो का स्थान"
 
 #: src/library/map/nearby.rs:141
 msgid "Taken Nearby"
-msgstr ""
+msgstr "आस-पास ली गई"
 
 #: src/library/map/place_search.rs:172
 #, rust-format
 msgid "Photon asked to wait {seconds} s"
-msgstr ""
+msgstr "Photon ने {seconds} सेकंड प्रतीक्षा करने को कहा"
 
 #: src/library/map/place_search.rs:267
 msgid "Searching…"
-msgstr ""
+msgstr "खोजा जा रहा है…"
 
 #: src/library/map/place_search.rs:335
 msgid "Address"
-msgstr ""
+msgstr "पता"
 
 #: src/library/map/satellite.rs:31 src/library/map/styles.rs:115
 msgid "Satellite"
-msgstr ""
+msgstr "उपग्रह"
 
 #: src/library/map/satellite.rs:155
 msgid "No satellite imagery here"
-msgstr ""
+msgstr "यहाँ कोई उपग्रह छवि नहीं है"
 
 #: src/library/map/satellite.rs:239
 msgid "Cancelled"
-msgstr ""
+msgstr "रद्द किया गया"
 
 #: src/library/map/satellite.rs:277
 #, rust-format
 msgid "VersaTiles asked to wait {seconds} s"
-msgstr ""
+msgstr "VersaTiles ने {seconds} सेकंड प्रतीक्षा करने को कहा"
 
 #: src/library/map/search.rs:213
 msgid "No places found"
-msgstr ""
+msgstr "कोई स्थान नहीं मिला"
 
 #: src/library/map/settings.rs:50
 msgid "All Time"
-msgstr ""
+msgstr "सभी समय"
 
 #: src/library/map/settings.rs:51
 msgid "Past 24 Hours"
-msgstr ""
+msgstr "पिछले 24 घंटे"
 
 #: src/library/map/settings.rs:52
 msgid "Past 7 Days"
-msgstr ""
+msgstr "पिछले 7 दिन"
 
 #: src/library/map/settings.rs:53
 msgid "Past 30 Days"
-msgstr ""
+msgstr "पिछले 30 दिन"
 
 #: src/library/map/settings.rs:54
 msgid "Past Year"
-msgstr ""
+msgstr "पिछला वर्ष"
 
 #: src/library/map/settings.rs:55
 msgid "Past 3 Years"
-msgstr ""
+msgstr "पिछले 3 वर्ष"
 
 #: src/library/map/settings.rs:56
 msgid "Custom Range"
-msgstr ""
+msgstr "कस्टम सीमा"
 
 #: src/library/map/settings.rs:84
 msgid "Only Favorites"
-msgstr ""
+msgstr "केवल पसंदीदा"
 
 #: src/library/map/settings.rs:86
 msgid "Include Archived"
-msgstr ""
+msgstr "संग्रहीत शामिल करें"
 
 #: src/library/map/settings.rs:87
 msgid "Your archived photos"
-msgstr ""
+msgstr "आपकी संग्रहीत फ़ोटो"
 
 #: src/library/map/settings.rs:91
 msgid "Include Partners"
-msgstr ""
+msgstr "पार्टनर शामिल करें"
 
 #: src/library/map/settings.rs:92
 msgid "Photos partners share with you"
-msgstr ""
+msgstr "फ़ोटो जो पार्टनर आपके साथ साझा करते हैं"
 
 #: src/library/map/settings.rs:96
 msgid "Include Shared Albums"
-msgstr ""
+msgstr "साझा एल्बम शामिल करें"
 
 #: src/library/map/settings.rs:97
 msgid "Photos in albums shared with you"
-msgstr ""
+msgstr "आपके साथ साझा किए गए एल्बम की फ़ोटो"
 
 #: src/library/map/settings.rs:101 src/library/utilities/controls.rs:97
 #: src/settings_window/behavior.rs:140
@@ -3312,51 +3324,51 @@ msgstr "तक"
 
 #: src/library/map/settings.rs:149
 msgid "Map Settings"
-msgstr ""
+msgstr "मानचित्र सेटिंग्स"
 
 #: src/library/map/settings.rs:173 src/library/utilities/controls.rs:109
 msgid "Show"
-msgstr ""
+msgstr "दिखाएँ"
 
 #: src/library/map/settings.rs:180
 msgid "Date Range"
-msgstr ""
+msgstr "तारीख़ सीमा"
 
 #: src/library/map/status.rs:29
 msgid "Loading Map…"
-msgstr ""
+msgstr "मानचित्र लोड हो रहा है…"
 
 #: src/library/map/status.rs:31
 msgid "No Photos With a Location"
-msgstr ""
+msgstr "स्थान वाली कोई फ़ोटो नहीं"
 
 #: src/library/map/status.rs:32
 msgid "Photos with GPS data, or a location you set, appear here"
-msgstr ""
+msgstr "GPS डेटा वाली फ़ोटो, या आपके द्वारा सेट किया गया स्थान, यहाँ दिखाई देते हैं"
 
 #: src/library/map/status.rs:34
 msgid "Could Not Load the Map"
-msgstr ""
+msgstr "मानचित्र लोड नहीं किया जा सका"
 
 #: src/library/map/styles.rs:99
 msgid "Colorful"
-msgstr ""
+msgstr "रंगीन"
 
 #: src/library/map/styles.rs:100
 msgid "Natural"
-msgstr ""
+msgstr "प्राकृतिक"
 
 #: src/library/map/styles.rs:101
 msgid "Muted"
-msgstr ""
+msgstr "म्यूटेड"
 
 #: src/library/map/styles.rs:102
 msgid "Gray"
-msgstr ""
+msgstr "ग्रे"
 
 #: src/library/map/styles.rs:118
 msgid "Humanitarian"
-msgstr ""
+msgstr "मानवीय"
 
 #: src/library/map/styles.rs:181 src/library/theme.rs:20
 #: src/settings_window/appearance.rs:21
@@ -3375,467 +3387,467 @@ msgstr "गहरा"
 
 #: src/library/map/view.rs:230
 msgid "This Area"
-msgstr ""
+msgstr "यह क्षेत्र"
 
 #: src/library/map/view.rs:494
 msgid "Map Area"
-msgstr ""
+msgstr "मानचित्र क्षेत्र"
 
 #: src/library/masonry/canvas.rs:532 src/library/server_stats_dialog.rs:156
 #: src/library/server_stats_dialog.rs:157
 #: src/library/source_loading/explore.rs:56
 msgid "HTTP 403"
-msgstr ""
+msgstr "HTTP 403"
 
 #: src/library/masonry/canvas/interaction.rs:272
 #, rust-format
 msgid "{n} file"
 msgid_plural "{n} files"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ाइल"
+msgstr[1] "{n} फ़ाइलें"
 
 #: src/library/masonry/canvas_helpers.rs:139
 msgid ""
 "Your API key is missing permissions required to view thumbnails. Please "
 "ensure the key has 'asset.view' enabled."
-msgstr ""
+msgstr "थंबनेल देखने के लिए आवश्यक अनुमतियाँ आपकी API कुंजी में मौजूद नहीं हैं। कृपया सुनिश्चित करें कि कुंजी में 'asset.view' सक्षम है।"
 
 #: src/library/memories.rs:154
 #, rust-format
 msgid "{name}'s birthday"
-msgstr ""
+msgstr "{name} का जन्मदिन"
 
 #: src/library/memories.rs:162
 #, rust-format
 msgid "{n} year ago"
 msgid_plural "{n} years ago"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} वर्ष पहले"
+msgstr[1] "{n} वर्ष पहले"
 
 #: src/library/memories.rs:165
 msgid "This year"
-msgstr ""
+msgstr "इस वर्ष"
 
 #: src/library/memories.rs:166
 msgid "Memory"
-msgstr ""
+msgstr "यादें"
 
 #: src/library/memories.rs:277
 msgid "Remove from Memory"
-msgstr ""
+msgstr "यादों से हटाएँ"
 
 #: src/library/memories.rs:306
 msgid "Removed from this memory"
-msgstr ""
+msgstr "इस याद से हटाया गया"
 
 #: src/library/memories.rs:308
 msgid "Couldn't change the memory"
-msgstr ""
+msgstr "याद बदली नहीं जा सकी"
 
 #: src/library/mod.rs:407
 msgid "Drop files to upload"
-msgstr ""
+msgstr "अपलोड करने के लिए फ़ाइलें यहाँ छोड़ें"
 
 #: src/library/navigation.rs:201 src/library/sidebar/rows.rs:76
 msgid "Shared Albums"
-msgstr ""
+msgstr "साझा एल्बम"
 
 #: src/library/navigation.rs:202 src/library/sidebar/rows.rs:82
 msgid "Shared Links"
-msgstr ""
+msgstr "साझा लिंक"
 
 #: src/library/navigation.rs:206 src/library/shortcuts_dialog.rs:65
 #: src/library/sidebar/rows.rs:88
 msgid "Sharing"
-msgstr ""
+msgstr "साझाकरण"
 
 #: src/library/navigation.rs:207 src/library/search_panel.rs:77
 #: src/library/search_view.rs:166 src/library/shortcuts_dialog.rs:33
 #: src/library/sidebar/rows.rs:46
 msgid "Search"
-msgstr ""
+msgstr "खोजें"
 
 #: src/library/navigation.rs:209 src/library/sidebar/rows.rs:124
 msgid "Duplicates"
-msgstr ""
+msgstr "डुप्लिकेट"
 
 #: src/library/people_view.rs:68 src/library/person_merge_dialog.rs:67
 msgid "Search people"
-msgstr ""
+msgstr "लोगों को खोजें"
 
 #: src/library/people_view.rs:73 src/library/people_view.rs:117
 msgid "Show hidden people"
-msgstr ""
+msgstr "छिपे हुए लोग दिखाएँ"
 
 #: src/library/people_view.rs:115
 msgid "Hide hidden people"
-msgstr ""
+msgstr "छिपे हुए लोग छिपाएँ"
 
 #: src/library/people_view.rs:137 src/library/person_merge_dialog.rs:31
 msgid "Could Not Load People"
-msgstr ""
+msgstr "लोग लोड नहीं किए जा सके"
 
 #: src/library/people_view.rs:161
 msgid "No People"
-msgstr ""
+msgstr "कोई लोग नहीं"
 
 #: src/library/people_view.rs:162
 msgid "People appear here once Immich has recognized faces in your photos."
-msgstr ""
+msgstr "जब Immich आपकी फ़ोटो में चेहरों को पहचान लेगा, तो लोग यहाँ दिखाई देंगे।"
 
 #: src/library/people_view.rs:166
 msgid "No Matches"
-msgstr ""
+msgstr "कोई मेल नहीं मिला"
 
 #: src/library/people_view.rs:167 src/library/sharing_view.rs:323
 msgid "No one matches your search."
-msgstr ""
+msgstr "आपकी खोज से कोई मेल नहीं खाता।"
 
 #: src/library/people_view.rs:320
 msgid "Add Name…"
-msgstr ""
+msgstr "नाम जोड़ें…"
 
 #: src/library/people_view.rs:325
 msgid "Unhide"
-msgstr ""
+msgstr "अनहाइड करें"
 
 #: src/library/people_view.rs:327
 msgid "Hide"
-msgstr ""
+msgstr "छिपाएँ"
 
 #: src/library/people_view.rs:339
 msgid "Set Birthday…"
-msgstr ""
+msgstr "जन्मदिन सेट करें…"
 
 #: src/library/people_view.rs:346
 msgid "Merge People…"
-msgstr ""
+msgstr "लोगों को मिलाएँ…"
 
 #: src/library/people_view.rs:375
 msgid "Could Not Update Person"
-msgstr ""
+msgstr "व्यक्ति को अपडेट नहीं किया जा सका"
 
 #: src/library/people_view.rs:422
 msgid "Add Name"
-msgstr ""
+msgstr "नाम जोड़ें"
 
 #: src/library/people_view.rs:424
 msgid "Rename Person"
-msgstr ""
+msgstr "व्यक्ति का नाम बदलें"
 
 #: src/library/people_view.rs:426
 msgid "This name is used in search and on the People page."
-msgstr ""
+msgstr "इस नाम का उपयोग खोज में और 'लोग' पृष्ठ पर किया जाता है।"
 
 #: src/library/people_view.rs:449
 msgid "Set Birthday"
-msgstr ""
+msgstr "जन्मदिन सेट करें"
 
 #: src/library/people_view.rs:451
 #, rust-format
 msgid "Immich shows {name}'s age on photos."
-msgstr ""
+msgstr "Immich फ़ोटो पर {name} की उम्र दिखाता है।"
 
 #: src/library/person_merge_dialog.rs:47 src/library/person_merge_dialog.rs:157
 msgid "Merge"
-msgstr ""
+msgstr "मिलाएँ"
 
 #: src/library/person_merge_dialog.rs:95
 #, rust-format
 msgid ""
 "Pick the people who are really {name}. Their faces move to {name} and "
 "they're removed. This can't be undone."
-msgstr ""
+msgstr "उन लोगों को चुनें जो वास्तव में {name} हैं। उनके चेहरे {name} में चले जाएँगे और उन्हें हटा दिया जाएगा। इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/person_merge_dialog.rs:124
 #, rust-format
 msgid "Merge Into {name}"
-msgstr ""
+msgstr "{name} में मिलाएँ"
 
 #: src/library/person_merge_dialog.rs:146
 #, rust-format
 msgid "Merge {count} person into {name}?"
 msgid_plural "Merge {count} people into {name}?"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} व्यक्ति को {name} में मिलाएँ?"
+msgstr[1] "{count} लोगों को {name} में मिलाएँ?"
 
 #: src/library/person_merge_dialog.rs:156
 msgid "This can't be undone."
-msgstr ""
+msgstr "इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/person_merge_dialog.rs:202
 msgid "Could Not Merge People"
-msgstr ""
+msgstr "लोगों को मिलाया नहीं जा सका"
 
 #: src/library/person_picker.rs:122
 msgid "Search or type a new name"
-msgstr ""
+msgstr "खोजें या नया नाम लिखें"
 
 #: src/library/person_picker.rs:138
 msgid "Create Person…"
-msgstr ""
+msgstr "व्यक्ति बनाएँ…"
 
 #: src/library/person_picker.rs:140
 msgid "Who Is This?"
-msgstr ""
+msgstr "यह कौन है?"
 
 #: src/library/person_picker.rs:156
 msgid "Back"
-msgstr ""
+msgstr "पीछे"
 
 #: src/library/person_picker.rs:161
 msgid "Create Person"
-msgstr ""
+msgstr "व्यक्ति बनाएँ"
 
 #: src/library/person_picker.rs:166
 msgid "Tag Face"
-msgstr ""
+msgstr "चेहरा टैग करें"
 
 #: src/library/photo_editor.rs:37
 msgid "Free"
-msgstr ""
+msgstr "मुक्त"
 
 #: src/library/photo_editor.rs:38 src/library/photo_editor/look.rs:130
 msgid "Original"
-msgstr ""
+msgstr "मूल"
 
 #: src/library/photo_editor.rs:39
 msgid "Square"
-msgstr ""
+msgstr "वर्गाकार"
 
 #: src/library/photo_editor/look.rs:38
 msgid "Brightness"
-msgstr ""
+msgstr "चमक"
 
 #: src/library/photo_editor/look.rs:39
 msgid "Contrast"
-msgstr ""
+msgstr "कंट्रास्ट"
 
 #: src/library/photo_editor/look.rs:40
 msgid "Highlights"
-msgstr ""
+msgstr "हाइलाइट्स"
 
 #: src/library/photo_editor/look.rs:41
 msgid "Shadows"
-msgstr ""
+msgstr "छाया"
 
 #: src/library/photo_editor/look.rs:42
 msgid "Saturation"
-msgstr ""
+msgstr "संतृप्ति"
 
 #: src/library/photo_editor/look.rs:43
 msgid "Warmth"
-msgstr ""
+msgstr "गर्माहट"
 
 #: src/library/photo_editor/look.rs:44
 msgid "Tint"
-msgstr ""
+msgstr "टिंट"
 
 #: src/library/photo_editor/look.rs:45
 msgid "Vignette"
-msgstr ""
+msgstr "विगनेट"
 
 #: src/library/photo_editor/look.rs:46
 msgid "Sharpen"
-msgstr ""
+msgstr "शार्पनेस"
 
 #: src/library/photo_editor/look.rs:133
 msgid "Vivid"
-msgstr ""
+msgstr "विविड"
 
 #: src/library/photo_editor/look.rs:142
 msgid "Warm"
-msgstr ""
+msgstr "वॉर्म"
 
 #: src/library/photo_editor/look.rs:151
 msgid "Cool"
-msgstr ""
+msgstr "कूल"
 
 #: src/library/photo_editor/look.rs:159
 msgid "Dramatic"
-msgstr ""
+msgstr "ड्रामैटिक"
 
 #: src/library/photo_editor/look.rs:171
 msgid "Fade"
-msgstr ""
+msgstr "फ़ेड"
 
 #: src/library/photo_editor/look.rs:181
 msgid "Vintage"
-msgstr ""
+msgstr "विंटेज"
 
 #: src/library/photo_editor/look.rs:192
 msgid "Mono"
-msgstr ""
+msgstr "मोनो"
 
 #: src/library/photo_editor/look.rs:200
 msgid "Noir"
-msgstr ""
+msgstr "नोइर"
 
 #: src/library/photo_editor/look.rs:211
 msgid "Sepia"
-msgstr ""
+msgstr "सीपिया"
 
 #: src/library/related.rs:20
 msgid "View Similar Photos"
-msgstr ""
+msgstr "समान फ़ोटो देखें"
 
 #: src/library/related.rs:29
 msgid "View in Timeline"
-msgstr ""
+msgstr "समयरेखा में देखें"
 
 #: src/library/search_filters.rs:59
 msgid "Text"
-msgstr ""
+msgstr "टेक्स्ट"
 
 #: src/library/search_filters.rs:62
 msgid "Filename contains"
-msgstr ""
+msgstr "फ़ाइल नाम में शामिल है"
 
 #: src/library/search_filters.rs:65
 msgid "Description contains"
-msgstr ""
+msgstr "विवरण में शामिल है"
 
 #: src/library/search_filters.rs:68
 msgid "OCR text contains"
-msgstr ""
+msgstr "OCR टेक्स्ट में शामिल है"
 
 #: src/library/search_filters.rs:79
 msgid "People, Tags, and Albums"
-msgstr ""
+msgstr "लोग, टैग और एल्बम"
 
 #: src/library/search_filters.rs:80
 msgid "Photos have to have everything you pick"
-msgstr ""
+msgstr "फ़ोटो में आपके द्वारा चुनी गई सभी चीजें होनी चाहिए"
 
 #: src/library/search_filters.rs:83
 msgid "Anyone"
-msgstr ""
+msgstr "कोई भी व्यक्ति"
 
 #: src/library/search_filters.rs:84 src/library/search_filters.rs:85
 #: src/library/search_filters.rs:123 src/library/search_filters.rs:135
 #: src/library/search_filters.rs:144 src/library/search_filters/suggest.rs:22
 #: src/library/search_filters/suggest.rs:47
 msgid "Any"
-msgstr ""
+msgstr "कोई भी"
 
 #: src/library/search_filters.rs:118
 msgid "Type and flags"
-msgstr ""
+msgstr "प्रकार और फ़्लैग"
 
 #: src/library/search_filters.rs:121
 msgid "Asset type"
-msgstr ""
+msgstr "एसेट प्रकार"
 
 #: src/library/search_filters.rs:124
 msgid "Image only"
-msgstr ""
+msgstr "केवल छवि"
 
 #: src/library/search_filters.rs:125
 msgid "Video only"
-msgstr ""
+msgstr "केवल वीडियो"
 
 #: src/library/search_filters.rs:128
 msgid "Favourites only"
-msgstr ""
+msgstr "केवल पसंदीदा"
 
 #: src/library/search_filters.rs:129
 msgid "Motion photos only"
-msgstr ""
+msgstr "केवल मोशन फ़ोटो"
 
 #: src/library/search_filters.rs:130
 msgid "Not in any album"
-msgstr ""
+msgstr "किसी भी एल्बम में नहीं"
 
 #: src/library/search_filters.rs:131
 msgid "Include deleted"
-msgstr ""
+msgstr "हटाए गए शामिल करें"
 
 #: src/library/search_filters.rs:133
 msgid "Visibility"
-msgstr ""
+msgstr "दृश्यता"
 
 #: src/library/search_filters.rs:136 src/library/shortcuts_dialog.rs:260
 msgid "Timeline"
-msgstr ""
+msgstr "समयरेखा"
 
 #: src/library/search_filters.rs:138
 #: src/library/source_header/enrichment.rs:251
 msgid "Hidden"
-msgstr ""
+msgstr "छिपा हुआ"
 
 #: src/library/search_filters.rs:139
 msgid "Locked"
-msgstr ""
+msgstr "लॉक किया गया"
 
 #: src/library/search_filters.rs:143
 msgid "Minimum rating"
-msgstr ""
+msgstr "न्यूनतम रेटिंग"
 
 #: src/library/search_filters.rs:173
 msgid "Date range"
-msgstr ""
+msgstr "तारीख़ सीमा"
 
 #: src/library/search_filters.rs:177
 msgid "Taken after"
-msgstr ""
+msgstr "इसके बाद ली गई"
 
 #: src/library/search_filters.rs:180
 msgid "Taken before"
-msgstr ""
+msgstr "इससे पहले ली गई"
 
 #: src/library/search_filters.rs:183
 msgid "Created after"
-msgstr ""
+msgstr "इसके बाद बनाई गई"
 
 #: src/library/search_filters.rs:186
 msgid "Created before"
-msgstr ""
+msgstr "इससे पहले बनाई गई"
 
 #: src/library/search_filters.rs:207
 msgid "Make"
-msgstr ""
+msgstr "निर्माता"
 
 #: src/library/search_filters.rs:208
 msgid "Model"
-msgstr ""
+msgstr "मॉडल"
 
 #: src/library/search_filters.rs:209
 msgid "Lens model"
-msgstr ""
+msgstr "लेंस मॉडल"
 
 #: src/library/search_filters.rs:222
 msgid "Country"
-msgstr ""
+msgstr "देश"
 
 #: src/library/search_filters.rs:223
 msgid "State / region"
-msgstr ""
+msgstr "राज्य / क्षेत्र"
 
 #: src/library/search_filters.rs:224
 msgid "City"
-msgstr ""
+msgstr "शहर"
 
 #: src/library/search_filters/choices.rs:119
 #, rust-format
 msgid "Filter {what}"
-msgstr ""
+msgstr "{what} फ़िल्टर करें"
 
 #: src/library/search_filters/choices.rs:207
 msgid "Nothing to choose from"
-msgstr ""
+msgstr "चुनने के लिए कुछ नहीं है"
 
 #: src/library/search_panel.rs:55
 msgid "Close filters"
-msgstr ""
+msgstr "फ़िल्टर बंद करें"
 
 #: src/library/search_panel.rs:73
 msgid "Clear every filter, keeping the search text"
-msgstr ""
+msgstr "खोज टेक्स्ट रखते हुए प्रत्येक फ़िल्टर साफ़ करें"
 
 #: src/library/search_panel.rs:108
 #, rust-format
 msgid "Filters · {count}"
-msgstr ""
+msgstr "फ़िल्टर · {count}"
 
 #: src/library/search_view.rs:116
 msgid ""
@@ -3843,39 +3855,42 @@ msgid ""
 "Filename: matches against file names.\n"
 "OCR: matches text inside images."
 msgstr ""
+"स्मार्ट: CLIP-आधारित अर्थगत खोज।\n"
+"फ़ाइल नाम: फ़ाइल नामों से मेल खाता है।\n"
+"OCR: छवियों के अंदर मौजूद टेक्स्ट से मेल खाता है।"
 
 #: src/library/search_view.rs:123 src/library/search_view.rs:315
 msgid "Describe what you're looking for…"
-msgstr ""
+msgstr "वर्णन करें कि आप क्या खोज रहे हैं…"
 
 #: src/library/search_view.rs:157
 msgid "Show search filters"
-msgstr ""
+msgstr "खोज फ़िल्टर दिखाएँ"
 
 #: src/library/search_view.rs:313
 msgid "Search filenames"
-msgstr ""
+msgstr "फ़ाइल नाम खोजें"
 
 #: src/library/search_view.rs:314
 msgid "Find words shown inside images"
-msgstr ""
+msgstr "छवियों के अंदर दिखाए गए शब्द ढूँढें"
 
 #: src/library/select_all.rs:29
 msgid "Loading every photo to select…"
-msgstr ""
+msgstr "चयन के लिए प्रत्येक फ़ोटो लोड हो रही है…"
 
 #: src/library/select_all.rs:48
 msgid "Some photos couldn't be loaded, so not all are selected"
-msgstr ""
+msgstr "कुछ फ़ोटो लोड नहीं की जा सकीं, इसलिए सभी का चयन नहीं किया गया"
 
 #: src/library/server_stats_dialog.rs:23
 msgid "Server statistics"
-msgstr ""
+msgstr "सर्वर आँकड़े"
 
 #: src/library/server_stats_dialog.rs:99 src/library/server_stats_dialog.rs:131
 #: src/library/utilities/controls.rs:29
 msgid "Videos"
-msgstr ""
+msgstr "वीडियो"
 
 #: src/library/server_stats_dialog.rs:104 src/settings_window/library.rs:190
 msgid "Storage"
@@ -3883,385 +3898,385 @@ msgstr "संग्रहण"
 
 #: src/library/server_stats_dialog.rs:113
 msgid "By user"
-msgstr ""
+msgstr "उपयोगकर्ता अनुसार"
 
 #: src/library/server_stats_dialog.rs:136
 msgid "Total"
-msgstr ""
+msgstr "कुल"
 
 #: src/library/server_stats_dialog.rs:145
 msgid "Server-wide statistics require administrator access."
-msgstr ""
+msgstr "सर्वर-व्यापी आँकड़ों के लिए व्यवस्थापक पहुँच आवश्यक है।"
 
 #: src/library/server_stats_dialog.rs:163
 msgid ""
 "Your API key must include the 'server.about', 'server.versionCheck', "
 "'server.statistics', and 'asset.statistics' permissions to view stats."
-msgstr ""
+msgstr "आँकड़े देखने के लिए आपकी API कुंजी में 'server.about', 'server.versionCheck', 'server.statistics', और 'asset.statistics' अनुमतियाँ शामिल होनी चाहिए।"
 
 #: src/library/server_stats_dialog.rs:168
 msgid "Unable to load statistics"
-msgstr ""
+msgstr "आँकड़े लोड करने में असमर्थ"
 
 #: src/library/server_stats_dialog.rs:169
 msgid "Check your connection and try again."
-msgstr ""
+msgstr "अपना कनेक्शन जाँचें और पुनः प्रयास करें।"
 
 #: src/library/server_stats_dialog.rs:247
 #, rust-format
 msgid "{used} of {quota}"
-msgstr ""
+msgstr "{quota} में से {used}"
 
 #: src/library/shared_link_dialog.rs:20
 msgid "Never"
-msgstr ""
+msgstr "कभी नहीं"
 
 #: src/library/shared_link_dialog.rs:21
 msgid "1 hour"
-msgstr ""
+msgstr "1 घंटा"
 
 #: src/library/shared_link_dialog.rs:22
 msgid "1 day"
-msgstr ""
+msgstr "1 दिन"
 
 #: src/library/shared_link_dialog.rs:23
 msgid "7 days"
-msgstr ""
+msgstr "7 दिन"
 
 #: src/library/shared_link_dialog.rs:24
 msgid "30 days"
-msgstr ""
+msgstr "30 दिन"
 
 #: src/library/shared_link_dialog.rs:31
 #, rust-format
 msgid "Keep current ({date})"
-msgstr ""
+msgstr "वर्तमान रखें ({date})"
 
 #. Translators: strftime date and time, e.g. "9 Oct 2026, 14:30".
 #: src/library/shared_link_dialog.rs:57
 msgid "%-d %b %Y, %H:%M"
-msgstr ""
+msgstr "%-d %b %Y, %H:%M"
 
 #: src/library/shared_link_dialog.rs:114
 msgid "Expires"
-msgstr ""
+msgstr "समाप्ति"
 
 #: src/library/shared_link_dialog.rs:119
 msgid "Password (leave empty to keep)"
-msgstr ""
+msgstr "पासवर्ड (वर्तमान रखने के लिए खाली छोड़ें)"
 
 #: src/library/shared_link_dialog.rs:121
 msgid "Password (optional)"
-msgstr ""
+msgstr "पासवर्ड (वैकल्पिक)"
 
 #: src/library/shared_link_dialog.rs:125
 msgid "Allow downloads"
-msgstr ""
+msgstr "डाउनलोड की अनुमति दें"
 
 #: src/library/shared_link_dialog.rs:126
 msgid "Visitors can download originals"
-msgstr ""
+msgstr "आगंतुक मूल फ़ाइलें डाउनलोड कर सकते हैं"
 
 #: src/library/shared_link_dialog.rs:130
 msgid "Allow uploads"
-msgstr ""
+msgstr "अपलोड की अनुमति दें"
 
 #: src/library/shared_link_dialog.rs:131
 msgid "Visitors can add photos to the album"
-msgstr ""
+msgstr "आगंतुक एल्बम में फ़ोटो जोड़ सकते हैं"
 
 #: src/library/shared_link_dialog.rs:135
 msgid "Show metadata"
-msgstr ""
+msgstr "मेटाडेटा दिखाएँ"
 
 #: src/library/shared_link_dialog.rs:136
 msgid "Visitors can see EXIF details and location"
-msgstr ""
+msgstr "आगंतुक EXIF विवरण और स्थान देख सकते हैं"
 
 #: src/library/shared_link_dialog.rs:177
 msgid "Create Share Link"
-msgstr ""
+msgstr "शेयर लिंक बनाएँ"
 
 #: src/library/shared_link_dialog.rs:178
 msgid "Edit Share Link"
-msgstr ""
+msgstr "शेयर लिंक संपादित करें"
 
 #: src/library/shared_link_dialog.rs:237
 msgid "Share link created and copied"
-msgstr ""
+msgstr "शेयर लिंक बनाया गया और कॉपी किया गया"
 
 #: src/library/shared_link_dialog.rs:243
 msgid "Could Not Save Share Link"
-msgstr ""
+msgstr "शेयर लिंक सहेजा नहीं जा सका"
 
 #: src/library/shared_link_dialog.rs:253 src/library/shared_link_photos.rs:343
 #: src/library/shared_links_view.rs:325
 msgid "Couldn't copy the link"
-msgstr ""
+msgstr "लिंक कॉपी नहीं किया जा सका"
 
 #: src/library/shared_link_photos.rs:56 src/library/shared_link_photos.rs:239
 msgid "Photos in Link"
-msgstr ""
+msgstr "लिंक में मौजूद फ़ोटो"
 
 #: src/library/shared_link_photos.rs:77
 msgid ""
 "Tap photos to take them out. To add some, select them in your library and "
 "choose Add to Share Link."
-msgstr ""
+msgstr "फ़ोटो निकालने के लिए उन पर टैप करें। कुछ जोड़ने के लिए, उन्हें अपनी लाइब्रेरी में चुनें और 'शेयर लिंक में जोड़ें' चुनें।"
 
 #: src/library/shared_link_photos.rs:111
 #, rust-format
 msgid "Couldn't load the photos: {err}"
-msgstr ""
+msgstr "फ़ोटो लोड नहीं की जा सकीं: {err}"
 
 #: src/library/shared_link_photos.rs:154
 msgid "Select"
-msgstr ""
+msgstr "चुनें"
 
 #: src/library/shared_link_photos.rs:183
 #, rust-format
 msgid "Remove {n} Photo"
 msgid_plural "Remove {n} Photos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ोटो हटाएँ"
+msgstr[1] "{n} फ़ोटो हटाएँ"
 
 #: src/library/shared_link_photos.rs:202
 #, rust-format
 msgid "Couldn't take them out: {err}"
-msgstr ""
+msgstr "उन्हें हटाया नहीं जा सका: {err}"
 
 #: src/library/shared_link_photos.rs:255
 msgid "Couldn't load your links"
-msgstr ""
+msgstr "आपके लिंक लोड नहीं किए जा सके"
 
 #: src/library/shared_link_photos.rs:293 src/library/shared_links_view.rs:384
 msgid "Individual share"
-msgstr ""
+msgstr "व्यक्तिगत शेयर"
 
 #: src/library/shared_link_photos.rs:311 src/library/shared_link_photos.rs:327
 msgid "Add to Share Link"
-msgstr ""
+msgstr "शेयर लिंक में जोड़ें"
 
 #: src/library/shared_link_photos.rs:318
 msgid "No Links to Add To"
-msgstr ""
+msgstr "जोड़ने के लिए कोई लिंक नहीं है"
 
 #: src/library/shared_link_photos.rs:320
 msgid ""
 "Albums' links always show the whole album. Make a link for some photos with "
 "Create Share Link first."
-msgstr ""
+msgstr "एल्बम के लिंक हमेशा पूरा एल्बम दिखाते हैं। पहले 'शेयर लिंक बनाएँ' से कुछ फ़ोटो के लिए लिंक बनाएँ।"
 
 #: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
 #: src/library/shared_link_qr.rs:129
 msgid "Copy Link"
-msgstr ""
+msgstr "लिंक कॉपी करें"
 
 #: src/library/shared_link_photos.rs:349
 msgid "Couldn't add to the link"
-msgstr ""
+msgstr "लिंक में जोड़ा नहीं जा सका"
 
 #: src/library/shared_link_photos.rs:356
 msgid "Already in the link"
-msgstr ""
+msgstr "पहले से ही लिंक में है"
 
 #: src/library/shared_link_photos.rs:359
 #, rust-format
 msgid "Added {items} to the link"
-msgstr ""
+msgstr "लिंक में {items} जोड़े गए"
 
 #: src/library/shared_link_photos.rs:366
 #, rust-format
 msgid "{n} wasn't added"
 msgid_plural "{n} weren't added"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} नहीं जोड़ा गया"
+msgstr[1] "{n} नहीं जोड़े गए"
 
 #: src/library/shared_link_qr.rs:35 src/library/shared_link_qr.rs:42
 msgid "Couldn't make the QR code"
-msgstr ""
+msgstr "QR कोड नहीं बनाया जा सका"
 
 #: src/library/shared_link_qr.rs:43
 msgid "The link is too long for a QR code."
-msgstr ""
+msgstr "लिंक QR कोड के लिए बहुत लंबा है।"
 
 #: src/library/shared_link_qr.rs:64 src/library/shared_links_view.rs:192
 msgid "QR Code"
-msgstr ""
+msgstr "QR कोड"
 
 #: src/library/shared_link_qr.rs:80
 msgid "QR code of the link"
-msgstr ""
+msgstr "लिंक का QR कोड"
 
 #: src/library/shared_links_view.rs:35
 msgid "Anyone with a link can view what it shares."
-msgstr ""
+msgstr "लिंक वाला कोई भी व्यक्ति देख सकता है कि क्या साझा किया गया है।"
 
 #: src/library/shared_links_view.rs:44
 msgid "No Shared Links"
-msgstr ""
+msgstr "कोई साझा लिंक नहीं"
 
 #: src/library/shared_links_view.rs:46
 msgid ""
 "Create one from an album's or a photo's right-click menu, or from a "
 "selection."
-msgstr ""
+msgstr "एल्बम या फ़ोटो के राइट-क्लिक मेन्यू से, या किसी चयन से एक बनाएँ।"
 
 #: src/library/shared_links_view.rs:101
 msgid "Could Not Load Shared Links"
-msgstr ""
+msgstr "साझा लिंक लोड नहीं किए जा सके"
 
 #: src/library/shared_links_view.rs:200
 msgid "Photos…"
-msgstr ""
+msgstr "फ़ोटो…"
 
 #: src/library/shared_links_view.rs:215
 msgid "Edit…"
-msgstr ""
+msgstr "संपादित करें…"
 
 #: src/library/shared_links_view.rs:311
 msgid "Show QR code"
-msgstr ""
+msgstr "QR कोड दिखाएँ"
 
 #: src/library/shared_links_view.rs:318
 msgid "Copy link"
-msgstr ""
+msgstr "लिंक कॉपी करें"
 
 #: src/library/shared_links_view.rs:355
 msgid "Delete this link?"
-msgstr ""
+msgstr "यह लिंक हटाएँ?"
 
 #: src/library/shared_links_view.rs:357
 msgid "Anyone using it will lose access. This can't be undone."
-msgstr ""
+msgstr "इसका उपयोग करने वाला कोई भी व्यक्ति पहुँच खो देगा। इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/shared_links_view.rs:373
 msgid "Could Not Delete Link"
-msgstr ""
+msgstr "लिंक हटाया नहीं जा सका"
 
 #: src/library/shared_links_view.rs:404
 msgid "Expired"
-msgstr ""
+msgstr "समाप्त हो गया"
 
 #: src/library/shared_links_view.rs:407
 #, rust-format
 msgid "Expires {date}"
-msgstr ""
+msgstr "समाप्ति {date}"
 
 #: src/library/shared_links_view.rs:408
 msgid "Never expires"
-msgstr ""
+msgstr "कभी समाप्त नहीं होता"
 
 #: src/library/shared_links_view.rs:414 src/library/staging_view.rs:143
 #: src/library/window_layout.rs:413
 msgid "Upload"
-msgstr ""
+msgstr "अपलोड"
 
 #: src/library/shared_links_view.rs:416
 msgid "Exif"
-msgstr ""
+msgstr "Exif"
 
 #: src/library/shared_links_view.rs:417
 msgid "Password"
-msgstr ""
+msgstr "पासवर्ड"
 
 #: src/library/sharing_view.rs:29
 msgid "Add partner"
-msgstr ""
+msgstr "पार्टनर जोड़ें"
 
 #: src/library/sharing_view.rs:34
 msgid "You Share With"
-msgstr ""
+msgstr "आप इनके साथ साझा करते हैं"
 
 #: src/library/sharing_view.rs:35
 msgid "Partners can see all your photos and videos."
-msgstr ""
+msgstr "पार्टनर आपकी सभी फ़ोटो और वीडियो देख सकते हैं।"
 
 #: src/library/sharing_view.rs:39
 msgid "Sharing With You"
-msgstr ""
+msgstr "आपके साथ साझा कर रहे हैं"
 
 #: src/library/sharing_view.rs:41
 msgid ""
 "People who added you as a partner. Switch one on to see their photos in "
 "Photos."
-msgstr ""
+msgstr "वे लोग जिन्होंने आपको पार्टनर के रूप में जोड़ा है। 'फ़ोटो' में उनकी फ़ोटो देखने के लिए एक चालू करें।"
 
 #: src/library/sharing_view.rs:94
 msgid "Could Not Load Partners"
-msgstr ""
+msgstr "पार्टनर लोड नहीं किए जा सके"
 
 #: src/library/sharing_view.rs:117
 msgid "Use + to share your library with someone."
-msgstr ""
+msgstr "किसी के साथ अपनी लाइब्रेरी साझा करने के लिए + का उपयोग करें।"
 
 #: src/library/sharing_view.rs:127
 msgid "No one is sharing with you."
-msgstr ""
+msgstr "कोई भी आपके साथ साझा नहीं कर रहा है।"
 
 #: src/library/sharing_view.rs:169
 msgid "Show in Photos"
-msgstr ""
+msgstr "फ़ोटो में दिखाएँ"
 
 #: src/library/sharing_view.rs:179
 msgid "Could Not Change Partner"
-msgstr ""
+msgstr "पार्टनर बदला नहीं जा सका"
 
 #: src/library/sharing_view.rs:203
 msgid "Stop sharing"
-msgstr ""
+msgstr "साझा करना बंद करें"
 
 #: src/library/sharing_view.rs:214
 #, rust-format
 msgid "Stop sharing with {name}?"
-msgstr ""
+msgstr "{name} के साथ साझा करना बंद करें?"
 
 #: src/library/sharing_view.rs:217
 msgid "They'll no longer see your photos and videos."
-msgstr ""
+msgstr "वे अब आपकी फ़ोटो और वीडियो नहीं देख पाएंगे।"
 
 #: src/library/sharing_view.rs:218
 msgid "Stop Sharing"
-msgstr ""
+msgstr "साझा करना बंद करें"
 
 #: src/library/sharing_view.rs:222
 msgid "Could Not Remove Partner"
-msgstr ""
+msgstr "पार्टनर हटाया नहीं जा सका"
 
 #: src/library/sharing_view.rs:279
 msgid "Loading people…"
-msgstr ""
+msgstr "लोग लोड हो रहे हैं…"
 
 #: src/library/sharing_view.rs:321
 msgid "No other people found. Listing people needs the 'user.read' permission."
-msgstr ""
+msgstr "कोई अन्य लोग नहीं मिले। लोगों को सूचीबद्ध करने के लिए 'user.read' अनुमति आवश्यक है।"
 
 #: src/library/sharing_view.rs:354
 msgid "Add Partner"
-msgstr ""
+msgstr "पार्टनर जोड़ें"
 
 #: src/library/sharing_view.rs:377
 #, rust-format
 msgid "Share your library with {name}?"
-msgstr ""
+msgstr "{name} के साथ अपनी लाइब्रेरी साझा करें?"
 
 #: src/library/sharing_view.rs:378
 msgid ""
 "They'll be able to see all your photos and videos. You can stop sharing at "
 "any time."
-msgstr ""
+msgstr "वे आपकी सभी फ़ोटो और वीडियो देख सकेंगे। आप किसी भी समय साझा करना बंद कर सकते हैं।"
 
 #: src/library/sharing_view.rs:381
 msgid "Share"
-msgstr ""
+msgstr "साझा करें"
 
 #: src/library/sharing_view.rs:388
 msgid "Could Not Add Partner"
-msgstr ""
+msgstr "पार्टनर जोड़ा नहीं जा सका"
 
 #: src/library/shortcuts_dialog.rs:29
 msgid "Show keyboard shortcuts"
-msgstr ""
+msgstr "कीबोर्ड शॉर्टकट दिखाएँ"
 
 #: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
 msgid "Open Settings"
@@ -4269,357 +4284,357 @@ msgstr "सेटिंग्स खोलें"
 
 #: src/library/shortcuts_dialog.rs:31
 msgid "Toggle sidebar"
-msgstr ""
+msgstr "साइडबार टॉगल करें"
 
 #: src/library/shortcuts_dialog.rs:32 src/library/window_layout.rs:328
 msgid "Refresh"
-msgstr ""
+msgstr "रीफ़्रेश करें"
 
 #: src/library/shortcuts_dialog.rs:35
 msgid "Paste photos"
-msgstr ""
+msgstr "फ़ोटो पेस्ट करें"
 
 #: src/library/shortcuts_dialog.rs:37
 msgid "Into the open album, or Photos"
-msgstr ""
+msgstr "खुले हुए एल्बम में, या फ़ोटो में"
 
 #: src/library/shortcuts_dialog.rs:40
 msgid "Go back"
-msgstr ""
+msgstr "पीछे जाएँ"
 
 #: src/library/shortcuts_dialog.rs:42
 msgid "Or the mouse back button"
-msgstr ""
+msgstr "या माउस का बैक बटन"
 
 #: src/library/shortcuts_dialog.rs:45
 msgid "Go forward"
-msgstr ""
+msgstr "आगे जाएँ"
 
 #: src/library/shortcuts_dialog.rs:47
 msgid "Or the mouse forward button"
-msgstr ""
+msgstr "या माउस का फ़ॉरवर्ड बटन"
 
 #: src/library/shortcuts_dialog.rs:50
 msgid "Open context menu"
-msgstr ""
+msgstr "संदर्भ मेन्यू खोलें"
 
 #: src/library/shortcuts_dialog.rs:52
 msgid "Or the Menu key; in the grid, the viewer, and on album tiles"
-msgstr ""
+msgstr "या मेन्यू कुंजी; ग्रिड में, व्यूअर में, और एल्बम टाइल्स पर"
 
 #: src/library/shortcuts_dialog.rs:61 src/library/sidebar/rows.rs:94
 #: src/library/source_header.rs:310
 msgid "Favorites"
-msgstr ""
+msgstr "पसंदीदा"
 
 #: src/library/shortcuts_dialog.rs:70
 msgid "Move between photos"
-msgstr ""
+msgstr "फ़ोटो के बीच जाएँ"
 
 #: src/library/shortcuts_dialog.rs:72
 msgid "After clicking a photo or tabbing to the grid"
-msgstr ""
+msgstr "किसी फ़ोटो पर क्लिक करने या ग्रिड पर टैब करने के बाद"
 
 #: src/library/shortcuts_dialog.rs:74
 msgid "First or last photo"
-msgstr ""
+msgstr "पहली या अंतिम फ़ोटो"
 
 #: src/library/shortcuts_dialog.rs:75
 msgid "Open photo"
-msgstr ""
+msgstr "फ़ोटो खोलें"
 
 #: src/library/shortcuts_dialog.rs:76
 msgid "Select or deselect photo"
-msgstr ""
+msgstr "फ़ोटो चुनें या अचयनित करें"
 
 #: src/library/shortcuts_dialog.rs:81
 msgid "Select assets"
-msgstr ""
+msgstr "एसेट चुनें"
 
 #: src/library/shortcuts_dialog.rs:83
 msgid "Hold and click to add or remove assets"
-msgstr ""
+msgstr "एसेट जोड़ने या हटाने के लिए दबाकर रखें और क्लिक करें"
 
 #: src/library/shortcuts_dialog.rs:86
 msgid "Select a range"
-msgstr ""
+msgstr "सीमा चुनें"
 
 #: src/library/shortcuts_dialog.rs:88
 msgid "Hold and click; add Ctrl to extend the selection"
-msgstr ""
+msgstr "दबाकर रखें और क्लिक करें; चयन बढ़ाने के लिए Ctrl जोड़ें"
 
 #: src/library/shortcuts_dialog.rs:91
 msgid "Move selection to trash"
-msgstr ""
+msgstr "चयनित को ट्रैश में भेजें"
 
 #: src/library/shortcuts_dialog.rs:93
 msgid "Deletes permanently in the Trash view"
-msgstr ""
+msgstr "ट्रैश दृश्य में स्थायी रूप से हटाता है"
 
 #: src/library/shortcuts_dialog.rs:96 src/library/staging_view.rs:193
 msgid "Select all"
-msgstr ""
+msgstr "सभी चुनें"
 
 #: src/library/shortcuts_dialog.rs:98
 msgid "Every photo in the view, loading the rest first"
-msgstr ""
+msgstr "दृश्य में मौजूद प्रत्येक फ़ोटो, पहले बाकी को लोड करते हुए"
 
 #: src/library/shortcuts_dialog.rs:101
 msgid "Select a whole day"
-msgstr ""
+msgstr "पूरा दिन चुनें"
 
 #: src/library/shortcuts_dialog.rs:103
 msgid ""
 "The focused photo's day or month; or tap its date heading while selecting"
-msgstr ""
+msgstr "फ़ोकस की गई फ़ोटो का दिन या महीना; या चयन करते समय उसके दिनांक शीर्षक पर टैप करें"
 
 #: src/library/shortcuts_dialog.rs:106
 msgid "Copy selection"
-msgstr ""
+msgstr "चयन कॉपी करें"
 
 #: src/library/shortcuts_dialog.rs:108
 msgid "Paste into an album to add them; one photo copies as a picture"
-msgstr ""
+msgstr "उन्हें जोड़ने के लिए एल्बम में पेस्ट करें; एक फ़ोटो चित्र के रूप में कॉपी होती है"
 
 #: src/library/shortcuts_dialog.rs:110
 msgid "Exit selection mode"
-msgstr ""
+msgstr "चयन मोड से बाहर निकलें"
 
 #: src/library/shortcuts_dialog.rs:115
 msgid "Next or previous day"
-msgstr ""
+msgstr "अगला या पिछला दिन"
 
 #: src/library/shortcuts_dialog.rs:117
 msgid "In Photos, sorted newest first"
-msgstr ""
+msgstr "'फ़ोटो' में, सबसे नए के अनुसार पहले क्रमबद्ध"
 
 #: src/library/shortcuts_dialog.rs:119
 msgid "Next or previous month"
-msgstr ""
+msgstr "अगला या पिछला महीना"
 
 #: src/library/shortcuts_dialog.rs:120
 msgid "Next or previous year"
-msgstr ""
+msgstr "अगला या पिछला वर्ष"
 
 #: src/library/shortcuts_dialog.rs:124
 msgid "Previous asset"
-msgstr ""
+msgstr "पिछला एसेट"
 
 #: src/library/shortcuts_dialog.rs:125
 msgid "Next asset"
-msgstr ""
+msgstr "अगला एसेट"
 
 #: src/library/shortcuts_dialog.rs:126
 msgid "Toggle details"
-msgstr ""
+msgstr "विवरण टॉगल करें"
 
 #: src/library/shortcuts_dialog.rs:128
 msgid "Show or hide all actions for the photo"
-msgstr ""
+msgstr "फ़ोटो के लिए सभी क्रियाएँ दिखाएँ या छिपाएँ"
 
 #: src/library/shortcuts_dialog.rs:131
 msgid "Toggle favorite"
-msgstr ""
+msgstr "पसंदीदा टॉगल करें"
 
 #: src/library/shortcuts_dialog.rs:132
 msgid "Archive or unarchive"
-msgstr ""
+msgstr "संग्रहीत या असंग्रहीत करें"
 
 #: src/library/shortcuts_dialog.rs:134
 msgid "Rate"
-msgstr ""
+msgstr "रेटिंग दें"
 
 #: src/library/shortcuts_dialog.rs:136
 msgid "0 clears the rating"
-msgstr ""
+msgstr "0 रेटिंग साफ़ करता है"
 
 #: src/library/shortcuts_dialog.rs:138
 msgid "Edit info"
-msgstr ""
+msgstr "जानकारी संपादित करें"
 
 #: src/library/shortcuts_dialog.rs:141
 msgid "Copy the photo"
-msgstr ""
+msgstr "फ़ोटो कॉपी करें"
 
 #: src/library/shortcuts_dialog.rs:143
 msgid "While recognized text shows, copies the text instead"
-msgstr ""
+msgstr "जब पहचाना गया पाठ दिखाई दे रहा हो, तो इसके बजाय पाठ कॉपी करता है"
 
 #: src/library/shortcuts_dialog.rs:146
 msgid "Show or hide recognized text"
-msgstr ""
+msgstr "पहचाना गया पाठ दिखाएँ या छिपाएँ"
 
 #: src/library/shortcuts_dialog.rs:148
 msgid "Only when Immich found text in the photo"
-msgstr ""
+msgstr "केवल तभी जब Immich को तस्वीर में पाठ मिला हो"
 
 #: src/library/shortcuts_dialog.rs:151
 msgid "Select all recognized text"
-msgstr ""
+msgstr "सभी पहचाना गया पाठ चुनें"
 
 #: src/library/shortcuts_dialog.rs:153
 msgid "Drag across text to select it; Ctrl-click adds or removes a box"
-msgstr ""
+msgstr "चयन करने के लिए पाठ पर खींचें; Ctrl-क्लिक बॉक्स जोड़ता या हटाता है"
 
 #: src/library/shortcuts_dialog.rs:156
 msgid "Copy recognized text"
-msgstr ""
+msgstr "पहचाना गया पाठ कॉपी करें"
 
 #: src/library/shortcuts_dialog.rs:158
 msgid "Copies the selection, or all text when nothing is selected"
-msgstr ""
+msgstr "चयनित भाग को कॉपी करता है, या कुछ भी चयनित न होने पर पूरे पाठ को"
 
 #: src/library/shortcuts_dialog.rs:164
 msgid "Or hold Ctrl and scroll"
-msgstr ""
+msgstr "या Ctrl दबाए रखें और स्क्रॉल करें"
 
 #: src/library/shortcuts_dialog.rs:167
 msgid "Reset zoom"
-msgstr ""
+msgstr "ज़ूम रीसेट करें"
 
 #: src/library/shortcuts_dialog.rs:169
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "पूर्ण स्क्रीन टॉगल करें"
 
 #: src/library/shortcuts_dialog.rs:171
 msgid "Or the header button; double-click a video; Esc exits"
-msgstr ""
+msgstr "या हेडर बटन; वीडियो पर दोहरा-क्लिक करें; Esc बाहर निकालता है"
 
 #: src/library/shortcuts_dialog.rs:174
 msgid "Play or stop a live photo"
-msgstr ""
+msgstr "लाइव तस्वीर चलाएँ या रोकें"
 
 #: src/library/shortcuts_dialog.rs:176
 msgid "Only on live and motion photos"
-msgstr ""
+msgstr "केवल लाइव और मोशन तस्वीरों पर"
 
 #: src/library/shortcuts_dialog.rs:178
 msgid "Start slideshow"
-msgstr ""
+msgstr "स्लाइडशो शुरू करें"
 
 #: src/library/shortcuts_dialog.rs:183
 msgid "Pause or resume"
-msgstr ""
+msgstr "रोकें या फिर से चलाएँ"
 
 #: src/library/shortcuts_dialog.rs:185
 msgid "Previous or next photo"
-msgstr ""
+msgstr "पिछली या अगली तस्वीर"
 
 #: src/library/shortcuts_dialog.rs:187
 msgid "The next photo then gets the full interval"
-msgstr ""
+msgstr "फिर अगली तस्वीर को पूरा अंतराल मिलता है"
 
 #: src/library/shortcuts_dialog.rs:190
 msgid "End slideshow"
-msgstr ""
+msgstr "स्लाइडशो समाप्त करें"
 
 #: src/library/shortcuts_dialog.rs:192
 msgid "Or S, or leave fullscreen"
-msgstr ""
+msgstr "या S, या पूर्ण स्क्रीन से बाहर निकलें"
 
 #: src/library/shortcuts_dialog.rs:198
 msgid "Switch the 360° view"
-msgstr ""
+msgstr "360° दृश्य बदलें"
 
 #: src/library/shortcuts_dialog.rs:200
 msgid "Only on 360° photos, which open in it"
-msgstr ""
+msgstr "केवल 360° तस्वीरों पर, जो इसमें खुलती हैं"
 
 #: src/library/shortcuts_dialog.rs:202
 msgid "Tilt up or down"
-msgstr ""
+msgstr "ऊपर या नीचे झुकाएँ"
 
 #: src/library/shortcuts_dialog.rs:204
 msgid "Turn left or right"
-msgstr ""
+msgstr "बाएँ या दाएँ घुमाएँ"
 
 #: src/library/shortcuts_dialog.rs:208
 msgid "Zoom in or out"
-msgstr ""
+msgstr "ज़ूम इन या आउट करें"
 
 #: src/library/shortcuts_dialog.rs:210
 msgid "Or scroll, or pinch"
-msgstr ""
+msgstr "या स्क्रॉल करें, या पिंच करें"
 
 #: src/library/shortcuts_dialog.rs:215
 msgid "Play or pause"
-msgstr ""
+msgstr "चलाएँ या रोकें"
 
 #: src/library/shortcuts_dialog.rs:216
 msgid "Back 10 seconds"
-msgstr ""
+msgstr "10 सेकंड पीछे"
 
 #: src/library/shortcuts_dialog.rs:217
 msgid "Forward 10 seconds"
-msgstr ""
+msgstr "10 सेकंड आगे"
 
 #: src/library/shortcuts_dialog.rs:219
 msgid "Previous frame"
-msgstr ""
+msgstr "पिछला फ़्रेम"
 
 #: src/library/shortcuts_dialog.rs:221 src/library/shortcuts_dialog.rs:226
 msgid "Pauses playback"
-msgstr ""
+msgstr "प्लेबैक रोकता है"
 
 #: src/library/shortcuts_dialog.rs:224
 msgid "Next frame"
-msgstr ""
+msgstr "अगला फ़्रेम"
 
 #: src/library/shortcuts_dialog.rs:228
 msgid "Mute or unmute"
-msgstr ""
+msgstr "म्यूट या अनम्यूट करें"
 
 #: src/library/shortcuts_dialog.rs:229
 msgid "Volume up"
-msgstr ""
+msgstr "आवाज़ बढ़ाएँ"
 
 #: src/library/shortcuts_dialog.rs:230
 msgid "Volume down"
-msgstr ""
+msgstr "आवाज़ घटाएँ"
 
 #: src/library/shortcuts_dialog.rs:233
 msgid "Enter a folder path"
-msgstr ""
+msgstr "फ़ोल्डर पथ दर्ज करें"
 
 #: src/library/shortcuts_dialog.rs:244
 msgid "Clear the search"
-msgstr ""
+msgstr "खोज साफ़ करें"
 
 #: src/library/shortcuts_dialog.rs:246
 msgid "While typing in the search field"
-msgstr ""
+msgstr "खोज फ़ील्ड में टाइप करते समय"
 
 #: src/library/shortcuts_dialog.rs:249
 msgid "Move the map"
-msgstr ""
+msgstr "मानचित्र को खिसकाएँ"
 
 #: src/library/shortcuts_dialog.rs:251
 msgid "After clicking the map"
-msgstr ""
+msgstr "मानचित्र पर क्लिक करने के बाद"
 
 #: src/library/shortcuts_dialog.rs:256
 msgid "General"
-msgstr ""
+msgstr "सामान्य"
 
 #: src/library/shortcuts_dialog.rs:257
 msgid "Go To"
-msgstr ""
+msgstr "यहाँ जाएँ"
 
 #: src/library/shortcuts_dialog.rs:258
 msgid "Grid"
-msgstr ""
+msgstr "ग्रिड"
 
 #: src/library/shortcuts_dialog.rs:259
 msgid "Selection"
-msgstr ""
+msgstr "चयन"
 
 #: src/library/shortcuts_dialog.rs:265
 msgid "360° Photos"
-msgstr ""
+msgstr "360° तस्वीरें"
 
 #: src/library/shortcuts_dialog.rs:266
 msgid "Video"
-msgstr ""
+msgstr "वीडियो"
 
 #: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
 #: src/settings_window/status.rs:48
@@ -4633,11 +4648,11 @@ msgstr "सर्वर"
 
 #: src/library/sidebar.rs:206
 msgid "Show recent albums"
-msgstr ""
+msgstr "हाल के एल्बम दिखाएँ"
 
 #: src/library/sidebar.rs:232
 msgid "All Albums"
-msgstr ""
+msgstr "सभी एल्बम"
 
 #: src/library/sidebar/rows.rs:8 src/library/window_layout/responsive.rs:83
 #: src/settings_window/library.rs:86 src/tray_icon.rs:62
@@ -4646,550 +4661,550 @@ msgstr "लाइब्रेरी"
 
 #: src/library/sidebar/rows.rs:20
 msgid "Albums & Sharing"
-msgstr ""
+msgstr "एल्बम और साझाकरण"
 
 #: src/library/sidebar/rows.rs:23
 msgid "Browse"
-msgstr ""
+msgstr "ब्राउज़ करें"
 
 #: src/library/sidebar/rows.rs:25
 msgid "Utilities"
-msgstr ""
+msgstr "उपयोगिताएँ"
 
 #: src/library/sidebar/rows.rs:41
 msgid "Timeline of every photo and video"
-msgstr ""
+msgstr "प्रत्येक तस्वीर और वीडियो की टाइमलाइन"
 
 #: src/library/sidebar/rows.rs:47
 msgid "Find photos, videos, and text"
-msgstr ""
+msgstr "तस्वीरें, वीडियो और पाठ ढूँढें"
 
 #: src/library/sidebar/rows.rs:53
 msgid "People, places, and things"
-msgstr ""
+msgstr "लोग, स्थान और चीज़ें"
 
 #: src/library/sidebar/rows.rs:59
 msgid "Photos by where they were taken"
-msgstr ""
+msgstr "स्थान के आधार पर तस्वीरें"
 
 #: src/library/sidebar/rows.rs:65
 msgid "Faces Immich has recognized"
-msgstr ""
+msgstr "Immich द्वारा पहचाने गए चेहरे"
 
 #: src/library/sidebar/rows.rs:71
 msgid "Recent, owned, and shared"
-msgstr ""
+msgstr "हाल की, अपनी और साझा की गई"
 
 #: src/library/sidebar/rows.rs:77
 msgid "Shared with you and by you"
-msgstr ""
+msgstr "आपके साथ और आपके द्वारा साझा की गई"
 
 #: src/library/sidebar/rows.rs:83
 msgid "Public links you've created"
-msgstr ""
+msgstr "आपके द्वारा बनाए गए सार्वजनिक लिंक"
 
 #: src/library/sidebar/rows.rs:89
 msgid "Partners who share libraries"
-msgstr ""
+msgstr "लाइब्रेरी साझा करने वाले पार्टनर"
 
 #: src/library/sidebar/rows.rs:95
 msgid "Photos and videos you've marked"
-msgstr ""
+msgstr "तस्वीरें और वीडियो जिन्हें आपने चिह्नित किया है"
 
 #: src/library/sidebar/rows.rs:101
 msgid "Browse and organize tags"
-msgstr ""
+msgstr "टैग ब्राउज़ और व्यवस्थित करें"
 
 #: src/library/sidebar/rows.rs:107
 msgid "Browse by folder on the server"
-msgstr ""
+msgstr "सर्वर पर फ़ोल्डर के अनुसार ब्राउज़ करें"
 
 #: src/library/sidebar/rows.rs:113
 msgid "Hidden from Photos"
-msgstr ""
+msgstr "तस्वीरों से छिपा हुआ"
 
 #: src/library/sidebar/rows.rs:119
 msgid "Restore or permanently delete"
-msgstr ""
+msgstr "पुनर्स्थापित करें या स्थायी रूप से हटाएँ"
 
 #: src/library/sidebar/rows.rs:125
 msgid "Photos Immich found more than once"
-msgstr ""
+msgstr "तस्वीरें जो Immich को एक से अधिक बार मिलीं"
 
 #: src/library/sidebar/rows.rs:130 src/library/source_header.rs:298
 msgid "Large Files"
-msgstr ""
+msgstr "बड़ी फ़ाइलें"
 
 #: src/library/sidebar/rows.rs:131
 msgid "The photos and videos taking the most space"
-msgstr ""
+msgstr "सबसे अधिक जगह लेने वाली तस्वीरें और वीडियो"
 
 #: src/library/sidebar/rows.rs:136 src/library/source_header.rs:299
 msgid "Missing Location"
-msgstr ""
+msgstr "स्थान मौजूद नहीं"
 
 #: src/library/sidebar/rows.rs:137
 msgid "Photos and videos without a place"
-msgstr ""
+msgstr "स्थान के बिना तस्वीरें और वीडियो"
 
 #: src/library/sidebar/rows.rs:142 src/library/source_header.rs:300
 msgid "Unusual Dates"
-msgstr ""
+msgstr "असामान्य तारीखें"
 
 #: src/library/sidebar/rows.rs:143
 msgid "Dated in the future, or too long ago"
-msgstr ""
+msgstr "भविष्य की तारीख या बहुत पहले की तारीख"
 
 #: src/library/source_header.rs:77
 msgid "Play Slideshow"
-msgstr ""
+msgstr "स्लाइडशो चलाएँ"
 
 #: src/library/source_header.rs:172 src/library/window_layout.rs:449
 msgid "Library data unavailable"
-msgstr ""
+msgstr "लाइब्रेरी डेटा अनुपलब्ध"
 
 #: src/library/source_header.rs:173 src/library/window_layout.rs:450
 msgid "Could not load library assets"
-msgstr ""
+msgstr "लाइब्रेरी एसेट लोड नहीं किए जा सके"
 
 #: src/library/source_header.rs:188
 msgid "Nothing Here"
-msgstr ""
+msgstr "यहाँ कुछ नहीं है"
 
 #: src/library/source_header.rs:189
 msgid "There are no photos or videos to show."
-msgstr ""
+msgstr "दिखाने के लिए कोई तस्वीर या वीडियो नहीं है।"
 
 #: src/library/source_header.rs:255
 msgid "Nothing to show yet"
-msgstr ""
+msgstr "अभी दिखाने के लिए कुछ नहीं है"
 
 #: src/library/source_header.rs:308
 msgid "On This Computer"
-msgstr ""
+msgstr "इस कंप्यूटर पर"
 
 #: src/library/source_header.rs:331
 #, rust-format
 msgid "Similar to {name}"
-msgstr ""
+msgstr "{name} के समान"
 
 #: src/library/source_header.rs:338
 msgid "Search Results"
-msgstr ""
+msgstr "खोज परिणाम"
 
 #: src/library/source_header/enrichment.rs:47
 msgid "Smart search"
-msgstr ""
+msgstr "स्मार्ट खोज"
 
 #: src/library/source_header/enrichment.rs:49
 msgid "Most similar first"
-msgstr ""
+msgstr "सबसे समान पहले"
 
 #: src/library/source_header/enrichment.rs:73
 msgid "Back to the map"
-msgstr ""
+msgstr "मानचित्र पर वापस जाएँ"
 
 #: src/library/source_header/enrichment.rs:82
 msgid "Full Grid"
-msgstr ""
+msgstr "पूर्ण ग्रिड"
 
 #: src/library/source_header/enrichment.rs:154
 msgid "Show on Map"
-msgstr ""
+msgstr "मानचित्र पर दिखाएँ"
 
 #: src/library/source_header/enrichment.rs:170
 msgid "Share album"
-msgstr ""
+msgstr "एल्बम साझा करें"
 
 #: src/library/source_header/enrichment.rs:180
 msgid "Download album"
-msgstr ""
+msgstr "एल्बम डाउनलोड करें"
 
 #: src/library/source_header/enrichment.rs:193
 msgid "Create share link"
-msgstr ""
+msgstr "साझा लिंक बनाएँ"
 
 #: src/library/source_header/enrichment.rs:273
 msgid "Remove from favorites"
-msgstr ""
+msgstr "पसंदीदा से हटाएँ"
 
 #: src/library/source_header/enrichment.rs:275
 msgid "Add to favorites"
-msgstr ""
+msgstr "पसंदीदा में जोड़ें"
 
 #: src/library/source_header/enrichment.rs:290
 #, rust-format
 msgid "In {path}"
-msgstr ""
+msgstr "{path} में"
 
 #: src/library/source_loading.rs:52 src/library/upload_picker.rs:30
 msgid "Upload to album"
-msgstr ""
+msgstr "एल्बम में अपलोड करें"
 
 #: src/library/source_loading.rs:55 src/library/upload_picker.rs:32
 #: src/library/window_layout.rs:422
 msgid "Upload to library"
-msgstr ""
+msgstr "लाइब्रेरी में अपलोड करें"
 
 #: src/library/source_loading.rs:413
 #, rust-format
 msgid "Could not load library assets: {err}"
-msgstr ""
+msgstr "लाइब्रेरी एसेट लोड नहीं किए जा सके: {err}"
 
 #: src/library/staging_view.rs:44
 msgid "Mimick - Upload"
-msgstr ""
+msgstr "Mimick - अपलोड"
 
 #: src/library/staging_view.rs:144
 msgid "Upload selected files to library"
-msgstr ""
+msgstr "चयनित फ़ाइलों को लाइब्रेरी में अपलोड करें"
 
 #: src/library/staging_view.rs:149
 msgid "Upload selected files to an album"
-msgstr ""
+msgstr "चयनित फ़ाइलों को किसी एल्बम में अपलोड करें"
 
 #: src/library/staging_view.rs:154
 msgid "Select all / Deselect all"
-msgstr ""
+msgstr "सभी चुनें / सभी अचयनित करें"
 
 #: src/library/staging_view.rs:199
 msgid "Deselect all"
-msgstr ""
+msgstr "सभी अचयनित करें"
 
 #: src/library/staging_view.rs:220
 #, rust-format
 msgid "{n} file staged"
 msgid_plural "{n} files staged"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ाइल स्टेज की गई"
+msgstr[1] "{n} फ़ाइलें स्टेज की गईं"
 
 #: src/library/staging_view.rs:226
 #, rust-format
 msgid "{selected} of {n} selected"
 msgid_plural "{selected} of {n} selected"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} में से {selected} चयनित"
+msgstr[1] "{n} में से {selected} चयनित"
 
 #: src/library/staging_view/album_picker.rs:28
 msgid "Upload to Album"
-msgstr ""
+msgstr "एल्बम में अपलोड करें"
 
 #: src/library/staging_view/album_picker.rs:50
 msgid "Upload Queued"
-msgstr ""
+msgstr "अपलोड कतारबद्ध"
 
 #: src/library/staging_view/album_picker.rs:53
 #, rust-format
 msgid "{n} file queued for upload. Progress is visible in the queue inspector."
 msgid_plural ""
 "{n} files queued for upload. Progress is visible in the queue inspector."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ाइल अपलोड के लिए कतारबद्ध। प्रगति कतार निरीक्षक में दिखाई दे रही है।"
+msgstr[1] "{n} फ़ाइलें अपलोड के लिए कतारबद्ध। प्रगति कतार निरीक्षक में दिखाई दे रही है।"
 
 #: src/library/staging_view/album_picker.rs:62
 msgid "Upload Failed"
-msgstr ""
+msgstr "अपलोड विफल रहा"
 
 #: src/library/staging_view/album_picker.rs:65
 #, rust-format
 msgid "{n} file failed to enqueue. Check the logs for details."
 msgid_plural "All {n} files failed to enqueue. Check the logs for details."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ाइल कतार में जोड़ने में विफल रही। विवरण के लिए लॉग देखें।"
+msgstr[1] "सभी {n} फ़ाइलें कतार में जोड़ने में विफल रहीं। विवरण के लिए लॉग देखें।"
 
 #: src/library/staging_view/album_picker.rs:74
 msgid "Upload Partially Queued"
-msgstr ""
+msgstr "अपलोड आंशिक रूप से कतारबद्ध"
 
 #: src/library/staging_view/album_picker.rs:77
 #, rust-format
 msgid "{n} file queued, {skipped} skipped (hash or path errors)."
 msgid_plural "{n} files queued, {skipped} skipped (hash or path errors)."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ाइल कतारबद्ध, {skipped} छोड़ी गई (हैश या पथ त्रुटियाँ)।"
+msgstr[1] "{n} फ़ाइलें कतारबद्ध, {skipped} छोड़ी गईं (हैश या पथ त्रुटियाँ)।"
 
 #: src/library/tags_view.rs:38 src/library/tags_view.rs:249
 msgid "New Tag"
-msgstr ""
+msgstr "नया टैग"
 
 #: src/library/tags_view.rs:74
 msgid "Could Not Load Tags"
-msgstr ""
+msgstr "टैग लोड नहीं किए जा सके"
 
 #: src/library/tags_view.rs:100
 msgid "All Tags"
-msgstr ""
+msgstr "सभी टैग"
 
 #: src/library/tags_view.rs:114
 msgid "No Tags"
-msgstr ""
+msgstr "कोई टैग नहीं"
 
 #: src/library/tags_view.rs:115
 msgid ""
 "Create a tag with New Tag, or tag photos from the lightbox details pane."
-msgstr ""
+msgstr "नया टैग से एक टैग बनाएँ, या लाइटबॉक्स विवरण फलक से तस्वीरों पर टैग लगाएँ।"
 
 #: src/library/tags_view.rs:118
 msgid "No Tags Inside"
-msgstr ""
+msgstr "अंदर कोई टैग नहीं है"
 
 #: src/library/tags_view.rs:119
 msgid "Use New Tag to add one here."
-msgstr ""
+msgstr "यहाँ जोड़ने के लिए नया टैग का उपयोग करें।"
 
 #: src/library/tags_view.rs:137
 #, rust-format
 msgid "Show photos tagged {value}"
-msgstr ""
+msgstr "{value} टैग वाली तस्वीरें दिखाएँ"
 
 #: src/library/tags_view.rs:143
 #, rust-format
 msgid "{n} tag inside"
 msgid_plural "{n} tags inside"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "अंदर {n} टैग"
+msgstr[1] "अंदर {n} टैग"
 
 #: src/library/tags_view.rs:183
 msgid "Change color"
-msgstr ""
+msgstr "रंग बदलें"
 
 #: src/library/tags_view.rs:209
 msgid "Change Color…"
-msgstr ""
+msgstr "रंग बदलें…"
 
 #: src/library/tags_view.rs:240
 #, rust-format
 msgid "The tag is created inside {parent}."
-msgstr ""
+msgstr "टैग {parent} के अंदर बनाया गया है।"
 
 #: src/library/tags_view.rs:252 src/library/tags_view.rs:276
 msgid "Tag name"
-msgstr ""
+msgstr "टैग नाम"
 
 #: src/library/tags_view.rs:261
 msgid "Could Not Create Tag"
-msgstr ""
+msgstr "टैग नहीं बनाया जा सका"
 
 #: src/library/tags_view.rs:273
 msgid "Rename Tag"
-msgstr ""
+msgstr "टैग का नाम बदलें"
 
 #: src/library/tags_view.rs:274
 msgid "Photos keep the tag under its new name."
-msgstr ""
+msgstr "तस्वीरें अपने नए नाम के तहत टैग रखती हैं।"
 
 #: src/library/tags_view.rs:283
 msgid "Couldn't rename the tag"
-msgstr ""
+msgstr "टैग का नाम नहीं बदला जा सका"
 
 #: src/library/tags_view.rs:289
 msgid "Could Not Rename Tag"
-msgstr ""
+msgstr "टैग का नाम नहीं बदला जा सका"
 
 #: src/library/tags_view.rs:301
 #, rust-format
 msgid "Delete “{name}”?"
-msgstr ""
+msgstr "“{name}” हटाएँ?"
 
 #: src/library/tags_view.rs:304
 msgid "The tag is removed from every photo. This can't be undone."
-msgstr ""
+msgstr "टैग को हर तस्वीर से हटा दिया जाता है। इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/tags_view.rs:309
 msgid "Could Not Delete Tag"
-msgstr ""
+msgstr "टैग हटाया नहीं जा सका"
 
 #: src/library/tags_view.rs:330
 #, rust-format
 msgid "Color for “{name}”"
-msgstr ""
+msgstr "“{name}” के लिए रंग"
 
 #: src/library/tags_view.rs:356
 msgid "Could Not Change Color"
-msgstr ""
+msgstr "रंग बदला नहीं जा सका"
 
 #: src/library/tags_view.rs:413
 msgid "Custom color"
-msgstr ""
+msgstr "कस्टम रंग"
 
 #: src/library/tags_view.rs:435
 msgid "Custom"
-msgstr ""
+msgstr "कस्टम"
 
 #: src/library/theme/palettes.rs:61
 msgid "Warm White"
-msgstr ""
+msgstr "वार्म व्हाइट"
 
 #: src/library/theme/palettes.rs:68
 msgid "Lavender"
-msgstr ""
+msgstr "लैवेंडर"
 
 #: src/library/theme/palettes.rs:75
 msgid "Mint"
-msgstr ""
+msgstr "मिंट"
 
 #: src/library/theme/palettes.rs:91
 msgid "Black"
-msgstr ""
+msgstr "काला"
 
 #: src/library/theme/palettes.rs:99
 msgid "Midnight"
-msgstr ""
+msgstr "मिडनाइट"
 
 #: src/library/theme/palettes.rs:106
 msgid "Mocha"
-msgstr ""
+msgstr "मोका"
 
 #: src/library/thumbnail_cache.rs:68 src/library/thumbnail_cache.rs:69
 msgid "Thumbnail load cancelled"
-msgstr ""
+msgstr "थंबनेल लोड करना रद्द किया गया"
 
 #: src/library/thumbnail_cache.rs:576
 msgid "MemTotal:"
-msgstr ""
+msgstr "MemTotal:"
 
 #: src/library/thumbnail_cache/decode.rs:122
 msgid "Failed to scale video thumbnail"
-msgstr ""
+msgstr "वीडियो थंबनेल को स्केल करने में विफल"
 
 #: src/library/thumbnail_cache/decode.rs:134
 #, rust-format
 msgid "No decoder succeeded for {path}"
-msgstr ""
+msgstr "{path} के लिए कोई डिकोडर सफल नहीं हुआ"
 
 #: src/library/thumbnail_cache/decode.rs:158
 msgid "Failed to scale pixbuf"
-msgstr ""
+msgstr "Pixbuf को स्केल करने में विफल"
 
 #: src/library/thumbnail_cache/screen.rs:40
 msgid "No decoder could read the file"
-msgstr ""
+msgstr "कोई भी डिकोडर फ़ाइल को नहीं पढ़ सका"
 
 #: src/library/time_zones.rs:82
 msgid "Time zone"
-msgstr ""
+msgstr "समय क्षेत्र"
 
 #. Translators: strftime day heading in the photo timeline, e.g. "Fri, Oct 9".
 #: src/library/timeline/dates.rs:15
 msgid "%a, %b %-d"
-msgstr ""
+msgstr "%a, %-d %b"
 
 #. Translators: strftime day heading for another year, e.g. "Fri, Oct 9, 2025".
 #: src/library/timeline/dates.rs:18
 msgid "%a, %b %-d, %Y"
-msgstr ""
+msgstr "%a, %-d %b %Y"
 
 #. Translators: strftime month heading, e.g. "October 2026"; %OB is the standalone month name.
 #: src/library/timeline/dates.rs:25
 msgid "%B %Y"
-msgstr ""
+msgstr "%B %Y"
 
 #: src/library/timeline/mod.rs:241
 msgid "This photo isn't in your Photos timeline"
-msgstr ""
+msgstr "यह तस्वीर आपकी तस्वीरें टाइमलाइन में नहीं है"
 
 #: src/library/trash_view.rs:35
 msgid ""
 "Immich permanently deletes trashed items after its retention period (30 days "
 "by default)."
-msgstr ""
+msgstr "Immich अपनी प्रतिधारण अवधि (डिफ़ॉल्ट रूप से 30 दिन) के बाद ट्रैश किए गए आइटमों को स्थायी रूप से हटा देता है।"
 
 #: src/library/trash_view.rs:66
 msgid "Restore All"
-msgstr ""
+msgstr "सभी पुनर्स्थापित करें"
 
 #: src/library/trash_view.rs:68 src/library/trash_view.rs:238
 msgid "Empty Trash"
-msgstr ""
+msgstr "ट्रैश खाली करें"
 
 #: src/library/trash_view.rs:74
 msgid "Restore selected"
-msgstr ""
+msgstr "चयनित को पुनर्स्थापित करें"
 
 #: src/library/trash_view.rs:79
 msgid "Delete selected permanently"
-msgstr ""
+msgstr "चयनित को स्थायी रूप से हटाएँ"
 
 #: src/library/trash_view.rs:167 src/library/trash_view.rs:228
 msgid "Could Not Restore"
-msgstr ""
+msgstr "पुनर्स्थापित नहीं किया जा सका"
 
 #: src/library/trash_view.rs:175
 msgid "Delete this item permanently?"
-msgstr ""
+msgstr "इस आइटम को स्थायी रूप से हटाएँ?"
 
 #: src/library/trash_view.rs:188
 msgid "This can't be undone. Local copies in your watch folders are kept."
-msgstr ""
+msgstr "इसे पूर्ववत नहीं किया जा सकता। आपके वॉच फ़ोल्डरों में स्थानीय प्रतियां सुरक्षित रहेंगी।"
 
 #: src/library/trash_view.rs:217
 msgid "Could Not Delete"
-msgstr ""
+msgstr "हटाया नहीं जा सका"
 
 #: src/library/trash_view.rs:236
 msgid "Empty the trash?"
-msgstr ""
+msgstr "ट्रैश खाली करें?"
 
 #: src/library/trash_view.rs:237
 msgid ""
 "Everything in the Immich trash is deleted permanently. This can't be undone."
-msgstr ""
+msgstr "Immich ट्रैश में मौजूद सभी चीज़ें स्थायी रूप से हटा दी जाएँगी। इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/trash_view.rs:243
 msgid "Could Not Empty Trash"
-msgstr ""
+msgstr "ट्रैश खाली नहीं किया जा सका"
 
 #: src/library/upload_stack.rs:33
 msgid "Upload and Create Stack…"
-msgstr ""
+msgstr "अपलोड करें और स्टैक बनाएँ…"
 
 #: src/library/upload_stack.rs:35
 msgid "Upload and Add to Stack…"
-msgstr ""
+msgstr "अपलोड करें और स्टैक में जोड़ें…"
 
 #: src/library/upload_stack.rs:50
 msgid "Upload and Stack"
-msgstr ""
+msgstr "अपलोड करें और स्टैक करें"
 
 #: src/library/upload_stack.rs:107
 msgid "Stack created"
-msgstr ""
+msgstr "स्टैक बनाया गया"
 
 #: src/library/upload_stack.rs:109
 msgid "Added to the stack"
-msgstr ""
+msgstr "स्टैक में जोड़ा गया"
 
 #: src/library/upload_stack.rs:130
 #, rust-format
 msgid "Couldn't upload {n} file"
 msgid_plural "Couldn't upload {n} files"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{n} फ़ाइल अपलोड नहीं की जा सकी"
+msgstr[1] "{n} फ़ाइलें अपलोड नहीं की जा सकीं"
 
 #: src/library/upload_stack.rs:138
 msgid "Immich didn't accept the upload."
-msgstr ""
+msgstr "Immich ने अपलोड स्वीकार नहीं किया।"
 
 #: src/library/utilities.rs:58
 msgid "Add Location"
-msgstr ""
+msgstr "स्थान जोड़ें"
 
 #: src/library/utilities.rs:59
 msgid "Change Date"
-msgstr ""
+msgstr "तारीख बदलें"
 
 #: src/library/utilities.rs:127
 msgid "Select photos, then Change Date"
-msgstr ""
+msgstr "तस्वीरें चुनें, फिर तारीख बदलें"
 
 #: src/library/utilities.rs:128
 msgid "Select photos, then Add Location"
-msgstr ""
+msgstr "तस्वीरें चुनें, फिर स्थान जोड़ें"
 
 #: src/library/utilities.rs:185
 #, rust-format
 msgid "{size} in all"
-msgstr ""
+msgstr "कुल {size}"
 
 #: src/library/utilities/controls.rs:29 src/settings_window/behavior.rs:182
 msgid "All Files"
@@ -5197,132 +5212,132 @@ msgstr "सभी फ़ाइलें"
 
 #: src/library/utilities/controls.rs:31
 msgid "Kind of file"
-msgstr ""
+msgstr "फ़ाइल का प्रकार"
 
 #: src/library/utilities/controls.rs:36
 msgid "Smallest size"
-msgstr ""
+msgstr "न्यूनतम आकार"
 
 #: src/library/utilities/controls.rs:72
 msgid "Any Size"
-msgstr ""
+msgstr "कोई भी आकार"
 
 #: src/library/utilities/controls.rs:73
 #, rust-format
 msgid "Over {n} GB"
-msgstr ""
+msgstr "{n} GB से अधिक"
 
 #: src/library/utilities/controls.rs:74
 #, rust-format
 msgid "Over {n} MB"
-msgstr ""
+msgstr "{n} MB से अधिक"
 
 #: src/library/utilities/controls.rs:84 src/library/utilities/controls.rs:117
 msgid "Dates"
-msgstr ""
+msgstr "तारीखें"
 
 #: src/library/utilities/controls.rs:88
 msgid "Show only photos taken between two days"
-msgstr ""
+msgstr "केवल दो दिनों के बीच ली गई तस्वीरें दिखाएँ"
 
 #: src/library/utilities/controls.rs:101
 msgid "Show the photos without a place taken between these days."
-msgstr ""
+msgstr "इन दिनों के बीच बिना स्थान की ली गई तस्वीरें दिखाएँ।"
 
 #: src/library/utilities/controls.rs:142
 #, rust-format
 msgid "From {from} to {until}"
-msgstr ""
+msgstr "{from} से {until} तक"
 
 #: src/library/utilities/controls.rs:145
 #, rust-format
 msgid "From {from}"
-msgstr ""
+msgstr "{from} से"
 
 #: src/library/utilities/controls.rs:146
 #, rust-format
 msgid "Until {until}"
-msgstr ""
+msgstr "{until} तक"
 
 #: src/library/utilities/controls.rs:157
 #, rust-format
 msgid "Before {year}"
-msgstr ""
+msgstr "{year} से पहले"
 
 #: src/library/utilities/controls.rs:160
 msgid "Future"
-msgstr ""
+msgstr "भविष्य"
 
 #: src/library/utilities/controls.rs:187
 msgid "Dated after today"
-msgstr ""
+msgstr "आज के बाद की तारीख"
 
 #: src/library/utilities/controls.rs:189
 #, rust-format
 msgid "Dated before {year}"
-msgstr ""
+msgstr "{year} से पहले की तारीख"
 
 #: src/library/video_player.rs:240
 msgid "Exit fullscreen (F11)"
-msgstr ""
+msgstr "पूर्ण स्क्रीन से बाहर निकलें (F11)"
 
 #: src/library/video_player.rs:242 src/library/video_player/controls.rs:61
 msgid "Fullscreen (F11)"
-msgstr ""
+msgstr "पूर्ण स्क्रीन (F11)"
 
 #: src/library/video_player.rs:317 src/library/video_player/controls.rs:41
 msgid "Play (Space)"
-msgstr ""
+msgstr "चलाएँ (Space)"
 
 #: src/library/video_player/controls.rs:35
 msgid "Audio and subtitles"
-msgstr ""
+msgstr "ऑडियो और उपशीर्षक"
 
 #: src/library/video_player/controls.rs:42
 msgid "Stop"
-msgstr ""
+msgstr "रोकें"
 
 #: src/library/video_player/controls.rs:45
 msgid "Back 10 seconds (J)"
-msgstr ""
+msgstr "10 सेकंड पीछे (J)"
 
 #: src/library/video_player/controls.rs:49
 msgid "Forward 10 seconds (L)"
-msgstr ""
+msgstr "10 सेकंड आगे (L)"
 
 #: src/library/video_player/controls.rs:149
 #, rust-format
 msgid "Track {n} ({lang})"
-msgstr ""
+msgstr "ट्रैक {n} ({lang})"
 
 #: src/library/video_player/controls.rs:152
 #, rust-format
 msgid "Track {n}"
-msgstr ""
+msgstr "ट्रैक {n}"
 
 #: src/library/video_player/controls.rs:197
 msgid "Loop"
-msgstr ""
+msgstr "लूप"
 
 #: src/library/video_player/controls.rs:261
 msgid "Playback speed"
-msgstr ""
+msgstr "प्लेबैक गति"
 
 #: src/library/video_player/controls.rs:275
 msgid "Mute (M)"
-msgstr ""
+msgstr "म्यूट (M)"
 
 #: src/library/video_player/controls.rs:282
 msgid "Volume"
-msgstr ""
+msgstr "आवाज़"
 
 #: src/library/video_player/pipeline.rs:44
 msgid "The GStreamer GTK 4 video sink (gst-plugin-gtk4) is not installed."
-msgstr ""
+msgstr "GStreamer GTK 4 वीडियो सिंक (gst-plugin-gtk4) इंस्टॉल नहीं है।"
 
 #: src/library/video_player/tracks.rs:34
 msgid "Audio"
-msgstr ""
+msgstr "ऑडियो"
 
 #: src/library/video_player/tracks.rs:49 src/settings_window/library.rs:129
 msgid "Off"
@@ -5330,31 +5345,31 @@ msgstr "बंद"
 
 #: src/library/video_player/tracks.rs:57
 msgid "Subtitles"
-msgstr ""
+msgstr "उपशीर्षक"
 
 #: src/library/window_layout.rs:106
 msgid "Mimick Library"
-msgstr ""
+msgstr "Mimick लाइब्रेरी"
 
 #: src/library/window_layout.rs:280
 msgid "Toggle sidebar (F9)"
-msgstr ""
+msgstr "साइडबार टॉगल करें (F9)"
 
 #: src/library/window_layout.rs:284
 msgid "Back (Alt+Left)"
-msgstr ""
+msgstr "पीछे (Alt+Left)"
 
 #: src/library/window_layout.rs:289
 msgid "Menu"
-msgstr ""
+msgstr "मेनू"
 
 #: src/library/window_layout.rs:297
 msgid "Search (Ctrl+K)"
-msgstr ""
+msgstr "खोजें (Ctrl+K)"
 
 #: src/library/window_layout.rs:303
 msgid "Select assets (Esc to exit)"
-msgstr ""
+msgstr "एसेट चुनें (बाहर निकलने के लिए Esc)"
 
 #: src/library/window_layout.rs:333 src/settings_window/queue_inspector.rs:61
 msgid "Queue Inspector"
@@ -5367,7 +5382,7 @@ msgstr "सेटिंग्स"
 
 #: src/library/window_layout.rs:337
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "कीबोर्ड शॉर्टकट"
 
 #: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
 msgid "About Mimick"
@@ -5375,35 +5390,35 @@ msgstr "Mimick के बारे में"
 
 #: src/library/window_layout.rs:393
 msgid "Remote"
-msgstr ""
+msgstr "रिमोट"
 
 #: src/library/window_layout.rs:394
 msgid "Local"
-msgstr ""
+msgstr "स्थानीय"
 
 #: src/library/window_layout.rs:395
 msgid "Unified"
-msgstr ""
+msgstr "एकीकृत"
 
 #: src/library/window_layout.rs:398
 msgid "Asset source"
-msgstr ""
+msgstr "एसेट स्रोत"
 
 #: src/library/window_layout.rs:415
 msgid "Paste from Clipboard"
-msgstr ""
+msgstr "क्लिपबोर्ड से चिपकाएँ"
 
 #: src/library/window_layout.rs:423
 msgid "More ways to upload"
-msgstr ""
+msgstr "अपलोड करने के अन्य तरीके"
 
 #: src/library/window_layout.rs:444
 msgid "Nothing to show"
-msgstr ""
+msgstr "दिखाने के लिए कुछ नहीं है"
 
 #: src/library/window_layout.rs:445
 msgid "No assets match the current view"
-msgstr ""
+msgstr "वर्तमान दृश्य से कोई भी एसेट मेल नहीं खाता"
 
 #: src/library/window_layout.rs:500
 #: src/settings_window/watch_folders/rules_dialog.rs:238
@@ -5412,47 +5427,47 @@ msgstr "सिंक"
 
 #: src/library/window_layout.rs:506
 msgid "Link"
-msgstr ""
+msgstr "लिंक"
 
 #: src/library/window_layout/bulk_bar.rs:65
 msgid "Add to album"
-msgstr ""
+msgstr "एल्बम में जोड़ें"
 
 #: src/library/window_layout/bulk_bar.rs:66
 msgid "Stack selected"
-msgstr ""
+msgstr "चयनित को स्टैक करें"
 
 #: src/library/window_layout/bulk_bar.rs:68
 msgid "Remove from album"
-msgstr ""
+msgstr "एल्बम से हटाएँ"
 
 #: src/library/window_layout/bulk_bar.rs:203
 msgid "Set location for selected"
-msgstr ""
+msgstr "चयनित के लिए स्थान निर्धारित करें"
 
 #: src/library/window_layout/bulk_bar.rs:207
 msgid "Change date for selected"
-msgstr ""
+msgstr "चयनित के लिए तारीख बदलें"
 
 #: src/library/window_layout/bulk_bar.rs:224
 msgid "Delete selected"
-msgstr ""
+msgstr "चयनित हटाएँ"
 
 #: src/library/window_layout/bulk_bar.rs:229
 msgid "Download selected"
-msgstr ""
+msgstr "चयनित डाउनलोड करें"
 
 #: src/library/window_layout/bulk_bar.rs:233
 msgid "Clear selection"
-msgstr ""
+msgstr "चयन साफ़ करें"
 
 #: src/library/window_layout/bulk_bar.rs:238
 msgid "Share selected"
-msgstr ""
+msgstr "चयनित साझा करें"
 
 #: src/library/window_layout/responsive.rs:173
 msgid "Sync…"
-msgstr ""
+msgstr "सिंक…"
 
 #: src/main/ui_lifecycle.rs:56 src/queue_manager.rs:481
 msgid "Paused by user"
@@ -6481,3 +6496,4 @@ msgstr "सेटिंग्स - सर्वर कनेक्शन और 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
 msgid "Status page with sync health dashboard"
 msgstr "सिंक स्थिति डैशबोर्ड के साथ स्थिति पृष्ठ"
+
