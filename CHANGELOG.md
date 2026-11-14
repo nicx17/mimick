@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.15.2] - 2026-11-14
+
+### Added
+
+- Added complete 100% translations for 21 languages across all 1,465 application strings (#338):
+  - Chinese (Simplified), Chinese (Traditional), Czech, Dutch, Finnish, French, German, Hindi, Indonesian, Italian, Japanese, Konkani (Romi), Korean, Norwegian Bokmål, Polish, Portuguese (Brazil), Russian, Spanish, Swedish, Turkish, and Ukrainian.
+
+### Fixed
+
+- Fixed Flatpak locale directory migration and symlink handling in build scripts (#338).
+- Fixed ShellCheck lint warnings in translation progress generation script (#338).
+
 ## [9.15.1] - 2026-11-12
 
 ### Added
