@@ -100,6 +100,10 @@ Per-release highlights and live open issues are on the [roadmap page](https://mi
 - [x] **AUR Package** — `mimick` on the Arch User Repository (#295).
 - [x] **AppImages** — x86_64 and aarch64 AppImages attached to each release (#295).
 
+### 9.15.2 Internationalization Release
+- [x] **Full 21-Language Localization** — Complete translations across 21 locales with 100% coverage (1,465 strings each) and gettext plural handling (#338).
+- [x] **Flatpak Build and Packaging Fixes** — Locale directory migration fix for Flatpak builds and ShellCheck script cleanups (#338).
+
 ### 9.15.1 Maintenance Release
 - [x] **AppImage Packaging** — Switched AppImage builds to AppImageKit's SquashFS-based `appimagetool` with automatic zsync delta generation, fixed output directories, and AppStream validation (#295, #335).
 - [x] **Donations & Website** — Dedicated UPI donation page (`pay.html`) and responsive support cards, plus website dark mode previews (#333).
@@ -128,7 +132,7 @@ Per-release highlights and live open issues are on the [roadmap page](https://mi
 
 Finished on `main` and coming in the next release (see the Unreleased section of [CHANGELOG.md](CHANGELOG.md)).
 
-Nothing merged yet since 9.15.1.
+Nothing merged yet since 9.15.2.
 
 ---
 

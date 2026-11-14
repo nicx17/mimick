@@ -2423,7 +2423,7 @@ dependencies = [
 
 [[package]]
 name = "mimick"
-version = "9.15.1"
+version = "9.15.2"
 dependencies = [
  "ashpd",
  "base64 0.22.1",
