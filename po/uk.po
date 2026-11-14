@@ -1,0 +1,6566 @@
+# Ukrainian translations for mimick package.
+# Copyright (C) 2026 THE mimick'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the mimick package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: mimick\n"
+"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
+"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"PO-Revision-Date: 2026-11-09 20:57+0530\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Ukrainian\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/about.rs:49
+msgid "Documentation"
+msgstr "Документація"
+
+#: src/about.rs:51
+msgid "Attribution"
+msgstr "Подяки"
+
+#: src/about.rs:53
+msgid "Special Thanks"
+msgstr "Особлива подяка"
+
+#: src/about.rs:56
+msgid "Built With"
+msgstr "Створено за допомогою"
+
+#: src/api_client/albums.rs:70
+msgid "Album list is unavailable"
+msgstr "Список альбомів недоступний"
+
+#: src/api_client/albums.rs:71
+msgid "Reconnect to the Immich server before refreshing albums."
+msgstr "Повторно під'єднайтеся до сервера Immich перед оновленням альбомів."
+
+#: src/api_client/albums.rs:180
+msgid "Failed to fetch albums"
+msgstr "Не вдалося отримати альбоми"
+
+#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+msgid "Cannot fetch albums to verify existence"
+msgstr "Не вдалося отримати альбоми для перевірки їхнього існування"
+
+#: src/api_client/errors.rs:35
+#, rust-format
+msgid ""
+"The server responded with HTTP {status}. Check the server logs and retry "
+"after confirming the current configuration."
+msgstr "Сервер відповів кодом HTTP {status}. Перевірте журнали сервера та повторіть спробу після перевірки поточної конфігурації."
+
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+msgid "Immich rejected the API key"
+msgstr "Immich відхилив ключ API"
+
+#: src/api_client/errors.rs:45
+msgid ""
+"Update the API key in Settings and confirm it still has the required Asset "
+"and Album permissions (see README for the full list)."
+msgstr "Оновіть ключ API у «Параметрах» і переконайтеся, що він досі має необхідні дозволи для ресурсів і альбомів (повний список див. у файлі README)."
+
+#: src/api_client/errors.rs:54
+msgid "An album reference is no longer valid"
+msgstr "Посилання на альбом більше не дійсне"
+
+#: src/api_client/errors.rs:55
+msgid "Refresh the album list or choose a different album before retrying."
+msgstr "Оновіть список альбомів або виберіть інший альбом перед повторною спробою."
+
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+msgid "Immich rejected a file as too large"
+msgstr "Immich відхилив файл як завеликий"
+
+#: src/api_client/errors.rs:61
+msgid ""
+"Reduce the file size, raise the server upload limit, or skip oversized files "
+"with folder rules."
+msgstr "Зменшіть розмір файлу, збільште обмеження на вивантаження на сервері або налаштуйте пропуск файлів великого розміру правилами тек."
+
+#: src/api_client/errors.rs:65
+msgid "Immich rate-limited the request"
+msgstr "Immich обмежив частоту запитів"
+
+#: src/api_client/errors.rs:67
+msgid ""
+"Wait a moment and retry. If this happens often, lower upload concurrency or "
+"check reverse proxy limits."
+msgstr "Зачекайте трохи та повторіть спробу. Якщо це трапляється часто, зменшіть кількість одночасних вивантажень або перевірте обмеження зворотного проксі."
+
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+msgid "Immich is temporarily unavailable"
+msgstr "Immich тимчасово недоступний"
+
+#: src/api_client/errors.rs:73
+msgid ""
+"Wait a moment and retry. If it keeps happening, inspect the server and "
+"reverse proxy logs."
+msgstr "Зачекайте трохи та повторіть спробу. Якщо це повторюється, перевірте журнали сервера та зворотного проксі."
+
+#: src/api_client/errors.rs:88
+msgid "the upload"
+msgstr "вивантаження"
+
+#: src/api_client/errors.rs:90
+#, rust-format
+msgid "Immich could not accept {subject}"
+msgstr "Immich не вдалося прийняти {subject}"
+
+#: src/api_client/errors.rs:95 src/library/explore_view/tiles.rs:116
+#: src/library/explore_view/tiles.rs:138 src/library/people_view.rs:236
+#: src/library/source_header/enrichment.rs:242
+msgid "Unnamed"
+msgstr "Без назви"
+
+#: src/api_client/errors.rs:97
+#, rust-format
+msgid "Immich could not create album '{album}'"
+msgstr "Immich не вдалося створити альбом '{album}'"
+
+#: src/api_client/errors.rs:101
+msgid "Immich could not load the album list"
+msgstr "Immich не вдалося завантажити список альбомів"
+
+#: src/api_client/errors.rs:103
+msgid "Immich could not add the asset to the selected album"
+msgstr "Immich не вдалося додати елемент до вибраного альбому"
+
+#: src/api_client/errors.rs:105
+msgid "Immich could not load a library thumbnail"
+msgstr "Immich не вдалося завантажити мініатюру з бібліотеки"
+
+#: src/api_client/errors.rs:106
+msgid "Immich could not load library assets"
+msgstr "Immich не вдалося завантажити елементи бібліотеки"
+
+#: src/api_client/errors.rs:107
+msgid "Immich could not run the smart library search"
+msgstr "Immich не вдалося виконати розумний пошук бібліотеки"
+
+#: src/api_client/errors.rs:109
+msgid "Immich could not run the metadata library search"
+msgstr "Immich не вдалося виконати пошук за метаданими бібліотеки"
+
+#: src/api_client/errors.rs:111
+msgid "Immich could not download the selected asset"
+msgstr "Immich не вдалося завантажити вибраний елемент"
+
+#: src/api_client/errors.rs:112
+msgid "Immich could not load library statistics"
+msgstr "Immich не вдалося завантажити статистику бібліотеки"
+
+#: src/api_client/errors.rs:113
+msgid "Immich could not load server version information"
+msgstr "Immich не вдалося завантажити відомості про версію сервера"
+
+#: src/api_client/errors.rs:121
+msgid "The Immich request timed out"
+msgstr "Вичерпано час очікування запиту до Immich"
+
+#: src/api_client/errors.rs:122
+msgid "Check network quality and server responsiveness, then retry."
+msgstr "Перевірте якість мережі та швидкість відповіді сервера, а потім повторіть спробу."
+
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+msgid "Could not reach the Immich server"
+msgstr "Не вдалося зв'язатися з сервером Immich"
+
+#: src/api_client/errors.rs:128
+msgid ""
+"Check the configured URLs, your network connection, and whether the server "
+"is online."
+msgstr "Перевірте налаштовані URL-адреси, з'єднання з мережею та доступність сервера."
+
+#: src/api_client/errors.rs:135
+msgid ""
+"Retry the request after checking network connectivity and server health."
+msgstr "Повторіть запит після перевірки з'єднання з мережею та стану сервера."
+
+#: src/api_client/errors.rs:144
+msgid "The upload request failed before completion"
+msgstr "Запит на вивантаження зазнав збою до завершення"
+
+#: src/api_client/errors.rs:145
+msgid "The album request failed before completion"
+msgstr "Запит щодо альбому зазнав збою до завершення"
+
+#: src/api_client/errors.rs:147
+msgid "The album creation request failed before completion"
+msgstr "Запит на створення альбому зазнав збою до завершення"
+
+#: src/api_client/errors.rs:150
+msgid "The album assignment request failed before completion"
+msgstr "Запит на додавання до альбому зазнав збою до завершення"
+
+#: src/api_client/errors.rs:152
+msgid "The thumbnail request failed before completion"
+msgstr "Запит мініатюри зазнав збою до завершення"
+
+#: src/api_client/errors.rs:153
+msgid "The library asset request failed before completion"
+msgstr "Запит елемента бібліотеки зазнав збою до завершення"
+
+#: src/api_client/errors.rs:154
+msgid "The smart search request failed before completion"
+msgstr "Запит розумного пошуку зазнав збою до завершення"
+
+#: src/api_client/errors.rs:156
+msgid "The metadata search request failed before completion"
+msgstr "Запит пошуку за метаданими зазнав збою до завершення"
+
+#: src/api_client/errors.rs:159
+msgid "The asset download request failed before completion"
+msgstr "Запит на завантаження елемента зазнав збою до завершення"
+
+#: src/api_client/errors.rs:162
+msgid "The library statistics request failed before completion"
+msgstr "Запит статистики бібліотеки зазнав збою до завершення"
+
+#: src/api_client/errors.rs:165
+msgid "The server version request failed before completion"
+msgstr "Запит версії сервера зазнав збою до завершення"
+
+#: src/api_client/mod.rs:387
+msgid "No active connection"
+msgstr "Немає активного з'єднання"
+
+#: src/api_client/search.rs:358
+msgid "Immich can't count by file name or deleted photos"
+msgstr "Immich не може вести підрахунок за назвою файлу або вилученими фотографіями"
+
+#: src/api_client/tags.rs:76
+#, rust-format
+msgid "Immich did not return the tag \"{value}\""
+msgstr "Immich не повернув мітку «{value}»"
+
+#: src/api_client/tags.rs:87
+msgid "Renaming tags needs a newer version of Immich."
+msgstr "Для перейменування міток потрібна новіша версія Immich."
+
+#: src/api_client/timeline.rs:194
+#, rust-format
+msgid "Invalid month {month}"
+msgstr "Неприпустимий місяць {month}"
+
+#: src/api_client/upload.rs:301
+msgid "A queued file is no longer available"
+msgstr "Файл у черзі більше недоступний"
+
+#: src/api_client/upload.rs:303
+msgid "Mimick could not read a queued file"
+msgstr "Mimick не вдалося прочитати файл із черги"
+
+#: src/api_client/upload.rs:306
+msgid ""
+"Check that the watched folder still exists and that the file was not moved "
+"or deleted before upload."
+msgstr "Переконайтеся, що відстежувана тека досі існує, а файл не було переміщено або вилучено перед вивантаженням."
+
+#: src/api_client/upload.rs:308
+msgid ""
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr "Перевірте права доступу до теки та переконайтеся, що файл доступний програмі."
+
+#: src/api_client/upload.rs:322
+msgid "Mimick could not open a queued file"
+msgstr "Mimick не вдалося відкрити файл із черги"
+
+#: src/api_client/upload.rs:323
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr "Можливо, файл заблоковано, вилучено або він знаходиться поза межами дозволеного для програми доступу до тек."
+
+#: src/api_client/upload.rs:336
+msgid "No active server connection"
+msgstr "Немає активного з'єднання з сервером"
+
+#: src/api_client/upload.rs:337
+msgid ""
+"Test the server connection in Settings and confirm at least one Immich URL "
+"is reachable."
+msgstr "Перевірте з'єднання з сервером у «Параметрах» і переконайтеся, що принаймні одна URL-адреса Immich є досяжною."
+
+#: src/api_client/upload.rs:393
+msgid ""
+"Reduce the file size, raise the server's upload limits, or use a folder rule "
+"to skip oversized files."
+msgstr "Зменшіть розмір файлу, збільште обмеження на вивантаження на сервері або використайте правило теки для пропуску завеликих файлів."
+
+#: src/api_client/upload.rs:410
+msgid ""
+"Wait a moment and retry. If it keeps happening, check the server logs and "
+"reverse proxy."
+msgstr "Зачекайте трохи та повторіть спробу. Якщо це повторюється, перевірте журнали сервера та зворотного проксі."
+
+#: src/autostart.rs:50
+msgid ""
+"Reason for requesting background access: Mimick must run in the background "
+"to automatically sync media to Immich."
+msgstr "Причина запиту на доступ у фоновому режимі: Mimick має працювати у фоновому режимі для автоматичної синхронізації медіафайлів з Immich."
+
+#: src/autostart.rs:57
+#, rust-format
+msgid "Failed to contact the background portal: {err}"
+msgstr "Не вдалося зв'язатися з порталом фонового режиму: {err}"
+
+#: src/autostart.rs:59
+#, rust-format
+msgid "The desktop rejected the autostart request: {err}"
+msgstr "Стільничне середовище відхилило запит на автозапуск: {err}"
+
+#: src/autostart.rs:74
+#, rust-format
+msgid "Failed to create autostart directory: {err}"
+msgstr "Не вдалося створити каталог автозапуску: {err}"
+
+#: src/autostart.rs:88
+#, rust-format
+msgid "Failed to write autostart entry: {err}"
+msgstr "Не вдалося записати запис автозапуску: {err}"
+
+#: src/autostart.rs:114
+#, rust-format
+msgid "Failed to remove autostart entry: {err}"
+msgstr "Не вдалося вилучити запис автозапуску: {err}"
+
+#: src/autostart.rs:126 src/autostart.rs:133
+msgid "Could not locate the user config directory."
+msgstr "Не вдалося знайти каталог конфігурації користувача."
+
+#: src/library/about_dialog.rs:40
+msgid "Repository"
+msgstr "Репозиторій"
+
+#: src/library/about_dialog.rs:45
+msgid "Source"
+msgstr "Вихідний код"
+
+#: src/library/about_dialog.rs:50
+msgid "Build"
+msgstr "Збірка"
+
+#: src/library/about_dialog.rs:55
+msgid "Build Image"
+msgstr "Образ збірки"
+
+#. Translators: strftime date, e.g. "9 Oct 2026".
+#: src/library/about_dialog.rs:78 src/library/day_row.rs:63
+#: src/library/duplicates_view/cards.rs:217
+#: src/library/explore_view/calendar.rs:36 src/library/header_format.rs:64
+#: src/library/header_format.rs:77 src/library/utilities/controls.rs:138
+msgid "%-d %b %Y"
+msgstr "%-d %b %Y"
+
+#: src/library/about_dialog.rs:81
+#, rust-format
+msgid "Installed {version} on {date}"
+msgstr "Встановлено {version} ({date})"
+
+#: src/library/about_dialog.rs:135 src/library/about_dialog.rs:150
+msgid "Immich Server"
+msgstr "Сервер Immich"
+
+#: src/library/about_dialog.rs:214
+msgid "Version History"
+msgstr "Історія версій"
+
+#: src/library/about_dialog.rs:234
+msgid "Server details unavailable"
+msgstr "Відомості про сервер недоступні"
+
+#: src/library/about_dialog.rs:235
+#, rust-format
+msgid ""
+"Your API key needs the 'server.about' and 'server.versionCheck' "
+"permissions.\n"
+"\n"
+"{err}"
+msgstr ""
+"Для вашого ключа API потрібні дозволи «server.about» та «server.versionCheck».\n"
+"\n"
+"{err}"
+
+#: src/library/account.rs:34 src/library/window_layout.rs:332
+msgid "Account"
+msgstr "Обліковий запис"
+
+#: src/library/account.rs:66
+#, rust-format
+msgid "Couldn't load this. Your API key needs the “{permission}” permission."
+msgstr "Не вдалося завантажити це. Для вашого ключа API потрібен дозвіл «{permission}»."
+
+#: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
+#: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
+#: src/library/album_link.rs:187 src/library/album_wiring.rs:35
+#: src/library/asset_edit.rs:253 src/library/bulk_date.rs:316
+#: src/library/dialogs.rs:40 src/library/dialogs.rs:85
+#: src/library/dialogs.rs:110 src/library/lightbox/edit/panel.rs:101
+#: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
+#: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
+#: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/watch_folders/rules_dialog.rs:120
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: src/library/account/avatar_crop.rs:130
+msgid "Picture to crop; drag or use the arrow keys to move it"
+msgstr "Зображення для кадрування; перетягуйте або використовуйте клавіші зі стрілками для переміщення"
+
+#: src/library/account/avatar_crop.rs:407 src/library/bulk_date.rs:274
+msgid "Set"
+msgstr "Встановити"
+
+#: src/library/account/avatar_crop.rs:420
+msgid "Zoom"
+msgstr "Масштаб"
+
+#: src/library/account/avatar_crop.rs:440
+msgid "Crop Picture"
+msgstr "Кадрувати зображення"
+
+#: src/library/account/devices.rs:20
+msgid "Signed-in Devices"
+msgstr "Під'єднані пристрої"
+
+#: src/library/account/devices.rs:22
+msgid ""
+"Browsers and apps signed in to your account. Mimick uses an API key, so it "
+"isn't listed."
+msgstr "Браузери та програми, що увійшли до вашого облікового запису. Mimick використовує ключ API, тому його немає у списку."
+
+#: src/library/account/devices.rs:28
+msgid "Devices"
+msgstr "Пристрої"
+
+#: src/library/account/devices.rs:42
+msgid "No browsers or apps are signed in."
+msgstr "Немає під'єднаних браузерів або програм."
+
+#: src/library/account/devices.rs:72
+msgid "Sign out"
+msgstr "Вийти"
+
+#: src/library/account/devices.rs:84
+#, rust-format
+msgid "Sign out {device}?"
+msgstr "Вийти на пристрої {device}?"
+
+#: src/library/account/devices.rs:85
+msgid "It will have to sign in to Immich again."
+msgstr "Потрібно буде знову увійти до Immich."
+
+#: src/library/account/devices.rs:86
+msgid "Sign Out"
+msgstr "Вийти"
+
+#: src/library/account/devices.rs:105
+#, rust-format
+msgid "Couldn't sign it out: {err}"
+msgstr "Не вдалося завершити сеанс: {err}"
+
+#: src/library/account/devices.rs:118
+msgid "Unknown device"
+msgstr "Невідомий пристрій"
+
+#: src/library/account/devices.rs:126
+#, rust-format
+msgid "Last used {date}"
+msgstr "Останнє використання: {date}"
+
+#: src/library/account/keys.rs:34
+msgid "This App"
+msgstr "Ця програма"
+
+#: src/library/account/keys.rs:35
+msgid "The key Mimick signs in to Immich with."
+msgstr "Ключ, за допомогою якого Mimick під'єднується до Immich."
+
+#: src/library/account/keys.rs:39
+msgid "Other Keys"
+msgstr "Інші ключі"
+
+#: src/library/account/keys.rs:40
+msgid "Make new keys in Immich's web app."
+msgstr "Створюйте нові ключі у вебпрограмі Immich."
+
+#: src/library/account/keys.rs:44
+msgid "API Keys"
+msgstr "Ключі API"
+
+#: src/library/account/keys.rs:92
+msgid "No other keys."
+msgstr "Інших ключів немає."
+
+#: src/library/account/keys.rs:101
+msgid "Unnamed key"
+msgstr "Ключ без назви"
+
+#: src/library/account/keys.rs:115 src/library/shared_link_photos.rs:297
+#, rust-format
+msgid "Made {date}"
+msgstr "Створено {date}"
+
+#: src/library/account/keys.rs:119
+msgid "All permissions"
+msgstr "Усі дозволи"
+
+#: src/library/account/keys.rs:123
+#, rust-format
+msgid "{n} permission"
+msgid_plural "{n} permissions"
+msgstr[0] "{n} дозвіл"
+msgstr[1] "{n} дозволи"
+msgstr[2] "{n} дозволів"
+
+#: src/library/account/keys.rs:144
+msgid "Rotate…"
+msgstr "Змінити…"
+
+#: src/library/account/keys.rs:145
+msgid "Get a new secret for this key"
+msgstr "Отримати новий секрет для цього ключа"
+
+#: src/library/account/keys.rs:155
+msgid "Get a new secret for this key?"
+msgstr "Отримати новий секрет для цього ключа?"
+
+#: src/library/account/keys.rs:157
+msgid ""
+"Mimick saves the new secret and keeps working. Anything else using this key "
+"stops working until you give it the new secret."
+msgstr "Mimick збереже новий секрет і продовжить роботу. Будь-які інші програми, що використовують цей ключ, перестануть працювати, доки ви не надасте їм новий секрет."
+
+#: src/library/account/keys.rs:159
+msgid "Rotate"
+msgstr "Змінити"
+
+#: src/library/account/keys.rs:176
+#, rust-format
+msgid "Couldn't rotate the key: {err}"
+msgstr "Не вдалося змінити ключ: {err}"
+
+#: src/library/account/keys.rs:184
+msgid "New secret saved"
+msgstr "Новий секрет збережено"
+
+#: src/library/account/keys.rs:192
+msgid "Copy Your New Secret"
+msgstr "Скопіюйте свій новий секрет"
+
+#: src/library/account/keys.rs:194
+#, rust-format
+msgid ""
+"Mimick is using it now but couldn't save it ({err}). Paste it in Settings so "
+"it's kept:\n"
+"\n"
+"{secret}"
+msgstr ""
+"Mimick зараз використовує його, але не зміг зберегти ({err}). Вставте його у «Параметрах», щоб зберегти:\n"
+"\n"
+"{secret}"
+
+#: src/library/account/keys.rs:199 src/library/context_menu.rs:321
+#: src/library/context_menu.rs:336 src/library/masonry/canvas_helpers.rs:141
+#: src/settings_window/mod.rs:65
+msgid "OK"
+msgstr "Гаразд"
+
+#: src/library/account/keys.rs:212
+msgid "Delete key"
+msgstr "Вилучити ключ"
+
+#: src/library/account/keys.rs:223
+msgid "Delete this key?"
+msgstr "Вилучити цей ключ?"
+
+#: src/library/account/keys.rs:224
+msgid "Anything signing in with it stops working. This can't be undone."
+msgstr "Усе, що входить за його допомогою, перестане працювати. Цю дію не можна скасувати."
+
+#: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
+#: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
+#: src/library/shared_links_view.rs:361 src/library/tags_view.rs:184
+#: src/library/tags_view.rs:305
+msgid "Delete"
+msgstr "Вилучити"
+
+#: src/library/account/keys.rs:244
+#, rust-format
+msgid "Couldn't delete the key: {err}"
+msgstr "Не вдалося вилучити ключ: {err}"
+
+#: src/library/account/profile.rs:36
+msgid "Profile"
+msgstr "Профіль"
+
+#: src/library/account/profile.rs:61
+msgid "Change Picture…"
+msgstr "Змінити зображення…"
+
+#: src/library/account/profile.rs:65
+msgid "Remove Picture"
+msgstr "Вилучити зображення"
+
+#: src/library/account/profile.rs:109
+msgid "Remove your profile picture?"
+msgstr "Вилучити ваше зображення профілю?"
+
+#: src/library/account/profile.rs:110
+msgid "Immich shows your initials instead."
+msgstr "Immich показуватиме натомість ваші ініціали."
+
+#: src/library/account/profile.rs:111 src/library/lightbox/edit/pages.rs:138
+#: src/library/people_view.rs:458
+msgid "Remove"
+msgstr "Вилучити"
+
+#: src/library/account/profile.rs:124
+#, rust-format
+msgid "Couldn't load your account: {err}"
+msgstr "Не вдалося завантажити ваш обліковий запис: {err}"
+
+#: src/library/account/profile.rs:152
+msgid "To use one of your photos, choose Set as Profile Picture in its menu."
+msgstr "Щоб використати одну зі своїх фотографій, виберіть «Встановити як зображення профілю» в її меню."
+
+#: src/library/account/profile.rs:163
+msgid "Images"
+msgstr "Зображення"
+
+#: src/library/account/profile.rs:178
+msgid "Choose a Profile Picture"
+msgstr "Виберіть зображення профілю"
+
+#: src/library/account/profile.rs:193 src/library/account/profile.rs:222
+msgid "That file isn't a JPEG, PNG, or WebP picture."
+msgstr "Цей файл не є зображенням у форматі JPEG, PNG або WebP."
+
+#: src/library/account/profile.rs:203
+#, rust-format
+msgid "Couldn't open the picture: {err}"
+msgstr "Не вдалося відкрити зображення: {err}"
+
+#: src/library/account/profile.rs:232
+#, rust-format
+msgid "Couldn't change it: {err}"
+msgstr "Не вдалося змінити його: {err}"
+
+#: src/library/account/profile.rs:242
+msgid "Couldn't remove the picture"
+msgstr "Не вдалося вилучити зображення"
+
+#: src/library/account/profile.rs:282
+msgid "Profile picture changed"
+msgstr "Зображення профілю змінено"
+
+#: src/library/account/profile.rs:284
+msgid "Couldn't change your picture"
+msgstr "Не вдалося змінити ваше зображення"
+
+#: src/library/account/profile.rs:298
+msgid "Immich's preview of this photo isn't a JPEG or WebP."
+msgstr "Попередній перегляд цієї фотографії в Immich не у форматі JPEG або WebP."
+
+#: src/library/actions.rs:222
+msgid "New Link…"
+msgstr "Нове посилання…"
+
+#: src/library/actions.rs:229
+msgid "Add to Existing Link…"
+msgstr "Додати до наявного посилання…"
+
+#: src/library/actions.rs:270 src/library/utilities.rs:194
+#, rust-format
+msgid "{n} selected"
+msgid_plural "{n} selected"
+msgstr[0] "Вибрано {n}"
+msgstr[1] "Вибрано {n}"
+msgstr[2] "Вибрано {n}"
+
+#: src/library/actions.rs:276
+#, rust-format
+msgid "{owned} of {n} selected, only yours change"
+msgid_plural "{owned} of {n} selected, only yours change"
+msgstr[0] "Вибрано {owned} з {n}, зміняться лише ваші"
+msgstr[1] "Вибрано {owned} з {n}, зміняться лише ваші"
+msgstr[2] "Вибрано {owned} з {n}, зміняться лише ваші"
+
+#: src/library/actions.rs:318 src/library/actions.rs:351
+msgid "Not Your Photos"
+msgstr "Не ваші фотографії"
+
+#: src/library/actions.rs:319
+msgid ""
+"Only the owner can change where a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "Лише власник може змінювати місце зйомки фотографії, а вибрані фотографії належать іншим людям."
+
+#: src/library/actions.rs:352
+msgid ""
+"Only the owner can change when a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "Лише власник може змінювати дату зйомки фотографії, а вибрані фотографії належать іншим людям."
+
+#: src/library/actions/trash.rs:60
+#, rust-format
+msgid "Move “{filename}” to trash?"
+msgstr "Перемістити «{filename}» до смітника?"
+
+#: src/library/actions/trash.rs:65
+#, rust-format
+msgid "Move {count} item to trash?"
+msgid_plural "Move {count} items to trash?"
+msgstr[0] "Перемістити {count} елемент до смітника?"
+msgstr[1] "Перемістити {count} елементи до смітника?"
+msgstr[2] "Перемістити {count} елементів до смітника?"
+
+#: src/library/actions/trash.rs:72
+#, rust-format
+msgid "Delete “{filename}” permanently?"
+msgstr "Остаточно вилучити «{filename}»?"
+
+#: src/library/actions/trash.rs:77 src/library/trash_view.rs:179
+#, rust-format
+msgid "Delete {count} item permanently?"
+msgid_plural "Delete {count} items permanently?"
+msgstr[0] "Остаточно вилучити {count} елемент?"
+msgstr[1] "Остаточно вилучити {count} елементи?"
+msgstr[2] "Остаточно вилучити {count} елементів?"
+
+#: src/library/actions/trash.rs:89
+msgid "Items can be restored from the Immich trash."
+msgstr "Елементи можна відновити зі смітника Immich."
+
+#: src/library/actions/trash.rs:91
+msgid "The Immich trash is turned off, so this can't be undone."
+msgstr "Смітник Immich вимкнено, тому цю дію не можна скасувати."
+
+#: src/library/actions/trash.rs:95
+msgid "Local copies in your watch folders are kept."
+msgstr "Локальні копії у ваших відстежуваних теках зберігаються."
+
+#: src/library/actions/trash.rs:101
+#, rust-format
+msgid "{n} local-only item is not on the server and will be skipped."
+msgid_plural "{n} local-only items are not on the server and will be skipped."
+msgstr[0] "{n} суто локальний елемент відсутній на сервері й буде пропущений."
+msgstr[1] "{n} суто локальні елементи відсутні на сервері й будуть пропущені."
+msgstr[2] "{n} суто локальних елементів відсутні на сервері й будуть пропущені."
+
+#: src/library/actions/trash.rs:159
+msgid "Could Not Move to Trash"
+msgstr "Не вдалося перемістити до смітника"
+
+#: src/library/actions/trash.rs:161 src/library/album_assets.rs:125
+#: src/library/album_assets.rs:226 src/library/album_delete.rs:218
+#: src/library/album_picker.rs:194 src/library/album_picker.rs:228
+#: src/library/album_picker/several.rs:101
+#, rust-format
+msgid "Immich rejected the request: {err}"
+msgstr "Immich відхилив запит: {err}"
+
+#: src/library/actions/trash.rs:185 src/library/shortcuts_dialog.rs:160
+msgid "Move to trash"
+msgstr "Перемістити до смітника"
+
+#: src/library/album_activity.rs:60
+#, rust-format
+msgid "{n} like"
+msgid_plural "{n} likes"
+msgstr[0] "{n} вподобання"
+msgstr[1] "{n} вподобання"
+msgstr[2] "{n} вподобань"
+
+#: src/library/album_activity.rs:64
+#, rust-format
+msgid "{n} comment"
+msgid_plural "{n} comments"
+msgstr[0] "{n} коментар"
+msgstr[1] "{n} коментарі"
+msgstr[2] "{n} коментарів"
+
+#: src/library/album_activity/dialog.rs:23
+msgid "Likes and comments"
+msgstr "Вподобання та коментарі"
+
+#: src/library/album_activity/dialog.rs:77 src/library/album_options.rs:34
+#: src/library/lightbox/activity.rs:22
+msgid "Activity"
+msgstr "Активність"
+
+#: src/library/album_activity/feed.rs:42 src/library/album_activity/feed.rs:126
+msgid "Like"
+msgstr "Подобається"
+
+#: src/library/album_activity/feed.rs:43
+msgid "Send"
+msgstr "Надіслати"
+
+#: src/library/album_activity/feed.rs:46
+msgid "Add a comment…"
+msgstr "Додати коментар…"
+
+#: src/library/album_activity/feed.rs:108
+msgid "Couldn't load likes and comments"
+msgstr "Не вдалося завантажити вподобання та коментарі"
+
+#: src/library/album_activity/feed.rs:117
+msgid "No likes or comments yet"
+msgstr "Поки що немає вподобань і коментарів"
+
+#: src/library/album_activity/feed.rs:124
+msgid "Unlike"
+msgstr "Скасувати вподобання"
+
+#: src/library/album_activity/feed.rs:166
+msgid "Couldn't update the like"
+msgstr "Не вдалося оновити вподобання"
+
+#: src/library/album_activity/feed.rs:191
+msgid "Couldn't post the comment"
+msgstr "Не вдалося опублікувати коментар"
+
+#: src/library/album_activity/feed.rs:202
+msgid "Couldn't delete"
+msgstr "Не вдалося вилучити"
+
+#: src/library/album_activity/feed.rs:260 src/library/content_state.rs:213
+#: src/library/server_stats_dialog.rs:42
+msgid "Loading…"
+msgstr "Завантаження…"
+
+#: src/library/album_assets.rs:79
+#, rust-format
+msgid "Only the owner can remove these from “{album}”"
+msgstr "Лише власник може вилучати їх із «{album}»"
+
+#: src/library/album_assets.rs:84
+#, rust-format
+msgid "Removed {items} from “{album}”"
+msgstr "Вилучено {items} із «{album}»"
+
+#: src/library/album_assets.rs:94
+#, rust-format
+msgid "{n} belongs to someone else"
+msgid_plural "{n} belong to someone else"
+msgstr[0] "{n} належить іншому користувачеві"
+msgstr[1] "{n} належать іншим користувачам"
+msgstr[2] "{n} належать іншим користувачам"
+
+#: src/library/album_assets.rs:123
+msgid "Couldn't remove from the album"
+msgstr "Не вдалося вилучити з альбому"
+
+#: src/library/album_assets.rs:155
+msgid "Undo"
+msgstr "Повернути"
+
+#: src/library/album_assets.rs:183
+msgid "Album cover updated"
+msgstr "Обкладинку альбому оновлено"
+
+#: src/library/album_assets.rs:186 src/library/album_edit.rs:91
+msgid "Couldn't update the album"
+msgstr "Не вдалося оновити альбом"
+
+#: src/library/album_assets.rs:194
+#, rust-format
+msgid "Leave “{album_name}”?"
+msgstr "Покинути «{album_name}»?"
+
+#: src/library/album_assets.rs:200
+msgid ""
+"You'll stop seeing its photos unless the owner shares it with you again."
+msgstr "Ви перестанете бачити фотографії з нього, доки власник знову не поділиться ним із вами."
+
+#: src/library/album_assets.rs:201
+msgid "Leave"
+msgstr "Покинути"
+
+#: src/library/album_assets.rs:212
+#, rust-format
+msgid "Left “{album_name}”"
+msgstr "Ви покинули «{album_name}»"
+
+#: src/library/album_assets.rs:224
+msgid "Couldn't leave the album"
+msgstr "Не вдалося покинути альбом"
+
+#: src/library/album_delete.rs:28
+#, rust-format
+msgid ""
+"Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
+"they don't create it again."
+msgstr "Mimick досі вивантажує файли. Вилучіть «{album_name}» після завершення вивантаження, щоб він не створився знову."
+
+#: src/library/album_delete.rs:29
+msgid "Uploads in Progress"
+msgstr "Триває вивантаження"
+
+#: src/library/album_delete.rs:35
+msgid "Close Settings First"
+msgstr "Спочатку закрийте «Параметри»"
+
+#: src/library/album_delete.rs:36
+msgid ""
+"Deleting this album changes your watch folders, and saving the open Settings "
+"window would undo that. Close Settings, then delete the album."
+msgstr "Вилучення цього альбому змінить ваші відстежувані теки, а збереження у відкритому вікні «Параметри» скасує ці зміни. Закрийте «Параметри», а потім вилучіть альбом."
+
+#: src/library/album_delete.rs:45
+msgid "Its photos stay in your library."
+msgstr "Його фотографії залишаться у вашій бібліотеці."
+
+#: src/library/album_delete.rs:49
+msgid "It's also removed for the person it's shared with."
+msgstr "Його також буде вилучено для користувача, з яким ним поділилися."
+
+#: src/library/album_delete.rs:53
+#, rust-format
+msgid "It's also removed for the {n} person it's shared with."
+msgid_plural "It's also removed for the {n} people it's shared with."
+msgstr[0] "Його також буде вилучено для {n} особи, з якою ним поділилися."
+msgstr[1] "Його також буде вилучено для {n} осіб, з якими ним поділилися."
+msgstr[2] "Його також буде вилучено для {n} осіб, з якими ним поділилися."
+
+#: src/library/album_delete.rs:61
+msgid "Its shared links stop working."
+msgstr "Спільні посилання на нього перестануть працювати."
+
+#: src/library/album_delete.rs:117
+#, rust-format
+msgid "Delete “{album_name}”?"
+msgstr "Вилучити «{album_name}»?"
+
+#: src/library/album_delete.rs:124
+msgid "Delete Album"
+msgstr "Вилучити альбом"
+
+#: src/library/album_delete.rs:153
+msgid "These folders sync with this album:"
+msgstr "Ці теки синхронізуються з цим альбомом:"
+
+#: src/library/album_delete.rs:156
+msgid "Keep backing them up to your library"
+msgstr "Продовжувати резервне копіювання до вашої бібліотеки"
+
+#: src/library/album_delete.rs:160
+msgid "Stop watching these folders"
+msgstr "Припинити відстеження цих тек"
+
+#: src/library/album_delete.rs:169
+msgid ""
+"So the album doesn't come back, photos in these folders go to your library "
+"instead of an album named after the folder:"
+msgstr "Щоб альбом не з'явився знову, фотографії з цих тек надходитимуть до вашої бібліотеки, а не до альбому з назвою теки:"
+
+#: src/library/album_delete.rs:221
+msgid "Could Not Delete Album"
+msgstr "Не вдалося вилучити альбом"
+
+#: src/library/album_delete.rs:256
+#, rust-format
+msgid "Deleted “{album_name}”"
+msgstr "Вилучено «{album_name}»"
+
+#: src/library/album_download.rs:20 src/library/controls.rs:377
+#: src/library/staging_view.rs:148
+msgid "Album"
+msgstr "Альбом"
+
+#: src/library/album_download.rs:34
+#, rust-format
+msgid "Immich couldn't prepare the album: {err}"
+msgstr "Immich не зміг підготувати альбом: {err}"
+
+#: src/library/album_download.rs:37 src/library/album_download.rs:54
+msgid "Download Failed"
+msgstr "Не вдалося завантажити"
+
+#: src/library/album_download.rs:42
+#, rust-format
+msgid "“{album}” has nothing to download"
+msgstr "У «{album}» немає файлів для завантаження"
+
+#: src/library/album_download.rs:90
+#, rust-format
+msgid "Saved {file_name}"
+msgstr "Збережено {file_name}"
+
+#: src/library/album_download.rs:101
+#, rust-format
+msgid "Saved {count} zip file"
+msgid_plural "Saved {count} zip files"
+msgstr[0] "Збережено {count} zip-файл"
+msgstr[1] "Збережено {count} zip-файли"
+msgstr[2] "Збережено {count} zip-файлів"
+
+#: src/library/album_download.rs:111 src/library/download.rs:287
+msgid "Open Folder"
+msgstr "Відкрити теку"
+
+#: src/library/album_edit.rs:21 src/library/albums_view.rs:66
+#: src/library/people_view.rs:322 src/library/tags_view.rs:205
+msgid "Rename…"
+msgstr "Перейменувати…"
+
+#: src/library/album_edit.rs:25 src/library/albums_view.rs:68
+#: src/library/window_layout/bulk_bar.rs:215
+msgid "Edit Description…"
+msgstr "Змінити опис…"
+
+#: src/library/album_edit.rs:29
+msgid "Options…"
+msgstr "Параметри…"
+
+#: src/library/album_edit.rs:33 src/library/albums_view.rs:72
+msgid "Delete Album…"
+msgstr "Вилучити альбом…"
+
+#: src/library/album_edit.rs:44
+msgid "Rename Album"
+msgstr "Перейменувати альбом"
+
+#: src/library/album_edit.rs:45
+msgid "Folders linked to this album stay linked."
+msgstr "Теки, пов'язані з цим альбомом, залишаться пов'язаними."
+
+#: src/library/album_edit.rs:47 src/library/album_picker.rs:432
+#: src/library/album_wiring.rs:31
+msgid "Album name"
+msgstr "Назва альбому"
+
+#: src/library/album_edit.rs:48 src/library/download.rs:357
+#: src/library/tags_view.rs:182 src/library/tags_view.rs:277
+msgid "Rename"
+msgstr "Перейменувати"
+
+#: src/library/album_edit.rs:76
+msgid "Album Description"
+msgstr "Опис альбому"
+
+#: src/library/album_link.rs:42
+msgid "Linked folder"
+msgstr "Пов'язана тека"
+
+#: src/library/album_link.rs:48
+msgid "Unlink"
+msgstr "Відв'язати"
+
+#: src/library/album_link.rs:54 src/library/window_layout.rs:492
+msgid "No local folder linked"
+msgstr "Немає пов'язаної локальної теки"
+
+#: src/library/album_link.rs:56 src/library/window_layout.rs:494
+msgid "Drop files in the linked folder to sync this album"
+msgstr "Перетягніть файли до пов'язаної теки, щоб синхронізувати цей альбом"
+
+#: src/library/album_link.rs:60 src/library/window_layout/responsive.rs:178
+msgid "Link folder…"
+msgstr "Пов'язати теку…"
+
+#: src/library/album_link.rs:184
+msgid "Sync album"
+msgstr "Синхронізувати альбом"
+
+#: src/library/album_link.rs:185
+msgid "Pick which directions to apply."
+msgstr "Виберіть напрямки для застосування."
+
+#: src/library/album_link.rs:188
+msgid "Apply"
+msgstr "Застосувати"
+
+#: src/library/album_link.rs:200
+#, rust-format
+msgid "Upload {n} item to album"
+msgid_plural "Upload {n} items to album"
+msgstr[0] "Вивантажити {n} елемент до альбому"
+msgstr[1] "Вивантажити {n} елементи до альбому"
+msgstr[2] "Вивантажити {n} елементів до альбому"
+
+#: src/library/album_link.rs:209
+#, rust-format
+msgid "Download {n} item to folder"
+msgid_plural "Download {n} items to folder"
+msgstr[0] "Завантажити {n} елемент до теки"
+msgstr[1] "Завантажити {n} елементи до теки"
+msgstr[2] "Завантажити {n} елементів до теки"
+
+#: src/library/album_link.rs:218
+#, rust-format
+msgid "Move {n} album item to trash"
+msgid_plural "Move {n} album items to trash"
+msgstr[0] "Перемістити {n} елемент альбому до смітника"
+msgstr[1] "Перемістити {n} елементи альбому до смітника"
+msgstr[2] "Перемістити {n} елементів альбому до смітника"
+
+#: src/library/album_link.rs:227
+#, rust-format
+msgid "Move {n} local item to trash"
+msgid_plural "Move {n} local items to trash"
+msgstr[0] "Перемістити {n} локальний елемент до смітника"
+msgstr[1] "Перемістити {n} локальні елементи до смітника"
+msgstr[2] "Перемістити {n} локальних елементів до смітника"
+
+#: src/library/album_link.rs:292
+#, rust-format
+msgid ""
+"Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
+msgid_plural ""
+"Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
+msgstr[0] "Уже синхронізовано ({n} віддалений елемент не вдалося зіставити — відсутня контрольна сума)."
+msgstr[1] "Уже синхронізовано ({n} віддалені елементи не вдалося зіставити — відсутня контрольна сума)."
+msgstr[2] "Уже синхронізовано ({n} віддалених елементів не вдалося зіставити — відсутня контрольна сума)."
+
+#: src/library/album_link.rs:299
+msgid "Already in sync."
+msgstr "Уже синхронізовано."
+
+#: src/library/album_link.rs:307
+#, rust-format
+msgid "{n} remote item couldn't be matched (missing checksum)."
+msgid_plural "{n} remote items couldn't be matched (missing checksum)."
+msgstr[0] "{n} віддалений елемент не вдалося зіставити (відсутня контрольна сума)."
+msgstr[1] "{n} віддалені елементи не вдалося зіставити (відсутня контрольна сума)."
+msgstr[2] "{n} віддалених елементів не вдалося зіставити (відсутня контрольна сума)."
+
+#: src/library/album_link.rs:430
+#, rust-format
+msgid "Link folder for album '{album_name}'"
+msgstr "Пов'язати теку для альбому «{album_name}»"
+
+#: src/library/album_options.rs:19
+msgid "Album Options"
+msgstr "Параметри альбому"
+
+#: src/library/album_options.rs:25
+msgid "Comments and Likes"
+msgstr "Коментарі та вподобання"
+
+#: src/library/album_options.rs:26
+msgid "Let people in this album like and comment"
+msgstr "Дозволити користувачам у цьому альбомі ставити вподобання та коментувати"
+
+#: src/library/album_options.rs:30
+msgid "Display"
+msgstr "Вигляд"
+
+#: src/library/album_options.rs:48
+msgid "Display Order"
+msgstr "Порядок відображення"
+
+#: src/library/album_options.rs:50
+msgid "Newest First"
+msgstr "Спочатку нові"
+
+#: src/library/album_options.rs:51
+msgid "Oldest First"
+msgstr "Спочатку старі"
+
+#: src/library/album_options.rs:92 src/library/album_options.rs:149
+#, rust-format
+msgid "Couldn't save: {err}"
+msgstr "Не вдалося зберегти: {err}"
+
+#: src/library/album_picker.rs:54
+msgid "Add to Album"
+msgstr "Додати до альбому"
+
+#: src/library/album_picker.rs:136
+#, rust-format
+msgid "Couldn't add to “{album}”"
+msgstr "Не вдалося додати до «{album}»"
+
+#: src/library/album_picker.rs:138
+#, rust-format
+msgid "Already in “{album}”"
+msgstr "Уже є в «{album}»"
+
+#: src/library/album_picker.rs:140
+#, rust-format
+msgid "Added {items} to “{album}”"
+msgstr "Додано {items} до «{album}»"
+
+#: src/library/album_picker.rs:144
+#, rust-format
+msgid "Added {items} to “{album}” · {duplicate} already there"
+msgstr "Додано {items} до «{album}» · {duplicate} вже там"
+
+#: src/library/album_picker.rs:156
+#, rust-format
+msgid "{n} not allowed"
+msgid_plural "{n} not allowed"
+msgstr[0] "{n} не дозволено"
+msgstr[1] "{n} не дозволено"
+msgstr[2] "{n} не дозволено"
+
+#: src/library/album_picker.rs:192
+msgid "Couldn't add to the album"
+msgstr "Не вдалося додати до альбому"
+
+#: src/library/album_picker.rs:206
+msgid "Open"
+msgstr "Відкрити"
+
+#: src/library/album_picker.rs:221 src/library/album_picker.rs:226
+msgid "Could Not Create Album"
+msgstr "Не вдалося створити альбом"
+
+#: src/library/album_picker.rs:222
+msgid "Immich didn't return the new album."
+msgstr "Immich не повернув новий альбом."
+
+#: src/library/album_picker.rs:260 src/library/albums_view.rs:187
+msgid "Filter albums"
+msgstr "Фільтрувати альбоми"
+
+#: src/library/album_picker.rs:358
+#, rust-format
+msgid "New Album “{name}”"
+msgstr "Новий альбом «{name}»"
+
+#: src/library/album_picker.rs:359
+msgid "New Album…"
+msgstr "Новий альбом…"
+
+#: src/library/album_picker.rs:429
+msgid "New Album"
+msgstr "Новий альбом"
+
+#: src/library/album_picker.rs:430
+msgid "The selected items will be added to it."
+msgstr "До нього буде додано вибрані елементи."
+
+#: src/library/album_picker.rs:433 src/library/album_wiring.rs:36
+#: src/library/tags_view.rs:253
+msgid "Create"
+msgstr "Створити"
+
+#: src/library/album_picker/several.rs:49
+msgid "Add to this album too"
+msgstr "Додати також до цього альбому"
+
+#: src/library/album_picker/several.rs:72
+#, rust-format
+msgid "Add to {n} Album"
+msgid_plural "Add to {n} Albums"
+msgstr[0] "Додати до {n} альбому"
+msgstr[1] "Додати до {n} альбомів"
+msgstr[2] "Додати до {n} альбомів"
+
+#: src/library/album_picker/several.rs:99
+msgid "Couldn't add to the albums"
+msgstr "Не вдалося додати до альбомів"
+
+#: src/library/album_picker/several.rs:114
+#, rust-format
+msgid "Added {items} to {n} album"
+msgid_plural "Added {items} to {n} albums"
+msgstr[0] "Додано {items} до {n} альбому"
+msgstr[1] "Додано {items} до {n} альбомів"
+msgstr[2] "Додано {items} до {n} альбомів"
+
+#: src/library/album_picker/several.rs:123
+msgid "Already in those albums"
+msgstr "Уже є в цих альбомах"
+
+#: src/library/album_picker/several.rs:124
+msgid "You can't add these to those albums"
+msgstr "Ви не можете додати їх до цих альбомів"
+
+#: src/library/album_picker/widgets.rs:87
+msgid "No matching albums"
+msgstr "Немає відповідних альбомів"
+
+#: src/library/album_share_dialog.rs:37
+msgid "Shared with"
+msgstr "Спільний доступ надано"
+
+#: src/library/album_share_dialog.rs:40 src/library/sharing_view.rs:271
+msgid "Find people by name or email"
+msgstr "Знайти людей за ім'ям або ел. поштою"
+
+#: src/library/album_share_dialog.rs:43
+msgid "Add people"
+msgstr "Додати людей"
+
+#: src/library/album_share_dialog.rs:53
+#, rust-format
+msgid "Share “{album_name}”"
+msgstr "Поділитися «{album_name}»"
+
+#: src/library/album_share_dialog.rs:89
+msgid "Could Not Load Album"
+msgstr "Не вдалося завантажити альбом"
+
+#: src/library/album_share_dialog.rs:150
+msgid "Editor"
+msgstr "Редактор"
+
+#: src/library/album_share_dialog.rs:150 src/library/shortcuts_dialog.rs:263
+msgid "Viewer"
+msgstr "Переглядач"
+
+#: src/library/album_share_dialog.rs:162
+msgid "Could Not Change Role"
+msgstr "Не вдалося змінити роль"
+
+#: src/library/album_share_dialog.rs:174
+msgid "Stop sharing with this person"
+msgstr "Припинити спільний доступ для цієї особи"
+
+#: src/library/album_share_dialog.rs:181
+msgid "Could Not Remove Person"
+msgstr "Не вдалося вилучити особу"
+
+#: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+msgid "Add"
+msgstr "Додати"
+
+#: src/library/album_share_dialog.rs:198
+msgid "Could Not Share Album"
+msgstr "Не вдалося поділитися альбомом"
+
+#: src/library/album_sync.rs:85
+#, rust-format
+msgid "{n} album item"
+msgid_plural "{n} album items"
+msgstr[0] "{n} елемент альбому"
+msgstr[1] "{n} елементи альбому"
+msgstr[2] "{n} елементів альбому"
+
+#: src/library/album_wiring.rs:27 src/library/albums_view.rs:183
+msgid "Create album"
+msgstr "Створити альбом"
+
+#: src/library/album_wiring.rs:28
+msgid "Choose a name for the new album."
+msgstr "Виберіть назву для нового альбому."
+
+#: src/library/album_wiring.rs:88 src/library/source_loading.rs:96
+#, rust-format
+msgid "Could not load albums: {err}"
+msgstr "Не вдалося завантажити альбоми: {err}"
+
+#: src/library/albums_view.rs:64
+msgid "Share…"
+msgstr "Поділитися…"
+
+#: src/library/albums_view.rs:65 src/library/context_menu/manage.rs:58
+msgid "Create Share Link…"
+msgstr "Створити спільне посилання…"
+
+#: src/library/albums_view.rs:71 src/library/albums_view.rs:76
+#: src/library/context_menu.rs:139 src/library/shared_links_view.rs:415
+#: src/library/shortcuts_dialog.rs:139
+msgid "Download"
+msgstr "Завантажити"
+
+#: src/library/albums_view.rs:77 src/library/source_header/enrichment.rs:221
+msgid "Leave Album…"
+msgstr "Покинути альбом…"
+
+#: src/library/albums_view.rs:137
+msgid "Recent"
+msgstr "Нещодавні"
+
+#: src/library/albums_view.rs:138 src/library/albums_view.rs:220
+msgid "Your albums"
+msgstr "Ваші альбоми"
+
+#: src/library/albums_view.rs:139
+msgid "Shared with you"
+msgstr "Поділилися з вами"
+
+#: src/library/albums_view.rs:218
+msgid "Shared by you"
+msgstr "Ви поділилися"
+
+#: src/library/albums_view.rs:352
+msgid "Couldn't Tell Which Albums Are Yours"
+msgstr "Не вдалося визначити, які альбоми належать вам"
+
+#: src/library/albums_view.rs:353
+msgid "Your API key needs the 'user.read' permission."
+msgstr "Для вашого ключа API потрібен дозвіл «user.read»."
+
+#: src/library/albums_view.rs:357
+msgid "No Shared Albums"
+msgstr "Немає спільних альбомів"
+
+#: src/library/albums_view.rs:358
+msgid "Share one of your albums, or ask someone to share one with you."
+msgstr "Поділіться одним зі своїх альбомів або попросіть когось поділитися альбомом із вами."
+
+#: src/library/albums_view/stats.rs:40
+#, rust-format
+msgid "{owned} owned · {shared} shared · {not_shared} not shared"
+msgstr "{owned} власних · {shared} спільних · {not_shared} особистих"
+
+#: src/library/albums_view/tile.rs:58 src/library/download.rs:177
+#: src/library/header_format.rs:34
+#, rust-format
+msgid "{n} item"
+msgid_plural "{n} items"
+msgstr[0] "{n} елемент"
+msgstr[1] "{n} елементи"
+msgstr[2] "{n} елементів"
+
+#: src/library/archive.rs:24
+msgid "Unarchive"
+msgstr "Розархівувати"
+
+#: src/library/archive.rs:26 src/library/search_filters.rs:137
+#: src/library/shortcuts_dialog.rs:62 src/library/sidebar/rows.rs:112
+#: src/library/source_header.rs:311
+msgid "Archive"
+msgstr "Архівувати"
+
+#: src/library/archive.rs:32
+msgid "Unarchive (A)"
+msgstr "Розархівувати (A)"
+
+#: src/library/archive.rs:34
+msgid "Archive (A)"
+msgstr "Архівувати (A)"
+
+#: src/library/archive.rs:62
+msgid "Could Not Archive"
+msgstr "Не вдалося архівувати"
+
+#: src/library/archive.rs:64
+msgid "Could Not Unarchive"
+msgstr "Не вдалося розархівувати"
+
+#: src/library/archive.rs:88
+msgid "Unarchive selected"
+msgstr "Розархівувати вибрані"
+
+#: src/library/archive.rs:90 src/library/window_layout/bulk_bar.rs:64
+msgid "Archive selected"
+msgstr "Архівувати вибрані"
+
+#: src/library/asset_edit.rs:131 src/library/map/location_dialog.rs:59
+msgid "Could Not Load Info"
+msgstr "Не вдалося завантажити відомості"
+
+#: src/library/asset_edit.rs:156
+msgid "Date taken"
+msgstr "Дата зйомки"
+
+#: src/library/asset_edit.rs:161
+msgid "Pick date and time"
+msgstr "Виберіть дату та час"
+
+#: src/library/asset_edit.rs:182 src/library/people_view.rs:226
+msgid "Favorite"
+msgstr "Вибране"
+
+#: src/library/asset_edit.rs:192 src/library/bulk_more.rs:138
+#: src/library/lightbox/details.rs:147 src/library/shared_link_dialog.rs:106
+msgid "Description"
+msgstr "Опис"
+
+#: src/library/asset_edit.rs:255 src/library/bulk_date.rs:318
+#: src/library/bulk_more.rs:139 src/library/dialogs.rs:86
+#: src/library/lightbox/edit/panel.rs:103 src/library/map/location_dialog.rs:76
+#: src/library/people_view.rs:429 src/library/people_view.rs:461
+#: src/library/shared_link_dialog.rs:202 src/library/tags_view.rs:335
+#: src/settings_window/watch_folders/rules_dialog.rs:122
+msgid "Save"
+msgstr "Зберегти"
+
+#: src/library/asset_edit.rs:275
+msgid "Edit Info"
+msgstr "Змінити відомості"
+
+#: src/library/asset_edit.rs:349
+msgid "Could Not Save Info"
+msgstr "Не вдалося зберегти відомості"
+
+#: src/library/asset_edit.rs:351 src/library/map/location_dialog.rs:167
+#, rust-format
+msgid "Immich rejected the update: {err}"
+msgstr "Immich відхилив оновлення: {err}"
+
+#: src/library/asset_edit/date_picker.rs:78
+msgid "Set Date"
+msgstr "Встановити дату"
+
+#: src/library/asset_edit/date_picker.rs:137
+#: src/library/lightbox/details.rs:260
+msgid "Not set"
+msgstr "Не вказано"
+
+#: src/library/asset_jobs.rs:35
+msgid "Refresh Faces"
+msgstr "Оновити обличчя"
+
+#: src/library/asset_jobs.rs:36
+msgid "Immich is looking for faces again"
+msgstr "Immich знову шукає обличчя"
+
+#: src/library/asset_jobs.rs:43
+msgid "Refresh Metadata"
+msgstr "Оновити метадані"
+
+#: src/library/asset_jobs.rs:44
+msgid "Immich is reading the metadata again"
+msgstr "Immich знову зчитує метадані"
+
+#: src/library/asset_jobs.rs:51
+msgid "Refresh Thumbnails"
+msgstr "Оновити мініатюри"
+
+#: src/library/asset_jobs.rs:52
+msgid "Immich is making new thumbnails"
+msgstr "Immich створює нові мініатюри"
+
+#: src/library/asset_jobs.rs:59
+msgid "Refresh Video"
+msgstr "Оновити відео"
+
+#: src/library/asset_jobs.rs:60
+msgid "Immich is converting the video again"
+msgstr "Immich знову конвертує відео"
+
+#: src/library/asset_jobs.rs:114
+msgid "Couldn't refresh"
+msgstr "Не вдалося оновити"
+
+#: src/library/asset_jobs.rs:116
+#, rust-format
+msgid "Immich didn't start the job: {err}"
+msgstr "Immich не запустив завдання: {err}"
+
+#: src/library/asset_tags.rs:46
+msgid "Add tag"
+msgstr "Додати мітку"
+
+#: src/library/asset_tags.rs:51 src/library/navigation.rs:204
+#: src/library/search_filters.rs:84 src/library/sidebar/rows.rs:100
+msgid "Tags"
+msgstr "Мітки"
+
+#: src/library/asset_tags.rs:63
+msgid "No tags yet"
+msgstr "Поки що немає міток"
+
+#: src/library/asset_tags.rs:139
+#, rust-format
+msgid "Show photos tagged “{value}”"
+msgstr "Показати фотографії з міткою «{value}»"
+
+#: src/library/asset_tags.rs:150
+#, rust-format
+msgid "Remove “{value}”"
+msgstr "Вилучити «{value}»"
+
+#: src/library/asset_tags.rs:189
+msgid "Couldn't remove the tag"
+msgstr "Не вдалося вилучити мітку"
+
+#: src/library/asset_tags.rs:219
+msgid "Couldn't add the tag"
+msgstr "Не вдалося додати мітку"
+
+#: src/library/asset_tags.rs:227
+msgid "Find or create a tag"
+msgstr "Знайти або створити мітку"
+
+#: src/library/asset_tags.rs:307
+#, rust-format
+msgid "Create “{query}”"
+msgstr "Створити «{query}»"
+
+#: src/library/bottom_nav.rs:10 src/library/server_stats_dialog.rs:94
+#: src/library/server_stats_dialog.rs:126 src/library/shortcuts_dialog.rs:57
+#: src/library/sidebar/rows.rs:40 src/library/source_header.rs:276
+#: src/library/utilities/controls.rs:29
+msgid "Photos"
+msgstr "Фотографії"
+
+#: src/library/bottom_nav.rs:11 src/library/shortcuts_dialog.rs:58
+#: src/library/sidebar/rows.rs:52 src/library/source_header.rs:309
+msgid "Explore"
+msgstr "Огляд"
+
+#: src/library/bottom_nav.rs:12 src/library/navigation.rs:177
+#: src/library/shortcuts_dialog.rs:59 src/library/shortcuts_dialog.rs:261
+#: src/library/sidebar/rows.rs:58
+msgid "Map"
+msgstr "Карта"
+
+#: src/library/bottom_nav.rs:13 src/library/navigation.rs:200
+#: src/library/search_filters.rs:85 src/library/shortcuts_dialog.rs:64
+#: src/library/sidebar/rows.rs:70
+msgid "Albums"
+msgstr "Альбоми"
+
+#: src/library/bottom_nav.rs:14 src/library/explore_view.rs:217
+#: src/library/lightbox/people.rs:47 src/library/navigation.rs:203
+#: src/library/search_filters.rs:83 src/library/shortcuts_dialog.rs:60
+#: src/library/sidebar/rows.rs:64
+msgid "People"
+msgstr "Люди"
+
+#: src/library/bulk_date.rs:27
+msgid "No change"
+msgstr "Без змін"
+
+#: src/library/bulk_date.rs:36
+#, rust-format
+msgid "{n} day"
+msgid_plural "{n} days"
+msgstr[0] "{n} день"
+msgstr[1] "{n} дні"
+msgstr[2] "{n} днів"
+
+#: src/library/bulk_date.rs:37
+#, rust-format
+msgid "{n} hour"
+msgid_plural "{n} hours"
+msgstr[0] "{n} година"
+msgstr[1] "{n} години"
+msgstr[2] "{n} годин"
+
+#: src/library/bulk_date.rs:38
+#, rust-format
+msgid "{n} minute"
+msgid_plural "{n} minutes"
+msgstr[0] "{n} хвилина"
+msgstr[1] "{n} хвилини"
+msgstr[2] "{n} хвилин"
+
+#: src/library/bulk_date.rs:46
+#, rust-format
+msgid "Later by {amount}"
+msgstr "Пізніше на {amount}"
+
+#: src/library/bulk_date.rs:48
+#, rust-format
+msgid "Earlier by {amount}"
+msgstr "Раніше на {amount}"
+
+#: src/library/bulk_date.rs:90
+#, rust-format
+msgid "Changed the date of {items}"
+msgstr "Змінено дату для {items}"
+
+#: src/library/bulk_date.rs:101
+msgid "Could Not Change Date"
+msgstr "Не вдалося змінити дату"
+
+#: src/library/bulk_date.rs:103
+#, rust-format
+msgid "Immich rejected the change: {err}"
+msgstr "Immich відхилив зміну: {err}"
+
+#: src/library/bulk_date.rs:151
+msgid "Days"
+msgstr "Дні"
+
+#: src/library/bulk_date.rs:152
+msgid "Hours"
+msgstr "Години"
+
+#: src/library/bulk_date.rs:153
+msgid "Minutes"
+msgstr "Хвилини"
+
+#: src/library/bulk_date.rs:160
+msgid "Date and time"
+msgstr "Дата та час"
+
+#: src/library/bulk_date.rs:230
+#, rust-format
+msgid "Saved as {date} UTC{offset}"
+msgstr "Збережено як {date} UTC{offset}"
+
+#: src/library/bulk_date.rs:274
+msgid "Shift"
+msgstr "Зсув"
+
+#: src/library/bulk_date.rs:325 src/library/bulk_date.rs:345
+msgid "Change Date and Time"
+msgstr "Змінити дату та час"
+
+#: src/library/bulk_more.rs:39
+msgid "Only the owner can change these photos"
+msgstr "Лише власник може змінювати ці фотографії"
+
+#: src/library/bulk_more.rs:71
+msgid "Unfavorite selected"
+msgstr "Вилучити вибрані з вибраного"
+
+#: src/library/bulk_more.rs:76 src/library/window_layout/bulk_bar.rs:211
+msgid "Favorite selected"
+msgstr "Додати вибрані до вибраного"
+
+#: src/library/bulk_more.rs:91
+msgid "Couldn't update favorites"
+msgstr "Не вдалося оновити вибране"
+
+#: src/library/bulk_more.rs:103
+#, rust-format
+msgid "Added {n} photo to favorites"
+msgid_plural "Added {n} photos to favorites"
+msgstr[0] "Додано {n} фотографію до вибраного"
+msgstr[1] "Додано {n} фотографії до вибраного"
+msgstr[2] "Додано {n} фотографій до вибраного"
+
+#: src/library/bulk_more.rs:109
+#, rust-format
+msgid "Removed {n} photo from favorites"
+msgid_plural "Removed {n} photos from favorites"
+msgstr[0] "Вилучено {n} фотографію з вибраного"
+msgstr[1] "Вилучено {n} фотографії з вибраного"
+msgstr[2] "Вилучено {n} фотографій з вибраного"
+
+#: src/library/bulk_more.rs:125
+#, rust-format
+msgid "Describe {n} Photo"
+msgid_plural "Describe {n} Photos"
+msgstr[0] "Описати {n} фотографію"
+msgstr[1] "Описати {n} фотографії"
+msgstr[2] "Описати {n} фотографій"
+
+#: src/library/bulk_more.rs:136
+msgid "Each photo gets this description in place of its own."
+msgstr "Кожна фотографія отримає цей опис замість власного."
+
+#: src/library/bulk_more.rs:151
+msgid "Description saved"
+msgstr "Опис збережено"
+
+#: src/library/bulk_more.rs:152
+msgid "Couldn't save the description"
+msgstr "Не вдалося зберегти опис"
+
+#: src/library/bulk_overflow.rs:32
+msgid "More actions"
+msgstr "Інші дії"
+
+#: src/library/clipboard.rs:141
+#, rust-format
+msgid "Copied {n} photo"
+msgid_plural "Copied {n} photos"
+msgstr[0] "Скопійовано {n} фотографію"
+msgstr[1] "Скопійовано {n} фотографії"
+msgstr[2] "Скопійовано {n} фотографій"
+
+#: src/library/clipboard.rs:151
+#, rust-format
+msgid ""
+"Pasting into an album here adds all {count}. Only {local} are on this "
+"computer, so other apps such as Files paste those; use Download for the rest."
+msgstr "Вставлення в альбом тут додає всі {count}. Лише {local} є на цьому комп'ютері, тому інші програми, такі як «Файли», вставляють тільки їх; для решти скористайтеся завантаженням."
+
+#: src/library/clipboard.rs:162
+msgid "Paste in Photos or albums"
+msgstr "Вставити у «Фотографії» або альбоми"
+
+#: src/library/clipboard.rs:177 src/library/clipboard.rs:187
+msgid "Couldn't paste"
+msgstr "Не вдалося вставити"
+
+#: src/library/clipboard.rs:186 src/library/clipboard.rs:191
+#: src/library/clipboard.rs:226
+msgid "No photos to paste"
+msgstr "Немає фотографій для вставлення"
+
+#: src/library/clipboard.rs:233 src/library/upload_stack.rs:74
+#, rust-format
+msgid "Uploading {n} file…"
+msgid_plural "Uploading {n} files…"
+msgstr[0] "Вивантаження {n} файлу…"
+msgstr[1] "Вивантаження {n} файлів…"
+msgstr[2] "Вивантаження {n} файлів…"
+
+#: src/library/clipboard.rs:262
+msgid "Already in your library"
+msgstr "Уже є у вашій бібліотеці"
+
+#: src/library/clipboard.rs:273
+msgid "Uploading pasted image…"
+msgstr "Вивантаження вставленого зображення…"
+
+#: src/library/clipboard.rs:279
+msgid "Pasted image"
+msgstr "Вставлене зображення"
+
+#: src/library/clipboard.rs:290
+msgid "Pasted image uploaded"
+msgstr "Вставлене зображення вивантажено"
+
+#: src/library/clipboard.rs:294
+msgid "Couldn't paste the image"
+msgstr "Не вдалося вставити зображення"
+
+#: src/library/content_state.rs:24
+#, rust-format
+msgid "{n} asset"
+msgid_plural "{n} assets"
+msgstr[0] "{n} елемент"
+msgstr[1] "{n} елементи"
+msgstr[2] "{n} елементів"
+
+#: src/library/content_state.rs:119 src/library/explore_view/calendar.rs:43
+#: src/library/header_format.rs:177 src/library/map/markers.rs:125
+#: src/library/memories.rs:134 src/library/server_stats_dialog.rs:227
+#: src/library/source_header.rs:268
+#, rust-format
+msgid "{n} photo"
+msgid_plural "{n} photos"
+msgstr[0] "{n} фотографія"
+msgstr[1] "{n} фотографії"
+msgstr[2] "{n} фотографій"
+
+#: src/library/content_state.rs:123 src/library/server_stats_dialog.rs:231
+#: src/library/source_header.rs:272
+#, rust-format
+msgid "{n} video"
+msgid_plural "{n} videos"
+msgstr[0] "{n} відеозапис"
+msgstr[1] "{n} відеозаписи"
+msgstr[2] "{n} відеозаписів"
+
+#: src/library/content_state.rs:128 src/library/sidebar.rs:36
+msgid "Statistics unavailable"
+msgstr "Статистика недоступна"
+
+#: src/library/content_state.rs:133 src/library/server_stats_dialog.rs:80
+#, rust-format
+msgid "Immich {version}"
+msgstr "Immich {version}"
+
+#: src/library/content_state.rs:134
+msgid "Version unavailable"
+msgstr "Версія недоступна"
+
+#: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
+#: src/settings_window/wiring.rs:215
+msgid "Connected through LAN"
+msgstr "Під'єднано через LAN"
+
+#: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
+#: src/settings_window/wiring.rs:217
+msgid "Connected through WAN"
+msgstr "Під'єднано через WAN"
+
+#: src/library/content_state.rs:142 src/settings_window/status_poll.rs:183
+msgid "Connected through configured server"
+msgstr "Під'єднано через налаштований сервер"
+
+#: src/library/content_state.rs:144 src/library/sidebar.rs:35
+msgid "Offline"
+msgstr "Поза мережею"
+
+#: src/library/content_state.rs:175
+msgid "queued asset"
+msgstr "елемент у черзі"
+
+#: src/library/content_state.rs:176
+msgid "selected asset"
+msgstr "вибраний елемент"
+
+#: src/library/content_state.rs:217
+msgid "Fetching library data from the Immich server"
+msgstr "Отримання даних бібліотеки з сервера Immich"
+
+#: src/library/content_state.rs:366 src/library/masonry/canvas_helpers.rs:138
+#: src/library/server_stats_dialog.rs:161
+msgid "Missing API Permissions"
+msgstr "Відсутні дозволи API"
+
+#: src/library/content_state.rs:367
+msgid ""
+"Your API key is missing permissions required for the Library view. Please "
+"ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
+"'person.read' enabled."
+msgstr "У вашому ключі API відсутні дозволи, необхідні для перегляду бібліотеки. Переконайтеся, що для ключа ввімкнено 'asset.read', 'asset.view', 'asset.download' та 'person.read'."
+
+#: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
+#: src/library/shortcuts_dialog.rs:179
+msgid "Close"
+msgstr "Закрити"
+
+#: src/library/context_menu.rs:131
+msgid "Copy"
+msgstr "Копіювати"
+
+#: src/library/context_menu.rs:148
+msgid "Open In"
+msgstr "Відкрити в"
+
+#: src/library/context_menu.rs:174 src/library/shortcuts_dialog.rs:264
+msgid "Slideshow"
+msgstr "Слайд-шоу"
+
+#: src/library/context_menu.rs:181
+msgid "Leave Fullscreen"
+msgstr "Вийти з повноекранного режиму"
+
+#: src/library/context_menu.rs:183
+msgid "Fullscreen"
+msgstr "Повноекранний режим"
+
+#: src/library/context_menu.rs:229 src/library/context_menu.rs:236
+msgid "Couldn't copy the photo"
+msgstr "Не вдалося скопіювати фотографію"
+
+#: src/library/context_menu.rs:237
+msgid "Could not decode the original image."
+msgstr "Не вдалося декодувати початкове зображення."
+
+#: src/library/context_menu.rs:256
+msgid "Couldn't open the file"
+msgstr "Не вдалося відкрити файл"
+
+#: src/library/context_menu.rs:288
+msgid "Could not locate a cache directory."
+msgstr "Не вдалося знайти каталог кешу."
+
+#: src/library/context_menu.rs:316 src/library/lightbox/details.rs:205
+msgid "Details"
+msgstr "Подробиці"
+
+#: src/library/context_menu/manage.rs:73
+msgid "Add to Share Link…"
+msgstr "Додати до спільного посилання…"
+
+#: src/library/context_menu/manage.rs:84 src/library/lightbox/widgets.rs:434
+msgid "Add to Album…"
+msgstr "Додати до альбому…"
+
+#: src/library/context_menu/manage.rs:92
+msgid "Set as Album Cover"
+msgstr "Зробити обкладинкою альбому"
+
+#: src/library/context_menu/manage.rs:108
+msgid "Remove from Album"
+msgstr "Вилучити з альбому"
+
+#: src/library/context_menu/manage.rs:130 src/library/lightbox/widgets.rs:432
+msgid "Edit Info…"
+msgstr "Змінити відомості…"
+
+#: src/library/context_menu/manage.rs:149
+msgid "Edit Photo…"
+msgstr "Редагувати фотографію…"
+
+#: src/library/context_menu/manage.rs:158 src/library/lightbox/people.rs:59
+msgid "Tag People…"
+msgstr "Позначити людей…"
+
+#: src/library/context_menu/manage.rs:176
+msgid "Set as Profile Picture"
+msgstr "Встановити як зображення профілю"
+
+#: src/library/context_menu/manage.rs:186
+msgid "Set Location…"
+msgstr "Вказати місцеположення…"
+
+#: src/library/context_menu/manage.rs:208
+msgid "Move to Trash"
+msgstr "Перемістити до смітника"
+
+#: src/library/context_menu/manage.rs:210 src/library/shared_links_view.rs:222
+#: src/library/tags_view.rs:213
+msgid "Delete…"
+msgstr "Вилучити…"
+
+#: src/library/context_menu/manage.rs:231 src/library/people_view.rs:330
+msgid "Remove from Favorites"
+msgstr "Вилучити з вибраного"
+
+#: src/library/context_menu/manage.rs:233 src/library/people_view.rs:332
+msgid "Add to Favorites"
+msgstr "Додати до вибраного"
+
+#: src/library/context_menu/manage.rs:283
+msgid "Restore"
+msgstr "Відновити"
+
+#: src/library/context_menu/manage.rs:293 src/library/trash_view.rs:207
+msgid "Delete Permanently"
+msgstr "Остаточно вилучити"
+
+#: src/library/context_menu/menu.rs:62
+msgid "Photo Actions"
+msgstr "Дії з фотографією"
+
+#: src/library/controls/sort.rs:57
+msgid "Most assets"
+msgstr "Найбільше елементів"
+
+#: src/library/controls/sort.rs:57 src/library/people_view.rs:428
+#: src/library/person_picker.rs:163
+msgid "Name"
+msgstr "Назва"
+
+#: src/library/controls/sort.rs:57 src/library/controls/sort.rs:60
+#: src/library/window_layout.rs:360
+msgid "Newest"
+msgstr "Спочатку нові"
+
+#: src/library/controls/sort.rs:58 src/library/theme/palettes.rs:54
+#: src/library/theme/palettes.rs:82
+msgid "Default"
+msgstr "Типово"
+
+#: src/library/controls/sort.rs:61
+msgid "Oldest"
+msgstr "Спочатку старі"
+
+#: src/library/controls/sort.rs:62 src/library/window_layout.rs:361
+msgid "Filename"
+msgstr "Назва файлу"
+
+#: src/library/controls/sort.rs:63 src/library/window_layout.rs:362
+msgid "File Type"
+msgstr "Тип файлу"
+
+#: src/library/day_row.rs:37 src/library/day_row.rs:69
+msgid "Any Day"
+msgstr "Будь-який день"
+
+#: src/library/download.rs:153
+#, rust-format
+msgid "Saved {safe_name}"
+msgstr "Збережено {safe_name}"
+
+#: src/library/download.rs:159
+msgid "Download failed"
+msgstr "Не вдалося завантажити"
+
+#: src/library/download.rs:258
+msgid "Nothing downloaded"
+msgstr "Нічого не завантажено"
+
+#: src/library/download.rs:261
+#, rust-format
+msgid "Downloaded {items}"
+msgstr "Завантажено {items}"
+
+#: src/library/download.rs:270
+#, rust-format
+msgid "{n} skipped"
+msgid_plural "{n} skipped"
+msgstr[0] "{n} пропущено"
+msgstr[1] "{n} пропущено"
+msgstr[2] "{n} пропущено"
+
+#: src/library/download.rs:276
+#, rust-format
+msgid "{n} failed"
+msgid_plural "{n} failed"
+msgstr[0] "{n} з помилкою"
+msgstr[1] "{n} з помилками"
+msgstr[2] "{n} з помилками"
+
+#: src/library/download.rs:321 src/library/download.rs:346
+msgid "File already exists"
+msgstr "Файл уже існує"
+
+#: src/library/download.rs:323
+#, rust-format
+msgid "\"{name}\" already exists. Overwrite?"
+msgstr "«{name}» вже існує. Перезаписати?"
+
+#: src/library/download.rs:327 src/library/download.rs:356
+msgid "Skip"
+msgstr "Пропустити"
+
+#: src/library/download.rs:328 src/library/download.rs:358
+msgid "Overwrite"
+msgstr "Перезаписати"
+
+#: src/library/download.rs:348
+#, rust-format
+msgid "\"{name}\" already exists in the download folder."
+msgstr "«{name}» вже існує в теці завантажень."
+
+#: src/library/download.rs:353
+msgid "Apply to all remaining conflicts"
+msgstr "Застосувати до всіх решти конфліктів"
+
+#: src/library/download.rs:409 src/settings_window/wiring/folder_wiring.rs:38
+msgid "Choose Download Folder"
+msgstr "Виберіть теку для завантаження"
+
+#: src/library/download.rs:423
+msgid "Save as default?"
+msgstr "Зберегти як типову?"
+
+#: src/library/download.rs:425
+#, rust-format
+msgid "Always download to {path}?"
+msgstr "Завжди завантажувати до {path}?"
+
+#: src/library/download.rs:429
+msgid "Just Once"
+msgstr "Лише один раз"
+
+#: src/library/download.rs:430
+msgid "Always"
+msgstr "Завжди"
+
+#: src/library/drop_target.rs:82
+msgid "No supported media files in drop"
+msgstr "Серед перетягнутих файлів немає підтримуваних медіафайлів"
+
+#: src/library/duplicates_view.rs:43
+msgid "Previous group"
+msgstr "Попередня група"
+
+#: src/library/duplicates_view.rs:44
+msgid "Next group"
+msgstr "Наступна група"
+
+#: src/library/duplicates_view.rs:86
+msgid "Not Duplicates"
+msgstr "Не дублікати"
+
+#: src/library/duplicates_view.rs:87
+msgid "Keep every photo and stop showing this group"
+msgstr "Залишити всі фотографії та більше не показувати цю групу"
+
+#: src/library/duplicates_view.rs:96
+msgid "No Duplicates"
+msgstr "Немає дублікатів"
+
+#: src/library/duplicates_view.rs:98
+msgid ""
+"Immich hasn't found any duplicate photos. It looks for them when its "
+"duplicate detection job runs."
+msgstr "Immich не знайшов дублікатів фотографій. Їхній пошук виконується під час запуску завдання виявлення дублікатів."
+
+#: src/library/duplicates_view.rs:123
+msgid "Tap a photo to keep it or trash it."
+msgstr "Натисніть на фотографію, щоб залишити її або перемістити до смітника."
+
+#: src/library/duplicates_view.rs:212
+msgid "Could Not Load Duplicates"
+msgstr "Не вдалося завантажити дублікати"
+
+#: src/library/duplicates_view.rs:214 src/library/folders_view.rs:71
+#: src/library/people_view.rs:139 src/library/shared_links_view.rs:103
+#: src/library/sharing_view.rs:96 src/library/sharing_view.rs:181
+#: src/library/tags_view.rs:76
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the '{permission}' permission."
+msgstr ""
+"{err}\n"
+"\n"
+"Для вашого ключа API потрібен дозвіл «{permission}»."
+
+#: src/library/duplicates_view.rs:261
+#, rust-format
+msgid "Group {n} of {total}"
+msgstr "Група {n} із {total}"
+
+#: src/library/duplicates_view.rs:280
+#, rust-format
+msgid "Trash {n} Photo"
+msgid_plural "Trash {n} Photos"
+msgstr[0] "Перемістити {n} фотографію до смітника"
+msgstr[1] "Перемістити {n} фотографії до смітника"
+msgstr[2] "Перемістити {n} фотографій до смітника"
+
+#: src/library/duplicates_view.rs:282
+#, rust-format
+msgid "Delete {n} Photo"
+msgid_plural "Delete {n} Photos"
+msgstr[0] "Вилучити {n} фотографію"
+msgstr[1] "Вилучити {n} фотографії"
+msgstr[2] "Вилучити {n} фотографій"
+
+#: src/library/duplicates_view.rs:323
+#, rust-format
+msgid "Delete {n} photo permanently?"
+msgid_plural "Delete {n} photos permanently?"
+msgstr[0] "Остаточно вилучити {n} фотографію?"
+msgstr[1] "Остаточно вилучити {n} фотографії?"
+msgstr[2] "Остаточно вилучити {n} фотографій?"
+
+#: src/library/duplicates_view.rs:333
+msgid "Trash is turned off on this server, so this can't be undone."
+msgstr "Смітник на цьому сервері вимкнено, тому цю дію не можна скасувати."
+
+#: src/library/duplicates_view.rs:352
+#, rust-format
+msgid "Kept {kept}, trashed {n}"
+msgid_plural "Kept {kept}, trashed {n}"
+msgstr[0] "Збережено {kept}, переміщено до смітника {n}"
+msgstr[1] "Збережено {kept}, переміщено до смітника {n}"
+msgstr[2] "Збережено {kept}, переміщено до смітника {n}"
+
+#: src/library/duplicates_view.rs:374
+msgid "Marked as not duplicates"
+msgstr "Позначено як не дублікати"
+
+#: src/library/duplicates_view.rs:404
+msgid "Couldn't update the duplicates"
+msgstr "Не вдалося оновити дублікати"
+
+#: src/library/duplicates_view/cards.rs:178
+msgid "Keep"
+msgstr "Залишити"
+
+#: src/library/duplicates_view/cards.rs:181 src/library/shortcuts_dialog.rs:63
+#: src/library/sidebar/rows.rs:118 src/library/source_header.rs:312
+msgid "Trash"
+msgstr "До смітника"
+
+#: src/library/duplicates_view/cards.rs:202
+#, rust-format
+msgid "{size}, largest"
+msgstr "{size}, найбільший"
+
+#: src/library/explore_view.rs:146
+msgid "Recently Added"
+msgstr "Нещодавно додані"
+
+#: src/library/explore_view.rs:147
+msgid "Places"
+msgstr "Місця"
+
+#: src/library/explore_view.rs:148 src/library/source_header/enrichment.rs:46
+msgid "Things"
+msgstr "Речі"
+
+#: src/library/explore_view.rs:151
+msgid "Filter people and places"
+msgstr "Фільтрувати людей і місця"
+
+#: src/library/explore_view.rs:227
+msgid "Filter people"
+msgstr "Фільтрувати людей"
+
+#: src/library/explore_view.rs:530
+#, rust-format
+msgid "See {remaining} more"
+msgstr "Показати ще {remaining}"
+
+#: src/library/explore_view.rs:539
+msgid "Show Less"
+msgstr "Показати менше"
+
+#. Translators: strftime short month, e.g. "Oct 2026".
+#: src/library/explore_view/calendar.rs:28 src/library/timeline/dates.rs:30
+msgid "%b %Y"
+msgstr "%b %Y"
+
+#: src/library/explore_view/calendar.rs:83
+msgid "Earlier year"
+msgstr "Попередній рік"
+
+#: src/library/explore_view/calendar.rs:84
+msgid "Later year"
+msgstr "Наступний рік"
+
+#: src/library/explore_view/calendar.rs:86 src/library/lightbox/details.rs:453
+#: src/library/map/settings.rs:76
+msgid "Taken"
+msgstr "Дата зйомки"
+
+#: src/library/explore_view/calendar.rs:87
+msgid "By when the photos were taken"
+msgstr "За часом зйомки фотографій"
+
+#: src/library/explore_view/calendar.rs:92 src/library/folders_view/rows.rs:154
+msgid "Show Photos"
+msgstr "Показати фотографії"
+
+#: src/library/explore_view/calendar.rs:109
+msgid "Calendar"
+msgstr "Календар"
+
+#: src/library/explore_view/calendar.rs:135
+msgid "Uploaded"
+msgstr "Дата вивантаження"
+
+#: src/library/explore_view/calendar.rs:136
+msgid "By when the photos reached Immich"
+msgstr "За часом надходження фотографій до Immich"
+
+#: src/library/explore_view/calendar.rs:202
+msgid "Pick a day to see its photos."
+msgstr "Виберіть день, щоб переглянути його фотографії."
+
+#: src/library/explore_view/calendar.rs:335
+msgid "Less"
+msgstr "Менше"
+
+#: src/library/explore_view/calendar.rs:336
+#: src/library/lightbox/edit/panel.rs:248 src/library/people_view.rs:306
+#: src/library/shared_links_view.rs:172
+#: src/library/source_header/enrichment.rs:227
+#: src/library/source_header/enrichment.rs:256
+#: src/library/source_header/enrichment.rs:311
+msgid "More"
+msgstr "Більше"
+
+#: src/library/explore_view/calendar/grid.rs:106
+msgid "Photos per day; use the arrow keys to pick a day"
+msgstr "Кількість фотографій за днями; використовуйте клавіші зі стрілками для вибору дня"
+
+#: src/library/explore_view/people.rs:119
+msgid "Show unnamed"
+msgstr "Показувати без назви"
+
+#: src/library/explore_view/people.rs:123
+msgid "Show hidden"
+msgstr "Показувати приховані"
+
+#: src/library/explore_view/tiles.rs:77
+msgid "Just now"
+msgstr "Щойно"
+
+#: src/library/explore_view/tiles.rs:81
+#, rust-format
+msgid "{n} min ago"
+msgid_plural "{n} min ago"
+msgstr[0] "{n} хв тому"
+msgstr[1] "{n} хв тому"
+msgstr[2] "{n} хв тому"
+
+#: src/library/explore_view/tiles.rs:87
+#, rust-format
+msgid "{n}h ago"
+msgid_plural "{n}h ago"
+msgstr[0] "{n} год тому"
+msgstr[1] "{n} год тому"
+msgstr[2] "{n} год тому"
+
+#: src/library/explore_view/tiles.rs:93
+#, rust-format
+msgid "{n}d ago"
+msgid_plural "{n}d ago"
+msgstr[0] "{n} д тому"
+msgstr[1] "{n} д тому"
+msgstr[2] "{n} д тому"
+
+#: src/library/favorites.rs:30
+msgid "Remove from favorites (F)"
+msgstr "Вилучити з вибраного (F)"
+
+#: src/library/favorites.rs:32
+msgid "Add to favorites (F)"
+msgstr "Додати до вибраного (F)"
+
+#: src/library/favorites.rs:63
+msgid "Couldn't update the favorite"
+msgstr "Не вдалося оновити вибране"
+
+#: src/library/folders_view.rs:69
+msgid "Could Not Load Folders"
+msgstr "Не вдалося завантажити теки"
+
+#: src/library/folders_view.rs:87
+msgid "Path copied"
+msgstr "Шлях скопійовано"
+
+#: src/library/folders_view.rs:115 src/library/navigation.rs:205
+#: src/library/shortcuts_dialog.rs:262 src/library/sidebar/rows.rs:106
+msgid "Folders"
+msgstr "Теки"
+
+#: src/library/folders_view.rs:131
+msgid "No Folders"
+msgstr "Немає тек"
+
+#: src/library/folders_view.rs:132
+msgid "Folders appear once Immich has photos from them."
+msgstr "Теки з'являться, щойно Immich отримає фотографії з них."
+
+#: src/library/folders_view/path_bar.rs:30
+msgid "Folder path"
+msgstr "Шлях до теки"
+
+#: src/library/folders_view/path_bar.rs:36
+msgid "Enter a path (Ctrl+L)"
+msgstr "Введіть шлях (Ctrl+L)"
+
+#: src/library/folders_view/path_bar.rs:40
+msgid "Copy path"
+msgstr "Скопіювати шлях"
+
+#: src/library/folders_view/path_bar.rs:219
+#, rust-format
+msgid "No folder at {path}"
+msgstr "Немає теки за шляхом {path}"
+
+#: src/library/folders_view/rows.rs:32
+#, rust-format
+msgid "Photos in {folder}"
+msgstr "Фотографії в {folder}"
+
+#: src/library/folders_view/rows.rs:52
+msgid "Show photos"
+msgstr "Показати фотографії"
+
+#: src/library/folders_view/rows.rs:65
+#, rust-format
+msgid "{n} folder"
+msgid_plural "{n} folders"
+msgstr[0] "{n} тека"
+msgstr[1] "{n} теки"
+msgstr[2] "{n} тек"
+
+#: src/library/folders_view/rows.rs:72 src/library/tags_view.rs:155
+#, rust-format
+msgid "Open {name}"
+msgstr "Відкрити {name}"
+
+#: src/library/folders_view/rows.rs:144
+msgid "Copy Path"
+msgstr "Скопіювати шлях"
+
+#: src/library/header_format.rs:58 src/library/lightbox/people.rs:242
+#, rust-format
+msgid "Age {age}"
+msgstr "Вік: {age}"
+
+#: src/library/header_format.rs:62
+#, rust-format
+msgid "Born {date}"
+msgstr "Дата народження: {date}"
+
+#. Translators: strftime day and month that start a date range, e.g. "30 Dec".
+#: src/library/header_format.rs:84 src/library/map/nearby.rs:129
+msgid "%-d %b"
+msgstr "%-d %b"
+
+#: src/library/header_format.rs:106
+#, rust-format
+msgid "Shared with {n} person"
+msgid_plural "Shared with {n} people"
+msgstr[0] "Спільний доступ для {n} особи"
+msgstr[1] "Спільний доступ для {n} осіб"
+msgstr[2] "Спільний доступ для {n} осіб"
+
+#: src/library/header_format.rs:122
+#, rust-format
+msgid "Shared by {owner}"
+msgstr "Поділився {owner}"
+
+#: src/library/inbox.rs:56 src/library/inbox.rs:364
+#: src/library/window_layout.rs:329 src/settings_window/behavior.rs:116
+msgid "Notifications"
+msgstr "Сповіщення"
+
+#: src/library/inbox.rs:76
+#, rust-format
+msgid "Notifications ({count} unread)"
+msgstr "Сповіщення ({count} непрочитаних)"
+
+#: src/library/inbox.rs:180
+msgid "No Notifications"
+msgstr "Немає сповіщень"
+
+#: src/library/inbox.rs:182
+msgid "Album invites and messages from Immich show up here."
+msgstr "Тут відображаються запрошення до альбомів і повідомлення від Immich."
+
+#: src/library/inbox.rs:188
+msgid "Mark All Read"
+msgstr "Позначити всі як прочитані"
+
+#: src/library/inbox.rs:235
+msgid "Couldn't Load Notifications"
+msgstr "Не вдалося завантажити сповіщення"
+
+#: src/library/inbox.rs:237
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the “{permission}” permission."
+msgstr ""
+"{err}\n"
+"\n"
+"Для вашого ключа API потрібен дозвіл «{permission}»."
+
+#: src/library/inbox.rs:273
+msgid "Dismiss"
+msgstr "Відхилити"
+
+#: src/library/lightbox/albums.rs:29
+msgid "Appears In"
+msgstr "Входить до"
+
+#: src/library/lightbox/albums.rs:65
+#, rust-format
+msgid "Open “{album_name}”"
+msgstr "Відкрити «{album_name}»"
+
+#: src/library/lightbox/details.rs:156 src/library/search_filters.rs:204
+msgid "Camera"
+msgstr "Камера"
+
+#: src/library/lightbox/details.rs:163
+msgid "Body"
+msgstr "Корпус"
+
+#: src/library/lightbox/details.rs:174
+msgid "Lens"
+msgstr "Об'єктив"
+
+#: src/library/lightbox/details.rs:183 src/library/photo_editor/look.rs:37
+msgid "Exposure"
+msgstr "Експозиція"
+
+#: src/library/lightbox/details.rs:223
+msgid "Dimensions"
+msgstr "Розміри"
+
+#: src/library/lightbox/details.rs:232
+msgid "Size"
+msgstr "Розмір"
+
+#: src/library/lightbox/details.rs:245 src/library/search_filters.rs:219
+msgid "Location"
+msgstr "Місцеположення"
+
+#: src/library/lightbox/details.rs:252 src/library/map/location_dialog.rs:512
+msgid "Place"
+msgstr "Місце"
+
+#: src/library/lightbox/details.rs:266
+msgid "Coordinates"
+msgstr "Координати"
+
+#: src/library/lightbox/details.rs:328
+#, rust-format
+msgid "ISO {iso}"
+msgstr "ISO {iso}"
+
+#: src/library/lightbox/details.rs:358 src/settings_window/library.rs:278
+#, rust-format
+msgid "{size} GB"
+msgstr "{size} ГБ"
+
+#: src/library/lightbox/details.rs:363 src/settings_window/library.rs:283
+#, rust-format
+msgid "{size} MB"
+msgstr "{size} МБ"
+
+#: src/library/lightbox/details.rs:368
+#, rust-format
+msgid "{size} KB"
+msgstr "{size} КБ"
+
+#: src/library/lightbox/details.rs:372
+#, rust-format
+msgid "{size} B"
+msgstr "{size} Б"
+
+#: src/library/lightbox/details.rs:451
+msgid "Modified"
+msgstr "Змінено"
+
+#: src/library/lightbox/edit.rs:43
+msgid "Crop"
+msgstr "Кадрування"
+
+#: src/library/lightbox/edit.rs:49
+msgid "Adjust"
+msgstr "Коригування"
+
+#: src/library/lightbox/edit.rs:55 src/library/search_panel.rs:48
+#: src/library/search_panel.rs:105
+msgid "Filters"
+msgstr "Фільтри"
+
+#: src/library/lightbox/edit.rs:61
+msgid "Redact"
+msgstr "Приховати"
+
+#: src/library/lightbox/edit.rs:276
+msgid "Couldn't load the photo"
+msgstr "Не вдалося завантажити фотографію"
+
+#: src/library/lightbox/edit.rs:438
+msgid "Saving a copy…"
+msgstr "Збереження копії…"
+
+#: src/library/lightbox/edit.rs:440
+msgid "Saves a copy stacked with the original"
+msgstr "Зберігає копію в стопці з оригіналом"
+
+#: src/library/lightbox/edit.rs:441
+msgid "Saves as a new photo"
+msgstr "Зберігає як нову фотографію"
+
+#: src/library/lightbox/edit/looks.rs:160
+#, rust-format
+msgid "{degrees}°"
+msgstr "{degrees}°"
+
+#: src/library/lightbox/edit/looks.rs:168
+#, rust-format
+msgid "{percent}%"
+msgstr "{percent}%"
+
+#: src/library/lightbox/edit/pages.rs:53
+msgid "Pixelate"
+msgstr "Пікселізація"
+
+#: src/library/lightbox/edit/pages.rs:54
+msgid "Blur"
+msgstr "Розмиття"
+
+#: src/library/lightbox/edit/pages.rs:55
+msgid "Frosted"
+msgstr "Матове скло"
+
+#: src/library/lightbox/edit/pages.rs:56
+msgid "Bar"
+msgstr "Смуга"
+
+#: src/library/lightbox/edit/pages.rs:64
+msgid "Straighten"
+msgstr "Вирівнювання"
+
+#: src/library/lightbox/edit/pages.rs:110
+msgid "Strength"
+msgstr "Інтенсивність"
+
+#: src/library/lightbox/edit/pages.rs:125
+msgid "Drag over what to hide. Tap a box to move, resize, or change it."
+msgstr "Виділіть область, яку слід приховати. Натисніть на рамку, щоб перемістити, змінити розмір або налаштувати її."
+
+#: src/library/lightbox/edit/pages.rs:135
+msgid "Hide Faces"
+msgstr "Приховати обличчя"
+
+#: src/library/lightbox/edit/pages.rs:136
+msgid "Hide Text"
+msgstr "Приховати текст"
+
+#: src/library/lightbox/edit/pages.rs:143
+msgid "Clear All"
+msgstr "Очистити все"
+
+#: src/library/lightbox/edit/pages.rs:171
+#: src/library/lightbox/edit/pages.rs:177
+msgid "Bar Colour"
+msgstr "Колір смуги"
+
+#: src/library/lightbox/edit/pages.rs:255
+msgid "Rotate Left"
+msgstr "Повернути ліворуч"
+
+#: src/library/lightbox/edit/pages.rs:260
+msgid "Rotate Right"
+msgstr "Повернути праворуч"
+
+#: src/library/lightbox/edit/pages.rs:263
+msgid "Mirror"
+msgstr "Віддзеркалити"
+
+#: src/library/lightbox/edit/pages.rs:266
+msgid "Flip"
+msgstr "Перевернути"
+
+#: src/library/lightbox/edit/panel.rs:54 src/library/search_panel.rs:72
+msgid "Reset"
+msgstr "Скинути"
+
+#: src/library/lightbox/edit/panel.rs:107
+msgid "Reset All"
+msgstr "Скинути все"
+
+#: src/library/lightbox/edit/panel.rs:108
+msgid "Revert to Original…"
+msgstr "Повернути до оригіналу…"
+
+#: src/library/lightbox/edit/panel.rs:111 src/library/lightbox/widgets.rs:294
+msgid "Edit Photo"
+msgstr "Редагувати фотографію"
+
+#: src/library/lightbox/edit/panel.rs:169
+msgid "Keep Original Details"
+msgstr "Зберігати початкові відомості"
+
+#: src/library/lightbox/edit/panel.rs:171
+msgid ""
+"A saved copy keeps the original's camera details, date, place, caption, "
+"rating, and albums. Off, the copy is a new photo of its own."
+msgstr "Збережена копія зберігає дані камери, дату, місце, підпис, оцінку та альбоми оригіналу. Якщо вимкнено, копія буде окремою новою фотографією."
+
+#: src/library/lightbox/edit/panel.rs:176
+msgid "Stack with Original"
+msgstr "Об'єднати в стопку з оригіналом"
+
+#: src/library/lightbox/edit/panel.rs:177
+msgid "A saved copy becomes the cover of a stack, with the original under it."
+msgstr "Збережена копія стає обкладинкою стопки, а оригінал розміщується під нею."
+
+#: src/library/lightbox/edit/saving.rs:73
+msgid "Revert to the Original?"
+msgstr "Повернути до оригіналу?"
+
+#: src/library/lightbox/edit/saving.rs:74
+msgid "Every crop, turn, and flip made in Immich is removed."
+msgstr "Усі кадрування, повороти та віддзеркалення, зроблені в Immich, буде вилучено."
+
+#: src/library/lightbox/edit/saving.rs:75
+msgid "Revert"
+msgstr "Повернути"
+
+#: src/library/lightbox/edit/saving.rs:96
+msgid "Immich didn't save the edit"
+msgstr "Immich не зберіг зміни"
+
+#: src/library/lightbox/edit/saving.rs:104
+msgid "Saved. Immich is updating the photo."
+msgstr "Збережено. Immich оновлює фотографію."
+
+#: src/library/lightbox/edit/saving.rs:153
+msgid "Couldn't save the copy"
+msgstr "Не вдалося зберегти копію"
+
+#: src/library/lightbox/edit/saving.rs:178
+msgid "Couldn't open the original"
+msgstr "Не вдалося відкрити оригінал"
+
+#: src/library/lightbox/edit/saving.rs:220
+msgid "Saved as a new photo, but not everything carried over"
+msgstr "Збережено як нову фотографію, але перенесено не всі дані"
+
+#: src/library/lightbox/edit/saving.rs:224
+msgid "Saved as a new photo, stacked with the original"
+msgstr "Збережено як нову фотографію в стопці з оригіналом"
+
+#: src/library/lightbox/edit/saving.rs:225
+msgid "Saved as a new photo"
+msgstr "Збережено як нову фотографію"
+
+#: src/library/lightbox/edit/saving.rs:270
+msgid "Couldn't add it to the original's albums"
+msgstr "Не вдалося додати її до альбомів оригіналу"
+
+#: src/library/lightbox/face_people.rs:185 src/library/lightbox/faces.rs:296
+msgid "Change Person…"
+msgstr "Змінити людину…"
+
+#: src/library/lightbox/face_people.rs:196
+msgid "Remove from Photo"
+msgstr "Вилучити з фотографії"
+
+#: src/library/lightbox/face_people.rs:221 src/library/lightbox/faces.rs:305
+msgid "Face moved"
+msgstr "Обличчя переміщено"
+
+#: src/library/lightbox/face_people.rs:240 src/library/lightbox/faces.rs:336
+msgid "Face removed"
+msgstr "Обличчя вилучено"
+
+#: src/library/lightbox/faces.rs:43
+msgid "Drag around a face to tag it"
+msgstr "Виділіть обличчя рамкою, щоб позначити його"
+
+#: src/library/lightbox/faces.rs:48
+msgid "Done"
+msgstr "Готово"
+
+#: src/library/lightbox/faces.rs:217
+msgid "Couldn't load the faces"
+msgstr "Не вдалося завантажити обличчя"
+
+#: src/library/lightbox/faces.rs:227
+msgid "No faces yet. Drag around one to tag it."
+msgstr "Облич ще немає. Виділіть одне рамкою, щоб позначити його."
+
+#: src/library/lightbox/faces.rs:298
+msgid "Choose Person…"
+msgstr "Вибрати людину…"
+
+#: src/library/lightbox/faces.rs:315
+msgid "Use as Cover Photo"
+msgstr "Використати як фотографію обкладинки"
+
+#: src/library/lightbox/faces.rs:323
+msgid "Cover photo changed"
+msgstr "Фотографію обкладинки змінено"
+
+#: src/library/lightbox/faces.rs:332
+msgid "Remove Face"
+msgstr "Вилучити обличчя"
+
+#: src/library/lightbox/faces.rs:375
+msgid "Face tagged"
+msgstr "Обличчя позначено"
+
+#: src/library/lightbox/faces.rs:398
+msgid "Immich didn't accept the change"
+msgstr "Immich не прийняв зміну"
+
+#: src/library/lightbox/faces.rs:426
+msgid "Unknown Person"
+msgstr "Невідома особа"
+
+#: src/library/lightbox/interaction.rs:225 src/library/lightbox/widgets.rs:343
+msgid "Raw"
+msgstr "RAW"
+
+#: src/library/lightbox/interaction.rs:227 src/library/lightbox/widgets.rs:345
+msgid "Prev"
+msgstr "Назад"
+
+#: src/library/lightbox/interaction.rs:329
+msgid "Add a description"
+msgstr "Додати опис"
+
+#: src/library/lightbox/interaction/rendering.rs:92
+msgid "On Immich and locally"
+msgstr "В Immich і локально"
+
+#: src/library/lightbox/interaction/rendering.rs:93
+msgid "Local only"
+msgstr "Лише локально"
+
+#: src/library/lightbox/interaction/rendering.rs:94
+msgid "On Immich only"
+msgstr "Лише в Immich"
+
+#: src/library/lightbox/interaction/rendering.rs:100
+#, rust-format
+msgid "Created: {date}"
+msgstr "Створено: {date}"
+
+#: src/library/lightbox/live.rs:16
+msgid "Live"
+msgstr "Живе фото"
+
+#: src/library/lightbox/live.rs:19
+msgid "Play motion (Space)"
+msgstr "Відтворити рух (Пробіл)"
+
+#: src/library/lightbox/live.rs:86 src/library/lightbox/video.rs:87
+msgid "Playback isn't available"
+msgstr "Відтворення недоступне"
+
+#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/video.rs:108
+msgid "Playback failed"
+msgstr "Збій відтворення"
+
+#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+msgid "Not connected to the Immich server."
+msgstr "Немає під'єднання до сервера Immich."
+
+#: src/library/lightbox/location.rs:32
+msgid "Set location"
+msgstr "Вказати місцеположення"
+
+#: src/library/lightbox/location.rs:66
+msgid "Copy coordinates"
+msgstr "Скопіювати координати"
+
+#: src/library/lightbox/ocr.rs:21 src/library/lightbox/ocr.rs:292
+msgid "Copy All Text"
+msgstr "Скопіювати весь текст"
+
+#: src/library/lightbox/ocr.rs:64
+msgid "Hide recognized text (T)"
+msgstr "Приховати розпізнаний текст (T)"
+
+#: src/library/lightbox/ocr.rs:66 src/library/lightbox/widgets.rs:352
+msgid "Show recognized text (T)"
+msgstr "Показати розпізнаний текст (T)"
+
+#: src/library/lightbox/ocr.rs:250 src/library/shared_link_qr.rs:125
+msgid "Copied"
+msgstr "Скопійовано"
+
+#: src/library/lightbox/ocr.rs:290
+msgid "Copy Selected Text"
+msgstr "Скопіювати виділений текст"
+
+#: src/library/lightbox/panorama.rs:265
+msgid "360°"
+msgstr "360°"
+
+#: src/library/lightbox/panorama.rs:266
+msgid "Look around (P)"
+msgstr "Озирнутися (P)"
+
+#: src/library/lightbox/people.rs:65
+msgid "No one is tagged yet."
+msgstr "Ще нікого не позначено."
+
+#: src/library/lightbox/people.rs:215 src/library/people_view.rs:262
+#, rust-format
+msgid "Show photos of {name}"
+msgstr "Показати фотографії з {name}"
+
+#: src/library/lightbox/people.rs:237
+#, rust-format
+msgid "Age {months}"
+msgstr "Вік: {months}"
+
+#: src/library/lightbox/people.rs:239
+#, rust-format
+msgid "Age 1 year, {months}"
+msgstr "Вік: 1 рік, {months}"
+
+#: src/library/lightbox/people.rs:255
+#, rust-format
+msgid "{n} month"
+msgid_plural "{n} months"
+msgstr[0] "{n} місяць"
+msgstr[1] "{n} місяці"
+msgstr[2] "{n} місяців"
+
+#: src/library/lightbox/rating.rs:28 src/library/search_filters/choices.rs:134
+#: src/library/search_view.rs:162 src/settings_window/library.rs:224
+#: src/settings_window/queue_inspector.rs:43
+msgid "Clear"
+msgstr "Очистити"
+
+#: src/library/lightbox/rating.rs:33
+msgid "Rating"
+msgstr "Оцінка"
+
+#: src/library/lightbox/rating.rs:128
+msgid "Couldn't save the rating"
+msgstr "Не вдалося зберегти оцінку"
+
+#: src/library/lightbox/slideshow.rs:85 src/library/lightbox/slideshow.rs:251
+#: src/library/video_player.rs:315
+msgid "Pause (Space)"
+msgstr "Пауза (Пробіл)"
+
+#: src/library/lightbox/slideshow.rs:86 src/library/lightbox/widgets.rs:150
+msgid "Previous (Left)"
+msgstr "Попереднє (Вліво)"
+
+#: src/library/lightbox/slideshow.rs:87 src/library/lightbox/widgets.rs:151
+msgid "Next (Right)"
+msgstr "Наступне (Вправо)"
+
+#: src/library/lightbox/slideshow.rs:90
+msgid "Slideshow Settings"
+msgstr "Параметри слайд-шоу"
+
+#: src/library/lightbox/slideshow.rs:93
+msgid "End Slideshow (Esc)"
+msgstr "Завершити слайд-шоу (Esc)"
+
+#: src/library/lightbox/slideshow.rs:249
+msgid "Resume (Space)"
+msgstr "Продовжити (Пробіл)"
+
+#: src/library/lightbox/slideshow.rs:422
+msgid "End of slideshow"
+msgstr "Кінець слайд-шоу"
+
+#: src/library/lightbox/slideshow/options.rs:40
+msgid "Crossfade"
+msgstr "Плавний перехід"
+
+#: src/library/lightbox/slideshow/options.rs:41
+msgid "Slide"
+msgstr "Зсув"
+
+#: src/library/lightbox/slideshow/options.rs:42
+msgid "None"
+msgstr "Немає"
+
+#: src/library/lightbox/slideshow/settings.rs:19
+msgid "Shuffle"
+msgstr "У випадковому порядку"
+
+#: src/library/lightbox/slideshow/settings.rs:20
+msgid "Repeat"
+msgstr "Повторювати"
+
+#: src/library/lightbox/slideshow/settings.rs:65
+msgid "Seconds per Photo"
+msgstr "Секунд на фотографію"
+
+#: src/library/lightbox/slideshow/settings.rs:80
+msgid "Transition"
+msgstr "Перехід"
+
+#: src/library/lightbox/stack.rs:46
+msgid "Stack Actions"
+msgstr "Дії зі стопкою"
+
+#: src/library/lightbox/stack.rs:273
+msgid "Set as Stack Cover"
+msgstr "Зробити обкладинкою стопки"
+
+#: src/library/lightbox/stack.rs:280
+msgid "Remove from Stack"
+msgstr "Вилучити зі стопки"
+
+#: src/library/lightbox/stack.rs:288 src/library/lightbox/stack.rs:465
+msgid "Unstack"
+msgstr "Розформувати стопку"
+
+#: src/library/lightbox/stack.rs:299
+msgid "Keep This, Trash Others"
+msgstr "Залишити цю, решту до смітника"
+
+#: src/library/lightbox/stack.rs:301
+msgid "Keep This, Delete Others"
+msgstr "Залишити цю, решту вилучити"
+
+#: src/library/lightbox/stack.rs:348 src/library/lightbox/stack.rs:388
+#: src/library/lightbox/stack.rs:476
+msgid "Couldn't change the stack"
+msgstr "Не вдалося змінити стопку"
+
+#: src/library/lightbox/stack.rs:403
+msgid "Stack cover changed"
+msgstr "Обкладинку стопки змінено"
+
+#: src/library/lightbox/stack.rs:408
+msgid "Removed from the stack"
+msgstr "Вилучено зі стопки"
+
+#: src/library/lightbox/stack.rs:412 src/library/lightbox/stack.rs:473
+msgid "Unstacked"
+msgstr "Стопку розформовано"
+
+#: src/library/lightbox/stack.rs:424
+#, rust-format
+msgid "Trashed {n} other photo"
+msgid_plural "Trashed {n} other photos"
+msgstr[0] "Переміщено до смітника {n} іншу фотографію"
+msgstr[1] "Переміщено до смітника {n} інші фотографії"
+msgstr[2] "Переміщено до смітника {n} інших фотографій"
+
+#: src/library/lightbox/stack.rs:430
+#, rust-format
+msgid "Deleted {n} other photo"
+msgid_plural "Deleted {n} other photos"
+msgstr[0] "Вилучено {n} іншу фотографію"
+msgstr[1] "Вилучено {n} інші фотографії"
+msgstr[2] "Вилучено {n} інших фотографій"
+
+#: src/library/lightbox/stack.rs:501 src/library/upload_stack.rs:122
+msgid "Couldn't stack the photos"
+msgstr "Не вдалося об'єднати фотографії в стопку"
+
+#: src/library/lightbox/stack.rs:510
+msgid "Stacked, see the timeline"
+msgstr "Об'єднано в стопку, перегляньте на часовій шкалі"
+
+#: src/library/lightbox/stack.rs:513
+#, rust-format
+msgid "Stacked {n} photo"
+msgid_plural "Stacked {n} photos"
+msgstr[0] "Об'єднано в стопку {n} фотографію"
+msgstr[1] "Об'єднано в стопку {n} фотографії"
+msgstr[2] "Об'єднано в стопку {n} фотографій"
+
+#: src/library/lightbox/video.rs:121
+msgid "The video file is no longer on disk."
+msgstr "Відеофайлу більше немає на диску."
+
+#: src/library/lightbox/widgets.rs:142
+msgid "Back to library"
+msgstr "Назад до бібліотеки"
+
+#: src/library/lightbox/widgets.rs:154
+msgid "Toggle details (I)"
+msgstr "Показати або приховати відомості (I)"
+
+#: src/library/lightbox/widgets.rs:161
+msgid "More (Shift+F10)"
+msgstr "Більше (Shift+F10)"
+
+#: src/library/lightbox/widgets.rs:242
+msgid "Preview unavailable"
+msgstr "Попередній перегляд недоступний"
+
+#: src/library/lightbox/widgets.rs:252
+msgid "Open in external app"
+msgstr "Відкрити у зовнішній програмі"
+
+#: src/library/lightbox/widgets.rs:286
+msgid "Play video (Space)"
+msgstr "Відтворити відео (Пробіл)"
+
+#: src/library/lightbox/widgets.rs:297
+msgid "Download asset"
+msgstr "Завантажити елемент"
+
+#: src/library/lightbox/widgets.rs:298
+msgid "Open with…"
+msgstr "Відкрити за допомогою…"
+
+#: src/library/lightbox/widgets.rs:299
+msgid "Move to trash (Delete)"
+msgstr "Перемістити до смітника (Delete)"
+
+#: src/library/lightbox/widgets.rs:347
+msgid "Toggle preview vs original full-resolution image"
+msgstr "Перемкнути між попереднім переглядом і початковим повнорозмірним зображенням"
+
+#: src/library/lightbox/widgets.rs:359
+msgid "Zoom out (Ctrl+-)"
+msgstr "Зменшити (Ctrl+-)"
+
+#: src/library/lightbox/widgets.rs:360
+msgid "Zoom in (Ctrl++)"
+msgstr "Збільшити (Ctrl++)"
+
+#: src/library/lightbox/widgets.rs:363
+msgid "Reset zoom (Ctrl+0)"
+msgstr "Скинути масштаб (Ctrl+0)"
+
+#: src/library/lightbox/widgets.rs:452
+msgid "Loading details…"
+msgstr "Завантаження відомостей…"
+
+#: src/library/map/album.rs:35
+msgid "Show all photos"
+msgstr "Показати всі фотографії"
+
+#: src/library/map/controls.rs:41 src/library/shortcuts_dialog.rs:162
+#: src/library/shortcuts_dialog.rs:237
+msgid "Zoom in"
+msgstr "Збільшити"
+
+#: src/library/map/controls.rs:42 src/library/shortcuts_dialog.rs:166
+#: src/library/shortcuts_dialog.rs:238
+msgid "Zoom out"
+msgstr "Зменшити"
+
+#: src/library/map/controls.rs:45 src/library/shortcuts_dialog.rs:239
+msgid "Rotate left"
+msgstr "Повернути ліворуч"
+
+#: src/library/map/controls.rs:46 src/library/shortcuts_dialog.rs:240
+msgid "Rotate right"
+msgstr "Повернути праворуч"
+
+#: src/library/map/controls.rs:51
+msgid "Show photos in this area"
+msgstr "Показати фотографії в цій області"
+
+#: src/library/map/controls.rs:53 src/library/shortcuts_dialog.rs:242
+msgid "Show my location"
+msgstr "Показати моє місцеположення"
+
+#: src/library/map/controls.rs:55
+msgid "Map settings"
+msgstr "Параметри карти"
+
+#: src/library/map/controls.rs:104
+msgid "Map style"
+msgstr "Стиль карти"
+
+#: src/library/map/controls.rs:130 src/library/shortcuts_dialog.rs:241
+msgid "Point north"
+msgstr "Орієнтувати на північ"
+
+#: src/library/map/controls.rs:153
+msgid "More Styles"
+msgstr "Інші стилі"
+
+#: src/library/map/controls.rs:158 src/settings_window/appearance.rs:18
+msgid "Appearance"
+msgstr "Зовнішній вигляд"
+
+#: src/library/map/controls.rs:289
+msgid "No photos in this area"
+msgstr "У цій області немає фотографій"
+
+#: src/library/map/controls.rs:300
+msgid "Your location isn't available"
+msgstr "Ваше місцеположення недоступне"
+
+#: src/library/map/locate.rs:19
+msgid "The location service did not answer in time."
+msgstr "Служба геолокації не відповіла вчасно."
+
+#: src/library/map/locate.rs:43
+#, rust-format
+msgid "Location access was not allowed ({err})."
+msgstr "Доступ до геолокації заборонено ({err})."
+
+#: src/library/map/locate.rs:49
+msgid "The location service stopped before finding you."
+msgstr "Служба геолокації зупинилася до визначення вашого місцеположення."
+
+#: src/library/map/locate.rs:51
+msgid "The location service returned an invalid position."
+msgstr "Служба геолокації повернула некоректні координати."
+
+#: src/library/map/locate.rs:56
+#, rust-format
+msgid ""
+"Location services are unavailable ({err}). Check that they are turned on."
+msgstr "Служби геолокації недоступні ({err}). Переконайтеся, що їх увімкнено."
+
+#: src/library/map/location_dialog.rs:118
+#: src/library/map/location_dialog.rs:127
+msgid "Set Location"
+msgstr "Вказати місцеположення"
+
+#: src/library/map/location_dialog.rs:165
+msgid "Could Not Set Location"
+msgstr "Не вдалося вказати місцеположення"
+
+#: src/library/map/location_dialog.rs:204 src/library/map/search.rs:34
+#: src/library/shortcuts_dialog.rs:236
+msgid "Search places"
+msgstr "Пошук місць"
+
+#: src/library/map/location_dialog.rs:287
+msgid "Looking up…"
+msgstr "Пошук…"
+
+#: src/library/map/location_dialog.rs:309
+msgid "No place name here"
+msgstr "Тут немає назви місця"
+
+#: src/library/map/location_dialog.rs:312
+msgid "Place name unavailable"
+msgstr "Назва місця недоступна"
+
+#: src/library/map/location_dialog.rs:497
+msgid "Latitude, Longitude"
+msgstr "Широта, довгота"
+
+#: src/library/map/location_dialog.rs:501
+msgid "Paste coordinates"
+msgstr "Вставити координати"
+
+#: src/library/map/markers.rs:92
+msgid "You are here"
+msgstr "Ви тут"
+
+#: src/library/map/markers.rs:118
+#, rust-format
+msgid "{n} photo in {place}"
+msgid_plural "{n} photos in {place}"
+msgstr[0] "{n} фотографія в {place}"
+msgstr[1] "{n} фотографії в {place}"
+msgstr[2] "{n} фотографій у {place}"
+
+#: src/library/map/minimap.rs:60
+msgid "Show on map"
+msgstr "Показати на карті"
+
+#: src/library/map/minimap.rs:99
+msgid "Photo location"
+msgstr "Місцеположення фотографії"
+
+#: src/library/map/nearby.rs:141
+msgid "Taken Nearby"
+msgstr "Знято поблизу"
+
+#: src/library/map/place_search.rs:172
+#, rust-format
+msgid "Photon asked to wait {seconds} s"
+msgstr "Photon просить зачекати {seconds} с"
+
+#: src/library/map/place_search.rs:267
+msgid "Searching…"
+msgstr "Пошук…"
+
+#: src/library/map/place_search.rs:335
+msgid "Address"
+msgstr "Адреса"
+
+#: src/library/map/satellite.rs:31 src/library/map/styles.rs:115
+msgid "Satellite"
+msgstr "Супутник"
+
+#: src/library/map/satellite.rs:155
+msgid "No satellite imagery here"
+msgstr "Тут немає супутникових знімків"
+
+#: src/library/map/satellite.rs:239
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#: src/library/map/satellite.rs:277
+#, rust-format
+msgid "VersaTiles asked to wait {seconds} s"
+msgstr "VersaTiles просить зачекати {seconds} с"
+
+#: src/library/map/search.rs:213
+msgid "No places found"
+msgstr "Місць не знайдено"
+
+#: src/library/map/settings.rs:50
+msgid "All Time"
+msgstr "За весь час"
+
+#: src/library/map/settings.rs:51
+msgid "Past 24 Hours"
+msgstr "За останні 24 години"
+
+#: src/library/map/settings.rs:52
+msgid "Past 7 Days"
+msgstr "За останні 7 днів"
+
+#: src/library/map/settings.rs:53
+msgid "Past 30 Days"
+msgstr "За останні 30 днів"
+
+#: src/library/map/settings.rs:54
+msgid "Past Year"
+msgstr "За останній рік"
+
+#: src/library/map/settings.rs:55
+msgid "Past 3 Years"
+msgstr "За останні 3 роки"
+
+#: src/library/map/settings.rs:56
+msgid "Custom Range"
+msgstr "Власний діапазон"
+
+#: src/library/map/settings.rs:84
+msgid "Only Favorites"
+msgstr "Лише вибрані"
+
+#: src/library/map/settings.rs:86
+msgid "Include Archived"
+msgstr "Враховувати архівні"
+
+#: src/library/map/settings.rs:87
+msgid "Your archived photos"
+msgstr "Ваші архівні фотографії"
+
+#: src/library/map/settings.rs:91
+msgid "Include Partners"
+msgstr "Враховувати партнерів"
+
+#: src/library/map/settings.rs:92
+msgid "Photos partners share with you"
+msgstr "Фотографії, якими з вами діляться партнери"
+
+#: src/library/map/settings.rs:96
+msgid "Include Shared Albums"
+msgstr "Враховувати спільні альбоми"
+
+#: src/library/map/settings.rs:97
+msgid "Photos in albums shared with you"
+msgstr "Фотографії в альбомах, якими з вами поділилися"
+
+#: src/library/map/settings.rs:101 src/library/utilities/controls.rs:97
+#: src/settings_window/behavior.rs:140
+msgid "From"
+msgstr "Від"
+
+#: src/library/map/settings.rs:102 src/library/utilities/controls.rs:98
+#: src/settings_window/behavior.rs:141
+msgid "Until"
+msgstr "До"
+
+#: src/library/map/settings.rs:149
+msgid "Map Settings"
+msgstr "Параметри карти"
+
+#: src/library/map/settings.rs:173 src/library/utilities/controls.rs:109
+msgid "Show"
+msgstr "Показувати"
+
+#: src/library/map/settings.rs:180
+msgid "Date Range"
+msgstr "Діапазон дат"
+
+#: src/library/map/status.rs:29
+msgid "Loading Map…"
+msgstr "Завантаження карти…"
+
+#: src/library/map/status.rs:31
+msgid "No Photos With a Location"
+msgstr "Немає фотографій із місцеположенням"
+
+#: src/library/map/status.rs:32
+msgid "Photos with GPS data, or a location you set, appear here"
+msgstr "Фотографії з даними GPS або вказаним вами місцеположенням з'являться тут"
+
+#: src/library/map/status.rs:34
+msgid "Could Not Load the Map"
+msgstr "Не вдалося завантажити карту"
+
+#: src/library/map/styles.rs:99
+msgid "Colorful"
+msgstr "Кольорова"
+
+#: src/library/map/styles.rs:100
+msgid "Natural"
+msgstr "Природна"
+
+#: src/library/map/styles.rs:101
+msgid "Muted"
+msgstr "Приглушена"
+
+#: src/library/map/styles.rs:102
+msgid "Gray"
+msgstr "Сіра"
+
+#: src/library/map/styles.rs:118
+msgid "Humanitarian"
+msgstr "Гуманітарна"
+
+#: src/library/map/styles.rs:181 src/library/theme.rs:20
+#: src/settings_window/appearance.rs:21
+msgid "Follow System"
+msgstr "Як у системі"
+
+#: src/library/map/styles.rs:182 src/library/theme.rs:21
+#: src/settings_window/appearance.rs:21
+msgid "Light"
+msgstr "Світла"
+
+#: src/library/map/styles.rs:183 src/library/theme.rs:22
+#: src/settings_window/appearance.rs:21
+msgid "Dark"
+msgstr "Темна"
+
+#: src/library/map/view.rs:230
+msgid "This Area"
+msgstr "Ця область"
+
+#: src/library/map/view.rs:494
+msgid "Map Area"
+msgstr "Область карти"
+
+#: src/library/masonry/canvas.rs:532 src/library/server_stats_dialog.rs:156
+#: src/library/server_stats_dialog.rs:157
+#: src/library/source_loading/explore.rs:56
+msgid "HTTP 403"
+msgstr "HTTP 403"
+
+#: src/library/masonry/canvas/interaction.rs:272
+#, rust-format
+msgid "{n} file"
+msgid_plural "{n} files"
+msgstr[0] "{n} файл"
+msgstr[1] "{n} файли"
+msgstr[2] "{n} файлів"
+
+#: src/library/masonry/canvas_helpers.rs:139
+msgid ""
+"Your API key is missing permissions required to view thumbnails. Please "
+"ensure the key has 'asset.view' enabled."
+msgstr "У вашому ключі API відсутні дозволи, необхідні для перегляду мініатюр. Переконайтеся, що для ключа ввімкнено дозвіл 'asset.view'."
+
+#: src/library/memories.rs:154
+#, rust-format
+msgid "{name}'s birthday"
+msgstr "День народження {name}"
+
+#: src/library/memories.rs:162
+#, rust-format
+msgid "{n} year ago"
+msgid_plural "{n} years ago"
+msgstr[0] "{n} рік тому"
+msgstr[1] "{n} роки тому"
+msgstr[2] "{n} років тому"
+
+#: src/library/memories.rs:165
+msgid "This year"
+msgstr "Цього року"
+
+#: src/library/memories.rs:166
+msgid "Memory"
+msgstr "Спогад"
+
+#: src/library/memories.rs:277
+msgid "Remove from Memory"
+msgstr "Вилучити зі спогаду"
+
+#: src/library/memories.rs:306
+msgid "Removed from this memory"
+msgstr "Вилучено з цього спогаду"
+
+#: src/library/memories.rs:308
+msgid "Couldn't change the memory"
+msgstr "Не вдалося змінити спогад"
+
+#: src/library/mod.rs:407
+msgid "Drop files to upload"
+msgstr "Перетягніть файли для вивантаження"
+
+#: src/library/navigation.rs:201 src/library/sidebar/rows.rs:76
+msgid "Shared Albums"
+msgstr "Спільні альбоми"
+
+#: src/library/navigation.rs:202 src/library/sidebar/rows.rs:82
+msgid "Shared Links"
+msgstr "Спільні посилання"
+
+#: src/library/navigation.rs:206 src/library/shortcuts_dialog.rs:65
+#: src/library/sidebar/rows.rs:88
+msgid "Sharing"
+msgstr "Спільний доступ"
+
+#: src/library/navigation.rs:207 src/library/search_panel.rs:77
+#: src/library/search_view.rs:166 src/library/shortcuts_dialog.rs:33
+#: src/library/sidebar/rows.rs:46
+msgid "Search"
+msgstr "Пошук"
+
+#: src/library/navigation.rs:209 src/library/sidebar/rows.rs:124
+msgid "Duplicates"
+msgstr "Дублікати"
+
+#: src/library/people_view.rs:68 src/library/person_merge_dialog.rs:67
+msgid "Search people"
+msgstr "Пошук людей"
+
+#: src/library/people_view.rs:73 src/library/people_view.rs:117
+msgid "Show hidden people"
+msgstr "Показати прихованих людей"
+
+#: src/library/people_view.rs:115
+msgid "Hide hidden people"
+msgstr "Сховати прихованих людей"
+
+#: src/library/people_view.rs:137 src/library/person_merge_dialog.rs:31
+msgid "Could Not Load People"
+msgstr "Не вдалося завантажити людей"
+
+#: src/library/people_view.rs:161
+msgid "No People"
+msgstr "Немає людей"
+
+#: src/library/people_view.rs:162
+msgid "People appear here once Immich has recognized faces in your photos."
+msgstr "Люди з'являться тут, коли Immich розпізнає обличчя на ваших фотографіях."
+
+#: src/library/people_view.rs:166
+msgid "No Matches"
+msgstr "Збігів не знайдено"
+
+#: src/library/people_view.rs:167 src/library/sharing_view.rs:323
+msgid "No one matches your search."
+msgstr "За вашим запитом нікого не знайдено."
+
+#: src/library/people_view.rs:320
+msgid "Add Name…"
+msgstr "Додати ім'я…"
+
+#: src/library/people_view.rs:325
+msgid "Unhide"
+msgstr "Показати"
+
+#: src/library/people_view.rs:327
+msgid "Hide"
+msgstr "Приховати"
+
+#: src/library/people_view.rs:339
+msgid "Set Birthday…"
+msgstr "Вказати дату народження…"
+
+#: src/library/people_view.rs:346
+msgid "Merge People…"
+msgstr "Об'єднати людей…"
+
+#: src/library/people_view.rs:375
+msgid "Could Not Update Person"
+msgstr "Не вдалося оновити особу"
+
+#: src/library/people_view.rs:422
+msgid "Add Name"
+msgstr "Додати ім'я"
+
+#: src/library/people_view.rs:424
+msgid "Rename Person"
+msgstr "Перейменувати особу"
+
+#: src/library/people_view.rs:426
+msgid "This name is used in search and on the People page."
+msgstr "Це ім'я використовується в пошуку та на сторінці «Люди»."
+
+#: src/library/people_view.rs:449
+msgid "Set Birthday"
+msgstr "Вказати дату народження"
+
+#: src/library/people_view.rs:451
+#, rust-format
+msgid "Immich shows {name}'s age on photos."
+msgstr "Immich показує вік {name} на фотографіях."
+
+#: src/library/person_merge_dialog.rs:47 src/library/person_merge_dialog.rs:157
+msgid "Merge"
+msgstr "Об'єднати"
+
+#: src/library/person_merge_dialog.rs:95
+#, rust-format
+msgid ""
+"Pick the people who are really {name}. Their faces move to {name} and "
+"they're removed. This can't be undone."
+msgstr "Виберіть людей, які насправді є {name}. Їхні обличчя перейдуть до {name}, а самі вони будуть вилучені. Цю дію не можна скасувати."
+
+#: src/library/person_merge_dialog.rs:124
+#, rust-format
+msgid "Merge Into {name}"
+msgstr "Об'єднати з {name}"
+
+#: src/library/person_merge_dialog.rs:146
+#, rust-format
+msgid "Merge {count} person into {name}?"
+msgid_plural "Merge {count} people into {name}?"
+msgstr[0] "Об'єднати {count} особу з {name}?"
+msgstr[1] "Об'єднати {count} особи з {name}?"
+msgstr[2] "Об'єднати {count} осіб з {name}?"
+
+#: src/library/person_merge_dialog.rs:156
+msgid "This can't be undone."
+msgstr "Цю дію не можна скасувати."
+
+#: src/library/person_merge_dialog.rs:202
+msgid "Could Not Merge People"
+msgstr "Не вдалося об'єднати людей"
+
+#: src/library/person_picker.rs:122
+msgid "Search or type a new name"
+msgstr "Знайдіть або введіть нове ім'я"
+
+#: src/library/person_picker.rs:138
+msgid "Create Person…"
+msgstr "Створити особу…"
+
+#: src/library/person_picker.rs:140
+msgid "Who Is This?"
+msgstr "Хто це?"
+
+#: src/library/person_picker.rs:156
+msgid "Back"
+msgstr "Назад"
+
+#: src/library/person_picker.rs:161
+msgid "Create Person"
+msgstr "Створити особу"
+
+#: src/library/person_picker.rs:166
+msgid "Tag Face"
+msgstr "Позначити обличчя"
+
+#: src/library/photo_editor.rs:37
+msgid "Free"
+msgstr "Довільно"
+
+#: src/library/photo_editor.rs:38 src/library/photo_editor/look.rs:130
+msgid "Original"
+msgstr "Оригінал"
+
+#: src/library/photo_editor.rs:39
+msgid "Square"
+msgstr "Квадрат"
+
+#: src/library/photo_editor/look.rs:38
+msgid "Brightness"
+msgstr "Яскравість"
+
+#: src/library/photo_editor/look.rs:39
+msgid "Contrast"
+msgstr "Контрастність"
+
+#: src/library/photo_editor/look.rs:40
+msgid "Highlights"
+msgstr "Світлі ділянки"
+
+#: src/library/photo_editor/look.rs:41
+msgid "Shadows"
+msgstr "Тіні"
+
+#: src/library/photo_editor/look.rs:42
+msgid "Saturation"
+msgstr "Насиченість"
+
+#: src/library/photo_editor/look.rs:43
+msgid "Warmth"
+msgstr "Теплота"
+
+#: src/library/photo_editor/look.rs:44
+msgid "Tint"
+msgstr "Відтінок"
+
+#: src/library/photo_editor/look.rs:45
+msgid "Vignette"
+msgstr "Віньєтування"
+
+#: src/library/photo_editor/look.rs:46
+msgid "Sharpen"
+msgstr "Різкість"
+
+#: src/library/photo_editor/look.rs:133
+msgid "Vivid"
+msgstr "Яскравий"
+
+#: src/library/photo_editor/look.rs:142
+msgid "Warm"
+msgstr "Теплий"
+
+#: src/library/photo_editor/look.rs:151
+msgid "Cool"
+msgstr "Холодний"
+
+#: src/library/photo_editor/look.rs:159
+msgid "Dramatic"
+msgstr "Драматичний"
+
+#: src/library/photo_editor/look.rs:171
+msgid "Fade"
+msgstr "Згасання"
+
+#: src/library/photo_editor/look.rs:181
+msgid "Vintage"
+msgstr "Вінтаж"
+
+#: src/library/photo_editor/look.rs:192
+msgid "Mono"
+msgstr "Моно"
+
+#: src/library/photo_editor/look.rs:200
+msgid "Noir"
+msgstr "Нуар"
+
+#: src/library/photo_editor/look.rs:211
+msgid "Sepia"
+msgstr "Сепія"
+
+#: src/library/related.rs:20
+msgid "View Similar Photos"
+msgstr "Переглянути схожі фотографії"
+
+#: src/library/related.rs:29
+msgid "View in Timeline"
+msgstr "Переглянути на часовій шкалі"
+
+#: src/library/search_filters.rs:59
+msgid "Text"
+msgstr "Текст"
+
+#: src/library/search_filters.rs:62
+msgid "Filename contains"
+msgstr "Назва файлу містить"
+
+#: src/library/search_filters.rs:65
+msgid "Description contains"
+msgstr "Опис містить"
+
+#: src/library/search_filters.rs:68
+msgid "OCR text contains"
+msgstr "Розпізнаний текст містить"
+
+#: src/library/search_filters.rs:79
+msgid "People, Tags, and Albums"
+msgstr "Люди, мітки та альбоми"
+
+#: src/library/search_filters.rs:80
+msgid "Photos have to have everything you pick"
+msgstr "Фотографії повинні містити все вибране"
+
+#: src/library/search_filters.rs:83
+msgid "Anyone"
+msgstr "Будь-хто"
+
+#: src/library/search_filters.rs:84 src/library/search_filters.rs:85
+#: src/library/search_filters.rs:123 src/library/search_filters.rs:135
+#: src/library/search_filters.rs:144 src/library/search_filters/suggest.rs:22
+#: src/library/search_filters/suggest.rs:47
+msgid "Any"
+msgstr "Будь-який"
+
+#: src/library/search_filters.rs:118
+msgid "Type and flags"
+msgstr "Тип і прапорці"
+
+#: src/library/search_filters.rs:121
+msgid "Asset type"
+msgstr "Тип елемента"
+
+#: src/library/search_filters.rs:124
+msgid "Image only"
+msgstr "Лише зображення"
+
+#: src/library/search_filters.rs:125
+msgid "Video only"
+msgstr "Лише відео"
+
+#: src/library/search_filters.rs:128
+msgid "Favourites only"
+msgstr "Лише вибрані"
+
+#: src/library/search_filters.rs:129
+msgid "Motion photos only"
+msgstr "Лише живі фото"
+
+#: src/library/search_filters.rs:130
+msgid "Not in any album"
+msgstr "Поза будь-яким альбомом"
+
+#: src/library/search_filters.rs:131
+msgid "Include deleted"
+msgstr "Враховувати вилучені"
+
+#: src/library/search_filters.rs:133
+msgid "Visibility"
+msgstr "Видимість"
+
+#: src/library/search_filters.rs:136 src/library/shortcuts_dialog.rs:260
+msgid "Timeline"
+msgstr "Часова шкала"
+
+#: src/library/search_filters.rs:138
+#: src/library/source_header/enrichment.rs:251
+msgid "Hidden"
+msgstr "Приховані"
+
+#: src/library/search_filters.rs:139
+msgid "Locked"
+msgstr "Заблоковані"
+
+#: src/library/search_filters.rs:143
+msgid "Minimum rating"
+msgstr "Мінімальна оцінка"
+
+#: src/library/search_filters.rs:173
+msgid "Date range"
+msgstr "Діапазон дат"
+
+#: src/library/search_filters.rs:177
+msgid "Taken after"
+msgstr "Знято після"
+
+#: src/library/search_filters.rs:180
+msgid "Taken before"
+msgstr "Знято до"
+
+#: src/library/search_filters.rs:183
+msgid "Created after"
+msgstr "Створено після"
+
+#: src/library/search_filters.rs:186
+msgid "Created before"
+msgstr "Створено до"
+
+#: src/library/search_filters.rs:207
+msgid "Make"
+msgstr "Виробник"
+
+#: src/library/search_filters.rs:208
+msgid "Model"
+msgstr "Модель"
+
+#: src/library/search_filters.rs:209
+msgid "Lens model"
+msgstr "Модель об'єктива"
+
+#: src/library/search_filters.rs:222
+msgid "Country"
+msgstr "Країна"
+
+#: src/library/search_filters.rs:223
+msgid "State / region"
+msgstr "Область / регіон"
+
+#: src/library/search_filters.rs:224
+msgid "City"
+msgstr "Місто"
+
+#: src/library/search_filters/choices.rs:119
+#, rust-format
+msgid "Filter {what}"
+msgstr "Фільтрувати {what}"
+
+#: src/library/search_filters/choices.rs:207
+msgid "Nothing to choose from"
+msgstr "Немає з чого вибрати"
+
+#: src/library/search_panel.rs:55
+msgid "Close filters"
+msgstr "Закрити фільтри"
+
+#: src/library/search_panel.rs:73
+msgid "Clear every filter, keeping the search text"
+msgstr "Очистити всі фільтри, зберігши текст пошуку"
+
+#: src/library/search_panel.rs:108
+#, rust-format
+msgid "Filters · {count}"
+msgstr "Фільтри · {count}"
+
+#: src/library/search_view.rs:116
+msgid ""
+"Smart: CLIP-based semantic search.\n"
+"Filename: matches against file names.\n"
+"OCR: matches text inside images."
+msgstr ""
+"Розумний: семантичний пошук на основі CLIP.\n"
+"Назва файлу: пошук за назвами файлів.\n"
+"OCR: пошук тексту на зображеннях."
+
+#: src/library/search_view.rs:123 src/library/search_view.rs:315
+msgid "Describe what you're looking for…"
+msgstr "Опишіть, що ви шукаєте…"
+
+#: src/library/search_view.rs:157
+msgid "Show search filters"
+msgstr "Показати фільтри пошуку"
+
+#: src/library/search_view.rs:313
+msgid "Search filenames"
+msgstr "Пошук за назвами файлів"
+
+#: src/library/search_view.rs:314
+msgid "Find words shown inside images"
+msgstr "Пошук слів усередині зображень"
+
+#: src/library/select_all.rs:29
+msgid "Loading every photo to select…"
+msgstr "Завантаження всіх фотографій для вибору…"
+
+#: src/library/select_all.rs:48
+msgid "Some photos couldn't be loaded, so not all are selected"
+msgstr "Деякі фотографії не вдалося завантажити, тому вибрано не всі"
+
+#: src/library/server_stats_dialog.rs:23
+msgid "Server statistics"
+msgstr "Статистика сервера"
+
+#: src/library/server_stats_dialog.rs:99 src/library/server_stats_dialog.rs:131
+#: src/library/utilities/controls.rs:29
+msgid "Videos"
+msgstr "Відео"
+
+#: src/library/server_stats_dialog.rs:104 src/settings_window/library.rs:190
+msgid "Storage"
+msgstr "Сховище"
+
+#: src/library/server_stats_dialog.rs:113
+msgid "By user"
+msgstr "За користувачами"
+
+#: src/library/server_stats_dialog.rs:136
+msgid "Total"
+msgstr "Загалом"
+
+#: src/library/server_stats_dialog.rs:145
+msgid "Server-wide statistics require administrator access."
+msgstr "Для перегляду статистики сервера потрібен доступ адміністратора."
+
+#: src/library/server_stats_dialog.rs:163
+msgid ""
+"Your API key must include the 'server.about', 'server.versionCheck', "
+"'server.statistics', and 'asset.statistics' permissions to view stats."
+msgstr "Ваш ключ API повинен містити дозволи 'server.about', 'server.versionCheck', 'server.statistics' та 'asset.statistics' для перегляду статистики."
+
+#: src/library/server_stats_dialog.rs:168
+msgid "Unable to load statistics"
+msgstr "Не вдалося завантажити статистику"
+
+#: src/library/server_stats_dialog.rs:169
+msgid "Check your connection and try again."
+msgstr "Перевірте з'єднання та повторіть спробу."
+
+#: src/library/server_stats_dialog.rs:247
+#, rust-format
+msgid "{used} of {quota}"
+msgstr "{used} із {quota}"
+
+#: src/library/shared_link_dialog.rs:20
+msgid "Never"
+msgstr "Ніколи"
+
+#: src/library/shared_link_dialog.rs:21
+msgid "1 hour"
+msgstr "1 година"
+
+#: src/library/shared_link_dialog.rs:22
+msgid "1 day"
+msgstr "1 день"
+
+#: src/library/shared_link_dialog.rs:23
+msgid "7 days"
+msgstr "7 днів"
+
+#: src/library/shared_link_dialog.rs:24
+msgid "30 days"
+msgstr "30 днів"
+
+#: src/library/shared_link_dialog.rs:31
+#, rust-format
+msgid "Keep current ({date})"
+msgstr "Залишити поточну ({date})"
+
+#. Translators: strftime date and time, e.g. "9 Oct 2026, 14:30".
+#: src/library/shared_link_dialog.rs:57
+msgid "%-d %b %Y, %H:%M"
+msgstr "%-d %b %Y, %H:%M"
+
+#: src/library/shared_link_dialog.rs:114
+msgid "Expires"
+msgstr "Термін дії"
+
+#: src/library/shared_link_dialog.rs:119
+msgid "Password (leave empty to keep)"
+msgstr "Пароль (залиште порожнім, щоб не змінювати)"
+
+#: src/library/shared_link_dialog.rs:121
+msgid "Password (optional)"
+msgstr "Пароль (необов'язково)"
+
+#: src/library/shared_link_dialog.rs:125
+msgid "Allow downloads"
+msgstr "Дозволити завантаження"
+
+#: src/library/shared_link_dialog.rs:126
+msgid "Visitors can download originals"
+msgstr "Відвідувачі можуть завантажувати оригінали"
+
+#: src/library/shared_link_dialog.rs:130
+msgid "Allow uploads"
+msgstr "Дозволити вивантаження"
+
+#: src/library/shared_link_dialog.rs:131
+msgid "Visitors can add photos to the album"
+msgstr "Відвідувачі можуть додавати фотографії до альбому"
+
+#: src/library/shared_link_dialog.rs:135
+msgid "Show metadata"
+msgstr "Показувати метадані"
+
+#: src/library/shared_link_dialog.rs:136
+msgid "Visitors can see EXIF details and location"
+msgstr "Відвідувачі можуть бачити дані EXIF і місцеположення"
+
+#: src/library/shared_link_dialog.rs:177
+msgid "Create Share Link"
+msgstr "Створити спільне посилання"
+
+#: src/library/shared_link_dialog.rs:178
+msgid "Edit Share Link"
+msgstr "Змінити спільне посилання"
+
+#: src/library/shared_link_dialog.rs:237
+msgid "Share link created and copied"
+msgstr "Спільне посилання створено та скопійовано"
+
+#: src/library/shared_link_dialog.rs:243
+msgid "Could Not Save Share Link"
+msgstr "Не вдалося зберегти спільне посилання"
+
+#: src/library/shared_link_dialog.rs:253 src/library/shared_link_photos.rs:343
+#: src/library/shared_links_view.rs:325
+msgid "Couldn't copy the link"
+msgstr "Не вдалося скопіювати посилання"
+
+#: src/library/shared_link_photos.rs:56 src/library/shared_link_photos.rs:239
+msgid "Photos in Link"
+msgstr "Фотографії в посиланні"
+
+#: src/library/shared_link_photos.rs:77
+msgid ""
+"Tap photos to take them out. To add some, select them in your library and "
+"choose Add to Share Link."
+msgstr "Натисніть на фотографії, щоб вилучити їх. Щоб додати фотографії, виберіть їх у бібліотеці та натисніть «Додати до спільного посилання»."
+
+#: src/library/shared_link_photos.rs:111
+#, rust-format
+msgid "Couldn't load the photos: {err}"
+msgstr "Не вдалося завантажити фотографії: {err}"
+
+#: src/library/shared_link_photos.rs:154
+msgid "Select"
+msgstr "Вибрати"
+
+#: src/library/shared_link_photos.rs:183
+#, rust-format
+msgid "Remove {n} Photo"
+msgid_plural "Remove {n} Photos"
+msgstr[0] "Вилучити {n} фотографію"
+msgstr[1] "Вилучити {n} фотографії"
+msgstr[2] "Вилучити {n} фотографій"
+
+#: src/library/shared_link_photos.rs:202
+#, rust-format
+msgid "Couldn't take them out: {err}"
+msgstr "Не вдалося вилучити їх: {err}"
+
+#: src/library/shared_link_photos.rs:255
+msgid "Couldn't load your links"
+msgstr "Не вдалося завантажити ваші посилання"
+
+#: src/library/shared_link_photos.rs:293 src/library/shared_links_view.rs:384
+msgid "Individual share"
+msgstr "Окремий спільний доступ"
+
+#: src/library/shared_link_photos.rs:311 src/library/shared_link_photos.rs:327
+msgid "Add to Share Link"
+msgstr "Додати до спільного посилання"
+
+#: src/library/shared_link_photos.rs:318
+msgid "No Links to Add To"
+msgstr "Немає посилань для додавання"
+
+#: src/library/shared_link_photos.rs:320
+msgid ""
+"Albums' links always show the whole album. Make a link for some photos with "
+"Create Share Link first."
+msgstr "Посилання на альбоми завжди показують увесь альбом. Спочатку створіть посилання для окремих фотографій за допомогою «Створити спільне посилання»."
+
+#: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
+#: src/library/shared_link_qr.rs:129
+msgid "Copy Link"
+msgstr "Скопіювати посилання"
+
+#: src/library/shared_link_photos.rs:349
+msgid "Couldn't add to the link"
+msgstr "Не вдалося додати до посилання"
+
+#: src/library/shared_link_photos.rs:356
+msgid "Already in the link"
+msgstr "Уже є в посиланні"
+
+#: src/library/shared_link_photos.rs:359
+#, rust-format
+msgid "Added {items} to the link"
+msgstr "Додано {items} до посилання"
+
+#: src/library/shared_link_photos.rs:366
+#, rust-format
+msgid "{n} wasn't added"
+msgid_plural "{n} weren't added"
+msgstr[0] "{n} не додано"
+msgstr[1] "{n} не додано"
+msgstr[2] "{n} не додано"
+
+#: src/library/shared_link_qr.rs:35 src/library/shared_link_qr.rs:42
+msgid "Couldn't make the QR code"
+msgstr "Не вдалося створити QR-код"
+
+#: src/library/shared_link_qr.rs:43
+msgid "The link is too long for a QR code."
+msgstr "Посилання занадто довге для QR-коду."
+
+#: src/library/shared_link_qr.rs:64 src/library/shared_links_view.rs:192
+msgid "QR Code"
+msgstr "QR-код"
+
+#: src/library/shared_link_qr.rs:80
+msgid "QR code of the link"
+msgstr "QR-код посилання"
+
+#: src/library/shared_links_view.rs:35
+msgid "Anyone with a link can view what it shares."
+msgstr "Будь-хто з посиланням може переглядати спільні матеріали."
+
+#: src/library/shared_links_view.rs:44
+msgid "No Shared Links"
+msgstr "Немає спільних посилань"
+
+#: src/library/shared_links_view.rs:46
+msgid ""
+"Create one from an album's or a photo's right-click menu, or from a "
+"selection."
+msgstr "Створіть посилання через контекстне меню альбому або фотографії чи з вибраного."
+
+#: src/library/shared_links_view.rs:101
+msgid "Could Not Load Shared Links"
+msgstr "Не вдалося завантажити спільні посилання"
+
+#: src/library/shared_links_view.rs:200
+msgid "Photos…"
+msgstr "Фотографії…"
+
+#: src/library/shared_links_view.rs:215
+msgid "Edit…"
+msgstr "Змінити…"
+
+#: src/library/shared_links_view.rs:311
+msgid "Show QR code"
+msgstr "Показати QR-код"
+
+#: src/library/shared_links_view.rs:318
+msgid "Copy link"
+msgstr "Скопіювати посилання"
+
+#: src/library/shared_links_view.rs:355
+msgid "Delete this link?"
+msgstr "Вилучити це посилання?"
+
+#: src/library/shared_links_view.rs:357
+msgid "Anyone using it will lose access. This can't be undone."
+msgstr "Усі користувачі втратять доступ. Цю дію не можна скасувати."
+
+#: src/library/shared_links_view.rs:373
+msgid "Could Not Delete Link"
+msgstr "Не вдалося вилучити посилання"
+
+#: src/library/shared_links_view.rs:404
+msgid "Expired"
+msgstr "Термін дії минув"
+
+#: src/library/shared_links_view.rs:407
+#, rust-format
+msgid "Expires {date}"
+msgstr "Дійсне до {date}"
+
+#: src/library/shared_links_view.rs:408
+msgid "Never expires"
+msgstr "Безстроково"
+
+#: src/library/shared_links_view.rs:414 src/library/staging_view.rs:143
+#: src/library/window_layout.rs:413
+msgid "Upload"
+msgstr "Вивантажити"
+
+#: src/library/shared_links_view.rs:416
+msgid "Exif"
+msgstr "EXIF"
+
+#: src/library/shared_links_view.rs:417
+msgid "Password"
+msgstr "Пароль"
+
+#: src/library/sharing_view.rs:29
+msgid "Add partner"
+msgstr "Додати партнера"
+
+#: src/library/sharing_view.rs:34
+msgid "You Share With"
+msgstr "Ви ділитеся з"
+
+#: src/library/sharing_view.rs:35
+msgid "Partners can see all your photos and videos."
+msgstr "Партнери можуть бачити всі ваші фотографії та відео."
+
+#: src/library/sharing_view.rs:39
+msgid "Sharing With You"
+msgstr "Діляться з вами"
+
+#: src/library/sharing_view.rs:41
+msgid ""
+"People who added you as a partner. Switch one on to see their photos in "
+"Photos."
+msgstr "Користувачі, які додали вас як партнера. Увімкніть користувача, щоб бачити його знімки у «Фотографіях»."
+
+#: src/library/sharing_view.rs:94
+msgid "Could Not Load Partners"
+msgstr "Не вдалося завантажити партнерів"
+
+#: src/library/sharing_view.rs:117
+msgid "Use + to share your library with someone."
+msgstr "Використовуйте «+», щоб поділитися своєю бібліотекою з кимось."
+
+#: src/library/sharing_view.rs:127
+msgid "No one is sharing with you."
+msgstr "Ніхто не ділиться з вами."
+
+#: src/library/sharing_view.rs:169
+msgid "Show in Photos"
+msgstr "Показувати у «Фотографіях»"
+
+#: src/library/sharing_view.rs:179
+msgid "Could Not Change Partner"
+msgstr "Не вдалося змінити партнера"
+
+#: src/library/sharing_view.rs:203
+msgid "Stop sharing"
+msgstr "Припинити спільний доступ"
+
+#: src/library/sharing_view.rs:214
+#, rust-format
+msgid "Stop sharing with {name}?"
+msgstr "Припинити спільний доступ із {name}?"
+
+#: src/library/sharing_view.rs:217
+msgid "They'll no longer see your photos and videos."
+msgstr "Вони більше не бачитимуть ваші фотографії та відео."
+
+#: src/library/sharing_view.rs:218
+msgid "Stop Sharing"
+msgstr "Припинити спільний доступ"
+
+#: src/library/sharing_view.rs:222
+msgid "Could Not Remove Partner"
+msgstr "Не вдалося вилучити партнера"
+
+#: src/library/sharing_view.rs:279
+msgid "Loading people…"
+msgstr "Завантаження людей…"
+
+#: src/library/sharing_view.rs:321
+msgid "No other people found. Listing people needs the 'user.read' permission."
+msgstr "Інших людей не знайдено. Для відображення списку потрібен дозвіл 'user.read'."
+
+#: src/library/sharing_view.rs:354
+msgid "Add Partner"
+msgstr "Додати партнера"
+
+#: src/library/sharing_view.rs:377
+#, rust-format
+msgid "Share your library with {name}?"
+msgstr "Поділитися бібліотекою з {name}?"
+
+#: src/library/sharing_view.rs:378
+msgid ""
+"They'll be able to see all your photos and videos. You can stop sharing at "
+"any time."
+msgstr "Вони зможуть бачити всі ваші фотографії та відео. Ви можете припинити спільний доступ будь-коли."
+
+#: src/library/sharing_view.rs:381
+msgid "Share"
+msgstr "Поділитися"
+
+#: src/library/sharing_view.rs:388
+msgid "Could Not Add Partner"
+msgstr "Не вдалося додати партнера"
+
+#: src/library/shortcuts_dialog.rs:29
+msgid "Show keyboard shortcuts"
+msgstr "Показати комбінації клавіш"
+
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+msgid "Open Settings"
+msgstr "Відкрити параметри"
+
+#: src/library/shortcuts_dialog.rs:31
+msgid "Toggle sidebar"
+msgstr "Показати/приховати бічну панель"
+
+#: src/library/shortcuts_dialog.rs:32 src/library/window_layout.rs:328
+msgid "Refresh"
+msgstr "Оновити"
+
+#: src/library/shortcuts_dialog.rs:35
+msgid "Paste photos"
+msgstr "Вставити фотографії"
+
+#: src/library/shortcuts_dialog.rs:37
+msgid "Into the open album, or Photos"
+msgstr "У відкритий альбом або у «Фотографії»"
+
+#: src/library/shortcuts_dialog.rs:40
+msgid "Go back"
+msgstr "Назад"
+
+#: src/library/shortcuts_dialog.rs:42
+msgid "Or the mouse back button"
+msgstr "Або кнопка «Назад» на миші"
+
+#: src/library/shortcuts_dialog.rs:45
+msgid "Go forward"
+msgstr "Вперед"
+
+#: src/library/shortcuts_dialog.rs:47
+msgid "Or the mouse forward button"
+msgstr "Або кнопка «Вперед» на миші"
+
+#: src/library/shortcuts_dialog.rs:50
+msgid "Open context menu"
+msgstr "Відкрити контекстне меню"
+
+#: src/library/shortcuts_dialog.rs:52
+msgid "Or the Menu key; in the grid, the viewer, and on album tiles"
+msgstr "Або клавіша Menu; у сітці, переглядачі та на плитках альбомів"
+
+#: src/library/shortcuts_dialog.rs:61 src/library/sidebar/rows.rs:94
+#: src/library/source_header.rs:310
+msgid "Favorites"
+msgstr "Вибране"
+
+#: src/library/shortcuts_dialog.rs:70
+msgid "Move between photos"
+msgstr "Переміщення між фотографіями"
+
+#: src/library/shortcuts_dialog.rs:72
+msgid "After clicking a photo or tabbing to the grid"
+msgstr "Після натискання на фотографію або переходу в сітку клавішею Tab"
+
+#: src/library/shortcuts_dialog.rs:74
+msgid "First or last photo"
+msgstr "Перша чи остання фотографія"
+
+#: src/library/shortcuts_dialog.rs:75
+msgid "Open photo"
+msgstr "Відкрити фотографію"
+
+#: src/library/shortcuts_dialog.rs:76
+msgid "Select or deselect photo"
+msgstr "Вибрати або зняти вибір із фотографії"
+
+#: src/library/shortcuts_dialog.rs:81
+msgid "Select assets"
+msgstr "Вибрати елементи"
+
+#: src/library/shortcuts_dialog.rs:83
+msgid "Hold and click to add or remove assets"
+msgstr "Утримуйте та натискайте для додавання або вилучення елементів"
+
+#: src/library/shortcuts_dialog.rs:86
+msgid "Select a range"
+msgstr "Вибрати діапазон"
+
+#: src/library/shortcuts_dialog.rs:88
+msgid "Hold and click; add Ctrl to extend the selection"
+msgstr "Утримуйте та натискайте; додайте Ctrl для розширення вибору"
+
+#: src/library/shortcuts_dialog.rs:91
+msgid "Move selection to trash"
+msgstr "Перемістити вибране до смітника"
+
+#: src/library/shortcuts_dialog.rs:93
+msgid "Deletes permanently in the Trash view"
+msgstr "Остаточно вилучає під час перегляду смітника"
+
+#: src/library/shortcuts_dialog.rs:96 src/library/staging_view.rs:193
+msgid "Select all"
+msgstr "Вибрати все"
+
+#: src/library/shortcuts_dialog.rs:98
+msgid "Every photo in the view, loading the rest first"
+msgstr "Усі фотографії в поточному вигляді, спочатку завантажуючи решту"
+
+#: src/library/shortcuts_dialog.rs:101
+msgid "Select a whole day"
+msgstr "Вибрати цілий день"
+
+#: src/library/shortcuts_dialog.rs:103
+msgid ""
+"The focused photo's day or month; or tap its date heading while selecting"
+msgstr "День або місяць фотографії у фокусі; або натисніть на заголовок дати під час вибору"
+
+#: src/library/shortcuts_dialog.rs:106
+msgid "Copy selection"
+msgstr "Скопіювати вибране"
+
+#: src/library/shortcuts_dialog.rs:108
+msgid "Paste into an album to add them; one photo copies as a picture"
+msgstr "Вставте в альбом, щоб додати їх; одна фотографія копіюється як зображення"
+
+#: src/library/shortcuts_dialog.rs:110
+msgid "Exit selection mode"
+msgstr "Вийти з режиму вибору"
+
+#: src/library/shortcuts_dialog.rs:115
+msgid "Next or previous day"
+msgstr "Наступний або попередній день"
+
+#: src/library/shortcuts_dialog.rs:117
+msgid "In Photos, sorted newest first"
+msgstr "У «Фотографіях», від нових до старих"
+
+#: src/library/shortcuts_dialog.rs:119
+msgid "Next or previous month"
+msgstr "Наступний або попередній місяць"
+
+#: src/library/shortcuts_dialog.rs:120
+msgid "Next or previous year"
+msgstr "Наступний або попередній рік"
+
+#: src/library/shortcuts_dialog.rs:124
+msgid "Previous asset"
+msgstr "Попередній елемент"
+
+#: src/library/shortcuts_dialog.rs:125
+msgid "Next asset"
+msgstr "Наступний елемент"
+
+#: src/library/shortcuts_dialog.rs:126
+msgid "Toggle details"
+msgstr "Показати/приховати відомості"
+
+#: src/library/shortcuts_dialog.rs:128
+msgid "Show or hide all actions for the photo"
+msgstr "Показати або приховати всі дії для фотографії"
+
+#: src/library/shortcuts_dialog.rs:131
+msgid "Toggle favorite"
+msgstr "Додати до / вилучити з вибраного"
+
+#: src/library/shortcuts_dialog.rs:132
+msgid "Archive or unarchive"
+msgstr "Архівувати або розархівувати"
+
+#: src/library/shortcuts_dialog.rs:134
+msgid "Rate"
+msgstr "Оцінити"
+
+#: src/library/shortcuts_dialog.rs:136
+msgid "0 clears the rating"
+msgstr "0 скидає оцінку"
+
+#: src/library/shortcuts_dialog.rs:138
+msgid "Edit info"
+msgstr "Змінити відомості"
+
+#: src/library/shortcuts_dialog.rs:141
+msgid "Copy the photo"
+msgstr "Скопіювати фотографію"
+
+#: src/library/shortcuts_dialog.rs:143
+msgid "While recognized text shows, copies the text instead"
+msgstr "Коли відображається розпізнаний текст, копіює натомість текст"
+
+#: src/library/shortcuts_dialog.rs:146
+msgid "Show or hide recognized text"
+msgstr "Показати або приховати розпізнаний текст"
+
+#: src/library/shortcuts_dialog.rs:148
+msgid "Only when Immich found text in the photo"
+msgstr "Лише коли Immich знайшов текст на фотографії"
+
+#: src/library/shortcuts_dialog.rs:151
+msgid "Select all recognized text"
+msgstr "Виділити весь розпізнаний текст"
+
+#: src/library/shortcuts_dialog.rs:153
+msgid "Drag across text to select it; Ctrl-click adds or removes a box"
+msgstr "Проведіть по тексту для виділення; Ctrl+клацання додає або вилучає рамку"
+
+#: src/library/shortcuts_dialog.rs:156
+msgid "Copy recognized text"
+msgstr "Скопіювати розпізнаний текст"
+
+#: src/library/shortcuts_dialog.rs:158
+msgid "Copies the selection, or all text when nothing is selected"
+msgstr "Копіює виділене або весь текст, якщо нічого не вибрано"
+
+#: src/library/shortcuts_dialog.rs:164
+msgid "Or hold Ctrl and scroll"
+msgstr "Або утримуйте Ctrl і прокручуйте"
+
+#: src/library/shortcuts_dialog.rs:167
+msgid "Reset zoom"
+msgstr "Скинути масштаб"
+
+#: src/library/shortcuts_dialog.rs:169
+msgid "Toggle fullscreen"
+msgstr "Перемкнути повноекранний режим"
+
+#: src/library/shortcuts_dialog.rs:171
+msgid "Or the header button; double-click a video; Esc exits"
+msgstr "Або кнопка в заголовку; подвійне клацання по відео; Esc для виходу"
+
+#: src/library/shortcuts_dialog.rs:174
+msgid "Play or stop a live photo"
+msgstr "Відтворити або зупинити живе фото"
+
+#: src/library/shortcuts_dialog.rs:176
+msgid "Only on live and motion photos"
+msgstr "Лише для живих фото та фото з рухом"
+
+#: src/library/shortcuts_dialog.rs:178
+msgid "Start slideshow"
+msgstr "Запустити слайд-шоу"
+
+#: src/library/shortcuts_dialog.rs:183
+msgid "Pause or resume"
+msgstr "Призупинити або відновити"
+
+#: src/library/shortcuts_dialog.rs:185
+msgid "Previous or next photo"
+msgstr "Попередня або наступна фотографія"
+
+#: src/library/shortcuts_dialog.rs:187
+msgid "The next photo then gets the full interval"
+msgstr "Наступна фотографія отримає повний інтервал"
+
+#: src/library/shortcuts_dialog.rs:190
+msgid "End slideshow"
+msgstr "Завершити слайд-шоу"
+
+#: src/library/shortcuts_dialog.rs:192
+msgid "Or S, or leave fullscreen"
+msgstr "Або клавіша S, або вихід із повноекранного режиму"
+
+#: src/library/shortcuts_dialog.rs:198
+msgid "Switch the 360° view"
+msgstr "Перемкнути режим 360°"
+
+#: src/library/shortcuts_dialog.rs:200
+msgid "Only on 360° photos, which open in it"
+msgstr "Лише для фотографій 360°, що відкриваються в ньому"
+
+#: src/library/shortcuts_dialog.rs:202
+msgid "Tilt up or down"
+msgstr "Нахилити вгору або вниз"
+
+#: src/library/shortcuts_dialog.rs:204
+msgid "Turn left or right"
+msgstr "Повернути ліворуч або праворуч"
+
+#: src/library/shortcuts_dialog.rs:208
+msgid "Zoom in or out"
+msgstr "Збільшити або зменшити"
+
+#: src/library/shortcuts_dialog.rs:210
+msgid "Or scroll, or pinch"
+msgstr "Або прокрутка, або жест зведення пальців"
+
+#: src/library/shortcuts_dialog.rs:215
+msgid "Play or pause"
+msgstr "Відтворення або пауза"
+
+#: src/library/shortcuts_dialog.rs:216
+msgid "Back 10 seconds"
+msgstr "Назад на 10 секунд"
+
+#: src/library/shortcuts_dialog.rs:217
+msgid "Forward 10 seconds"
+msgstr "Вперед на 10 секунд"
+
+#: src/library/shortcuts_dialog.rs:219
+msgid "Previous frame"
+msgstr "Попередній кадр"
+
+#: src/library/shortcuts_dialog.rs:221 src/library/shortcuts_dialog.rs:226
+msgid "Pauses playback"
+msgstr "Призупиняє відтворення"
+
+#: src/library/shortcuts_dialog.rs:224
+msgid "Next frame"
+msgstr "Наступний кадр"
+
+#: src/library/shortcuts_dialog.rs:228
+msgid "Mute or unmute"
+msgstr "Вимкнути або увімкнути звук"
+
+#: src/library/shortcuts_dialog.rs:229
+msgid "Volume up"
+msgstr "Збільшити гучність"
+
+#: src/library/shortcuts_dialog.rs:230
+msgid "Volume down"
+msgstr "Зменшити гучність"
+
+#: src/library/shortcuts_dialog.rs:233
+msgid "Enter a folder path"
+msgstr "Ввести шлях до теки"
+
+#: src/library/shortcuts_dialog.rs:244
+msgid "Clear the search"
+msgstr "Очистити пошук"
+
+#: src/library/shortcuts_dialog.rs:246
+msgid "While typing in the search field"
+msgstr "Під час введення в полі пошуку"
+
+#: src/library/shortcuts_dialog.rs:249
+msgid "Move the map"
+msgstr "Перемістити карту"
+
+#: src/library/shortcuts_dialog.rs:251
+msgid "After clicking the map"
+msgstr "Після натискання на карту"
+
+#: src/library/shortcuts_dialog.rs:256
+msgid "General"
+msgstr "Загальні"
+
+#: src/library/shortcuts_dialog.rs:257
+msgid "Go To"
+msgstr "Перейти до"
+
+#: src/library/shortcuts_dialog.rs:258
+msgid "Grid"
+msgstr "Сітка"
+
+#: src/library/shortcuts_dialog.rs:259
+msgid "Selection"
+msgstr "Вибір"
+
+#: src/library/shortcuts_dialog.rs:265
+msgid "360° Photos"
+msgstr "Фотографії 360°"
+
+#: src/library/shortcuts_dialog.rs:266
+msgid "Video"
+msgstr "Відео"
+
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/settings_window/status.rs:48
+msgid "Connection"
+msgstr "З'єднання"
+
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/settings_window/status.rs:50
+msgid "Server"
+msgstr "Сервер"
+
+#: src/library/sidebar.rs:206
+msgid "Show recent albums"
+msgstr "Показати нещодавні альбоми"
+
+#: src/library/sidebar.rs:232
+msgid "All Albums"
+msgstr "Усі альбоми"
+
+#: src/library/sidebar/rows.rs:8 src/library/window_layout/responsive.rs:83
+#: src/settings_window/library.rs:86 src/tray_icon.rs:62
+msgid "Library"
+msgstr "Бібліотека"
+
+#: src/library/sidebar/rows.rs:20
+msgid "Albums & Sharing"
+msgstr "Альбоми та спільний доступ"
+
+#: src/library/sidebar/rows.rs:23
+msgid "Browse"
+msgstr "Огляд"
+
+#: src/library/sidebar/rows.rs:25
+msgid "Utilities"
+msgstr "Інструменти"
+
+#: src/library/sidebar/rows.rs:41
+msgid "Timeline of every photo and video"
+msgstr "Хронологія всіх фотографій і відео"
+
+#: src/library/sidebar/rows.rs:47
+msgid "Find photos, videos, and text"
+msgstr "Пошук фотографій, відео та тексту"
+
+#: src/library/sidebar/rows.rs:53
+msgid "People, places, and things"
+msgstr "Люди, місця та речі"
+
+#: src/library/sidebar/rows.rs:59
+msgid "Photos by where they were taken"
+msgstr "Фотографії за місцем зйомки"
+
+#: src/library/sidebar/rows.rs:65
+msgid "Faces Immich has recognized"
+msgstr "Обличчя, які розпізнав Immich"
+
+#: src/library/sidebar/rows.rs:71
+msgid "Recent, owned, and shared"
+msgstr "Нещодавні, власні та спільні"
+
+#: src/library/sidebar/rows.rs:77
+msgid "Shared with you and by you"
+msgstr "Поділилися з вами та ви"
+
+#: src/library/sidebar/rows.rs:83
+msgid "Public links you've created"
+msgstr "Публічні посилання, створені вами"
+
+#: src/library/sidebar/rows.rs:89
+msgid "Partners who share libraries"
+msgstr "Партнери зі спільними бібліотеками"
+
+#: src/library/sidebar/rows.rs:95
+msgid "Photos and videos you've marked"
+msgstr "Позначені вами фотографії та відео"
+
+#: src/library/sidebar/rows.rs:101
+msgid "Browse and organize tags"
+msgstr "Перегляд міток і керування ними"
+
+#: src/library/sidebar/rows.rs:107
+msgid "Browse by folder on the server"
+msgstr "Огляд тек на сервері"
+
+#: src/library/sidebar/rows.rs:113
+msgid "Hidden from Photos"
+msgstr "Приховано з «Фотографій»"
+
+#: src/library/sidebar/rows.rs:119
+msgid "Restore or permanently delete"
+msgstr "Відновлення або остаточне вилучення"
+
+#: src/library/sidebar/rows.rs:125
+msgid "Photos Immich found more than once"
+msgstr "Фотографії, які Immich знайшов більше одного разу"
+
+#: src/library/sidebar/rows.rs:130 src/library/source_header.rs:298
+msgid "Large Files"
+msgstr "Великі файли"
+
+#: src/library/sidebar/rows.rs:131
+msgid "The photos and videos taking the most space"
+msgstr "Фотографії та відео, що займають найбільше місця"
+
+#: src/library/sidebar/rows.rs:136 src/library/source_header.rs:299
+msgid "Missing Location"
+msgstr "Без місцеположення"
+
+#: src/library/sidebar/rows.rs:137
+msgid "Photos and videos without a place"
+msgstr "Фотографії та відео без вказаного місця"
+
+#: src/library/sidebar/rows.rs:142 src/library/source_header.rs:300
+msgid "Unusual Dates"
+msgstr "Незвичайні дати"
+
+#: src/library/sidebar/rows.rs:143
+msgid "Dated in the future, or too long ago"
+msgstr "Датовані в майбутньому або занадто старі"
+
+#: src/library/source_header.rs:77
+msgid "Play Slideshow"
+msgstr "Запустити слайд-шоу"
+
+#: src/library/source_header.rs:172 src/library/window_layout.rs:449
+msgid "Library data unavailable"
+msgstr "Дані бібліотеки недоступні"
+
+#: src/library/source_header.rs:173 src/library/window_layout.rs:450
+msgid "Could not load library assets"
+msgstr "Не вдалося завантажити елементи бібліотеки"
+
+#: src/library/source_header.rs:188
+msgid "Nothing Here"
+msgstr "Тут нічого немає"
+
+#: src/library/source_header.rs:189
+msgid "There are no photos or videos to show."
+msgstr "Немає фотографій чи відео для показу."
+
+#: src/library/source_header.rs:255
+msgid "Nothing to show yet"
+msgstr "Поки що немає чого показувати"
+
+#: src/library/source_header.rs:308
+msgid "On This Computer"
+msgstr "На цьому комп'ютері"
+
+#: src/library/source_header.rs:331
+#, rust-format
+msgid "Similar to {name}"
+msgstr "Схожі на {name}"
+
+#: src/library/source_header.rs:338
+msgid "Search Results"
+msgstr "Результати пошуку"
+
+#: src/library/source_header/enrichment.rs:47
+msgid "Smart search"
+msgstr "Розумний пошук"
+
+#: src/library/source_header/enrichment.rs:49
+msgid "Most similar first"
+msgstr "Спочатку найбільш схожі"
+
+#: src/library/source_header/enrichment.rs:73
+msgid "Back to the map"
+msgstr "Назад до карти"
+
+#: src/library/source_header/enrichment.rs:82
+msgid "Full Grid"
+msgstr "Повна сітка"
+
+#: src/library/source_header/enrichment.rs:154
+msgid "Show on Map"
+msgstr "Показати на карті"
+
+#: src/library/source_header/enrichment.rs:170
+msgid "Share album"
+msgstr "Поділитися альбомом"
+
+#: src/library/source_header/enrichment.rs:180
+msgid "Download album"
+msgstr "Завантажити альбом"
+
+#: src/library/source_header/enrichment.rs:193
+msgid "Create share link"
+msgstr "Створити спільне посилання"
+
+#: src/library/source_header/enrichment.rs:273
+msgid "Remove from favorites"
+msgstr "Вилучити з вибраного"
+
+#: src/library/source_header/enrichment.rs:275
+msgid "Add to favorites"
+msgstr "Додати до вибраного"
+
+#: src/library/source_header/enrichment.rs:290
+#, rust-format
+msgid "In {path}"
+msgstr "У {path}"
+
+#: src/library/source_loading.rs:52 src/library/upload_picker.rs:30
+msgid "Upload to album"
+msgstr "Вивантажити до альбому"
+
+#: src/library/source_loading.rs:55 src/library/upload_picker.rs:32
+#: src/library/window_layout.rs:422
+msgid "Upload to library"
+msgstr "Вивантажити до бібліотеки"
+
+#: src/library/source_loading.rs:413
+#, rust-format
+msgid "Could not load library assets: {err}"
+msgstr "Не вдалося завантажити елементи бібліотеки: {err}"
+
+#: src/library/staging_view.rs:44
+msgid "Mimick - Upload"
+msgstr "Mimick — Вивантаження"
+
+#: src/library/staging_view.rs:144
+msgid "Upload selected files to library"
+msgstr "Вивантажити вибрані файли до бібліотеки"
+
+#: src/library/staging_view.rs:149
+msgid "Upload selected files to an album"
+msgstr "Вивантажити вибрані файли до альбому"
+
+#: src/library/staging_view.rs:154
+msgid "Select all / Deselect all"
+msgstr "Вибрати все / Зняти вибір"
+
+#: src/library/staging_view.rs:199
+msgid "Deselect all"
+msgstr "Зняти вибір з усього"
+
+#: src/library/staging_view.rs:220
+#, rust-format
+msgid "{n} file staged"
+msgid_plural "{n} files staged"
+msgstr[0] "{n} файл підготовлено"
+msgstr[1] "{n} файли підготовлено"
+msgstr[2] "{n} файлів підготовлено"
+
+#: src/library/staging_view.rs:226
+#, rust-format
+msgid "{selected} of {n} selected"
+msgid_plural "{selected} of {n} selected"
+msgstr[0] "Вибрано {selected} із {n}"
+msgstr[1] "Вибрано {selected} із {n}"
+msgstr[2] "Вибрано {selected} із {n}"
+
+#: src/library/staging_view/album_picker.rs:28
+msgid "Upload to Album"
+msgstr "Вивантажити до альбому"
+
+#: src/library/staging_view/album_picker.rs:50
+msgid "Upload Queued"
+msgstr "Вивантаження додано до черги"
+
+#: src/library/staging_view/album_picker.rs:53
+#, rust-format
+msgid "{n} file queued for upload. Progress is visible in the queue inspector."
+msgid_plural ""
+"{n} files queued for upload. Progress is visible in the queue inspector."
+msgstr[0] "{n} файл додано до черги вивантаження. Перебіг видно в інспекторі черги."
+msgstr[1] "{n} файли додано до черги вивантаження. Перебіг видно в інспекторі черги."
+msgstr[2] "{n} файлів додано до черги вивантаження. Перебіг видно в інспекторі черги."
+
+#: src/library/staging_view/album_picker.rs:62
+msgid "Upload Failed"
+msgstr "Збій вивантаження"
+
+#: src/library/staging_view/album_picker.rs:65
+#, rust-format
+msgid "{n} file failed to enqueue. Check the logs for details."
+msgid_plural "All {n} files failed to enqueue. Check the logs for details."
+msgstr[0] "Не вдалося додати {n} файл до черги. Подробиці див. у журналі."
+msgstr[1] "Не вдалося додати всі {n} файли до черги. Подробиці див. у журналі."
+msgstr[2] "Не вдалося додати всі {n} файлів до черги. Подробиці див. у журналі."
+
+#: src/library/staging_view/album_picker.rs:74
+msgid "Upload Partially Queued"
+msgstr "Вивантаження частково додано до черги"
+
+#: src/library/staging_view/album_picker.rs:77
+#, rust-format
+msgid "{n} file queued, {skipped} skipped (hash or path errors)."
+msgid_plural "{n} files queued, {skipped} skipped (hash or path errors)."
+msgstr[0] "{n} файл додано до черги, {skipped} пропущено (помилки хешу або шляху)."
+msgstr[1] "{n} файли додано до черги, {skipped} пропущено (помилки хешу або шляху)."
+msgstr[2] "{n} файлів додано до черги, {skipped} пропущено (помилки хешу або шляху)."
+
+#: src/library/tags_view.rs:38 src/library/tags_view.rs:249
+msgid "New Tag"
+msgstr "Нова мітка"
+
+#: src/library/tags_view.rs:74
+msgid "Could Not Load Tags"
+msgstr "Не вдалося завантажити мітки"
+
+#: src/library/tags_view.rs:100
+msgid "All Tags"
+msgstr "Усі мітки"
+
+#: src/library/tags_view.rs:114
+msgid "No Tags"
+msgstr "Немає міток"
+
+#: src/library/tags_view.rs:115
+msgid ""
+"Create a tag with New Tag, or tag photos from the lightbox details pane."
+msgstr "Створіть мітку за допомогою «Нова мітка» або призначте мітки фотографіям на панелі відомостей переглядача."
+
+#: src/library/tags_view.rs:118
+msgid "No Tags Inside"
+msgstr "Усередині немає міток"
+
+#: src/library/tags_view.rs:119
+msgid "Use New Tag to add one here."
+msgstr "Використайте «Нова мітка», щоб додати її сюди."
+
+#: src/library/tags_view.rs:137
+#, rust-format
+msgid "Show photos tagged {value}"
+msgstr "Показати фотографії з міткою {value}"
+
+#: src/library/tags_view.rs:143
+#, rust-format
+msgid "{n} tag inside"
+msgid_plural "{n} tags inside"
+msgstr[0] "{n} мітка всередині"
+msgstr[1] "{n} мітки всередині"
+msgstr[2] "{n} міток всередині"
+
+#: src/library/tags_view.rs:183
+msgid "Change color"
+msgstr "Змінити колір"
+
+#: src/library/tags_view.rs:209
+msgid "Change Color…"
+msgstr "Змінити колір…"
+
+#: src/library/tags_view.rs:240
+#, rust-format
+msgid "The tag is created inside {parent}."
+msgstr "Мітку буде створено всередині {parent}."
+
+#: src/library/tags_view.rs:252 src/library/tags_view.rs:276
+msgid "Tag name"
+msgstr "Назва мітки"
+
+#: src/library/tags_view.rs:261
+msgid "Could Not Create Tag"
+msgstr "Не вдалося створити мітку"
+
+#: src/library/tags_view.rs:273
+msgid "Rename Tag"
+msgstr "Перейменувати мітку"
+
+#: src/library/tags_view.rs:274
+msgid "Photos keep the tag under its new name."
+msgstr "Фотографії збережуть мітку під новою назвою."
+
+#: src/library/tags_view.rs:283
+msgid "Couldn't rename the tag"
+msgstr "Не вдалося перейменувати мітку"
+
+#: src/library/tags_view.rs:289
+msgid "Could Not Rename Tag"
+msgstr "Не вдалося перейменувати мітку"
+
+#: src/library/tags_view.rs:301
+#, rust-format
+msgid "Delete “{name}”?"
+msgstr "Вилучити «{name}»?"
+
+#: src/library/tags_view.rs:304
+msgid "The tag is removed from every photo. This can't be undone."
+msgstr "Мітку буде вилучено з кожної фотографії. Цю дію не можна скасувати."
+
+#: src/library/tags_view.rs:309
+msgid "Could Not Delete Tag"
+msgstr "Не вдалося вилучити мітку"
+
+#: src/library/tags_view.rs:330
+#, rust-format
+msgid "Color for “{name}”"
+msgstr "Колір для «{name}»"
+
+#: src/library/tags_view.rs:356
+msgid "Could Not Change Color"
+msgstr "Не вдалося змінити колір"
+
+#: src/library/tags_view.rs:413
+msgid "Custom color"
+msgstr "Власний колір"
+
+#: src/library/tags_view.rs:435
+msgid "Custom"
+msgstr "Власний"
+
+#: src/library/theme/palettes.rs:61
+msgid "Warm White"
+msgstr "Теплий білий"
+
+#: src/library/theme/palettes.rs:68
+msgid "Lavender"
+msgstr "Лавандовий"
+
+#: src/library/theme/palettes.rs:75
+msgid "Mint"
+msgstr "М'ятний"
+
+#: src/library/theme/palettes.rs:91
+msgid "Black"
+msgstr "Чорний"
+
+#: src/library/theme/palettes.rs:99
+msgid "Midnight"
+msgstr "Опівнічний синій"
+
+#: src/library/theme/palettes.rs:106
+msgid "Mocha"
+msgstr "Мока"
+
+#: src/library/thumbnail_cache.rs:68 src/library/thumbnail_cache.rs:69
+msgid "Thumbnail load cancelled"
+msgstr "Завантаження мініатюри скасовано"
+
+#: src/library/thumbnail_cache.rs:576
+msgid "MemTotal:"
+msgstr "MemTotal:"
+
+#: src/library/thumbnail_cache/decode.rs:122
+msgid "Failed to scale video thumbnail"
+msgstr "Не вдалося масштабувати мініатюру відео"
+
+#: src/library/thumbnail_cache/decode.rs:134
+#, rust-format
+msgid "No decoder succeeded for {path}"
+msgstr "Жоден декодер не зміг обробити {path}"
+
+#: src/library/thumbnail_cache/decode.rs:158
+msgid "Failed to scale pixbuf"
+msgstr "Не вдалося масштабувати pixbuf"
+
+#: src/library/thumbnail_cache/screen.rs:40
+msgid "No decoder could read the file"
+msgstr "Жоден декодер не зміг прочитати файл"
+
+#: src/library/time_zones.rs:82
+msgid "Time zone"
+msgstr "Часовий пояс"
+
+#. Translators: strftime day heading in the photo timeline, e.g. "Fri, Oct 9".
+#: src/library/timeline/dates.rs:15
+msgid "%a, %b %-d"
+msgstr "%a, %-d %b"
+
+#. Translators: strftime day heading for another year, e.g. "Fri, Oct 9, 2025".
+#: src/library/timeline/dates.rs:18
+msgid "%a, %b %-d, %Y"
+msgstr "%a, %-d %b %Y"
+
+#. Translators: strftime month heading, e.g. "October 2026"; %OB is the standalone month name.
+#: src/library/timeline/dates.rs:25
+msgid "%B %Y"
+msgstr "%B %Y"
+
+#: src/library/timeline/mod.rs:241
+msgid "This photo isn't in your Photos timeline"
+msgstr "Цієї фотографії немає на часовій шкалі «Фотографій»"
+
+#: src/library/trash_view.rs:35
+msgid ""
+"Immich permanently deletes trashed items after its retention period (30 days "
+"by default)."
+msgstr "Immich остаточно вилучає елементи зі смітника після завершення терміну зберігання (типово 30 днів)."
+
+#: src/library/trash_view.rs:66
+msgid "Restore All"
+msgstr "Відновити все"
+
+#: src/library/trash_view.rs:68 src/library/trash_view.rs:238
+msgid "Empty Trash"
+msgstr "Очистити смітник"
+
+#: src/library/trash_view.rs:74
+msgid "Restore selected"
+msgstr "Відновити вибрані"
+
+#: src/library/trash_view.rs:79
+msgid "Delete selected permanently"
+msgstr "Остаточно вилучити вибрані"
+
+#: src/library/trash_view.rs:167 src/library/trash_view.rs:228
+msgid "Could Not Restore"
+msgstr "Не вдалося відновити"
+
+#: src/library/trash_view.rs:175
+msgid "Delete this item permanently?"
+msgstr "Остаточно вилучити цей елемент?"
+
+#: src/library/trash_view.rs:188
+msgid "This can't be undone. Local copies in your watch folders are kept."
+msgstr "Цю дію не можна скасувати. Локальні копії у ваших відстежуваних теках буде збережено."
+
+#: src/library/trash_view.rs:217
+msgid "Could Not Delete"
+msgstr "Не вдалося вилучити"
+
+#: src/library/trash_view.rs:236
+msgid "Empty the trash?"
+msgstr "Очистити смітник?"
+
+#: src/library/trash_view.rs:237
+msgid ""
+"Everything in the Immich trash is deleted permanently. This can't be undone."
+msgstr "Усе в смітнику Immich буде остаточно вилучено. Цю дію не можна скасувати."
+
+#: src/library/trash_view.rs:243
+msgid "Could Not Empty Trash"
+msgstr "Не вдалося очистити смітник"
+
+#: src/library/upload_stack.rs:33
+msgid "Upload and Create Stack…"
+msgstr "Вивантажити та створити стопку…"
+
+#: src/library/upload_stack.rs:35
+msgid "Upload and Add to Stack…"
+msgstr "Вивантажити та додати до стопки…"
+
+#: src/library/upload_stack.rs:50
+msgid "Upload and Stack"
+msgstr "Вивантажити та об'єднати в стопку"
+
+#: src/library/upload_stack.rs:107
+msgid "Stack created"
+msgstr "Стопку створено"
+
+#: src/library/upload_stack.rs:109
+msgid "Added to the stack"
+msgstr "Додано до стопки"
+
+#: src/library/upload_stack.rs:130
+#, rust-format
+msgid "Couldn't upload {n} file"
+msgid_plural "Couldn't upload {n} files"
+msgstr[0] "Не вдалося вивантажити {n} файл"
+msgstr[1] "Не вдалося вивантажити {n} файли"
+msgstr[2] "Не вдалося вивантажити {n} файлів"
+
+#: src/library/upload_stack.rs:138
+msgid "Immich didn't accept the upload."
+msgstr "Immich не прийняв вивантаження."
+
+#: src/library/utilities.rs:58
+msgid "Add Location"
+msgstr "Додати місцеположення"
+
+#: src/library/utilities.rs:59
+msgid "Change Date"
+msgstr "Змінити дату"
+
+#: src/library/utilities.rs:127
+msgid "Select photos, then Change Date"
+msgstr "Виберіть фотографії, потім виберіть «Змінити дату»"
+
+#: src/library/utilities.rs:128
+msgid "Select photos, then Add Location"
+msgstr "Виберіть фотографії, потім виберіть «Додати місцеположення»"
+
+#: src/library/utilities.rs:185
+#, rust-format
+msgid "{size} in all"
+msgstr "Загалом {size}"
+
+#: src/library/utilities/controls.rs:29 src/settings_window/behavior.rs:182
+msgid "All Files"
+msgstr "Усі файли"
+
+#: src/library/utilities/controls.rs:31
+msgid "Kind of file"
+msgstr "Тип файлу"
+
+#: src/library/utilities/controls.rs:36
+msgid "Smallest size"
+msgstr "Мінімальний розмір"
+
+#: src/library/utilities/controls.rs:72
+msgid "Any Size"
+msgstr "Будь-який розмір"
+
+#: src/library/utilities/controls.rs:73
+#, rust-format
+msgid "Over {n} GB"
+msgstr "Більше ніж {n} ГБ"
+
+#: src/library/utilities/controls.rs:74
+#, rust-format
+msgid "Over {n} MB"
+msgstr "Більше ніж {n} МБ"
+
+#: src/library/utilities/controls.rs:84 src/library/utilities/controls.rs:117
+msgid "Dates"
+msgstr "Дати"
+
+#: src/library/utilities/controls.rs:88
+msgid "Show only photos taken between two days"
+msgstr "Показувати лише фотографії, зняті між двома датами"
+
+#: src/library/utilities/controls.rs:101
+msgid "Show the photos without a place taken between these days."
+msgstr "Показати фотографії без вказаного місця, зняті в цей період."
+
+#: src/library/utilities/controls.rs:142
+#, rust-format
+msgid "From {from} to {until}"
+msgstr "З {from} до {until}"
+
+#: src/library/utilities/controls.rs:145
+#, rust-format
+msgid "From {from}"
+msgstr "З {from}"
+
+#: src/library/utilities/controls.rs:146
+#, rust-format
+msgid "Until {until}"
+msgstr "До {until}"
+
+#: src/library/utilities/controls.rs:157
+#, rust-format
+msgid "Before {year}"
+msgstr "До {year}"
+
+#: src/library/utilities/controls.rs:160
+msgid "Future"
+msgstr "Майбутні"
+
+#: src/library/utilities/controls.rs:187
+msgid "Dated after today"
+msgstr "З датою після сьогоднішньої"
+
+#: src/library/utilities/controls.rs:189
+#, rust-format
+msgid "Dated before {year}"
+msgstr "З датою до {year}"
+
+#: src/library/video_player.rs:240
+msgid "Exit fullscreen (F11)"
+msgstr "Вийти з повноекранного режиму (F11)"
+
+#: src/library/video_player.rs:242 src/library/video_player/controls.rs:61
+msgid "Fullscreen (F11)"
+msgstr "Повноекранний режим (F11)"
+
+#: src/library/video_player.rs:317 src/library/video_player/controls.rs:41
+msgid "Play (Space)"
+msgstr "Відтворити (Пробіл)"
+
+#: src/library/video_player/controls.rs:35
+msgid "Audio and subtitles"
+msgstr "Аудіо та субтитри"
+
+#: src/library/video_player/controls.rs:42
+msgid "Stop"
+msgstr "Зупинити"
+
+#: src/library/video_player/controls.rs:45
+msgid "Back 10 seconds (J)"
+msgstr "Назад на 10 секунд (J)"
+
+#: src/library/video_player/controls.rs:49
+msgid "Forward 10 seconds (L)"
+msgstr "Вперед на 10 секунд (L)"
+
+#: src/library/video_player/controls.rs:149
+#, rust-format
+msgid "Track {n} ({lang})"
+msgstr "Доріжка {n} ({lang})"
+
+#: src/library/video_player/controls.rs:152
+#, rust-format
+msgid "Track {n}"
+msgstr "Доріжка {n}"
+
+#: src/library/video_player/controls.rs:197
+msgid "Loop"
+msgstr "Зациклити"
+
+#: src/library/video_player/controls.rs:261
+msgid "Playback speed"
+msgstr "Швидкість відтворення"
+
+#: src/library/video_player/controls.rs:275
+msgid "Mute (M)"
+msgstr "Вимкнути звук (M)"
+
+#: src/library/video_player/controls.rs:282
+msgid "Volume"
+msgstr "Гучність"
+
+#: src/library/video_player/pipeline.rs:44
+msgid "The GStreamer GTK 4 video sink (gst-plugin-gtk4) is not installed."
+msgstr "Модуль приймача відео GStreamer GTK 4 (gst-plugin-gtk4) не встановлено."
+
+#: src/library/video_player/tracks.rs:34
+msgid "Audio"
+msgstr "Аудіо"
+
+#: src/library/video_player/tracks.rs:49 src/settings_window/library.rs:129
+msgid "Off"
+msgstr "Вимкнено"
+
+#: src/library/video_player/tracks.rs:57
+msgid "Subtitles"
+msgstr "Субтитри"
+
+#: src/library/window_layout.rs:106
+msgid "Mimick Library"
+msgstr "Бібліотека Mimick"
+
+#: src/library/window_layout.rs:280
+msgid "Toggle sidebar (F9)"
+msgstr "Показати/приховати бічну панель (F9)"
+
+#: src/library/window_layout.rs:284
+msgid "Back (Alt+Left)"
+msgstr "Назад (Alt+Вліво)"
+
+#: src/library/window_layout.rs:289
+msgid "Menu"
+msgstr "Меню"
+
+#: src/library/window_layout.rs:297
+msgid "Search (Ctrl+K)"
+msgstr "Пошук (Ctrl+K)"
+
+#: src/library/window_layout.rs:303
+msgid "Select assets (Esc to exit)"
+msgstr "Вибрати елементи (Esc для виходу)"
+
+#: src/library/window_layout.rs:333 src/settings_window/queue_inspector.rs:61
+msgid "Queue Inspector"
+msgstr "Інспектор черги"
+
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/tray_icon.rs:73
+msgid "Settings"
+msgstr "Параметри"
+
+#: src/library/window_layout.rs:337
+msgid "Keyboard Shortcuts"
+msgstr "Комбінації клавіш"
+
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+msgid "About Mimick"
+msgstr "Про Mimick"
+
+#: src/library/window_layout.rs:393
+msgid "Remote"
+msgstr "Віддалені"
+
+#: src/library/window_layout.rs:394
+msgid "Local"
+msgstr "Локальні"
+
+#: src/library/window_layout.rs:395
+msgid "Unified"
+msgstr "Об'єднані"
+
+#: src/library/window_layout.rs:398
+msgid "Asset source"
+msgstr "Джерело елементів"
+
+#: src/library/window_layout.rs:415
+msgid "Paste from Clipboard"
+msgstr "Вставити з буфера обміну"
+
+#: src/library/window_layout.rs:423
+msgid "More ways to upload"
+msgstr "Інші способи вивантаження"
+
+#: src/library/window_layout.rs:444
+msgid "Nothing to show"
+msgstr "Немає чого показувати"
+
+#: src/library/window_layout.rs:445
+msgid "No assets match the current view"
+msgstr "Жоден елемент не відповідає поточному перегляду"
+
+#: src/library/window_layout.rs:500
+#: src/settings_window/watch_folders/rules_dialog.rs:238
+msgid "Sync"
+msgstr "Синхронізувати"
+
+#: src/library/window_layout.rs:506
+msgid "Link"
+msgstr "Посилання"
+
+#: src/library/window_layout/bulk_bar.rs:65
+msgid "Add to album"
+msgstr "Додати до альбому"
+
+#: src/library/window_layout/bulk_bar.rs:66
+msgid "Stack selected"
+msgstr "Об'єднати вибрані в стопку"
+
+#: src/library/window_layout/bulk_bar.rs:68
+msgid "Remove from album"
+msgstr "Вилучити з альбому"
+
+#: src/library/window_layout/bulk_bar.rs:203
+msgid "Set location for selected"
+msgstr "Вказати місцеположення для вибраних"
+
+#: src/library/window_layout/bulk_bar.rs:207
+msgid "Change date for selected"
+msgstr "Змінити дату для вибраних"
+
+#: src/library/window_layout/bulk_bar.rs:224
+msgid "Delete selected"
+msgstr "Вилучити вибрані"
+
+#: src/library/window_layout/bulk_bar.rs:229
+msgid "Download selected"
+msgstr "Завантажити вибрані"
+
+#: src/library/window_layout/bulk_bar.rs:233
+msgid "Clear selection"
+msgstr "Очистити вибір"
+
+#: src/library/window_layout/bulk_bar.rs:238
+msgid "Share selected"
+msgstr "Поділитися вибраними"
+
+#: src/library/window_layout/responsive.rs:173
+msgid "Sync…"
+msgstr "Синхронізація…"
+
+#: src/main/ui_lifecycle.rs:56 src/queue_manager.rs:481
+msgid "Paused by user"
+msgstr "Призупинено користувачем"
+
+#: src/notifications.rs:28
+msgid "Sync complete"
+msgstr "Синхронізацію завершено"
+
+#: src/notifications.rs:32
+#, rust-format
+msgid "All {n} file processed. Idle."
+msgid_plural "All {n} files processed. Idle."
+msgstr[0] "Оброблено {n} файл. Очікування."
+msgstr[1] "Оброблено всі {n} файли. Очікування."
+msgstr[2] "Оброблено всі {n} файлів. Очікування."
+
+#: src/notifications.rs:42
+#, rust-format
+msgid "{n} failed and will be retried."
+msgid_plural "{n} failed and will be retried."
+msgstr[0] "Не вдалося вивантажити {n} файл, спробу буде повторено."
+msgstr[1] "Не вдалося вивантажити {n} файли, спробу буде повторено."
+msgstr[2] "Не вдалося вивантажити {n} файлів, спробу буде повторено."
+
+#: src/notifications.rs:55
+msgid "Mimick: Connection lost"
+msgstr "Mimick: з'єднання втрачено"
+
+#: src/notifications.rs:57
+msgid ""
+"Could not reach the Immich server. Uploads will resume automatically when "
+"connectivity is restored."
+msgstr "Не вдалося зв'язатися з сервером Immich. Вивантаження відновиться автоматично після відновлення з'єднання."
+
+#: src/queue_manager.rs:241
+#, rust-format
+msgid "Target album: {name}"
+msgstr "Цільовий альбом: {name}"
+
+#: src/queue_manager.rs:326
+msgid "Removed from retry queue"
+msgstr "Вилучено з черги повторних спроб"
+
+#: src/queue_manager.rs:339 src/queue_manager.rs:350
+msgid "Manual retry"
+msgstr "Повторити вручну"
+
+#: src/queue_manager.rs:484
+msgid "Deferred on metered network"
+msgstr "Відкладено в мережі з тарифікацією трафіку"
+
+#: src/queue_manager.rs:486
+msgid "Deferred while on battery power"
+msgstr "Відкладено під час роботи від батареї"
+
+#: src/queue_manager.rs:488
+msgid "Deferred during quiet hours"
+msgstr "Відкладено в години тиші"
+
+#: src/queue_manager/progress.rs:319
+#, rust-format
+msgid "Finished in {elapsed}s"
+msgstr "Завершено за {elapsed} с"
+
+#: src/queue_manager/progress.rs:357
+#, rust-format
+msgid "Upload failed for {path}"
+msgstr "Збій вивантаження для {path}"
+
+#: src/queue_manager/progress.rs:366
+msgid ""
+"Review the latest server and permission settings, then retry the failed item."
+msgstr "Перевірте останні параметри сервера та дозволів, потім повторіть спробу для цього елемента."
+
+#: src/queue_manager/progress.rs:379
+msgid "Queued for retry"
+msgstr "Поставлено в чергу на повтор"
+
+#: src/sanitize.rs:47
+msgid "URL is empty"
+msgstr "URL-адреса порожня"
+
+#: src/sanitize.rs:51
+#, rust-format
+msgid "Invalid URL: {err}"
+msgstr "Неприпустима URL-адреса: {err}"
+
+#: src/settings_window/actions_ui.rs:17
+msgid "Troubleshooting"
+msgstr "Усунення несправностей"
+
+#: src/settings_window/actions_ui.rs:21
+msgid "Detailed Logs"
+msgstr "Докладні журнали"
+
+#: src/settings_window/actions_ui.rs:23
+msgid ""
+"Record more while you reproduce a problem, then export. The log grows faster."
+msgstr "Записувати більше відомостей під час відтворення проблеми, а потім експортувати. Журнал зростатиме швидше."
+
+#: src/settings_window/actions_ui.rs:28
+msgid "Export…"
+msgstr "Експортувати…"
+
+#: src/settings_window/actions_ui.rs:32
+msgid "Export Diagnostics"
+msgstr "Експортувати діагностику"
+
+#: src/settings_window/actions_ui.rs:34
+msgid ""
+"For bug reports: settings, status, and the end of the log, with private "
+"details removed."
+msgstr "Для звітів про помилки: параметри, стан і кінець журналу з вилученням конфіденційних даних."
+
+#: src/settings_window/appearance.rs:22
+msgid "Style"
+msgstr "Стиль"
+
+#: src/settings_window/appearance.rs:23
+msgid "Light Theme"
+msgstr "Світла тема"
+
+#: src/settings_window/appearance.rs:24
+msgid "Dark Theme"
+msgstr "Темна тема"
+
+#: src/settings_window/apply.rs:164
+msgid "API Key Stored in a File"
+msgstr "Ключ API збережено у файлі"
+
+#: src/settings_window/apply.rs:170
+msgid "Settings Saved"
+msgstr "Параметри збережено"
+
+#: src/settings_window/apply.rs:171
+msgid "Mimick saved the updated settings successfully."
+msgstr "Mimick успішно зберіг оновлені параметри."
+
+#: src/settings_window/apply.rs:207
+msgid "Startup Permission Needed"
+msgstr "Потрібен дозвіл на автозапуск"
+
+#: src/settings_window/apply.rs:208
+msgid "Mimick was not allowed to start automatically at login."
+msgstr "Mimick не має дозволу запускатися автоматично під час входу в систему."
+
+#: src/settings_window/apply.rs:210
+msgid "Could Not Update Startup Setting"
+msgstr "Не вдалося оновити параметр автозапуску"
+
+#: src/settings_window/apply.rs:241
+msgid "Could Not Save API Key"
+msgstr "Не вдалося зберегти ключ API"
+
+#: src/settings_window/apply.rs:249
+msgid "Could Not Save Settings"
+msgstr "Не вдалося зберегти параметри"
+
+#: src/settings_window/apply.rs:250
+msgid "Mimick could not write the updated configuration to disk."
+msgstr "Mimick не вдалося записати оновлену конфігурацію на диск."
+
+#: src/settings_window/behavior.rs:53
+msgid "Uploads"
+msgstr "Вивантаження"
+
+#: src/settings_window/behavior.rs:54
+msgid "How and when your watched folders are backed up."
+msgstr "Як і коли створюються резервні копії відстежуваних тек."
+
+#: src/settings_window/behavior.rs:59
+msgid "Parallel Uploads"
+msgstr "Паралельні вивантаження"
+
+#: src/settings_window/behavior.rs:60
+msgid "Higher is faster but uses more bandwidth."
+msgstr "Що більше значення, то швидше вивантаження, але використовується більше пропускної здатності."
+
+#: src/settings_window/behavior.rs:65
+#: src/settings_window/watch_folders/rules_dialog.rs:304
+msgid "Upload XMP Sidecars"
+msgstr "Вивантажувати супутні файли XMP"
+
+#: src/settings_window/behavior.rs:66
+#: src/settings_window/watch_folders/rules_dialog.rs:305
+msgid "Send .xmp edit files along with their photos."
+msgstr "Надсилати файли змін .xmp разом із фотографіями."
+
+#: src/settings_window/behavior.rs:71
+msgid "Pause on Metered Networks"
+msgstr "Призупиняти в мережах із тарифікацією трафіку"
+
+#: src/settings_window/behavior.rs:72
+msgid "Wait for an unmetered connection, such as home Wi-Fi."
+msgstr "Очікувати на безлімітне з'єднання, наприклад домашній Wi-Fi."
+
+#: src/settings_window/behavior.rs:76
+msgid "Pause on Battery"
+msgstr "Призупиняти під час роботи від батареї"
+
+#: src/settings_window/behavior.rs:77
+msgid "Wait until the computer is plugged in."
+msgstr "Очікувати, доки комп'ютер не буде під'єднано до живлення."
+
+#: src/settings_window/behavior.rs:101
+msgid "App"
+msgstr "Програма"
+
+#: src/settings_window/behavior.rs:106
+msgid "Run on Startup"
+msgstr "Запускати під час входу в систему"
+
+#: src/settings_window/behavior.rs:107
+msgid "Start Mimick when you log in."
+msgstr "Запускати Mimick під час входу в систему."
+
+#: src/settings_window/behavior.rs:111
+msgid "Background Sync"
+msgstr "Фонова синхронізація"
+
+#: src/settings_window/behavior.rs:112
+msgid "Keep watching folders after you close this window."
+msgstr "Продовжувати відстеження тек після закриття цього вікна."
+
+#: src/settings_window/behavior.rs:117
+msgid "Tell me when uploads finish or something goes wrong."
+msgstr "Сповіщати, коли вивантаження завершиться або станеться збій."
+
+#: src/settings_window/behavior.rs:121
+msgid "Library View"
+msgstr "Перегляд бібліотеки"
+
+#: src/settings_window/behavior.rs:122
+msgid "The tray menu updates after a restart."
+msgstr "Меню в системному лотку оновиться після перезапуску."
+
+#: src/settings_window/behavior.rs:137
+msgid "Quiet Hours"
+msgstr "Години тиші"
+
+#: src/settings_window/behavior.rs:138
+msgid "Don't upload during these hours each day."
+msgstr "Не вивантажувати в ці години щодня."
+
+#: src/settings_window/behavior.rs:183
+msgid "Changed in the Last 7 Days"
+msgstr "Змінені за останні 7 днів"
+
+#: src/settings_window/behavior.rs:184
+msgid "New Files Only"
+msgstr "Лише нові файли"
+
+#: src/settings_window/behavior.rs:190
+#: src/settings_window/watch_folders/rules_dialog.rs:194
+msgid "When Mimick Starts, Check"
+msgstr "Під час запуску Mimick перевіряти"
+
+#: src/settings_window/behavior.rs:191
+msgid "Folders can choose their own in Folder Rules."
+msgstr "Для тек можна вказати власні правила у «Правилах тек»."
+
+#: src/settings_window/connectivity.rs:29
+msgid "Internal URL (LAN)"
+msgstr "Внутрішня URL-адреса (LAN)"
+
+#: src/settings_window/connectivity.rs:31
+msgid "External URL (WAN)"
+msgstr "Зовнішня URL-адреса (WAN)"
+
+#: src/settings_window/connectivity.rs:35
+msgid "Not tested yet"
+msgstr "Ще не перевірялося"
+
+#: src/settings_window/connectivity.rs:38
+msgid "Test Connection"
+msgstr "Перевірити з'єднання"
+
+#: src/settings_window/connectivity.rs:41
+msgid "Save and Connect"
+msgstr "Зберегти та під'єднатися"
+
+#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+msgid "Open Library"
+msgstr "Відкрити бібліотеку"
+
+#: src/settings_window/connectivity.rs:89
+msgid "API Key"
+msgstr "Ключ API"
+
+#: src/settings_window/connectivity.rs:137
+msgid "LAN URL"
+msgstr "URL локальної мережі (LAN)"
+
+#: src/settings_window/connectivity.rs:138
+msgid "WAN URL"
+msgstr "URL зовнішньої мережі (WAN)"
+
+#: src/settings_window/form.rs:127
+msgid "Invalid Internal URL"
+msgstr "Неприпустима внутрішня URL-адреса"
+
+#: src/settings_window/form.rs:132
+msgid "Invalid External URL"
+msgstr "Неприпустима зовнішня URL-адреса"
+
+#: src/settings_window/library.rs:70
+msgid "Open Map Places in a Full Grid"
+msgstr "Відкривати місця на карті у повній сітці"
+
+#: src/settings_window/library.rs:71
+msgid "Otherwise their photos open beside the map."
+msgstr "Інакше їхні фотографії відкриватимуться поруч із картою."
+
+#: src/settings_window/library.rs:88
+msgid "Open Originals in Lightbox"
+msgstr "Відкривати оригінали у переглядачі"
+
+#: src/settings_window/library.rs:89
+msgid "Slower to open."
+msgstr "Відкривається повільніше."
+
+#: src/settings_window/library.rs:93
+msgid "Thumbnail Quality"
+msgstr "Якість мініатюр"
+
+#: src/settings_window/library.rs:94
+msgid "Sharper thumbnails use more memory."
+msgstr "Чіткіші мініатюри використовують більше пам'яті."
+
+#: src/settings_window/library.rs:96
+msgid "Automatic"
+msgstr "Автоматично"
+
+#: src/settings_window/library.rs:97
+msgid "Thumbnail"
+msgstr "Мініатюра"
+
+#: src/settings_window/library.rs:98
+msgid "Preview"
+msgstr "Попередній перегляд"
+
+#: src/settings_window/library.rs:99
+msgid "Full Size"
+msgstr "Повний розмір"
+
+#: src/settings_window/library.rs:104
+msgid "Fit Thumbnails to Tiles"
+msgstr "Підганяти мініатюри під розмір плиток"
+
+#: src/settings_window/library.rs:106
+msgid "Preview and Full Size thumbnails use far less memory."
+msgstr "Мініатюри попереднього перегляду та повного розміру використовують значно менше пам'яті."
+
+#: src/settings_window/library.rs:122
+msgid "Date Headings"
+msgstr "Заголовки дат"
+
+#: src/settings_window/library.rs:124
+msgid "Dates between photos in Photos, albums, and other timelines."
+msgstr "Дати між фотографіями у «Фотографіях», альбомах та інших часових шкалах."
+
+#: src/settings_window/library.rs:127
+msgid "By Day"
+msgstr "За днями"
+
+#: src/settings_window/library.rs:128
+msgid "By Month"
+msgstr "За місяцями"
+
+#: src/settings_window/library.rs:139
+msgid "Grid Appearance"
+msgstr "Вигляд сітки"
+
+#: src/settings_window/library.rs:141
+msgid "Border Width"
+msgstr "Ширина рамки"
+
+#: src/settings_window/library.rs:142
+msgid "Gap between photos, in pixels. 0 for none."
+msgstr "Відстань між фотографіями у пікселях. 0 — без відступу."
+
+#: src/settings_window/library.rs:148
+msgid "Border Color"
+msgstr "Колір рамки"
+
+#: src/settings_window/library.rs:163
+msgid "RAW Files"
+msgstr "Файли RAW"
+
+#: src/settings_window/library.rs:165
+msgid "Full RAW Decoding"
+msgstr "Повне декодування RAW"
+
+#: src/settings_window/library.rs:167
+msgid ""
+"Uses the sensor data, not the embedded preview, with every colour the camera "
+"recorded. Slower, and uses more memory."
+msgstr "Використовує дані сенсора, а не вбудований попередній перегляд, зберігаючи всі зафіксовані камерою кольори. Повільніше та використовує більше пам'яті."
+
+#: src/settings_window/library.rs:172
+msgid "Keep Decoded RAW Files"
+msgstr "Зберігати декодовані файли RAW"
+
+#: src/settings_window/library.rs:173
+msgid "Reopen instantly, using disk space."
+msgstr "Відкриваються миттєво, використовуючи місце на диску."
+
+#: src/settings_window/library.rs:192
+msgid "Cache Limit (MB)"
+msgstr "Обмеження кешу (МБ)"
+
+#: src/settings_window/library.rs:193
+msgid "Trimmed when Mimick starts."
+msgstr "Очищається під час запуску Mimick."
+
+#: src/settings_window/library.rs:200
+msgid "Memory Limit (MB)"
+msgstr "Обмеження пам'яті (МБ)"
+
+#: src/settings_window/library.rs:201
+msgid "At most half your RAM."
+msgstr "Не більше ніж половина вашої оперативної пам'яті."
+
+#: src/settings_window/library.rs:228
+msgid "Clear Cache"
+msgstr "Очистити кеш"
+
+#: src/settings_window/library.rs:230
+msgid "Free the space now. Thumbnails reload as you browse."
+msgstr "Звільнити місце зараз. Мініатюри перезавантажуватимуться під час перегляду."
+
+#: src/settings_window/library.rs:243
+msgid "Download Folder"
+msgstr "Тека для завантаження"
+
+#: src/settings_window/library.rs:244 src/settings_window/library.rs:253
+#: src/settings_window/wiring/folder_wiring.rs:58
+msgid "Ask each time"
+msgstr "Запитувати щоразу"
+
+#: src/settings_window/library.rs:248
+msgid "Change…"
+msgstr "Змінити…"
+
+#: src/settings_window/library.rs:267
+#, rust-format
+msgid "Using {used} of {limit}"
+msgstr "Використано {used} із {limit}"
+
+#: src/settings_window/mod.rs:52
+msgid "Default (Folder Name)"
+msgstr "Типово (назва теки)"
+
+#: src/settings_window/mod.rs:56
+msgid "Library (No Album)"
+msgstr "Бібліотека (без альбому)"
+
+#: src/settings_window/mod.rs:127
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so the API key "
+"was stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"Параметри збережено, але системна зв'язка ключів недоступна, тому ключ API збережено в {path}.\n"
+"\n"
+"Файл доступний для читання лише вашому обліковому запису, але не зашифрований.\n"
+"\n"
+"Див.: {url}"
+
+#: src/settings_window/mod.rs:141
+msgid "No successful sync yet"
+msgstr "Успішної синхронізації ще не було"
+
+#: src/settings_window/mod.rs:151
+msgid "Less than a minute ago"
+msgstr "Менше ніж хвилину тому"
+
+#: src/settings_window/mod.rs:157
+#, rust-format
+msgid "{n} minute ago"
+msgid_plural "{n} minutes ago"
+msgstr[0] "{n} хвилину тому"
+msgstr[1] "{n} хвилини тому"
+msgstr[2] "{n} хвилин тому"
+
+#: src/settings_window/mod.rs:161
+#, rust-format
+msgid "{n} hour ago"
+msgid_plural "{n} hours ago"
+msgstr[0] "{n} годину тому"
+msgstr[1] "{n} години тому"
+msgstr[2] "{n} годин тому"
+
+#: src/settings_window/mod.rs:164
+#, rust-format
+msgid "{n} day ago"
+msgid_plural "{n} days ago"
+msgstr[0] "{n} день тому"
+msgstr[1] "{n} дні тому"
+msgstr[2] "{n} днів тому"
+
+#: src/settings_window/queue_inspector.rs:38
+msgid "Retry All"
+msgstr "Повторити все"
+
+#: src/settings_window/queue_inspector.rs:86
+msgid "Failed Retry Queue"
+msgstr "Черга повтору помилок"
+
+#: src/settings_window/queue_inspector.rs:90
+msgid "Recent Queue Activity"
+msgstr "Нещодавні дії в черзі"
+
+#: src/settings_window/queue_inspector.rs:114
+msgid "Retry All Failed"
+msgstr "Повторити всі невдалі"
+
+#: src/settings_window/queue_inspector.rs:116
+msgid "Clear Failed Queue"
+msgstr "Очистити чергу помилок"
+
+#: src/settings_window/queue_inspector.rs:233
+msgid "No failed items"
+msgstr "Немає невдалих елементів"
+
+#: src/settings_window/queue_inspector.rs:234
+msgid "The retry queue is currently empty."
+msgstr "Черга повторних спроб зараз порожня."
+
+#: src/settings_window/queue_inspector.rs:252 src/settings_window/status.rs:231
+msgid "Retry"
+msgstr "Повторити"
+
+#: src/settings_window/queue_inspector.rs:258
+msgid "Retrying…"
+msgstr "Повторна спроба…"
+
+#: src/settings_window/status.rs:38
+msgid "Watched Folders"
+msgstr "Відстежувані теки"
+
+#: src/settings_window/status.rs:50
+msgid "Checking…"
+msgstr "Перевірка…"
+
+#: src/settings_window/status.rs:51
+msgid "Last Upload"
+msgstr "Останнє вивантаження"
+
+#: src/settings_window/status.rs:51
+msgid "Nothing uploaded yet"
+msgstr "Ще нічого не вивантажено"
+
+#: src/settings_window/status.rs:92
+msgid "Set Up…"
+msgstr "Налаштувати…"
+
+#: src/settings_window/status.rs:129 src/settings_window/status_poll.rs:243
+msgid "Up to Date"
+msgstr "Синхронізовано"
+
+#: src/settings_window/status.rs:153 src/tray_icon.rs:95
+msgid "Sync Now"
+msgstr "Синхронізувати зараз"
+
+#: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
+#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+msgid "Pause"
+msgstr "Призупинити"
+
+#: src/settings_window/status.rs:155
+msgid "Queue…"
+msgstr "Черга…"
+
+#: src/settings_window/status.rs:222
+msgid "Needs Attention"
+msgstr "Потребує уваги"
+
+#: src/settings_window/status.rs:226
+msgid "Failed uploads"
+msgstr "Невдалі вивантаження"
+
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
+#: src/settings_window/wiring.rs:368
+msgid "Resume"
+msgstr "Відновити"
+
+#: src/settings_window/status_poll.rs:127
+msgid "No server set up yet"
+msgstr "Сервер ще не налаштовано"
+
+#: src/settings_window/status_poll.rs:138
+#, rust-format
+msgid "{n} upload failed"
+msgid_plural "{n} uploads failed"
+msgstr[0] "Не вдалося вивантажити {n} файл"
+msgstr[1] "Не вдалося вивантажити {n} файли"
+msgstr[2] "Не вдалося вивантажити {n} файлів"
+
+#: src/settings_window/status_poll.rs:149
+msgid "No folders yet"
+msgstr "Тек ще немає"
+
+#: src/settings_window/status_poll.rs:150
+msgid "Add one under Settings → Watch Folders."
+msgstr "Додайте теку в меню «Параметри» → «Відстежувані теки»."
+
+#: src/settings_window/status_poll.rs:184
+msgid "Waiting for a successful connection check"
+msgstr "Очікування успішної перевірки з'єднання"
+
+#: src/settings_window/status_poll.rs:202
+msgid "Not Set Up Yet"
+msgstr "Ще не налаштовано"
+
+#: src/settings_window/status_poll.rs:203
+msgid "Connect Mimick to your Immich server to start."
+msgstr "Під'єднайте Mimick до вашого сервера Immich для початку."
+
+#: src/settings_window/status_poll.rs:210
+msgid "Paused"
+msgstr "Призупинено"
+
+#: src/settings_window/status_poll.rs:228
+msgid "Can't Reach Immich"
+msgstr "Не вдається зв'язатися з Immich"
+
+#: src/settings_window/status_poll.rs:229
+msgid "Check the server address and API key in Settings."
+msgstr "Перевірте адресу сервера та ключ API у «Параметрах»."
+
+#: src/settings_window/status_poll.rs:236
+msgid "Waiting for Immich"
+msgstr "Очікування Immich"
+
+#: src/settings_window/status_poll.rs:237
+msgid "Failed uploads retry when the server is reachable."
+msgstr "Повторні спроби вивантаження відбудуться, коли сервер стане досяжним."
+
+#: src/settings_window/status_poll.rs:246
+#, rust-format
+msgid "Last upload {when}"
+msgstr "Останнє вивантаження: {when}"
+
+#: src/settings_window/status_poll.rs:263
+#, rust-format
+msgid "Uploading {done} of {total}"
+msgstr "Вивантаження {done} із {total}"
+
+#: src/settings_window/status_poll.rs:289
+#: src/settings_window/status_poll.rs:295
+msgid "Up to date"
+msgstr "Синхронізовано"
+
+#: src/settings_window/status_poll.rs:292
+#, rust-format
+msgid "Problem: {err}"
+msgstr "Проблема: {err}"
+
+#: src/settings_window/status_poll.rs:298
+#, rust-format
+msgid "{n} waiting to upload"
+msgid_plural "{n} waiting to upload"
+msgstr[0] "{n} очікує на вивантаження"
+msgstr[1] "{n} очікують на вивантаження"
+msgstr[2] "{n} очікують на вивантаження"
+
+#: src/settings_window/status_poll.rs:308
+#, rust-format
+msgid "last upload {when}"
+msgstr "останнє вивантаження: {when}"
+
+#: src/settings_window/watch_folders.rs:123
+msgid "Upload Target"
+msgstr "Призначення вивантаження"
+
+#: src/settings_window/watch_folders.rs:156
+msgid "Select a library or album upload target"
+msgstr "Виберіть бібліотеку чи альбом для вивантаження"
+
+#: src/settings_window/watch_folders.rs:192
+msgid "Remove Folder"
+msgstr "Вилучити теку"
+
+#: src/settings_window/watch_folders/album_picker.rs:88
+#, rust-format
+msgid "Create new: \"{name}\""
+msgstr "Створити новий: «{name}»"
+
+#: src/settings_window/watch_folders/album_picker.rs:95
+msgid "No album sync or deletion mirroring"
+msgstr "Без синхронізації альбому та дзеркалювання вилучень"
+
+#: src/settings_window/watch_folders/album_picker.rs:96
+msgid "Creates album dynamically per-folder"
+msgstr "Створює альбом динамічно для кожної теки"
+
+#: src/settings_window/watch_folders/album_picker.rs:188
+msgid "Select Upload Target"
+msgstr "Виберіть призначення вивантаження"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:29
+msgid "Rules"
+msgstr "Правила"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:30
+msgid "Edit folder rules"
+msgstr "Змінити правила теки"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:33
+#: src/settings_window/watch_folders/rules_dialog.rs:83
+msgid "Folder Rules"
+msgstr "Правила теки"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:172
+msgid "Uploads new photos and downloads new album photos."
+msgstr "Вивантажує нові фотографії та завантажує нові фотографії з альбому."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:184
+msgid "Sync Method"
+msgstr "Спосіб синхронізації"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:187
+msgid "Full Sync"
+msgstr "Повна синхронізація"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:188
+msgid "Upload Only"
+msgstr "Лише вивантаження"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:189
+msgid "Download Only"
+msgstr "Лише завантаження"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:195
+msgid "Which files in this folder are checked at startup."
+msgstr "Які файли в цій теці перевіряються під час запуску."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:220
+msgid "Library uploads can only upload from this folder."
+msgstr "Вивантаження до бібліотеки дозволяє лише вивантаження з цієї теки."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:224
+msgid "Not available for library uploads."
+msgstr "Недоступно для вивантажень до бібліотеки."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:245
+msgid "Deletions"
+msgstr "Вилучення"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:252
+msgid "Files"
+msgstr "Файли"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:280
+msgid "Delete from Immich Too"
+msgstr "Вилучати також з Immich"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:281
+msgid "Moves the Immich copy to the Immich trash."
+msgstr "Переміщує копію в Immich до смітника Immich."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:287
+msgid "Delete from This Folder Too"
+msgstr "Вилучати також із цієї теки"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:288
+msgid "Waiting on a Flatpak trash portal fix."
+msgstr "Очікується виправлення порталу смітника Flatpak."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:298
+msgid "Skip Hidden Files"
+msgstr "Пропускати приховані файли"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:299
+msgid "Names starting with a dot, like .thumbnails"
+msgstr "Імена, що починаються з крапки, наприклад .thumbnails"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:321
+msgid "Largest File in MB (empty for no limit)"
+msgstr "Максимальний розмір файлу в МБ (порожньо — без обмежень)"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:325
+msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
+msgstr "Лише ці типи, наприклад jpg, png, mp4 (порожньо — для всіх)"
+
+#: src/settings_window/wiring.rs:72
+msgid "Status"
+msgstr "Стан"
+
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+msgid "Quit Mimick"
+msgstr "Вийти з Mimick"
+
+#: src/settings_window/wiring.rs:101
+msgid "Main Menu"
+msgstr "Головне меню"
+
+#: src/settings_window/wiring.rs:148
+msgid "Get Started"
+msgstr "Початок роботи"
+
+#: src/settings_window/wiring.rs:150
+msgid "Three steps to connect Mimick to your Immich server."
+msgstr "Три кроки для під'єднання Mimick до вашого сервера Immich."
+
+#: src/settings_window/wiring.rs:155
+msgid "1. Enter your server"
+msgstr "1. Вкажіть сервер"
+
+#: src/settings_window/wiring.rs:156
+msgid "Your Immich address under Server, below."
+msgstr "Адреса вашого Immich у розділі «Сервер» нижче."
+
+#: src/settings_window/wiring.rs:159
+msgid "2. Add an API key"
+msgstr "2. Додайте ключ API"
+
+#: src/settings_window/wiring.rs:160
+msgid ""
+"In Immich: Account Settings → API Keys. The guide lists the permissions."
+msgstr "В Immich: «Параметри облікового запису» → «Ключі API». Список дозволів наведено у посібнику."
+
+#: src/settings_window/wiring.rs:163
+msgid "3. Save and Connect"
+msgstr "3. Зберегти та під'єднатися"
+
+#: src/settings_window/wiring.rs:165
+msgid ""
+"Your library opens next. To back up a folder too, add it under Watch Folders."
+msgstr "Після цього відкриється ваша бібліотека. Щоб налаштувати резервне копіювання теки, додайте її у «Відстежуваних теках»."
+
+#: src/settings_window/wiring.rs:177
+msgid "Guide"
+msgstr "Посібник"
+
+#: src/settings_window/wiring.rs:207
+#, rust-format
+msgid "{name} also works"
+msgstr "{name} також працює"
+
+#: src/settings_window/wiring.rs:211
+#, rust-format
+msgid "{name} unreachable"
+msgstr "{name} недосяжний"
+
+#: src/settings_window/wiring.rs:219
+msgid "Couldn't reach Immich at either address"
+msgstr "Не вдалося зв'язатися з Immich за жодною з адрес"
+
+#: src/settings_window/wiring.rs:252
+msgid "Testing…"
+msgstr "Перевірка…"
+
+#: src/settings_window/wiring.rs:366
+msgid "Paused by you"
+msgstr "Призупинено вами"
+
+#: src/settings_window/wiring.rs:425
+msgid "Invalid Selection"
+msgstr "Неприпустимий вибір"
+
+#: src/settings_window/wiring.rs:426
+msgid "At least one URL (Internal or External) must be enabled."
+msgstr "Повинна бути ввімкнена принаймні одна URL-адреса (внутрішня або зовнішня)."
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:16
+msgid "Choose Diagnostics Export Folder"
+msgstr "Виберіть теку для експорту діагностики"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:49
+msgid "Diagnostics Exported"
+msgstr "Діагностику експортовано"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:51
+#, rust-format
+msgid "Saved diagnostics bundle to {path}"
+msgstr "Пакет діагностики збережено в {path}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:61
+#: src/settings_window/wiring/diagnostics_wiring.rs:68
+msgid "Diagnostics Export Failed"
+msgstr "Збій експорту діагностики"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:63
+#, rust-format
+msgid "Could not write diagnostics bundle: {err}"
+msgstr "Не вдалося записати пакет діагностики: {err}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:70
+#, rust-format
+msgid "Diagnostics task could not complete: {err}"
+msgstr "Завдання діагностики не вдалося завершити: {err}"
+
+#: src/settings_window/wiring/folder_wiring.rs:91
+msgid "Watch Folders"
+msgstr "Відстежувані теки"
+
+#: src/settings_window/wiring/folder_wiring.rs:92
+msgid "Expand a folder to pick its album and rules."
+msgstr "Розгорніть теку, щоб вибрати її альбом і правила."
+
+#: src/settings_window/wiring/folder_wiring.rs:114
+msgid "Add Folder…"
+msgstr "Додати теку…"
+
+#: src/settings_window/wiring/folder_wiring.rs:152
+msgid "Select Watch Folder"
+msgstr "Виберіть відстежувану теку"
+
+#: src/settings_window/wiring/library_wiring.rs:86
+msgid "Could Not Clear Cache"
+msgstr "Не вдалося очистити кеш"
+
+#: src/startup_scan/enumeration.rs:114
+msgid "Permission lost or folder missing"
+msgstr "Втрачено права доступу або тека відсутня"
+
+#: src/tray_icon.rs:41
+msgid "Mimick Sync"
+msgstr "Синхронізація Mimick"
+
+#: src/tray_icon.rs:84
+msgid "Pause / Resume"
+msgstr "Призупинити / Відновити"
+
+#: src/tray_icon.rs:106
+msgid "Quit"
+msgstr "Вийти"
+
+#: src/watch_path_display.rs:18
+msgid "Selected Folder"
+msgstr "Вибрана тека"
+
+#: setup/dev.nicx.mimick.desktop:2
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:4
+msgid "Mimick"
+msgstr "Mimick"
+
+#: setup/dev.nicx.mimick.desktop:3
+msgid "Unofficial Immich desktop client and auto-sync agent"
+msgstr "Неофіційний клієнт Immich для комп'ютера й агент автосинхронізації"
+
+#: setup/dev.nicx.mimick.desktop:10
+msgid ""
+"Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
+msgstr "Фотографія;Фотографії;Знімок;Зображення;Відео;Синхронізація;Резервне копіювання;Вивантаження;Immich;Галерея;Власний сервер;"
+
+#: setup/dev.nicx.mimick.desktop:25
+msgid "Upload with Mimick"
+msgstr "Вивантажити за допомогою Mimick"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:5
+msgid "Back up and browse your photos"
+msgstr "Резервне копіювання та перегляд ваших фотографій"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:17
+msgid ""
+"Mimick is a native Linux desktop client for self-hosted Immich servers. It "
+"monitors your folders in the background and automatically syncs photos and "
+"videos to your server."
+msgstr "Mimick — це рідний клієнт Linux для серверів Immich. Він відстежує теки у фоновому режимі та автоматично синхронізує фотографії й відео з сервером."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
+msgid ""
+"Per-folder sync methods: upload only, download only, or full bidirectional "
+"sync with optional deletion mirroring."
+msgstr "Способи синхронізації для кожної теки: лише вивантаження, лише завантаження або повна двонапрямна синхронізація з можливістю дзеркалювання вилучень."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
+msgid ""
+"Built-in Library View for browsing your timeline, managing albums, and "
+"searching with Smart Search, OCR, and metadata filters."
+msgstr "Вбудований перегляд бібліотеки для навігації часовою шкалою, керування альбомами та пошуку за допомогою розумного пошуку, розпізнавання тексту (OCR) і фільтрів метаданих."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
+msgid ""
+"SHA-1 deduplication, parallel upload workers, and offline retry queue for "
+"reliable transfers."
+msgstr "Дедуплікація за SHA-1, паралельні потоки вивантаження та черга повторних спроб без мережі для надійного передавання даних."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
+msgid ""
+"Environment-aware: automatically pauses on battery or metered connections. "
+"Configurable quiet hours and per-folder rules."
+msgstr "Адаптація до умов: автоматичне призупинення під час роботи від батареї або в мережах із тарифікацією трафіку. Налаштовувані години тиші та правила для окремих тек."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
+msgid ""
+"Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
+"sandbox support."
+msgstr "Створено мовою Rust із використанням GTK4 та Libadwaita. Інтеграція із системним лотком і підтримка пісочниці Flatpak."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
+msgid ""
+"Mimick is a community-developed client and is not affiliated with or "
+"endorsed by the Immich project."
+msgstr "Mimick розробляється спільнотою, не пов'язаний із проєктом Immich і не схвалений ним."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
+msgid "Library View - Photos page with sidebar"
+msgstr "Перегляд бібліотеки — сторінка фотографій із бічною панеллю"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:43
+msgid "Explore page showing People, Places, and Things"
+msgstr "Сторінка огляду з людьми, місцями та речами"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:48
+msgid "Selected album view in dark mode"
+msgstr "Перегляд вибраного альбому в темній темі"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:53
+msgid "Lightbox viewer with details pane"
+msgstr "Переглядач зображень із панеллю відомостей"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:58
+msgid "OCR search for text inside images"
+msgstr "Пошук тексту на зображеннях (OCR)"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:63
+msgid "Album sync dialog with upload and download actions"
+msgstr "Діалог синхронізації альбомів із діями вивантаження та завантаження"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:68
+msgid "Settings - Server connection and watch folders"
+msgstr "Параметри — під'єднання до сервера та відстежувані теки"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
+msgid "Status page with sync health dashboard"
+msgstr "Сторінка стану з панеллю моніторингу синхронізації"

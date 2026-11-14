@@ -1,0 +1,6499 @@
+# Italian translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: mimick\n"
+"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
+"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"PO-Revision-Date: 2026-11-09 20:57+0530\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/about.rs:49
+msgid "Documentation"
+msgstr "Documentazione"
+
+#: src/about.rs:51
+msgid "Attribution"
+msgstr "Attribuzioni"
+
+#: src/about.rs:53
+msgid "Special Thanks"
+msgstr "Ringraziamenti speciali"
+
+#: src/about.rs:56
+msgid "Built With"
+msgstr "Creato con"
+
+#: src/api_client/albums.rs:70
+msgid "Album list is unavailable"
+msgstr "L'elenco degli album non è disponibile"
+
+#: src/api_client/albums.rs:71
+msgid "Reconnect to the Immich server before refreshing albums."
+msgstr "Riconnettersi al server Immich prima di aggiornare gli album."
+
+#: src/api_client/albums.rs:180
+msgid "Failed to fetch albums"
+msgstr "Impossibile recuperare gli album"
+
+#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+msgid "Cannot fetch albums to verify existence"
+msgstr "Impossibile recuperare gli album per verificarne l'esistenza"
+
+#: src/api_client/errors.rs:35
+#, rust-format
+msgid ""
+"The server responded with HTTP {status}. Check the server logs and retry "
+"after confirming the current configuration."
+msgstr "Il server ha risposto con HTTP {status}. Controllare i log del server e riprovare dopo aver confermato la configurazione attuale."
+
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+msgid "Immich rejected the API key"
+msgstr "Immich ha rifiutato la chiave API"
+
+#: src/api_client/errors.rs:45
+msgid ""
+"Update the API key in Settings and confirm it still has the required Asset "
+"and Album permissions (see README for the full list)."
+msgstr "Aggiornare la chiave API nelle Impostazioni e verificare che abbia ancora i permessi richiesti per Risorse e Album (consultare il file README per l'elenco completo)."
+
+#: src/api_client/errors.rs:54
+msgid "An album reference is no longer valid"
+msgstr "Un riferimento all'album non è più valido"
+
+#: src/api_client/errors.rs:55
+msgid "Refresh the album list or choose a different album before retrying."
+msgstr "Aggiornare l'elenco degli album o scegliere un album diverso prima di riprovare."
+
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+msgid "Immich rejected a file as too large"
+msgstr "Immich ha rifiutato un file perché troppo grande"
+
+#: src/api_client/errors.rs:61
+msgid ""
+"Reduce the file size, raise the server upload limit, or skip oversized files "
+"with folder rules."
+msgstr "Ridurre le dimensioni del file, aumentare il limite di caricamento del server o ignorare i file troppo grandi con le regole della cartella."
+
+#: src/api_client/errors.rs:65
+msgid "Immich rate-limited the request"
+msgstr "Immich ha limitato la frequenza delle richieste"
+
+#: src/api_client/errors.rs:67
+msgid ""
+"Wait a moment and retry. If this happens often, lower upload concurrency or "
+"check reverse proxy limits."
+msgstr "Attendere un momento e riprovare. Se accade spesso, ridurre il caricamento simultaneo o controllare i limiti del reverse proxy."
+
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+msgid "Immich is temporarily unavailable"
+msgstr "Immich è temporaneamente non disponibile"
+
+#: src/api_client/errors.rs:73
+msgid ""
+"Wait a moment and retry. If it keeps happening, inspect the server and "
+"reverse proxy logs."
+msgstr "Attendere un momento e riprovare. Se continua a verificarsi, esaminare i log del server e del reverse proxy."
+
+#: src/api_client/errors.rs:88
+msgid "the upload"
+msgstr "il caricamento"
+
+#: src/api_client/errors.rs:90
+#, rust-format
+msgid "Immich could not accept {subject}"
+msgstr "Immich non ha potuto accettare {subject}"
+
+#: src/api_client/errors.rs:95 src/library/explore_view/tiles.rs:116
+#: src/library/explore_view/tiles.rs:138 src/library/people_view.rs:236
+#: src/library/source_header/enrichment.rs:242
+msgid "Unnamed"
+msgstr "Senza nome"
+
+#: src/api_client/errors.rs:97
+#, rust-format
+msgid "Immich could not create album '{album}'"
+msgstr "Immich non ha potuto creare l'album '{album}'"
+
+#: src/api_client/errors.rs:101
+msgid "Immich could not load the album list"
+msgstr "Immich non ha potuto caricare l'elenco degli album"
+
+#: src/api_client/errors.rs:103
+msgid "Immich could not add the asset to the selected album"
+msgstr "Immich non ha potuto aggiungere l'elemento all'album selezionato"
+
+#: src/api_client/errors.rs:105
+msgid "Immich could not load a library thumbnail"
+msgstr "Immich non ha potuto caricare una miniatura della libreria"
+
+#: src/api_client/errors.rs:106
+msgid "Immich could not load library assets"
+msgstr "Immich non ha potuto caricare gli elementi della libreria"
+
+#: src/api_client/errors.rs:107
+msgid "Immich could not run the smart library search"
+msgstr "Immich non ha potuto eseguire la ricerca intelligente nella libreria"
+
+#: src/api_client/errors.rs:109
+msgid "Immich could not run the metadata library search"
+msgstr "Immich non ha potuto eseguire la ricerca per metadati nella libreria"
+
+#: src/api_client/errors.rs:111
+msgid "Immich could not download the selected asset"
+msgstr "Immich non ha potuto scaricare l'elemento selezionato"
+
+#: src/api_client/errors.rs:112
+msgid "Immich could not load library statistics"
+msgstr "Immich non ha potuto caricare le statistiche della libreria"
+
+#: src/api_client/errors.rs:113
+msgid "Immich could not load server version information"
+msgstr "Immich non ha potuto caricare le informazioni sulla versione del server"
+
+#: src/api_client/errors.rs:121
+msgid "The Immich request timed out"
+msgstr "La richiesta a Immich è scaduta"
+
+#: src/api_client/errors.rs:122
+msgid "Check network quality and server responsiveness, then retry."
+msgstr "Controllare la qualità della rete e la reattività del server, quindi riprovare."
+
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+msgid "Could not reach the Immich server"
+msgstr "Impossibile raggiungere il server Immich"
+
+#: src/api_client/errors.rs:128
+msgid ""
+"Check the configured URLs, your network connection, and whether the server "
+"is online."
+msgstr "Controllare gli URL configurati, la connessione di rete e verificare che il server sia online."
+
+#: src/api_client/errors.rs:135
+msgid ""
+"Retry the request after checking network connectivity and server health."
+msgstr "Riprovare la richiesta dopo aver verificato la connettività di rete e lo stato del server."
+
+#: src/api_client/errors.rs:144
+msgid "The upload request failed before completion"
+msgstr "La richiesta di caricamento non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:145
+msgid "The album request failed before completion"
+msgstr "La richiesta relativa all'album non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:147
+msgid "The album creation request failed before completion"
+msgstr "La richiesta di creazione dell'album non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:150
+msgid "The album assignment request failed before completion"
+msgstr "La richiesta di assegnazione all'album non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:152
+msgid "The thumbnail request failed before completion"
+msgstr "La richiesta della miniatura non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:153
+msgid "The library asset request failed before completion"
+msgstr "La richiesta dell'elemento della libreria non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:154
+msgid "The smart search request failed before completion"
+msgstr "La richiesta di ricerca intelligente non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:156
+msgid "The metadata search request failed before completion"
+msgstr "La richiesta di ricerca per metadati non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:159
+msgid "The asset download request failed before completion"
+msgstr "La richiesta di scaricamento dell'elemento non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:162
+msgid "The library statistics request failed before completion"
+msgstr "La richiesta delle statistiche della libreria non è riuscita prima del completamento"
+
+#: src/api_client/errors.rs:165
+msgid "The server version request failed before completion"
+msgstr "La richiesta della versione del server non è riuscita prima del completamento"
+
+#: src/api_client/mod.rs:387
+msgid "No active connection"
+msgstr "Nessuna connessione attiva"
+
+#: src/api_client/search.rs:358
+msgid "Immich can't count by file name or deleted photos"
+msgstr "Immich non può contare per nome file o foto eliminate"
+
+#: src/api_client/tags.rs:76
+#, rust-format
+msgid "Immich did not return the tag \"{value}\""
+msgstr "Immich non ha restituito il tag \"{value}\""
+
+#: src/api_client/tags.rs:87
+msgid "Renaming tags needs a newer version of Immich."
+msgstr "La ridenominazione dei tag richiede una versione più recente di Immich."
+
+#: src/api_client/timeline.rs:194
+#, rust-format
+msgid "Invalid month {month}"
+msgstr "Mese non valido {month}"
+
+#: src/api_client/upload.rs:301
+msgid "A queued file is no longer available"
+msgstr "Un file in coda non è più disponibile"
+
+#: src/api_client/upload.rs:303
+msgid "Mimick could not read a queued file"
+msgstr "Mimick non ha potuto leggere un file in coda"
+
+#: src/api_client/upload.rs:306
+msgid ""
+"Check that the watched folder still exists and that the file was not moved "
+"or deleted before upload."
+msgstr "Verificare che la cartella monitorata esista ancora e che il file non sia stato spostato o eliminato prima del caricamento."
+
+#: src/api_client/upload.rs:308
+msgid ""
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr "Verificare i permessi della cartella e assicurarsi che il file sia ancora accessibile dall'applicazione."
+
+#: src/api_client/upload.rs:322
+msgid "Mimick could not open a queued file"
+msgstr "Mimick non ha potuto aprire un file in coda"
+
+#: src/api_client/upload.rs:323
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr "Il file potrebbe essere bloccato, eliminato o al di fuori delle cartelle a cui l'applicazione può accedere."
+
+#: src/api_client/upload.rs:336
+msgid "No active server connection"
+msgstr "Nessuna connessione al server attiva"
+
+#: src/api_client/upload.rs:337
+msgid ""
+"Test the server connection in Settings and confirm at least one Immich URL "
+"is reachable."
+msgstr "Verificare la connessione al server nelle Impostazioni e confermare che almeno un URL di Immich sia raggiungibile."
+
+#: src/api_client/upload.rs:393
+msgid ""
+"Reduce the file size, raise the server's upload limits, or use a folder rule "
+"to skip oversized files."
+msgstr "Ridurre le dimensioni del file, aumentare i limiti di caricamento del server o utilizzare una regola della cartella per ignorare i file troppo grandi."
+
+#: src/api_client/upload.rs:410
+msgid ""
+"Wait a moment and retry. If it keeps happening, check the server logs and "
+"reverse proxy."
+msgstr "Attendere un momento e riprovare. Se continua a verificarsi, controllare i log del server e del reverse proxy."
+
+#: src/autostart.rs:50
+msgid ""
+"Reason for requesting background access: Mimick must run in the background "
+"to automatically sync media to Immich."
+msgstr "Motivo della richiesta di accesso in background: Mimick deve essere eseguito in background per sincronizzare automaticamente i file multimediali su Immich."
+
+#: src/autostart.rs:57
+#, rust-format
+msgid "Failed to contact the background portal: {err}"
+msgstr "Impossibile contattare il portale in background: {err}"
+
+#: src/autostart.rs:59
+#, rust-format
+msgid "The desktop rejected the autostart request: {err}"
+msgstr "Il desktop ha rifiutato la richiesta di avvio automatico: {err}"
+
+#: src/autostart.rs:74
+#, rust-format
+msgid "Failed to create autostart directory: {err}"
+msgstr "Impossibile creare la directory di avvio automatico: {err}"
+
+#: src/autostart.rs:88
+#, rust-format
+msgid "Failed to write autostart entry: {err}"
+msgstr "Impossibile scrivere la voce di avvio automatico: {err}"
+
+#: src/autostart.rs:114
+#, rust-format
+msgid "Failed to remove autostart entry: {err}"
+msgstr "Impossibile rimuovere la voce di avvio automatico: {err}"
+
+#: src/autostart.rs:126 src/autostart.rs:133
+msgid "Could not locate the user config directory."
+msgstr "Impossibile individuare la directory di configurazione dell'utente."
+
+#: src/library/about_dialog.rs:40
+msgid "Repository"
+msgstr "Repository"
+
+#: src/library/about_dialog.rs:45
+msgid "Source"
+msgstr "Sorgente"
+
+#: src/library/about_dialog.rs:50
+msgid "Build"
+msgstr "Build"
+
+#: src/library/about_dialog.rs:55
+msgid "Build Image"
+msgstr "Immagine di build"
+
+#. Translators: strftime date, e.g. "9 Oct 2026".
+#: src/library/about_dialog.rs:78 src/library/day_row.rs:63
+#: src/library/duplicates_view/cards.rs:217
+#: src/library/explore_view/calendar.rs:36 src/library/header_format.rs:64
+#: src/library/header_format.rs:77 src/library/utilities/controls.rs:138
+msgid "%-d %b %Y"
+msgstr "%-d %b %Y"
+
+#: src/library/about_dialog.rs:81
+#, rust-format
+msgid "Installed {version} on {date}"
+msgstr "Installato {version} il {date}"
+
+#: src/library/about_dialog.rs:135 src/library/about_dialog.rs:150
+msgid "Immich Server"
+msgstr "Server Immich"
+
+#: src/library/about_dialog.rs:214
+msgid "Version History"
+msgstr "Cronologia versioni"
+
+#: src/library/about_dialog.rs:234
+msgid "Server details unavailable"
+msgstr "Dettagli del server non disponibili"
+
+#: src/library/about_dialog.rs:235
+#, rust-format
+msgid ""
+"Your API key needs the 'server.about' and 'server.versionCheck' "
+"permissions.\n"
+"\n"
+"{err}"
+msgstr ""
+"La chiave API richiede i permessi 'server.about' e 'server.versionCheck'.\n"
+"\n"
+"{err}"
+
+#: src/library/account.rs:34 src/library/window_layout.rs:332
+msgid "Account"
+msgstr "Account"
+
+#: src/library/account.rs:66
+#, rust-format
+msgid "Couldn't load this. Your API key needs the “{permission}” permission."
+msgstr "Impossibile caricare questo elemento. La chiave API richiede il permesso “{permission}”."
+
+#: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
+#: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
+#: src/library/album_link.rs:187 src/library/album_wiring.rs:35
+#: src/library/asset_edit.rs:253 src/library/bulk_date.rs:316
+#: src/library/dialogs.rs:40 src/library/dialogs.rs:85
+#: src/library/dialogs.rs:110 src/library/lightbox/edit/panel.rs:101
+#: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
+#: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
+#: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/watch_folders/rules_dialog.rs:120
+msgid "Cancel"
+msgstr "Annulla"
+
+#: src/library/account/avatar_crop.rs:130
+msgid "Picture to crop; drag or use the arrow keys to move it"
+msgstr "Immagine da ritagliare; trascina o usa i tasti freccia per spostarla"
+
+#: src/library/account/avatar_crop.rs:407 src/library/bulk_date.rs:274
+msgid "Set"
+msgstr "Imposta"
+
+#: src/library/account/avatar_crop.rs:420
+msgid "Zoom"
+msgstr "Ingrandimento"
+
+#: src/library/account/avatar_crop.rs:440
+msgid "Crop Picture"
+msgstr "Ritaglia immagine"
+
+#: src/library/account/devices.rs:20
+msgid "Signed-in Devices"
+msgstr "Dispositivi connessi"
+
+#: src/library/account/devices.rs:22
+msgid ""
+"Browsers and apps signed in to your account. Mimick uses an API key, so it "
+"isn't listed."
+msgstr "Browser e applicazioni che hanno effettuato l'accesso al tuo account. Mimick usa una chiave API, quindi non è presente nell'elenco."
+
+#: src/library/account/devices.rs:28
+msgid "Devices"
+msgstr "Dispositivi"
+
+#: src/library/account/devices.rs:42
+msgid "No browsers or apps are signed in."
+msgstr "Nessun browser o applicazione ha effettuato l'accesso."
+
+#: src/library/account/devices.rs:72
+msgid "Sign out"
+msgstr "Disconnetti"
+
+#: src/library/account/devices.rs:84
+#, rust-format
+msgid "Sign out {device}?"
+msgstr "Disconnettere {device}?"
+
+#: src/library/account/devices.rs:85
+msgid "It will have to sign in to Immich again."
+msgstr "Dovrà effettuare nuovamente l'accesso a Immich."
+
+#: src/library/account/devices.rs:86
+msgid "Sign Out"
+msgstr "Disconnetti"
+
+#: src/library/account/devices.rs:105
+#, rust-format
+msgid "Couldn't sign it out: {err}"
+msgstr "Impossibile disconnettere il dispositivo: {err}"
+
+#: src/library/account/devices.rs:118
+msgid "Unknown device"
+msgstr "Dispositivo sconosciuto"
+
+#: src/library/account/devices.rs:126
+#, rust-format
+msgid "Last used {date}"
+msgstr "Ultimo utilizzo: {date}"
+
+#: src/library/account/keys.rs:34
+msgid "This App"
+msgstr "Questa applicazione"
+
+#: src/library/account/keys.rs:35
+msgid "The key Mimick signs in to Immich with."
+msgstr "La chiave usata da Mimick per accedere a Immich."
+
+#: src/library/account/keys.rs:39
+msgid "Other Keys"
+msgstr "Altre chiavi"
+
+#: src/library/account/keys.rs:40
+msgid "Make new keys in Immich's web app."
+msgstr "Crea nuove chiavi nell'applicazione web di Immich."
+
+#: src/library/account/keys.rs:44
+msgid "API Keys"
+msgstr "Chiavi API"
+
+#: src/library/account/keys.rs:92
+msgid "No other keys."
+msgstr "Nessun'altra chiave."
+
+#: src/library/account/keys.rs:101
+msgid "Unnamed key"
+msgstr "Chiave senza nome"
+
+#: src/library/account/keys.rs:115 src/library/shared_link_photos.rs:297
+#, rust-format
+msgid "Made {date}"
+msgstr "Creata il {date}"
+
+#: src/library/account/keys.rs:119
+msgid "All permissions"
+msgstr "Tutti i permessi"
+
+#: src/library/account/keys.rs:123
+#, rust-format
+msgid "{n} permission"
+msgid_plural "{n} permissions"
+msgstr[0] "{n} permesso"
+msgstr[1] "{n} permessi"
+
+#: src/library/account/keys.rs:144
+msgid "Rotate…"
+msgstr "Ruota…"
+
+#: src/library/account/keys.rs:145
+msgid "Get a new secret for this key"
+msgstr "Ottieni un nuovo segreto per questa chiave"
+
+#: src/library/account/keys.rs:155
+msgid "Get a new secret for this key?"
+msgstr "Ottenere un nuovo segreto per questa chiave?"
+
+#: src/library/account/keys.rs:157
+msgid ""
+"Mimick saves the new secret and keeps working. Anything else using this key "
+"stops working until you give it the new secret."
+msgstr "Mimick salverà il nuovo segreto e continuerà a funzionare. Qualsiasi altra applicazione che usa questa chiave smetterà di funzionare finché non le fornirai il nuovo segreto."
+
+#: src/library/account/keys.rs:159
+msgid "Rotate"
+msgstr "Ruota"
+
+#: src/library/account/keys.rs:176
+#, rust-format
+msgid "Couldn't rotate the key: {err}"
+msgstr "Impossibile ruotare la chiave: {err}"
+
+#: src/library/account/keys.rs:184
+msgid "New secret saved"
+msgstr "Nuovo segreto salvato"
+
+#: src/library/account/keys.rs:192
+msgid "Copy Your New Secret"
+msgstr "Copia il nuovo segreto"
+
+#: src/library/account/keys.rs:194
+#, rust-format
+msgid ""
+"Mimick is using it now but couldn't save it ({err}). Paste it in Settings so "
+"it's kept:\n"
+"\n"
+"{secret}"
+msgstr ""
+"Mimick lo sta utilizzando ora ma non è stato possibile salvarlo ({err}). Incollalo in Impostazioni per conservarlo:\n"
+"\n"
+"{secret}"
+
+#: src/library/account/keys.rs:199 src/library/context_menu.rs:321
+#: src/library/context_menu.rs:336 src/library/masonry/canvas_helpers.rs:141
+#: src/settings_window/mod.rs:65
+msgid "OK"
+msgstr "OK"
+
+#: src/library/account/keys.rs:212
+msgid "Delete key"
+msgstr "Elimina chiave"
+
+#: src/library/account/keys.rs:223
+msgid "Delete this key?"
+msgstr "Eliminare questa chiave?"
+
+#: src/library/account/keys.rs:224
+msgid "Anything signing in with it stops working. This can't be undone."
+msgstr "Qualsiasi applicazione effettui l'accesso con essa smetterà di funzionare. L'operazione non può essere annullata."
+
+#: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
+#: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
+#: src/library/shared_links_view.rs:361 src/library/tags_view.rs:184
+#: src/library/tags_view.rs:305
+msgid "Delete"
+msgstr "Elimina"
+
+#: src/library/account/keys.rs:244
+#, rust-format
+msgid "Couldn't delete the key: {err}"
+msgstr "Impossibile eliminare la chiave: {err}"
+
+#: src/library/account/profile.rs:36
+msgid "Profile"
+msgstr "Profilo"
+
+#: src/library/account/profile.rs:61
+msgid "Change Picture…"
+msgstr "Cambia immagine…"
+
+#: src/library/account/profile.rs:65
+msgid "Remove Picture"
+msgstr "Rimuovi immagine"
+
+#: src/library/account/profile.rs:109
+msgid "Remove your profile picture?"
+msgstr "Rimuovere l'immagine del profilo?"
+
+#: src/library/account/profile.rs:110
+msgid "Immich shows your initials instead."
+msgstr "Immich mostrerà invece le tue iniziali."
+
+#: src/library/account/profile.rs:111 src/library/lightbox/edit/pages.rs:138
+#: src/library/people_view.rs:458
+msgid "Remove"
+msgstr "Rimuovi"
+
+#: src/library/account/profile.rs:124
+#, rust-format
+msgid "Couldn't load your account: {err}"
+msgstr "Impossibile caricare l'account: {err}"
+
+#: src/library/account/profile.rs:152
+msgid "To use one of your photos, choose Set as Profile Picture in its menu."
+msgstr "Per usare una delle tue foto, scegli «Imposta come immagine del profilo» nel relativo menu."
+
+#: src/library/account/profile.rs:163
+msgid "Images"
+msgstr "Immagini"
+
+#: src/library/account/profile.rs:178
+msgid "Choose a Profile Picture"
+msgstr "Scegli un'immagine del profilo"
+
+#: src/library/account/profile.rs:193 src/library/account/profile.rs:222
+msgid "That file isn't a JPEG, PNG, or WebP picture."
+msgstr "Il file non è un'immagine JPEG, PNG o WebP."
+
+#: src/library/account/profile.rs:203
+#, rust-format
+msgid "Couldn't open the picture: {err}"
+msgstr "Impossibile aprire l'immagine: {err}"
+
+#: src/library/account/profile.rs:232
+#, rust-format
+msgid "Couldn't change it: {err}"
+msgstr "Impossibile modificarla: {err}"
+
+#: src/library/account/profile.rs:242
+msgid "Couldn't remove the picture"
+msgstr "Impossibile rimuovere l'immagine"
+
+#: src/library/account/profile.rs:282
+msgid "Profile picture changed"
+msgstr "Immagine del profilo modificata"
+
+#: src/library/account/profile.rs:284
+msgid "Couldn't change your picture"
+msgstr "Impossibile modificare l'immagine"
+
+#: src/library/account/profile.rs:298
+msgid "Immich's preview of this photo isn't a JPEG or WebP."
+msgstr "L'anteprima di Immich per questa foto non è in formato JPEG o WebP."
+
+#: src/library/actions.rs:222
+msgid "New Link…"
+msgstr "Nuovo collegamento…"
+
+#: src/library/actions.rs:229
+msgid "Add to Existing Link…"
+msgstr "Aggiungi a collegamento esistente…"
+
+#: src/library/actions.rs:270 src/library/utilities.rs:194
+#, rust-format
+msgid "{n} selected"
+msgid_plural "{n} selected"
+msgstr[0] "{n} selezionato"
+msgstr[1] "{n} selezionati"
+
+#: src/library/actions.rs:276
+#, rust-format
+msgid "{owned} of {n} selected, only yours change"
+msgid_plural "{owned} of {n} selected, only yours change"
+msgstr[0] "{owned} su {n} selezionato, cambiano solo i tuoi"
+msgstr[1] "{owned} su {n} selezionati, cambiano solo i tuoi"
+
+#: src/library/actions.rs:318 src/library/actions.rs:351
+msgid "Not Your Photos"
+msgstr "Foto non tue"
+
+#: src/library/actions.rs:319
+msgid ""
+"Only the owner can change where a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "Solo il proprietario può modificare il luogo in cui è stata scattata una foto, e le foto selezionate appartengono ad altre persone."
+
+#: src/library/actions.rs:352
+msgid ""
+"Only the owner can change when a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "Solo il proprietario può modificare la data in cui è stata scattata una foto, e le foto selezionate appartengono ad altre persone."
+
+#: src/library/actions/trash.rs:60
+#, rust-format
+msgid "Move “{filename}” to trash?"
+msgstr "Spostare «{filename}» nel cestino?"
+
+#: src/library/actions/trash.rs:65
+#, rust-format
+msgid "Move {count} item to trash?"
+msgid_plural "Move {count} items to trash?"
+msgstr[0] "Spostare {count} elemento nel cestino?"
+msgstr[1] "Spostare {count} elementi nel cestino?"
+
+#: src/library/actions/trash.rs:72
+#, rust-format
+msgid "Delete “{filename}” permanently?"
+msgstr "Eliminare definitivamente «{filename}»?"
+
+#: src/library/actions/trash.rs:77 src/library/trash_view.rs:179
+#, rust-format
+msgid "Delete {count} item permanently?"
+msgid_plural "Delete {count} items permanently?"
+msgstr[0] "Eliminare definitivamente {count} elemento?"
+msgstr[1] "Eliminare definitivamente {count} elementi?"
+
+#: src/library/actions/trash.rs:89
+msgid "Items can be restored from the Immich trash."
+msgstr "Gli elementi possono essere ripristinati dal cestino di Immich."
+
+#: src/library/actions/trash.rs:91
+msgid "The Immich trash is turned off, so this can't be undone."
+msgstr "Il cestino di Immich è disattivato, quindi l'operazione non può essere annullata."
+
+#: src/library/actions/trash.rs:95
+msgid "Local copies in your watch folders are kept."
+msgstr "Le copie locali nelle cartelle monitorate verranno mantenute."
+
+#: src/library/actions/trash.rs:101
+#, rust-format
+msgid "{n} local-only item is not on the server and will be skipped."
+msgid_plural "{n} local-only items are not on the server and will be skipped."
+msgstr[0] "{n} elemento solo locale non è presente sul server e verrà ignorato."
+msgstr[1] "{n} elementi solo locali non sono presenti sul server e verranno ignorati."
+
+#: src/library/actions/trash.rs:159
+msgid "Could Not Move to Trash"
+msgstr "Impossibile spostare nel cestino"
+
+#: src/library/actions/trash.rs:161 src/library/album_assets.rs:125
+#: src/library/album_assets.rs:226 src/library/album_delete.rs:218
+#: src/library/album_picker.rs:194 src/library/album_picker.rs:228
+#: src/library/album_picker/several.rs:101
+#, rust-format
+msgid "Immich rejected the request: {err}"
+msgstr "Immich ha rifiutato la richiesta: {err}"
+
+#: src/library/actions/trash.rs:185 src/library/shortcuts_dialog.rs:160
+msgid "Move to trash"
+msgstr "Sposta nel cestino"
+
+#: src/library/album_activity.rs:60
+#, rust-format
+msgid "{n} like"
+msgid_plural "{n} likes"
+msgstr[0] "{n} mi piace"
+msgstr[1] "{n} mi piace"
+
+#: src/library/album_activity.rs:64
+#, rust-format
+msgid "{n} comment"
+msgid_plural "{n} comments"
+msgstr[0] "{n} commento"
+msgstr[1] "{n} commenti"
+
+#: src/library/album_activity/dialog.rs:23
+msgid "Likes and comments"
+msgstr "Mi piace e commenti"
+
+#: src/library/album_activity/dialog.rs:77 src/library/album_options.rs:34
+#: src/library/lightbox/activity.rs:22
+msgid "Activity"
+msgstr "Attività"
+
+#: src/library/album_activity/feed.rs:42 src/library/album_activity/feed.rs:126
+msgid "Like"
+msgstr "Mi piace"
+
+#: src/library/album_activity/feed.rs:43
+msgid "Send"
+msgstr "Invia"
+
+#: src/library/album_activity/feed.rs:46
+msgid "Add a comment…"
+msgstr "Aggiungi un commento…"
+
+#: src/library/album_activity/feed.rs:108
+msgid "Couldn't load likes and comments"
+msgstr "Impossibile caricare mi piace e commenti"
+
+#: src/library/album_activity/feed.rs:117
+msgid "No likes or comments yet"
+msgstr "Ancora nessun mi piace o commento"
+
+#: src/library/album_activity/feed.rs:124
+msgid "Unlike"
+msgstr "Non mi piace più"
+
+#: src/library/album_activity/feed.rs:166
+msgid "Couldn't update the like"
+msgstr "Impossibile aggiornare il «Mi piace»"
+
+#: src/library/album_activity/feed.rs:191
+msgid "Couldn't post the comment"
+msgstr "Impossibile pubblicare il commento"
+
+#: src/library/album_activity/feed.rs:202
+msgid "Couldn't delete"
+msgstr "Impossibile eliminare"
+
+#: src/library/album_activity/feed.rs:260 src/library/content_state.rs:213
+#: src/library/server_stats_dialog.rs:42
+msgid "Loading…"
+msgstr "Caricamento…"
+
+#: src/library/album_assets.rs:79
+#, rust-format
+msgid "Only the owner can remove these from “{album}”"
+msgstr "Solo il proprietario può rimuovere questi elementi da «{album}»"
+
+#: src/library/album_assets.rs:84
+#, rust-format
+msgid "Removed {items} from “{album}”"
+msgstr "Rimossi {items} da «{album}»"
+
+#: src/library/album_assets.rs:94
+#, rust-format
+msgid "{n} belongs to someone else"
+msgid_plural "{n} belong to someone else"
+msgstr[0] "{n} appartiene a qualcun altro"
+msgstr[1] "{n} appartengono a qualcun altro"
+
+#: src/library/album_assets.rs:123
+msgid "Couldn't remove from the album"
+msgstr "Impossibile rimuovere dall'album"
+
+#: src/library/album_assets.rs:155
+msgid "Undo"
+msgstr "Annulla"
+
+#: src/library/album_assets.rs:183
+msgid "Album cover updated"
+msgstr "Copertina dell'album aggiornata"
+
+#: src/library/album_assets.rs:186 src/library/album_edit.rs:91
+msgid "Couldn't update the album"
+msgstr "Impossibile aggiornare l'album"
+
+#: src/library/album_assets.rs:194
+#, rust-format
+msgid "Leave “{album_name}”?"
+msgstr "Abbandonare «{album_name}»?"
+
+#: src/library/album_assets.rs:200
+msgid ""
+"You'll stop seeing its photos unless the owner shares it with you again."
+msgstr "Non vedrai più le sue foto a meno che il proprietario non lo condivida di nuovo con te."
+
+#: src/library/album_assets.rs:201
+msgid "Leave"
+msgstr "Abbandona"
+
+#: src/library/album_assets.rs:212
+#, rust-format
+msgid "Left “{album_name}”"
+msgstr "Hai abbandonato «{album_name}»"
+
+#: src/library/album_assets.rs:224
+msgid "Couldn't leave the album"
+msgstr "Impossibile abbandonare l'album"
+
+#: src/library/album_delete.rs:28
+#, rust-format
+msgid ""
+"Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
+"they don't create it again."
+msgstr "Mimick sta ancora caricando. Elimina «{album_name}» al termine dei caricamenti per evitare che venga ricreato."
+
+#: src/library/album_delete.rs:29
+msgid "Uploads in Progress"
+msgstr "Caricamenti in corso"
+
+#: src/library/album_delete.rs:35
+msgid "Close Settings First"
+msgstr "Chiudi prima Impostazioni"
+
+#: src/library/album_delete.rs:36
+msgid ""
+"Deleting this album changes your watch folders, and saving the open Settings "
+"window would undo that. Close Settings, then delete the album."
+msgstr "L'eliminazione di questo album modifica le cartelle monitorate, e il salvataggio nella finestra Impostazioni aperta annullerebbe questa modifica. Chiudi Impostazioni, quindi elimina l'album."
+
+#: src/library/album_delete.rs:45
+msgid "Its photos stay in your library."
+msgstr "Le sue foto rimarranno nella libreria."
+
+#: src/library/album_delete.rs:49
+msgid "It's also removed for the person it's shared with."
+msgstr "Verrà rimosso anche per la persona con cui è condiviso."
+
+#: src/library/album_delete.rs:53
+#, rust-format
+msgid "It's also removed for the {n} person it's shared with."
+msgid_plural "It's also removed for the {n} people it's shared with."
+msgstr[0] "Verrà rimosso anche per la persona ({n}) con cui è condiviso."
+msgstr[1] "Verrà rimosso anche per le {n} persone con cui è condiviso."
+
+#: src/library/album_delete.rs:61
+msgid "Its shared links stop working."
+msgstr "I relativi collegamenti condivisi smetteranno di funzionare."
+
+#: src/library/album_delete.rs:117
+#, rust-format
+msgid "Delete “{album_name}”?"
+msgstr "Eliminare «{album_name}»?"
+
+#: src/library/album_delete.rs:124
+msgid "Delete Album"
+msgstr "Elimina album"
+
+#: src/library/album_delete.rs:153
+msgid "These folders sync with this album:"
+msgstr "Queste cartelle si sincronizzano con questo album:"
+
+#: src/library/album_delete.rs:156
+msgid "Keep backing them up to your library"
+msgstr "Continua a eseguirne il backup nella libreria"
+
+#: src/library/album_delete.rs:160
+msgid "Stop watching these folders"
+msgstr "Smetti di monitorare queste cartelle"
+
+#: src/library/album_delete.rs:169
+msgid ""
+"So the album doesn't come back, photos in these folders go to your library "
+"instead of an album named after the folder:"
+msgstr "Affinché l'album non venga ricreato, le foto in queste cartelle andranno nella libreria invece che in un album con il nome della cartella:"
+
+#: src/library/album_delete.rs:221
+msgid "Could Not Delete Album"
+msgstr "Impossibile eliminare l'album"
+
+#: src/library/album_delete.rs:256
+#, rust-format
+msgid "Deleted “{album_name}”"
+msgstr "«{album_name}» eliminato"
+
+#: src/library/album_download.rs:20 src/library/controls.rs:377
+#: src/library/staging_view.rs:148
+msgid "Album"
+msgstr "Album"
+
+#: src/library/album_download.rs:34
+#, rust-format
+msgid "Immich couldn't prepare the album: {err}"
+msgstr "Immich non è riuscito a preparare l'album: {err}"
+
+#: src/library/album_download.rs:37 src/library/album_download.rs:54
+msgid "Download Failed"
+msgstr "Scaricamento non riuscito"
+
+#: src/library/album_download.rs:42
+#, rust-format
+msgid "“{album}” has nothing to download"
+msgstr "«{album}» non ha nulla da scaricare"
+
+#: src/library/album_download.rs:90
+#, rust-format
+msgid "Saved {file_name}"
+msgstr "Salvato {file_name}"
+
+#: src/library/album_download.rs:101
+#, rust-format
+msgid "Saved {count} zip file"
+msgid_plural "Saved {count} zip files"
+msgstr[0] "Salvato {count} file zip"
+msgstr[1] "Salvati {count} file zip"
+
+#: src/library/album_download.rs:111 src/library/download.rs:287
+msgid "Open Folder"
+msgstr "Apri cartella"
+
+#: src/library/album_edit.rs:21 src/library/albums_view.rs:66
+#: src/library/people_view.rs:322 src/library/tags_view.rs:205
+msgid "Rename…"
+msgstr "Rinomina…"
+
+#: src/library/album_edit.rs:25 src/library/albums_view.rs:68
+#: src/library/window_layout/bulk_bar.rs:215
+msgid "Edit Description…"
+msgstr "Modifica descrizione…"
+
+#: src/library/album_edit.rs:29
+msgid "Options…"
+msgstr "Opzioni…"
+
+#: src/library/album_edit.rs:33 src/library/albums_view.rs:72
+msgid "Delete Album…"
+msgstr "Elimina album…"
+
+#: src/library/album_edit.rs:44
+msgid "Rename Album"
+msgstr "Rinomina album"
+
+#: src/library/album_edit.rs:45
+msgid "Folders linked to this album stay linked."
+msgstr "Le cartelle collegate a questo album rimangono collegate."
+
+#: src/library/album_edit.rs:47 src/library/album_picker.rs:432
+#: src/library/album_wiring.rs:31
+msgid "Album name"
+msgstr "Nome dell'album"
+
+#: src/library/album_edit.rs:48 src/library/download.rs:357
+#: src/library/tags_view.rs:182 src/library/tags_view.rs:277
+msgid "Rename"
+msgstr "Rinomina"
+
+#: src/library/album_edit.rs:76
+msgid "Album Description"
+msgstr "Descrizione dell'album"
+
+#: src/library/album_link.rs:42
+msgid "Linked folder"
+msgstr "Cartella collegata"
+
+#: src/library/album_link.rs:48
+msgid "Unlink"
+msgstr "Scollega"
+
+#: src/library/album_link.rs:54 src/library/window_layout.rs:492
+msgid "No local folder linked"
+msgstr "Nessuna cartella locale collegata"
+
+#: src/library/album_link.rs:56 src/library/window_layout.rs:494
+msgid "Drop files in the linked folder to sync this album"
+msgstr "Trascina i file nella cartella collegata per sincronizzare questo album"
+
+#: src/library/album_link.rs:60 src/library/window_layout/responsive.rs:178
+msgid "Link folder…"
+msgstr "Collega cartella…"
+
+#: src/library/album_link.rs:184
+msgid "Sync album"
+msgstr "Sincronizza album"
+
+#: src/library/album_link.rs:185
+msgid "Pick which directions to apply."
+msgstr "Scegli quali direzioni applicare."
+
+#: src/library/album_link.rs:188
+msgid "Apply"
+msgstr "Applica"
+
+#: src/library/album_link.rs:200
+#, rust-format
+msgid "Upload {n} item to album"
+msgid_plural "Upload {n} items to album"
+msgstr[0] "Carica {n} elemento nell'album"
+msgstr[1] "Carica {n} elementi nell'album"
+
+#: src/library/album_link.rs:209
+#, rust-format
+msgid "Download {n} item to folder"
+msgid_plural "Download {n} items to folder"
+msgstr[0] "Scarica {n} elemento nella cartella"
+msgstr[1] "Scarica {n} elementi nella cartella"
+
+#: src/library/album_link.rs:218
+#, rust-format
+msgid "Move {n} album item to trash"
+msgid_plural "Move {n} album items to trash"
+msgstr[0] "Sposta {n} elemento dell'album nel cestino"
+msgstr[1] "Sposta {n} elementi dell'album nel cestino"
+
+#: src/library/album_link.rs:227
+#, rust-format
+msgid "Move {n} local item to trash"
+msgid_plural "Move {n} local items to trash"
+msgstr[0] "Sposta {n} elemento locale nel cestino"
+msgstr[1] "Sposta {n} elementi locali nel cestino"
+
+#: src/library/album_link.rs:292
+#, rust-format
+msgid ""
+"Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
+msgid_plural ""
+"Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
+msgstr[0] "Già sincronizzato. (Impossibile associare {n} elemento remoto — checksum mancante.)"
+msgstr[1] "Già sincronizzato. (Impossibile associare {n} elementi remoti — checksum mancante.)"
+
+#: src/library/album_link.rs:299
+msgid "Already in sync."
+msgstr "Già sincronizzato."
+
+#: src/library/album_link.rs:307
+#, rust-format
+msgid "{n} remote item couldn't be matched (missing checksum)."
+msgid_plural "{n} remote items couldn't be matched (missing checksum)."
+msgstr[0] "Impossibile associare {n} elemento remoto (checksum mancante)."
+msgstr[1] "Impossibile associare {n} elementi remoti (checksum mancante)."
+
+#: src/library/album_link.rs:430
+#, rust-format
+msgid "Link folder for album '{album_name}'"
+msgstr "Collega cartella per l'album '{album_name}'"
+
+#: src/library/album_options.rs:19
+msgid "Album Options"
+msgstr "Opzioni album"
+
+#: src/library/album_options.rs:25
+msgid "Comments and Likes"
+msgstr "Commenti e mi piace"
+
+#: src/library/album_options.rs:26
+msgid "Let people in this album like and comment"
+msgstr "Consenti alle persone in questo album di aggiungere mi piace e commentare"
+
+#: src/library/album_options.rs:30
+msgid "Display"
+msgstr "Visualizzazione"
+
+#: src/library/album_options.rs:48
+msgid "Display Order"
+msgstr "Ordine di visualizzazione"
+
+#: src/library/album_options.rs:50
+msgid "Newest First"
+msgstr "Più recenti prima"
+
+#: src/library/album_options.rs:51
+msgid "Oldest First"
+msgstr "Meno recenti prima"
+
+#: src/library/album_options.rs:92 src/library/album_options.rs:149
+#, rust-format
+msgid "Couldn't save: {err}"
+msgstr "Impossibile salvare: {err}"
+
+#: src/library/album_picker.rs:54
+msgid "Add to Album"
+msgstr "Aggiungi all'album"
+
+#: src/library/album_picker.rs:136
+#, rust-format
+msgid "Couldn't add to “{album}”"
+msgstr "Impossibile aggiungere a «{album}»"
+
+#: src/library/album_picker.rs:138
+#, rust-format
+msgid "Already in “{album}”"
+msgstr "Già presente in «{album}»"
+
+#: src/library/album_picker.rs:140
+#, rust-format
+msgid "Added {items} to “{album}”"
+msgstr "Aggiunti {items} a «{album}»"
+
+#: src/library/album_picker.rs:144
+#, rust-format
+msgid "Added {items} to “{album}” · {duplicate} already there"
+msgstr "Aggiunti {items} a «{album}» · {duplicate} già presenti"
+
+#: src/library/album_picker.rs:156
+#, rust-format
+msgid "{n} not allowed"
+msgid_plural "{n} not allowed"
+msgstr[0] "{n} non consentito"
+msgstr[1] "{n} non consentiti"
+
+#: src/library/album_picker.rs:192
+msgid "Couldn't add to the album"
+msgstr "Impossibile aggiungere all'album"
+
+#: src/library/album_picker.rs:206
+msgid "Open"
+msgstr "Apri"
+
+#: src/library/album_picker.rs:221 src/library/album_picker.rs:226
+msgid "Could Not Create Album"
+msgstr "Impossibile creare l'album"
+
+#: src/library/album_picker.rs:222
+msgid "Immich didn't return the new album."
+msgstr "Immich non ha restituito il nuovo album."
+
+#: src/library/album_picker.rs:260 src/library/albums_view.rs:187
+msgid "Filter albums"
+msgstr "Filtra album"
+
+#: src/library/album_picker.rs:358
+#, rust-format
+msgid "New Album “{name}”"
+msgstr "Nuovo album «{name}»"
+
+#: src/library/album_picker.rs:359
+msgid "New Album…"
+msgstr "Nuovo album…"
+
+#: src/library/album_picker.rs:429
+msgid "New Album"
+msgstr "Nuovo album"
+
+#: src/library/album_picker.rs:430
+msgid "The selected items will be added to it."
+msgstr "Gli elementi selezionati verranno aggiunti all'album."
+
+#: src/library/album_picker.rs:433 src/library/album_wiring.rs:36
+#: src/library/tags_view.rs:253
+msgid "Create"
+msgstr "Crea"
+
+#: src/library/album_picker/several.rs:49
+msgid "Add to this album too"
+msgstr "Aggiungi anche a questo album"
+
+#: src/library/album_picker/several.rs:72
+#, rust-format
+msgid "Add to {n} Album"
+msgid_plural "Add to {n} Albums"
+msgstr[0] "Aggiungi a {n} album"
+msgstr[1] "Aggiungi a {n} album"
+
+#: src/library/album_picker/several.rs:99
+msgid "Couldn't add to the albums"
+msgstr "Impossibile aggiungere agli album"
+
+#: src/library/album_picker/several.rs:114
+#, rust-format
+msgid "Added {items} to {n} album"
+msgid_plural "Added {items} to {n} albums"
+msgstr[0] "Aggiunti {items} a {n} album"
+msgstr[1] "Aggiunti {items} a {n} album"
+
+#: src/library/album_picker/several.rs:123
+msgid "Already in those albums"
+msgstr "Già presente in quegli album"
+
+#: src/library/album_picker/several.rs:124
+msgid "You can't add these to those albums"
+msgstr "Impossibile aggiungere questi elementi a quegli album"
+
+#: src/library/album_picker/widgets.rs:87
+msgid "No matching albums"
+msgstr "Nessun album corrispondente"
+
+#: src/library/album_share_dialog.rs:37
+msgid "Shared with"
+msgstr "Condiviso con"
+
+#: src/library/album_share_dialog.rs:40 src/library/sharing_view.rs:271
+msgid "Find people by name or email"
+msgstr "Cerca persone per nome o email"
+
+#: src/library/album_share_dialog.rs:43
+msgid "Add people"
+msgstr "Aggiungi persone"
+
+#: src/library/album_share_dialog.rs:53
+#, rust-format
+msgid "Share “{album_name}”"
+msgstr "Condividi «{album_name}»"
+
+#: src/library/album_share_dialog.rs:89
+msgid "Could Not Load Album"
+msgstr "Impossibile caricare l'album"
+
+#: src/library/album_share_dialog.rs:150
+msgid "Editor"
+msgstr "Editor"
+
+#: src/library/album_share_dialog.rs:150 src/library/shortcuts_dialog.rs:263
+msgid "Viewer"
+msgstr "Visualizzatore"
+
+#: src/library/album_share_dialog.rs:162
+msgid "Could Not Change Role"
+msgstr "Impossibile modificare il ruolo"
+
+#: src/library/album_share_dialog.rs:174
+msgid "Stop sharing with this person"
+msgstr "Interrompi condivisione con questa persona"
+
+#: src/library/album_share_dialog.rs:181
+msgid "Could Not Remove Person"
+msgstr "Impossibile rimuovere la persona"
+
+#: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+msgid "Add"
+msgstr "Aggiungi"
+
+#: src/library/album_share_dialog.rs:198
+msgid "Could Not Share Album"
+msgstr "Impossibile condividere l'album"
+
+#: src/library/album_sync.rs:85
+#, rust-format
+msgid "{n} album item"
+msgid_plural "{n} album items"
+msgstr[0] "{n} elemento dell'album"
+msgstr[1] "{n} elementi dell'album"
+
+#: src/library/album_wiring.rs:27 src/library/albums_view.rs:183
+msgid "Create album"
+msgstr "Crea album"
+
+#: src/library/album_wiring.rs:28
+msgid "Choose a name for the new album."
+msgstr "Scegli un nome per il nuovo album."
+
+#: src/library/album_wiring.rs:88 src/library/source_loading.rs:96
+#, rust-format
+msgid "Could not load albums: {err}"
+msgstr "Impossibile caricare gli album: {err}"
+
+#: src/library/albums_view.rs:64
+msgid "Share…"
+msgstr "Condividi…"
+
+#: src/library/albums_view.rs:65 src/library/context_menu/manage.rs:58
+msgid "Create Share Link…"
+msgstr "Crea collegamento di condivisione…"
+
+#: src/library/albums_view.rs:71 src/library/albums_view.rs:76
+#: src/library/context_menu.rs:139 src/library/shared_links_view.rs:415
+#: src/library/shortcuts_dialog.rs:139
+msgid "Download"
+msgstr "Scarica"
+
+#: src/library/albums_view.rs:77 src/library/source_header/enrichment.rs:221
+msgid "Leave Album…"
+msgstr "Abbandona album…"
+
+#: src/library/albums_view.rs:137
+msgid "Recent"
+msgstr "Recenti"
+
+#: src/library/albums_view.rs:138 src/library/albums_view.rs:220
+msgid "Your albums"
+msgstr "I tuoi album"
+
+#: src/library/albums_view.rs:139
+msgid "Shared with you"
+msgstr "Condivisi con te"
+
+#: src/library/albums_view.rs:218
+msgid "Shared by you"
+msgstr "Condivisi da te"
+
+#: src/library/albums_view.rs:352
+msgid "Couldn't Tell Which Albums Are Yours"
+msgstr "Impossibile determinare quali album ti appartengono"
+
+#: src/library/albums_view.rs:353
+msgid "Your API key needs the 'user.read' permission."
+msgstr "La chiave API richiede il permesso 'user.read'."
+
+#: src/library/albums_view.rs:357
+msgid "No Shared Albums"
+msgstr "Nessun album condiviso"
+
+#: src/library/albums_view.rs:358
+msgid "Share one of your albums, or ask someone to share one with you."
+msgstr "Condividi uno dei tuoi album oppure chiedi a qualcuno di condividerne uno con te."
+
+#: src/library/albums_view/stats.rs:40
+#, rust-format
+msgid "{owned} owned · {shared} shared · {not_shared} not shared"
+msgstr "{owned} di tua proprietà · {shared} condivisi · {not_shared} non condivisi"
+
+#: src/library/albums_view/tile.rs:58 src/library/download.rs:177
+#: src/library/header_format.rs:34
+#, rust-format
+msgid "{n} item"
+msgid_plural "{n} items"
+msgstr[0] "{n} elemento"
+msgstr[1] "{n} elementi"
+
+#: src/library/archive.rs:24
+msgid "Unarchive"
+msgstr "Disarchivia"
+
+#: src/library/archive.rs:26 src/library/search_filters.rs:137
+#: src/library/shortcuts_dialog.rs:62 src/library/sidebar/rows.rs:112
+#: src/library/source_header.rs:311
+msgid "Archive"
+msgstr "Archivia"
+
+#: src/library/archive.rs:32
+msgid "Unarchive (A)"
+msgstr "Disarchivia (A)"
+
+#: src/library/archive.rs:34
+msgid "Archive (A)"
+msgstr "Archivia (A)"
+
+#: src/library/archive.rs:62
+msgid "Could Not Archive"
+msgstr "Impossibile archiviare"
+
+#: src/library/archive.rs:64
+msgid "Could Not Unarchive"
+msgstr "Impossibile disarchiviare"
+
+#: src/library/archive.rs:88
+msgid "Unarchive selected"
+msgstr "Disarchivia selezionati"
+
+#: src/library/archive.rs:90 src/library/window_layout/bulk_bar.rs:64
+msgid "Archive selected"
+msgstr "Archivia selezionati"
+
+#: src/library/asset_edit.rs:131 src/library/map/location_dialog.rs:59
+msgid "Could Not Load Info"
+msgstr "Impossibile caricare le informazioni"
+
+#: src/library/asset_edit.rs:156
+msgid "Date taken"
+msgstr "Data dello scatto"
+
+#: src/library/asset_edit.rs:161
+msgid "Pick date and time"
+msgstr "Scegli data e ora"
+
+#: src/library/asset_edit.rs:182 src/library/people_view.rs:226
+msgid "Favorite"
+msgstr "Preferito"
+
+#: src/library/asset_edit.rs:192 src/library/bulk_more.rs:138
+#: src/library/lightbox/details.rs:147 src/library/shared_link_dialog.rs:106
+msgid "Description"
+msgstr "Descrizione"
+
+#: src/library/asset_edit.rs:255 src/library/bulk_date.rs:318
+#: src/library/bulk_more.rs:139 src/library/dialogs.rs:86
+#: src/library/lightbox/edit/panel.rs:103 src/library/map/location_dialog.rs:76
+#: src/library/people_view.rs:429 src/library/people_view.rs:461
+#: src/library/shared_link_dialog.rs:202 src/library/tags_view.rs:335
+#: src/settings_window/watch_folders/rules_dialog.rs:122
+msgid "Save"
+msgstr "Salva"
+
+#: src/library/asset_edit.rs:275
+msgid "Edit Info"
+msgstr "Modifica informazioni"
+
+#: src/library/asset_edit.rs:349
+msgid "Could Not Save Info"
+msgstr "Impossibile salvare le informazioni"
+
+#: src/library/asset_edit.rs:351 src/library/map/location_dialog.rs:167
+#, rust-format
+msgid "Immich rejected the update: {err}"
+msgstr "Immich ha rifiutato l'aggiornamento: {err}"
+
+#: src/library/asset_edit/date_picker.rs:78
+msgid "Set Date"
+msgstr "Imposta data"
+
+#: src/library/asset_edit/date_picker.rs:137
+#: src/library/lightbox/details.rs:260
+msgid "Not set"
+msgstr "Non impostata"
+
+#: src/library/asset_jobs.rs:35
+msgid "Refresh Faces"
+msgstr "Aggiorna volti"
+
+#: src/library/asset_jobs.rs:36
+msgid "Immich is looking for faces again"
+msgstr "Immich sta cercando nuovamente i volti"
+
+#: src/library/asset_jobs.rs:43
+msgid "Refresh Metadata"
+msgstr "Aggiorna metadati"
+
+#: src/library/asset_jobs.rs:44
+msgid "Immich is reading the metadata again"
+msgstr "Immich sta rileggendo i metadati"
+
+#: src/library/asset_jobs.rs:51
+msgid "Refresh Thumbnails"
+msgstr "Aggiorna miniature"
+
+#: src/library/asset_jobs.rs:52
+msgid "Immich is making new thumbnails"
+msgstr "Immich sta generando nuove miniature"
+
+#: src/library/asset_jobs.rs:59
+msgid "Refresh Video"
+msgstr "Aggiorna video"
+
+#: src/library/asset_jobs.rs:60
+msgid "Immich is converting the video again"
+msgstr "Immich sta convertendo nuovamente il video"
+
+#: src/library/asset_jobs.rs:114
+msgid "Couldn't refresh"
+msgstr "Impossibile aggiornare"
+
+#: src/library/asset_jobs.rs:116
+#, rust-format
+msgid "Immich didn't start the job: {err}"
+msgstr "Immich non ha avviato l'attività: {err}"
+
+#: src/library/asset_tags.rs:46
+msgid "Add tag"
+msgstr "Aggiungi tag"
+
+#: src/library/asset_tags.rs:51 src/library/navigation.rs:204
+#: src/library/search_filters.rs:84 src/library/sidebar/rows.rs:100
+msgid "Tags"
+msgstr "Tag"
+
+#: src/library/asset_tags.rs:63
+msgid "No tags yet"
+msgstr "Ancora nessun tag"
+
+#: src/library/asset_tags.rs:139
+#, rust-format
+msgid "Show photos tagged “{value}”"
+msgstr "Mostra foto con il tag «{value}»"
+
+#: src/library/asset_tags.rs:150
+#, rust-format
+msgid "Remove “{value}”"
+msgstr "Rimuovi «{value}»"
+
+#: src/library/asset_tags.rs:189
+msgid "Couldn't remove the tag"
+msgstr "Impossibile rimuovere il tag"
+
+#: src/library/asset_tags.rs:219
+msgid "Couldn't add the tag"
+msgstr "Impossibile aggiungere il tag"
+
+#: src/library/asset_tags.rs:227
+msgid "Find or create a tag"
+msgstr "Trova o crea un tag"
+
+#: src/library/asset_tags.rs:307
+#, rust-format
+msgid "Create “{query}”"
+msgstr "Crea «{query}»"
+
+#: src/library/bottom_nav.rs:10 src/library/server_stats_dialog.rs:94
+#: src/library/server_stats_dialog.rs:126 src/library/shortcuts_dialog.rs:57
+#: src/library/sidebar/rows.rs:40 src/library/source_header.rs:276
+#: src/library/utilities/controls.rs:29
+msgid "Photos"
+msgstr "Foto"
+
+#: src/library/bottom_nav.rs:11 src/library/shortcuts_dialog.rs:58
+#: src/library/sidebar/rows.rs:52 src/library/source_header.rs:309
+msgid "Explore"
+msgstr "Esplora"
+
+#: src/library/bottom_nav.rs:12 src/library/navigation.rs:177
+#: src/library/shortcuts_dialog.rs:59 src/library/shortcuts_dialog.rs:261
+#: src/library/sidebar/rows.rs:58
+msgid "Map"
+msgstr "Mappa"
+
+#: src/library/bottom_nav.rs:13 src/library/navigation.rs:200
+#: src/library/search_filters.rs:85 src/library/shortcuts_dialog.rs:64
+#: src/library/sidebar/rows.rs:70
+msgid "Albums"
+msgstr "Album"
+
+#: src/library/bottom_nav.rs:14 src/library/explore_view.rs:217
+#: src/library/lightbox/people.rs:47 src/library/navigation.rs:203
+#: src/library/search_filters.rs:83 src/library/shortcuts_dialog.rs:60
+#: src/library/sidebar/rows.rs:64
+msgid "People"
+msgstr "Persone"
+
+#: src/library/bulk_date.rs:27
+msgid "No change"
+msgstr "Nessuna modifica"
+
+#: src/library/bulk_date.rs:36
+#, rust-format
+msgid "{n} day"
+msgid_plural "{n} days"
+msgstr[0] "{n} giorno"
+msgstr[1] "{n} giorni"
+
+#: src/library/bulk_date.rs:37
+#, rust-format
+msgid "{n} hour"
+msgid_plural "{n} hours"
+msgstr[0] "{n} ora"
+msgstr[1] "{n} ore"
+
+#: src/library/bulk_date.rs:38
+#, rust-format
+msgid "{n} minute"
+msgid_plural "{n} minutes"
+msgstr[0] "{n} minuto"
+msgstr[1] "{n} minuti"
+
+#: src/library/bulk_date.rs:46
+#, rust-format
+msgid "Later by {amount}"
+msgstr "In avanti di {amount}"
+
+#: src/library/bulk_date.rs:48
+#, rust-format
+msgid "Earlier by {amount}"
+msgstr "Indietro di {amount}"
+
+#: src/library/bulk_date.rs:90
+#, rust-format
+msgid "Changed the date of {items}"
+msgstr "Data modificata per {items}"
+
+#: src/library/bulk_date.rs:101
+msgid "Could Not Change Date"
+msgstr "Impossibile modificare la data"
+
+#: src/library/bulk_date.rs:103
+#, rust-format
+msgid "Immich rejected the change: {err}"
+msgstr "Immich ha rifiutato la modifica: {err}"
+
+#: src/library/bulk_date.rs:151
+msgid "Days"
+msgstr "Giorni"
+
+#: src/library/bulk_date.rs:152
+msgid "Hours"
+msgstr "Ore"
+
+#: src/library/bulk_date.rs:153
+msgid "Minutes"
+msgstr "Minuti"
+
+#: src/library/bulk_date.rs:160
+msgid "Date and time"
+msgstr "Data e ora"
+
+#: src/library/bulk_date.rs:230
+#, rust-format
+msgid "Saved as {date} UTC{offset}"
+msgstr "Salvato come {date} UTC{offset}"
+
+#: src/library/bulk_date.rs:274
+msgid "Shift"
+msgstr "Sposta"
+
+#: src/library/bulk_date.rs:325 src/library/bulk_date.rs:345
+msgid "Change Date and Time"
+msgstr "Modifica data e ora"
+
+#: src/library/bulk_more.rs:39
+msgid "Only the owner can change these photos"
+msgstr "Solo il proprietario può modificare queste foto"
+
+#: src/library/bulk_more.rs:71
+msgid "Unfavorite selected"
+msgstr "Rimuovi selezionati dai preferiti"
+
+#: src/library/bulk_more.rs:76 src/library/window_layout/bulk_bar.rs:211
+msgid "Favorite selected"
+msgstr "Aggiungi selezionati ai preferiti"
+
+#: src/library/bulk_more.rs:91
+msgid "Couldn't update favorites"
+msgstr "Impossibile aggiornare i preferiti"
+
+#: src/library/bulk_more.rs:103
+#, rust-format
+msgid "Added {n} photo to favorites"
+msgid_plural "Added {n} photos to favorites"
+msgstr[0] "Aggiunta {n} foto ai preferiti"
+msgstr[1] "Aggiunte {n} foto ai preferiti"
+
+#: src/library/bulk_more.rs:109
+#, rust-format
+msgid "Removed {n} photo from favorites"
+msgid_plural "Removed {n} photos from favorites"
+msgstr[0] "Rimossa {n} foto dai preferiti"
+msgstr[1] "Rimosse {n} foto dai preferiti"
+
+#: src/library/bulk_more.rs:125
+#, rust-format
+msgid "Describe {n} Photo"
+msgid_plural "Describe {n} Photos"
+msgstr[0] "Descrivi {n} foto"
+msgstr[1] "Descrivi {n} foto"
+
+#: src/library/bulk_more.rs:136
+msgid "Each photo gets this description in place of its own."
+msgstr "Ogni foto riceverà questa descrizione al posto della propria."
+
+#: src/library/bulk_more.rs:151
+msgid "Description saved"
+msgstr "Descrizione salvata"
+
+#: src/library/bulk_more.rs:152
+msgid "Couldn't save the description"
+msgstr "Impossibile salvare la descrizione"
+
+#: src/library/bulk_overflow.rs:32
+msgid "More actions"
+msgstr "Altre azioni"
+
+#: src/library/clipboard.rs:141
+#, rust-format
+msgid "Copied {n} photo"
+msgid_plural "Copied {n} photos"
+msgstr[0] "Copiata {n} foto"
+msgstr[1] "Copiate {n} foto"
+
+#: src/library/clipboard.rs:151
+#, rust-format
+msgid ""
+"Pasting into an album here adds all {count}. Only {local} are on this "
+"computer, so other apps such as Files paste those; use Download for the rest."
+msgstr "Incollando in un album qui vengono aggiunti tutti i {count}. Solo {local} sono su questo computer, quindi altre applicazioni come File incolleranno quelli; usa Scarica per il resto."
+
+#: src/library/clipboard.rs:162
+msgid "Paste in Photos or albums"
+msgstr "Incolla in Foto o negli album"
+
+#: src/library/clipboard.rs:177 src/library/clipboard.rs:187
+msgid "Couldn't paste"
+msgstr "Impossibile incollare"
+
+#: src/library/clipboard.rs:186 src/library/clipboard.rs:191
+#: src/library/clipboard.rs:226
+msgid "No photos to paste"
+msgstr "Nessuna foto da incollare"
+
+#: src/library/clipboard.rs:233 src/library/upload_stack.rs:74
+#, rust-format
+msgid "Uploading {n} file…"
+msgid_plural "Uploading {n} files…"
+msgstr[0] "Caricamento di {n} file…"
+msgstr[1] "Caricamento di {n} file…"
+
+#: src/library/clipboard.rs:262
+msgid "Already in your library"
+msgstr "Già presente nella libreria"
+
+#: src/library/clipboard.rs:273
+msgid "Uploading pasted image…"
+msgstr "Caricamento dell'immagine incollata…"
+
+#: src/library/clipboard.rs:279
+msgid "Pasted image"
+msgstr "Immagine incollata"
+
+#: src/library/clipboard.rs:290
+msgid "Pasted image uploaded"
+msgstr "Immagine incollata caricata"
+
+#: src/library/clipboard.rs:294
+msgid "Couldn't paste the image"
+msgstr "Impossibile incollare l'immagine"
+
+#: src/library/content_state.rs:24
+#, rust-format
+msgid "{n} asset"
+msgid_plural "{n} assets"
+msgstr[0] "{n} elemento"
+msgstr[1] "{n} elementi"
+
+#: src/library/content_state.rs:119 src/library/explore_view/calendar.rs:43
+#: src/library/header_format.rs:177 src/library/map/markers.rs:125
+#: src/library/memories.rs:134 src/library/server_stats_dialog.rs:227
+#: src/library/source_header.rs:268
+#, rust-format
+msgid "{n} photo"
+msgid_plural "{n} photos"
+msgstr[0] "{n} foto"
+msgstr[1] "{n} foto"
+
+#: src/library/content_state.rs:123 src/library/server_stats_dialog.rs:231
+#: src/library/source_header.rs:272
+#, rust-format
+msgid "{n} video"
+msgid_plural "{n} videos"
+msgstr[0] "{n} video"
+msgstr[1] "{n} video"
+
+#: src/library/content_state.rs:128 src/library/sidebar.rs:36
+msgid "Statistics unavailable"
+msgstr "Statistiche non disponibili"
+
+#: src/library/content_state.rs:133 src/library/server_stats_dialog.rs:80
+#, rust-format
+msgid "Immich {version}"
+msgstr "Immich {version}"
+
+#: src/library/content_state.rs:134
+msgid "Version unavailable"
+msgstr "Versione non disponibile"
+
+#: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
+#: src/settings_window/wiring.rs:215
+msgid "Connected through LAN"
+msgstr "Connesso tramite LAN"
+
+#: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
+#: src/settings_window/wiring.rs:217
+msgid "Connected through WAN"
+msgstr "Connesso tramite WAN"
+
+#: src/library/content_state.rs:142 src/settings_window/status_poll.rs:183
+msgid "Connected through configured server"
+msgstr "Connesso tramite il server configurato"
+
+#: src/library/content_state.rs:144 src/library/sidebar.rs:35
+msgid "Offline"
+msgstr "Non in linea"
+
+#: src/library/content_state.rs:175
+msgid "queued asset"
+msgstr "elemento in coda"
+
+#: src/library/content_state.rs:176
+msgid "selected asset"
+msgstr "elemento selezionato"
+
+#: src/library/content_state.rs:217
+msgid "Fetching library data from the Immich server"
+msgstr "Recupero dei dati della libreria dal server Immich"
+
+#: src/library/content_state.rs:366 src/library/masonry/canvas_helpers.rs:138
+#: src/library/server_stats_dialog.rs:161
+msgid "Missing API Permissions"
+msgstr "Permessi API mancanti"
+
+#: src/library/content_state.rs:367
+msgid ""
+"Your API key is missing permissions required for the Library view. Please "
+"ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
+"'person.read' enabled."
+msgstr "La chiave API non dispone dei permessi richiesti per la vista Libreria. Assicurarsi che la chiave abbia 'asset.read', 'asset.view', 'asset.download' e 'person.read' abilitati."
+
+#: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
+#: src/library/shortcuts_dialog.rs:179
+msgid "Close"
+msgstr "Chiudi"
+
+#: src/library/context_menu.rs:131
+msgid "Copy"
+msgstr "Copia"
+
+#: src/library/context_menu.rs:148
+msgid "Open In"
+msgstr "Apri in"
+
+#: src/library/context_menu.rs:174 src/library/shortcuts_dialog.rs:264
+msgid "Slideshow"
+msgstr "Presentazione"
+
+#: src/library/context_menu.rs:181
+msgid "Leave Fullscreen"
+msgstr "Esci da schermo intero"
+
+#: src/library/context_menu.rs:183
+msgid "Fullscreen"
+msgstr "Schermo intero"
+
+#: src/library/context_menu.rs:229 src/library/context_menu.rs:236
+msgid "Couldn't copy the photo"
+msgstr "Impossibile copiare la foto"
+
+#: src/library/context_menu.rs:237
+msgid "Could not decode the original image."
+msgstr "Impossibile decodificare l'immagine originale."
+
+#: src/library/context_menu.rs:256
+msgid "Couldn't open the file"
+msgstr "Impossibile aprire il file"
+
+#: src/library/context_menu.rs:288
+msgid "Could not locate a cache directory."
+msgstr "Impossibile trovare una cartella di cache."
+
+#: src/library/context_menu.rs:316 src/library/lightbox/details.rs:205
+msgid "Details"
+msgstr "Dettagli"
+
+#: src/library/context_menu/manage.rs:73
+msgid "Add to Share Link…"
+msgstr "Aggiungi al link di condivisione…"
+
+#: src/library/context_menu/manage.rs:84 src/library/lightbox/widgets.rs:434
+msgid "Add to Album…"
+msgstr "Aggiungi all'album…"
+
+#: src/library/context_menu/manage.rs:92
+msgid "Set as Album Cover"
+msgstr "Imposta come copertina dell'album"
+
+#: src/library/context_menu/manage.rs:108
+msgid "Remove from Album"
+msgstr "Rimuovi dall'album"
+
+#: src/library/context_menu/manage.rs:130 src/library/lightbox/widgets.rs:432
+msgid "Edit Info…"
+msgstr "Modifica informazioni…"
+
+#: src/library/context_menu/manage.rs:149
+msgid "Edit Photo…"
+msgstr "Modifica foto…"
+
+#: src/library/context_menu/manage.rs:158 src/library/lightbox/people.rs:59
+msgid "Tag People…"
+msgstr "Etichetta persone…"
+
+#: src/library/context_menu/manage.rs:176
+msgid "Set as Profile Picture"
+msgstr "Imposta come immagine del profilo"
+
+#: src/library/context_menu/manage.rs:186
+msgid "Set Location…"
+msgstr "Imposta posizione…"
+
+#: src/library/context_menu/manage.rs:208
+msgid "Move to Trash"
+msgstr "Sposta nel cestino"
+
+#: src/library/context_menu/manage.rs:210 src/library/shared_links_view.rs:222
+#: src/library/tags_view.rs:213
+msgid "Delete…"
+msgstr "Elimina…"
+
+#: src/library/context_menu/manage.rs:231 src/library/people_view.rs:330
+msgid "Remove from Favorites"
+msgstr "Rimuovi dai preferiti"
+
+#: src/library/context_menu/manage.rs:233 src/library/people_view.rs:332
+msgid "Add to Favorites"
+msgstr "Aggiungi ai preferiti"
+
+#: src/library/context_menu/manage.rs:283
+msgid "Restore"
+msgstr "Ripristina"
+
+#: src/library/context_menu/manage.rs:293 src/library/trash_view.rs:207
+msgid "Delete Permanently"
+msgstr "Elimina definitivamente"
+
+#: src/library/context_menu/menu.rs:62
+msgid "Photo Actions"
+msgstr "Azioni foto"
+
+#: src/library/controls/sort.rs:57
+msgid "Most assets"
+msgstr "Più elementi"
+
+#: src/library/controls/sort.rs:57 src/library/people_view.rs:428
+#: src/library/person_picker.rs:163
+msgid "Name"
+msgstr "Nome"
+
+#: src/library/controls/sort.rs:57 src/library/controls/sort.rs:60
+#: src/library/window_layout.rs:360
+msgid "Newest"
+msgstr "Più recenti"
+
+#: src/library/controls/sort.rs:58 src/library/theme/palettes.rs:54
+#: src/library/theme/palettes.rs:82
+msgid "Default"
+msgstr "Predefinito"
+
+#: src/library/controls/sort.rs:61
+msgid "Oldest"
+msgstr "Meno recenti"
+
+#: src/library/controls/sort.rs:62 src/library/window_layout.rs:361
+msgid "Filename"
+msgstr "Nome del file"
+
+#: src/library/controls/sort.rs:63 src/library/window_layout.rs:362
+msgid "File Type"
+msgstr "Tipo di file"
+
+#: src/library/day_row.rs:37 src/library/day_row.rs:69
+msgid "Any Day"
+msgstr "Qualsiasi giorno"
+
+#: src/library/download.rs:153
+#, rust-format
+msgid "Saved {safe_name}"
+msgstr "Salvato {safe_name}"
+
+#: src/library/download.rs:159
+msgid "Download failed"
+msgstr "Scaricamento non riuscito"
+
+#: src/library/download.rs:258
+msgid "Nothing downloaded"
+msgstr "Nessun elemento scaricato"
+
+#: src/library/download.rs:261
+#, rust-format
+msgid "Downloaded {items}"
+msgstr "Scaricati {items}"
+
+#: src/library/download.rs:270
+#, rust-format
+msgid "{n} skipped"
+msgid_plural "{n} skipped"
+msgstr[0] "{n} ignorato"
+msgstr[1] "{n} ignorati"
+
+#: src/library/download.rs:276
+#, rust-format
+msgid "{n} failed"
+msgid_plural "{n} failed"
+msgstr[0] "{n} non riuscito"
+msgstr[1] "{n} non riusciti"
+
+#: src/library/download.rs:321 src/library/download.rs:346
+msgid "File already exists"
+msgstr "Il file esiste già"
+
+#: src/library/download.rs:323
+#, rust-format
+msgid "\"{name}\" already exists. Overwrite?"
+msgstr "\"{name}\" esiste già. Sovrascrivere?"
+
+#: src/library/download.rs:327 src/library/download.rs:356
+msgid "Skip"
+msgstr "Ignora"
+
+#: src/library/download.rs:328 src/library/download.rs:358
+msgid "Overwrite"
+msgstr "Sovrascrivi"
+
+#: src/library/download.rs:348
+#, rust-format
+msgid "\"{name}\" already exists in the download folder."
+msgstr "\"{name}\" esiste già nella cartella di scaricamento."
+
+#: src/library/download.rs:353
+msgid "Apply to all remaining conflicts"
+msgstr "Applica a tutti i conflitti rimanenti"
+
+#: src/library/download.rs:409 src/settings_window/wiring/folder_wiring.rs:38
+msgid "Choose Download Folder"
+msgstr "Scegli cartella di scaricamento"
+
+#: src/library/download.rs:423
+msgid "Save as default?"
+msgstr "Salvare come predefinito?"
+
+#: src/library/download.rs:425
+#, rust-format
+msgid "Always download to {path}?"
+msgstr "Scaricare sempre in {path}?"
+
+#: src/library/download.rs:429
+msgid "Just Once"
+msgstr "Solo una volta"
+
+#: src/library/download.rs:430
+msgid "Always"
+msgstr "Sempre"
+
+#: src/library/drop_target.rs:82
+msgid "No supported media files in drop"
+msgstr "Nessun file multimediale supportato tra quelli rilasciati"
+
+#: src/library/duplicates_view.rs:43
+msgid "Previous group"
+msgstr "Gruppo precedente"
+
+#: src/library/duplicates_view.rs:44
+msgid "Next group"
+msgstr "Gruppo successivo"
+
+#: src/library/duplicates_view.rs:86
+msgid "Not Duplicates"
+msgstr "Non duplicati"
+
+#: src/library/duplicates_view.rs:87
+msgid "Keep every photo and stop showing this group"
+msgstr "Conserva tutte le foto e non mostrare più questo gruppo"
+
+#: src/library/duplicates_view.rs:96
+msgid "No Duplicates"
+msgstr "Nessun duplicato"
+
+#: src/library/duplicates_view.rs:98
+msgid ""
+"Immich hasn't found any duplicate photos. It looks for them when its "
+"duplicate detection job runs."
+msgstr "Immich non ha trovato foto duplicate. La ricerca viene effettuata quando viene eseguita l'attività di rilevamento dei duplicati."
+
+#: src/library/duplicates_view.rs:123
+msgid "Tap a photo to keep it or trash it."
+msgstr "Tocca una foto per conservarla o cestinarla."
+
+#: src/library/duplicates_view.rs:212
+msgid "Could Not Load Duplicates"
+msgstr "Impossibile caricare i duplicati"
+
+#: src/library/duplicates_view.rs:214 src/library/folders_view.rs:71
+#: src/library/people_view.rs:139 src/library/shared_links_view.rs:103
+#: src/library/sharing_view.rs:96 src/library/sharing_view.rs:181
+#: src/library/tags_view.rs:76
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the '{permission}' permission."
+msgstr ""
+"{err}\n"
+"\n"
+"La chiave API richiede il permesso '{permission}'."
+
+#: src/library/duplicates_view.rs:261
+#, rust-format
+msgid "Group {n} of {total}"
+msgstr "Gruppo {n} di {total}"
+
+#: src/library/duplicates_view.rs:280
+#, rust-format
+msgid "Trash {n} Photo"
+msgid_plural "Trash {n} Photos"
+msgstr[0] "Cestina {n} foto"
+msgstr[1] "Cestina {n} foto"
+
+#: src/library/duplicates_view.rs:282
+#, rust-format
+msgid "Delete {n} Photo"
+msgid_plural "Delete {n} Photos"
+msgstr[0] "Elimina {n} foto"
+msgstr[1] "Elimina {n} foto"
+
+#: src/library/duplicates_view.rs:323
+#, rust-format
+msgid "Delete {n} photo permanently?"
+msgid_plural "Delete {n} photos permanently?"
+msgstr[0] "Eliminare definitivamente {n} foto?"
+msgstr[1] "Eliminare definitivamente {n} foto?"
+
+#: src/library/duplicates_view.rs:333
+msgid "Trash is turned off on this server, so this can't be undone."
+msgstr "Il cestino è disabilitato su questo server, quindi l'operazione non può essere annullata."
+
+#: src/library/duplicates_view.rs:352
+#, rust-format
+msgid "Kept {kept}, trashed {n}"
+msgid_plural "Kept {kept}, trashed {n}"
+msgstr[0] "Conservate {kept}, cestinata {n}"
+msgstr[1] "Conservate {kept}, cestinate {n}"
+
+#: src/library/duplicates_view.rs:374
+msgid "Marked as not duplicates"
+msgstr "Contrassegnati come non duplicati"
+
+#: src/library/duplicates_view.rs:404
+msgid "Couldn't update the duplicates"
+msgstr "Impossibile aggiornare i duplicati"
+
+#: src/library/duplicates_view/cards.rs:178
+msgid "Keep"
+msgstr "Conserva"
+
+#: src/library/duplicates_view/cards.rs:181 src/library/shortcuts_dialog.rs:63
+#: src/library/sidebar/rows.rs:118 src/library/source_header.rs:312
+msgid "Trash"
+msgstr "Cestina"
+
+#: src/library/duplicates_view/cards.rs:202
+#, rust-format
+msgid "{size}, largest"
+msgstr "{size}, più grande"
+
+#: src/library/explore_view.rs:146
+msgid "Recently Added"
+msgstr "Aggiunti di recente"
+
+#: src/library/explore_view.rs:147
+msgid "Places"
+msgstr "Luoghi"
+
+#: src/library/explore_view.rs:148 src/library/source_header/enrichment.rs:46
+msgid "Things"
+msgstr "Oggetti"
+
+#: src/library/explore_view.rs:151
+msgid "Filter people and places"
+msgstr "Filtra persone e luoghi"
+
+#: src/library/explore_view.rs:227
+msgid "Filter people"
+msgstr "Filtra persone"
+
+#: src/library/explore_view.rs:530
+#, rust-format
+msgid "See {remaining} more"
+msgstr "Mostra altri {remaining}"
+
+#: src/library/explore_view.rs:539
+msgid "Show Less"
+msgstr "Mostra meno"
+
+#. Translators: strftime short month, e.g. "Oct 2026".
+#: src/library/explore_view/calendar.rs:28 src/library/timeline/dates.rs:30
+msgid "%b %Y"
+msgstr "%b %Y"
+
+#: src/library/explore_view/calendar.rs:83
+msgid "Earlier year"
+msgstr "Anno precedente"
+
+#: src/library/explore_view/calendar.rs:84
+msgid "Later year"
+msgstr "Anno successivo"
+
+#: src/library/explore_view/calendar.rs:86 src/library/lightbox/details.rs:453
+#: src/library/map/settings.rs:76
+msgid "Taken"
+msgstr "Scattate"
+
+#: src/library/explore_view/calendar.rs:87
+msgid "By when the photos were taken"
+msgstr "In base alla data in cui sono state scattate le foto"
+
+#: src/library/explore_view/calendar.rs:92 src/library/folders_view/rows.rs:154
+msgid "Show Photos"
+msgstr "Mostra foto"
+
+#: src/library/explore_view/calendar.rs:109
+msgid "Calendar"
+msgstr "Calendario"
+
+#: src/library/explore_view/calendar.rs:135
+msgid "Uploaded"
+msgstr "Caricate"
+
+#: src/library/explore_view/calendar.rs:136
+msgid "By when the photos reached Immich"
+msgstr "In base alla data in cui le foto sono arrivate su Immich"
+
+#: src/library/explore_view/calendar.rs:202
+msgid "Pick a day to see its photos."
+msgstr "Scegli un giorno per visualizzarne le foto."
+
+#: src/library/explore_view/calendar.rs:335
+msgid "Less"
+msgstr "Meno"
+
+#: src/library/explore_view/calendar.rs:336
+#: src/library/lightbox/edit/panel.rs:248 src/library/people_view.rs:306
+#: src/library/shared_links_view.rs:172
+#: src/library/source_header/enrichment.rs:227
+#: src/library/source_header/enrichment.rs:256
+#: src/library/source_header/enrichment.rs:311
+msgid "More"
+msgstr "Più"
+
+#: src/library/explore_view/calendar/grid.rs:106
+msgid "Photos per day; use the arrow keys to pick a day"
+msgstr "Foto al giorno; usa i tasti freccia per scegliere un giorno"
+
+#: src/library/explore_view/people.rs:119
+msgid "Show unnamed"
+msgstr "Mostra senza nome"
+
+#: src/library/explore_view/people.rs:123
+msgid "Show hidden"
+msgstr "Mostra nascosti"
+
+#: src/library/explore_view/tiles.rs:77
+msgid "Just now"
+msgstr "Proprio ora"
+
+#: src/library/explore_view/tiles.rs:81
+#, rust-format
+msgid "{n} min ago"
+msgid_plural "{n} min ago"
+msgstr[0] "{n} min fa"
+msgstr[1] "{n} min fa"
+
+#: src/library/explore_view/tiles.rs:87
+#, rust-format
+msgid "{n}h ago"
+msgid_plural "{n}h ago"
+msgstr[0] "{n}h fa"
+msgstr[1] "{n}h fa"
+
+#: src/library/explore_view/tiles.rs:93
+#, rust-format
+msgid "{n}d ago"
+msgid_plural "{n}d ago"
+msgstr[0] "{n}g fa"
+msgstr[1] "{n}g fa"
+
+#: src/library/favorites.rs:30
+msgid "Remove from favorites (F)"
+msgstr "Rimuovi dai preferiti (F)"
+
+#: src/library/favorites.rs:32
+msgid "Add to favorites (F)"
+msgstr "Aggiungi ai preferiti (F)"
+
+#: src/library/favorites.rs:63
+msgid "Couldn't update the favorite"
+msgstr "Impossibile aggiornare i preferiti"
+
+#: src/library/folders_view.rs:69
+msgid "Could Not Load Folders"
+msgstr "Impossibile caricare le cartelle"
+
+#: src/library/folders_view.rs:87
+msgid "Path copied"
+msgstr "Percorso copiato"
+
+#: src/library/folders_view.rs:115 src/library/navigation.rs:205
+#: src/library/shortcuts_dialog.rs:262 src/library/sidebar/rows.rs:106
+msgid "Folders"
+msgstr "Cartelle"
+
+#: src/library/folders_view.rs:131
+msgid "No Folders"
+msgstr "Nessuna cartella"
+
+#: src/library/folders_view.rs:132
+msgid "Folders appear once Immich has photos from them."
+msgstr "Le cartelle appariranno quando Immich conterrà foto al loro interno."
+
+#: src/library/folders_view/path_bar.rs:30
+msgid "Folder path"
+msgstr "Percorso cartella"
+
+#: src/library/folders_view/path_bar.rs:36
+msgid "Enter a path (Ctrl+L)"
+msgstr "Inserisci un percorso (Ctrl+L)"
+
+#: src/library/folders_view/path_bar.rs:40
+msgid "Copy path"
+msgstr "Copia percorso"
+
+#: src/library/folders_view/path_bar.rs:219
+#, rust-format
+msgid "No folder at {path}"
+msgstr "Nessuna cartella in {path}"
+
+#: src/library/folders_view/rows.rs:32
+#, rust-format
+msgid "Photos in {folder}"
+msgstr "Foto in {folder}"
+
+#: src/library/folders_view/rows.rs:52
+msgid "Show photos"
+msgstr "Mostra foto"
+
+#: src/library/folders_view/rows.rs:65
+#, rust-format
+msgid "{n} folder"
+msgid_plural "{n} folders"
+msgstr[0] "{n} cartella"
+msgstr[1] "{n} cartelle"
+
+#: src/library/folders_view/rows.rs:72 src/library/tags_view.rs:155
+#, rust-format
+msgid "Open {name}"
+msgstr "Apri {name}"
+
+#: src/library/folders_view/rows.rs:144
+msgid "Copy Path"
+msgstr "Copia percorso"
+
+#: src/library/header_format.rs:58 src/library/lightbox/people.rs:242
+#, rust-format
+msgid "Age {age}"
+msgstr "Età {age}"
+
+#: src/library/header_format.rs:62
+#, rust-format
+msgid "Born {date}"
+msgstr "Nascita: {date}"
+
+#. Translators: strftime day and month that start a date range, e.g. "30 Dec".
+#: src/library/header_format.rs:84 src/library/map/nearby.rs:129
+msgid "%-d %b"
+msgstr "%-d %b"
+
+#: src/library/header_format.rs:106
+#, rust-format
+msgid "Shared with {n} person"
+msgid_plural "Shared with {n} people"
+msgstr[0] "Condiviso con {n} persona"
+msgstr[1] "Condiviso con {n} persone"
+
+#: src/library/header_format.rs:122
+#, rust-format
+msgid "Shared by {owner}"
+msgstr "Condiviso da {owner}"
+
+#: src/library/inbox.rs:56 src/library/inbox.rs:364
+#: src/library/window_layout.rs:329 src/settings_window/behavior.rs:116
+msgid "Notifications"
+msgstr "Notifiche"
+
+#: src/library/inbox.rs:76
+#, rust-format
+msgid "Notifications ({count} unread)"
+msgstr "Notifiche ({count} non lette)"
+
+#: src/library/inbox.rs:180
+msgid "No Notifications"
+msgstr "Nessuna notifica"
+
+#: src/library/inbox.rs:182
+msgid "Album invites and messages from Immich show up here."
+msgstr "Gli inviti agli album e i messaggi di Immich vengono mostrati qui."
+
+#: src/library/inbox.rs:188
+msgid "Mark All Read"
+msgstr "Segna tutte come lette"
+
+#: src/library/inbox.rs:235
+msgid "Couldn't Load Notifications"
+msgstr "Impossibile caricare le notifiche"
+
+#: src/library/inbox.rs:237
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the “{permission}” permission."
+msgstr ""
+"{err}\n"
+"\n"
+"La chiave API richiede il permesso “{permission}”."
+
+#: src/library/inbox.rs:273
+msgid "Dismiss"
+msgstr "Ignora"
+
+#: src/library/lightbox/albums.rs:29
+msgid "Appears In"
+msgstr "Presente in"
+
+#: src/library/lightbox/albums.rs:65
+#, rust-format
+msgid "Open “{album_name}”"
+msgstr "Apri “{album_name}”"
+
+#: src/library/lightbox/details.rs:156 src/library/search_filters.rs:204
+msgid "Camera"
+msgstr "Fotocamera"
+
+#: src/library/lightbox/details.rs:163
+msgid "Body"
+msgstr "Corpo macchina"
+
+#: src/library/lightbox/details.rs:174
+msgid "Lens"
+msgstr "Obiettivo"
+
+#: src/library/lightbox/details.rs:183 src/library/photo_editor/look.rs:37
+msgid "Exposure"
+msgstr "Esposizione"
+
+#: src/library/lightbox/details.rs:223
+msgid "Dimensions"
+msgstr "Dimensioni"
+
+#: src/library/lightbox/details.rs:232
+msgid "Size"
+msgstr "Dimensione"
+
+#: src/library/lightbox/details.rs:245 src/library/search_filters.rs:219
+msgid "Location"
+msgstr "Posizione"
+
+#: src/library/lightbox/details.rs:252 src/library/map/location_dialog.rs:512
+msgid "Place"
+msgstr "Luogo"
+
+#: src/library/lightbox/details.rs:266
+msgid "Coordinates"
+msgstr "Coordinate"
+
+#: src/library/lightbox/details.rs:328
+#, rust-format
+msgid "ISO {iso}"
+msgstr "ISO {iso}"
+
+#: src/library/lightbox/details.rs:358 src/settings_window/library.rs:278
+#, rust-format
+msgid "{size} GB"
+msgstr "{size} GB"
+
+#: src/library/lightbox/details.rs:363 src/settings_window/library.rs:283
+#, rust-format
+msgid "{size} MB"
+msgstr "{size} MB"
+
+#: src/library/lightbox/details.rs:368
+#, rust-format
+msgid "{size} KB"
+msgstr "{size} KB"
+
+#: src/library/lightbox/details.rs:372
+#, rust-format
+msgid "{size} B"
+msgstr "{size} B"
+
+#: src/library/lightbox/details.rs:451
+msgid "Modified"
+msgstr "Modificato"
+
+#: src/library/lightbox/edit.rs:43
+msgid "Crop"
+msgstr "Ritaglia"
+
+#: src/library/lightbox/edit.rs:49
+msgid "Adjust"
+msgstr "Regola"
+
+#: src/library/lightbox/edit.rs:55 src/library/search_panel.rs:48
+#: src/library/search_panel.rs:105
+msgid "Filters"
+msgstr "Filtri"
+
+#: src/library/lightbox/edit.rs:61
+msgid "Redact"
+msgstr "Oscura"
+
+#: src/library/lightbox/edit.rs:276
+msgid "Couldn't load the photo"
+msgstr "Impossibile caricare la foto"
+
+#: src/library/lightbox/edit.rs:438
+msgid "Saving a copy…"
+msgstr "Salvataggio di una copia…"
+
+#: src/library/lightbox/edit.rs:440
+msgid "Saves a copy stacked with the original"
+msgstr "Salva una copia in pila con l'originale"
+
+#: src/library/lightbox/edit.rs:441
+msgid "Saves as a new photo"
+msgstr "Salva come nuova foto"
+
+#: src/library/lightbox/edit/looks.rs:160
+#, rust-format
+msgid "{degrees}°"
+msgstr "{degrees}°"
+
+#: src/library/lightbox/edit/looks.rs:168
+#, rust-format
+msgid "{percent}%"
+msgstr "{percent}%"
+
+#: src/library/lightbox/edit/pages.rs:53
+msgid "Pixelate"
+msgstr "Pixella"
+
+#: src/library/lightbox/edit/pages.rs:54
+msgid "Blur"
+msgstr "Sfoca"
+
+#: src/library/lightbox/edit/pages.rs:55
+msgid "Frosted"
+msgstr "Satinato"
+
+#: src/library/lightbox/edit/pages.rs:56
+msgid "Bar"
+msgstr "Barra"
+
+#: src/library/lightbox/edit/pages.rs:64
+msgid "Straighten"
+msgstr "Raddrizza"
+
+#: src/library/lightbox/edit/pages.rs:110
+msgid "Strength"
+msgstr "Intensità"
+
+#: src/library/lightbox/edit/pages.rs:125
+msgid "Drag over what to hide. Tap a box to move, resize, or change it."
+msgstr "Trascina sopra l'area da nascondere. Tocca un riquadro per spostarlo, ridimensionarlo o modificarlo."
+
+#: src/library/lightbox/edit/pages.rs:135
+msgid "Hide Faces"
+msgstr "Nascondi volti"
+
+#: src/library/lightbox/edit/pages.rs:136
+msgid "Hide Text"
+msgstr "Nascondi testo"
+
+#: src/library/lightbox/edit/pages.rs:143
+msgid "Clear All"
+msgstr "Cancella tutto"
+
+#: src/library/lightbox/edit/pages.rs:171
+#: src/library/lightbox/edit/pages.rs:177
+msgid "Bar Colour"
+msgstr "Colore barra"
+
+#: src/library/lightbox/edit/pages.rs:255
+msgid "Rotate Left"
+msgstr "Ruota a sinistra"
+
+#: src/library/lightbox/edit/pages.rs:260
+msgid "Rotate Right"
+msgstr "Ruota a destra"
+
+#: src/library/lightbox/edit/pages.rs:263
+msgid "Mirror"
+msgstr "Rifletti"
+
+#: src/library/lightbox/edit/pages.rs:266
+msgid "Flip"
+msgstr "Capovolgi"
+
+#: src/library/lightbox/edit/panel.rs:54 src/library/search_panel.rs:72
+msgid "Reset"
+msgstr "Reimposta"
+
+#: src/library/lightbox/edit/panel.rs:107
+msgid "Reset All"
+msgstr "Reimposta tutto"
+
+#: src/library/lightbox/edit/panel.rs:108
+msgid "Revert to Original…"
+msgstr "Ripristina all'originale…"
+
+#: src/library/lightbox/edit/panel.rs:111 src/library/lightbox/widgets.rs:294
+msgid "Edit Photo"
+msgstr "Modifica foto"
+
+#: src/library/lightbox/edit/panel.rs:169
+msgid "Keep Original Details"
+msgstr "Mantieni dettagli originali"
+
+#: src/library/lightbox/edit/panel.rs:171
+msgid ""
+"A saved copy keeps the original's camera details, date, place, caption, "
+"rating, and albums. Off, the copy is a new photo of its own."
+msgstr "Una copia salvata mantiene i dettagli della fotocamera, la data, il luogo, la didascalia, la valutazione e gli album dell'originale. Se disattivata, la copia sarà una nuova foto a sé stante."
+
+#: src/library/lightbox/edit/panel.rs:176
+msgid "Stack with Original"
+msgstr "Crea pila con l'originale"
+
+#: src/library/lightbox/edit/panel.rs:177
+msgid "A saved copy becomes the cover of a stack, with the original under it."
+msgstr "Una copia salvata diventa la copertina di una pila, con l'originale al di sotto."
+
+#: src/library/lightbox/edit/saving.rs:73
+msgid "Revert to the Original?"
+msgstr "Ripristinare all'originale?"
+
+#: src/library/lightbox/edit/saving.rs:74
+msgid "Every crop, turn, and flip made in Immich is removed."
+msgstr "Ogni ritaglio, rotazione e capovolgimento effettuato in Immich verrà rimosso."
+
+#: src/library/lightbox/edit/saving.rs:75
+msgid "Revert"
+msgstr "Ripristina"
+
+#: src/library/lightbox/edit/saving.rs:96
+msgid "Immich didn't save the edit"
+msgstr "Immich non ha salvato la modifica"
+
+#: src/library/lightbox/edit/saving.rs:104
+msgid "Saved. Immich is updating the photo."
+msgstr "Salvato. Immich sta aggiornando la foto."
+
+#: src/library/lightbox/edit/saving.rs:153
+msgid "Couldn't save the copy"
+msgstr "Impossibile salvare la copia"
+
+#: src/library/lightbox/edit/saving.rs:178
+msgid "Couldn't open the original"
+msgstr "Impossibile aprire l'originale"
+
+#: src/library/lightbox/edit/saving.rs:220
+msgid "Saved as a new photo, but not everything carried over"
+msgstr "Salvata come nuova foto, ma non tutte le informazioni sono state trasferite"
+
+#: src/library/lightbox/edit/saving.rs:224
+msgid "Saved as a new photo, stacked with the original"
+msgstr "Salvata come nuova foto, in pila con l'originale"
+
+#: src/library/lightbox/edit/saving.rs:225
+msgid "Saved as a new photo"
+msgstr "Salvata come nuova foto"
+
+#: src/library/lightbox/edit/saving.rs:270
+msgid "Couldn't add it to the original's albums"
+msgstr "Impossibile aggiungerla agli album dell'originale"
+
+#: src/library/lightbox/face_people.rs:185 src/library/lightbox/faces.rs:296
+msgid "Change Person…"
+msgstr "Cambia persona…"
+
+#: src/library/lightbox/face_people.rs:196
+msgid "Remove from Photo"
+msgstr "Rimuovi dalla foto"
+
+#: src/library/lightbox/face_people.rs:221 src/library/lightbox/faces.rs:305
+msgid "Face moved"
+msgstr "Volto spostato"
+
+#: src/library/lightbox/face_people.rs:240 src/library/lightbox/faces.rs:336
+msgid "Face removed"
+msgstr "Volto rimosso"
+
+#: src/library/lightbox/faces.rs:43
+msgid "Drag around a face to tag it"
+msgstr "Trascina attorno a un volto per etichettarlo"
+
+#: src/library/lightbox/faces.rs:48
+msgid "Done"
+msgstr "Fatto"
+
+#: src/library/lightbox/faces.rs:217
+msgid "Couldn't load the faces"
+msgstr "Impossibile caricare i volti"
+
+#: src/library/lightbox/faces.rs:227
+msgid "No faces yet. Drag around one to tag it."
+msgstr "Nessun volto presente. Trascina attorno a un volto per etichettarlo."
+
+#: src/library/lightbox/faces.rs:298
+msgid "Choose Person…"
+msgstr "Scegli persona…"
+
+#: src/library/lightbox/faces.rs:315
+msgid "Use as Cover Photo"
+msgstr "Usa come foto di copertina"
+
+#: src/library/lightbox/faces.rs:323
+msgid "Cover photo changed"
+msgstr "Foto di copertina modificata"
+
+#: src/library/lightbox/faces.rs:332
+msgid "Remove Face"
+msgstr "Rimuovi volto"
+
+#: src/library/lightbox/faces.rs:375
+msgid "Face tagged"
+msgstr "Volto etichettato"
+
+#: src/library/lightbox/faces.rs:398
+msgid "Immich didn't accept the change"
+msgstr "Immich non ha accettato la modifica"
+
+#: src/library/lightbox/faces.rs:426
+msgid "Unknown Person"
+msgstr "Persona sconosciuta"
+
+#: src/library/lightbox/interaction.rs:225 src/library/lightbox/widgets.rs:343
+msgid "Raw"
+msgstr "RAW"
+
+#: src/library/lightbox/interaction.rs:227 src/library/lightbox/widgets.rs:345
+msgid "Prev"
+msgstr "Prec"
+
+#: src/library/lightbox/interaction.rs:329
+msgid "Add a description"
+msgstr "Aggiungi una descrizione"
+
+#: src/library/lightbox/interaction/rendering.rs:92
+msgid "On Immich and locally"
+msgstr "Su Immich e in locale"
+
+#: src/library/lightbox/interaction/rendering.rs:93
+msgid "Local only"
+msgstr "Solo in locale"
+
+#: src/library/lightbox/interaction/rendering.rs:94
+msgid "On Immich only"
+msgstr "Solo su Immich"
+
+#: src/library/lightbox/interaction/rendering.rs:100
+#, rust-format
+msgid "Created: {date}"
+msgstr "Creazione: {date}"
+
+#: src/library/lightbox/live.rs:16
+msgid "Live"
+msgstr "Live"
+
+#: src/library/lightbox/live.rs:19
+msgid "Play motion (Space)"
+msgstr "Riproduci movimento (Spazio)"
+
+#: src/library/lightbox/live.rs:86 src/library/lightbox/video.rs:87
+msgid "Playback isn't available"
+msgstr "La riproduzione non è disponibile"
+
+#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/video.rs:108
+msgid "Playback failed"
+msgstr "Riproduzione non riuscita"
+
+#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+msgid "Not connected to the Immich server."
+msgstr "Non connesso al server Immich."
+
+#: src/library/lightbox/location.rs:32
+msgid "Set location"
+msgstr "Imposta posizione"
+
+#: src/library/lightbox/location.rs:66
+msgid "Copy coordinates"
+msgstr "Copia coordinate"
+
+#: src/library/lightbox/ocr.rs:21 src/library/lightbox/ocr.rs:292
+msgid "Copy All Text"
+msgstr "Copia tutto il testo"
+
+#: src/library/lightbox/ocr.rs:64
+msgid "Hide recognized text (T)"
+msgstr "Nascondi testo riconosciuto (T)"
+
+#: src/library/lightbox/ocr.rs:66 src/library/lightbox/widgets.rs:352
+msgid "Show recognized text (T)"
+msgstr "Mostra testo riconosciuto (T)"
+
+#: src/library/lightbox/ocr.rs:250 src/library/shared_link_qr.rs:125
+msgid "Copied"
+msgstr "Copiato"
+
+#: src/library/lightbox/ocr.rs:290
+msgid "Copy Selected Text"
+msgstr "Copia testo selezionato"
+
+#: src/library/lightbox/panorama.rs:265
+msgid "360°"
+msgstr "360°"
+
+#: src/library/lightbox/panorama.rs:266
+msgid "Look around (P)"
+msgstr "Guardati attorno (P)"
+
+#: src/library/lightbox/people.rs:65
+msgid "No one is tagged yet."
+msgstr "Nessuna persona è stata ancora etichettata."
+
+#: src/library/lightbox/people.rs:215 src/library/people_view.rs:262
+#, rust-format
+msgid "Show photos of {name}"
+msgstr "Mostra foto di {name}"
+
+#: src/library/lightbox/people.rs:237
+#, rust-format
+msgid "Age {months}"
+msgstr "Età {months}"
+
+#: src/library/lightbox/people.rs:239
+#, rust-format
+msgid "Age 1 year, {months}"
+msgstr "Età 1 anno, {months}"
+
+#: src/library/lightbox/people.rs:255
+#, rust-format
+msgid "{n} month"
+msgid_plural "{n} months"
+msgstr[0] "{n} mese"
+msgstr[1] "{n} mesi"
+
+#: src/library/lightbox/rating.rs:28 src/library/search_filters/choices.rs:134
+#: src/library/search_view.rs:162 src/settings_window/library.rs:224
+#: src/settings_window/queue_inspector.rs:43
+msgid "Clear"
+msgstr "Cancella"
+
+#: src/library/lightbox/rating.rs:33
+msgid "Rating"
+msgstr "Valutazione"
+
+#: src/library/lightbox/rating.rs:128
+msgid "Couldn't save the rating"
+msgstr "Impossibile salvare la valutazione"
+
+#: src/library/lightbox/slideshow.rs:85 src/library/lightbox/slideshow.rs:251
+#: src/library/video_player.rs:315
+msgid "Pause (Space)"
+msgstr "Pausa (Spazio)"
+
+#: src/library/lightbox/slideshow.rs:86 src/library/lightbox/widgets.rs:150
+msgid "Previous (Left)"
+msgstr "Precedente (Sinistra)"
+
+#: src/library/lightbox/slideshow.rs:87 src/library/lightbox/widgets.rs:151
+msgid "Next (Right)"
+msgstr "Successivo (Destra)"
+
+#: src/library/lightbox/slideshow.rs:90
+msgid "Slideshow Settings"
+msgstr "Impostazioni presentazione"
+
+#: src/library/lightbox/slideshow.rs:93
+msgid "End Slideshow (Esc)"
+msgstr "Termina presentazione (Esc)"
+
+#: src/library/lightbox/slideshow.rs:249
+msgid "Resume (Space)"
+msgstr "Riprendi (Spazio)"
+
+#: src/library/lightbox/slideshow.rs:422
+msgid "End of slideshow"
+msgstr "Fine della presentazione"
+
+#: src/library/lightbox/slideshow/options.rs:40
+msgid "Crossfade"
+msgstr "Dissolvenza incrociata"
+
+#: src/library/lightbox/slideshow/options.rs:41
+msgid "Slide"
+msgstr "Scorrimento"
+
+#: src/library/lightbox/slideshow/options.rs:42
+msgid "None"
+msgstr "Nessuna"
+
+#: src/library/lightbox/slideshow/settings.rs:19
+msgid "Shuffle"
+msgstr "Casuale"
+
+#: src/library/lightbox/slideshow/settings.rs:20
+msgid "Repeat"
+msgstr "Ripeti"
+
+#: src/library/lightbox/slideshow/settings.rs:65
+msgid "Seconds per Photo"
+msgstr "Secondi per foto"
+
+#: src/library/lightbox/slideshow/settings.rs:80
+msgid "Transition"
+msgstr "Transizione"
+
+#: src/library/lightbox/stack.rs:46
+msgid "Stack Actions"
+msgstr "Azioni pila"
+
+#: src/library/lightbox/stack.rs:273
+msgid "Set as Stack Cover"
+msgstr "Imposta come copertina della pila"
+
+#: src/library/lightbox/stack.rs:280
+msgid "Remove from Stack"
+msgstr "Rimuovi dalla pila"
+
+#: src/library/lightbox/stack.rs:288 src/library/lightbox/stack.rs:465
+msgid "Unstack"
+msgstr "Separa pila"
+
+#: src/library/lightbox/stack.rs:299
+msgid "Keep This, Trash Others"
+msgstr "Conserva questa, cestina le altre"
+
+#: src/library/lightbox/stack.rs:301
+msgid "Keep This, Delete Others"
+msgstr "Conserva questa, elimina le altre"
+
+#: src/library/lightbox/stack.rs:348 src/library/lightbox/stack.rs:388
+#: src/library/lightbox/stack.rs:476
+msgid "Couldn't change the stack"
+msgstr "Impossibile modificare la pila"
+
+#: src/library/lightbox/stack.rs:403
+msgid "Stack cover changed"
+msgstr "Copertina della pila modificata"
+
+#: src/library/lightbox/stack.rs:408
+msgid "Removed from the stack"
+msgstr "Rimosso dalla pila"
+
+#: src/library/lightbox/stack.rs:412 src/library/lightbox/stack.rs:473
+msgid "Unstacked"
+msgstr "Pila separata"
+
+#: src/library/lightbox/stack.rs:424
+#, rust-format
+msgid "Trashed {n} other photo"
+msgid_plural "Trashed {n} other photos"
+msgstr[0] "Cestinata {n} altra foto"
+msgstr[1] "Cestinate {n} altre foto"
+
+#: src/library/lightbox/stack.rs:430
+#, rust-format
+msgid "Deleted {n} other photo"
+msgid_plural "Deleted {n} other photos"
+msgstr[0] "Eliminata {n} altra foto"
+msgstr[1] "Eliminate {n} altre foto"
+
+#: src/library/lightbox/stack.rs:501 src/library/upload_stack.rs:122
+msgid "Couldn't stack the photos"
+msgstr "Impossibile raggruppare le foto in pila"
+
+#: src/library/lightbox/stack.rs:510
+msgid "Stacked, see the timeline"
+msgstr "Raggruppate in pila, vedi la cronologia"
+
+#: src/library/lightbox/stack.rs:513
+#, rust-format
+msgid "Stacked {n} photo"
+msgid_plural "Stacked {n} photos"
+msgstr[0] "Raggruppata {n} foto in pila"
+msgstr[1] "Raggruppate {n} foto in pila"
+
+#: src/library/lightbox/video.rs:121
+msgid "The video file is no longer on disk."
+msgstr "Il file video non è più presente sul disco."
+
+#: src/library/lightbox/widgets.rs:142
+msgid "Back to library"
+msgstr "Torna alla libreria"
+
+#: src/library/lightbox/widgets.rs:154
+msgid "Toggle details (I)"
+msgstr "Mostra/Nascondi dettagli (I)"
+
+#: src/library/lightbox/widgets.rs:161
+msgid "More (Shift+F10)"
+msgstr "Altro (Maiusc+F10)"
+
+#: src/library/lightbox/widgets.rs:242
+msgid "Preview unavailable"
+msgstr "Anteprima non disponibile"
+
+#: src/library/lightbox/widgets.rs:252
+msgid "Open in external app"
+msgstr "Apri in un'applicazione esterna"
+
+#: src/library/lightbox/widgets.rs:286
+msgid "Play video (Space)"
+msgstr "Riproduci video (Spazio)"
+
+#: src/library/lightbox/widgets.rs:297
+msgid "Download asset"
+msgstr "Scarica elemento"
+
+#: src/library/lightbox/widgets.rs:298
+msgid "Open with…"
+msgstr "Apri con…"
+
+#: src/library/lightbox/widgets.rs:299
+msgid "Move to trash (Delete)"
+msgstr "Sposta nel cestino (Canc)"
+
+#: src/library/lightbox/widgets.rs:347
+msgid "Toggle preview vs original full-resolution image"
+msgstr "Alterna anteprima e immagine originale ad alta risoluzione"
+
+#: src/library/lightbox/widgets.rs:359
+msgid "Zoom out (Ctrl+-)"
+msgstr "Rimpicciolisci (Ctrl+-)"
+
+#: src/library/lightbox/widgets.rs:360
+msgid "Zoom in (Ctrl++)"
+msgstr "Ingrandisci (Ctrl++)"
+
+#: src/library/lightbox/widgets.rs:363
+msgid "Reset zoom (Ctrl+0)"
+msgstr "Reimposta ingrandimento (Ctrl+0)"
+
+#: src/library/lightbox/widgets.rs:452
+msgid "Loading details…"
+msgstr "Caricamento dettagli…"
+
+#: src/library/map/album.rs:35
+msgid "Show all photos"
+msgstr "Mostra tutte le foto"
+
+#: src/library/map/controls.rs:41 src/library/shortcuts_dialog.rs:162
+#: src/library/shortcuts_dialog.rs:237
+msgid "Zoom in"
+msgstr "Ingrandisci"
+
+#: src/library/map/controls.rs:42 src/library/shortcuts_dialog.rs:166
+#: src/library/shortcuts_dialog.rs:238
+msgid "Zoom out"
+msgstr "Rimpicciolisci"
+
+#: src/library/map/controls.rs:45 src/library/shortcuts_dialog.rs:239
+msgid "Rotate left"
+msgstr "Ruota a sinistra"
+
+#: src/library/map/controls.rs:46 src/library/shortcuts_dialog.rs:240
+msgid "Rotate right"
+msgstr "Ruota a destra"
+
+#: src/library/map/controls.rs:51
+msgid "Show photos in this area"
+msgstr "Mostra foto in quest'area"
+
+#: src/library/map/controls.rs:53 src/library/shortcuts_dialog.rs:242
+msgid "Show my location"
+msgstr "Mostra la mia posizione"
+
+#: src/library/map/controls.rs:55
+msgid "Map settings"
+msgstr "Impostazioni mappa"
+
+#: src/library/map/controls.rs:104
+msgid "Map style"
+msgstr "Stile mappa"
+
+#: src/library/map/controls.rs:130 src/library/shortcuts_dialog.rs:241
+msgid "Point north"
+msgstr "Punta a nord"
+
+#: src/library/map/controls.rs:153
+msgid "More Styles"
+msgstr "Altri stili"
+
+#: src/library/map/controls.rs:158 src/settings_window/appearance.rs:18
+msgid "Appearance"
+msgstr "Aspetto"
+
+#: src/library/map/controls.rs:289
+msgid "No photos in this area"
+msgstr "Nessuna foto in quest'area"
+
+#: src/library/map/controls.rs:300
+msgid "Your location isn't available"
+msgstr "La tua posizione non è disponibile"
+
+#: src/library/map/locate.rs:19
+msgid "The location service did not answer in time."
+msgstr "Il servizio di localizzazione non ha risposto in tempo."
+
+#: src/library/map/locate.rs:43
+#, rust-format
+msgid "Location access was not allowed ({err})."
+msgstr "Accesso alla posizione non consentito ({err})."
+
+#: src/library/map/locate.rs:49
+msgid "The location service stopped before finding you."
+msgstr "Il servizio di localizzazione si è interrotto prima di rilevare la posizione."
+
+#: src/library/map/locate.rs:51
+msgid "The location service returned an invalid position."
+msgstr "Il servizio di localizzazione ha restituito una posizione non valida."
+
+#: src/library/map/locate.rs:56
+#, rust-format
+msgid ""
+"Location services are unavailable ({err}). Check that they are turned on."
+msgstr "I servizi di localizzazione non sono disponibili ({err}). Verificare che siano attivi."
+
+#: src/library/map/location_dialog.rs:118
+#: src/library/map/location_dialog.rs:127
+msgid "Set Location"
+msgstr "Imposta posizione"
+
+#: src/library/map/location_dialog.rs:165
+msgid "Could Not Set Location"
+msgstr "Impossibile impostare la posizione"
+
+#: src/library/map/location_dialog.rs:204 src/library/map/search.rs:34
+#: src/library/shortcuts_dialog.rs:236
+msgid "Search places"
+msgstr "Cerca luoghi"
+
+#: src/library/map/location_dialog.rs:287
+msgid "Looking up…"
+msgstr "Ricerca in corso…"
+
+#: src/library/map/location_dialog.rs:309
+msgid "No place name here"
+msgstr "Nessun nome per questo luogo"
+
+#: src/library/map/location_dialog.rs:312
+msgid "Place name unavailable"
+msgstr "Nome del luogo non disponibile"
+
+#: src/library/map/location_dialog.rs:497
+msgid "Latitude, Longitude"
+msgstr "Latitudine, longitudine"
+
+#: src/library/map/location_dialog.rs:501
+msgid "Paste coordinates"
+msgstr "Incolla coordinate"
+
+#: src/library/map/markers.rs:92
+msgid "You are here"
+msgstr "Ti trovi qui"
+
+#: src/library/map/markers.rs:118
+#, rust-format
+msgid "{n} photo in {place}"
+msgid_plural "{n} photos in {place}"
+msgstr[0] "{n} foto in {place}"
+msgstr[1] "{n} foto in {place}"
+
+#: src/library/map/minimap.rs:60
+msgid "Show on map"
+msgstr "Mostra sulla mappa"
+
+#: src/library/map/minimap.rs:99
+msgid "Photo location"
+msgstr "Posizione della foto"
+
+#: src/library/map/nearby.rs:141
+msgid "Taken Nearby"
+msgstr "Scattate nelle vicinanze"
+
+#: src/library/map/place_search.rs:172
+#, rust-format
+msgid "Photon asked to wait {seconds} s"
+msgstr "Photon ha richiesto di attendere {seconds} s"
+
+#: src/library/map/place_search.rs:267
+msgid "Searching…"
+msgstr "Ricerca in corso…"
+
+#: src/library/map/place_search.rs:335
+msgid "Address"
+msgstr "Indirizzo"
+
+#: src/library/map/satellite.rs:31 src/library/map/styles.rs:115
+msgid "Satellite"
+msgstr "Satellite"
+
+#: src/library/map/satellite.rs:155
+msgid "No satellite imagery here"
+msgstr "Nessuna immagine satellitare disponibile qui"
+
+#: src/library/map/satellite.rs:239
+msgid "Cancelled"
+msgstr "Annullato"
+
+#: src/library/map/satellite.rs:277
+#, rust-format
+msgid "VersaTiles asked to wait {seconds} s"
+msgstr "VersaTiles ha richiesto di attendere {seconds} s"
+
+#: src/library/map/search.rs:213
+msgid "No places found"
+msgstr "Nessun luogo trovato"
+
+#: src/library/map/settings.rs:50
+msgid "All Time"
+msgstr "Tutto il periodo"
+
+#: src/library/map/settings.rs:51
+msgid "Past 24 Hours"
+msgstr "Ultime 24 ore"
+
+#: src/library/map/settings.rs:52
+msgid "Past 7 Days"
+msgstr "Ultimi 7 giorni"
+
+#: src/library/map/settings.rs:53
+msgid "Past 30 Days"
+msgstr "Ultimi 30 giorni"
+
+#: src/library/map/settings.rs:54
+msgid "Past Year"
+msgstr "Ultimo anno"
+
+#: src/library/map/settings.rs:55
+msgid "Past 3 Years"
+msgstr "Ultimi 3 anni"
+
+#: src/library/map/settings.rs:56
+msgid "Custom Range"
+msgstr "Intervallo personalizzato"
+
+#: src/library/map/settings.rs:84
+msgid "Only Favorites"
+msgstr "Solo preferiti"
+
+#: src/library/map/settings.rs:86
+msgid "Include Archived"
+msgstr "Includi archiviate"
+
+#: src/library/map/settings.rs:87
+msgid "Your archived photos"
+msgstr "Le tue foto archiviate"
+
+#: src/library/map/settings.rs:91
+msgid "Include Partners"
+msgstr "Includi partner"
+
+#: src/library/map/settings.rs:92
+msgid "Photos partners share with you"
+msgstr "Foto condivise dai partner"
+
+#: src/library/map/settings.rs:96
+msgid "Include Shared Albums"
+msgstr "Includi album condivisi"
+
+#: src/library/map/settings.rs:97
+msgid "Photos in albums shared with you"
+msgstr "Foto negli album condivisi con te"
+
+#: src/library/map/settings.rs:101 src/library/utilities/controls.rs:97
+#: src/settings_window/behavior.rs:140
+msgid "From"
+msgstr "Da"
+
+#: src/library/map/settings.rs:102 src/library/utilities/controls.rs:98
+#: src/settings_window/behavior.rs:141
+msgid "Until"
+msgstr "A"
+
+#: src/library/map/settings.rs:149
+msgid "Map Settings"
+msgstr "Impostazioni mappa"
+
+#: src/library/map/settings.rs:173 src/library/utilities/controls.rs:109
+msgid "Show"
+msgstr "Mostra"
+
+#: src/library/map/settings.rs:180
+msgid "Date Range"
+msgstr "Intervallo di date"
+
+#: src/library/map/status.rs:29
+msgid "Loading Map…"
+msgstr "Caricamento mappa…"
+
+#: src/library/map/status.rs:31
+msgid "No Photos With a Location"
+msgstr "Nessuna foto con posizione"
+
+#: src/library/map/status.rs:32
+msgid "Photos with GPS data, or a location you set, appear here"
+msgstr "Le foto con dati GPS o con una posizione impostata appariranno qui"
+
+#: src/library/map/status.rs:34
+msgid "Could Not Load the Map"
+msgstr "Impossibile caricare la mappa"
+
+#: src/library/map/styles.rs:99
+msgid "Colorful"
+msgstr "Colorato"
+
+#: src/library/map/styles.rs:100
+msgid "Natural"
+msgstr "Naturale"
+
+#: src/library/map/styles.rs:101
+msgid "Muted"
+msgstr "Attenuato"
+
+#: src/library/map/styles.rs:102
+msgid "Gray"
+msgstr "Grigio"
+
+#: src/library/map/styles.rs:118
+msgid "Humanitarian"
+msgstr "Umanitario"
+
+#: src/library/map/styles.rs:181 src/library/theme.rs:20
+#: src/settings_window/appearance.rs:21
+msgid "Follow System"
+msgstr "Segui il sistema"
+
+#: src/library/map/styles.rs:182 src/library/theme.rs:21
+#: src/settings_window/appearance.rs:21
+msgid "Light"
+msgstr "Chiaro"
+
+#: src/library/map/styles.rs:183 src/library/theme.rs:22
+#: src/settings_window/appearance.rs:21
+msgid "Dark"
+msgstr "Scuro"
+
+#: src/library/map/view.rs:230
+msgid "This Area"
+msgstr "Quest'area"
+
+#: src/library/map/view.rs:494
+msgid "Map Area"
+msgstr "Area della mappa"
+
+#: src/library/masonry/canvas.rs:532 src/library/server_stats_dialog.rs:156
+#: src/library/server_stats_dialog.rs:157
+#: src/library/source_loading/explore.rs:56
+msgid "HTTP 403"
+msgstr "HTTP 403"
+
+#: src/library/masonry/canvas/interaction.rs:272
+#, rust-format
+msgid "{n} file"
+msgid_plural "{n} files"
+msgstr[0] "{n} file"
+msgstr[1] "{n} file"
+
+#: src/library/masonry/canvas_helpers.rs:139
+msgid ""
+"Your API key is missing permissions required to view thumbnails. Please "
+"ensure the key has 'asset.view' enabled."
+msgstr "Alla chiave API mancano i permessi necessari per visualizzare le miniature. Verificare che la chiave abbia abilitato 'asset.view'."
+
+#: src/library/memories.rs:154
+#, rust-format
+msgid "{name}'s birthday"
+msgstr "Compleanno di {name}"
+
+#: src/library/memories.rs:162
+#, rust-format
+msgid "{n} year ago"
+msgid_plural "{n} years ago"
+msgstr[0] "{n} anno fa"
+msgstr[1] "{n} anni fa"
+
+#: src/library/memories.rs:165
+msgid "This year"
+msgstr "Quest'anno"
+
+#: src/library/memories.rs:166
+msgid "Memory"
+msgstr "Ricordo"
+
+#: src/library/memories.rs:277
+msgid "Remove from Memory"
+msgstr "Rimuovi dal ricordo"
+
+#: src/library/memories.rs:306
+msgid "Removed from this memory"
+msgstr "Rimosso da questo ricordo"
+
+#: src/library/memories.rs:308
+msgid "Couldn't change the memory"
+msgstr "Impossibile modificare il ricordo"
+
+#: src/library/mod.rs:407
+msgid "Drop files to upload"
+msgstr "Trascina qui i file da caricare"
+
+#: src/library/navigation.rs:201 src/library/sidebar/rows.rs:76
+msgid "Shared Albums"
+msgstr "Album condivisi"
+
+#: src/library/navigation.rs:202 src/library/sidebar/rows.rs:82
+msgid "Shared Links"
+msgstr "Collegamenti condivisi"
+
+#: src/library/navigation.rs:206 src/library/shortcuts_dialog.rs:65
+#: src/library/sidebar/rows.rs:88
+msgid "Sharing"
+msgstr "Condivisione"
+
+#: src/library/navigation.rs:207 src/library/search_panel.rs:77
+#: src/library/search_view.rs:166 src/library/shortcuts_dialog.rs:33
+#: src/library/sidebar/rows.rs:46
+msgid "Search"
+msgstr "Cerca"
+
+#: src/library/navigation.rs:209 src/library/sidebar/rows.rs:124
+msgid "Duplicates"
+msgstr "Duplicati"
+
+#: src/library/people_view.rs:68 src/library/person_merge_dialog.rs:67
+msgid "Search people"
+msgstr "Cerca persone"
+
+#: src/library/people_view.rs:73 src/library/people_view.rs:117
+msgid "Show hidden people"
+msgstr "Mostra persone nascoste"
+
+#: src/library/people_view.rs:115
+msgid "Hide hidden people"
+msgstr "Nascondi persone nascoste"
+
+#: src/library/people_view.rs:137 src/library/person_merge_dialog.rs:31
+msgid "Could Not Load People"
+msgstr "Impossibile caricare le persone"
+
+#: src/library/people_view.rs:161
+msgid "No People"
+msgstr "Nessuna persona"
+
+#: src/library/people_view.rs:162
+msgid "People appear here once Immich has recognized faces in your photos."
+msgstr "Le persone appariranno qui quando Immich avrà riconosciuto i volti nelle tue foto."
+
+#: src/library/people_view.rs:166
+msgid "No Matches"
+msgstr "Nessun risultato"
+
+#: src/library/people_view.rs:167 src/library/sharing_view.rs:323
+msgid "No one matches your search."
+msgstr "Nessuna corrispondenza con la ricerca."
+
+#: src/library/people_view.rs:320
+msgid "Add Name…"
+msgstr "Aggiungi nome…"
+
+#: src/library/people_view.rs:325
+msgid "Unhide"
+msgstr "Mostra"
+
+#: src/library/people_view.rs:327
+msgid "Hide"
+msgstr "Nascondi"
+
+#: src/library/people_view.rs:339
+msgid "Set Birthday…"
+msgstr "Imposta data di nascita…"
+
+#: src/library/people_view.rs:346
+msgid "Merge People…"
+msgstr "Unisci persone…"
+
+#: src/library/people_view.rs:375
+msgid "Could Not Update Person"
+msgstr "Impossibile aggiornare la persona"
+
+#: src/library/people_view.rs:422
+msgid "Add Name"
+msgstr "Aggiungi nome"
+
+#: src/library/people_view.rs:424
+msgid "Rename Person"
+msgstr "Rinomina persona"
+
+#: src/library/people_view.rs:426
+msgid "This name is used in search and on the People page."
+msgstr "Questo nome viene usato nella ricerca e nella pagina Persone."
+
+#: src/library/people_view.rs:449
+msgid "Set Birthday"
+msgstr "Imposta data di nascita"
+
+#: src/library/people_view.rs:451
+#, rust-format
+msgid "Immich shows {name}'s age on photos."
+msgstr "Immich mostrerà l'età di {name} sulle foto."
+
+#: src/library/person_merge_dialog.rs:47 src/library/person_merge_dialog.rs:157
+msgid "Merge"
+msgstr "Unisci"
+
+#: src/library/person_merge_dialog.rs:95
+#, rust-format
+msgid ""
+"Pick the people who are really {name}. Their faces move to {name} and "
+"they're removed. This can't be undone."
+msgstr "Seleziona le persone che corrispondono a {name}. I loro volti verranno assegnati a {name} e saranno rimosse. L'azione non può essere annullata."
+
+#: src/library/person_merge_dialog.rs:124
+#, rust-format
+msgid "Merge Into {name}"
+msgstr "Unisci in {name}"
+
+#: src/library/person_merge_dialog.rs:146
+#, rust-format
+msgid "Merge {count} person into {name}?"
+msgid_plural "Merge {count} people into {name}?"
+msgstr[0] "Unire {count} persona in {name}?"
+msgstr[1] "Unire {count} persone in {name}?"
+
+#: src/library/person_merge_dialog.rs:156
+msgid "This can't be undone."
+msgstr "Questa azione non può essere annullata."
+
+#: src/library/person_merge_dialog.rs:202
+msgid "Could Not Merge People"
+msgstr "Impossibile unire le persone"
+
+#: src/library/person_picker.rs:122
+msgid "Search or type a new name"
+msgstr "Cerca o digita un nuovo nome"
+
+#: src/library/person_picker.rs:138
+msgid "Create Person…"
+msgstr "Crea persona…"
+
+#: src/library/person_picker.rs:140
+msgid "Who Is This?"
+msgstr "Chi è?"
+
+#: src/library/person_picker.rs:156
+msgid "Back"
+msgstr "Indietro"
+
+#: src/library/person_picker.rs:161
+msgid "Create Person"
+msgstr "Crea persona"
+
+#: src/library/person_picker.rs:166
+msgid "Tag Face"
+msgstr "Etichetta volto"
+
+#: src/library/photo_editor.rs:37
+msgid "Free"
+msgstr "Libero"
+
+#: src/library/photo_editor.rs:38 src/library/photo_editor/look.rs:130
+msgid "Original"
+msgstr "Originale"
+
+#: src/library/photo_editor.rs:39
+msgid "Square"
+msgstr "Quadrato"
+
+#: src/library/photo_editor/look.rs:38
+msgid "Brightness"
+msgstr "Luminosità"
+
+#: src/library/photo_editor/look.rs:39
+msgid "Contrast"
+msgstr "Contrasto"
+
+#: src/library/photo_editor/look.rs:40
+msgid "Highlights"
+msgstr "Luci"
+
+#: src/library/photo_editor/look.rs:41
+msgid "Shadows"
+msgstr "Ombre"
+
+#: src/library/photo_editor/look.rs:42
+msgid "Saturation"
+msgstr "Saturazione"
+
+#: src/library/photo_editor/look.rs:43
+msgid "Warmth"
+msgstr "Temperatura"
+
+#: src/library/photo_editor/look.rs:44
+msgid "Tint"
+msgstr "Tinta"
+
+#: src/library/photo_editor/look.rs:45
+msgid "Vignette"
+msgstr "Vignettatura"
+
+#: src/library/photo_editor/look.rs:46
+msgid "Sharpen"
+msgstr "Nitidezza"
+
+#: src/library/photo_editor/look.rs:133
+msgid "Vivid"
+msgstr "Vivace"
+
+#: src/library/photo_editor/look.rs:142
+msgid "Warm"
+msgstr "Caldo"
+
+#: src/library/photo_editor/look.rs:151
+msgid "Cool"
+msgstr "Freddo"
+
+#: src/library/photo_editor/look.rs:159
+msgid "Dramatic"
+msgstr "Drammatico"
+
+#: src/library/photo_editor/look.rs:171
+msgid "Fade"
+msgstr "Sbiadito"
+
+#: src/library/photo_editor/look.rs:181
+msgid "Vintage"
+msgstr "Vintage"
+
+#: src/library/photo_editor/look.rs:192
+msgid "Mono"
+msgstr "Mono"
+
+#: src/library/photo_editor/look.rs:200
+msgid "Noir"
+msgstr "Noir"
+
+#: src/library/photo_editor/look.rs:211
+msgid "Sepia"
+msgstr "Seppia"
+
+#: src/library/related.rs:20
+msgid "View Similar Photos"
+msgstr "Visualizza foto simili"
+
+#: src/library/related.rs:29
+msgid "View in Timeline"
+msgstr "Visualizza nella cronologia"
+
+#: src/library/search_filters.rs:59
+msgid "Text"
+msgstr "Testo"
+
+#: src/library/search_filters.rs:62
+msgid "Filename contains"
+msgstr "Il nome file contiene"
+
+#: src/library/search_filters.rs:65
+msgid "Description contains"
+msgstr "La descrizione contiene"
+
+#: src/library/search_filters.rs:68
+msgid "OCR text contains"
+msgstr "Il testo OCR contiene"
+
+#: src/library/search_filters.rs:79
+msgid "People, Tags, and Albums"
+msgstr "Persone, tag e album"
+
+#: src/library/search_filters.rs:80
+msgid "Photos have to have everything you pick"
+msgstr "Le foto devono includere tutti gli elementi selezionati"
+
+#: src/library/search_filters.rs:83
+msgid "Anyone"
+msgstr "Chiunque"
+
+#: src/library/search_filters.rs:84 src/library/search_filters.rs:85
+#: src/library/search_filters.rs:123 src/library/search_filters.rs:135
+#: src/library/search_filters.rs:144 src/library/search_filters/suggest.rs:22
+#: src/library/search_filters/suggest.rs:47
+msgid "Any"
+msgstr "Qualsiasi"
+
+#: src/library/search_filters.rs:118
+msgid "Type and flags"
+msgstr "Tipo e contrassegni"
+
+#: src/library/search_filters.rs:121
+msgid "Asset type"
+msgstr "Tipo di elemento"
+
+#: src/library/search_filters.rs:124
+msgid "Image only"
+msgstr "Solo immagini"
+
+#: src/library/search_filters.rs:125
+msgid "Video only"
+msgstr "Solo video"
+
+#: src/library/search_filters.rs:128
+msgid "Favourites only"
+msgstr "Solo preferiti"
+
+#: src/library/search_filters.rs:129
+msgid "Motion photos only"
+msgstr "Solo foto in movimento"
+
+#: src/library/search_filters.rs:130
+msgid "Not in any album"
+msgstr "Non presente in alcun album"
+
+#: src/library/search_filters.rs:131
+msgid "Include deleted"
+msgstr "Includi eliminati"
+
+#: src/library/search_filters.rs:133
+msgid "Visibility"
+msgstr "Visibilità"
+
+#: src/library/search_filters.rs:136 src/library/shortcuts_dialog.rs:260
+msgid "Timeline"
+msgstr "Cronologia"
+
+#: src/library/search_filters.rs:138
+#: src/library/source_header/enrichment.rs:251
+msgid "Hidden"
+msgstr "Nascosto"
+
+#: src/library/search_filters.rs:139
+msgid "Locked"
+msgstr "Bloccato"
+
+#: src/library/search_filters.rs:143
+msgid "Minimum rating"
+msgstr "Valutazione minima"
+
+#: src/library/search_filters.rs:173
+msgid "Date range"
+msgstr "Intervallo di date"
+
+#: src/library/search_filters.rs:177
+msgid "Taken after"
+msgstr "Scattata dopo il"
+
+#: src/library/search_filters.rs:180
+msgid "Taken before"
+msgstr "Scattata prima del"
+
+#: src/library/search_filters.rs:183
+msgid "Created after"
+msgstr "Creata dopo il"
+
+#: src/library/search_filters.rs:186
+msgid "Created before"
+msgstr "Creata prima del"
+
+#: src/library/search_filters.rs:207
+msgid "Make"
+msgstr "Produttore"
+
+#: src/library/search_filters.rs:208
+msgid "Model"
+msgstr "Modello"
+
+#: src/library/search_filters.rs:209
+msgid "Lens model"
+msgstr "Modello obiettivo"
+
+#: src/library/search_filters.rs:222
+msgid "Country"
+msgstr "Paese"
+
+#: src/library/search_filters.rs:223
+msgid "State / region"
+msgstr "Stato / regione"
+
+#: src/library/search_filters.rs:224
+msgid "City"
+msgstr "Città"
+
+#: src/library/search_filters/choices.rs:119
+#, rust-format
+msgid "Filter {what}"
+msgstr "Filtra {what}"
+
+#: src/library/search_filters/choices.rs:207
+msgid "Nothing to choose from"
+msgstr "Nessun elemento da selezionare"
+
+#: src/library/search_panel.rs:55
+msgid "Close filters"
+msgstr "Chiudi filtri"
+
+#: src/library/search_panel.rs:73
+msgid "Clear every filter, keeping the search text"
+msgstr "Azzera tutti i filtri, mantenendo il testo di ricerca"
+
+#: src/library/search_panel.rs:108
+#, rust-format
+msgid "Filters · {count}"
+msgstr "Filtri · {count}"
+
+#: src/library/search_view.rs:116
+msgid ""
+"Smart: CLIP-based semantic search.\n"
+"Filename: matches against file names.\n"
+"OCR: matches text inside images."
+msgstr ""
+"Smart: ricerca semantica basata su CLIP.\n"
+"Nome file: corrisponde ai nomi dei file.\n"
+"OCR: corrisponde al testo all'interno delle immagini."
+
+#: src/library/search_view.rs:123 src/library/search_view.rs:315
+msgid "Describe what you're looking for…"
+msgstr "Descrivi cosa stai cercando…"
+
+#: src/library/search_view.rs:157
+msgid "Show search filters"
+msgstr "Mostra filtri di ricerca"
+
+#: src/library/search_view.rs:313
+msgid "Search filenames"
+msgstr "Cerca nei nomi file"
+
+#: src/library/search_view.rs:314
+msgid "Find words shown inside images"
+msgstr "Trova le parole presenti nelle immagini"
+
+#: src/library/select_all.rs:29
+msgid "Loading every photo to select…"
+msgstr "Caricamento di tutte le foto da selezionare…"
+
+#: src/library/select_all.rs:48
+msgid "Some photos couldn't be loaded, so not all are selected"
+msgstr "Impossibile caricare alcune foto, pertanto non tutte sono state selezionate"
+
+#: src/library/server_stats_dialog.rs:23
+msgid "Server statistics"
+msgstr "Statistiche del server"
+
+#: src/library/server_stats_dialog.rs:99 src/library/server_stats_dialog.rs:131
+#: src/library/utilities/controls.rs:29
+msgid "Videos"
+msgstr "Video"
+
+#: src/library/server_stats_dialog.rs:104 src/settings_window/library.rs:190
+msgid "Storage"
+msgstr "Archiviazione"
+
+#: src/library/server_stats_dialog.rs:113
+msgid "By user"
+msgstr "Per utente"
+
+#: src/library/server_stats_dialog.rs:136
+msgid "Total"
+msgstr "Totale"
+
+#: src/library/server_stats_dialog.rs:145
+msgid "Server-wide statistics require administrator access."
+msgstr "Le statistiche globali del server richiedono l'accesso di amministratore."
+
+#: src/library/server_stats_dialog.rs:163
+msgid ""
+"Your API key must include the 'server.about', 'server.versionCheck', "
+"'server.statistics', and 'asset.statistics' permissions to view stats."
+msgstr "La chiave API deve includere i permessi 'server.about', 'server.versionCheck', 'server.statistics' e 'asset.statistics' per visualizzare le statistiche."
+
+#: src/library/server_stats_dialog.rs:168
+msgid "Unable to load statistics"
+msgstr "Impossibile caricare le statistiche"
+
+#: src/library/server_stats_dialog.rs:169
+msgid "Check your connection and try again."
+msgstr "Verificare la connessione e riprovare."
+
+#: src/library/server_stats_dialog.rs:247
+#, rust-format
+msgid "{used} of {quota}"
+msgstr "{used} di {quota}"
+
+#: src/library/shared_link_dialog.rs:20
+msgid "Never"
+msgstr "Mai"
+
+#: src/library/shared_link_dialog.rs:21
+msgid "1 hour"
+msgstr "1 ora"
+
+#: src/library/shared_link_dialog.rs:22
+msgid "1 day"
+msgstr "1 giorno"
+
+#: src/library/shared_link_dialog.rs:23
+msgid "7 days"
+msgstr "7 giorni"
+
+#: src/library/shared_link_dialog.rs:24
+msgid "30 days"
+msgstr "30 giorni"
+
+#: src/library/shared_link_dialog.rs:31
+#, rust-format
+msgid "Keep current ({date})"
+msgstr "Mantieni attuale ({date})"
+
+#. Translators: strftime date and time, e.g. "9 Oct 2026, 14:30".
+#: src/library/shared_link_dialog.rs:57
+msgid "%-d %b %Y, %H:%M"
+msgstr "%-d %b %Y, %H:%M"
+
+#: src/library/shared_link_dialog.rs:114
+msgid "Expires"
+msgstr "Scadenza"
+
+#: src/library/shared_link_dialog.rs:119
+msgid "Password (leave empty to keep)"
+msgstr "Password (lasciare vuoto per mantenere)"
+
+#: src/library/shared_link_dialog.rs:121
+msgid "Password (optional)"
+msgstr "Password (facoltativa)"
+
+#: src/library/shared_link_dialog.rs:125
+msgid "Allow downloads"
+msgstr "Consenti scaricamento"
+
+#: src/library/shared_link_dialog.rs:126
+msgid "Visitors can download originals"
+msgstr "I visitatori possono scaricare gli originali"
+
+#: src/library/shared_link_dialog.rs:130
+msgid "Allow uploads"
+msgstr "Consenti caricamento"
+
+#: src/library/shared_link_dialog.rs:131
+msgid "Visitors can add photos to the album"
+msgstr "I visitatori possono aggiungere foto all'album"
+
+#: src/library/shared_link_dialog.rs:135
+msgid "Show metadata"
+msgstr "Mostra metadati"
+
+#: src/library/shared_link_dialog.rs:136
+msgid "Visitors can see EXIF details and location"
+msgstr "I visitatori possono vedere i dettagli EXIF e la posizione"
+
+#: src/library/shared_link_dialog.rs:177
+msgid "Create Share Link"
+msgstr "Crea collegamento di condivisione"
+
+#: src/library/shared_link_dialog.rs:178
+msgid "Edit Share Link"
+msgstr "Modifica collegamento di condivisione"
+
+#: src/library/shared_link_dialog.rs:237
+msgid "Share link created and copied"
+msgstr "Collegamento di condivisione creato e copiato"
+
+#: src/library/shared_link_dialog.rs:243
+msgid "Could Not Save Share Link"
+msgstr "Impossibile salvare il collegamento di condivisione"
+
+#: src/library/shared_link_dialog.rs:253 src/library/shared_link_photos.rs:343
+#: src/library/shared_links_view.rs:325
+msgid "Couldn't copy the link"
+msgstr "Impossibile copiare il collegamento"
+
+#: src/library/shared_link_photos.rs:56 src/library/shared_link_photos.rs:239
+msgid "Photos in Link"
+msgstr "Foto nel collegamento"
+
+#: src/library/shared_link_photos.rs:77
+msgid ""
+"Tap photos to take them out. To add some, select them in your library and "
+"choose Add to Share Link."
+msgstr "Tocca le foto per rimuoverle. Per aggiungerne altre, selezionale nella raccolta e scegli «Aggiungi a collegamento di condivisione»."
+
+#: src/library/shared_link_photos.rs:111
+#, rust-format
+msgid "Couldn't load the photos: {err}"
+msgstr "Impossibile caricare le foto: {err}"
+
+#: src/library/shared_link_photos.rs:154
+msgid "Select"
+msgstr "Seleziona"
+
+#: src/library/shared_link_photos.rs:183
+#, rust-format
+msgid "Remove {n} Photo"
+msgid_plural "Remove {n} Photos"
+msgstr[0] "Rimuovi {n} foto"
+msgstr[1] "Rimuovi {n} foto"
+
+#: src/library/shared_link_photos.rs:202
+#, rust-format
+msgid "Couldn't take them out: {err}"
+msgstr "Impossibile rimuoverle: {err}"
+
+#: src/library/shared_link_photos.rs:255
+msgid "Couldn't load your links"
+msgstr "Impossibile caricare i collegamenti"
+
+#: src/library/shared_link_photos.rs:293 src/library/shared_links_view.rs:384
+msgid "Individual share"
+msgstr "Condivisione individuale"
+
+#: src/library/shared_link_photos.rs:311 src/library/shared_link_photos.rs:327
+msgid "Add to Share Link"
+msgstr "Aggiungi a collegamento di condivisione"
+
+#: src/library/shared_link_photos.rs:318
+msgid "No Links to Add To"
+msgstr "Nessun collegamento a cui aggiungere"
+
+#: src/library/shared_link_photos.rs:320
+msgid ""
+"Albums' links always show the whole album. Make a link for some photos with "
+"Create Share Link first."
+msgstr "I collegamenti agli album mostrano sempre l'intero album. Crea prima un collegamento per alcune foto con «Crea collegamento di condivisione»."
+
+#: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
+#: src/library/shared_link_qr.rs:129
+msgid "Copy Link"
+msgstr "Copia collegamento"
+
+#: src/library/shared_link_photos.rs:349
+msgid "Couldn't add to the link"
+msgstr "Impossibile aggiungere al collegamento"
+
+#: src/library/shared_link_photos.rs:356
+msgid "Already in the link"
+msgstr "Già presente nel collegamento"
+
+#: src/library/shared_link_photos.rs:359
+#, rust-format
+msgid "Added {items} to the link"
+msgstr "Aggiunti {items} al collegamento"
+
+#: src/library/shared_link_photos.rs:366
+#, rust-format
+msgid "{n} wasn't added"
+msgid_plural "{n} weren't added"
+msgstr[0] "{n} non è stato aggiunto"
+msgstr[1] "{n} non sono stati aggiunti"
+
+#: src/library/shared_link_qr.rs:35 src/library/shared_link_qr.rs:42
+msgid "Couldn't make the QR code"
+msgstr "Impossibile generare il codice QR"
+
+#: src/library/shared_link_qr.rs:43
+msgid "The link is too long for a QR code."
+msgstr "Il collegamento è troppo lungo per un codice QR."
+
+#: src/library/shared_link_qr.rs:64 src/library/shared_links_view.rs:192
+msgid "QR Code"
+msgstr "Codice QR"
+
+#: src/library/shared_link_qr.rs:80
+msgid "QR code of the link"
+msgstr "Codice QR del collegamento"
+
+#: src/library/shared_links_view.rs:35
+msgid "Anyone with a link can view what it shares."
+msgstr "Chiunque abbia il collegamento può visualizzarne i contenuti."
+
+#: src/library/shared_links_view.rs:44
+msgid "No Shared Links"
+msgstr "Nessun collegamento condiviso"
+
+#: src/library/shared_links_view.rs:46
+msgid ""
+"Create one from an album's or a photo's right-click menu, or from a "
+"selection."
+msgstr "Creane uno dal menu contestuale di un album o di una foto, oppure da una selezione."
+
+#: src/library/shared_links_view.rs:101
+msgid "Could Not Load Shared Links"
+msgstr "Impossibile caricare i collegamenti condivisi"
+
+#: src/library/shared_links_view.rs:200
+msgid "Photos…"
+msgstr "Foto…"
+
+#: src/library/shared_links_view.rs:215
+msgid "Edit…"
+msgstr "Modifica…"
+
+#: src/library/shared_links_view.rs:311
+msgid "Show QR code"
+msgstr "Mostra codice QR"
+
+#: src/library/shared_links_view.rs:318
+msgid "Copy link"
+msgstr "Copia collegamento"
+
+#: src/library/shared_links_view.rs:355
+msgid "Delete this link?"
+msgstr "Eliminare questo collegamento?"
+
+#: src/library/shared_links_view.rs:357
+msgid "Anyone using it will lose access. This can't be undone."
+msgstr "Chiunque lo stia utilizzando ne perderà l'accesso. L'azione non può essere annullata."
+
+#: src/library/shared_links_view.rs:373
+msgid "Could Not Delete Link"
+msgstr "Impossibile eliminare il collegamento"
+
+#: src/library/shared_links_view.rs:404
+msgid "Expired"
+msgstr "Scaduto"
+
+#: src/library/shared_links_view.rs:407
+#, rust-format
+msgid "Expires {date}"
+msgstr "Scade il {date}"
+
+#: src/library/shared_links_view.rs:408
+msgid "Never expires"
+msgstr "Nessuna scadenza"
+
+#: src/library/shared_links_view.rs:414 src/library/staging_view.rs:143
+#: src/library/window_layout.rs:413
+msgid "Upload"
+msgstr "Carica"
+
+#: src/library/shared_links_view.rs:416
+msgid "Exif"
+msgstr "EXIF"
+
+#: src/library/shared_links_view.rs:417
+msgid "Password"
+msgstr "Password"
+
+#: src/library/sharing_view.rs:29
+msgid "Add partner"
+msgstr "Aggiungi partner"
+
+#: src/library/sharing_view.rs:34
+msgid "You Share With"
+msgstr "Condividi con"
+
+#: src/library/sharing_view.rs:35
+msgid "Partners can see all your photos and videos."
+msgstr "I partner possono visualizzare tutte le tue foto e i tuoi video."
+
+#: src/library/sharing_view.rs:39
+msgid "Sharing With You"
+msgstr "Condivisione con te"
+
+#: src/library/sharing_view.rs:41
+msgid ""
+"People who added you as a partner. Switch one on to see their photos in "
+"Photos."
+msgstr "Persone che ti hanno aggiunto come partner. Attiva l'opzione per visualizzare le loro foto in Foto."
+
+#: src/library/sharing_view.rs:94
+msgid "Could Not Load Partners"
+msgstr "Impossibile caricare i partner"
+
+#: src/library/sharing_view.rs:117
+msgid "Use + to share your library with someone."
+msgstr "Usa + per condividere la tua raccolta con qualcuno."
+
+#: src/library/sharing_view.rs:127
+msgid "No one is sharing with you."
+msgstr "Nessuno sta condividendo con te."
+
+#: src/library/sharing_view.rs:169
+msgid "Show in Photos"
+msgstr "Mostra in Foto"
+
+#: src/library/sharing_view.rs:179
+msgid "Could Not Change Partner"
+msgstr "Impossibile modificare il partner"
+
+#: src/library/sharing_view.rs:203
+msgid "Stop sharing"
+msgstr "Interrompi condivisione"
+
+#: src/library/sharing_view.rs:214
+#, rust-format
+msgid "Stop sharing with {name}?"
+msgstr "Interrompere la condivisione con {name}?"
+
+#: src/library/sharing_view.rs:217
+msgid "They'll no longer see your photos and videos."
+msgstr "Non potrà più vedere le tue foto e i tuoi video."
+
+#: src/library/sharing_view.rs:218
+msgid "Stop Sharing"
+msgstr "Interrompi condivisione"
+
+#: src/library/sharing_view.rs:222
+msgid "Could Not Remove Partner"
+msgstr "Impossibile rimuovere il partner"
+
+#: src/library/sharing_view.rs:279
+msgid "Loading people…"
+msgstr "Caricamento persone…"
+
+#: src/library/sharing_view.rs:321
+msgid "No other people found. Listing people needs the 'user.read' permission."
+msgstr "Nessun'altra persona trovata. L'elenco delle persone richiede il permesso 'user.read'."
+
+#: src/library/sharing_view.rs:354
+msgid "Add Partner"
+msgstr "Aggiungi partner"
+
+#: src/library/sharing_view.rs:377
+#, rust-format
+msgid "Share your library with {name}?"
+msgstr "Condividere la raccolta con {name}?"
+
+#: src/library/sharing_view.rs:378
+msgid ""
+"They'll be able to see all your photos and videos. You can stop sharing at "
+"any time."
+msgstr "Potrà visualizzare tutte le tue foto e i tuoi video. Puoi interrompere la condivisione in qualsiasi momento."
+
+#: src/library/sharing_view.rs:381
+msgid "Share"
+msgstr "Condividi"
+
+#: src/library/sharing_view.rs:388
+msgid "Could Not Add Partner"
+msgstr "Impossibile aggiungere il partner"
+
+#: src/library/shortcuts_dialog.rs:29
+msgid "Show keyboard shortcuts"
+msgstr "Mostra scorciatoie da tastiera"
+
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+msgid "Open Settings"
+msgstr "Apri impostazioni"
+
+#: src/library/shortcuts_dialog.rs:31
+msgid "Toggle sidebar"
+msgstr "Mostra/Nascondi barra laterale"
+
+#: src/library/shortcuts_dialog.rs:32 src/library/window_layout.rs:328
+msgid "Refresh"
+msgstr "Aggiorna"
+
+#: src/library/shortcuts_dialog.rs:35
+msgid "Paste photos"
+msgstr "Incolla foto"
+
+#: src/library/shortcuts_dialog.rs:37
+msgid "Into the open album, or Photos"
+msgstr "Nell'album aperto o in Foto"
+
+#: src/library/shortcuts_dialog.rs:40
+msgid "Go back"
+msgstr "Torna indietro"
+
+#: src/library/shortcuts_dialog.rs:42
+msgid "Or the mouse back button"
+msgstr "O il pulsante indietro del mouse"
+
+#: src/library/shortcuts_dialog.rs:45
+msgid "Go forward"
+msgstr "Vai avanti"
+
+#: src/library/shortcuts_dialog.rs:47
+msgid "Or the mouse forward button"
+msgstr "O il pulsante avanti del mouse"
+
+#: src/library/shortcuts_dialog.rs:50
+msgid "Open context menu"
+msgstr "Apri menu contestuale"
+
+#: src/library/shortcuts_dialog.rs:52
+msgid "Or the Menu key; in the grid, the viewer, and on album tiles"
+msgstr "O il tasto Menu; nella griglia, nel visualizzatore e nei riquadri degli album"
+
+#: src/library/shortcuts_dialog.rs:61 src/library/sidebar/rows.rs:94
+#: src/library/source_header.rs:310
+msgid "Favorites"
+msgstr "Preferiti"
+
+#: src/library/shortcuts_dialog.rs:70
+msgid "Move between photos"
+msgstr "Spostati tra le foto"
+
+#: src/library/shortcuts_dialog.rs:72
+msgid "After clicking a photo or tabbing to the grid"
+msgstr "Dopo aver fatto clic su una foto o raggiunto la griglia con Tab"
+
+#: src/library/shortcuts_dialog.rs:74
+msgid "First or last photo"
+msgstr "Prima o ultima foto"
+
+#: src/library/shortcuts_dialog.rs:75
+msgid "Open photo"
+msgstr "Apri foto"
+
+#: src/library/shortcuts_dialog.rs:76
+msgid "Select or deselect photo"
+msgstr "Seleziona o deseleziona foto"
+
+#: src/library/shortcuts_dialog.rs:81
+msgid "Select assets"
+msgstr "Seleziona elementi"
+
+#: src/library/shortcuts_dialog.rs:83
+msgid "Hold and click to add or remove assets"
+msgstr "Tieni premuto e fai clic per aggiungere o rimuovere elementi"
+
+#: src/library/shortcuts_dialog.rs:86
+msgid "Select a range"
+msgstr "Seleziona un intervallo"
+
+#: src/library/shortcuts_dialog.rs:88
+msgid "Hold and click; add Ctrl to extend the selection"
+msgstr "Tieni premuto e fai clic; aggiungi Ctrl per estendere la selezione"
+
+#: src/library/shortcuts_dialog.rs:91
+msgid "Move selection to trash"
+msgstr "Sposta selezione nel cestino"
+
+#: src/library/shortcuts_dialog.rs:93
+msgid "Deletes permanently in the Trash view"
+msgstr "Elimina definitivamente nella vista Cestino"
+
+#: src/library/shortcuts_dialog.rs:96 src/library/staging_view.rs:193
+msgid "Select all"
+msgstr "Seleziona tutto"
+
+#: src/library/shortcuts_dialog.rs:98
+msgid "Every photo in the view, loading the rest first"
+msgstr "Tutte le foto nella vista, caricando prima le rimanenti"
+
+#: src/library/shortcuts_dialog.rs:101
+msgid "Select a whole day"
+msgstr "Seleziona un'intera giornata"
+
+#: src/library/shortcuts_dialog.rs:103
+msgid ""
+"The focused photo's day or month; or tap its date heading while selecting"
+msgstr "Il giorno o il mese della foto evidenziata, oppure tocca la sua intestazione di data durante la selezione"
+
+#: src/library/shortcuts_dialog.rs:106
+msgid "Copy selection"
+msgstr "Copia selezione"
+
+#: src/library/shortcuts_dialog.rs:108
+msgid "Paste into an album to add them; one photo copies as a picture"
+msgstr "Incolla in un album per aggiungerli; una singola foto viene copiata come immagine"
+
+#: src/library/shortcuts_dialog.rs:110
+msgid "Exit selection mode"
+msgstr "Esci dalla modalità di selezione"
+
+#: src/library/shortcuts_dialog.rs:115
+msgid "Next or previous day"
+msgstr "Giorno successivo o precedente"
+
+#: src/library/shortcuts_dialog.rs:117
+msgid "In Photos, sorted newest first"
+msgstr "In Foto, ordinate dalla più recente"
+
+#: src/library/shortcuts_dialog.rs:119
+msgid "Next or previous month"
+msgstr "Mese successivo o precedente"
+
+#: src/library/shortcuts_dialog.rs:120
+msgid "Next or previous year"
+msgstr "Anno successivo o precedente"
+
+#: src/library/shortcuts_dialog.rs:124
+msgid "Previous asset"
+msgstr "Elemento precedente"
+
+#: src/library/shortcuts_dialog.rs:125
+msgid "Next asset"
+msgstr "Elemento successivo"
+
+#: src/library/shortcuts_dialog.rs:126
+msgid "Toggle details"
+msgstr "Mostra/Nascondi dettagli"
+
+#: src/library/shortcuts_dialog.rs:128
+msgid "Show or hide all actions for the photo"
+msgstr "Mostra o nascondi tutte le azioni per la foto"
+
+#: src/library/shortcuts_dialog.rs:131
+msgid "Toggle favorite"
+msgstr "Aggiungi/Rimuovi dai preferiti"
+
+#: src/library/shortcuts_dialog.rs:132
+msgid "Archive or unarchive"
+msgstr "Archivia o annulla archiviazione"
+
+#: src/library/shortcuts_dialog.rs:134
+msgid "Rate"
+msgstr "Valuta"
+
+#: src/library/shortcuts_dialog.rs:136
+msgid "0 clears the rating"
+msgstr "0 azzera la valutazione"
+
+#: src/library/shortcuts_dialog.rs:138
+msgid "Edit info"
+msgstr "Modifica informazioni"
+
+#: src/library/shortcuts_dialog.rs:141
+msgid "Copy the photo"
+msgstr "Copia la foto"
+
+#: src/library/shortcuts_dialog.rs:143
+msgid "While recognized text shows, copies the text instead"
+msgstr "Mentre il testo riconosciuto è visibile, copia invece il testo"
+
+#: src/library/shortcuts_dialog.rs:146
+msgid "Show or hide recognized text"
+msgstr "Mostra o nascondi il testo riconosciuto"
+
+#: src/library/shortcuts_dialog.rs:148
+msgid "Only when Immich found text in the photo"
+msgstr "Solo quando Immich trova testo nella foto"
+
+#: src/library/shortcuts_dialog.rs:151
+msgid "Select all recognized text"
+msgstr "Seleziona tutto il testo riconosciuto"
+
+#: src/library/shortcuts_dialog.rs:153
+msgid "Drag across text to select it; Ctrl-click adds or removes a box"
+msgstr "Trascina sul testo per selezionarlo; Ctrl-clic aggiunge o rimuove una casella"
+
+#: src/library/shortcuts_dialog.rs:156
+msgid "Copy recognized text"
+msgstr "Copia il testo riconosciuto"
+
+#: src/library/shortcuts_dialog.rs:158
+msgid "Copies the selection, or all text when nothing is selected"
+msgstr "Copia la selezione o tutto il testo quando non è selezionato nulla"
+
+#: src/library/shortcuts_dialog.rs:164
+msgid "Or hold Ctrl and scroll"
+msgstr "Oppure tieni premuto Ctrl e scorri"
+
+#: src/library/shortcuts_dialog.rs:167
+msgid "Reset zoom"
+msgstr "Reimposta zoom"
+
+#: src/library/shortcuts_dialog.rs:169
+msgid "Toggle fullscreen"
+msgstr "Attiva/Disattiva schermo intero"
+
+#: src/library/shortcuts_dialog.rs:171
+msgid "Or the header button; double-click a video; Esc exits"
+msgstr "Oppure il pulsante nell'intestazione; doppio clic su un video; Esc per uscire"
+
+#: src/library/shortcuts_dialog.rs:174
+msgid "Play or stop a live photo"
+msgstr "Riproduci o ferma una live photo"
+
+#: src/library/shortcuts_dialog.rs:176
+msgid "Only on live and motion photos"
+msgstr "Solo su live photo e foto in movimento"
+
+#: src/library/shortcuts_dialog.rs:178
+msgid "Start slideshow"
+msgstr "Avvia presentazione"
+
+#: src/library/shortcuts_dialog.rs:183
+msgid "Pause or resume"
+msgstr "Metti in pausa o riprendi"
+
+#: src/library/shortcuts_dialog.rs:185
+msgid "Previous or next photo"
+msgstr "Foto precedente o successiva"
+
+#: src/library/shortcuts_dialog.rs:187
+msgid "The next photo then gets the full interval"
+msgstr "La foto successiva riceve quindi l'intervallo completo"
+
+#: src/library/shortcuts_dialog.rs:190
+msgid "End slideshow"
+msgstr "Termina presentazione"
+
+#: src/library/shortcuts_dialog.rs:192
+msgid "Or S, or leave fullscreen"
+msgstr "Oppure S, o esci dallo schermo intero"
+
+#: src/library/shortcuts_dialog.rs:198
+msgid "Switch the 360° view"
+msgstr "Passa alla vista a 360°"
+
+#: src/library/shortcuts_dialog.rs:200
+msgid "Only on 360° photos, which open in it"
+msgstr "Solo sulle foto a 360°, che si aprono in questa vista"
+
+#: src/library/shortcuts_dialog.rs:202
+msgid "Tilt up or down"
+msgstr "Inclina in alto o in basso"
+
+#: src/library/shortcuts_dialog.rs:204
+msgid "Turn left or right"
+msgstr "Gira a sinistra o a destra"
+
+#: src/library/shortcuts_dialog.rs:208
+msgid "Zoom in or out"
+msgstr "Ingrandisci o rimpicciolisci"
+
+#: src/library/shortcuts_dialog.rs:210
+msgid "Or scroll, or pinch"
+msgstr "Oppure scorri o pizzica"
+
+#: src/library/shortcuts_dialog.rs:215
+msgid "Play or pause"
+msgstr "Riproduci o metti in pausa"
+
+#: src/library/shortcuts_dialog.rs:216
+msgid "Back 10 seconds"
+msgstr "Indietro di 10 secondi"
+
+#: src/library/shortcuts_dialog.rs:217
+msgid "Forward 10 seconds"
+msgstr "Avanti di 10 secondi"
+
+#: src/library/shortcuts_dialog.rs:219
+msgid "Previous frame"
+msgstr "Fotogramma precedente"
+
+#: src/library/shortcuts_dialog.rs:221 src/library/shortcuts_dialog.rs:226
+msgid "Pauses playback"
+msgstr "Mette in pausa la riproduzione"
+
+#: src/library/shortcuts_dialog.rs:224
+msgid "Next frame"
+msgstr "Fotogramma successivo"
+
+#: src/library/shortcuts_dialog.rs:228
+msgid "Mute or unmute"
+msgstr "Disattiva o riattiva l'audio"
+
+#: src/library/shortcuts_dialog.rs:229
+msgid "Volume up"
+msgstr "Alza il volume"
+
+#: src/library/shortcuts_dialog.rs:230
+msgid "Volume down"
+msgstr "Abbassa il volume"
+
+#: src/library/shortcuts_dialog.rs:233
+msgid "Enter a folder path"
+msgstr "Inserisci il percorso di una cartella"
+
+#: src/library/shortcuts_dialog.rs:244
+msgid "Clear the search"
+msgstr "Cancella la ricerca"
+
+#: src/library/shortcuts_dialog.rs:246
+msgid "While typing in the search field"
+msgstr "Durante la digitazione nel campo di ricerca"
+
+#: src/library/shortcuts_dialog.rs:249
+msgid "Move the map"
+msgstr "Sposta la mappa"
+
+#: src/library/shortcuts_dialog.rs:251
+msgid "After clicking the map"
+msgstr "Dopo aver fatto clic sulla mappa"
+
+#: src/library/shortcuts_dialog.rs:256
+msgid "General"
+msgstr "Generale"
+
+#: src/library/shortcuts_dialog.rs:257
+msgid "Go To"
+msgstr "Vai a"
+
+#: src/library/shortcuts_dialog.rs:258
+msgid "Grid"
+msgstr "Griglia"
+
+#: src/library/shortcuts_dialog.rs:259
+msgid "Selection"
+msgstr "Selezione"
+
+#: src/library/shortcuts_dialog.rs:265
+msgid "360° Photos"
+msgstr "Foto a 360°"
+
+#: src/library/shortcuts_dialog.rs:266
+msgid "Video"
+msgstr "Video"
+
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/settings_window/status.rs:48
+msgid "Connection"
+msgstr "Connessione"
+
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/settings_window/status.rs:50
+msgid "Server"
+msgstr "Server"
+
+#: src/library/sidebar.rs:206
+msgid "Show recent albums"
+msgstr "Mostra album recenti"
+
+#: src/library/sidebar.rs:232
+msgid "All Albums"
+msgstr "Tutti gli album"
+
+#: src/library/sidebar/rows.rs:8 src/library/window_layout/responsive.rs:83
+#: src/settings_window/library.rs:86 src/tray_icon.rs:62
+msgid "Library"
+msgstr "Libreria"
+
+#: src/library/sidebar/rows.rs:20
+msgid "Albums & Sharing"
+msgstr "Album e condivisione"
+
+#: src/library/sidebar/rows.rs:23
+msgid "Browse"
+msgstr "Esplora"
+
+#: src/library/sidebar/rows.rs:25
+msgid "Utilities"
+msgstr "Utilità"
+
+#: src/library/sidebar/rows.rs:41
+msgid "Timeline of every photo and video"
+msgstr "Cronologia di ogni foto e video"
+
+#: src/library/sidebar/rows.rs:47
+msgid "Find photos, videos, and text"
+msgstr "Trova foto, video e testo"
+
+#: src/library/sidebar/rows.rs:53
+msgid "People, places, and things"
+msgstr "Persone, luoghi e cose"
+
+#: src/library/sidebar/rows.rs:59
+msgid "Photos by where they were taken"
+msgstr "Foto in base al luogo dello scatto"
+
+#: src/library/sidebar/rows.rs:65
+msgid "Faces Immich has recognized"
+msgstr "Volti riconosciuti da Immich"
+
+#: src/library/sidebar/rows.rs:71
+msgid "Recent, owned, and shared"
+msgstr "Recenti, personali e condivisi"
+
+#: src/library/sidebar/rows.rs:77
+msgid "Shared with you and by you"
+msgstr "Condivisi con te e da te"
+
+#: src/library/sidebar/rows.rs:83
+msgid "Public links you've created"
+msgstr "Collegamenti pubblici creati da te"
+
+#: src/library/sidebar/rows.rs:89
+msgid "Partners who share libraries"
+msgstr "Partner che condividono librerie"
+
+#: src/library/sidebar/rows.rs:95
+msgid "Photos and videos you've marked"
+msgstr "Foto e video contrassegnati"
+
+#: src/library/sidebar/rows.rs:101
+msgid "Browse and organize tags"
+msgstr "Esplora e organizza i tag"
+
+#: src/library/sidebar/rows.rs:107
+msgid "Browse by folder on the server"
+msgstr "Esplora per cartella sul server"
+
+#: src/library/sidebar/rows.rs:113
+msgid "Hidden from Photos"
+msgstr "Nascosti da Foto"
+
+#: src/library/sidebar/rows.rs:119
+msgid "Restore or permanently delete"
+msgstr "Ripristina o elimina definitivamente"
+
+#: src/library/sidebar/rows.rs:125
+msgid "Photos Immich found more than once"
+msgstr "Foto trovate più volte da Immich"
+
+#: src/library/sidebar/rows.rs:130 src/library/source_header.rs:298
+msgid "Large Files"
+msgstr "File di grandi dimensioni"
+
+#: src/library/sidebar/rows.rs:131
+msgid "The photos and videos taking the most space"
+msgstr "Le foto e i video che occupano più spazio"
+
+#: src/library/sidebar/rows.rs:136 src/library/source_header.rs:299
+msgid "Missing Location"
+msgstr "Posizione mancante"
+
+#: src/library/sidebar/rows.rs:137
+msgid "Photos and videos without a place"
+msgstr "Foto e video senza un luogo"
+
+#: src/library/sidebar/rows.rs:142 src/library/source_header.rs:300
+msgid "Unusual Dates"
+msgstr "Date insolite"
+
+#: src/library/sidebar/rows.rs:143
+msgid "Dated in the future, or too long ago"
+msgstr "Con data nel futuro o troppo indietro nel tempo"
+
+#: src/library/source_header.rs:77
+msgid "Play Slideshow"
+msgstr "Avvia presentazione"
+
+#: src/library/source_header.rs:172 src/library/window_layout.rs:449
+msgid "Library data unavailable"
+msgstr "Dati della libreria non disponibili"
+
+#: src/library/source_header.rs:173 src/library/window_layout.rs:450
+msgid "Could not load library assets"
+msgstr "Impossibile caricare gli elementi della libreria"
+
+#: src/library/source_header.rs:188
+msgid "Nothing Here"
+msgstr "Nessun elemento qui"
+
+#: src/library/source_header.rs:189
+msgid "There are no photos or videos to show."
+msgstr "Non ci sono foto o video da mostrare."
+
+#: src/library/source_header.rs:255
+msgid "Nothing to show yet"
+msgstr "Ancora nulla da mostrare"
+
+#: src/library/source_header.rs:308
+msgid "On This Computer"
+msgstr "Su questo computer"
+
+#: src/library/source_header.rs:331
+#, rust-format
+msgid "Similar to {name}"
+msgstr "Simile a {name}"
+
+#: src/library/source_header.rs:338
+msgid "Search Results"
+msgstr "Risultati della ricerca"
+
+#: src/library/source_header/enrichment.rs:47
+msgid "Smart search"
+msgstr "Ricerca avanzata"
+
+#: src/library/source_header/enrichment.rs:49
+msgid "Most similar first"
+msgstr "Prima i più simili"
+
+#: src/library/source_header/enrichment.rs:73
+msgid "Back to the map"
+msgstr "Torna alla mappa"
+
+#: src/library/source_header/enrichment.rs:82
+msgid "Full Grid"
+msgstr "Griglia completa"
+
+#: src/library/source_header/enrichment.rs:154
+msgid "Show on Map"
+msgstr "Mostra sulla mappa"
+
+#: src/library/source_header/enrichment.rs:170
+msgid "Share album"
+msgstr "Condividi album"
+
+#: src/library/source_header/enrichment.rs:180
+msgid "Download album"
+msgstr "Scarica album"
+
+#: src/library/source_header/enrichment.rs:193
+msgid "Create share link"
+msgstr "Crea collegamento di condivisione"
+
+#: src/library/source_header/enrichment.rs:273
+msgid "Remove from favorites"
+msgstr "Rimuovi dai preferiti"
+
+#: src/library/source_header/enrichment.rs:275
+msgid "Add to favorites"
+msgstr "Aggiungi ai preferiti"
+
+#: src/library/source_header/enrichment.rs:290
+#, rust-format
+msgid "In {path}"
+msgstr "In {path}"
+
+#: src/library/source_loading.rs:52 src/library/upload_picker.rs:30
+msgid "Upload to album"
+msgstr "Carica nell'album"
+
+#: src/library/source_loading.rs:55 src/library/upload_picker.rs:32
+#: src/library/window_layout.rs:422
+msgid "Upload to library"
+msgstr "Carica nella libreria"
+
+#: src/library/source_loading.rs:413
+#, rust-format
+msgid "Could not load library assets: {err}"
+msgstr "Impossibile caricare gli elementi della libreria: {err}"
+
+#: src/library/staging_view.rs:44
+msgid "Mimick - Upload"
+msgstr "Mimick - Carica"
+
+#: src/library/staging_view.rs:144
+msgid "Upload selected files to library"
+msgstr "Carica i file selezionati nella libreria"
+
+#: src/library/staging_view.rs:149
+msgid "Upload selected files to an album"
+msgstr "Carica i file selezionati in un album"
+
+#: src/library/staging_view.rs:154
+msgid "Select all / Deselect all"
+msgstr "Seleziona tutto / Deseleziona tutto"
+
+#: src/library/staging_view.rs:199
+msgid "Deselect all"
+msgstr "Deseleziona tutto"
+
+#: src/library/staging_view.rs:220
+#, rust-format
+msgid "{n} file staged"
+msgid_plural "{n} files staged"
+msgstr[0] "{n} file preparato"
+msgstr[1] "{n} file preparati"
+
+#: src/library/staging_view.rs:226
+#, rust-format
+msgid "{selected} of {n} selected"
+msgid_plural "{selected} of {n} selected"
+msgstr[0] "{selected} su {n} selezionato"
+msgstr[1] "{selected} su {n} selezionati"
+
+#: src/library/staging_view/album_picker.rs:28
+msgid "Upload to Album"
+msgstr "Carica nell'album"
+
+#: src/library/staging_view/album_picker.rs:50
+msgid "Upload Queued"
+msgstr "Caricamento in coda"
+
+#: src/library/staging_view/album_picker.rs:53
+#, rust-format
+msgid "{n} file queued for upload. Progress is visible in the queue inspector."
+msgid_plural ""
+"{n} files queued for upload. Progress is visible in the queue inspector."
+msgstr[0] "{n} file in coda per il caricamento. L'avanzamento è visibile nell'ispettore coda."
+msgstr[1] "{n} file in coda per il caricamento. L'avanzamento è visibile nell'ispettore coda."
+
+#: src/library/staging_view/album_picker.rs:62
+msgid "Upload Failed"
+msgstr "Caricamento non riuscito"
+
+#: src/library/staging_view/album_picker.rs:65
+#, rust-format
+msgid "{n} file failed to enqueue. Check the logs for details."
+msgid_plural "All {n} files failed to enqueue. Check the logs for details."
+msgstr[0] "Impossibile accodare {n} file. Controllare i log per i dettagli."
+msgstr[1] "Impossibile accodare tutti i {n} file. Controllare i log per i dettagli."
+
+#: src/library/staging_view/album_picker.rs:74
+msgid "Upload Partially Queued"
+msgstr "Caricamento parzialmente in coda"
+
+#: src/library/staging_view/album_picker.rs:77
+#, rust-format
+msgid "{n} file queued, {skipped} skipped (hash or path errors)."
+msgid_plural "{n} files queued, {skipped} skipped (hash or path errors)."
+msgstr[0] "{n} file in coda, {skipped} ignorato (errori di hash o di percorso)."
+msgstr[1] "{n} file in coda, {skipped} ignorati (errori di hash o di percorso)."
+
+#: src/library/tags_view.rs:38 src/library/tags_view.rs:249
+msgid "New Tag"
+msgstr "Nuovo tag"
+
+#: src/library/tags_view.rs:74
+msgid "Could Not Load Tags"
+msgstr "Impossibile caricare i tag"
+
+#: src/library/tags_view.rs:100
+msgid "All Tags"
+msgstr "Tutti i tag"
+
+#: src/library/tags_view.rs:114
+msgid "No Tags"
+msgstr "Nessun tag"
+
+#: src/library/tags_view.rs:115
+msgid ""
+"Create a tag with New Tag, or tag photos from the lightbox details pane."
+msgstr "Crea un tag con «Nuovo tag», oppure applica tag alle foto dal riquadro dettagli del visualizzatore."
+
+#: src/library/tags_view.rs:118
+msgid "No Tags Inside"
+msgstr "Nessun tag all'interno"
+
+#: src/library/tags_view.rs:119
+msgid "Use New Tag to add one here."
+msgstr "Usa «Nuovo tag» per aggiungerne uno qui."
+
+#: src/library/tags_view.rs:137
+#, rust-format
+msgid "Show photos tagged {value}"
+msgstr "Mostra le foto con tag {value}"
+
+#: src/library/tags_view.rs:143
+#, rust-format
+msgid "{n} tag inside"
+msgid_plural "{n} tags inside"
+msgstr[0] "{n} tag all'interno"
+msgstr[1] "{n} tag all'interno"
+
+#: src/library/tags_view.rs:183
+msgid "Change color"
+msgstr "Cambia colore"
+
+#: src/library/tags_view.rs:209
+msgid "Change Color…"
+msgstr "Cambia colore…"
+
+#: src/library/tags_view.rs:240
+#, rust-format
+msgid "The tag is created inside {parent}."
+msgstr "Il tag viene creato all'interno di {parent}."
+
+#: src/library/tags_view.rs:252 src/library/tags_view.rs:276
+msgid "Tag name"
+msgstr "Nome del tag"
+
+#: src/library/tags_view.rs:261
+msgid "Could Not Create Tag"
+msgstr "Impossibile creare il tag"
+
+#: src/library/tags_view.rs:273
+msgid "Rename Tag"
+msgstr "Rinomina tag"
+
+#: src/library/tags_view.rs:274
+msgid "Photos keep the tag under its new name."
+msgstr "Le foto mantengono il tag con il nuovo nome."
+
+#: src/library/tags_view.rs:283
+msgid "Couldn't rename the tag"
+msgstr "Impossibile rinominare il tag"
+
+#: src/library/tags_view.rs:289
+msgid "Could Not Rename Tag"
+msgstr "Impossibile rinominare il tag"
+
+#: src/library/tags_view.rs:301
+#, rust-format
+msgid "Delete “{name}”?"
+msgstr "Eliminare “{name}”?"
+
+#: src/library/tags_view.rs:304
+msgid "The tag is removed from every photo. This can't be undone."
+msgstr "Il tag verrà rimosso da tutte le foto. Questa operazione non può essere annullata."
+
+#: src/library/tags_view.rs:309
+msgid "Could Not Delete Tag"
+msgstr "Impossibile eliminare il tag"
+
+#: src/library/tags_view.rs:330
+#, rust-format
+msgid "Color for “{name}”"
+msgstr "Colore per “{name}”"
+
+#: src/library/tags_view.rs:356
+msgid "Could Not Change Color"
+msgstr "Impossibile cambiare colore"
+
+#: src/library/tags_view.rs:413
+msgid "Custom color"
+msgstr "Colore personalizzato"
+
+#: src/library/tags_view.rs:435
+msgid "Custom"
+msgstr "Personalizzato"
+
+#: src/library/theme/palettes.rs:61
+msgid "Warm White"
+msgstr "Bianco caldo"
+
+#: src/library/theme/palettes.rs:68
+msgid "Lavender"
+msgstr "Lavanda"
+
+#: src/library/theme/palettes.rs:75
+msgid "Mint"
+msgstr "Menta"
+
+#: src/library/theme/palettes.rs:91
+msgid "Black"
+msgstr "Nero"
+
+#: src/library/theme/palettes.rs:99
+msgid "Midnight"
+msgstr "Mezzanotte"
+
+#: src/library/theme/palettes.rs:106
+msgid "Mocha"
+msgstr "Moka"
+
+#: src/library/thumbnail_cache.rs:68 src/library/thumbnail_cache.rs:69
+msgid "Thumbnail load cancelled"
+msgstr "Caricamento della miniatura annullato"
+
+#: src/library/thumbnail_cache.rs:576
+msgid "MemTotal:"
+msgstr "MemTotal:"
+
+#: src/library/thumbnail_cache/decode.rs:122
+msgid "Failed to scale video thumbnail"
+msgstr "Impossibile ridimensionare la miniatura del video"
+
+#: src/library/thumbnail_cache/decode.rs:134
+#, rust-format
+msgid "No decoder succeeded for {path}"
+msgstr "Nessun decodificatore riuscito per {path}"
+
+#: src/library/thumbnail_cache/decode.rs:158
+msgid "Failed to scale pixbuf"
+msgstr "Impossibile ridimensionare il pixbuf"
+
+#: src/library/thumbnail_cache/screen.rs:40
+msgid "No decoder could read the file"
+msgstr "Nessun decodificatore è riuscito a leggere il file"
+
+#: src/library/time_zones.rs:82
+msgid "Time zone"
+msgstr "Fuso orario"
+
+#. Translators: strftime day heading in the photo timeline, e.g. "Fri, Oct 9".
+#: src/library/timeline/dates.rs:15
+msgid "%a, %b %-d"
+msgstr "%a %-d %b"
+
+#. Translators: strftime day heading for another year, e.g. "Fri, Oct 9, 2025".
+#: src/library/timeline/dates.rs:18
+msgid "%a, %b %-d, %Y"
+msgstr "%a %-d %b %Y"
+
+#. Translators: strftime month heading, e.g. "October 2026"; %OB is the standalone month name.
+#: src/library/timeline/dates.rs:25
+msgid "%B %Y"
+msgstr "%B %Y"
+
+#: src/library/timeline/mod.rs:241
+msgid "This photo isn't in your Photos timeline"
+msgstr "Questa foto non è presente nella cronologia di Foto"
+
+#: src/library/trash_view.rs:35
+msgid ""
+"Immich permanently deletes trashed items after its retention period (30 days "
+"by default)."
+msgstr "Immich elimina definitivamente gli elementi nel cestino dopo il periodo di conservazione (30 giorni per impostazione predefinita)."
+
+#: src/library/trash_view.rs:66
+msgid "Restore All"
+msgstr "Ripristina tutto"
+
+#: src/library/trash_view.rs:68 src/library/trash_view.rs:238
+msgid "Empty Trash"
+msgstr "Svuota cestino"
+
+#: src/library/trash_view.rs:74
+msgid "Restore selected"
+msgstr "Ripristina selezionati"
+
+#: src/library/trash_view.rs:79
+msgid "Delete selected permanently"
+msgstr "Elimina definitivamente i selezionati"
+
+#: src/library/trash_view.rs:167 src/library/trash_view.rs:228
+msgid "Could Not Restore"
+msgstr "Impossibile ripristinare"
+
+#: src/library/trash_view.rs:175
+msgid "Delete this item permanently?"
+msgstr "Eliminare definitivamente questo elemento?"
+
+#: src/library/trash_view.rs:188
+msgid "This can't be undone. Local copies in your watch folders are kept."
+msgstr "Questa operazione non può essere annullata. Le copie locali nelle cartelle monitorate verranno mantenute."
+
+#: src/library/trash_view.rs:217
+msgid "Could Not Delete"
+msgstr "Impossibile eliminare"
+
+#: src/library/trash_view.rs:236
+msgid "Empty the trash?"
+msgstr "Svuotare il cestino?"
+
+#: src/library/trash_view.rs:237
+msgid ""
+"Everything in the Immich trash is deleted permanently. This can't be undone."
+msgstr "Tutti gli elementi nel cestino di Immich verranno eliminati definitivamente. Questa operazione non può essere annullata."
+
+#: src/library/trash_view.rs:243
+msgid "Could Not Empty Trash"
+msgstr "Impossibile svuotare il cestino"
+
+#: src/library/upload_stack.rs:33
+msgid "Upload and Create Stack…"
+msgstr "Carica e crea pila…"
+
+#: src/library/upload_stack.rs:35
+msgid "Upload and Add to Stack…"
+msgstr "Carica e aggiungi alla pila…"
+
+#: src/library/upload_stack.rs:50
+msgid "Upload and Stack"
+msgstr "Carica e impila"
+
+#: src/library/upload_stack.rs:107
+msgid "Stack created"
+msgstr "Pila creata"
+
+#: src/library/upload_stack.rs:109
+msgid "Added to the stack"
+msgstr "Aggiunto alla pila"
+
+#: src/library/upload_stack.rs:130
+#, rust-format
+msgid "Couldn't upload {n} file"
+msgid_plural "Couldn't upload {n} files"
+msgstr[0] "Impossibile caricare {n} file"
+msgstr[1] "Impossibile caricare {n} file"
+
+#: src/library/upload_stack.rs:138
+msgid "Immich didn't accept the upload."
+msgstr "Immich non ha accettato il caricamento."
+
+#: src/library/utilities.rs:58
+msgid "Add Location"
+msgstr "Aggiungi posizione"
+
+#: src/library/utilities.rs:59
+msgid "Change Date"
+msgstr "Cambia data"
+
+#: src/library/utilities.rs:127
+msgid "Select photos, then Change Date"
+msgstr "Seleziona le foto, quindi «Cambia data»"
+
+#: src/library/utilities.rs:128
+msgid "Select photos, then Add Location"
+msgstr "Seleziona le foto, quindi «Aggiungi posizione»"
+
+#: src/library/utilities.rs:185
+#, rust-format
+msgid "{size} in all"
+msgstr "{size} in totale"
+
+#: src/library/utilities/controls.rs:29 src/settings_window/behavior.rs:182
+msgid "All Files"
+msgstr "Tutti i file"
+
+#: src/library/utilities/controls.rs:31
+msgid "Kind of file"
+msgstr "Tipo di file"
+
+#: src/library/utilities/controls.rs:36
+msgid "Smallest size"
+msgstr "Dimensione minima"
+
+#: src/library/utilities/controls.rs:72
+msgid "Any Size"
+msgstr "Qualsiasi dimensione"
+
+#: src/library/utilities/controls.rs:73
+#, rust-format
+msgid "Over {n} GB"
+msgstr "Oltre {n} GB"
+
+#: src/library/utilities/controls.rs:74
+#, rust-format
+msgid "Over {n} MB"
+msgstr "Oltre {n} MB"
+
+#: src/library/utilities/controls.rs:84 src/library/utilities/controls.rs:117
+msgid "Dates"
+msgstr "Date"
+
+#: src/library/utilities/controls.rs:88
+msgid "Show only photos taken between two days"
+msgstr "Mostra solo le foto scattate tra due date"
+
+#: src/library/utilities/controls.rs:101
+msgid "Show the photos without a place taken between these days."
+msgstr "Mostra le foto senza luogo scattate tra queste date."
+
+#: src/library/utilities/controls.rs:142
+#, rust-format
+msgid "From {from} to {until}"
+msgstr "Da {from} a {until}"
+
+#: src/library/utilities/controls.rs:145
+#, rust-format
+msgid "From {from}"
+msgstr "Da {from}"
+
+#: src/library/utilities/controls.rs:146
+#, rust-format
+msgid "Until {until}"
+msgstr "Fino a {until}"
+
+#: src/library/utilities/controls.rs:157
+#, rust-format
+msgid "Before {year}"
+msgstr "Prima del {year}"
+
+#: src/library/utilities/controls.rs:160
+msgid "Future"
+msgstr "Futuro"
+
+#: src/library/utilities/controls.rs:187
+msgid "Dated after today"
+msgstr "Con data successiva a oggi"
+
+#: src/library/utilities/controls.rs:189
+#, rust-format
+msgid "Dated before {year}"
+msgstr "Con data precedente al {year}"
+
+#: src/library/video_player.rs:240
+msgid "Exit fullscreen (F11)"
+msgstr "Esci dallo schermo intero (F11)"
+
+#: src/library/video_player.rs:242 src/library/video_player/controls.rs:61
+msgid "Fullscreen (F11)"
+msgstr "Schermo intero (F11)"
+
+#: src/library/video_player.rs:317 src/library/video_player/controls.rs:41
+msgid "Play (Space)"
+msgstr "Riproduci (Spazio)"
+
+#: src/library/video_player/controls.rs:35
+msgid "Audio and subtitles"
+msgstr "Audio e sottotitoli"
+
+#: src/library/video_player/controls.rs:42
+msgid "Stop"
+msgstr "Ferma"
+
+#: src/library/video_player/controls.rs:45
+msgid "Back 10 seconds (J)"
+msgstr "Indietro di 10 secondi (J)"
+
+#: src/library/video_player/controls.rs:49
+msgid "Forward 10 seconds (L)"
+msgstr "Avanti di 10 secondi (L)"
+
+#: src/library/video_player/controls.rs:149
+#, rust-format
+msgid "Track {n} ({lang})"
+msgstr "Traccia {n} ({lang})"
+
+#: src/library/video_player/controls.rs:152
+#, rust-format
+msgid "Track {n}"
+msgstr "Traccia {n}"
+
+#: src/library/video_player/controls.rs:197
+msgid "Loop"
+msgstr "Ripeti"
+
+#: src/library/video_player/controls.rs:261
+msgid "Playback speed"
+msgstr "Velocità di riproduzione"
+
+#: src/library/video_player/controls.rs:275
+msgid "Mute (M)"
+msgstr "Disattiva audio (M)"
+
+#: src/library/video_player/controls.rs:282
+msgid "Volume"
+msgstr "Volume"
+
+#: src/library/video_player/pipeline.rs:44
+msgid "The GStreamer GTK 4 video sink (gst-plugin-gtk4) is not installed."
+msgstr "Il sink video GTK 4 di GStreamer (gst-plugin-gtk4) non è installato."
+
+#: src/library/video_player/tracks.rs:34
+msgid "Audio"
+msgstr "Audio"
+
+#: src/library/video_player/tracks.rs:49 src/settings_window/library.rs:129
+msgid "Off"
+msgstr "Disattivato"
+
+#: src/library/video_player/tracks.rs:57
+msgid "Subtitles"
+msgstr "Sottotitoli"
+
+#: src/library/window_layout.rs:106
+msgid "Mimick Library"
+msgstr "Libreria di Mimick"
+
+#: src/library/window_layout.rs:280
+msgid "Toggle sidebar (F9)"
+msgstr "Mostra/Nascondi barra laterale (F9)"
+
+#: src/library/window_layout.rs:284
+msgid "Back (Alt+Left)"
+msgstr "Indietro (Alt+Sinistra)"
+
+#: src/library/window_layout.rs:289
+msgid "Menu"
+msgstr "Menu"
+
+#: src/library/window_layout.rs:297
+msgid "Search (Ctrl+K)"
+msgstr "Cerca (Ctrl+K)"
+
+#: src/library/window_layout.rs:303
+msgid "Select assets (Esc to exit)"
+msgstr "Seleziona elementi (Esc per uscire)"
+
+#: src/library/window_layout.rs:333 src/settings_window/queue_inspector.rs:61
+msgid "Queue Inspector"
+msgstr "Ispettore coda"
+
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/tray_icon.rs:73
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: src/library/window_layout.rs:337
+msgid "Keyboard Shortcuts"
+msgstr "Scorciatoie da tastiera"
+
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+msgid "About Mimick"
+msgstr "Informazioni su Mimick"
+
+#: src/library/window_layout.rs:393
+msgid "Remote"
+msgstr "Remoto"
+
+#: src/library/window_layout.rs:394
+msgid "Local"
+msgstr "Locale"
+
+#: src/library/window_layout.rs:395
+msgid "Unified"
+msgstr "Unificato"
+
+#: src/library/window_layout.rs:398
+msgid "Asset source"
+msgstr "Origine elementi"
+
+#: src/library/window_layout.rs:415
+msgid "Paste from Clipboard"
+msgstr "Incolla dagli appunti"
+
+#: src/library/window_layout.rs:423
+msgid "More ways to upload"
+msgstr "Altri modi per caricare"
+
+#: src/library/window_layout.rs:444
+msgid "Nothing to show"
+msgstr "Nulla da mostrare"
+
+#: src/library/window_layout.rs:445
+msgid "No assets match the current view"
+msgstr "Nessun elemento corrisponde alla visualizzazione corrente"
+
+#: src/library/window_layout.rs:500
+#: src/settings_window/watch_folders/rules_dialog.rs:238
+msgid "Sync"
+msgstr "Sincronizzazione"
+
+#: src/library/window_layout.rs:506
+msgid "Link"
+msgstr "Collega"
+
+#: src/library/window_layout/bulk_bar.rs:65
+msgid "Add to album"
+msgstr "Aggiungi all'album"
+
+#: src/library/window_layout/bulk_bar.rs:66
+msgid "Stack selected"
+msgstr "Impila selezionati"
+
+#: src/library/window_layout/bulk_bar.rs:68
+msgid "Remove from album"
+msgstr "Rimuovi dall'album"
+
+#: src/library/window_layout/bulk_bar.rs:203
+msgid "Set location for selected"
+msgstr "Imposta posizione per i selezionati"
+
+#: src/library/window_layout/bulk_bar.rs:207
+msgid "Change date for selected"
+msgstr "Cambia data per i selezionati"
+
+#: src/library/window_layout/bulk_bar.rs:224
+msgid "Delete selected"
+msgstr "Elimina selezionati"
+
+#: src/library/window_layout/bulk_bar.rs:229
+msgid "Download selected"
+msgstr "Scarica selezionati"
+
+#: src/library/window_layout/bulk_bar.rs:233
+msgid "Clear selection"
+msgstr "Annulla selezione"
+
+#: src/library/window_layout/bulk_bar.rs:238
+msgid "Share selected"
+msgstr "Condividi selezionati"
+
+#: src/library/window_layout/responsive.rs:173
+msgid "Sync…"
+msgstr "Sincronizza…"
+
+#: src/main/ui_lifecycle.rs:56 src/queue_manager.rs:481
+msgid "Paused by user"
+msgstr "Messo in pausa dall'utente"
+
+#: src/notifications.rs:28
+msgid "Sync complete"
+msgstr "Sincronizzazione completata"
+
+#: src/notifications.rs:32
+#, rust-format
+msgid "All {n} file processed. Idle."
+msgid_plural "All {n} files processed. Idle."
+msgstr[0] "{n} file elaborato. Inattivo."
+msgstr[1] "Tutti i {n} file elaborati. Inattivo."
+
+#: src/notifications.rs:42
+#, rust-format
+msgid "{n} failed and will be retried."
+msgid_plural "{n} failed and will be retried."
+msgstr[0] "{n} non riuscito; verrà riprovato."
+msgstr[1] "{n} non riusciti; verranno riprovati."
+
+#: src/notifications.rs:55
+msgid "Mimick: Connection lost"
+msgstr "Mimick: Connessione persa"
+
+#: src/notifications.rs:57
+msgid ""
+"Could not reach the Immich server. Uploads will resume automatically when "
+"connectivity is restored."
+msgstr "Impossibile raggiungere il server Immich. I caricamenti riprenderanno automaticamente al ripristino della connessione."
+
+#: src/queue_manager.rs:241
+#, rust-format
+msgid "Target album: {name}"
+msgstr "Album di destinazione: {name}"
+
+#: src/queue_manager.rs:326
+msgid "Removed from retry queue"
+msgstr "Rimosso dalla coda dei tentativi"
+
+#: src/queue_manager.rs:339 src/queue_manager.rs:350
+msgid "Manual retry"
+msgstr "Nuovo tentativo manuale"
+
+#: src/queue_manager.rs:484
+msgid "Deferred on metered network"
+msgstr "Rinviato su rete a consumo"
+
+#: src/queue_manager.rs:486
+msgid "Deferred while on battery power"
+msgstr "Rinviato con alimentazione a batteria"
+
+#: src/queue_manager.rs:488
+msgid "Deferred during quiet hours"
+msgstr "Rinviato durante le ore di silenzio"
+
+#: src/queue_manager/progress.rs:319
+#, rust-format
+msgid "Finished in {elapsed}s"
+msgstr "Completato in {elapsed}s"
+
+#: src/queue_manager/progress.rs:357
+#, rust-format
+msgid "Upload failed for {path}"
+msgstr "Caricamento non riuscito per {path}"
+
+#: src/queue_manager/progress.rs:366
+msgid ""
+"Review the latest server and permission settings, then retry the failed item."
+msgstr "Verificare le impostazioni più recenti del server e dei permessi, quindi riprovare l'elemento non riuscito."
+
+#: src/queue_manager/progress.rs:379
+msgid "Queued for retry"
+msgstr "In coda per un nuovo tentativo"
+
+#: src/sanitize.rs:47
+msgid "URL is empty"
+msgstr "L'URL è vuoto"
+
+#: src/sanitize.rs:51
+#, rust-format
+msgid "Invalid URL: {err}"
+msgstr "URL non valido: {err}"
+
+#: src/settings_window/actions_ui.rs:17
+msgid "Troubleshooting"
+msgstr "Risoluzione dei problemi"
+
+#: src/settings_window/actions_ui.rs:21
+msgid "Detailed Logs"
+msgstr "Log dettagliati"
+
+#: src/settings_window/actions_ui.rs:23
+msgid ""
+"Record more while you reproduce a problem, then export. The log grows faster."
+msgstr "Registra più informazioni durante la riproduzione del problema, quindi esporta. Il log cresce più rapidamente."
+
+#: src/settings_window/actions_ui.rs:28
+msgid "Export…"
+msgstr "Esporta…"
+
+#: src/settings_window/actions_ui.rs:32
+msgid "Export Diagnostics"
+msgstr "Esporta diagnostica"
+
+#: src/settings_window/actions_ui.rs:34
+msgid ""
+"For bug reports: settings, status, and the end of the log, with private "
+"details removed."
+msgstr "Per le segnalazioni di bug: impostazioni, stato e la fine del log, con i dati riservati rimossi."
+
+#: src/settings_window/appearance.rs:22
+msgid "Style"
+msgstr "Stile"
+
+#: src/settings_window/appearance.rs:23
+msgid "Light Theme"
+msgstr "Tema chiaro"
+
+#: src/settings_window/appearance.rs:24
+msgid "Dark Theme"
+msgstr "Tema scuro"
+
+#: src/settings_window/apply.rs:164
+msgid "API Key Stored in a File"
+msgstr "Chiave API memorizzata in un file"
+
+#: src/settings_window/apply.rs:170
+msgid "Settings Saved"
+msgstr "Impostazioni salvate"
+
+#: src/settings_window/apply.rs:171
+msgid "Mimick saved the updated settings successfully."
+msgstr "Mimick ha salvato le impostazioni aggiornate con successo."
+
+#: src/settings_window/apply.rs:207
+msgid "Startup Permission Needed"
+msgstr "Autorizzazione all'avvio necessaria"
+
+#: src/settings_window/apply.rs:208
+msgid "Mimick was not allowed to start automatically at login."
+msgstr "A Mimick non è stato consentito l'avvio automatico all'accesso."
+
+#: src/settings_window/apply.rs:210
+msgid "Could Not Update Startup Setting"
+msgstr "Impossibile aggiornare l'impostazione di avvio"
+
+#: src/settings_window/apply.rs:241
+msgid "Could Not Save API Key"
+msgstr "Impossibile salvare la chiave API"
+
+#: src/settings_window/apply.rs:249
+msgid "Could Not Save Settings"
+msgstr "Impossibile salvare le impostazioni"
+
+#: src/settings_window/apply.rs:250
+msgid "Mimick could not write the updated configuration to disk."
+msgstr "Mimick non ha potuto scrivere la configurazione aggiornata sul disco."
+
+#: src/settings_window/behavior.rs:53
+msgid "Uploads"
+msgstr "Caricamenti"
+
+#: src/settings_window/behavior.rs:54
+msgid "How and when your watched folders are backed up."
+msgstr "Come e quando eseguire il backup delle cartelle monitorate."
+
+#: src/settings_window/behavior.rs:59
+msgid "Parallel Uploads"
+msgstr "Caricamenti paralleli"
+
+#: src/settings_window/behavior.rs:60
+msgid "Higher is faster but uses more bandwidth."
+msgstr "Un valore più alto è più veloce ma utilizza più larghezza di banda."
+
+#: src/settings_window/behavior.rs:65
+#: src/settings_window/watch_folders/rules_dialog.rs:304
+msgid "Upload XMP Sidecars"
+msgstr "Carica file collaterali XMP"
+
+#: src/settings_window/behavior.rs:66
+#: src/settings_window/watch_folders/rules_dialog.rs:305
+msgid "Send .xmp edit files along with their photos."
+msgstr "Invia i file di modifica .xmp insieme alle relative foto."
+
+#: src/settings_window/behavior.rs:71
+msgid "Pause on Metered Networks"
+msgstr "Pausa su reti a consumo"
+
+#: src/settings_window/behavior.rs:72
+msgid "Wait for an unmetered connection, such as home Wi-Fi."
+msgstr "Attendi una connessione non a consumo, come il Wi-Fi di casa."
+
+#: src/settings_window/behavior.rs:76
+msgid "Pause on Battery"
+msgstr "Pausa quando a batteria"
+
+#: src/settings_window/behavior.rs:77
+msgid "Wait until the computer is plugged in."
+msgstr "Attendi che il computer sia collegato all'alimentazione."
+
+#: src/settings_window/behavior.rs:101
+msgid "App"
+msgstr "Applicazione"
+
+#: src/settings_window/behavior.rs:106
+msgid "Run on Startup"
+msgstr "Esegui all'avvio"
+
+#: src/settings_window/behavior.rs:107
+msgid "Start Mimick when you log in."
+msgstr "Avvia Mimick all'accesso."
+
+#: src/settings_window/behavior.rs:111
+msgid "Background Sync"
+msgstr "Sincronizzazione in background"
+
+#: src/settings_window/behavior.rs:112
+msgid "Keep watching folders after you close this window."
+msgstr "Continua a monitorare le cartelle dopo la chiusura di questa finestra."
+
+#: src/settings_window/behavior.rs:117
+msgid "Tell me when uploads finish or something goes wrong."
+msgstr "Avvisami quando i caricamenti finiscono o si verifica un errore."
+
+#: src/settings_window/behavior.rs:121
+msgid "Library View"
+msgstr "Vista libreria"
+
+#: src/settings_window/behavior.rs:122
+msgid "The tray menu updates after a restart."
+msgstr "Il menu dell'area di notifica si aggiorna dopo un riavvio."
+
+#: src/settings_window/behavior.rs:137
+msgid "Quiet Hours"
+msgstr "Ore di silenzio"
+
+#: src/settings_window/behavior.rs:138
+msgid "Don't upload during these hours each day."
+msgstr "Non caricare durante queste ore ogni giorno."
+
+#: src/settings_window/behavior.rs:183
+msgid "Changed in the Last 7 Days"
+msgstr "Modificati negli ultimi 7 giorni"
+
+#: src/settings_window/behavior.rs:184
+msgid "New Files Only"
+msgstr "Solo nuovi file"
+
+#: src/settings_window/behavior.rs:190
+#: src/settings_window/watch_folders/rules_dialog.rs:194
+msgid "When Mimick Starts, Check"
+msgstr "All'avvio di Mimick, controlla"
+
+#: src/settings_window/behavior.rs:191
+msgid "Folders can choose their own in Folder Rules."
+msgstr "Le cartelle possono avere impostazioni personalizzate nelle Regole cartella."
+
+#: src/settings_window/connectivity.rs:29
+msgid "Internal URL (LAN)"
+msgstr "URL interno (LAN)"
+
+#: src/settings_window/connectivity.rs:31
+msgid "External URL (WAN)"
+msgstr "URL esterno (WAN)"
+
+#: src/settings_window/connectivity.rs:35
+msgid "Not tested yet"
+msgstr "Non ancora testato"
+
+#: src/settings_window/connectivity.rs:38
+msgid "Test Connection"
+msgstr "Verifica connessione"
+
+#: src/settings_window/connectivity.rs:41
+msgid "Save and Connect"
+msgstr "Salva e connetti"
+
+#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+msgid "Open Library"
+msgstr "Apri libreria"
+
+#: src/settings_window/connectivity.rs:89
+msgid "API Key"
+msgstr "Chiave API"
+
+#: src/settings_window/connectivity.rs:137
+msgid "LAN URL"
+msgstr "URL LAN"
+
+#: src/settings_window/connectivity.rs:138
+msgid "WAN URL"
+msgstr "URL WAN"
+
+#: src/settings_window/form.rs:127
+msgid "Invalid Internal URL"
+msgstr "URL interno non valido"
+
+#: src/settings_window/form.rs:132
+msgid "Invalid External URL"
+msgstr "URL esterno non valido"
+
+#: src/settings_window/library.rs:70
+msgid "Open Map Places in a Full Grid"
+msgstr "Apri i luoghi della mappa in una griglia a schermo intero"
+
+#: src/settings_window/library.rs:71
+msgid "Otherwise their photos open beside the map."
+msgstr "Altrimenti le relative foto si aprono accanto alla mappa."
+
+#: src/settings_window/library.rs:88
+msgid "Open Originals in Lightbox"
+msgstr "Apri gli originali nel lightbox"
+
+#: src/settings_window/library.rs:89
+msgid "Slower to open."
+msgstr "Apertura più lenta."
+
+#: src/settings_window/library.rs:93
+msgid "Thumbnail Quality"
+msgstr "Qualità delle miniature"
+
+#: src/settings_window/library.rs:94
+msgid "Sharper thumbnails use more memory."
+msgstr "Miniature più nitide occupano più memoria."
+
+#: src/settings_window/library.rs:96
+msgid "Automatic"
+msgstr "Automatica"
+
+#: src/settings_window/library.rs:97
+msgid "Thumbnail"
+msgstr "Miniatura"
+
+#: src/settings_window/library.rs:98
+msgid "Preview"
+msgstr "Anteprima"
+
+#: src/settings_window/library.rs:99
+msgid "Full Size"
+msgstr "Dimensione intera"
+
+#: src/settings_window/library.rs:104
+msgid "Fit Thumbnails to Tiles"
+msgstr "Adatta le miniature ai riquadri"
+
+#: src/settings_window/library.rs:106
+msgid "Preview and Full Size thumbnails use far less memory."
+msgstr "Le miniature Anteprima e Dimensione intera utilizzano molta meno memoria."
+
+#: src/settings_window/library.rs:122
+msgid "Date Headings"
+msgstr "Intestazioni per data"
+
+#: src/settings_window/library.rs:124
+msgid "Dates between photos in Photos, albums, and other timelines."
+msgstr "Date tra le foto in Foto, album e altre cronologie."
+
+#: src/settings_window/library.rs:127
+msgid "By Day"
+msgstr "Per giorno"
+
+#: src/settings_window/library.rs:128
+msgid "By Month"
+msgstr "Per mese"
+
+#: src/settings_window/library.rs:139
+msgid "Grid Appearance"
+msgstr "Aspetto della griglia"
+
+#: src/settings_window/library.rs:141
+msgid "Border Width"
+msgstr "Larghezza del bordo"
+
+#: src/settings_window/library.rs:142
+msgid "Gap between photos, in pixels. 0 for none."
+msgstr "Spazio tra le foto, in pixel. 0 per nessuno."
+
+#: src/settings_window/library.rs:148
+msgid "Border Color"
+msgstr "Colore del bordo"
+
+#: src/settings_window/library.rs:163
+msgid "RAW Files"
+msgstr "File RAW"
+
+#: src/settings_window/library.rs:165
+msgid "Full RAW Decoding"
+msgstr "Decodifica RAW completa"
+
+#: src/settings_window/library.rs:167
+msgid ""
+"Uses the sensor data, not the embedded preview, with every colour the camera "
+"recorded. Slower, and uses more memory."
+msgstr "Utilizza i dati del sensore, non l'anteprima incorporata, con tutti i colori registrati dalla fotocamera. Più lenta e richiede più memoria."
+
+#: src/settings_window/library.rs:172
+msgid "Keep Decoded RAW Files"
+msgstr "Mantieni i file RAW decodificati"
+
+#: src/settings_window/library.rs:173
+msgid "Reopen instantly, using disk space."
+msgstr "Riapre istantaneamente, occupando spazio su disco."
+
+#: src/settings_window/library.rs:192
+msgid "Cache Limit (MB)"
+msgstr "Limite cache (MB)"
+
+#: src/settings_window/library.rs:193
+msgid "Trimmed when Mimick starts."
+msgstr "Ridotto all'avvio di Mimick."
+
+#: src/settings_window/library.rs:200
+msgid "Memory Limit (MB)"
+msgstr "Limite di memoria (MB)"
+
+#: src/settings_window/library.rs:201
+msgid "At most half your RAM."
+msgstr "Al massimo metà della RAM."
+
+#: src/settings_window/library.rs:228
+msgid "Clear Cache"
+msgstr "Svuota cache"
+
+#: src/settings_window/library.rs:230
+msgid "Free the space now. Thumbnails reload as you browse."
+msgstr "Libera spazio adesso. Le miniature si ricaricano durante l'esplorazione."
+
+#: src/settings_window/library.rs:243
+msgid "Download Folder"
+msgstr "Cartella di scaricamento"
+
+#: src/settings_window/library.rs:244 src/settings_window/library.rs:253
+#: src/settings_window/wiring/folder_wiring.rs:58
+msgid "Ask each time"
+msgstr "Chiedi ogni volta"
+
+#: src/settings_window/library.rs:248
+msgid "Change…"
+msgstr "Modifica…"
+
+#: src/settings_window/library.rs:267
+#, rust-format
+msgid "Using {used} of {limit}"
+msgstr "In uso {used} di {limit}"
+
+#: src/settings_window/mod.rs:52
+msgid "Default (Folder Name)"
+msgstr "Predefinito (nome cartella)"
+
+#: src/settings_window/mod.rs:56
+msgid "Library (No Album)"
+msgstr "Libreria (nessun album)"
+
+#: src/settings_window/mod.rs:127
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so the API key "
+"was stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"Le impostazioni sono state salvate, ma il portachiavi di sistema non è disponibile, quindi la chiave API è stata memorizzata in {path}.\n"
+"\n"
+"Il file è leggibile solo dal proprio account utente ma non è crittografato.\n"
+"\n"
+"Consultare: {url}"
+
+#: src/settings_window/mod.rs:141
+msgid "No successful sync yet"
+msgstr "Nessuna sincronizzazione completata finora"
+
+#: src/settings_window/mod.rs:151
+msgid "Less than a minute ago"
+msgstr "Meno di un minuto fa"
+
+#: src/settings_window/mod.rs:157
+#, rust-format
+msgid "{n} minute ago"
+msgid_plural "{n} minutes ago"
+msgstr[0] "{n} minuto fa"
+msgstr[1] "{n} minuti fa"
+
+#: src/settings_window/mod.rs:161
+#, rust-format
+msgid "{n} hour ago"
+msgid_plural "{n} hours ago"
+msgstr[0] "{n} ora fa"
+msgstr[1] "{n} ore fa"
+
+#: src/settings_window/mod.rs:164
+#, rust-format
+msgid "{n} day ago"
+msgid_plural "{n} days ago"
+msgstr[0] "{n} giorno fa"
+msgstr[1] "{n} giorni fa"
+
+#: src/settings_window/queue_inspector.rs:38
+msgid "Retry All"
+msgstr "Riprova tutti"
+
+#: src/settings_window/queue_inspector.rs:86
+msgid "Failed Retry Queue"
+msgstr "Coda dei tentativi non riusciti"
+
+#: src/settings_window/queue_inspector.rs:90
+msgid "Recent Queue Activity"
+msgstr "Attività recente della coda"
+
+#: src/settings_window/queue_inspector.rs:114
+msgid "Retry All Failed"
+msgstr "Riprova tutti quelli non riusciti"
+
+#: src/settings_window/queue_inspector.rs:116
+msgid "Clear Failed Queue"
+msgstr "Cancella la coda dei non riusciti"
+
+#: src/settings_window/queue_inspector.rs:233
+msgid "No failed items"
+msgstr "Nessun elemento non riuscito"
+
+#: src/settings_window/queue_inspector.rs:234
+msgid "The retry queue is currently empty."
+msgstr "La coda dei tentativi è attualmente vuota."
+
+#: src/settings_window/queue_inspector.rs:252 src/settings_window/status.rs:231
+msgid "Retry"
+msgstr "Riprova"
+
+#: src/settings_window/queue_inspector.rs:258
+msgid "Retrying…"
+msgstr "Nuovo tentativo…"
+
+#: src/settings_window/status.rs:38
+msgid "Watched Folders"
+msgstr "Cartelle monitorate"
+
+#: src/settings_window/status.rs:50
+msgid "Checking…"
+msgstr "Verifica in corso…"
+
+#: src/settings_window/status.rs:51
+msgid "Last Upload"
+msgstr "Ultimo caricamento"
+
+#: src/settings_window/status.rs:51
+msgid "Nothing uploaded yet"
+msgstr "Ancora nulla di caricato"
+
+#: src/settings_window/status.rs:92
+msgid "Set Up…"
+msgstr "Configura…"
+
+#: src/settings_window/status.rs:129 src/settings_window/status_poll.rs:243
+msgid "Up to Date"
+msgstr "Aggiornato"
+
+#: src/settings_window/status.rs:153 src/tray_icon.rs:95
+msgid "Sync Now"
+msgstr "Sincronizza ora"
+
+#: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
+#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+msgid "Pause"
+msgstr "Pausa"
+
+#: src/settings_window/status.rs:155
+msgid "Queue…"
+msgstr "Coda…"
+
+#: src/settings_window/status.rs:222
+msgid "Needs Attention"
+msgstr "Richiede attenzione"
+
+#: src/settings_window/status.rs:226
+msgid "Failed uploads"
+msgstr "Caricamenti non riusciti"
+
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
+#: src/settings_window/wiring.rs:368
+msgid "Resume"
+msgstr "Riprendi"
+
+#: src/settings_window/status_poll.rs:127
+msgid "No server set up yet"
+msgstr "Nessun server ancora configurato"
+
+#: src/settings_window/status_poll.rs:138
+#, rust-format
+msgid "{n} upload failed"
+msgid_plural "{n} uploads failed"
+msgstr[0] "{n} caricamento non riuscito"
+msgstr[1] "{n} caricamenti non riusciti"
+
+#: src/settings_window/status_poll.rs:149
+msgid "No folders yet"
+msgstr "Ancora nessuna cartella"
+
+#: src/settings_window/status_poll.rs:150
+msgid "Add one under Settings → Watch Folders."
+msgstr "Aggiungine una in Impostazioni → Cartelle monitorate."
+
+#: src/settings_window/status_poll.rs:184
+msgid "Waiting for a successful connection check"
+msgstr "In attesa di un controllo della connessione riuscito"
+
+#: src/settings_window/status_poll.rs:202
+msgid "Not Set Up Yet"
+msgstr "Non ancora configurato"
+
+#: src/settings_window/status_poll.rs:203
+msgid "Connect Mimick to your Immich server to start."
+msgstr "Connetti Mimick al server Immich per iniziare."
+
+#: src/settings_window/status_poll.rs:210
+msgid "Paused"
+msgstr "In pausa"
+
+#: src/settings_window/status_poll.rs:228
+msgid "Can't Reach Immich"
+msgstr "Impossibile raggiungere Immich"
+
+#: src/settings_window/status_poll.rs:229
+msgid "Check the server address and API key in Settings."
+msgstr "Controllare l'indirizzo del server e la chiave API nelle Impostazioni."
+
+#: src/settings_window/status_poll.rs:236
+msgid "Waiting for Immich"
+msgstr "In attesa di Immich"
+
+#: src/settings_window/status_poll.rs:237
+msgid "Failed uploads retry when the server is reachable."
+msgstr "I caricamenti non riusciti verranno riprovati quando il server sarà raggiungibile."
+
+#: src/settings_window/status_poll.rs:246
+#, rust-format
+msgid "Last upload {when}"
+msgstr "Ultimo caricamento {when}"
+
+#: src/settings_window/status_poll.rs:263
+#, rust-format
+msgid "Uploading {done} of {total}"
+msgstr "Caricamento di {done} su {total}"
+
+#: src/settings_window/status_poll.rs:289
+#: src/settings_window/status_poll.rs:295
+msgid "Up to date"
+msgstr "Aggiornato"
+
+#: src/settings_window/status_poll.rs:292
+#, rust-format
+msgid "Problem: {err}"
+msgstr "Problema: {err}"
+
+#: src/settings_window/status_poll.rs:298
+#, rust-format
+msgid "{n} waiting to upload"
+msgid_plural "{n} waiting to upload"
+msgstr[0] "{n} in attesa di caricamento"
+msgstr[1] "{n} in attesa di caricamento"
+
+#: src/settings_window/status_poll.rs:308
+#, rust-format
+msgid "last upload {when}"
+msgstr "ultimo caricamento {when}"
+
+#: src/settings_window/watch_folders.rs:123
+msgid "Upload Target"
+msgstr "Destinazione di caricamento"
+
+#: src/settings_window/watch_folders.rs:156
+msgid "Select a library or album upload target"
+msgstr "Seleziona una libreria o un album come destinazione di caricamento"
+
+#: src/settings_window/watch_folders.rs:192
+msgid "Remove Folder"
+msgstr "Rimuovi cartella"
+
+#: src/settings_window/watch_folders/album_picker.rs:88
+#, rust-format
+msgid "Create new: \"{name}\""
+msgstr "Crea nuovo: \"{name}\""
+
+#: src/settings_window/watch_folders/album_picker.rs:95
+msgid "No album sync or deletion mirroring"
+msgstr "Nessuna sincronizzazione dell'album o mirroring delle eliminazioni"
+
+#: src/settings_window/watch_folders/album_picker.rs:96
+msgid "Creates album dynamically per-folder"
+msgstr "Crea l'album dinamicamente per cartella"
+
+#: src/settings_window/watch_folders/album_picker.rs:188
+msgid "Select Upload Target"
+msgstr "Seleziona destinazione di caricamento"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:29
+msgid "Rules"
+msgstr "Regole"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:30
+msgid "Edit folder rules"
+msgstr "Modifica regole della cartella"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:33
+#: src/settings_window/watch_folders/rules_dialog.rs:83
+msgid "Folder Rules"
+msgstr "Regole cartella"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:172
+msgid "Uploads new photos and downloads new album photos."
+msgstr "Carica le nuove foto e scarica le nuove foto dell'album."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:184
+msgid "Sync Method"
+msgstr "Metodo di sincronizzazione"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:187
+msgid "Full Sync"
+msgstr "Sincronizzazione completa"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:188
+msgid "Upload Only"
+msgstr "Solo caricamento"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:189
+msgid "Download Only"
+msgstr "Solo scaricamento"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:195
+msgid "Which files in this folder are checked at startup."
+msgstr "Quali file in questa cartella vengono controllati all'avvio."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:220
+msgid "Library uploads can only upload from this folder."
+msgstr "I caricamenti nella libreria possono caricare solo da questa cartella."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:224
+msgid "Not available for library uploads."
+msgstr "Non disponibile per i caricamenti nella libreria."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:245
+msgid "Deletions"
+msgstr "Eliminazioni"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:252
+msgid "Files"
+msgstr "File"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:280
+msgid "Delete from Immich Too"
+msgstr "Elimina anche da Immich"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:281
+msgid "Moves the Immich copy to the Immich trash."
+msgstr "Sposta la copia di Immich nel cestino di Immich."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:287
+msgid "Delete from This Folder Too"
+msgstr "Elimina anche da questa cartella"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:288
+msgid "Waiting on a Flatpak trash portal fix."
+msgstr "In attesa di una correzione del portale del cestino di Flatpak."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:298
+msgid "Skip Hidden Files"
+msgstr "Ignora i file nascosti"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:299
+msgid "Names starting with a dot, like .thumbnails"
+msgstr "Nomi che iniziano con un punto, come .thumbnails"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:321
+msgid "Largest File in MB (empty for no limit)"
+msgstr "Dimensione massima del file in MB (vuoto per nessun limite)"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:325
+msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
+msgstr "Solo questi tipi, es. jpg, png, mp4 (vuoto per tutti)"
+
+#: src/settings_window/wiring.rs:72
+msgid "Status"
+msgstr "Stato"
+
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+msgid "Quit Mimick"
+msgstr "Esci da Mimick"
+
+#: src/settings_window/wiring.rs:101
+msgid "Main Menu"
+msgstr "Menu principale"
+
+#: src/settings_window/wiring.rs:148
+msgid "Get Started"
+msgstr "Per iniziare"
+
+#: src/settings_window/wiring.rs:150
+msgid "Three steps to connect Mimick to your Immich server."
+msgstr "Tre passaggi per connettere Mimick al server Immich."
+
+#: src/settings_window/wiring.rs:155
+msgid "1. Enter your server"
+msgstr "1. Inserisci il server"
+
+#: src/settings_window/wiring.rs:156
+msgid "Your Immich address under Server, below."
+msgstr "L'indirizzo del server Immich nella sezione Server sottostante."
+
+#: src/settings_window/wiring.rs:159
+msgid "2. Add an API key"
+msgstr "2. Aggiungi una chiave API"
+
+#: src/settings_window/wiring.rs:160
+msgid ""
+"In Immich: Account Settings → API Keys. The guide lists the permissions."
+msgstr "In Immich: Impostazioni account → Chiavi API. La guida elenca i permessi."
+
+#: src/settings_window/wiring.rs:163
+msgid "3. Save and Connect"
+msgstr "3. Salva e connetti"
+
+#: src/settings_window/wiring.rs:165
+msgid ""
+"Your library opens next. To back up a folder too, add it under Watch Folders."
+msgstr "Successivamente si aprirà la libreria. Per eseguire anche il backup di una cartella, aggiungila in Cartelle monitorate."
+
+#: src/settings_window/wiring.rs:177
+msgid "Guide"
+msgstr "Guida"
+
+#: src/settings_window/wiring.rs:207
+#, rust-format
+msgid "{name} also works"
+msgstr "Anche {name} funziona"
+
+#: src/settings_window/wiring.rs:211
+#, rust-format
+msgid "{name} unreachable"
+msgstr "{name} non raggiungibile"
+
+#: src/settings_window/wiring.rs:219
+msgid "Couldn't reach Immich at either address"
+msgstr "Impossibile raggiungere Immich a entrambi gli indirizzi"
+
+#: src/settings_window/wiring.rs:252
+msgid "Testing…"
+msgstr "Test in corso…"
+
+#: src/settings_window/wiring.rs:366
+msgid "Paused by you"
+msgstr "Messo in pausa dall'utente"
+
+#: src/settings_window/wiring.rs:425
+msgid "Invalid Selection"
+msgstr "Selezione non valida"
+
+#: src/settings_window/wiring.rs:426
+msgid "At least one URL (Internal or External) must be enabled."
+msgstr "Almeno un URL (interno o esterno) deve essere abilitato."
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:16
+msgid "Choose Diagnostics Export Folder"
+msgstr "Scegli cartella di esportazione della diagnostica"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:49
+msgid "Diagnostics Exported"
+msgstr "Diagnostica esportata"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:51
+#, rust-format
+msgid "Saved diagnostics bundle to {path}"
+msgstr "Pacchetto di diagnostica salvato in {path}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:61
+#: src/settings_window/wiring/diagnostics_wiring.rs:68
+msgid "Diagnostics Export Failed"
+msgstr "Esportazione diagnostica non riuscita"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:63
+#, rust-format
+msgid "Could not write diagnostics bundle: {err}"
+msgstr "Impossibile scrivere il pacchetto di diagnostica: {err}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:70
+#, rust-format
+msgid "Diagnostics task could not complete: {err}"
+msgstr "L'attività di diagnostica non è stata completata: {err}"
+
+#: src/settings_window/wiring/folder_wiring.rs:91
+msgid "Watch Folders"
+msgstr "Cartelle monitorate"
+
+#: src/settings_window/wiring/folder_wiring.rs:92
+msgid "Expand a folder to pick its album and rules."
+msgstr "Espandi una cartella per scegliere il relativo album e le regole."
+
+#: src/settings_window/wiring/folder_wiring.rs:114
+msgid "Add Folder…"
+msgstr "Aggiungi cartella…"
+
+#: src/settings_window/wiring/folder_wiring.rs:152
+msgid "Select Watch Folder"
+msgstr "Seleziona cartella monitorata"
+
+#: src/settings_window/wiring/library_wiring.rs:86
+msgid "Could Not Clear Cache"
+msgstr "Impossibile svuotare la cache"
+
+#: src/startup_scan/enumeration.rs:114
+msgid "Permission lost or folder missing"
+msgstr "Autorizzazione persa o cartella mancante"
+
+#: src/tray_icon.rs:41
+msgid "Mimick Sync"
+msgstr "Sincronizzazione Mimick"
+
+#: src/tray_icon.rs:84
+msgid "Pause / Resume"
+msgstr "Pausa / Riprendi"
+
+#: src/tray_icon.rs:106
+msgid "Quit"
+msgstr "Esci"
+
+#: src/watch_path_display.rs:18
+msgid "Selected Folder"
+msgstr "Cartella selezionata"
+
+#: setup/dev.nicx.mimick.desktop:2
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:4
+msgid "Mimick"
+msgstr "Mimick"
+
+#: setup/dev.nicx.mimick.desktop:3
+msgid "Unofficial Immich desktop client and auto-sync agent"
+msgstr "Client desktop e agente di sincronizzazione automatica non ufficiale per Immich"
+
+#: setup/dev.nicx.mimick.desktop:10
+msgid ""
+"Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
+msgstr "Foto;Fotografie;Immagini;Video;Sync;Sincronizzazione;Backup;Carica;Caricamento;Immich;Galleria;Self-hosted;"
+
+#: setup/dev.nicx.mimick.desktop:25
+msgid "Upload with Mimick"
+msgstr "Carica con Mimick"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:5
+msgid "Back up and browse your photos"
+msgstr "Esegui il backup ed esplora le tue foto"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:17
+msgid ""
+"Mimick is a native Linux desktop client for self-hosted Immich servers. It "
+"monitors your folders in the background and automatically syncs photos and "
+"videos to your server."
+msgstr "Mimick è un client desktop nativo per Linux per server Immich self-hosted. Monitora le cartelle in background e sincronizza automaticamente foto e video sul server."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
+msgid ""
+"Per-folder sync methods: upload only, download only, or full bidirectional "
+"sync with optional deletion mirroring."
+msgstr "Metodi di sincronizzazione per cartella: solo caricamento, solo scaricamento o sincronizzazione bidirezionale completa con mirroring opzionale delle eliminazioni."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
+msgid ""
+"Built-in Library View for browsing your timeline, managing albums, and "
+"searching with Smart Search, OCR, and metadata filters."
+msgstr "Vista libreria integrata per esplorare la cronologia, gestire gli album ed eseguire ricerche con Ricerca intelligente, OCR e filtri sui metadati."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
+msgid ""
+"SHA-1 deduplication, parallel upload workers, and offline retry queue for "
+"reliable transfers."
+msgstr "Deduplicazione SHA-1, processi di caricamento paralleli e coda di nuovi tentativi offline per trasferimenti affidabili."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
+msgid ""
+"Environment-aware: automatically pauses on battery or metered connections. "
+"Configurable quiet hours and per-folder rules."
+msgstr "Consapevole dell'ambiente: si sospende automaticamente su batteria o connessioni a consumo. Ore di silenzio e regole per cartella configurabili."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
+msgid ""
+"Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
+"sandbox support."
+msgstr "Sviluppato in Rust con GTK4 e Libadwaita. Integrazione nell'area di notifica e supporto al sandbox Flatpak."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
+msgid ""
+"Mimick is a community-developed client and is not affiliated with or "
+"endorsed by the Immich project."
+msgstr "Mimick è un client sviluppato dalla comunità e non è affiliato né approvato dal progetto Immich."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
+msgid "Library View - Photos page with sidebar"
+msgstr "Vista libreria - Pagina Foto con barra laterale"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:43
+msgid "Explore page showing People, Places, and Things"
+msgstr "Pagina Esplora che mostra Persone, Luoghi e Cose"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:48
+msgid "Selected album view in dark mode"
+msgstr "Vista dell'album selezionato in modalità scura"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:53
+msgid "Lightbox viewer with details pane"
+msgstr "Visore lightbox con riquadro dei dettagli"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:58
+msgid "OCR search for text inside images"
+msgstr "Ricerca OCR per il testo all'interno delle immagini"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:63
+msgid "Album sync dialog with upload and download actions"
+msgstr "Finestra di dialogo di sincronizzazione dell'album con azioni di caricamento e scaricamento"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:68
+msgid "Settings - Server connection and watch folders"
+msgstr "Impostazioni - Connessione al server e cartelle monitorate"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
+msgid "Status page with sync health dashboard"
+msgstr "Pagina di stato con dashboard sull'integrità della sincronizzazione"
+

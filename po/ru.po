@@ -1,0 +1,6568 @@
+# Russian translations for mimick package.
+# Copyright (C) 2026 THE mimick'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the mimick package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: mimick\n"
+"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
+"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"PO-Revision-Date: 2026-11-09 20:57+0530\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/about.rs:49
+msgid "Documentation"
+msgstr "Документация"
+
+#: src/about.rs:51
+msgid "Attribution"
+msgstr "Благодарности"
+
+#: src/about.rs:53
+msgid "Special Thanks"
+msgstr "Особая благодарность"
+
+#: src/about.rs:56
+msgid "Built With"
+msgstr "Создано с помощью"
+
+#: src/api_client/albums.rs:70
+msgid "Album list is unavailable"
+msgstr "Список альбомов недоступен"
+
+#: src/api_client/albums.rs:71
+msgid "Reconnect to the Immich server before refreshing albums."
+msgstr "Переподключитесь к серверу Immich перед обновлением списка альбомов."
+
+#: src/api_client/albums.rs:180
+msgid "Failed to fetch albums"
+msgstr "Не удалось получить альбомы"
+
+#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+msgid "Cannot fetch albums to verify existence"
+msgstr "Не удалось получить альбомы для проверки их существования"
+
+#: src/api_client/errors.rs:35
+#, rust-format
+msgid ""
+"The server responded with HTTP {status}. Check the server logs and retry "
+"after confirming the current configuration."
+msgstr "Сервер ответил ошибкой HTTP {status}. Проверьте журналы сервера и повторите попытку после проверки текущей конфигурации."
+
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+msgid "Immich rejected the API key"
+msgstr "Immich отклонил ключ API"
+
+#: src/api_client/errors.rs:45
+msgid ""
+"Update the API key in Settings and confirm it still has the required Asset "
+"and Album permissions (see README for the full list)."
+msgstr "Обновите ключ API в настройках и убедитесь, что у него есть необходимые разрешения для файлов и альбомов (полный список см. в файле README)."
+
+#: src/api_client/errors.rs:54
+msgid "An album reference is no longer valid"
+msgstr "Ссылка на альбом больше не действительна"
+
+#: src/api_client/errors.rs:55
+msgid "Refresh the album list or choose a different album before retrying."
+msgstr "Обновите список альбомов или выберите другой альбом перед повторной попыткой."
+
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+msgid "Immich rejected a file as too large"
+msgstr "Immich отклонил файл из-за слишком большого размера"
+
+#: src/api_client/errors.rs:61
+msgid ""
+"Reduce the file size, raise the server upload limit, or skip oversized files "
+"with folder rules."
+msgstr "Уменьшите размер файла, увеличьте ограничение на загрузку на сервере или настройте пропуск файлов большого размера в правилах папок."
+
+#: src/api_client/errors.rs:65
+msgid "Immich rate-limited the request"
+msgstr "Immich ограничил частоту запросов"
+
+#: src/api_client/errors.rs:67
+msgid ""
+"Wait a moment and retry. If this happens often, lower upload concurrency or "
+"check reverse proxy limits."
+msgstr "Подождите немного и повторите попытку. Если это происходит часто, уменьшите количество параллельных загрузок или проверьте ограничения обратного прокси."
+
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+msgid "Immich is temporarily unavailable"
+msgstr "Immich временно недоступен"
+
+#: src/api_client/errors.rs:73
+msgid ""
+"Wait a moment and retry. If it keeps happening, inspect the server and "
+"reverse proxy logs."
+msgstr "Подождите немного и повторите попытку. Если это повторяется, проверьте журналы сервера и обратного прокси."
+
+#: src/api_client/errors.rs:88
+msgid "the upload"
+msgstr "загрузку"
+
+#: src/api_client/errors.rs:90
+#, rust-format
+msgid "Immich could not accept {subject}"
+msgstr "Immich не удалось принять {subject}"
+
+#: src/api_client/errors.rs:95 src/library/explore_view/tiles.rs:116
+#: src/library/explore_view/tiles.rs:138 src/library/people_view.rs:236
+#: src/library/source_header/enrichment.rs:242
+msgid "Unnamed"
+msgstr "Без названия"
+
+#: src/api_client/errors.rs:97
+#, rust-format
+msgid "Immich could not create album '{album}'"
+msgstr "Immich не удалось создать альбом '{album}'"
+
+#: src/api_client/errors.rs:101
+msgid "Immich could not load the album list"
+msgstr "Immich не удалось загрузить список альбомов"
+
+#: src/api_client/errors.rs:103
+msgid "Immich could not add the asset to the selected album"
+msgstr "Immich не удалось добавить файл в выбранный альбом"
+
+#: src/api_client/errors.rs:105
+msgid "Immich could not load a library thumbnail"
+msgstr "Immich не удалось загрузить миниатюру из библиотеки"
+
+#: src/api_client/errors.rs:106
+msgid "Immich could not load library assets"
+msgstr "Immich не удалось загрузить файлы библиотеки"
+
+#: src/api_client/errors.rs:107
+msgid "Immich could not run the smart library search"
+msgstr "Immich не удалось выполнить умный поиск по библиотеке"
+
+#: src/api_client/errors.rs:109
+msgid "Immich could not run the metadata library search"
+msgstr "Immich не удалось выполнить поиск по метаданным библиотеки"
+
+#: src/api_client/errors.rs:111
+msgid "Immich could not download the selected asset"
+msgstr "Immich не удалось скачать выбранный файл"
+
+#: src/api_client/errors.rs:112
+msgid "Immich could not load library statistics"
+msgstr "Immich не удалось загрузить статистику библиотеки"
+
+#: src/api_client/errors.rs:113
+msgid "Immich could not load server version information"
+msgstr "Immich не удалось загрузить информацию о версии сервера"
+
+#: src/api_client/errors.rs:121
+msgid "The Immich request timed out"
+msgstr "Время ожидания запроса к Immich истекло"
+
+#: src/api_client/errors.rs:122
+msgid "Check network quality and server responsiveness, then retry."
+msgstr "Проверьте качество сетевого подключения и отзывчивость сервера, затем повторите попытку."
+
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+msgid "Could not reach the Immich server"
+msgstr "Не удалось связаться с сервером Immich"
+
+#: src/api_client/errors.rs:128
+msgid ""
+"Check the configured URLs, your network connection, and whether the server "
+"is online."
+msgstr "Проверьте настроенные URL-адреса, сетевое подключение и доступность сервера."
+
+#: src/api_client/errors.rs:135
+msgid ""
+"Retry the request after checking network connectivity and server health."
+msgstr "Проверьте сетевое подключение и состояние сервера, затем повторите попытку."
+
+#: src/api_client/errors.rs:144
+msgid "The upload request failed before completion"
+msgstr "Запрос на загрузку завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:145
+msgid "The album request failed before completion"
+msgstr "Запрос альбома завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:147
+msgid "The album creation request failed before completion"
+msgstr "Запрос на создание альбома завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:150
+msgid "The album assignment request failed before completion"
+msgstr "Запрос на добавление в альбом завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:152
+msgid "The thumbnail request failed before completion"
+msgstr "Запрос миниатюры завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:153
+msgid "The library asset request failed before completion"
+msgstr "Запрос файлов библиотеки завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:154
+msgid "The smart search request failed before completion"
+msgstr "Запрос умного поиска завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:156
+msgid "The metadata search request failed before completion"
+msgstr "Запрос поиска по метаданным завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:159
+msgid "The asset download request failed before completion"
+msgstr "Запрос на скачивание файла завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:162
+msgid "The library statistics request failed before completion"
+msgstr "Запрос статистики библиотеки завершился сбоем до его окончания"
+
+#: src/api_client/errors.rs:165
+msgid "The server version request failed before completion"
+msgstr "Запрос версии сервера завершился сбоем до его окончания"
+
+#: src/api_client/mod.rs:387
+msgid "No active connection"
+msgstr "Нет активного подключения"
+
+#: src/api_client/search.rs:358
+msgid "Immich can't count by file name or deleted photos"
+msgstr "Immich не может вести подсчёт по имени файла или удалённым фотографиям"
+
+#: src/api_client/tags.rs:76
+#, rust-format
+msgid "Immich did not return the tag \"{value}\""
+msgstr "Immich не вернул метку \"{value}\""
+
+#: src/api_client/tags.rs:87
+msgid "Renaming tags needs a newer version of Immich."
+msgstr "Для переименования меток требуется более новая версия Immich."
+
+#: src/api_client/timeline.rs:194
+#, rust-format
+msgid "Invalid month {month}"
+msgstr "Недопустимый месяц {month}"
+
+#: src/api_client/upload.rs:301
+msgid "A queued file is no longer available"
+msgstr "Файл из очереди больше не доступен"
+
+#: src/api_client/upload.rs:303
+msgid "Mimick could not read a queued file"
+msgstr "Mimick не удалось прочитать файл из очереди"
+
+#: src/api_client/upload.rs:306
+msgid ""
+"Check that the watched folder still exists and that the file was not moved "
+"or deleted before upload."
+msgstr "Убедитесь, что отслеживаемая папка существует, а файл не был перемещён или удалён перед загрузкой."
+
+#: src/api_client/upload.rs:308
+msgid ""
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr "Проверьте права доступа к папке и убедитесь, что файл доступен приложению."
+
+#: src/api_client/upload.rs:322
+msgid "Mimick could not open a queued file"
+msgstr "Mimick не удалось открыть файл из очереди"
+
+#: src/api_client/upload.rs:323
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr "Возможно, файл заблокирован, удалён или находится вне разрешённых для приложения папок."
+
+#: src/api_client/upload.rs:336
+msgid "No active server connection"
+msgstr "Нет активного подключения к серверу"
+
+#: src/api_client/upload.rs:337
+msgid ""
+"Test the server connection in Settings and confirm at least one Immich URL "
+"is reachable."
+msgstr "Проверьте подключение к серверу в настройках и убедитесь, что хотя бы один URL Immich доступен."
+
+#: src/api_client/upload.rs:393
+msgid ""
+"Reduce the file size, raise the server's upload limits, or use a folder rule "
+"to skip oversized files."
+msgstr "Уменьшите размер файла, увеличьте ограничения на загрузку на сервере или используйте правило папки для пропуска файлов большого размера."
+
+#: src/api_client/upload.rs:410
+msgid ""
+"Wait a moment and retry. If it keeps happening, check the server logs and "
+"reverse proxy."
+msgstr "Подождите немного и повторите попытку. Если это повторяется, проверьте журналы сервера и обратного прокси."
+
+#: src/autostart.rs:50
+msgid ""
+"Reason for requesting background access: Mimick must run in the background "
+"to automatically sync media to Immich."
+msgstr "Причина запроса фонового режима: Mimick должен работать в фоновом режиме для автоматической синхронизации медиафайлов с Immich."
+
+#: src/autostart.rs:57
+#, rust-format
+msgid "Failed to contact the background portal: {err}"
+msgstr "Не удалось связаться с порталом фонового режима: {err}"
+
+#: src/autostart.rs:59
+#, rust-format
+msgid "The desktop rejected the autostart request: {err}"
+msgstr "Рабочий стол отклонил запрос автозапуска: {err}"
+
+#: src/autostart.rs:74
+#, rust-format
+msgid "Failed to create autostart directory: {err}"
+msgstr "Не удалось создать каталог автозапуска: {err}"
+
+#: src/autostart.rs:88
+#, rust-format
+msgid "Failed to write autostart entry: {err}"
+msgstr "Не удалось записать запись автозапуска: {err}"
+
+#: src/autostart.rs:114
+#, rust-format
+msgid "Failed to remove autostart entry: {err}"
+msgstr "Не удалось удалить запись автозапуска: {err}"
+
+#: src/autostart.rs:126 src/autostart.rs:133
+msgid "Could not locate the user config directory."
+msgstr "Не удалось найти каталог конфигурации пользователя."
+
+#: src/library/about_dialog.rs:40
+msgid "Repository"
+msgstr "Репозиторий"
+
+#: src/library/about_dialog.rs:45
+msgid "Source"
+msgstr "Исходный код"
+
+#: src/library/about_dialog.rs:50
+msgid "Build"
+msgstr "Сборка"
+
+#: src/library/about_dialog.rs:55
+msgid "Build Image"
+msgstr "Образ сборки"
+
+#. Translators: strftime date, e.g. "9 Oct 2026".
+#: src/library/about_dialog.rs:78 src/library/day_row.rs:63
+#: src/library/duplicates_view/cards.rs:217
+#: src/library/explore_view/calendar.rs:36 src/library/header_format.rs:64
+#: src/library/header_format.rs:77 src/library/utilities/controls.rs:138
+msgid "%-d %b %Y"
+msgstr "%-d %b %Y"
+
+#: src/library/about_dialog.rs:81
+#, rust-format
+msgid "Installed {version} on {date}"
+msgstr "Установлена версия {version} ({date})"
+
+#: src/library/about_dialog.rs:135 src/library/about_dialog.rs:150
+msgid "Immich Server"
+msgstr "Сервер Immich"
+
+#: src/library/about_dialog.rs:214
+msgid "Version History"
+msgstr "История версий"
+
+#: src/library/about_dialog.rs:234
+msgid "Server details unavailable"
+msgstr "Сведения о сервере недоступны"
+
+#: src/library/about_dialog.rs:235
+#, rust-format
+msgid ""
+"Your API key needs the 'server.about' and 'server.versionCheck' "
+"permissions.\n"
+"\n"
+"{err}"
+msgstr ""
+"Для вашего ключа API требуются разрешения «server.about» и «server.versionCheck».\n"
+"\n"
+"{err}"
+
+#: src/library/account.rs:34 src/library/window_layout.rs:332
+msgid "Account"
+msgstr "Учётная запись"
+
+#: src/library/account.rs:66
+#, rust-format
+msgid "Couldn't load this. Your API key needs the “{permission}” permission."
+msgstr "Не удалось загрузить. Для вашего ключа API требуется разрешение «{permission}»."
+
+#: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
+#: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
+#: src/library/album_link.rs:187 src/library/album_wiring.rs:35
+#: src/library/asset_edit.rs:253 src/library/bulk_date.rs:316
+#: src/library/dialogs.rs:40 src/library/dialogs.rs:85
+#: src/library/dialogs.rs:110 src/library/lightbox/edit/panel.rs:101
+#: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
+#: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
+#: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/watch_folders/rules_dialog.rs:120
+msgid "Cancel"
+msgstr "Отмена"
+
+#: src/library/account/avatar_crop.rs:130
+msgid "Picture to crop; drag or use the arrow keys to move it"
+msgstr "Изображение для кадрирования; перетаскивайте или используйте клавиши со стрелками для перемещения"
+
+#: src/library/account/avatar_crop.rs:407 src/library/bulk_date.rs:274
+msgid "Set"
+msgstr "Установить"
+
+#: src/library/account/avatar_crop.rs:420
+msgid "Zoom"
+msgstr "Масштаб"
+
+#: src/library/account/avatar_crop.rs:440
+msgid "Crop Picture"
+msgstr "Кадрировать изображение"
+
+#: src/library/account/devices.rs:20
+msgid "Signed-in Devices"
+msgstr "Подключённые устройства"
+
+#: src/library/account/devices.rs:22
+msgid ""
+"Browsers and apps signed in to your account. Mimick uses an API key, so it "
+"isn't listed."
+msgstr "Браузеры и приложения, выполнившие вход в вашу учётную запись. Mimick использует ключ API, поэтому не отображается в списке."
+
+#: src/library/account/devices.rs:28
+msgid "Devices"
+msgstr "Устройства"
+
+#: src/library/account/devices.rs:42
+msgid "No browsers or apps are signed in."
+msgstr "Нет подключённых браузеров или приложений."
+
+#: src/library/account/devices.rs:72
+msgid "Sign out"
+msgstr "Выйти"
+
+#: src/library/account/devices.rs:84
+#, rust-format
+msgid "Sign out {device}?"
+msgstr "Выйти на устройстве {device}?"
+
+#: src/library/account/devices.rs:85
+msgid "It will have to sign in to Immich again."
+msgstr "Потребуется снова войти в Immich."
+
+#: src/library/account/devices.rs:86
+msgid "Sign Out"
+msgstr "Выйти"
+
+#: src/library/account/devices.rs:105
+#, rust-format
+msgid "Couldn't sign it out: {err}"
+msgstr "Не удалось завершить сеанс: {err}"
+
+#: src/library/account/devices.rs:118
+msgid "Unknown device"
+msgstr "Неизвестное устройство"
+
+#: src/library/account/devices.rs:126
+#, rust-format
+msgid "Last used {date}"
+msgstr "Последнее использование: {date}"
+
+#: src/library/account/keys.rs:34
+msgid "This App"
+msgstr "Это приложение"
+
+#: src/library/account/keys.rs:35
+msgid "The key Mimick signs in to Immich with."
+msgstr "Ключ, с помощью которого Mimick подключается к Immich."
+
+#: src/library/account/keys.rs:39
+msgid "Other Keys"
+msgstr "Другие ключи"
+
+#: src/library/account/keys.rs:40
+msgid "Make new keys in Immich's web app."
+msgstr "Создавайте новые ключи в веб-приложении Immich."
+
+#: src/library/account/keys.rs:44
+msgid "API Keys"
+msgstr "Ключи API"
+
+#: src/library/account/keys.rs:92
+msgid "No other keys."
+msgstr "Других ключей нет."
+
+#: src/library/account/keys.rs:101
+msgid "Unnamed key"
+msgstr "Безымянный ключ"
+
+#: src/library/account/keys.rs:115 src/library/shared_link_photos.rs:297
+#, rust-format
+msgid "Made {date}"
+msgstr "Создан {date}"
+
+#: src/library/account/keys.rs:119
+msgid "All permissions"
+msgstr "Все разрешения"
+
+#: src/library/account/keys.rs:123
+#, rust-format
+msgid "{n} permission"
+msgid_plural "{n} permissions"
+msgstr[0] "{n} разрешение"
+msgstr[1] "{n} разрешения"
+msgstr[2] "{n} разрешений"
+
+#: src/library/account/keys.rs:144
+msgid "Rotate…"
+msgstr "Сменить…"
+
+#: src/library/account/keys.rs:145
+msgid "Get a new secret for this key"
+msgstr "Получить новый секрет для этого ключа"
+
+#: src/library/account/keys.rs:155
+msgid "Get a new secret for this key?"
+msgstr "Получить новый секрет для этого ключа?"
+
+#: src/library/account/keys.rs:157
+msgid ""
+"Mimick saves the new secret and keeps working. Anything else using this key "
+"stops working until you give it the new secret."
+msgstr "Mimick сохранит новый секрет и продолжит работу. Все остальные приложения, использующие этот ключ, перестанут работать, пока вы не укажете для них новый секрет."
+
+#: src/library/account/keys.rs:159
+msgid "Rotate"
+msgstr "Сменить"
+
+#: src/library/account/keys.rs:176
+#, rust-format
+msgid "Couldn't rotate the key: {err}"
+msgstr "Не удалось сменить ключ: {err}"
+
+#: src/library/account/keys.rs:184
+msgid "New secret saved"
+msgstr "Новый секрет сохранён"
+
+#: src/library/account/keys.rs:192
+msgid "Copy Your New Secret"
+msgstr "Скопируйте ваш новый секрет"
+
+#: src/library/account/keys.rs:194
+#, rust-format
+msgid ""
+"Mimick is using it now but couldn't save it ({err}). Paste it in Settings so "
+"it's kept:\n"
+"\n"
+"{secret}"
+msgstr ""
+"Mimick сейчас использует его, но не смог сохранить ({err}). Вставьте его в «Настройках», чтобы сохранить:\n"
+"\n"
+"{secret}"
+
+#: src/library/account/keys.rs:199 src/library/context_menu.rs:321
+#: src/library/context_menu.rs:336 src/library/masonry/canvas_helpers.rs:141
+#: src/settings_window/mod.rs:65
+msgid "OK"
+msgstr "ОК"
+
+#: src/library/account/keys.rs:212
+msgid "Delete key"
+msgstr "Удалить ключ"
+
+#: src/library/account/keys.rs:223
+msgid "Delete this key?"
+msgstr "Удалить этот ключ?"
+
+#: src/library/account/keys.rs:224
+msgid "Anything signing in with it stops working. This can't be undone."
+msgstr "Все приложения, выполняющие вход с его помощью, перестанут работать. Это действие нельзя отменить."
+
+#: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
+#: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
+#: src/library/shared_links_view.rs:361 src/library/tags_view.rs:184
+#: src/library/tags_view.rs:305
+msgid "Delete"
+msgstr "Удалить"
+
+#: src/library/account/keys.rs:244
+#, rust-format
+msgid "Couldn't delete the key: {err}"
+msgstr "Не удалось удалить ключ: {err}"
+
+#: src/library/account/profile.rs:36
+msgid "Profile"
+msgstr "Профиль"
+
+#: src/library/account/profile.rs:61
+msgid "Change Picture…"
+msgstr "Изменить изображение…"
+
+#: src/library/account/profile.rs:65
+msgid "Remove Picture"
+msgstr "Удалить изображение"
+
+#: src/library/account/profile.rs:109
+msgid "Remove your profile picture?"
+msgstr "Удалить фотографию профиля?"
+
+#: src/library/account/profile.rs:110
+msgid "Immich shows your initials instead."
+msgstr "Immich будет показывать вместо неё ваши инициалы."
+
+#: src/library/account/profile.rs:111 src/library/lightbox/edit/pages.rs:138
+#: src/library/people_view.rs:458
+msgid "Remove"
+msgstr "Удалить"
+
+#: src/library/account/profile.rs:124
+#, rust-format
+msgid "Couldn't load your account: {err}"
+msgstr "Не удалось загрузить вашу учётную запись: {err}"
+
+#: src/library/account/profile.rs:152
+msgid "To use one of your photos, choose Set as Profile Picture in its menu."
+msgstr "Чтобы использовать одну из ваших фотографий, выберите «Установить как фотографию профиля» в её меню."
+
+#: src/library/account/profile.rs:163
+msgid "Images"
+msgstr "Изображения"
+
+#: src/library/account/profile.rs:178
+msgid "Choose a Profile Picture"
+msgstr "Выберите фотографию профиля"
+
+#: src/library/account/profile.rs:193 src/library/account/profile.rs:222
+msgid "That file isn't a JPEG, PNG, or WebP picture."
+msgstr "Этот файл не является изображением в формате JPEG, PNG или WebP."
+
+#: src/library/account/profile.rs:203
+#, rust-format
+msgid "Couldn't open the picture: {err}"
+msgstr "Не удалось открыть изображение: {err}"
+
+#: src/library/account/profile.rs:232
+#, rust-format
+msgid "Couldn't change it: {err}"
+msgstr "Не удалось изменить: {err}"
+
+#: src/library/account/profile.rs:242
+msgid "Couldn't remove the picture"
+msgstr "Не удалось удалить изображение"
+
+#: src/library/account/profile.rs:282
+msgid "Profile picture changed"
+msgstr "Фотография профиля изменена"
+
+#: src/library/account/profile.rs:284
+msgid "Couldn't change your picture"
+msgstr "Не удалось изменить изображение профиля"
+
+#: src/library/account/profile.rs:298
+msgid "Immich's preview of this photo isn't a JPEG or WebP."
+msgstr "Предпросмотр этой фотографии в Immich не является форматом JPEG или WebP."
+
+#: src/library/actions.rs:222
+msgid "New Link…"
+msgstr "Новая ссылка…"
+
+#: src/library/actions.rs:229
+msgid "Add to Existing Link…"
+msgstr "Добавить в существующую ссылку…"
+
+#: src/library/actions.rs:270 src/library/utilities.rs:194
+#, rust-format
+msgid "{n} selected"
+msgid_plural "{n} selected"
+msgstr[0] "Выбран {n}"
+msgstr[1] "Выбрано {n}"
+msgstr[2] "Выбрано {n}"
+
+#: src/library/actions.rs:276
+#, rust-format
+msgid "{owned} of {n} selected, only yours change"
+msgid_plural "{owned} of {n} selected, only yours change"
+msgstr[0] "Выбрано {owned} из {n}, изменятся только ваши"
+msgstr[1] "Выбрано {owned} из {n}, изменятся только ваши"
+msgstr[2] "Выбрано {owned} из {n}, изменятся только ваши"
+
+#: src/library/actions.rs:318 src/library/actions.rs:351
+msgid "Not Your Photos"
+msgstr "Не ваши фотографии"
+
+#: src/library/actions.rs:319
+msgid ""
+"Only the owner can change where a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "Только владелец может изменять место съёмки фотографии, а выбранные фотографии принадлежат другим пользователям."
+
+#: src/library/actions.rs:352
+msgid ""
+"Only the owner can change when a photo was taken, and the selected photos "
+"belong to other people."
+msgstr "Только владелец может изменять дату съёмки фотографии, а выбранные фотографии принадлежат другим пользователям."
+
+#: src/library/actions/trash.rs:60
+#, rust-format
+msgid "Move “{filename}” to trash?"
+msgstr "Переместить «{filename}» в корзину?"
+
+#: src/library/actions/trash.rs:65
+#, rust-format
+msgid "Move {count} item to trash?"
+msgid_plural "Move {count} items to trash?"
+msgstr[0] "Переместить {count} элемент в корзину?"
+msgstr[1] "Переместить {count} элемента в корзину?"
+msgstr[2] "Переместить {count} элементов в корзину?"
+
+#: src/library/actions/trash.rs:72
+#, rust-format
+msgid "Delete “{filename}” permanently?"
+msgstr "Удалить «{filename}» навсегда?"
+
+#: src/library/actions/trash.rs:77 src/library/trash_view.rs:179
+#, rust-format
+msgid "Delete {count} item permanently?"
+msgid_plural "Delete {count} items permanently?"
+msgstr[0] "Удалить {count} элемент навсегда?"
+msgstr[1] "Удалить {count} элемента навсегда?"
+msgstr[2] "Удалить {count} элементов навсегда?"
+
+#: src/library/actions/trash.rs:89
+msgid "Items can be restored from the Immich trash."
+msgstr "Элементы можно восстановить из корзины Immich."
+
+#: src/library/actions/trash.rs:91
+msgid "The Immich trash is turned off, so this can't be undone."
+msgstr "Корзина Immich отключена, поэтому это действие нельзя будет отменить."
+
+#: src/library/actions/trash.rs:95
+msgid "Local copies in your watch folders are kept."
+msgstr "Локальные копии в отслеживаемых папках сохраняются."
+
+#: src/library/actions/trash.rs:101
+#, rust-format
+msgid "{n} local-only item is not on the server and will be skipped."
+msgid_plural "{n} local-only items are not on the server and will be skipped."
+msgstr[0] "{n} локальный элемент отсутствует на сервере и будет пропущен."
+msgstr[1] "{n} локальных элемента отсутствуют на сервере и будут пропущены."
+msgstr[2] "{n} локальных элементов отсутствуют на сервере и будут пропущены."
+
+#: src/library/actions/trash.rs:159
+msgid "Could Not Move to Trash"
+msgstr "Не удалось переместить в корзину"
+
+#: src/library/actions/trash.rs:161 src/library/album_assets.rs:125
+#: src/library/album_assets.rs:226 src/library/album_delete.rs:218
+#: src/library/album_picker.rs:194 src/library/album_picker.rs:228
+#: src/library/album_picker/several.rs:101
+#, rust-format
+msgid "Immich rejected the request: {err}"
+msgstr "Immich отклонил запрос: {err}"
+
+#: src/library/actions/trash.rs:185 src/library/shortcuts_dialog.rs:160
+msgid "Move to trash"
+msgstr "Переместить в корзину"
+
+#: src/library/album_activity.rs:60
+#, rust-format
+msgid "{n} like"
+msgid_plural "{n} likes"
+msgstr[0] "{n} отметка «Нравится»"
+msgstr[1] "{n} отметки «Нравится»"
+msgstr[2] "{n} отметок «Нравится»"
+
+#: src/library/album_activity.rs:64
+#, rust-format
+msgid "{n} comment"
+msgid_plural "{n} comments"
+msgstr[0] "{n} комментарий"
+msgstr[1] "{n} комментария"
+msgstr[2] "{n} комментариев"
+
+#: src/library/album_activity/dialog.rs:23
+msgid "Likes and comments"
+msgstr "Отметки «Нравится» и комментарии"
+
+#: src/library/album_activity/dialog.rs:77 src/library/album_options.rs:34
+#: src/library/lightbox/activity.rs:22
+msgid "Activity"
+msgstr "Активность"
+
+#: src/library/album_activity/feed.rs:42 src/library/album_activity/feed.rs:126
+msgid "Like"
+msgstr "Нравится"
+
+#: src/library/album_activity/feed.rs:43
+msgid "Send"
+msgstr "Отправить"
+
+#: src/library/album_activity/feed.rs:46
+msgid "Add a comment…"
+msgstr "Добавить комментарий…"
+
+#: src/library/album_activity/feed.rs:108
+msgid "Couldn't load likes and comments"
+msgstr "Не удалось загрузить отметки «Нравится» и комментарии"
+
+#: src/library/album_activity/feed.rs:117
+msgid "No likes or comments yet"
+msgstr "Пока нет отметок «Нравится» и комментариев"
+
+#: src/library/album_activity/feed.rs:124
+msgid "Unlike"
+msgstr "Убрать «Нравится»"
+
+#: src/library/album_activity/feed.rs:166
+msgid "Couldn't update the like"
+msgstr "Не удалось обновить отметку «Нравится»"
+
+#: src/library/album_activity/feed.rs:191
+msgid "Couldn't post the comment"
+msgstr "Не удалось отправить комментарий"
+
+#: src/library/album_activity/feed.rs:202
+msgid "Couldn't delete"
+msgstr "Не удалось удалить"
+
+#: src/library/album_activity/feed.rs:260 src/library/content_state.rs:213
+#: src/library/server_stats_dialog.rs:42
+msgid "Loading…"
+msgstr "Загрузка…"
+
+#: src/library/album_assets.rs:79
+#, rust-format
+msgid "Only the owner can remove these from “{album}”"
+msgstr "Только владелец может удалять их из «{album}»"
+
+#: src/library/album_assets.rs:84
+#, rust-format
+msgid "Removed {items} from “{album}”"
+msgstr "Удалено {items} из «{album}»"
+
+#: src/library/album_assets.rs:94
+#, rust-format
+msgid "{n} belongs to someone else"
+msgid_plural "{n} belong to someone else"
+msgstr[0] "{n} принадлежит другому пользователю"
+msgstr[1] "{n} принадлежат другим пользователям"
+msgstr[2] "{n} принадлежат другим пользователям"
+
+#: src/library/album_assets.rs:123
+msgid "Couldn't remove from the album"
+msgstr "Не удалось удалить из альбома"
+
+#: src/library/album_assets.rs:155
+msgid "Undo"
+msgstr "Отменить"
+
+#: src/library/album_assets.rs:183
+msgid "Album cover updated"
+msgstr "Обложка альбома обновлена"
+
+#: src/library/album_assets.rs:186 src/library/album_edit.rs:91
+msgid "Couldn't update the album"
+msgstr "Не удалось обновить альбом"
+
+#: src/library/album_assets.rs:194
+#, rust-format
+msgid "Leave “{album_name}”?"
+msgstr "Покинуть «{album_name}»?"
+
+#: src/library/album_assets.rs:200
+msgid ""
+"You'll stop seeing its photos unless the owner shares it with you again."
+msgstr "Вы перестанете видеть фотографии из него, пока владелец снова не поделится им с вами."
+
+#: src/library/album_assets.rs:201
+msgid "Leave"
+msgstr "Покинуть"
+
+#: src/library/album_assets.rs:212
+#, rust-format
+msgid "Left “{album_name}”"
+msgstr "Вы вышли из «{album_name}»"
+
+#: src/library/album_assets.rs:224
+msgid "Couldn't leave the album"
+msgstr "Не удалось покинуть альбом"
+
+#: src/library/album_delete.rs:28
+#, rust-format
+msgid ""
+"Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
+"they don't create it again."
+msgstr "Mimick всё ещё выполняет загрузку. Удалите «{album_name}» после завершения загрузок, чтобы он не создался снова."
+
+#: src/library/album_delete.rs:29
+msgid "Uploads in Progress"
+msgstr "Выполняется загрузка"
+
+#: src/library/album_delete.rs:35
+msgid "Close Settings First"
+msgstr "Сначала закройте «Настройки»"
+
+#: src/library/album_delete.rs:36
+msgid ""
+"Deleting this album changes your watch folders, and saving the open Settings "
+"window would undo that. Close Settings, then delete the album."
+msgstr "Удаление этого альбома изменит отслеживаемые папки, а сохранение в открытом окне «Настройки» отменит эти изменения. Закройте «Настройки», затем удалите альбом."
+
+#: src/library/album_delete.rs:45
+msgid "Its photos stay in your library."
+msgstr "Фотографии из него останутся в вашей библиотеке."
+
+#: src/library/album_delete.rs:49
+msgid "It's also removed for the person it's shared with."
+msgstr "Он также будет удалён у пользователя, с которым им поделились."
+
+#: src/library/album_delete.rs:53
+#, rust-format
+msgid "It's also removed for the {n} person it's shared with."
+msgid_plural "It's also removed for the {n} people it's shared with."
+msgstr[0] "Он также будет удалён у {n} человека, с которым им поделились."
+msgstr[1] "Он также будет удалён у {n} человек, с которыми им поделились."
+msgstr[2] "Он также будет удалён у {n} человек, с которыми им поделились."
+
+#: src/library/album_delete.rs:61
+msgid "Its shared links stop working."
+msgstr "Общие ссылки на него перестанут работать."
+
+#: src/library/album_delete.rs:117
+#, rust-format
+msgid "Delete “{album_name}”?"
+msgstr "Удалить «{album_name}»?"
+
+#: src/library/album_delete.rs:124
+msgid "Delete Album"
+msgstr "Удалить альбом"
+
+#: src/library/album_delete.rs:153
+msgid "These folders sync with this album:"
+msgstr "Эти папки синхронизируются с этим альбомом:"
+
+#: src/library/album_delete.rs:156
+msgid "Keep backing them up to your library"
+msgstr "Продолжать копировать их в библиотеку"
+
+#: src/library/album_delete.rs:160
+msgid "Stop watching these folders"
+msgstr "Прекратить отслеживание этих папок"
+
+#: src/library/album_delete.rs:169
+msgid ""
+"So the album doesn't come back, photos in these folders go to your library "
+"instead of an album named after the folder:"
+msgstr "Чтобы альбом не появился снова, фотографии из этих папок будут отправляться в вашу библиотеку, а не в альбом с именем папки:"
+
+#: src/library/album_delete.rs:221
+msgid "Could Not Delete Album"
+msgstr "Не удалось удалить альбом"
+
+#: src/library/album_delete.rs:256
+#, rust-format
+msgid "Deleted “{album_name}”"
+msgstr "Удалён альбом «{album_name}»"
+
+#: src/library/album_download.rs:20 src/library/controls.rs:377
+#: src/library/staging_view.rs:148
+msgid "Album"
+msgstr "Альбом"
+
+#: src/library/album_download.rs:34
+#, rust-format
+msgid "Immich couldn't prepare the album: {err}"
+msgstr "Immich не удалось подготовить альбом: {err}"
+
+#: src/library/album_download.rs:37 src/library/album_download.rs:54
+msgid "Download Failed"
+msgstr "Не удалось скачать"
+
+#: src/library/album_download.rs:42
+#, rust-format
+msgid "“{album}” has nothing to download"
+msgstr "В «{album}» нет файлов для скачивания"
+
+#: src/library/album_download.rs:90
+#, rust-format
+msgid "Saved {file_name}"
+msgstr "Сохранено: {file_name}"
+
+#: src/library/album_download.rs:101
+#, rust-format
+msgid "Saved {count} zip file"
+msgid_plural "Saved {count} zip files"
+msgstr[0] "Сохранён {count} zip-файл"
+msgstr[1] "Сохранено {count} zip-файла"
+msgstr[2] "Сохранено {count} zip-файлов"
+
+#: src/library/album_download.rs:111 src/library/download.rs:287
+msgid "Open Folder"
+msgstr "Открыть папку"
+
+#: src/library/album_edit.rs:21 src/library/albums_view.rs:66
+#: src/library/people_view.rs:322 src/library/tags_view.rs:205
+msgid "Rename…"
+msgstr "Переименовать…"
+
+#: src/library/album_edit.rs:25 src/library/albums_view.rs:68
+#: src/library/window_layout/bulk_bar.rs:215
+msgid "Edit Description…"
+msgstr "Изменить описание…"
+
+#: src/library/album_edit.rs:29
+msgid "Options…"
+msgstr "Параметры…"
+
+#: src/library/album_edit.rs:33 src/library/albums_view.rs:72
+msgid "Delete Album…"
+msgstr "Удалить альбом…"
+
+#: src/library/album_edit.rs:44
+msgid "Rename Album"
+msgstr "Переименовать альбом"
+
+#: src/library/album_edit.rs:45
+msgid "Folders linked to this album stay linked."
+msgstr "Папки, связанные с этим альбомом, останутся связанными."
+
+#: src/library/album_edit.rs:47 src/library/album_picker.rs:432
+#: src/library/album_wiring.rs:31
+msgid "Album name"
+msgstr "Название альбома"
+
+#: src/library/album_edit.rs:48 src/library/download.rs:357
+#: src/library/tags_view.rs:182 src/library/tags_view.rs:277
+msgid "Rename"
+msgstr "Переименовать"
+
+#: src/library/album_edit.rs:76
+msgid "Album Description"
+msgstr "Описание альбома"
+
+#: src/library/album_link.rs:42
+msgid "Linked folder"
+msgstr "Связанная папка"
+
+#: src/library/album_link.rs:48
+msgid "Unlink"
+msgstr "Отвязать"
+
+#: src/library/album_link.rs:54 src/library/window_layout.rs:492
+msgid "No local folder linked"
+msgstr "Нет связанной локальной папки"
+
+#: src/library/album_link.rs:56 src/library/window_layout.rs:494
+msgid "Drop files in the linked folder to sync this album"
+msgstr "Перетащите файлы в связанную папку для синхронизации с этим альбомом"
+
+#: src/library/album_link.rs:60 src/library/window_layout/responsive.rs:178
+msgid "Link folder…"
+msgstr "Связать папку…"
+
+#: src/library/album_link.rs:184
+msgid "Sync album"
+msgstr "Синхронизировать альбом"
+
+#: src/library/album_link.rs:185
+msgid "Pick which directions to apply."
+msgstr "Выберите направления синхронизации."
+
+#: src/library/album_link.rs:188
+msgid "Apply"
+msgstr "Применить"
+
+#: src/library/album_link.rs:200
+#, rust-format
+msgid "Upload {n} item to album"
+msgid_plural "Upload {n} items to album"
+msgstr[0] "Загрузить {n} элемент в альбом"
+msgstr[1] "Загрузить {n} элемента в альбом"
+msgstr[2] "Загрузить {n} элементов в альбом"
+
+#: src/library/album_link.rs:209
+#, rust-format
+msgid "Download {n} item to folder"
+msgid_plural "Download {n} items to folder"
+msgstr[0] "Скачать {n} элемент в папку"
+msgstr[1] "Скачать {n} элемента в папку"
+msgstr[2] "Скачать {n} элементов в папку"
+
+#: src/library/album_link.rs:218
+#, rust-format
+msgid "Move {n} album item to trash"
+msgid_plural "Move {n} album items to trash"
+msgstr[0] "Переместить {n} элемент альбома в корзину"
+msgstr[1] "Переместить {n} элемента альбома в корзину"
+msgstr[2] "Переместить {n} элементов альбома в корзину"
+
+#: src/library/album_link.rs:227
+#, rust-format
+msgid "Move {n} local item to trash"
+msgid_plural "Move {n} local items to trash"
+msgstr[0] "Переместить {n} локальный элемент в корзину"
+msgstr[1] "Переместить {n} локальных элемента в корзину"
+msgstr[2] "Переместить {n} локальных элементов в корзину"
+
+#: src/library/album_link.rs:292
+#, rust-format
+msgid ""
+"Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
+msgid_plural ""
+"Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
+msgstr[0] "Уже синхронизировано. ({n} удалённый элемент не удалось сопоставить — отсутствует контрольная сумма.)"
+msgstr[1] "Уже синхронизировано. ({n} удалённых элемента не удалось сопоставить — отсутствует контрольная сумма.)"
+msgstr[2] "Уже синхронизировано. ({n} удалённых элементов не удалось сопоставить — отсутствует контрольная сумма.)"
+
+#: src/library/album_link.rs:299
+msgid "Already in sync."
+msgstr "Уже синхронизировано."
+
+#: src/library/album_link.rs:307
+#, rust-format
+msgid "{n} remote item couldn't be matched (missing checksum)."
+msgid_plural "{n} remote items couldn't be matched (missing checksum)."
+msgstr[0] "{n} удалённый элемент не удалось сопоставить (отсутствует контрольная сумма)."
+msgstr[1] "{n} удалённых элемента не удалось сопоставить (отсутствует контрольная сумма)."
+msgstr[2] "{n} удалённых элементов не удалось сопоставить (отсутствует контрольная сумма)."
+
+#: src/library/album_link.rs:430
+#, rust-format
+msgid "Link folder for album '{album_name}'"
+msgstr "Связать папку для альбома «{album_name}»"
+
+#: src/library/album_options.rs:19
+msgid "Album Options"
+msgstr "Параметры альбома"
+
+#: src/library/album_options.rs:25
+msgid "Comments and Likes"
+msgstr "Комментарии и отметки «Нравится»"
+
+#: src/library/album_options.rs:26
+msgid "Let people in this album like and comment"
+msgstr "Разрешить участникам альбома ставить отметки «Нравится» и комментировать"
+
+#: src/library/album_options.rs:30
+msgid "Display"
+msgstr "Вид"
+
+#: src/library/album_options.rs:48
+msgid "Display Order"
+msgstr "Порядок отображения"
+
+#: src/library/album_options.rs:50
+msgid "Newest First"
+msgstr "Сначала новые"
+
+#: src/library/album_options.rs:51
+msgid "Oldest First"
+msgstr "Сначала старые"
+
+#: src/library/album_options.rs:92 src/library/album_options.rs:149
+#, rust-format
+msgid "Couldn't save: {err}"
+msgstr "Не удалось сохранить: {err}"
+
+#: src/library/album_picker.rs:54
+msgid "Add to Album"
+msgstr "Добавить в альбом"
+
+#: src/library/album_picker.rs:136
+#, rust-format
+msgid "Couldn't add to “{album}”"
+msgstr "Не удалось добавить в «{album}»"
+
+#: src/library/album_picker.rs:138
+#, rust-format
+msgid "Already in “{album}”"
+msgstr "Уже есть в «{album}»"
+
+#: src/library/album_picker.rs:140
+#, rust-format
+msgid "Added {items} to “{album}”"
+msgstr "Добавлено: {items} в «{album}»"
+
+#: src/library/album_picker.rs:144
+#, rust-format
+msgid "Added {items} to “{album}” · {duplicate} already there"
+msgstr "Добавлено: {items} в «{album}» · {duplicate} уже там"
+
+#: src/library/album_picker.rs:156
+#, rust-format
+msgid "{n} not allowed"
+msgid_plural "{n} not allowed"
+msgstr[0] "{n} не разрешён"
+msgstr[1] "{n} не разрешено"
+msgstr[2] "{n} не разрешено"
+
+#: src/library/album_picker.rs:192
+msgid "Couldn't add to the album"
+msgstr "Не удалось добавить в альбом"
+
+#: src/library/album_picker.rs:206
+msgid "Open"
+msgstr "Открыть"
+
+#: src/library/album_picker.rs:221 src/library/album_picker.rs:226
+msgid "Could Not Create Album"
+msgstr "Не удалось создать альбом"
+
+#: src/library/album_picker.rs:222
+msgid "Immich didn't return the new album."
+msgstr "Immich не вернул новый альбом."
+
+#: src/library/album_picker.rs:260 src/library/albums_view.rs:187
+msgid "Filter albums"
+msgstr "Фильтр альбомов"
+
+#: src/library/album_picker.rs:358
+#, rust-format
+msgid "New Album “{name}”"
+msgstr "Новый альбом «{name}»"
+
+#: src/library/album_picker.rs:359
+msgid "New Album…"
+msgstr "Новый альбом…"
+
+#: src/library/album_picker.rs:429
+msgid "New Album"
+msgstr "Новый альбом"
+
+#: src/library/album_picker.rs:430
+msgid "The selected items will be added to it."
+msgstr "В него будут добавлены выбранные элементы."
+
+#: src/library/album_picker.rs:433 src/library/album_wiring.rs:36
+#: src/library/tags_view.rs:253
+msgid "Create"
+msgstr "Создать"
+
+#: src/library/album_picker/several.rs:49
+msgid "Add to this album too"
+msgstr "Также добавить в этот альбом"
+
+#: src/library/album_picker/several.rs:72
+#, rust-format
+msgid "Add to {n} Album"
+msgid_plural "Add to {n} Albums"
+msgstr[0] "Добавить в {n} альбом"
+msgstr[1] "Добавить в {n} альбома"
+msgstr[2] "Добавить в {n} альбомов"
+
+#: src/library/album_picker/several.rs:99
+msgid "Couldn't add to the albums"
+msgstr "Не удалось добавить в альбомы"
+
+#: src/library/album_picker/several.rs:114
+#, rust-format
+msgid "Added {items} to {n} album"
+msgid_plural "Added {items} to {n} albums"
+msgstr[0] "Добавлено: {items} в {n} альбом"
+msgstr[1] "Добавлено: {items} в {n} альбома"
+msgstr[2] "Добавлено: {items} в {n} альбомов"
+
+#: src/library/album_picker/several.rs:123
+msgid "Already in those albums"
+msgstr "Уже есть в этих альбомах"
+
+#: src/library/album_picker/several.rs:124
+msgid "You can't add these to those albums"
+msgstr "Вы не можете добавить их в эти альбомы"
+
+#: src/library/album_picker/widgets.rs:87
+msgid "No matching albums"
+msgstr "Нет подходящих альбомов"
+
+#: src/library/album_share_dialog.rs:37
+msgid "Shared with"
+msgstr "Общий доступ предоставлен"
+
+#: src/library/album_share_dialog.rs:40 src/library/sharing_view.rs:271
+msgid "Find people by name or email"
+msgstr "Найти людей по имени или эл. почте"
+
+#: src/library/album_share_dialog.rs:43
+msgid "Add people"
+msgstr "Добавить пользователей"
+
+#: src/library/album_share_dialog.rs:53
+#, rust-format
+msgid "Share “{album_name}”"
+msgstr "Поделиться альбомом «{album_name}»"
+
+#: src/library/album_share_dialog.rs:89
+msgid "Could Not Load Album"
+msgstr "Не удалось загрузить альбом"
+
+#: src/library/album_share_dialog.rs:150
+msgid "Editor"
+msgstr "Редактор"
+
+#: src/library/album_share_dialog.rs:150 src/library/shortcuts_dialog.rs:263
+msgid "Viewer"
+msgstr "Читатель"
+
+#: src/library/album_share_dialog.rs:162
+msgid "Could Not Change Role"
+msgstr "Не удалось изменить роль"
+
+#: src/library/album_share_dialog.rs:174
+msgid "Stop sharing with this person"
+msgstr "Закрыть доступ для этого пользователя"
+
+#: src/library/album_share_dialog.rs:181
+msgid "Could Not Remove Person"
+msgstr "Не удалось удалить пользователя"
+
+#: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+msgid "Add"
+msgstr "Добавить"
+
+#: src/library/album_share_dialog.rs:198
+msgid "Could Not Share Album"
+msgstr "Не удалось поделиться альбомом"
+
+#: src/library/album_sync.rs:85
+#, rust-format
+msgid "{n} album item"
+msgid_plural "{n} album items"
+msgstr[0] "{n} элемент альбома"
+msgstr[1] "{n} элемента альбома"
+msgstr[2] "{n} элементов альбома"
+
+#: src/library/album_wiring.rs:27 src/library/albums_view.rs:183
+msgid "Create album"
+msgstr "Создать альбом"
+
+#: src/library/album_wiring.rs:28
+msgid "Choose a name for the new album."
+msgstr "Выберите название для нового альбома."
+
+#: src/library/album_wiring.rs:88 src/library/source_loading.rs:96
+#, rust-format
+msgid "Could not load albums: {err}"
+msgstr "Не удалось загрузить альбомы: {err}"
+
+#: src/library/albums_view.rs:64
+msgid "Share…"
+msgstr "Поделиться…"
+
+#: src/library/albums_view.rs:65 src/library/context_menu/manage.rs:58
+msgid "Create Share Link…"
+msgstr "Создать ссылку общего доступа…"
+
+#: src/library/albums_view.rs:71 src/library/albums_view.rs:76
+#: src/library/context_menu.rs:139 src/library/shared_links_view.rs:415
+#: src/library/shortcuts_dialog.rs:139
+msgid "Download"
+msgstr "Скачать"
+
+#: src/library/albums_view.rs:77 src/library/source_header/enrichment.rs:221
+msgid "Leave Album…"
+msgstr "Покинуть альбом…"
+
+#: src/library/albums_view.rs:137
+msgid "Recent"
+msgstr "Недавние"
+
+#: src/library/albums_view.rs:138 src/library/albums_view.rs:220
+msgid "Your albums"
+msgstr "Ваши альбомы"
+
+#: src/library/albums_view.rs:139
+msgid "Shared with you"
+msgstr "Доступные вам"
+
+#: src/library/albums_view.rs:218
+msgid "Shared by you"
+msgstr "Предоставленные вами"
+
+#: src/library/albums_view.rs:352
+msgid "Couldn't Tell Which Albums Are Yours"
+msgstr "Не удалось определить, какие альбомы принадлежат вам"
+
+#: src/library/albums_view.rs:353
+msgid "Your API key needs the 'user.read' permission."
+msgstr "Для вашего ключа API требуется разрешение «user.read»."
+
+#: src/library/albums_view.rs:357
+msgid "No Shared Albums"
+msgstr "Нет общих альбомов"
+
+#: src/library/albums_view.rs:358
+msgid "Share one of your albums, or ask someone to share one with you."
+msgstr "Поделитесь одним из своих альбомов или попросите кого-нибудь поделиться альбомом с вами."
+
+#: src/library/albums_view/stats.rs:40
+#, rust-format
+msgid "{owned} owned · {shared} shared · {not_shared} not shared"
+msgstr "{owned} ваших · {shared} общих · {not_shared} личных"
+
+#: src/library/albums_view/tile.rs:58 src/library/download.rs:177
+#: src/library/header_format.rs:34
+#, rust-format
+msgid "{n} item"
+msgid_plural "{n} items"
+msgstr[0] "{n} элемент"
+msgstr[1] "{n} элемента"
+msgstr[2] "{n} элементов"
+
+#: src/library/archive.rs:24
+msgid "Unarchive"
+msgstr "Разархивировать"
+
+#: src/library/archive.rs:26 src/library/search_filters.rs:137
+#: src/library/shortcuts_dialog.rs:62 src/library/sidebar/rows.rs:112
+#: src/library/source_header.rs:311
+msgid "Archive"
+msgstr "Архивировать"
+
+#: src/library/archive.rs:32
+msgid "Unarchive (A)"
+msgstr "Разархивировать (A)"
+
+#: src/library/archive.rs:34
+msgid "Archive (A)"
+msgstr "Архивировать (A)"
+
+#: src/library/archive.rs:62
+msgid "Could Not Archive"
+msgstr "Не удалось архивировать"
+
+#: src/library/archive.rs:64
+msgid "Could Not Unarchive"
+msgstr "Не удалось разархивировать"
+
+#: src/library/archive.rs:88
+msgid "Unarchive selected"
+msgstr "Разархивировать выбранные"
+
+#: src/library/archive.rs:90 src/library/window_layout/bulk_bar.rs:64
+msgid "Archive selected"
+msgstr "Архивировать выбранные"
+
+#: src/library/asset_edit.rs:131 src/library/map/location_dialog.rs:59
+msgid "Could Not Load Info"
+msgstr "Не удалось загрузить сведения"
+
+#: src/library/asset_edit.rs:156
+msgid "Date taken"
+msgstr "Дата съёмки"
+
+#: src/library/asset_edit.rs:161
+msgid "Pick date and time"
+msgstr "Выберите дату и время"
+
+#: src/library/asset_edit.rs:182 src/library/people_view.rs:226
+msgid "Favorite"
+msgstr "Избранное"
+
+#: src/library/asset_edit.rs:192 src/library/bulk_more.rs:138
+#: src/library/lightbox/details.rs:147 src/library/shared_link_dialog.rs:106
+msgid "Description"
+msgstr "Описание"
+
+#: src/library/asset_edit.rs:255 src/library/bulk_date.rs:318
+#: src/library/bulk_more.rs:139 src/library/dialogs.rs:86
+#: src/library/lightbox/edit/panel.rs:103 src/library/map/location_dialog.rs:76
+#: src/library/people_view.rs:429 src/library/people_view.rs:461
+#: src/library/shared_link_dialog.rs:202 src/library/tags_view.rs:335
+#: src/settings_window/watch_folders/rules_dialog.rs:122
+msgid "Save"
+msgstr "Сохранить"
+
+#: src/library/asset_edit.rs:275
+msgid "Edit Info"
+msgstr "Изменить сведения"
+
+#: src/library/asset_edit.rs:349
+msgid "Could Not Save Info"
+msgstr "Не удалось сохранить сведения"
+
+#: src/library/asset_edit.rs:351 src/library/map/location_dialog.rs:167
+#, rust-format
+msgid "Immich rejected the update: {err}"
+msgstr "Immich отклонил обновление: {err}"
+
+#: src/library/asset_edit/date_picker.rs:78
+msgid "Set Date"
+msgstr "Установить дату"
+
+#: src/library/asset_edit/date_picker.rs:137
+#: src/library/lightbox/details.rs:260
+msgid "Not set"
+msgstr "Не задано"
+
+#: src/library/asset_jobs.rs:35
+msgid "Refresh Faces"
+msgstr "Обновить лица"
+
+#: src/library/asset_jobs.rs:36
+msgid "Immich is looking for faces again"
+msgstr "Immich снова выполняет поиск лиц"
+
+#: src/library/asset_jobs.rs:43
+msgid "Refresh Metadata"
+msgstr "Обновить метаданные"
+
+#: src/library/asset_jobs.rs:44
+msgid "Immich is reading the metadata again"
+msgstr "Immich снова считывает метаданные"
+
+#: src/library/asset_jobs.rs:51
+msgid "Refresh Thumbnails"
+msgstr "Обновить миниатюры"
+
+#: src/library/asset_jobs.rs:52
+msgid "Immich is making new thumbnails"
+msgstr "Immich создаёт новые миниатюры"
+
+#: src/library/asset_jobs.rs:59
+msgid "Refresh Video"
+msgstr "Обновить видео"
+
+#: src/library/asset_jobs.rs:60
+msgid "Immich is converting the video again"
+msgstr "Immich снова конвертирует видео"
+
+#: src/library/asset_jobs.rs:114
+msgid "Couldn't refresh"
+msgstr "Не удалось обновить"
+
+#: src/library/asset_jobs.rs:116
+#, rust-format
+msgid "Immich didn't start the job: {err}"
+msgstr "Immich не запустил задание: {err}"
+
+#: src/library/asset_tags.rs:46
+msgid "Add tag"
+msgstr "Добавить метку"
+
+#: src/library/asset_tags.rs:51 src/library/navigation.rs:204
+#: src/library/search_filters.rs:84 src/library/sidebar/rows.rs:100
+msgid "Tags"
+msgstr "Метки"
+
+#: src/library/asset_tags.rs:63
+msgid "No tags yet"
+msgstr "Пока нет меток"
+
+#: src/library/asset_tags.rs:139
+#, rust-format
+msgid "Show photos tagged “{value}”"
+msgstr "Показать фотографии с меткой «{value}»"
+
+#: src/library/asset_tags.rs:150
+#, rust-format
+msgid "Remove “{value}”"
+msgstr "Удалить «{value}»"
+
+#: src/library/asset_tags.rs:189
+msgid "Couldn't remove the tag"
+msgstr "Не удалось удалить метку"
+
+#: src/library/asset_tags.rs:219
+msgid "Couldn't add the tag"
+msgstr "Не удалось добавить метку"
+
+#: src/library/asset_tags.rs:227
+msgid "Find or create a tag"
+msgstr "Найти или создать метку"
+
+#: src/library/asset_tags.rs:307
+#, rust-format
+msgid "Create “{query}”"
+msgstr "Создать «{query}»"
+
+#: src/library/bottom_nav.rs:10 src/library/server_stats_dialog.rs:94
+#: src/library/server_stats_dialog.rs:126 src/library/shortcuts_dialog.rs:57
+#: src/library/sidebar/rows.rs:40 src/library/source_header.rs:276
+#: src/library/utilities/controls.rs:29
+msgid "Photos"
+msgstr "Фотографии"
+
+#: src/library/bottom_nav.rs:11 src/library/shortcuts_dialog.rs:58
+#: src/library/sidebar/rows.rs:52 src/library/source_header.rs:309
+msgid "Explore"
+msgstr "Обзор"
+
+#: src/library/bottom_nav.rs:12 src/library/navigation.rs:177
+#: src/library/shortcuts_dialog.rs:59 src/library/shortcuts_dialog.rs:261
+#: src/library/sidebar/rows.rs:58
+msgid "Map"
+msgstr "Карта"
+
+#: src/library/bottom_nav.rs:13 src/library/navigation.rs:200
+#: src/library/search_filters.rs:85 src/library/shortcuts_dialog.rs:64
+#: src/library/sidebar/rows.rs:70
+msgid "Albums"
+msgstr "Альбомы"
+
+#: src/library/bottom_nav.rs:14 src/library/explore_view.rs:217
+#: src/library/lightbox/people.rs:47 src/library/navigation.rs:203
+#: src/library/search_filters.rs:83 src/library/shortcuts_dialog.rs:60
+#: src/library/sidebar/rows.rs:64
+msgid "People"
+msgstr "Люди"
+
+#: src/library/bulk_date.rs:27
+msgid "No change"
+msgstr "Без изменений"
+
+#: src/library/bulk_date.rs:36
+#, rust-format
+msgid "{n} day"
+msgid_plural "{n} days"
+msgstr[0] "{n} день"
+msgstr[1] "{n} дня"
+msgstr[2] "{n} дней"
+
+#: src/library/bulk_date.rs:37
+#, rust-format
+msgid "{n} hour"
+msgid_plural "{n} hours"
+msgstr[0] "{n} час"
+msgstr[1] "{n} часа"
+msgstr[2] "{n} часов"
+
+#: src/library/bulk_date.rs:38
+#, rust-format
+msgid "{n} minute"
+msgid_plural "{n} minutes"
+msgstr[0] "{n} минута"
+msgstr[1] "{n} минуты"
+msgstr[2] "{n} минут"
+
+#: src/library/bulk_date.rs:46
+#, rust-format
+msgid "Later by {amount}"
+msgstr "Позже на {amount}"
+
+#: src/library/bulk_date.rs:48
+#, rust-format
+msgid "Earlier by {amount}"
+msgstr "Раньше на {amount}"
+
+#: src/library/bulk_date.rs:90
+#, rust-format
+msgid "Changed the date of {items}"
+msgstr "Изменена дата для {items}"
+
+#: src/library/bulk_date.rs:101
+msgid "Could Not Change Date"
+msgstr "Не удалось изменить дату"
+
+#: src/library/bulk_date.rs:103
+#, rust-format
+msgid "Immich rejected the change: {err}"
+msgstr "Immich отклонил изменение: {err}"
+
+#: src/library/bulk_date.rs:151
+msgid "Days"
+msgstr "Дни"
+
+#: src/library/bulk_date.rs:152
+msgid "Hours"
+msgstr "Часы"
+
+#: src/library/bulk_date.rs:153
+msgid "Minutes"
+msgstr "Минуты"
+
+#: src/library/bulk_date.rs:160
+msgid "Date and time"
+msgstr "Дата и время"
+
+#: src/library/bulk_date.rs:230
+#, rust-format
+msgid "Saved as {date} UTC{offset}"
+msgstr "Сохранено как {date} UTC{offset}"
+
+#: src/library/bulk_date.rs:274
+msgid "Shift"
+msgstr "Сдвинуть"
+
+#: src/library/bulk_date.rs:325 src/library/bulk_date.rs:345
+msgid "Change Date and Time"
+msgstr "Изменить дату и время"
+
+#: src/library/bulk_more.rs:39
+msgid "Only the owner can change these photos"
+msgstr "Только владелец может изменять эти фотографии"
+
+#: src/library/bulk_more.rs:71
+msgid "Unfavorite selected"
+msgstr "Удалить выбранные из избранного"
+
+#: src/library/bulk_more.rs:76 src/library/window_layout/bulk_bar.rs:211
+msgid "Favorite selected"
+msgstr "Добавить выбранные в избранное"
+
+#: src/library/bulk_more.rs:91
+msgid "Couldn't update favorites"
+msgstr "Не удалось обновить избранное"
+
+#: src/library/bulk_more.rs:103
+#, rust-format
+msgid "Added {n} photo to favorites"
+msgid_plural "Added {n} photos to favorites"
+msgstr[0] "В избранное добавлена {n} фотография"
+msgstr[1] "В избранное добавлено {n} фотографии"
+msgstr[2] "В избранное добавлено {n} фотографий"
+
+#: src/library/bulk_more.rs:109
+#, rust-format
+msgid "Removed {n} photo from favorites"
+msgid_plural "Removed {n} photos from favorites"
+msgstr[0] "Из избранного удалена {n} фотография"
+msgstr[1] "Из избранного удалено {n} фотографии"
+msgstr[2] "Из избранного удалено {n} фотографий"
+
+#: src/library/bulk_more.rs:125
+#, rust-format
+msgid "Describe {n} Photo"
+msgid_plural "Describe {n} Photos"
+msgstr[0] "Описать {n} фотографию"
+msgstr[1] "Описать {n} фотографии"
+msgstr[2] "Описать {n} фотографий"
+
+#: src/library/bulk_more.rs:136
+msgid "Each photo gets this description in place of its own."
+msgstr "Каждая фотография получит это описание взамен своего."
+
+#: src/library/bulk_more.rs:151
+msgid "Description saved"
+msgstr "Описание сохранено"
+
+#: src/library/bulk_more.rs:152
+msgid "Couldn't save the description"
+msgstr "Не удалось сохранить описание"
+
+#: src/library/bulk_overflow.rs:32
+msgid "More actions"
+msgstr "Другие действия"
+
+#: src/library/clipboard.rs:141
+#, rust-format
+msgid "Copied {n} photo"
+msgid_plural "Copied {n} photos"
+msgstr[0] "Скопирована {n} фотография"
+msgstr[1] "Скопировано {n} фотографии"
+msgstr[2] "Скопировано {n} фотографий"
+
+#: src/library/clipboard.rs:151
+#, rust-format
+msgid ""
+"Pasting into an album here adds all {count}. Only {local} are on this "
+"computer, so other apps such as Files paste those; use Download for the rest."
+msgstr "Вставка в этот альбом добавит все {count}. На этом компьютере находятся только {local}, поэтому другие приложения (например, «Файлы») вставят только их; для остальных используйте функцию «Скачать»."
+
+#: src/library/clipboard.rs:162
+msgid "Paste in Photos or albums"
+msgstr "Вставить в «Фотографии» или альбомы"
+
+#: src/library/clipboard.rs:177 src/library/clipboard.rs:187
+msgid "Couldn't paste"
+msgstr "Не удалось вставить"
+
+#: src/library/clipboard.rs:186 src/library/clipboard.rs:191
+#: src/library/clipboard.rs:226
+msgid "No photos to paste"
+msgstr "Нет фотографий для вставки"
+
+#: src/library/clipboard.rs:233 src/library/upload_stack.rs:74
+#, rust-format
+msgid "Uploading {n} file…"
+msgid_plural "Uploading {n} files…"
+msgstr[0] "Загрузка {n} файла…"
+msgstr[1] "Загрузка {n} файлов…"
+msgstr[2] "Загрузка {n} файлов…"
+
+#: src/library/clipboard.rs:262
+msgid "Already in your library"
+msgstr "Уже есть в вашей библиотеке"
+
+#: src/library/clipboard.rs:273
+msgid "Uploading pasted image…"
+msgstr "Загрузка вставленного изображения…"
+
+#: src/library/clipboard.rs:279
+msgid "Pasted image"
+msgstr "Вставленное изображение"
+
+#: src/library/clipboard.rs:290
+msgid "Pasted image uploaded"
+msgstr "Вставленное изображение загружено"
+
+#: src/library/clipboard.rs:294
+msgid "Couldn't paste the image"
+msgstr "Не удалось вставить изображение"
+
+#: src/library/content_state.rs:24
+#, rust-format
+msgid "{n} asset"
+msgid_plural "{n} assets"
+msgstr[0] "{n} объект"
+msgstr[1] "{n} объекта"
+msgstr[2] "{n} объектов"
+
+#: src/library/content_state.rs:119 src/library/explore_view/calendar.rs:43
+#: src/library/header_format.rs:177 src/library/map/markers.rs:125
+#: src/library/memories.rs:134 src/library/server_stats_dialog.rs:227
+#: src/library/source_header.rs:268
+#, rust-format
+msgid "{n} photo"
+msgid_plural "{n} photos"
+msgstr[0] "{n} фотография"
+msgstr[1] "{n} фотографии"
+msgstr[2] "{n} фотографий"
+
+#: src/library/content_state.rs:123 src/library/server_stats_dialog.rs:231
+#: src/library/source_header.rs:272
+#, rust-format
+msgid "{n} video"
+msgid_plural "{n} videos"
+msgstr[0] "{n} видеозапись"
+msgstr[1] "{n} видеозаписи"
+msgstr[2] "{n} видеозаписей"
+
+#: src/library/content_state.rs:128 src/library/sidebar.rs:36
+msgid "Statistics unavailable"
+msgstr "Статистика недоступна"
+
+#: src/library/content_state.rs:133 src/library/server_stats_dialog.rs:80
+#, rust-format
+msgid "Immich {version}"
+msgstr "Immich {version}"
+
+#: src/library/content_state.rs:134
+msgid "Version unavailable"
+msgstr "Версия недоступна"
+
+#: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
+#: src/settings_window/wiring.rs:215
+msgid "Connected through LAN"
+msgstr "Подключено через LAN"
+
+#: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
+#: src/settings_window/wiring.rs:217
+msgid "Connected through WAN"
+msgstr "Подключено через WAN"
+
+#: src/library/content_state.rs:142 src/settings_window/status_poll.rs:183
+msgid "Connected through configured server"
+msgstr "Подключено через настроенный сервер"
+
+#: src/library/content_state.rs:144 src/library/sidebar.rs:35
+msgid "Offline"
+msgstr "Не в сети"
+
+#: src/library/content_state.rs:175
+msgid "queued asset"
+msgstr "объект в очереди"
+
+#: src/library/content_state.rs:176
+msgid "selected asset"
+msgstr "выбранный объект"
+
+#: src/library/content_state.rs:217
+msgid "Fetching library data from the Immich server"
+msgstr "Получение данных медиатеки с сервера Immich"
+
+#: src/library/content_state.rs:366 src/library/masonry/canvas_helpers.rs:138
+#: src/library/server_stats_dialog.rs:161
+msgid "Missing API Permissions"
+msgstr "Отсутствуют разрешения API"
+
+#: src/library/content_state.rs:367
+msgid ""
+"Your API key is missing permissions required for the Library view. Please "
+"ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
+"'person.read' enabled."
+msgstr "В вашем ключе API отсутствуют разрешения, необходимые для просмотра медиатеки. Убедитесь, что для ключа включены «asset.read», «asset.view», «asset.download» и «person.read»."
+
+#: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
+#: src/library/shortcuts_dialog.rs:179
+msgid "Close"
+msgstr "Закрыть"
+
+#: src/library/context_menu.rs:131
+msgid "Copy"
+msgstr "Копировать"
+
+#: src/library/context_menu.rs:148
+msgid "Open In"
+msgstr "Открыть в"
+
+#: src/library/context_menu.rs:174 src/library/shortcuts_dialog.rs:264
+msgid "Slideshow"
+msgstr "Слайд-шоу"
+
+#: src/library/context_menu.rs:181
+msgid "Leave Fullscreen"
+msgstr "Выйти из полноэкранного режима"
+
+#: src/library/context_menu.rs:183
+msgid "Fullscreen"
+msgstr "Полноэкранный режим"
+
+#: src/library/context_menu.rs:229 src/library/context_menu.rs:236
+msgid "Couldn't copy the photo"
+msgstr "Не удалось скопировать фотографию"
+
+#: src/library/context_menu.rs:237
+msgid "Could not decode the original image."
+msgstr "Не удалось декодировать исходное изображение."
+
+#: src/library/context_menu.rs:256
+msgid "Couldn't open the file"
+msgstr "Не удалось открыть файл"
+
+#: src/library/context_menu.rs:288
+msgid "Could not locate a cache directory."
+msgstr "Не удалось найти каталог кэша."
+
+#: src/library/context_menu.rs:316 src/library/lightbox/details.rs:205
+msgid "Details"
+msgstr "Сведения"
+
+#: src/library/context_menu/manage.rs:73
+msgid "Add to Share Link…"
+msgstr "Добавить в общую ссылку…"
+
+#: src/library/context_menu/manage.rs:84 src/library/lightbox/widgets.rs:434
+msgid "Add to Album…"
+msgstr "Добавить в альбом…"
+
+#: src/library/context_menu/manage.rs:92
+msgid "Set as Album Cover"
+msgstr "Сделать обложкой альбома"
+
+#: src/library/context_menu/manage.rs:108
+msgid "Remove from Album"
+msgstr "Удалить из альбома"
+
+#: src/library/context_menu/manage.rs:130 src/library/lightbox/widgets.rs:432
+msgid "Edit Info…"
+msgstr "Изменить сведения…"
+
+#: src/library/context_menu/manage.rs:149
+msgid "Edit Photo…"
+msgstr "Редактировать фотографию…"
+
+#: src/library/context_menu/manage.rs:158 src/library/lightbox/people.rs:59
+msgid "Tag People…"
+msgstr "Отметить людей…"
+
+#: src/library/context_menu/manage.rs:176
+msgid "Set as Profile Picture"
+msgstr "Сделать фотографией профиля"
+
+#: src/library/context_menu/manage.rs:186
+msgid "Set Location…"
+msgstr "Указать местоположение…"
+
+#: src/library/context_menu/manage.rs:208
+msgid "Move to Trash"
+msgstr "Переместить в корзину"
+
+#: src/library/context_menu/manage.rs:210 src/library/shared_links_view.rs:222
+#: src/library/tags_view.rs:213
+msgid "Delete…"
+msgstr "Удалить…"
+
+#: src/library/context_menu/manage.rs:231 src/library/people_view.rs:330
+msgid "Remove from Favorites"
+msgstr "Удалить из избранного"
+
+#: src/library/context_menu/manage.rs:233 src/library/people_view.rs:332
+msgid "Add to Favorites"
+msgstr "Добавить в избранное"
+
+#: src/library/context_menu/manage.rs:283
+msgid "Restore"
+msgstr "Восстановить"
+
+#: src/library/context_menu/manage.rs:293 src/library/trash_view.rs:207
+msgid "Delete Permanently"
+msgstr "Удалить навсегда"
+
+#: src/library/context_menu/menu.rs:62
+msgid "Photo Actions"
+msgstr "Действия с фотографией"
+
+#: src/library/controls/sort.rs:57
+msgid "Most assets"
+msgstr "Больше всего объектов"
+
+#: src/library/controls/sort.rs:57 src/library/people_view.rs:428
+#: src/library/person_picker.rs:163
+msgid "Name"
+msgstr "Имя"
+
+#: src/library/controls/sort.rs:57 src/library/controls/sort.rs:60
+#: src/library/window_layout.rs:360
+msgid "Newest"
+msgstr "Сначала новые"
+
+#: src/library/controls/sort.rs:58 src/library/theme/palettes.rs:54
+#: src/library/theme/palettes.rs:82
+msgid "Default"
+msgstr "По умолчанию"
+
+#: src/library/controls/sort.rs:61
+msgid "Oldest"
+msgstr "Сначала старые"
+
+#: src/library/controls/sort.rs:62 src/library/window_layout.rs:361
+msgid "Filename"
+msgstr "Имя файла"
+
+#: src/library/controls/sort.rs:63 src/library/window_layout.rs:362
+msgid "File Type"
+msgstr "Тип файла"
+
+#: src/library/day_row.rs:37 src/library/day_row.rs:69
+msgid "Any Day"
+msgstr "Любой день"
+
+#: src/library/download.rs:153
+#, rust-format
+msgid "Saved {safe_name}"
+msgstr "Сохранено {safe_name}"
+
+#: src/library/download.rs:159
+msgid "Download failed"
+msgstr "Не удалось скачать"
+
+#: src/library/download.rs:258
+msgid "Nothing downloaded"
+msgstr "Ничего не скачано"
+
+#: src/library/download.rs:261
+#, rust-format
+msgid "Downloaded {items}"
+msgstr "Скачано: {items}"
+
+#: src/library/download.rs:270
+#, rust-format
+msgid "{n} skipped"
+msgid_plural "{n} skipped"
+msgstr[0] "{n} пропущен"
+msgstr[1] "{n} пропущены"
+msgstr[2] "{n} пропущено"
+
+#: src/library/download.rs:276
+#, rust-format
+msgid "{n} failed"
+msgid_plural "{n} failed"
+msgstr[0] "{n} с ошибкой"
+msgstr[1] "{n} с ошибками"
+msgstr[2] "{n} с ошибками"
+
+#: src/library/download.rs:321 src/library/download.rs:346
+msgid "File already exists"
+msgstr "Файл уже существует"
+
+#: src/library/download.rs:323
+#, rust-format
+msgid "\"{name}\" already exists. Overwrite?"
+msgstr "«{name}» уже существует. Перезаписать?"
+
+#: src/library/download.rs:327 src/library/download.rs:356
+msgid "Skip"
+msgstr "Пропустить"
+
+#: src/library/download.rs:328 src/library/download.rs:358
+msgid "Overwrite"
+msgstr "Перезаписать"
+
+#: src/library/download.rs:348
+#, rust-format
+msgid "\"{name}\" already exists in the download folder."
+msgstr "«{name}» уже существует в папке загрузок."
+
+#: src/library/download.rs:353
+msgid "Apply to all remaining conflicts"
+msgstr "Применить ко всем оставшимся конфликтам"
+
+#: src/library/download.rs:409 src/settings_window/wiring/folder_wiring.rs:38
+msgid "Choose Download Folder"
+msgstr "Выберите папку для скачивания"
+
+#: src/library/download.rs:423
+msgid "Save as default?"
+msgstr "Сохранить по умолчанию?"
+
+#: src/library/download.rs:425
+#, rust-format
+msgid "Always download to {path}?"
+msgstr "Всегда скачивать в {path}?"
+
+#: src/library/download.rs:429
+msgid "Just Once"
+msgstr "Только один раз"
+
+#: src/library/download.rs:430
+msgid "Always"
+msgstr "Всегда"
+
+#: src/library/drop_target.rs:82
+msgid "No supported media files in drop"
+msgstr "В перетащенных файлах нет поддерживаемых медиафайлов"
+
+#: src/library/duplicates_view.rs:43
+msgid "Previous group"
+msgstr "Предыдущая группа"
+
+#: src/library/duplicates_view.rs:44
+msgid "Next group"
+msgstr "Следующая группа"
+
+#: src/library/duplicates_view.rs:86
+msgid "Not Duplicates"
+msgstr "Не дубликаты"
+
+#: src/library/duplicates_view.rs:87
+msgid "Keep every photo and stop showing this group"
+msgstr "Оставить все фотографии и больше не показывать эту группу"
+
+#: src/library/duplicates_view.rs:96
+msgid "No Duplicates"
+msgstr "Нет дубликатов"
+
+#: src/library/duplicates_view.rs:98
+msgid ""
+"Immich hasn't found any duplicate photos. It looks for them when its "
+"duplicate detection job runs."
+msgstr "Immich не обнаружил дубликатов фотографий. Поиск выполняется при запуске задачи обнаружения дубликатов."
+
+#: src/library/duplicates_view.rs:123
+msgid "Tap a photo to keep it or trash it."
+msgstr "Нажмите на фотографию, чтобы оставить её или переместить в корзину."
+
+#: src/library/duplicates_view.rs:212
+msgid "Could Not Load Duplicates"
+msgstr "Не удалось загрузить дубликаты"
+
+#: src/library/duplicates_view.rs:214 src/library/folders_view.rs:71
+#: src/library/people_view.rs:139 src/library/shared_links_view.rs:103
+#: src/library/sharing_view.rs:96 src/library/sharing_view.rs:181
+#: src/library/tags_view.rs:76
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the '{permission}' permission."
+msgstr ""
+"{err}\n"
+"\n"
+"Вашему ключу API требуется разрешение «{permission}»."
+
+#: src/library/duplicates_view.rs:261
+#, rust-format
+msgid "Group {n} of {total}"
+msgstr "Группа {n} из {total}"
+
+#: src/library/duplicates_view.rs:280
+#, rust-format
+msgid "Trash {n} Photo"
+msgid_plural "Trash {n} Photos"
+msgstr[0] "Переместить в корзину {n} фотографию"
+msgstr[1] "Переместить в корзину {n} фотографии"
+msgstr[2] "Переместить в корзину {n} фотографий"
+
+#: src/library/duplicates_view.rs:282
+#, rust-format
+msgid "Delete {n} Photo"
+msgid_plural "Delete {n} Photos"
+msgstr[0] "Удалить {n} фотографию"
+msgstr[1] "Удалить {n} фотографии"
+msgstr[2] "Удалить {n} фотографий"
+
+#: src/library/duplicates_view.rs:323
+#, rust-format
+msgid "Delete {n} photo permanently?"
+msgid_plural "Delete {n} photos permanently?"
+msgstr[0] "Удалить {n} фотографию навсегда?"
+msgstr[1] "Удалить {n} фотографии навсегда?"
+msgstr[2] "Удалить {n} фотографий навсегда?"
+
+#: src/library/duplicates_view.rs:333
+msgid "Trash is turned off on this server, so this can't be undone."
+msgstr "Корзина отключена на этом сервере, поэтому действие нельзя будет отменить."
+
+#: src/library/duplicates_view.rs:352
+#, rust-format
+msgid "Kept {kept}, trashed {n}"
+msgid_plural "Kept {kept}, trashed {n}"
+msgstr[0] "Оставлено {kept}, перемещена в корзину {n}"
+msgstr[1] "Оставлено {kept}, перемещены в корзину {n}"
+msgstr[2] "Оставлено {kept}, перемещено в корзину {n}"
+
+#: src/library/duplicates_view.rs:374
+msgid "Marked as not duplicates"
+msgstr "Помечено как не дубликаты"
+
+#: src/library/duplicates_view.rs:404
+msgid "Couldn't update the duplicates"
+msgstr "Не удалось обновить дубликаты"
+
+#: src/library/duplicates_view/cards.rs:178
+msgid "Keep"
+msgstr "Оставить"
+
+#: src/library/duplicates_view/cards.rs:181 src/library/shortcuts_dialog.rs:63
+#: src/library/sidebar/rows.rs:118 src/library/source_header.rs:312
+msgid "Trash"
+msgstr "В корзину"
+
+#: src/library/duplicates_view/cards.rs:202
+#, rust-format
+msgid "{size}, largest"
+msgstr "{size}, наибольший"
+
+#: src/library/explore_view.rs:146
+msgid "Recently Added"
+msgstr "Недавно добавленные"
+
+#: src/library/explore_view.rs:147
+msgid "Places"
+msgstr "Места"
+
+#: src/library/explore_view.rs:148 src/library/source_header/enrichment.rs:46
+msgid "Things"
+msgstr "Предметы"
+
+#: src/library/explore_view.rs:151
+msgid "Filter people and places"
+msgstr "Фильтр по людям и местам"
+
+#: src/library/explore_view.rs:227
+msgid "Filter people"
+msgstr "Фильтр по людям"
+
+#: src/library/explore_view.rs:530
+#, rust-format
+msgid "See {remaining} more"
+msgstr "Показать ещё {remaining}"
+
+#: src/library/explore_view.rs:539
+msgid "Show Less"
+msgstr "Показать меньше"
+
+#. Translators: strftime short month, e.g. "Oct 2026".
+#: src/library/explore_view/calendar.rs:28 src/library/timeline/dates.rs:30
+msgid "%b %Y"
+msgstr "%b %Y"
+
+#: src/library/explore_view/calendar.rs:83
+msgid "Earlier year"
+msgstr "Предыдущий год"
+
+#: src/library/explore_view/calendar.rs:84
+msgid "Later year"
+msgstr "Следующий год"
+
+#: src/library/explore_view/calendar.rs:86 src/library/lightbox/details.rs:453
+#: src/library/map/settings.rs:76
+msgid "Taken"
+msgstr "Дата съёмки"
+
+#: src/library/explore_view/calendar.rs:87
+msgid "By when the photos were taken"
+msgstr "По времени съёмки фотографий"
+
+#: src/library/explore_view/calendar.rs:92 src/library/folders_view/rows.rs:154
+msgid "Show Photos"
+msgstr "Показать фотографии"
+
+#: src/library/explore_view/calendar.rs:109
+msgid "Calendar"
+msgstr "Календарь"
+
+#: src/library/explore_view/calendar.rs:135
+msgid "Uploaded"
+msgstr "Дата загрузки"
+
+#: src/library/explore_view/calendar.rs:136
+msgid "By when the photos reached Immich"
+msgstr "По времени добавления фотографий в Immich"
+
+#: src/library/explore_view/calendar.rs:202
+msgid "Pick a day to see its photos."
+msgstr "Выберите день, чтобы просмотреть его фотографии."
+
+#: src/library/explore_view/calendar.rs:335
+msgid "Less"
+msgstr "Меньше"
+
+#: src/library/explore_view/calendar.rs:336
+#: src/library/lightbox/edit/panel.rs:248 src/library/people_view.rs:306
+#: src/library/shared_links_view.rs:172
+#: src/library/source_header/enrichment.rs:227
+#: src/library/source_header/enrichment.rs:256
+#: src/library/source_header/enrichment.rs:311
+msgid "More"
+msgstr "Больше"
+
+#: src/library/explore_view/calendar/grid.rs:106
+msgid "Photos per day; use the arrow keys to pick a day"
+msgstr "Количество фотографий по дням; используйте клавиши со стрелками для выбора дня"
+
+#: src/library/explore_view/people.rs:119
+msgid "Show unnamed"
+msgstr "Показывать безымянные"
+
+#: src/library/explore_view/people.rs:123
+msgid "Show hidden"
+msgstr "Показывать скрытые"
+
+#: src/library/explore_view/tiles.rs:77
+msgid "Just now"
+msgstr "Только что"
+
+#: src/library/explore_view/tiles.rs:81
+#, rust-format
+msgid "{n} min ago"
+msgid_plural "{n} min ago"
+msgstr[0] "{n} мин. назад"
+msgstr[1] "{n} мин. назад"
+msgstr[2] "{n} мин. назад"
+
+#: src/library/explore_view/tiles.rs:87
+#, rust-format
+msgid "{n}h ago"
+msgid_plural "{n}h ago"
+msgstr[0] "{n} ч. назад"
+msgstr[1] "{n} ч. назад"
+msgstr[2] "{n} ч. назад"
+
+#: src/library/explore_view/tiles.rs:93
+#, rust-format
+msgid "{n}d ago"
+msgid_plural "{n}d ago"
+msgstr[0] "{n} дн. назад"
+msgstr[1] "{n} дн. назад"
+msgstr[2] "{n} дн. назад"
+
+#: src/library/favorites.rs:30
+msgid "Remove from favorites (F)"
+msgstr "Удалить из избранного (F)"
+
+#: src/library/favorites.rs:32
+msgid "Add to favorites (F)"
+msgstr "Добавить в избранное (F)"
+
+#: src/library/favorites.rs:63
+msgid "Couldn't update the favorite"
+msgstr "Не удалось обновить избранное"
+
+#: src/library/folders_view.rs:69
+msgid "Could Not Load Folders"
+msgstr "Не удалось загрузить папки"
+
+#: src/library/folders_view.rs:87
+msgid "Path copied"
+msgstr "Путь скопирован"
+
+#: src/library/folders_view.rs:115 src/library/navigation.rs:205
+#: src/library/shortcuts_dialog.rs:262 src/library/sidebar/rows.rs:106
+msgid "Folders"
+msgstr "Папки"
+
+#: src/library/folders_view.rs:131
+msgid "No Folders"
+msgstr "Нет папок"
+
+#: src/library/folders_view.rs:132
+msgid "Folders appear once Immich has photos from them."
+msgstr "Папки появятся, как только в Immich будут добавлены фотографии из них."
+
+#: src/library/folders_view/path_bar.rs:30
+msgid "Folder path"
+msgstr "Путь к папке"
+
+#: src/library/folders_view/path_bar.rs:36
+msgid "Enter a path (Ctrl+L)"
+msgstr "Введите путь (Ctrl+L)"
+
+#: src/library/folders_view/path_bar.rs:40
+msgid "Copy path"
+msgstr "Скопировать путь"
+
+#: src/library/folders_view/path_bar.rs:219
+#, rust-format
+msgid "No folder at {path}"
+msgstr "По пути {path} нет папки"
+
+#: src/library/folders_view/rows.rs:32
+#, rust-format
+msgid "Photos in {folder}"
+msgstr "Фотографии в {folder}"
+
+#: src/library/folders_view/rows.rs:52
+msgid "Show photos"
+msgstr "Показать фотографии"
+
+#: src/library/folders_view/rows.rs:65
+#, rust-format
+msgid "{n} folder"
+msgid_plural "{n} folders"
+msgstr[0] "{n} папка"
+msgstr[1] "{n} папки"
+msgstr[2] "{n} папок"
+
+#: src/library/folders_view/rows.rs:72 src/library/tags_view.rs:155
+#, rust-format
+msgid "Open {name}"
+msgstr "Открыть {name}"
+
+#: src/library/folders_view/rows.rs:144
+msgid "Copy Path"
+msgstr "Скопировать путь"
+
+#: src/library/header_format.rs:58 src/library/lightbox/people.rs:242
+#, rust-format
+msgid "Age {age}"
+msgstr "Возраст: {age}"
+
+#: src/library/header_format.rs:62
+#, rust-format
+msgid "Born {date}"
+msgstr "Дата рождения: {date}"
+
+#. Translators: strftime day and month that start a date range, e.g. "30 Dec".
+#: src/library/header_format.rs:84 src/library/map/nearby.rs:129
+msgid "%-d %b"
+msgstr "%-d %b"
+
+#: src/library/header_format.rs:106
+#, rust-format
+msgid "Shared with {n} person"
+msgid_plural "Shared with {n} people"
+msgstr[0] "Доступно {n} человеку"
+msgstr[1] "Доступно {n} людям"
+msgstr[2] "Доступно {n} людям"
+
+#: src/library/header_format.rs:122
+#, rust-format
+msgid "Shared by {owner}"
+msgstr "Предоставил {owner}"
+
+#: src/library/inbox.rs:56 src/library/inbox.rs:364
+#: src/library/window_layout.rs:329 src/settings_window/behavior.rs:116
+msgid "Notifications"
+msgstr "Уведомления"
+
+#: src/library/inbox.rs:76
+#, rust-format
+msgid "Notifications ({count} unread)"
+msgstr "Уведомления ({count} непрочитанных)"
+
+#: src/library/inbox.rs:180
+msgid "No Notifications"
+msgstr "Нет уведомлений"
+
+#: src/library/inbox.rs:182
+msgid "Album invites and messages from Immich show up here."
+msgstr "Здесь отображаются приглашения в альбомы и сообщения от Immich."
+
+#: src/library/inbox.rs:188
+msgid "Mark All Read"
+msgstr "Отметить все как прочитанные"
+
+#: src/library/inbox.rs:235
+msgid "Couldn't Load Notifications"
+msgstr "Не удалось загрузить уведомления"
+
+#: src/library/inbox.rs:237
+#, rust-format
+msgid ""
+"{err}\n"
+"\n"
+"Your API key needs the “{permission}” permission."
+msgstr ""
+"{err}\n"
+"\n"
+"Вашему ключу API требуется разрешение «{permission}»."
+
+#: src/library/inbox.rs:273
+msgid "Dismiss"
+msgstr "Отклонить"
+
+#: src/library/lightbox/albums.rs:29
+msgid "Appears In"
+msgstr "Входит в"
+
+#: src/library/lightbox/albums.rs:65
+#, rust-format
+msgid "Open “{album_name}”"
+msgstr "Открыть «{album_name}»"
+
+#: src/library/lightbox/details.rs:156 src/library/search_filters.rs:204
+msgid "Camera"
+msgstr "Камера"
+
+#: src/library/lightbox/details.rs:163
+msgid "Body"
+msgstr "Корпус"
+
+#: src/library/lightbox/details.rs:174
+msgid "Lens"
+msgstr "Объектив"
+
+#: src/library/lightbox/details.rs:183 src/library/photo_editor/look.rs:37
+msgid "Exposure"
+msgstr "Экспозиция"
+
+#: src/library/lightbox/details.rs:223
+msgid "Dimensions"
+msgstr "Размеры"
+
+#: src/library/lightbox/details.rs:232
+msgid "Size"
+msgstr "Размер"
+
+#: src/library/lightbox/details.rs:245 src/library/search_filters.rs:219
+msgid "Location"
+msgstr "Местоположение"
+
+#: src/library/lightbox/details.rs:252 src/library/map/location_dialog.rs:512
+msgid "Place"
+msgstr "Место"
+
+#: src/library/lightbox/details.rs:266
+msgid "Coordinates"
+msgstr "Координаты"
+
+#: src/library/lightbox/details.rs:328
+#, rust-format
+msgid "ISO {iso}"
+msgstr "ISO {iso}"
+
+#: src/library/lightbox/details.rs:358 src/settings_window/library.rs:278
+#, rust-format
+msgid "{size} GB"
+msgstr "{size} ГБ"
+
+#: src/library/lightbox/details.rs:363 src/settings_window/library.rs:283
+#, rust-format
+msgid "{size} MB"
+msgstr "{size} МБ"
+
+#: src/library/lightbox/details.rs:368
+#, rust-format
+msgid "{size} KB"
+msgstr "{size} КБ"
+
+#: src/library/lightbox/details.rs:372
+#, rust-format
+msgid "{size} B"
+msgstr "{size} Б"
+
+#: src/library/lightbox/details.rs:451
+msgid "Modified"
+msgstr "Изменено"
+
+#: src/library/lightbox/edit.rs:43
+msgid "Crop"
+msgstr "Кадрирование"
+
+#: src/library/lightbox/edit.rs:49
+msgid "Adjust"
+msgstr "Коррекция"
+
+#: src/library/lightbox/edit.rs:55 src/library/search_panel.rs:48
+#: src/library/search_panel.rs:105
+msgid "Filters"
+msgstr "Фильтры"
+
+#: src/library/lightbox/edit.rs:61
+msgid "Redact"
+msgstr "Скрытие"
+
+#: src/library/lightbox/edit.rs:276
+msgid "Couldn't load the photo"
+msgstr "Не удалось загрузить фотографию"
+
+#: src/library/lightbox/edit.rs:438
+msgid "Saving a copy…"
+msgstr "Сохранение копии…"
+
+#: src/library/lightbox/edit.rs:440
+msgid "Saves a copy stacked with the original"
+msgstr "Сохраняет копию в стопке с оригиналом"
+
+#: src/library/lightbox/edit.rs:441
+msgid "Saves as a new photo"
+msgstr "Сохраняет как новую фотографию"
+
+#: src/library/lightbox/edit/looks.rs:160
+#, rust-format
+msgid "{degrees}°"
+msgstr "{degrees}°"
+
+#: src/library/lightbox/edit/looks.rs:168
+#, rust-format
+msgid "{percent}%"
+msgstr "{percent}%"
+
+#: src/library/lightbox/edit/pages.rs:53
+msgid "Pixelate"
+msgstr "Пикселизация"
+
+#: src/library/lightbox/edit/pages.rs:54
+msgid "Blur"
+msgstr "Размытие"
+
+#: src/library/lightbox/edit/pages.rs:55
+msgid "Frosted"
+msgstr "Матовое стекло"
+
+#: src/library/lightbox/edit/pages.rs:56
+msgid "Bar"
+msgstr "Полоса"
+
+#: src/library/lightbox/edit/pages.rs:64
+msgid "Straighten"
+msgstr "Выравнивание"
+
+#: src/library/lightbox/edit/pages.rs:110
+msgid "Strength"
+msgstr "Интенсивность"
+
+#: src/library/lightbox/edit/pages.rs:125
+msgid "Drag over what to hide. Tap a box to move, resize, or change it."
+msgstr "Выделите область, которую нужно скрыть. Нажмите на рамку, чтобы переместить, изменить размер или настроить её."
+
+#: src/library/lightbox/edit/pages.rs:135
+msgid "Hide Faces"
+msgstr "Скрыть лица"
+
+#: src/library/lightbox/edit/pages.rs:136
+msgid "Hide Text"
+msgstr "Скрыть текст"
+
+#: src/library/lightbox/edit/pages.rs:143
+msgid "Clear All"
+msgstr "Очистить все"
+
+#: src/library/lightbox/edit/pages.rs:171
+#: src/library/lightbox/edit/pages.rs:177
+msgid "Bar Colour"
+msgstr "Цвет полосы"
+
+#: src/library/lightbox/edit/pages.rs:255
+msgid "Rotate Left"
+msgstr "Повернуть влево"
+
+#: src/library/lightbox/edit/pages.rs:260
+msgid "Rotate Right"
+msgstr "Повернуть вправо"
+
+#: src/library/lightbox/edit/pages.rs:263
+msgid "Mirror"
+msgstr "Отразить зеркально"
+
+#: src/library/lightbox/edit/pages.rs:266
+msgid "Flip"
+msgstr "Перевернуть"
+
+#: src/library/lightbox/edit/panel.rs:54 src/library/search_panel.rs:72
+msgid "Reset"
+msgstr "Сбросить"
+
+#: src/library/lightbox/edit/panel.rs:107
+msgid "Reset All"
+msgstr "Сбросить все"
+
+#: src/library/lightbox/edit/panel.rs:108
+msgid "Revert to Original…"
+msgstr "Вернуть к оригиналу…"
+
+#: src/library/lightbox/edit/panel.rs:111 src/library/lightbox/widgets.rs:294
+msgid "Edit Photo"
+msgstr "Редактировать фотографию"
+
+#: src/library/lightbox/edit/panel.rs:169
+msgid "Keep Original Details"
+msgstr "Сохранять исходные сведения"
+
+#: src/library/lightbox/edit/panel.rs:171
+msgid ""
+"A saved copy keeps the original's camera details, date, place, caption, "
+"rating, and albums. Off, the copy is a new photo of its own."
+msgstr "Сохраненная копия сохраняет данные камеры, дату, место, описание, оценку и альбомы оригинала. Если выключено, копия будет полностью новой фотографией."
+
+#: src/library/lightbox/edit/panel.rs:176
+msgid "Stack with Original"
+msgstr "Группировать в стопку с оригиналом"
+
+#: src/library/lightbox/edit/panel.rs:177
+msgid "A saved copy becomes the cover of a stack, with the original under it."
+msgstr "Сохраненная копия становится обложкой стопки, а оригинал помещается под ней."
+
+#: src/library/lightbox/edit/saving.rs:73
+msgid "Revert to the Original?"
+msgstr "Вернуть к оригиналу?"
+
+#: src/library/lightbox/edit/saving.rs:74
+msgid "Every crop, turn, and flip made in Immich is removed."
+msgstr "Все кадрирования, повороты и отражения, сделанные в Immich, будут удалены."
+
+#: src/library/lightbox/edit/saving.rs:75
+msgid "Revert"
+msgstr "Вернуть"
+
+#: src/library/lightbox/edit/saving.rs:96
+msgid "Immich didn't save the edit"
+msgstr "Immich не сохранил изменения"
+
+#: src/library/lightbox/edit/saving.rs:104
+msgid "Saved. Immich is updating the photo."
+msgstr "Сохранено. Immich обновляет фотографию."
+
+#: src/library/lightbox/edit/saving.rs:153
+msgid "Couldn't save the copy"
+msgstr "Не удалось сохранить копию"
+
+#: src/library/lightbox/edit/saving.rs:178
+msgid "Couldn't open the original"
+msgstr "Не удалось открыть оригинал"
+
+#: src/library/lightbox/edit/saving.rs:220
+msgid "Saved as a new photo, but not everything carried over"
+msgstr "Сохранено как новая фотография, но перенесены не все данные"
+
+#: src/library/lightbox/edit/saving.rs:224
+msgid "Saved as a new photo, stacked with the original"
+msgstr "Сохранено как новая фотография в стопке с оригиналом"
+
+#: src/library/lightbox/edit/saving.rs:225
+msgid "Saved as a new photo"
+msgstr "Сохранено как новая фотография"
+
+#: src/library/lightbox/edit/saving.rs:270
+msgid "Couldn't add it to the original's albums"
+msgstr "Не удалось добавить её в альбомы оригинала"
+
+#: src/library/lightbox/face_people.rs:185 src/library/lightbox/faces.rs:296
+msgid "Change Person…"
+msgstr "Изменить человека…"
+
+#: src/library/lightbox/face_people.rs:196
+msgid "Remove from Photo"
+msgstr "Удалить с фотографии"
+
+#: src/library/lightbox/face_people.rs:221 src/library/lightbox/faces.rs:305
+msgid "Face moved"
+msgstr "Лицо перемещено"
+
+#: src/library/lightbox/face_people.rs:240 src/library/lightbox/faces.rs:336
+msgid "Face removed"
+msgstr "Лицо удалено"
+
+#: src/library/lightbox/faces.rs:43
+msgid "Drag around a face to tag it"
+msgstr "Выделите лицо рамкой, чтобы отметить его"
+
+#: src/library/lightbox/faces.rs:48
+msgid "Done"
+msgstr "Готово"
+
+#: src/library/lightbox/faces.rs:217
+msgid "Couldn't load the faces"
+msgstr "Не удалось загрузить лица"
+
+#: src/library/lightbox/faces.rs:227
+msgid "No faces yet. Drag around one to tag it."
+msgstr "Лиц пока нет. Выделите лицо рамкой, чтобы отметить его."
+
+#: src/library/lightbox/faces.rs:298
+msgid "Choose Person…"
+msgstr "Выбрать человека…"
+
+#: src/library/lightbox/faces.rs:315
+msgid "Use as Cover Photo"
+msgstr "Использовать как фото обложки"
+
+#: src/library/lightbox/faces.rs:323
+msgid "Cover photo changed"
+msgstr "Фото обложки изменено"
+
+#: src/library/lightbox/faces.rs:332
+msgid "Remove Face"
+msgstr "Удалить лицо"
+
+#: src/library/lightbox/faces.rs:375
+msgid "Face tagged"
+msgstr "Лицо отмечено"
+
+#: src/library/lightbox/faces.rs:398
+msgid "Immich didn't accept the change"
+msgstr "Immich не принял изменение"
+
+#: src/library/lightbox/faces.rs:426
+msgid "Unknown Person"
+msgstr "Неизвестный человек"
+
+#: src/library/lightbox/interaction.rs:225 src/library/lightbox/widgets.rs:343
+msgid "Raw"
+msgstr "RAW"
+
+#: src/library/lightbox/interaction.rs:227 src/library/lightbox/widgets.rs:345
+msgid "Prev"
+msgstr "Назад"
+
+#: src/library/lightbox/interaction.rs:329
+msgid "Add a description"
+msgstr "Добавить описание"
+
+#: src/library/lightbox/interaction/rendering.rs:92
+msgid "On Immich and locally"
+msgstr "В Immich и локально"
+
+#: src/library/lightbox/interaction/rendering.rs:93
+msgid "Local only"
+msgstr "Только локально"
+
+#: src/library/lightbox/interaction/rendering.rs:94
+msgid "On Immich only"
+msgstr "Только в Immich"
+
+#: src/library/lightbox/interaction/rendering.rs:100
+#, rust-format
+msgid "Created: {date}"
+msgstr "Создано: {date}"
+
+#: src/library/lightbox/live.rs:16
+msgid "Live"
+msgstr "Живое фото"
+
+#: src/library/lightbox/live.rs:19
+msgid "Play motion (Space)"
+msgstr "Воспроизвести движение (Пробел)"
+
+#: src/library/lightbox/live.rs:86 src/library/lightbox/video.rs:87
+msgid "Playback isn't available"
+msgstr "Воспроизведение недоступно"
+
+#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/video.rs:108
+msgid "Playback failed"
+msgstr "Сбой воспроизведения"
+
+#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+msgid "Not connected to the Immich server."
+msgstr "Нет подключения к серверу Immich."
+
+#: src/library/lightbox/location.rs:32
+msgid "Set location"
+msgstr "Указать местоположение"
+
+#: src/library/lightbox/location.rs:66
+msgid "Copy coordinates"
+msgstr "Скопировать координаты"
+
+#: src/library/lightbox/ocr.rs:21 src/library/lightbox/ocr.rs:292
+msgid "Copy All Text"
+msgstr "Скопировать весь текст"
+
+#: src/library/lightbox/ocr.rs:64
+msgid "Hide recognized text (T)"
+msgstr "Скрыть распознанный текст (T)"
+
+#: src/library/lightbox/ocr.rs:66 src/library/lightbox/widgets.rs:352
+msgid "Show recognized text (T)"
+msgstr "Показать распознанный текст (T)"
+
+#: src/library/lightbox/ocr.rs:250 src/library/shared_link_qr.rs:125
+msgid "Copied"
+msgstr "Скопировано"
+
+#: src/library/lightbox/ocr.rs:290
+msgid "Copy Selected Text"
+msgstr "Скопировать выделенный текст"
+
+#: src/library/lightbox/panorama.rs:265
+msgid "360°"
+msgstr "360°"
+
+#: src/library/lightbox/panorama.rs:266
+msgid "Look around (P)"
+msgstr "Осмотреться (P)"
+
+#: src/library/lightbox/people.rs:65
+msgid "No one is tagged yet."
+msgstr "Никто ещё не отмечен."
+
+#: src/library/lightbox/people.rs:215 src/library/people_view.rs:262
+#, rust-format
+msgid "Show photos of {name}"
+msgstr "Показать фотографии с {name}"
+
+#: src/library/lightbox/people.rs:237
+#, rust-format
+msgid "Age {months}"
+msgstr "Возраст: {months}"
+
+#: src/library/lightbox/people.rs:239
+#, rust-format
+msgid "Age 1 year, {months}"
+msgstr "Возраст: 1 год, {months}"
+
+#: src/library/lightbox/people.rs:255
+#, rust-format
+msgid "{n} month"
+msgid_plural "{n} months"
+msgstr[0] "{n} месяц"
+msgstr[1] "{n} месяца"
+msgstr[2] "{n} месяцев"
+
+#: src/library/lightbox/rating.rs:28 src/library/search_filters/choices.rs:134
+#: src/library/search_view.rs:162 src/settings_window/library.rs:224
+#: src/settings_window/queue_inspector.rs:43
+msgid "Clear"
+msgstr "Очистить"
+
+#: src/library/lightbox/rating.rs:33
+msgid "Rating"
+msgstr "Оценка"
+
+#: src/library/lightbox/rating.rs:128
+msgid "Couldn't save the rating"
+msgstr "Не удалось сохранить оценку"
+
+#: src/library/lightbox/slideshow.rs:85 src/library/lightbox/slideshow.rs:251
+#: src/library/video_player.rs:315
+msgid "Pause (Space)"
+msgstr "Пауза (Пробел)"
+
+#: src/library/lightbox/slideshow.rs:86 src/library/lightbox/widgets.rs:150
+msgid "Previous (Left)"
+msgstr "Предыдущее (Влево)"
+
+#: src/library/lightbox/slideshow.rs:87 src/library/lightbox/widgets.rs:151
+msgid "Next (Right)"
+msgstr "Следующее (Вправо)"
+
+#: src/library/lightbox/slideshow.rs:90
+msgid "Slideshow Settings"
+msgstr "Параметры слайд-шоу"
+
+#: src/library/lightbox/slideshow.rs:93
+msgid "End Slideshow (Esc)"
+msgstr "Завершить слайд-шоу (Esc)"
+
+#: src/library/lightbox/slideshow.rs:249
+msgid "Resume (Space)"
+msgstr "Продолжить (Пробел)"
+
+#: src/library/lightbox/slideshow.rs:422
+msgid "End of slideshow"
+msgstr "Конец слайд-шоу"
+
+#: src/library/lightbox/slideshow/options.rs:40
+msgid "Crossfade"
+msgstr "Плавный переход"
+
+#: src/library/lightbox/slideshow/options.rs:41
+msgid "Slide"
+msgstr "Сдвиг"
+
+#: src/library/lightbox/slideshow/options.rs:42
+msgid "None"
+msgstr "Нет"
+
+#: src/library/lightbox/slideshow/settings.rs:19
+msgid "Shuffle"
+msgstr "В случайном порядке"
+
+#: src/library/lightbox/slideshow/settings.rs:20
+msgid "Repeat"
+msgstr "Повторять"
+
+#: src/library/lightbox/slideshow/settings.rs:65
+msgid "Seconds per Photo"
+msgstr "Секунд на фотографию"
+
+#: src/library/lightbox/slideshow/settings.rs:80
+msgid "Transition"
+msgstr "Переход"
+
+#: src/library/lightbox/stack.rs:46
+msgid "Stack Actions"
+msgstr "Действия со стопкой"
+
+#: src/library/lightbox/stack.rs:273
+msgid "Set as Stack Cover"
+msgstr "Сделать обложкой стопки"
+
+#: src/library/lightbox/stack.rs:280
+msgid "Remove from Stack"
+msgstr "Удалить из стопки"
+
+#: src/library/lightbox/stack.rs:288 src/library/lightbox/stack.rs:465
+msgid "Unstack"
+msgstr "Расформировать стопку"
+
+#: src/library/lightbox/stack.rs:299
+msgid "Keep This, Trash Others"
+msgstr "Оставить эту, остальные в корзину"
+
+#: src/library/lightbox/stack.rs:301
+msgid "Keep This, Delete Others"
+msgstr "Оставить эту, остальные удалить"
+
+#: src/library/lightbox/stack.rs:348 src/library/lightbox/stack.rs:388
+#: src/library/lightbox/stack.rs:476
+msgid "Couldn't change the stack"
+msgstr "Не удалось изменить стопку"
+
+#: src/library/lightbox/stack.rs:403
+msgid "Stack cover changed"
+msgstr "Обложка стопки изменена"
+
+#: src/library/lightbox/stack.rs:408
+msgid "Removed from the stack"
+msgstr "Удалено из стопки"
+
+#: src/library/lightbox/stack.rs:412 src/library/lightbox/stack.rs:473
+msgid "Unstacked"
+msgstr "Стопка расформирована"
+
+#: src/library/lightbox/stack.rs:424
+#, rust-format
+msgid "Trashed {n} other photo"
+msgid_plural "Trashed {n} other photos"
+msgstr[0] "В корзину перемещена {n} другая фотография"
+msgstr[1] "В корзину перемещены {n} другие фотографии"
+msgstr[2] "В корзину перемещено {n} других фотографий"
+
+#: src/library/lightbox/stack.rs:430
+#, rust-format
+msgid "Deleted {n} other photo"
+msgid_plural "Deleted {n} other photos"
+msgstr[0] "Удалена {n} другая фотография"
+msgstr[1] "Удалены {n} другие фотографии"
+msgstr[2] "Удалено {n} других фотографий"
+
+#: src/library/lightbox/stack.rs:501 src/library/upload_stack.rs:122
+msgid "Couldn't stack the photos"
+msgstr "Не удалось объединить фотографии в стопку"
+
+#: src/library/lightbox/stack.rs:510
+msgid "Stacked, see the timeline"
+msgstr "Объединено в стопку, смотрите на шкале времени"
+
+#: src/library/lightbox/stack.rs:513
+#, rust-format
+msgid "Stacked {n} photo"
+msgid_plural "Stacked {n} photos"
+msgstr[0] "В стопку объединена {n} фотография"
+msgstr[1] "В стопку объединены {n} фотографии"
+msgstr[2] "В стопку объединено {n} фотографий"
+
+#: src/library/lightbox/video.rs:121
+msgid "The video file is no longer on disk."
+msgstr "Видеофайл больше не существует на диске."
+
+#: src/library/lightbox/widgets.rs:142
+msgid "Back to library"
+msgstr "Назад в медиатеку"
+
+#: src/library/lightbox/widgets.rs:154
+msgid "Toggle details (I)"
+msgstr "Показать/скрыть сведения (I)"
+
+#: src/library/lightbox/widgets.rs:161
+msgid "More (Shift+F10)"
+msgstr "Дополнительно (Shift+F10)"
+
+#: src/library/lightbox/widgets.rs:242
+msgid "Preview unavailable"
+msgstr "Предпросмотр недоступен"
+
+#: src/library/lightbox/widgets.rs:252
+msgid "Open in external app"
+msgstr "Открыть во внешнем приложении"
+
+#: src/library/lightbox/widgets.rs:286
+msgid "Play video (Space)"
+msgstr "Воспроизвести видео (Пробел)"
+
+#: src/library/lightbox/widgets.rs:297
+msgid "Download asset"
+msgstr "Скачать объект"
+
+#: src/library/lightbox/widgets.rs:298
+msgid "Open with…"
+msgstr "Открыть с помощью…"
+
+#: src/library/lightbox/widgets.rs:299
+msgid "Move to trash (Delete)"
+msgstr "Переместить в корзину (Delete)"
+
+#: src/library/lightbox/widgets.rs:347
+msgid "Toggle preview vs original full-resolution image"
+msgstr "Переключить предпросмотр и полноразмерное изображение"
+
+#: src/library/lightbox/widgets.rs:359
+msgid "Zoom out (Ctrl+-)"
+msgstr "Уменьшить (Ctrl+-)"
+
+#: src/library/lightbox/widgets.rs:360
+msgid "Zoom in (Ctrl++)"
+msgstr "Увеличить (Ctrl++)"
+
+#: src/library/lightbox/widgets.rs:363
+msgid "Reset zoom (Ctrl+0)"
+msgstr "Сбросить масштаб (Ctrl+0)"
+
+#: src/library/lightbox/widgets.rs:452
+msgid "Loading details…"
+msgstr "Загрузка сведений…"
+
+#: src/library/map/album.rs:35
+msgid "Show all photos"
+msgstr "Показать все фотографии"
+
+#: src/library/map/controls.rs:41 src/library/shortcuts_dialog.rs:162
+#: src/library/shortcuts_dialog.rs:237
+msgid "Zoom in"
+msgstr "Увеличить"
+
+#: src/library/map/controls.rs:42 src/library/shortcuts_dialog.rs:166
+#: src/library/shortcuts_dialog.rs:238
+msgid "Zoom out"
+msgstr "Уменьшить"
+
+#: src/library/map/controls.rs:45 src/library/shortcuts_dialog.rs:239
+msgid "Rotate left"
+msgstr "Повернуть влево"
+
+#: src/library/map/controls.rs:46 src/library/shortcuts_dialog.rs:240
+msgid "Rotate right"
+msgstr "Повернуть вправо"
+
+#: src/library/map/controls.rs:51
+msgid "Show photos in this area"
+msgstr "Показать фотографии в этой области"
+
+#: src/library/map/controls.rs:53 src/library/shortcuts_dialog.rs:242
+msgid "Show my location"
+msgstr "Показать моё местоположение"
+
+#: src/library/map/controls.rs:55
+msgid "Map settings"
+msgstr "Параметры карты"
+
+#: src/library/map/controls.rs:104
+msgid "Map style"
+msgstr "Стиль карты"
+
+#: src/library/map/controls.rs:130 src/library/shortcuts_dialog.rs:241
+msgid "Point north"
+msgstr "Ориентация на север"
+
+#: src/library/map/controls.rs:153
+msgid "More Styles"
+msgstr "Другие стили"
+
+#: src/library/map/controls.rs:158 src/settings_window/appearance.rs:18
+msgid "Appearance"
+msgstr "Внешний вид"
+
+#: src/library/map/controls.rs:289
+msgid "No photos in this area"
+msgstr "В этой области нет фотографий"
+
+#: src/library/map/controls.rs:300
+msgid "Your location isn't available"
+msgstr "Ваше местоположение недоступно"
+
+#: src/library/map/locate.rs:19
+msgid "The location service did not answer in time."
+msgstr "Служба геолокации не ответила вовремя."
+
+#: src/library/map/locate.rs:43
+#, rust-format
+msgid "Location access was not allowed ({err})."
+msgstr "Доступ к местоположению не разрешён ({err})."
+
+#: src/library/map/locate.rs:49
+msgid "The location service stopped before finding you."
+msgstr "Служба геолокации остановлена до определения вашего местоположения."
+
+#: src/library/map/locate.rs:51
+msgid "The location service returned an invalid position."
+msgstr "Служба геолокации вернула некорректные координаты."
+
+#: src/library/map/locate.rs:56
+#, rust-format
+msgid ""
+"Location services are unavailable ({err}). Check that they are turned on."
+msgstr "Службы геолокации недоступны ({err}). Убедитесь, что они включены."
+
+#: src/library/map/location_dialog.rs:118
+#: src/library/map/location_dialog.rs:127
+msgid "Set Location"
+msgstr "Указать местоположение"
+
+#: src/library/map/location_dialog.rs:165
+msgid "Could Not Set Location"
+msgstr "Не удалось указать местоположение"
+
+#: src/library/map/location_dialog.rs:204 src/library/map/search.rs:34
+#: src/library/shortcuts_dialog.rs:236
+msgid "Search places"
+msgstr "Поиск мест"
+
+#: src/library/map/location_dialog.rs:287
+msgid "Looking up…"
+msgstr "Поиск…"
+
+#: src/library/map/location_dialog.rs:309
+msgid "No place name here"
+msgstr "Здесь нет названия места"
+
+#: src/library/map/location_dialog.rs:312
+msgid "Place name unavailable"
+msgstr "Название места недоступно"
+
+#: src/library/map/location_dialog.rs:497
+msgid "Latitude, Longitude"
+msgstr "Широта, долгота"
+
+#: src/library/map/location_dialog.rs:501
+msgid "Paste coordinates"
+msgstr "Вставить координаты"
+
+#: src/library/map/markers.rs:92
+msgid "You are here"
+msgstr "Вы здесь"
+
+#: src/library/map/markers.rs:118
+#, rust-format
+msgid "{n} photo in {place}"
+msgid_plural "{n} photos in {place}"
+msgstr[0] "{n} фотография в {place}"
+msgstr[1] "{n} фотографии в {place}"
+msgstr[2] "{n} фотографий в {place}"
+
+#: src/library/map/minimap.rs:60
+msgid "Show on map"
+msgstr "Показать на карте"
+
+#: src/library/map/minimap.rs:99
+msgid "Photo location"
+msgstr "Местоположение фотографии"
+
+#: src/library/map/nearby.rs:141
+msgid "Taken Nearby"
+msgstr "Снято рядом"
+
+#: src/library/map/place_search.rs:172
+#, rust-format
+msgid "Photon asked to wait {seconds} s"
+msgstr "Photon запросил ожидание {seconds} с"
+
+#: src/library/map/place_search.rs:267
+msgid "Searching…"
+msgstr "Поиск…"
+
+#: src/library/map/place_search.rs:335
+msgid "Address"
+msgstr "Адрес"
+
+#: src/library/map/satellite.rs:31 src/library/map/styles.rs:115
+msgid "Satellite"
+msgstr "Спутник"
+
+#: src/library/map/satellite.rs:155
+msgid "No satellite imagery here"
+msgstr "Здесь нет спутниковых снимков"
+
+#: src/library/map/satellite.rs:239
+msgid "Cancelled"
+msgstr "Отменено"
+
+#: src/library/map/satellite.rs:277
+#, rust-format
+msgid "VersaTiles asked to wait {seconds} s"
+msgstr "VersaTiles запросил ожидание {seconds} с"
+
+#: src/library/map/search.rs:213
+msgid "No places found"
+msgstr "Места не найдены"
+
+#: src/library/map/settings.rs:50
+msgid "All Time"
+msgstr "За всё время"
+
+#: src/library/map/settings.rs:51
+msgid "Past 24 Hours"
+msgstr "За последние 24 часа"
+
+#: src/library/map/settings.rs:52
+msgid "Past 7 Days"
+msgstr "За последние 7 дней"
+
+#: src/library/map/settings.rs:53
+msgid "Past 30 Days"
+msgstr "За последние 30 дней"
+
+#: src/library/map/settings.rs:54
+msgid "Past Year"
+msgstr "За последний год"
+
+#: src/library/map/settings.rs:55
+msgid "Past 3 Years"
+msgstr "За последние 3 года"
+
+#: src/library/map/settings.rs:56
+msgid "Custom Range"
+msgstr "Пользовательский диапазон"
+
+#: src/library/map/settings.rs:84
+msgid "Only Favorites"
+msgstr "Только избранные"
+
+#: src/library/map/settings.rs:86
+msgid "Include Archived"
+msgstr "Включая архивные"
+
+#: src/library/map/settings.rs:87
+msgid "Your archived photos"
+msgstr "Ваши архивные фотографии"
+
+#: src/library/map/settings.rs:91
+msgid "Include Partners"
+msgstr "Включая партнёров"
+
+#: src/library/map/settings.rs:92
+msgid "Photos partners share with you"
+msgstr "Фотографии, которыми с вами делятся партнёры"
+
+#: src/library/map/settings.rs:96
+msgid "Include Shared Albums"
+msgstr "Включая общие альбомы"
+
+#: src/library/map/settings.rs:97
+msgid "Photos in albums shared with you"
+msgstr "Фотографии в альбомах, к которым вам предоставлен доступ"
+
+#: src/library/map/settings.rs:101 src/library/utilities/controls.rs:97
+#: src/settings_window/behavior.rs:140
+msgid "From"
+msgstr "С"
+
+#: src/library/map/settings.rs:102 src/library/utilities/controls.rs:98
+#: src/settings_window/behavior.rs:141
+msgid "Until"
+msgstr "По"
+
+#: src/library/map/settings.rs:149
+msgid "Map Settings"
+msgstr "Настройки карты"
+
+#: src/library/map/settings.rs:173 src/library/utilities/controls.rs:109
+msgid "Show"
+msgstr "Показывать"
+
+#: src/library/map/settings.rs:180
+msgid "Date Range"
+msgstr "Диапазон дат"
+
+#: src/library/map/status.rs:29
+msgid "Loading Map…"
+msgstr "Загрузка карты…"
+
+#: src/library/map/status.rs:31
+msgid "No Photos With a Location"
+msgstr "Нет фотографий с местоположением"
+
+#: src/library/map/status.rs:32
+msgid "Photos with GPS data, or a location you set, appear here"
+msgstr "Фотографии с GPS-данными или указанным вами местоположением появятся здесь"
+
+#: src/library/map/status.rs:34
+msgid "Could Not Load the Map"
+msgstr "Не удалось загрузить карту"
+
+#: src/library/map/styles.rs:99
+msgid "Colorful"
+msgstr "Цветная"
+
+#: src/library/map/styles.rs:100
+msgid "Natural"
+msgstr "Естественная"
+
+#: src/library/map/styles.rs:101
+msgid "Muted"
+msgstr "Приглушённая"
+
+#: src/library/map/styles.rs:102
+msgid "Gray"
+msgstr "Серая"
+
+#: src/library/map/styles.rs:118
+msgid "Humanitarian"
+msgstr "Гуманитарная"
+
+#: src/library/map/styles.rs:181 src/library/theme.rs:20
+#: src/settings_window/appearance.rs:21
+msgid "Follow System"
+msgstr "Как в системе"
+
+#: src/library/map/styles.rs:182 src/library/theme.rs:21
+#: src/settings_window/appearance.rs:21
+msgid "Light"
+msgstr "Светлая"
+
+#: src/library/map/styles.rs:183 src/library/theme.rs:22
+#: src/settings_window/appearance.rs:21
+msgid "Dark"
+msgstr "Тёмная"
+
+#: src/library/map/view.rs:230
+msgid "This Area"
+msgstr "Эта область"
+
+#: src/library/map/view.rs:494
+msgid "Map Area"
+msgstr "Область карты"
+
+#: src/library/masonry/canvas.rs:532 src/library/server_stats_dialog.rs:156
+#: src/library/server_stats_dialog.rs:157
+#: src/library/source_loading/explore.rs:56
+msgid "HTTP 403"
+msgstr "HTTP 403"
+
+#: src/library/masonry/canvas/interaction.rs:272
+#, rust-format
+msgid "{n} file"
+msgid_plural "{n} files"
+msgstr[0] "{n} файл"
+msgstr[1] "{n} файла"
+msgstr[2] "{n} файлов"
+
+#: src/library/masonry/canvas_helpers.rs:139
+msgid ""
+"Your API key is missing permissions required to view thumbnails. Please "
+"ensure the key has 'asset.view' enabled."
+msgstr "В вашем ключе API отсутствуют разрешения, необходимые для просмотра миниатюр. Убедитесь, что для ключа включено разрешение «asset.view»."
+
+#: src/library/memories.rs:154
+#, rust-format
+msgid "{name}'s birthday"
+msgstr "День рождения {name}"
+
+#: src/library/memories.rs:162
+#, rust-format
+msgid "{n} year ago"
+msgid_plural "{n} years ago"
+msgstr[0] "{n} год назад"
+msgstr[1] "{n} года назад"
+msgstr[2] "{n} лет назад"
+
+#: src/library/memories.rs:165
+msgid "This year"
+msgstr "В этом году"
+
+#: src/library/memories.rs:166
+msgid "Memory"
+msgstr "Воспоминание"
+
+#: src/library/memories.rs:277
+msgid "Remove from Memory"
+msgstr "Удалить из воспоминания"
+
+#: src/library/memories.rs:306
+msgid "Removed from this memory"
+msgstr "Удалено из этого воспоминания"
+
+#: src/library/memories.rs:308
+msgid "Couldn't change the memory"
+msgstr "Не удалось изменить воспоминание"
+
+#: src/library/mod.rs:407
+msgid "Drop files to upload"
+msgstr "Перетащите файлы для загрузки"
+
+#: src/library/navigation.rs:201 src/library/sidebar/rows.rs:76
+msgid "Shared Albums"
+msgstr "Общие альбомы"
+
+#: src/library/navigation.rs:202 src/library/sidebar/rows.rs:82
+msgid "Shared Links"
+msgstr "Общие ссылки"
+
+#: src/library/navigation.rs:206 src/library/shortcuts_dialog.rs:65
+#: src/library/sidebar/rows.rs:88
+msgid "Sharing"
+msgstr "Общий доступ"
+
+#: src/library/navigation.rs:207 src/library/search_panel.rs:77
+#: src/library/search_view.rs:166 src/library/shortcuts_dialog.rs:33
+#: src/library/sidebar/rows.rs:46
+msgid "Search"
+msgstr "Поиск"
+
+#: src/library/navigation.rs:209 src/library/sidebar/rows.rs:124
+msgid "Duplicates"
+msgstr "Дубликаты"
+
+#: src/library/people_view.rs:68 src/library/person_merge_dialog.rs:67
+msgid "Search people"
+msgstr "Поиск людей"
+
+#: src/library/people_view.rs:73 src/library/people_view.rs:117
+msgid "Show hidden people"
+msgstr "Показать скрытых людей"
+
+#: src/library/people_view.rs:115
+msgid "Hide hidden people"
+msgstr "Скрыть скрытых людей"
+
+#: src/library/people_view.rs:137 src/library/person_merge_dialog.rs:31
+msgid "Could Not Load People"
+msgstr "Не удалось загрузить людей"
+
+#: src/library/people_view.rs:161
+msgid "No People"
+msgstr "Нет людей"
+
+#: src/library/people_view.rs:162
+msgid "People appear here once Immich has recognized faces in your photos."
+msgstr "Люди появятся здесь, когда Immich распознает лица на ваших фотографиях."
+
+#: src/library/people_view.rs:166
+msgid "No Matches"
+msgstr "Совпадений не найдено"
+
+#: src/library/people_view.rs:167 src/library/sharing_view.rs:323
+msgid "No one matches your search."
+msgstr "По вашему запросу никого не найдено."
+
+#: src/library/people_view.rs:320
+msgid "Add Name…"
+msgstr "Добавить имя…"
+
+#: src/library/people_view.rs:325
+msgid "Unhide"
+msgstr "Показать"
+
+#: src/library/people_view.rs:327
+msgid "Hide"
+msgstr "Скрыть"
+
+#: src/library/people_view.rs:339
+msgid "Set Birthday…"
+msgstr "Указать дату рождения…"
+
+#: src/library/people_view.rs:346
+msgid "Merge People…"
+msgstr "Объединить людей…"
+
+#: src/library/people_view.rs:375
+msgid "Could Not Update Person"
+msgstr "Не удалось обновить человека"
+
+#: src/library/people_view.rs:422
+msgid "Add Name"
+msgstr "Добавить имя"
+
+#: src/library/people_view.rs:424
+msgid "Rename Person"
+msgstr "Переименовать человека"
+
+#: src/library/people_view.rs:426
+msgid "This name is used in search and on the People page."
+msgstr "Это имя используется в поиске и на странице «Люди»."
+
+#: src/library/people_view.rs:449
+msgid "Set Birthday"
+msgstr "Указать дату рождения"
+
+#: src/library/people_view.rs:451
+#, rust-format
+msgid "Immich shows {name}'s age on photos."
+msgstr "Immich показывает возраст {name} на фотографиях."
+
+#: src/library/person_merge_dialog.rs:47 src/library/person_merge_dialog.rs:157
+msgid "Merge"
+msgstr "Объединить"
+
+#: src/library/person_merge_dialog.rs:95
+#, rust-format
+msgid ""
+"Pick the people who are really {name}. Their faces move to {name} and "
+"they're removed. This can't be undone."
+msgstr "Выберите людей, которые на самом деле {name}. Их лица будут перенесены к {name}, а сами они удалены. Это действие нельзя отменить."
+
+#: src/library/person_merge_dialog.rs:124
+#, rust-format
+msgid "Merge Into {name}"
+msgstr "Объединить с {name}"
+
+#: src/library/person_merge_dialog.rs:146
+#, rust-format
+msgid "Merge {count} person into {name}?"
+msgid_plural "Merge {count} people into {name}?"
+msgstr[0] "Объединить {count} человека с {name}?"
+msgstr[1] "Объединить {count} человек с {name}?"
+msgstr[2] "Объединить {count} человек с {name}?"
+
+#: src/library/person_merge_dialog.rs:156
+msgid "This can't be undone."
+msgstr "Это действие нельзя отменить."
+
+#: src/library/person_merge_dialog.rs:202
+msgid "Could Not Merge People"
+msgstr "Не удалось объединить людей"
+
+#: src/library/person_picker.rs:122
+msgid "Search or type a new name"
+msgstr "Найдите или введите новое имя"
+
+#: src/library/person_picker.rs:138
+msgid "Create Person…"
+msgstr "Создать человека…"
+
+#: src/library/person_picker.rs:140
+msgid "Who Is This?"
+msgstr "Кто это?"
+
+#: src/library/person_picker.rs:156
+msgid "Back"
+msgstr "Назад"
+
+#: src/library/person_picker.rs:161
+msgid "Create Person"
+msgstr "Создать человека"
+
+#: src/library/person_picker.rs:166
+msgid "Tag Face"
+msgstr "Отметить лицо"
+
+#: src/library/photo_editor.rs:37
+msgid "Free"
+msgstr "Произвольно"
+
+#: src/library/photo_editor.rs:38 src/library/photo_editor/look.rs:130
+msgid "Original"
+msgstr "Оригинал"
+
+#: src/library/photo_editor.rs:39
+msgid "Square"
+msgstr "Квадрат"
+
+#: src/library/photo_editor/look.rs:38
+msgid "Brightness"
+msgstr "Яркость"
+
+#: src/library/photo_editor/look.rs:39
+msgid "Contrast"
+msgstr "Контрастность"
+
+#: src/library/photo_editor/look.rs:40
+msgid "Highlights"
+msgstr "Светлые участки"
+
+#: src/library/photo_editor/look.rs:41
+msgid "Shadows"
+msgstr "Тени"
+
+#: src/library/photo_editor/look.rs:42
+msgid "Saturation"
+msgstr "Насыщенность"
+
+#: src/library/photo_editor/look.rs:43
+msgid "Warmth"
+msgstr "Теплота"
+
+#: src/library/photo_editor/look.rs:44
+msgid "Tint"
+msgstr "Оттенок"
+
+#: src/library/photo_editor/look.rs:45
+msgid "Vignette"
+msgstr "Виньетирование"
+
+#: src/library/photo_editor/look.rs:46
+msgid "Sharpen"
+msgstr "Резкость"
+
+#: src/library/photo_editor/look.rs:133
+msgid "Vivid"
+msgstr "Яркий"
+
+#: src/library/photo_editor/look.rs:142
+msgid "Warm"
+msgstr "Тёплый"
+
+#: src/library/photo_editor/look.rs:151
+msgid "Cool"
+msgstr "Холодный"
+
+#: src/library/photo_editor/look.rs:159
+msgid "Dramatic"
+msgstr "Драматичный"
+
+#: src/library/photo_editor/look.rs:171
+msgid "Fade"
+msgstr "Выцветание"
+
+#: src/library/photo_editor/look.rs:181
+msgid "Vintage"
+msgstr "Винтаж"
+
+#: src/library/photo_editor/look.rs:192
+msgid "Mono"
+msgstr "Моно"
+
+#: src/library/photo_editor/look.rs:200
+msgid "Noir"
+msgstr "Нуар"
+
+#: src/library/photo_editor/look.rs:211
+msgid "Sepia"
+msgstr "Сепия"
+
+#: src/library/related.rs:20
+msgid "View Similar Photos"
+msgstr "Показать похожие фотографии"
+
+#: src/library/related.rs:29
+msgid "View in Timeline"
+msgstr "Показать на временной шкале"
+
+#: src/library/search_filters.rs:59
+msgid "Text"
+msgstr "Текст"
+
+#: src/library/search_filters.rs:62
+msgid "Filename contains"
+msgstr "Имя файла содержит"
+
+#: src/library/search_filters.rs:65
+msgid "Description contains"
+msgstr "Описание содержит"
+
+#: src/library/search_filters.rs:68
+msgid "OCR text contains"
+msgstr "Распознанный текст содержит"
+
+#: src/library/search_filters.rs:79
+msgid "People, Tags, and Albums"
+msgstr "Люди, метки и альбомы"
+
+#: src/library/search_filters.rs:80
+msgid "Photos have to have everything you pick"
+msgstr "Фотографии должны содержать всё выбранное"
+
+#: src/library/search_filters.rs:83
+msgid "Anyone"
+msgstr "Любой человек"
+
+#: src/library/search_filters.rs:84 src/library/search_filters.rs:85
+#: src/library/search_filters.rs:123 src/library/search_filters.rs:135
+#: src/library/search_filters.rs:144 src/library/search_filters/suggest.rs:22
+#: src/library/search_filters/suggest.rs:47
+msgid "Any"
+msgstr "Любой"
+
+#: src/library/search_filters.rs:118
+msgid "Type and flags"
+msgstr "Тип и флаги"
+
+#: src/library/search_filters.rs:121
+msgid "Asset type"
+msgstr "Тип файла"
+
+#: src/library/search_filters.rs:124
+msgid "Image only"
+msgstr "Только изображения"
+
+#: src/library/search_filters.rs:125
+msgid "Video only"
+msgstr "Только видео"
+
+#: src/library/search_filters.rs:128
+msgid "Favourites only"
+msgstr "Только избранные"
+
+#: src/library/search_filters.rs:129
+msgid "Motion photos only"
+msgstr "Только живые фотографии"
+
+#: src/library/search_filters.rs:130
+msgid "Not in any album"
+msgstr "Вне альбомов"
+
+#: src/library/search_filters.rs:131
+msgid "Include deleted"
+msgstr "Включая удалённые"
+
+#: src/library/search_filters.rs:133
+msgid "Visibility"
+msgstr "Видимость"
+
+#: src/library/search_filters.rs:136 src/library/shortcuts_dialog.rs:260
+msgid "Timeline"
+msgstr "Временная шкала"
+
+#: src/library/search_filters.rs:138
+#: src/library/source_header/enrichment.rs:251
+msgid "Hidden"
+msgstr "Скрытые"
+
+#: src/library/search_filters.rs:139
+msgid "Locked"
+msgstr "Заблокированные"
+
+#: src/library/search_filters.rs:143
+msgid "Minimum rating"
+msgstr "Минимальный рейтинг"
+
+#: src/library/search_filters.rs:173
+msgid "Date range"
+msgstr "Диапазон дат"
+
+#: src/library/search_filters.rs:177
+msgid "Taken after"
+msgstr "Снято после"
+
+#: src/library/search_filters.rs:180
+msgid "Taken before"
+msgstr "Снято до"
+
+#: src/library/search_filters.rs:183
+msgid "Created after"
+msgstr "Создано после"
+
+#: src/library/search_filters.rs:186
+msgid "Created before"
+msgstr "Создано до"
+
+#: src/library/search_filters.rs:207
+msgid "Make"
+msgstr "Производитель"
+
+#: src/library/search_filters.rs:208
+msgid "Model"
+msgstr "Модель"
+
+#: src/library/search_filters.rs:209
+msgid "Lens model"
+msgstr "Модель объектива"
+
+#: src/library/search_filters.rs:222
+msgid "Country"
+msgstr "Страна"
+
+#: src/library/search_filters.rs:223
+msgid "State / region"
+msgstr "Регион / область"
+
+#: src/library/search_filters.rs:224
+msgid "City"
+msgstr "Город"
+
+#: src/library/search_filters/choices.rs:119
+#, rust-format
+msgid "Filter {what}"
+msgstr "Фильтр: {what}"
+
+#: src/library/search_filters/choices.rs:207
+msgid "Nothing to choose from"
+msgstr "Нечего выбрать"
+
+#: src/library/search_panel.rs:55
+msgid "Close filters"
+msgstr "Закрыть фильтры"
+
+#: src/library/search_panel.rs:73
+msgid "Clear every filter, keeping the search text"
+msgstr "Очистить все фильтры, сохранив поисковый запрос"
+
+#: src/library/search_panel.rs:108
+#, rust-format
+msgid "Filters · {count}"
+msgstr "Фильтры · {count}"
+
+#: src/library/search_view.rs:116
+msgid ""
+"Smart: CLIP-based semantic search.\n"
+"Filename: matches against file names.\n"
+"OCR: matches text inside images."
+msgstr ""
+"Умный: семантический поиск на основе CLIP.\n"
+"Имя файла: поиск по именам файлов.\n"
+"OCR: поиск текста на изображениях."
+
+#: src/library/search_view.rs:123 src/library/search_view.rs:315
+msgid "Describe what you're looking for…"
+msgstr "Опишите, что вы ищете…"
+
+#: src/library/search_view.rs:157
+msgid "Show search filters"
+msgstr "Показать фильтры поиска"
+
+#: src/library/search_view.rs:313
+msgid "Search filenames"
+msgstr "Поиск по именам файлов"
+
+#: src/library/search_view.rs:314
+msgid "Find words shown inside images"
+msgstr "Поиск слов внутри изображений"
+
+#: src/library/select_all.rs:29
+msgid "Loading every photo to select…"
+msgstr "Загрузка всех фотографий для выбора…"
+
+#: src/library/select_all.rs:48
+msgid "Some photos couldn't be loaded, so not all are selected"
+msgstr "Некоторые фотографии не удалось загрузить, поэтому выбраны не все"
+
+#: src/library/server_stats_dialog.rs:23
+msgid "Server statistics"
+msgstr "Статистика сервера"
+
+#: src/library/server_stats_dialog.rs:99 src/library/server_stats_dialog.rs:131
+#: src/library/utilities/controls.rs:29
+msgid "Videos"
+msgstr "Видео"
+
+#: src/library/server_stats_dialog.rs:104 src/settings_window/library.rs:190
+msgid "Storage"
+msgstr "Хранилище"
+
+#: src/library/server_stats_dialog.rs:113
+msgid "By user"
+msgstr "По пользователям"
+
+#: src/library/server_stats_dialog.rs:136
+msgid "Total"
+msgstr "Всего"
+
+#: src/library/server_stats_dialog.rs:145
+msgid "Server-wide statistics require administrator access."
+msgstr "Для просмотра статистики по всему серверу требуются права администратора."
+
+#: src/library/server_stats_dialog.rs:163
+msgid ""
+"Your API key must include the 'server.about', 'server.versionCheck', "
+"'server.statistics', and 'asset.statistics' permissions to view stats."
+msgstr "Ваш ключ API должен содержать разрешения «server.about», «server.versionCheck», «server.statistics» и «asset.statistics» для просмотра статистики."
+
+#: src/library/server_stats_dialog.rs:168
+msgid "Unable to load statistics"
+msgstr "Не удалось загрузить статистику"
+
+#: src/library/server_stats_dialog.rs:169
+msgid "Check your connection and try again."
+msgstr "Проверьте подключение и повторите попытку."
+
+#: src/library/server_stats_dialog.rs:247
+#, rust-format
+msgid "{used} of {quota}"
+msgstr "{used} из {quota}"
+
+#: src/library/shared_link_dialog.rs:20
+msgid "Never"
+msgstr "Никогда"
+
+#: src/library/shared_link_dialog.rs:21
+msgid "1 hour"
+msgstr "1 час"
+
+#: src/library/shared_link_dialog.rs:22
+msgid "1 day"
+msgstr "1 день"
+
+#: src/library/shared_link_dialog.rs:23
+msgid "7 days"
+msgstr "7 дней"
+
+#: src/library/shared_link_dialog.rs:24
+msgid "30 days"
+msgstr "30 дней"
+
+#: src/library/shared_link_dialog.rs:31
+#, rust-format
+msgid "Keep current ({date})"
+msgstr "Оставить текущую ({date})"
+
+#. Translators: strftime date and time, e.g. "9 Oct 2026, 14:30".
+#: src/library/shared_link_dialog.rs:57
+msgid "%-d %b %Y, %H:%M"
+msgstr "%-d %b %Y, %H:%M"
+
+#: src/library/shared_link_dialog.rs:114
+msgid "Expires"
+msgstr "Срок действия"
+
+#: src/library/shared_link_dialog.rs:119
+msgid "Password (leave empty to keep)"
+msgstr "Пароль (оставьте пустым, чтобы сохранить)"
+
+#: src/library/shared_link_dialog.rs:121
+msgid "Password (optional)"
+msgstr "Пароль (необязательно)"
+
+#: src/library/shared_link_dialog.rs:125
+msgid "Allow downloads"
+msgstr "Разрешить скачивание"
+
+#: src/library/shared_link_dialog.rs:126
+msgid "Visitors can download originals"
+msgstr "Посетители могут скачивать оригиналы"
+
+#: src/library/shared_link_dialog.rs:130
+msgid "Allow uploads"
+msgstr "Разрешить загрузку"
+
+#: src/library/shared_link_dialog.rs:131
+msgid "Visitors can add photos to the album"
+msgstr "Посетители могут добавлять фотографии в альбом"
+
+#: src/library/shared_link_dialog.rs:135
+msgid "Show metadata"
+msgstr "Показывать метаданные"
+
+#: src/library/shared_link_dialog.rs:136
+msgid "Visitors can see EXIF details and location"
+msgstr "Посетители могут просматривать сведения EXIF и местоположение"
+
+#: src/library/shared_link_dialog.rs:177
+msgid "Create Share Link"
+msgstr "Создать общую ссылку"
+
+#: src/library/shared_link_dialog.rs:178
+msgid "Edit Share Link"
+msgstr "Изменить общую ссылку"
+
+#: src/library/shared_link_dialog.rs:237
+msgid "Share link created and copied"
+msgstr "Общая ссылка создана и скопирована"
+
+#: src/library/shared_link_dialog.rs:243
+msgid "Could Not Save Share Link"
+msgstr "Не удалось сохранить общую ссылку"
+
+#: src/library/shared_link_dialog.rs:253 src/library/shared_link_photos.rs:343
+#: src/library/shared_links_view.rs:325
+msgid "Couldn't copy the link"
+msgstr "Не удалось скопировать ссылку"
+
+#: src/library/shared_link_photos.rs:56 src/library/shared_link_photos.rs:239
+msgid "Photos in Link"
+msgstr "Фотографии в ссылке"
+
+#: src/library/shared_link_photos.rs:77
+msgid ""
+"Tap photos to take them out. To add some, select them in your library and "
+"choose Add to Share Link."
+msgstr "Нажмите на фотографии, чтобы убрать их. Чтобы добавить фотографии, выберите их в библиотеке и нажмите «Добавить в общую ссылку»."
+
+#: src/library/shared_link_photos.rs:111
+#, rust-format
+msgid "Couldn't load the photos: {err}"
+msgstr "Не удалось загрузить фотографии: {err}"
+
+#: src/library/shared_link_photos.rs:154
+msgid "Select"
+msgstr "Выбрать"
+
+#: src/library/shared_link_photos.rs:183
+#, rust-format
+msgid "Remove {n} Photo"
+msgid_plural "Remove {n} Photos"
+msgstr[0] "Удалить {n} фотографию"
+msgstr[1] "Удалить {n} фотографии"
+msgstr[2] "Удалить {n} фотографий"
+
+#: src/library/shared_link_photos.rs:202
+#, rust-format
+msgid "Couldn't take them out: {err}"
+msgstr "Не удалось убрать их: {err}"
+
+#: src/library/shared_link_photos.rs:255
+msgid "Couldn't load your links"
+msgstr "Не удалось загрузить ваши ссылки"
+
+#: src/library/shared_link_photos.rs:293 src/library/shared_links_view.rs:384
+msgid "Individual share"
+msgstr "Индивидуальный доступ"
+
+#: src/library/shared_link_photos.rs:311 src/library/shared_link_photos.rs:327
+msgid "Add to Share Link"
+msgstr "Добавить в общую ссылку"
+
+#: src/library/shared_link_photos.rs:318
+msgid "No Links to Add To"
+msgstr "Нет ссылок для добавления"
+
+#: src/library/shared_link_photos.rs:320
+msgid ""
+"Albums' links always show the whole album. Make a link for some photos with "
+"Create Share Link first."
+msgstr "Ссылки на альбомы всегда показывают весь альбом. Сначала создайте ссылку для отдельных фотографий с помощью действия «Создать общую ссылку»."
+
+#: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
+#: src/library/shared_link_qr.rs:129
+msgid "Copy Link"
+msgstr "Скопировать ссылку"
+
+#: src/library/shared_link_photos.rs:349
+msgid "Couldn't add to the link"
+msgstr "Не удалось добавить в ссылку"
+
+#: src/library/shared_link_photos.rs:356
+msgid "Already in the link"
+msgstr "Уже есть в ссылке"
+
+#: src/library/shared_link_photos.rs:359
+#, rust-format
+msgid "Added {items} to the link"
+msgstr "{items} добавлено в ссылку"
+
+#: src/library/shared_link_photos.rs:366
+#, rust-format
+msgid "{n} wasn't added"
+msgid_plural "{n} weren't added"
+msgstr[0] "{n} не был добавлен"
+msgstr[1] "{n} не были добавлены"
+msgstr[2] "{n} не были добавлены"
+
+#: src/library/shared_link_qr.rs:35 src/library/shared_link_qr.rs:42
+msgid "Couldn't make the QR code"
+msgstr "Не удалось создать QR-код"
+
+#: src/library/shared_link_qr.rs:43
+msgid "The link is too long for a QR code."
+msgstr "Ссылка слишком длинная для QR-кода."
+
+#: src/library/shared_link_qr.rs:64 src/library/shared_links_view.rs:192
+msgid "QR Code"
+msgstr "QR-код"
+
+#: src/library/shared_link_qr.rs:80
+msgid "QR code of the link"
+msgstr "QR-код ссылки"
+
+#: src/library/shared_links_view.rs:35
+msgid "Anyone with a link can view what it shares."
+msgstr "Любой пользователь, имеющий ссылку, может просматривать эти материалы."
+
+#: src/library/shared_links_view.rs:44
+msgid "No Shared Links"
+msgstr "Нет общих ссылок"
+
+#: src/library/shared_links_view.rs:46
+msgid ""
+"Create one from an album's or a photo's right-click menu, or from a "
+"selection."
+msgstr "Создайте ссылку через контекстное меню альбома или фотографии либо из выбранного."
+
+#: src/library/shared_links_view.rs:101
+msgid "Could Not Load Shared Links"
+msgstr "Не удалось загрузить общие ссылки"
+
+#: src/library/shared_links_view.rs:200
+msgid "Photos…"
+msgstr "Фотографии…"
+
+#: src/library/shared_links_view.rs:215
+msgid "Edit…"
+msgstr "Изменить…"
+
+#: src/library/shared_links_view.rs:311
+msgid "Show QR code"
+msgstr "Показать QR-код"
+
+#: src/library/shared_links_view.rs:318
+msgid "Copy link"
+msgstr "Скопировать ссылку"
+
+#: src/library/shared_links_view.rs:355
+msgid "Delete this link?"
+msgstr "Удалить эту ссылку?"
+
+#: src/library/shared_links_view.rs:357
+msgid "Anyone using it will lose access. This can't be undone."
+msgstr "Все, кто её использует, потеряют доступ. Это действие нельзя отменить."
+
+#: src/library/shared_links_view.rs:373
+msgid "Could Not Delete Link"
+msgstr "Не удалось удалить ссылку"
+
+#: src/library/shared_links_view.rs:404
+msgid "Expired"
+msgstr "Срок действия истёк"
+
+#: src/library/shared_links_view.rs:407
+#, rust-format
+msgid "Expires {date}"
+msgstr "Истекает {date}"
+
+#: src/library/shared_links_view.rs:408
+msgid "Never expires"
+msgstr "Бессрочно"
+
+#: src/library/shared_links_view.rs:414 src/library/staging_view.rs:143
+#: src/library/window_layout.rs:413
+msgid "Upload"
+msgstr "Загрузить"
+
+#: src/library/shared_links_view.rs:416
+msgid "Exif"
+msgstr "EXIF"
+
+#: src/library/shared_links_view.rs:417
+msgid "Password"
+msgstr "Пароль"
+
+#: src/library/sharing_view.rs:29
+msgid "Add partner"
+msgstr "Добавить партнёра"
+
+#: src/library/sharing_view.rs:34
+msgid "You Share With"
+msgstr "Вы делитесь с"
+
+#: src/library/sharing_view.rs:35
+msgid "Partners can see all your photos and videos."
+msgstr "Партнёры могут видеть все ваши фотографии и видео."
+
+#: src/library/sharing_view.rs:39
+msgid "Sharing With You"
+msgstr "Делятся с вами"
+
+#: src/library/sharing_view.rs:41
+msgid ""
+"People who added you as a partner. Switch one on to see their photos in "
+"Photos."
+msgstr "Пользователи, добавившие вас в качестве партнёра. Включите кого-либо из них, чтобы видеть их снимки в разделе «Фотографии»."
+
+#: src/library/sharing_view.rs:94
+msgid "Could Not Load Partners"
+msgstr "Не удалось загрузить партнёров"
+
+#: src/library/sharing_view.rs:117
+msgid "Use + to share your library with someone."
+msgstr "Используйте «+», чтобы предоставить доступ к вашей библиотеке."
+
+#: src/library/sharing_view.rs:127
+msgid "No one is sharing with you."
+msgstr "С вами никто не делится."
+
+#: src/library/sharing_view.rs:169
+msgid "Show in Photos"
+msgstr "Показывать в разделе «Фотографии»"
+
+#: src/library/sharing_view.rs:179
+msgid "Could Not Change Partner"
+msgstr "Не удалось изменить партнёра"
+
+#: src/library/sharing_view.rs:203
+msgid "Stop sharing"
+msgstr "Прекратить общий доступ"
+
+#: src/library/sharing_view.rs:214
+#, rust-format
+msgid "Stop sharing with {name}?"
+msgstr "Прекратить общий доступ с {name}?"
+
+#: src/library/sharing_view.rs:217
+msgid "They'll no longer see your photos and videos."
+msgstr "Они больше не смогут видеть ваши фотографии и видео."
+
+#: src/library/sharing_view.rs:218
+msgid "Stop Sharing"
+msgstr "Прекратить общий доступ"
+
+#: src/library/sharing_view.rs:222
+msgid "Could Not Remove Partner"
+msgstr "Не удалось удалить партнёра"
+
+#: src/library/sharing_view.rs:279
+msgid "Loading people…"
+msgstr "Загрузка людей…"
+
+#: src/library/sharing_view.rs:321
+msgid "No other people found. Listing people needs the 'user.read' permission."
+msgstr "Другие пользователи не найдены. Для отображения списка требуется разрешение «user.read»."
+
+#: src/library/sharing_view.rs:354
+msgid "Add Partner"
+msgstr "Добавить партнёра"
+
+#: src/library/sharing_view.rs:377
+#, rust-format
+msgid "Share your library with {name}?"
+msgstr "Предоставить доступ к вашей библиотеке {name}?"
+
+#: src/library/sharing_view.rs:378
+msgid ""
+"They'll be able to see all your photos and videos. You can stop sharing at "
+"any time."
+msgstr "Они смогут видеть все ваши фотографии и видео. Вы можете прекратить общий доступ в любое время."
+
+#: src/library/sharing_view.rs:381
+msgid "Share"
+msgstr "Поделиться"
+
+#: src/library/sharing_view.rs:388
+msgid "Could Not Add Partner"
+msgstr "Не удалось добавить партнёра"
+
+#: src/library/shortcuts_dialog.rs:29
+msgid "Show keyboard shortcuts"
+msgstr "Показать комбинации клавиш"
+
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+msgid "Open Settings"
+msgstr "Открыть настройки"
+
+#: src/library/shortcuts_dialog.rs:31
+msgid "Toggle sidebar"
+msgstr "Показать/скрыть боковую панель"
+
+#: src/library/shortcuts_dialog.rs:32 src/library/window_layout.rs:328
+msgid "Refresh"
+msgstr "Обновить"
+
+#: src/library/shortcuts_dialog.rs:35
+msgid "Paste photos"
+msgstr "Вставить фотографии"
+
+#: src/library/shortcuts_dialog.rs:37
+msgid "Into the open album, or Photos"
+msgstr "В открытый альбом или в раздел «Фотографии»"
+
+#: src/library/shortcuts_dialog.rs:40
+msgid "Go back"
+msgstr "Назад"
+
+#: src/library/shortcuts_dialog.rs:42
+msgid "Or the mouse back button"
+msgstr "Или кнопка «Назад» на мыши"
+
+#: src/library/shortcuts_dialog.rs:45
+msgid "Go forward"
+msgstr "Вперёд"
+
+#: src/library/shortcuts_dialog.rs:47
+msgid "Or the mouse forward button"
+msgstr "Или кнопка «Вперёд» на мыши"
+
+#: src/library/shortcuts_dialog.rs:50
+msgid "Open context menu"
+msgstr "Открыть контекстное меню"
+
+#: src/library/shortcuts_dialog.rs:52
+msgid "Or the Menu key; in the grid, the viewer, and on album tiles"
+msgstr "Или клавиша Menu; в сетке, средстве просмотра и на плитках альбомов"
+
+#: src/library/shortcuts_dialog.rs:61 src/library/sidebar/rows.rs:94
+#: src/library/source_header.rs:310
+msgid "Favorites"
+msgstr "Избранное"
+
+#: src/library/shortcuts_dialog.rs:70
+msgid "Move between photos"
+msgstr "Перемещение между фотографиями"
+
+#: src/library/shortcuts_dialog.rs:72
+msgid "After clicking a photo or tabbing to the grid"
+msgstr "После нажатия на фотографию или перехода в сетку клавишей Tab"
+
+#: src/library/shortcuts_dialog.rs:74
+msgid "First or last photo"
+msgstr "Первая или последняя фотография"
+
+#: src/library/shortcuts_dialog.rs:75
+msgid "Open photo"
+msgstr "Открыть фотографию"
+
+#: src/library/shortcuts_dialog.rs:76
+msgid "Select or deselect photo"
+msgstr "Выбрать или снять выбор с фотографии"
+
+#: src/library/shortcuts_dialog.rs:81
+msgid "Select assets"
+msgstr "Выбрать файлы"
+
+#: src/library/shortcuts_dialog.rs:83
+msgid "Hold and click to add or remove assets"
+msgstr "Удерживайте и нажимайте для добавления или удаления файлов"
+
+#: src/library/shortcuts_dialog.rs:86
+msgid "Select a range"
+msgstr "Выбрать диапазон"
+
+#: src/library/shortcuts_dialog.rs:88
+msgid "Hold and click; add Ctrl to extend the selection"
+msgstr "Удерживайте и нажимайте; добавьте клавишу Ctrl для расширения выбора"
+
+#: src/library/shortcuts_dialog.rs:91
+msgid "Move selection to trash"
+msgstr "Переместить выбранное в корзину"
+
+#: src/library/shortcuts_dialog.rs:93
+msgid "Deletes permanently in the Trash view"
+msgstr "Удаляет навсегда при просмотре корзины"
+
+#: src/library/shortcuts_dialog.rs:96 src/library/staging_view.rs:193
+msgid "Select all"
+msgstr "Выбрать всё"
+
+#: src/library/shortcuts_dialog.rs:98
+msgid "Every photo in the view, loading the rest first"
+msgstr "Все фотографии в текущем виде, с предварительной загрузкой остальных"
+
+#: src/library/shortcuts_dialog.rs:101
+msgid "Select a whole day"
+msgstr "Выбрать весь день"
+
+#: src/library/shortcuts_dialog.rs:103
+msgid ""
+"The focused photo's day or month; or tap its date heading while selecting"
+msgstr "День или месяц фотографии в фокусе; либо нажмите на заголовок с датой во время выбора"
+
+#: src/library/shortcuts_dialog.rs:106
+msgid "Copy selection"
+msgstr "Скопировать выбранное"
+
+#: src/library/shortcuts_dialog.rs:108
+msgid "Paste into an album to add them; one photo copies as a picture"
+msgstr "Вставьте в альбом, чтобы добавить их; одна фотография копируется как изображение"
+
+#: src/library/shortcuts_dialog.rs:110
+msgid "Exit selection mode"
+msgstr "Выйти из режима выбора"
+
+#: src/library/shortcuts_dialog.rs:115
+msgid "Next or previous day"
+msgstr "Следующий или предыдущий день"
+
+#: src/library/shortcuts_dialog.rs:117
+msgid "In Photos, sorted newest first"
+msgstr "В разделе «Фотографии», с сортировкой от новых к старым"
+
+#: src/library/shortcuts_dialog.rs:119
+msgid "Next or previous month"
+msgstr "Следующий или предыдущий месяц"
+
+#: src/library/shortcuts_dialog.rs:120
+msgid "Next or previous year"
+msgstr "Следующий или предыдущий год"
+
+#: src/library/shortcuts_dialog.rs:124
+msgid "Previous asset"
+msgstr "Предыдущий файл"
+
+#: src/library/shortcuts_dialog.rs:125
+msgid "Next asset"
+msgstr "Следующий файл"
+
+#: src/library/shortcuts_dialog.rs:126
+msgid "Toggle details"
+msgstr "Показать/скрыть сведения"
+
+#: src/library/shortcuts_dialog.rs:128
+msgid "Show or hide all actions for the photo"
+msgstr "Показать или скрыть все действия для фотографии"
+
+#: src/library/shortcuts_dialog.rs:131
+msgid "Toggle favorite"
+msgstr "Добавить в избранное / удалить из избранного"
+
+#: src/library/shortcuts_dialog.rs:132
+msgid "Archive or unarchive"
+msgstr "Архивировать или разархивировать"
+
+#: src/library/shortcuts_dialog.rs:134
+msgid "Rate"
+msgstr "Оценить"
+
+#: src/library/shortcuts_dialog.rs:136
+msgid "0 clears the rating"
+msgstr "0 сбрасывает оценку"
+
+#: src/library/shortcuts_dialog.rs:138
+msgid "Edit info"
+msgstr "Изменить информацию"
+
+#: src/library/shortcuts_dialog.rs:141
+msgid "Copy the photo"
+msgstr "Скопировать фотографию"
+
+#: src/library/shortcuts_dialog.rs:143
+msgid "While recognized text shows, copies the text instead"
+msgstr "Когда отображается распознанный текст, вместо этого копирует текст"
+
+#: src/library/shortcuts_dialog.rs:146
+msgid "Show or hide recognized text"
+msgstr "Показать или скрыть распознанный текст"
+
+#: src/library/shortcuts_dialog.rs:148
+msgid "Only when Immich found text in the photo"
+msgstr "Только если Immich нашёл текст на фотографии"
+
+#: src/library/shortcuts_dialog.rs:151
+msgid "Select all recognized text"
+msgstr "Выделить весь распознанный текст"
+
+#: src/library/shortcuts_dialog.rs:153
+msgid "Drag across text to select it; Ctrl-click adds or removes a box"
+msgstr "Проведите по тексту для выделения; Ctrl+щелчок добавляет или удаляет рамку"
+
+#: src/library/shortcuts_dialog.rs:156
+msgid "Copy recognized text"
+msgstr "Скопировать распознанный текст"
+
+#: src/library/shortcuts_dialog.rs:158
+msgid "Copies the selection, or all text when nothing is selected"
+msgstr "Копирует выделенный фрагмент или весь текст, если ничего не выбрано"
+
+#: src/library/shortcuts_dialog.rs:164
+msgid "Or hold Ctrl and scroll"
+msgstr "Или удерживайте Ctrl и прокручивайте"
+
+#: src/library/shortcuts_dialog.rs:167
+msgid "Reset zoom"
+msgstr "Сбросить масштаб"
+
+#: src/library/shortcuts_dialog.rs:169
+msgid "Toggle fullscreen"
+msgstr "Переключить полноэкранный режим"
+
+#: src/library/shortcuts_dialog.rs:171
+msgid "Or the header button; double-click a video; Esc exits"
+msgstr "Или кнопка в заголовке; двойной щелчок по видео; Esc для выхода"
+
+#: src/library/shortcuts_dialog.rs:174
+msgid "Play or stop a live photo"
+msgstr "Воспроизвести или остановить живое фото"
+
+#: src/library/shortcuts_dialog.rs:176
+msgid "Only on live and motion photos"
+msgstr "Только для живых фото и фото с движением"
+
+#: src/library/shortcuts_dialog.rs:178
+msgid "Start slideshow"
+msgstr "Запустить слайд-шоу"
+
+#: src/library/shortcuts_dialog.rs:183
+msgid "Pause or resume"
+msgstr "Приостановить или возобновить"
+
+#: src/library/shortcuts_dialog.rs:185
+msgid "Previous or next photo"
+msgstr "Предыдущее или следующее фото"
+
+#: src/library/shortcuts_dialog.rs:187
+msgid "The next photo then gets the full interval"
+msgstr "Следующее фото будет отображаться полный интервал"
+
+#: src/library/shortcuts_dialog.rs:190
+msgid "End slideshow"
+msgstr "Завершить слайд-шоу"
+
+#: src/library/shortcuts_dialog.rs:192
+msgid "Or S, or leave fullscreen"
+msgstr "Или клавиша S, или выход из полноэкранного режима"
+
+#: src/library/shortcuts_dialog.rs:198
+msgid "Switch the 360° view"
+msgstr "Переключить режим 360°"
+
+#: src/library/shortcuts_dialog.rs:200
+msgid "Only on 360° photos, which open in it"
+msgstr "Только для фото 360°, которые открываются в нём"
+
+#: src/library/shortcuts_dialog.rs:202
+msgid "Tilt up or down"
+msgstr "Наклонить вверх или вниз"
+
+#: src/library/shortcuts_dialog.rs:204
+msgid "Turn left or right"
+msgstr "Повернуть влево или вправо"
+
+#: src/library/shortcuts_dialog.rs:208
+msgid "Zoom in or out"
+msgstr "Увеличить или уменьшить масштаб"
+
+#: src/library/shortcuts_dialog.rs:210
+msgid "Or scroll, or pinch"
+msgstr "Или прокрутка, или сведение пальцев"
+
+#: src/library/shortcuts_dialog.rs:215
+msgid "Play or pause"
+msgstr "Воспроизведение или пауза"
+
+#: src/library/shortcuts_dialog.rs:216
+msgid "Back 10 seconds"
+msgstr "Назад на 10 секунд"
+
+#: src/library/shortcuts_dialog.rs:217
+msgid "Forward 10 seconds"
+msgstr "Вперёд на 10 секунд"
+
+#: src/library/shortcuts_dialog.rs:219
+msgid "Previous frame"
+msgstr "Предыдущий кадр"
+
+#: src/library/shortcuts_dialog.rs:221 src/library/shortcuts_dialog.rs:226
+msgid "Pauses playback"
+msgstr "Приостанавливает воспроизведение"
+
+#: src/library/shortcuts_dialog.rs:224
+msgid "Next frame"
+msgstr "Следующий кадр"
+
+#: src/library/shortcuts_dialog.rs:228
+msgid "Mute or unmute"
+msgstr "Выключить или включить звук"
+
+#: src/library/shortcuts_dialog.rs:229
+msgid "Volume up"
+msgstr "Увеличить громкость"
+
+#: src/library/shortcuts_dialog.rs:230
+msgid "Volume down"
+msgstr "Уменьшить громкость"
+
+#: src/library/shortcuts_dialog.rs:233
+msgid "Enter a folder path"
+msgstr "Ввести путь к папке"
+
+#: src/library/shortcuts_dialog.rs:244
+msgid "Clear the search"
+msgstr "Очистить поиск"
+
+#: src/library/shortcuts_dialog.rs:246
+msgid "While typing in the search field"
+msgstr "При вводе в поле поиска"
+
+#: src/library/shortcuts_dialog.rs:249
+msgid "Move the map"
+msgstr "Переместить карту"
+
+#: src/library/shortcuts_dialog.rs:251
+msgid "After clicking the map"
+msgstr "После нажатия на карту"
+
+#: src/library/shortcuts_dialog.rs:256
+msgid "General"
+msgstr "Основные"
+
+#: src/library/shortcuts_dialog.rs:257
+msgid "Go To"
+msgstr "Переход"
+
+#: src/library/shortcuts_dialog.rs:258
+msgid "Grid"
+msgstr "Сетка"
+
+#: src/library/shortcuts_dialog.rs:259
+msgid "Selection"
+msgstr "Выделение"
+
+#: src/library/shortcuts_dialog.rs:265
+msgid "360° Photos"
+msgstr "Фото 360°"
+
+#: src/library/shortcuts_dialog.rs:266
+msgid "Video"
+msgstr "Видео"
+
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/settings_window/status.rs:48
+msgid "Connection"
+msgstr "Подключение"
+
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/settings_window/status.rs:50
+msgid "Server"
+msgstr "Сервер"
+
+#: src/library/sidebar.rs:206
+msgid "Show recent albums"
+msgstr "Показать недавние альбомы"
+
+#: src/library/sidebar.rs:232
+msgid "All Albums"
+msgstr "Все альбомы"
+
+#: src/library/sidebar/rows.rs:8 src/library/window_layout/responsive.rs:83
+#: src/settings_window/library.rs:86 src/tray_icon.rs:62
+msgid "Library"
+msgstr "Библиотека"
+
+#: src/library/sidebar/rows.rs:20
+msgid "Albums & Sharing"
+msgstr "Альбомы и общий доступ"
+
+#: src/library/sidebar/rows.rs:23
+msgid "Browse"
+msgstr "Обзор"
+
+#: src/library/sidebar/rows.rs:25
+msgid "Utilities"
+msgstr "Служебные"
+
+#: src/library/sidebar/rows.rs:41
+msgid "Timeline of every photo and video"
+msgstr "Хронология всех фото и видео"
+
+#: src/library/sidebar/rows.rs:47
+msgid "Find photos, videos, and text"
+msgstr "Поиск фото, видео и текста"
+
+#: src/library/sidebar/rows.rs:53
+msgid "People, places, and things"
+msgstr "Люди, места и объекты"
+
+#: src/library/sidebar/rows.rs:59
+msgid "Photos by where they were taken"
+msgstr "Фотографии по местам съёмки"
+
+#: src/library/sidebar/rows.rs:65
+msgid "Faces Immich has recognized"
+msgstr "Лица, распознанные Immich"
+
+#: src/library/sidebar/rows.rs:71
+msgid "Recent, owned, and shared"
+msgstr "Недавние, собственные и общие"
+
+#: src/library/sidebar/rows.rs:77
+msgid "Shared with you and by you"
+msgstr "Предоставленные вам и вами"
+
+#: src/library/sidebar/rows.rs:83
+msgid "Public links you've created"
+msgstr "Созданные вами публичные ссылки"
+
+#: src/library/sidebar/rows.rs:89
+msgid "Partners who share libraries"
+msgstr "Партнёры с общими библиотеками"
+
+#: src/library/sidebar/rows.rs:95
+msgid "Photos and videos you've marked"
+msgstr "Отмеченные вами фото и видео"
+
+#: src/library/sidebar/rows.rs:101
+msgid "Browse and organize tags"
+msgstr "Просмотр меток и управление ими"
+
+#: src/library/sidebar/rows.rs:107
+msgid "Browse by folder on the server"
+msgstr "Обзор папок на сервере"
+
+#: src/library/sidebar/rows.rs:113
+msgid "Hidden from Photos"
+msgstr "Скрыто из «Фото»"
+
+#: src/library/sidebar/rows.rs:119
+msgid "Restore or permanently delete"
+msgstr "Восстановление или окончательное удаление"
+
+#: src/library/sidebar/rows.rs:125
+msgid "Photos Immich found more than once"
+msgstr "Фотографии, найденные Immich несколько раз"
+
+#: src/library/sidebar/rows.rs:130 src/library/source_header.rs:298
+msgid "Large Files"
+msgstr "Большие файлы"
+
+#: src/library/sidebar/rows.rs:131
+msgid "The photos and videos taking the most space"
+msgstr "Фото и видео, занимающие больше всего места"
+
+#: src/library/sidebar/rows.rs:136 src/library/source_header.rs:299
+msgid "Missing Location"
+msgstr "Без геопозиции"
+
+#: src/library/sidebar/rows.rs:137
+msgid "Photos and videos without a place"
+msgstr "Фото и видео без указания места"
+
+#: src/library/sidebar/rows.rs:142 src/library/source_header.rs:300
+msgid "Unusual Dates"
+msgstr "Необычные даты"
+
+#: src/library/sidebar/rows.rs:143
+msgid "Dated in the future, or too long ago"
+msgstr "С датой в будущем или слишком старые"
+
+#: src/library/source_header.rs:77
+msgid "Play Slideshow"
+msgstr "Запустить слайд-шоу"
+
+#: src/library/source_header.rs:172 src/library/window_layout.rs:449
+msgid "Library data unavailable"
+msgstr "Данные библиотеки недоступны"
+
+#: src/library/source_header.rs:173 src/library/window_layout.rs:450
+msgid "Could not load library assets"
+msgstr "Не удалось загрузить файлы библиотеки"
+
+#: src/library/source_header.rs:188
+msgid "Nothing Here"
+msgstr "Здесь ничего нет"
+
+#: src/library/source_header.rs:189
+msgid "There are no photos or videos to show."
+msgstr "Нет фото или видео для отображения."
+
+#: src/library/source_header.rs:255
+msgid "Nothing to show yet"
+msgstr "Пока нечего отображать"
+
+#: src/library/source_header.rs:308
+msgid "On This Computer"
+msgstr "На этом компьютере"
+
+#: src/library/source_header.rs:331
+#, rust-format
+msgid "Similar to {name}"
+msgstr "Похожие на {name}"
+
+#: src/library/source_header.rs:338
+msgid "Search Results"
+msgstr "Результаты поиска"
+
+#: src/library/source_header/enrichment.rs:47
+msgid "Smart search"
+msgstr "Умный поиск"
+
+#: src/library/source_header/enrichment.rs:49
+msgid "Most similar first"
+msgstr "Сначала наиболее похожие"
+
+#: src/library/source_header/enrichment.rs:73
+msgid "Back to the map"
+msgstr "Назад к карте"
+
+#: src/library/source_header/enrichment.rs:82
+msgid "Full Grid"
+msgstr "Полная сетка"
+
+#: src/library/source_header/enrichment.rs:154
+msgid "Show on Map"
+msgstr "Показать на карте"
+
+#: src/library/source_header/enrichment.rs:170
+msgid "Share album"
+msgstr "Поделиться альбомом"
+
+#: src/library/source_header/enrichment.rs:180
+msgid "Download album"
+msgstr "Скачать альбом"
+
+#: src/library/source_header/enrichment.rs:193
+msgid "Create share link"
+msgstr "Создать ссылку для доступа"
+
+#: src/library/source_header/enrichment.rs:273
+msgid "Remove from favorites"
+msgstr "Удалить из избранного"
+
+#: src/library/source_header/enrichment.rs:275
+msgid "Add to favorites"
+msgstr "Добавить в избранное"
+
+#: src/library/source_header/enrichment.rs:290
+#, rust-format
+msgid "In {path}"
+msgstr "В {path}"
+
+#: src/library/source_loading.rs:52 src/library/upload_picker.rs:30
+msgid "Upload to album"
+msgstr "Загрузить в альбом"
+
+#: src/library/source_loading.rs:55 src/library/upload_picker.rs:32
+#: src/library/window_layout.rs:422
+msgid "Upload to library"
+msgstr "Загрузить в библиотеку"
+
+#: src/library/source_loading.rs:413
+#, rust-format
+msgid "Could not load library assets: {err}"
+msgstr "Не удалось загрузить файлы библиотеки: {err}"
+
+#: src/library/staging_view.rs:44
+msgid "Mimick - Upload"
+msgstr "Mimick — Загрузка"
+
+#: src/library/staging_view.rs:144
+msgid "Upload selected files to library"
+msgstr "Загрузить выбранные файлы в библиотеку"
+
+#: src/library/staging_view.rs:149
+msgid "Upload selected files to an album"
+msgstr "Загрузить выбранные файлы в альбом"
+
+#: src/library/staging_view.rs:154
+msgid "Select all / Deselect all"
+msgstr "Выделить всё / Снять выделение"
+
+#: src/library/staging_view.rs:199
+msgid "Deselect all"
+msgstr "Снять выделение"
+
+#: src/library/staging_view.rs:220
+#, rust-format
+msgid "{n} file staged"
+msgid_plural "{n} files staged"
+msgstr[0] "{n} файл подготовлен"
+msgstr[1] "{n} файла подготовлены"
+msgstr[2] "{n} файлов подготовлено"
+
+#: src/library/staging_view.rs:226
+#, rust-format
+msgid "{selected} of {n} selected"
+msgid_plural "{selected} of {n} selected"
+msgstr[0] "Выбран {selected} из {n}"
+msgstr[1] "Выбрано {selected} из {n}"
+msgstr[2] "Выбрано {selected} из {n}"
+
+#: src/library/staging_view/album_picker.rs:28
+msgid "Upload to Album"
+msgstr "Загрузить в альбом"
+
+#: src/library/staging_view/album_picker.rs:50
+msgid "Upload Queued"
+msgstr "Загрузка добавлена в очередь"
+
+#: src/library/staging_view/album_picker.rs:53
+#, rust-format
+msgid "{n} file queued for upload. Progress is visible in the queue inspector."
+msgid_plural ""
+"{n} files queued for upload. Progress is visible in the queue inspector."
+msgstr[0] "{n} файл добавлен в очередь на загрузку. Ход выполнения виден в инспекторе очереди."
+msgstr[1] "{n} файла добавлены в очередь на загрузку. Ход выполнения виден в инспекторе очереди."
+msgstr[2] "{n} файлов добавлено в очередь на загрузку. Ход выполнения виден в инспекторе очереди."
+
+#: src/library/staging_view/album_picker.rs:62
+msgid "Upload Failed"
+msgstr "Сбой загрузки"
+
+#: src/library/staging_view/album_picker.rs:65
+#, rust-format
+msgid "{n} file failed to enqueue. Check the logs for details."
+msgid_plural "All {n} files failed to enqueue. Check the logs for details."
+msgstr[0] "Не удалось добавить в очередь {n} файл. Подробности см. в журнале."
+msgstr[1] "Не удалось добавить в очередь все {n} файла. Подробности см. в журнале."
+msgstr[2] "Не удалось добавить в очередь все {n} файлов. Подробности см. в журнале."
+
+#: src/library/staging_view/album_picker.rs:74
+msgid "Upload Partially Queued"
+msgstr "Загрузка частично добавлена в очередь"
+
+#: src/library/staging_view/album_picker.rs:77
+#, rust-format
+msgid "{n} file queued, {skipped} skipped (hash or path errors)."
+msgid_plural "{n} files queued, {skipped} skipped (hash or path errors)."
+msgstr[0] "{n} файл добавлен в очередь, {skipped} пропущен (ошибки хэша или пути)."
+msgstr[1] "{n} файла добавлены в очередь, {skipped} пропущено (ошибки хэша или пути)."
+msgstr[2] "{n} файлов добавлено в очередь, {skipped} пропущено (ошибки хэша или пути)."
+
+#: src/library/tags_view.rs:38 src/library/tags_view.rs:249
+msgid "New Tag"
+msgstr "Новая метка"
+
+#: src/library/tags_view.rs:74
+msgid "Could Not Load Tags"
+msgstr "Не удалось загрузить метки"
+
+#: src/library/tags_view.rs:100
+msgid "All Tags"
+msgstr "Все метки"
+
+#: src/library/tags_view.rs:114
+msgid "No Tags"
+msgstr "Нет меток"
+
+#: src/library/tags_view.rs:115
+msgid ""
+"Create a tag with New Tag, or tag photos from the lightbox details pane."
+msgstr "Создайте метку с помощью «Новая метка» или присвойте метки фотографиям на панели сведений просмотрщика."
+
+#: src/library/tags_view.rs:118
+msgid "No Tags Inside"
+msgstr "Внутри нет меток"
+
+#: src/library/tags_view.rs:119
+msgid "Use New Tag to add one here."
+msgstr "Используйте «Новая метка», чтобы добавить её сюда."
+
+#: src/library/tags_view.rs:137
+#, rust-format
+msgid "Show photos tagged {value}"
+msgstr "Показать фотографии с меткой {value}"
+
+#: src/library/tags_view.rs:143
+#, rust-format
+msgid "{n} tag inside"
+msgid_plural "{n} tags inside"
+msgstr[0] "{n} метка внутри"
+msgstr[1] "{n} метки внутри"
+msgstr[2] "{n} меток внутри"
+
+#: src/library/tags_view.rs:183
+msgid "Change color"
+msgstr "Изменить цвет"
+
+#: src/library/tags_view.rs:209
+msgid "Change Color…"
+msgstr "Изменить цвет…"
+
+#: src/library/tags_view.rs:240
+#, rust-format
+msgid "The tag is created inside {parent}."
+msgstr "Метка будет создана внутри {parent}."
+
+#: src/library/tags_view.rs:252 src/library/tags_view.rs:276
+msgid "Tag name"
+msgstr "Имя метки"
+
+#: src/library/tags_view.rs:261
+msgid "Could Not Create Tag"
+msgstr "Не удалось создать метку"
+
+#: src/library/tags_view.rs:273
+msgid "Rename Tag"
+msgstr "Переименовать метку"
+
+#: src/library/tags_view.rs:274
+msgid "Photos keep the tag under its new name."
+msgstr "Метка на фотографиях сохранится под новым именем."
+
+#: src/library/tags_view.rs:283
+msgid "Couldn't rename the tag"
+msgstr "Не удалось переименовать метку"
+
+#: src/library/tags_view.rs:289
+msgid "Could Not Rename Tag"
+msgstr "Не удалось переименовать метку"
+
+#: src/library/tags_view.rs:301
+#, rust-format
+msgid "Delete “{name}”?"
+msgstr "Удалить «{name}»?"
+
+#: src/library/tags_view.rs:304
+msgid "The tag is removed from every photo. This can't be undone."
+msgstr "Метка будет удалена со всех фотографий. Это действие нельзя отменить."
+
+#: src/library/tags_view.rs:309
+msgid "Could Not Delete Tag"
+msgstr "Не удалось удалить метку"
+
+#: src/library/tags_view.rs:330
+#, rust-format
+msgid "Color for “{name}”"
+msgstr "Цвет для «{name}»"
+
+#: src/library/tags_view.rs:356
+msgid "Could Not Change Color"
+msgstr "Не удалось изменить цвет"
+
+#: src/library/tags_view.rs:413
+msgid "Custom color"
+msgstr "Другой цвет"
+
+#: src/library/tags_view.rs:435
+msgid "Custom"
+msgstr "Другой"
+
+#: src/library/theme/palettes.rs:61
+msgid "Warm White"
+msgstr "Тёплый белый"
+
+#: src/library/theme/palettes.rs:68
+msgid "Lavender"
+msgstr "Лавандовый"
+
+#: src/library/theme/palettes.rs:75
+msgid "Mint"
+msgstr "Мятный"
+
+#: src/library/theme/palettes.rs:91
+msgid "Black"
+msgstr "Чёрный"
+
+#: src/library/theme/palettes.rs:99
+msgid "Midnight"
+msgstr "Полуночный синий"
+
+#: src/library/theme/palettes.rs:106
+msgid "Mocha"
+msgstr "Мокко"
+
+#: src/library/thumbnail_cache.rs:68 src/library/thumbnail_cache.rs:69
+msgid "Thumbnail load cancelled"
+msgstr "Загрузка миниатюры отменена"
+
+#: src/library/thumbnail_cache.rs:576
+msgid "MemTotal:"
+msgstr "MemTotal:"
+
+#: src/library/thumbnail_cache/decode.rs:122
+msgid "Failed to scale video thumbnail"
+msgstr "Не удалось масштабировать миниатюру видео"
+
+#: src/library/thumbnail_cache/decode.rs:134
+#, rust-format
+msgid "No decoder succeeded for {path}"
+msgstr "Ни один декодер не смог обработать {path}"
+
+#: src/library/thumbnail_cache/decode.rs:158
+msgid "Failed to scale pixbuf"
+msgstr "Не удалось масштабировать pixbuf"
+
+#: src/library/thumbnail_cache/screen.rs:40
+msgid "No decoder could read the file"
+msgstr "Ни один декодер не смог прочитать файл"
+
+#: src/library/time_zones.rs:82
+msgid "Time zone"
+msgstr "Часовой пояс"
+
+#. Translators: strftime day heading in the photo timeline, e.g. "Fri, Oct 9".
+#: src/library/timeline/dates.rs:15
+msgid "%a, %b %-d"
+msgstr "%a, %-d %b"
+
+#. Translators: strftime day heading for another year, e.g. "Fri, Oct 9, 2025".
+#: src/library/timeline/dates.rs:18
+msgid "%a, %b %-d, %Y"
+msgstr "%a, %-d %b %Y"
+
+#. Translators: strftime month heading, e.g. "October 2026"; %OB is the standalone month name.
+#: src/library/timeline/dates.rs:25
+msgid "%B %Y"
+msgstr "%OB %Y"
+
+#: src/library/timeline/mod.rs:241
+msgid "This photo isn't in your Photos timeline"
+msgstr "Этой фотографии нет в вашей хронологии «Фото»"
+
+#: src/library/trash_view.rs:35
+msgid ""
+"Immich permanently deletes trashed items after its retention period (30 days "
+"by default)."
+msgstr "Immich окончательно удаляет элементы из корзины по истечении срока хранения (по умолчанию 30 дней)."
+
+#: src/library/trash_view.rs:66
+msgid "Restore All"
+msgstr "Восстановить все"
+
+#: src/library/trash_view.rs:68 src/library/trash_view.rs:238
+msgid "Empty Trash"
+msgstr "Очистить корзину"
+
+#: src/library/trash_view.rs:74
+msgid "Restore selected"
+msgstr "Восстановить выбранные"
+
+#: src/library/trash_view.rs:79
+msgid "Delete selected permanently"
+msgstr "Удалить выбранные навсегда"
+
+#: src/library/trash_view.rs:167 src/library/trash_view.rs:228
+msgid "Could Not Restore"
+msgstr "Не удалось восстановить"
+
+#: src/library/trash_view.rs:175
+msgid "Delete this item permanently?"
+msgstr "Удалить этот элемент навсегда?"
+
+#: src/library/trash_view.rs:188
+msgid "This can't be undone. Local copies in your watch folders are kept."
+msgstr "Это действие нельзя отменить. Локальные копии в отслеживаемых папках будут сохранены."
+
+#: src/library/trash_view.rs:217
+msgid "Could Not Delete"
+msgstr "Не удалось удалить"
+
+#: src/library/trash_view.rs:236
+msgid "Empty the trash?"
+msgstr "Очистить корзину?"
+
+#: src/library/trash_view.rs:237
+msgid ""
+"Everything in the Immich trash is deleted permanently. This can't be undone."
+msgstr "Все элементы в корзине Immich будут удалены навсегда. Это действие нельзя отменить."
+
+#: src/library/trash_view.rs:243
+msgid "Could Not Empty Trash"
+msgstr "Не удалось очистить корзину"
+
+#: src/library/upload_stack.rs:33
+msgid "Upload and Create Stack…"
+msgstr "Загрузить и создать стопку…"
+
+#: src/library/upload_stack.rs:35
+msgid "Upload and Add to Stack…"
+msgstr "Загрузить и добавить в стопку…"
+
+#: src/library/upload_stack.rs:50
+msgid "Upload and Stack"
+msgstr "Загрузить и объединить в стопку"
+
+#: src/library/upload_stack.rs:107
+msgid "Stack created"
+msgstr "Стопка создана"
+
+#: src/library/upload_stack.rs:109
+msgid "Added to the stack"
+msgstr "Добавлено в стопку"
+
+#: src/library/upload_stack.rs:130
+#, rust-format
+msgid "Couldn't upload {n} file"
+msgid_plural "Couldn't upload {n} files"
+msgstr[0] "Не удалось загрузить {n} файл"
+msgstr[1] "Не удалось загрузить {n} файла"
+msgstr[2] "Не удалось загрузить {n} файлов"
+
+#: src/library/upload_stack.rs:138
+msgid "Immich didn't accept the upload."
+msgstr "Immich отклонил загрузку."
+
+#: src/library/utilities.rs:58
+msgid "Add Location"
+msgstr "Добавить геопозицию"
+
+#: src/library/utilities.rs:59
+msgid "Change Date"
+msgstr "Изменить дату"
+
+#: src/library/utilities.rs:127
+msgid "Select photos, then Change Date"
+msgstr "Выберите фотографии, затем выберите «Изменить дату»"
+
+#: src/library/utilities.rs:128
+msgid "Select photos, then Add Location"
+msgstr "Выберите фотографии, затем выберите «Добавить геопозицию»"
+
+#: src/library/utilities.rs:185
+#, rust-format
+msgid "{size} in all"
+msgstr "Всего: {size}"
+
+#: src/library/utilities/controls.rs:29 src/settings_window/behavior.rs:182
+msgid "All Files"
+msgstr "Все файлы"
+
+#: src/library/utilities/controls.rs:31
+msgid "Kind of file"
+msgstr "Тип файла"
+
+#: src/library/utilities/controls.rs:36
+msgid "Smallest size"
+msgstr "Минимальный размер"
+
+#: src/library/utilities/controls.rs:72
+msgid "Any Size"
+msgstr "Любой размер"
+
+#: src/library/utilities/controls.rs:73
+#, rust-format
+msgid "Over {n} GB"
+msgstr "Более {n} ГБ"
+
+#: src/library/utilities/controls.rs:74
+#, rust-format
+msgid "Over {n} MB"
+msgstr "Более {n} МБ"
+
+#: src/library/utilities/controls.rs:84 src/library/utilities/controls.rs:117
+msgid "Dates"
+msgstr "Даты"
+
+#: src/library/utilities/controls.rs:88
+msgid "Show only photos taken between two days"
+msgstr "Показывать только фотографии, снятые между двумя датами"
+
+#: src/library/utilities/controls.rs:101
+msgid "Show the photos without a place taken between these days."
+msgstr "Показать фотографии без указания места, снятые в этот период."
+
+#: src/library/utilities/controls.rs:142
+#, rust-format
+msgid "From {from} to {until}"
+msgstr "С {from} по {until}"
+
+#: src/library/utilities/controls.rs:145
+#, rust-format
+msgid "From {from}"
+msgstr "С {from}"
+
+#: src/library/utilities/controls.rs:146
+#, rust-format
+msgid "Until {until}"
+msgstr "По {until}"
+
+#: src/library/utilities/controls.rs:157
+#, rust-format
+msgid "Before {year}"
+msgstr "До {year}"
+
+#: src/library/utilities/controls.rs:160
+msgid "Future"
+msgstr "В будущем"
+
+#: src/library/utilities/controls.rs:187
+msgid "Dated after today"
+msgstr "С датой позже сегодняшней"
+
+#: src/library/utilities/controls.rs:189
+#, rust-format
+msgid "Dated before {year}"
+msgstr "С датой до {year}"
+
+#: src/library/video_player.rs:240
+msgid "Exit fullscreen (F11)"
+msgstr "Выйти из полноэкранного режима (F11)"
+
+#: src/library/video_player.rs:242 src/library/video_player/controls.rs:61
+msgid "Fullscreen (F11)"
+msgstr "Полноэкранный режим (F11)"
+
+#: src/library/video_player.rs:317 src/library/video_player/controls.rs:41
+msgid "Play (Space)"
+msgstr "Воспроизведение (Пробел)"
+
+#: src/library/video_player/controls.rs:35
+msgid "Audio and subtitles"
+msgstr "Аудио и субтитры"
+
+#: src/library/video_player/controls.rs:42
+msgid "Stop"
+msgstr "Остановить"
+
+#: src/library/video_player/controls.rs:45
+msgid "Back 10 seconds (J)"
+msgstr "Назад на 10 секунд (J)"
+
+#: src/library/video_player/controls.rs:49
+msgid "Forward 10 seconds (L)"
+msgstr "Вперёд на 10 секунд (L)"
+
+#: src/library/video_player/controls.rs:149
+#, rust-format
+msgid "Track {n} ({lang})"
+msgstr "Дорожка {n} ({lang})"
+
+#: src/library/video_player/controls.rs:152
+#, rust-format
+msgid "Track {n}"
+msgstr "Дорожка {n}"
+
+#: src/library/video_player/controls.rs:197
+msgid "Loop"
+msgstr "Зациклить"
+
+#: src/library/video_player/controls.rs:261
+msgid "Playback speed"
+msgstr "Скорость воспроизведения"
+
+#: src/library/video_player/controls.rs:275
+msgid "Mute (M)"
+msgstr "Выключить звук (M)"
+
+#: src/library/video_player/controls.rs:282
+msgid "Volume"
+msgstr "Громкость"
+
+#: src/library/video_player/pipeline.rs:44
+msgid "The GStreamer GTK 4 video sink (gst-plugin-gtk4) is not installed."
+msgstr "Приёмник видео GStreamer GTK 4 (gst-plugin-gtk4) не установлен."
+
+#: src/library/video_player/tracks.rs:34
+msgid "Audio"
+msgstr "Аудио"
+
+#: src/library/video_player/tracks.rs:49 src/settings_window/library.rs:129
+msgid "Off"
+msgstr "Выкл."
+
+#: src/library/video_player/tracks.rs:57
+msgid "Subtitles"
+msgstr "Субтитры"
+
+#: src/library/window_layout.rs:106
+msgid "Mimick Library"
+msgstr "Библиотека Mimick"
+
+#: src/library/window_layout.rs:280
+msgid "Toggle sidebar (F9)"
+msgstr "Переключить боковую панель (F9)"
+
+#: src/library/window_layout.rs:284
+msgid "Back (Alt+Left)"
+msgstr "Назад (Alt+Влево)"
+
+#: src/library/window_layout.rs:289
+msgid "Menu"
+msgstr "Меню"
+
+#: src/library/window_layout.rs:297
+msgid "Search (Ctrl+K)"
+msgstr "Поиск (Ctrl+K)"
+
+#: src/library/window_layout.rs:303
+msgid "Select assets (Esc to exit)"
+msgstr "Выбрать файлы (Esc для выхода)"
+
+#: src/library/window_layout.rs:333 src/settings_window/queue_inspector.rs:61
+msgid "Queue Inspector"
+msgstr "Инспектор очереди"
+
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/tray_icon.rs:73
+msgid "Settings"
+msgstr "Настройки"
+
+#: src/library/window_layout.rs:337
+msgid "Keyboard Shortcuts"
+msgstr "Комбинации клавиш"
+
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+msgid "About Mimick"
+msgstr "О приложении Mimick"
+
+#: src/library/window_layout.rs:393
+msgid "Remote"
+msgstr "Удалённые"
+
+#: src/library/window_layout.rs:394
+msgid "Local"
+msgstr "Локальные"
+
+#: src/library/window_layout.rs:395
+msgid "Unified"
+msgstr "Объединённые"
+
+#: src/library/window_layout.rs:398
+msgid "Asset source"
+msgstr "Источник файлов"
+
+#: src/library/window_layout.rs:415
+msgid "Paste from Clipboard"
+msgstr "Вставить из буфера обмена"
+
+#: src/library/window_layout.rs:423
+msgid "More ways to upload"
+msgstr "Другие способы загрузки"
+
+#: src/library/window_layout.rs:444
+msgid "Nothing to show"
+msgstr "Нечего отображать"
+
+#: src/library/window_layout.rs:445
+msgid "No assets match the current view"
+msgstr "Нет файлов, соответствующих текущему виду"
+
+#: src/library/window_layout.rs:500
+#: src/settings_window/watch_folders/rules_dialog.rs:238
+msgid "Sync"
+msgstr "Синхронизация"
+
+#: src/library/window_layout.rs:506
+msgid "Link"
+msgstr "Ссылка"
+
+#: src/library/window_layout/bulk_bar.rs:65
+msgid "Add to album"
+msgstr "Добавить в альбом"
+
+#: src/library/window_layout/bulk_bar.rs:66
+msgid "Stack selected"
+msgstr "Объединить выбранные в стопку"
+
+#: src/library/window_layout/bulk_bar.rs:68
+msgid "Remove from album"
+msgstr "Удалить из альбома"
+
+#: src/library/window_layout/bulk_bar.rs:203
+msgid "Set location for selected"
+msgstr "Указать местоположение для выбранных"
+
+#: src/library/window_layout/bulk_bar.rs:207
+msgid "Change date for selected"
+msgstr "Изменить дату для выбранных"
+
+#: src/library/window_layout/bulk_bar.rs:224
+msgid "Delete selected"
+msgstr "Удалить выбранные"
+
+#: src/library/window_layout/bulk_bar.rs:229
+msgid "Download selected"
+msgstr "Скачать выбранные"
+
+#: src/library/window_layout/bulk_bar.rs:233
+msgid "Clear selection"
+msgstr "Очистить выделение"
+
+#: src/library/window_layout/bulk_bar.rs:238
+msgid "Share selected"
+msgstr "Поделиться выбранными"
+
+#: src/library/window_layout/responsive.rs:173
+msgid "Sync…"
+msgstr "Синхронизация…"
+
+#: src/main/ui_lifecycle.rs:56 src/queue_manager.rs:481
+msgid "Paused by user"
+msgstr "Приостановлено пользователем"
+
+#: src/notifications.rs:28
+msgid "Sync complete"
+msgstr "Синхронизация завершена"
+
+#: src/notifications.rs:32
+#, rust-format
+msgid "All {n} file processed. Idle."
+msgid_plural "All {n} files processed. Idle."
+msgstr[0] "Обработан {n} файл. Ожидание."
+msgstr[1] "Обработаны все {n} файла. Ожидание."
+msgstr[2] "Обработаны все {n} файлов. Ожидание."
+
+#: src/notifications.rs:42
+#, rust-format
+msgid "{n} failed and will be retried."
+msgid_plural "{n} failed and will be retried."
+msgstr[0] "Не удалось загрузить {n} файл, попытка будет повторена."
+msgstr[1] "Не удалось загрузить {n} файла, попытка будет повторена."
+msgstr[2] "Не удалось загрузить {n} файлов, попытка будет повторена."
+
+#: src/notifications.rs:55
+msgid "Mimick: Connection lost"
+msgstr "Mimick: подключение потеряно"
+
+#: src/notifications.rs:57
+msgid ""
+"Could not reach the Immich server. Uploads will resume automatically when "
+"connectivity is restored."
+msgstr "Не удалось связаться с сервером Immich. Загрузка возобновится автоматически при восстановлении подключения."
+
+#: src/queue_manager.rs:241
+#, rust-format
+msgid "Target album: {name}"
+msgstr "Целевой альбом: {name}"
+
+#: src/queue_manager.rs:326
+msgid "Removed from retry queue"
+msgstr "Удалено из очереди повторных попыток"
+
+#: src/queue_manager.rs:339 src/queue_manager.rs:350
+msgid "Manual retry"
+msgstr "Повторить вручную"
+
+#: src/queue_manager.rs:484
+msgid "Deferred on metered network"
+msgstr "Отложено в лимитированной сети"
+
+#: src/queue_manager.rs:486
+msgid "Deferred while on battery power"
+msgstr "Отложено при работе от батареи"
+
+#: src/queue_manager.rs:488
+msgid "Deferred during quiet hours"
+msgstr "Отложено в часы тишины"
+
+#: src/queue_manager/progress.rs:319
+#, rust-format
+msgid "Finished in {elapsed}s"
+msgstr "Завершено за {elapsed} с"
+
+#: src/queue_manager/progress.rs:357
+#, rust-format
+msgid "Upload failed for {path}"
+msgstr "Сбой загрузки файла {path}"
+
+#: src/queue_manager/progress.rs:366
+msgid ""
+"Review the latest server and permission settings, then retry the failed item."
+msgstr "Проверьте параметры сервера и разрешения, затем повторите попытку для этого файла."
+
+#: src/queue_manager/progress.rs:379
+msgid "Queued for retry"
+msgstr "Поставлено в очередь на повтор"
+
+#: src/sanitize.rs:47
+msgid "URL is empty"
+msgstr "URL-адрес пуст"
+
+#: src/sanitize.rs:51
+#, rust-format
+msgid "Invalid URL: {err}"
+msgstr "Недопустимый URL-адрес: {err}"
+
+#: src/settings_window/actions_ui.rs:17
+msgid "Troubleshooting"
+msgstr "Устранение неполадок"
+
+#: src/settings_window/actions_ui.rs:21
+msgid "Detailed Logs"
+msgstr "Подробный журнал"
+
+#: src/settings_window/actions_ui.rs:23
+msgid ""
+"Record more while you reproduce a problem, then export. The log grows faster."
+msgstr "Записывать больше информации при воспроизведении проблемы перед экспортом. Журнал увеличивается быстрее."
+
+#: src/settings_window/actions_ui.rs:28
+msgid "Export…"
+msgstr "Экспортировать…"
+
+#: src/settings_window/actions_ui.rs:32
+msgid "Export Diagnostics"
+msgstr "Экспорт диагностики"
+
+#: src/settings_window/actions_ui.rs:34
+msgid ""
+"For bug reports: settings, status, and the end of the log, with private "
+"details removed."
+msgstr "Для отчётов об ошибках: настройки, состояние и конец журнала без конфиденциальных данных."
+
+#: src/settings_window/appearance.rs:22
+msgid "Style"
+msgstr "Стиль"
+
+#: src/settings_window/appearance.rs:23
+msgid "Light Theme"
+msgstr "Светлая тема"
+
+#: src/settings_window/appearance.rs:24
+msgid "Dark Theme"
+msgstr "Тёмная тема"
+
+#: src/settings_window/apply.rs:164
+msgid "API Key Stored in a File"
+msgstr "Ключ API сохранён в файле"
+
+#: src/settings_window/apply.rs:170
+msgid "Settings Saved"
+msgstr "Настройки сохранены"
+
+#: src/settings_window/apply.rs:171
+msgid "Mimick saved the updated settings successfully."
+msgstr "Mimick успешно сохранил обновлённые настройки."
+
+#: src/settings_window/apply.rs:207
+msgid "Startup Permission Needed"
+msgstr "Требуется разрешение на автозапуск"
+
+#: src/settings_window/apply.rs:208
+msgid "Mimick was not allowed to start automatically at login."
+msgstr "Приложению Mimick не было разрешено запускаться автоматически при входе в систему."
+
+#: src/settings_window/apply.rs:210
+msgid "Could Not Update Startup Setting"
+msgstr "Не удалось обновить параметр автозапуска"
+
+#: src/settings_window/apply.rs:241
+msgid "Could Not Save API Key"
+msgstr "Не удалось сохранить ключ API"
+
+#: src/settings_window/apply.rs:249
+msgid "Could Not Save Settings"
+msgstr "Не удалось сохранить настройки"
+
+#: src/settings_window/apply.rs:250
+msgid "Mimick could not write the updated configuration to disk."
+msgstr "Mimick не удалось записать обновлённую конфигурацию на диск."
+
+#: src/settings_window/behavior.rs:53
+msgid "Uploads"
+msgstr "Загрузки"
+
+#: src/settings_window/behavior.rs:54
+msgid "How and when your watched folders are backed up."
+msgstr "Как и когда выполняется резервное копирование отслеживаемых папок."
+
+#: src/settings_window/behavior.rs:59
+msgid "Parallel Uploads"
+msgstr "Параллельные загрузки"
+
+#: src/settings_window/behavior.rs:60
+msgid "Higher is faster but uses more bandwidth."
+msgstr "Чем больше значение, тем быстрее загрузка, но расходуется больше пропускной способности сети."
+
+#: src/settings_window/behavior.rs:65
+#: src/settings_window/watch_folders/rules_dialog.rs:304
+msgid "Upload XMP Sidecars"
+msgstr "Загружать сопутствующие файлы XMP"
+
+#: src/settings_window/behavior.rs:66
+#: src/settings_window/watch_folders/rules_dialog.rs:305
+msgid "Send .xmp edit files along with their photos."
+msgstr "Отправлять файлы правок .xmp вместе с фотографиями."
+
+#: src/settings_window/behavior.rs:71
+msgid "Pause on Metered Networks"
+msgstr "Приостанавливать в лимитированных сетях"
+
+#: src/settings_window/behavior.rs:72
+msgid "Wait for an unmetered connection, such as home Wi-Fi."
+msgstr "Ожидать безлимитного подключения, например домашнего Wi-Fi."
+
+#: src/settings_window/behavior.rs:76
+msgid "Pause on Battery"
+msgstr "Приостанавливать при работе от батареи"
+
+#: src/settings_window/behavior.rs:77
+msgid "Wait until the computer is plugged in."
+msgstr "Ожидать подключения компьютера к электросети."
+
+#: src/settings_window/behavior.rs:101
+msgid "App"
+msgstr "Приложение"
+
+#: src/settings_window/behavior.rs:106
+msgid "Run on Startup"
+msgstr "Запускать при входе в систему"
+
+#: src/settings_window/behavior.rs:107
+msgid "Start Mimick when you log in."
+msgstr "Запускать Mimick автоматически при входе в систему."
+
+#: src/settings_window/behavior.rs:111
+msgid "Background Sync"
+msgstr "Фоновая синхронизация"
+
+#: src/settings_window/behavior.rs:112
+msgid "Keep watching folders after you close this window."
+msgstr "Продолжать отслеживание папок после закрытия этого окна."
+
+#: src/settings_window/behavior.rs:117
+msgid "Tell me when uploads finish or something goes wrong."
+msgstr "Уведомлять, когда загрузка завершится или что-то пойдёт не так."
+
+#: src/settings_window/behavior.rs:121
+msgid "Library View"
+msgstr "Просмотр библиотеки"
+
+#: src/settings_window/behavior.rs:122
+msgid "The tray menu updates after a restart."
+msgstr "Меню в области уведомлений обновится после перезапуска."
+
+#: src/settings_window/behavior.rs:137
+msgid "Quiet Hours"
+msgstr "Часы тишины"
+
+#: src/settings_window/behavior.rs:138
+msgid "Don't upload during these hours each day."
+msgstr "Не загружать файлы в эти часы каждый день."
+
+#: src/settings_window/behavior.rs:183
+msgid "Changed in the Last 7 Days"
+msgstr "Изменённые за последние 7 дней"
+
+#: src/settings_window/behavior.rs:184
+msgid "New Files Only"
+msgstr "Только новые файлы"
+
+#: src/settings_window/behavior.rs:190
+#: src/settings_window/watch_folders/rules_dialog.rs:194
+msgid "When Mimick Starts, Check"
+msgstr "При запуске Mimick проверять"
+
+#: src/settings_window/behavior.rs:191
+msgid "Folders can choose their own in Folder Rules."
+msgstr "Для отдельных папок можно настроить свои правила в правилах папок."
+
+#: src/settings_window/connectivity.rs:29
+msgid "Internal URL (LAN)"
+msgstr "Внутренний URL (LAN)"
+
+#: src/settings_window/connectivity.rs:31
+msgid "External URL (WAN)"
+msgstr "Внешний URL (WAN)"
+
+#: src/settings_window/connectivity.rs:35
+msgid "Not tested yet"
+msgstr "Ещё не проверялось"
+
+#: src/settings_window/connectivity.rs:38
+msgid "Test Connection"
+msgstr "Проверить подключение"
+
+#: src/settings_window/connectivity.rs:41
+msgid "Save and Connect"
+msgstr "Сохранить и подключиться"
+
+#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+msgid "Open Library"
+msgstr "Открыть библиотеку"
+
+#: src/settings_window/connectivity.rs:89
+msgid "API Key"
+msgstr "Ключ API"
+
+#: src/settings_window/connectivity.rs:137
+msgid "LAN URL"
+msgstr "URL локальной сети (LAN)"
+
+#: src/settings_window/connectivity.rs:138
+msgid "WAN URL"
+msgstr "URL внешней сети (WAN)"
+
+#: src/settings_window/form.rs:127
+msgid "Invalid Internal URL"
+msgstr "Недопустимый внутренний URL"
+
+#: src/settings_window/form.rs:132
+msgid "Invalid External URL"
+msgstr "Недопустимый внешний URL"
+
+#: src/settings_window/library.rs:70
+msgid "Open Map Places in a Full Grid"
+msgstr "Открывать места на карте в виде полной сетки"
+
+#: src/settings_window/library.rs:71
+msgid "Otherwise their photos open beside the map."
+msgstr "В противном случае их фотографии открываются рядом с картой."
+
+#: src/settings_window/library.rs:88
+msgid "Open Originals in Lightbox"
+msgstr "Открывать оригиналы в режиме просмотра"
+
+#: src/settings_window/library.rs:89
+msgid "Slower to open."
+msgstr "Открывается медленнее."
+
+#: src/settings_window/library.rs:93
+msgid "Thumbnail Quality"
+msgstr "Качество миниатюр"
+
+#: src/settings_window/library.rs:94
+msgid "Sharper thumbnails use more memory."
+msgstr "Более чёткие миниатюры используют больше памяти."
+
+#: src/settings_window/library.rs:96
+msgid "Automatic"
+msgstr "Автоматически"
+
+#: src/settings_window/library.rs:97
+msgid "Thumbnail"
+msgstr "Миниатюра"
+
+#: src/settings_window/library.rs:98
+msgid "Preview"
+msgstr "Предварительный просмотр"
+
+#: src/settings_window/library.rs:99
+msgid "Full Size"
+msgstr "Полный размер"
+
+#: src/settings_window/library.rs:104
+msgid "Fit Thumbnails to Tiles"
+msgstr "Подгонять миниатюры под размер плиток"
+
+#: src/settings_window/library.rs:106
+msgid "Preview and Full Size thumbnails use far less memory."
+msgstr "Миниатюры предварительного просмотра и полного размера используют значительно меньше памяти."
+
+#: src/settings_window/library.rs:122
+msgid "Date Headings"
+msgstr "Заголовки с датами"
+
+#: src/settings_window/library.rs:124
+msgid "Dates between photos in Photos, albums, and other timelines."
+msgstr "Даты между фотографиями в разделе «Фотографии», альбомах и на других временных шкалах."
+
+#: src/settings_window/library.rs:127
+msgid "By Day"
+msgstr "По дням"
+
+#: src/settings_window/library.rs:128
+msgid "By Month"
+msgstr "По месяцам"
+
+#: src/settings_window/library.rs:139
+msgid "Grid Appearance"
+msgstr "Внешний вид сетки"
+
+#: src/settings_window/library.rs:141
+msgid "Border Width"
+msgstr "Ширина рамки"
+
+#: src/settings_window/library.rs:142
+msgid "Gap between photos, in pixels. 0 for none."
+msgstr "Расстояние между фотографиями в пикселях. 0 — без отступа."
+
+#: src/settings_window/library.rs:148
+msgid "Border Color"
+msgstr "Цвет рамки"
+
+#: src/settings_window/library.rs:163
+msgid "RAW Files"
+msgstr "Файлы RAW"
+
+#: src/settings_window/library.rs:165
+msgid "Full RAW Decoding"
+msgstr "Полное декодирование RAW"
+
+#: src/settings_window/library.rs:167
+msgid ""
+"Uses the sensor data, not the embedded preview, with every colour the camera "
+"recorded. Slower, and uses more memory."
+msgstr "Используются данные матрицы, а не встроенный предпросмотр, сохраняя все зафиксированные камерой цвета. Медленнее и расходует больше памяти."
+
+#: src/settings_window/library.rs:172
+msgid "Keep Decoded RAW Files"
+msgstr "Сохранять декодированные файлы RAW"
+
+#: src/settings_window/library.rs:173
+msgid "Reopen instantly, using disk space."
+msgstr "Открываются мгновенно, но расходуется место на диске."
+
+#: src/settings_window/library.rs:192
+msgid "Cache Limit (MB)"
+msgstr "Ограничение кэша (МБ)"
+
+#: src/settings_window/library.rs:193
+msgid "Trimmed when Mimick starts."
+msgstr "Очищается при запуске Mimick."
+
+#: src/settings_window/library.rs:200
+msgid "Memory Limit (MB)"
+msgstr "Ограничение памяти (МБ)"
+
+#: src/settings_window/library.rs:201
+msgid "At most half your RAM."
+msgstr "Не более половины объёма оперативной памяти."
+
+#: src/settings_window/library.rs:228
+msgid "Clear Cache"
+msgstr "Очистить кэш"
+
+#: src/settings_window/library.rs:230
+msgid "Free the space now. Thumbnails reload as you browse."
+msgstr "Освободить место сейчас. Миниатюры будут загружаться повторно при просмотре."
+
+#: src/settings_window/library.rs:243
+msgid "Download Folder"
+msgstr "Папка для скачивания"
+
+#: src/settings_window/library.rs:244 src/settings_window/library.rs:253
+#: src/settings_window/wiring/folder_wiring.rs:58
+msgid "Ask each time"
+msgstr "Спрашивать каждый раз"
+
+#: src/settings_window/library.rs:248
+msgid "Change…"
+msgstr "Изменить…"
+
+#: src/settings_window/library.rs:267
+#, rust-format
+msgid "Using {used} of {limit}"
+msgstr "Использовано {used} из {limit}"
+
+#: src/settings_window/mod.rs:52
+msgid "Default (Folder Name)"
+msgstr "По умолчанию (имя папки)"
+
+#: src/settings_window/mod.rs:56
+msgid "Library (No Album)"
+msgstr "Библиотека (без альбома)"
+
+#: src/settings_window/mod.rs:127
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so the API key "
+"was stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"Настройки сохранены, но системная связка ключей недоступна, поэтому ключ API сохранён в {path}.\n"
+"\n"
+"Файл доступен для чтения только вашей учётной записи, но не зашифрован.\n"
+"\n"
+"См.: {url}"
+
+#: src/settings_window/mod.rs:141
+msgid "No successful sync yet"
+msgstr "Успешной синхронизации ещё не было"
+
+#: src/settings_window/mod.rs:151
+msgid "Less than a minute ago"
+msgstr "Меньше минуты назад"
+
+#: src/settings_window/mod.rs:157
+#, rust-format
+msgid "{n} minute ago"
+msgid_plural "{n} minutes ago"
+msgstr[0] "{n} минуту назад"
+msgstr[1] "{n} минуты назад"
+msgstr[2] "{n} минут назад"
+
+#: src/settings_window/mod.rs:161
+#, rust-format
+msgid "{n} hour ago"
+msgid_plural "{n} hours ago"
+msgstr[0] "{n} час назад"
+msgstr[1] "{n} часа назад"
+msgstr[2] "{n} часов назад"
+
+#: src/settings_window/mod.rs:164
+#, rust-format
+msgid "{n} day ago"
+msgid_plural "{n} days ago"
+msgstr[0] "{n} день назад"
+msgstr[1] "{n} дня назад"
+msgstr[2] "{n} дней назад"
+
+#: src/settings_window/queue_inspector.rs:38
+msgid "Retry All"
+msgstr "Повторить всё"
+
+#: src/settings_window/queue_inspector.rs:86
+msgid "Failed Retry Queue"
+msgstr "Очередь повтора ошибок"
+
+#: src/settings_window/queue_inspector.rs:90
+msgid "Recent Queue Activity"
+msgstr "Недавние действия в очереди"
+
+#: src/settings_window/queue_inspector.rs:114
+msgid "Retry All Failed"
+msgstr "Повторить все неудачные"
+
+#: src/settings_window/queue_inspector.rs:116
+msgid "Clear Failed Queue"
+msgstr "Очистить очередь ошибок"
+
+#: src/settings_window/queue_inspector.rs:233
+msgid "No failed items"
+msgstr "Нет неудачных элементов"
+
+#: src/settings_window/queue_inspector.rs:234
+msgid "The retry queue is currently empty."
+msgstr "Очередь повторных попыток сейчас пуста."
+
+#: src/settings_window/queue_inspector.rs:252 src/settings_window/status.rs:231
+msgid "Retry"
+msgstr "Повторить"
+
+#: src/settings_window/queue_inspector.rs:258
+msgid "Retrying…"
+msgstr "Повторная попытка…"
+
+#: src/settings_window/status.rs:38
+msgid "Watched Folders"
+msgstr "Отслеживаемые папки"
+
+#: src/settings_window/status.rs:50
+msgid "Checking…"
+msgstr "Проверка…"
+
+#: src/settings_window/status.rs:51
+msgid "Last Upload"
+msgstr "Последняя загрузка"
+
+#: src/settings_window/status.rs:51
+msgid "Nothing uploaded yet"
+msgstr "Ещё ничего не загружено"
+
+#: src/settings_window/status.rs:92
+msgid "Set Up…"
+msgstr "Настроить…"
+
+#: src/settings_window/status.rs:129 src/settings_window/status_poll.rs:243
+msgid "Up to Date"
+msgstr "Синхронизировано"
+
+#: src/settings_window/status.rs:153 src/tray_icon.rs:95
+msgid "Sync Now"
+msgstr "Синхронизировать сейчас"
+
+#: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
+#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+msgid "Pause"
+msgstr "Приостановить"
+
+#: src/settings_window/status.rs:155
+msgid "Queue…"
+msgstr "Очередь…"
+
+#: src/settings_window/status.rs:222
+msgid "Needs Attention"
+msgstr "Требуется внимание"
+
+#: src/settings_window/status.rs:226
+msgid "Failed uploads"
+msgstr "Ошибки загрузки"
+
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
+#: src/settings_window/wiring.rs:368
+msgid "Resume"
+msgstr "Возобновить"
+
+#: src/settings_window/status_poll.rs:127
+msgid "No server set up yet"
+msgstr "Сервер ещё не настроен"
+
+#: src/settings_window/status_poll.rs:138
+#, rust-format
+msgid "{n} upload failed"
+msgid_plural "{n} uploads failed"
+msgstr[0] "Не удалось загрузить {n} файл"
+msgstr[1] "Не удалось загрузить {n} файла"
+msgstr[2] "Не удалось загрузить {n} файлов"
+
+#: src/settings_window/status_poll.rs:149
+msgid "No folders yet"
+msgstr "Папки ещё не добавлены"
+
+#: src/settings_window/status_poll.rs:150
+msgid "Add one under Settings → Watch Folders."
+msgstr "Добавьте папку в меню «Настройки» → «Отслеживаемые папки»."
+
+#: src/settings_window/status_poll.rs:184
+msgid "Waiting for a successful connection check"
+msgstr "Ожидание успешной проверки подключения"
+
+#: src/settings_window/status_poll.rs:202
+msgid "Not Set Up Yet"
+msgstr "Ещё не настроено"
+
+#: src/settings_window/status_poll.rs:203
+msgid "Connect Mimick to your Immich server to start."
+msgstr "Подключите Mimick к вашему серверу Immich для начала работы."
+
+#: src/settings_window/status_poll.rs:210
+msgid "Paused"
+msgstr "Приостановлено"
+
+#: src/settings_window/status_poll.rs:228
+msgid "Can't Reach Immich"
+msgstr "Не удаётся связаться с Immich"
+
+#: src/settings_window/status_poll.rs:229
+msgid "Check the server address and API key in Settings."
+msgstr "Проверьте адрес сервера и ключ API в настройках."
+
+#: src/settings_window/status_poll.rs:236
+msgid "Waiting for Immich"
+msgstr "Ожидание Immich"
+
+#: src/settings_window/status_poll.rs:237
+msgid "Failed uploads retry when the server is reachable."
+msgstr "Повторная загрузка файлов начнётся, когда сервер станет доступен."
+
+#: src/settings_window/status_poll.rs:246
+#, rust-format
+msgid "Last upload {when}"
+msgstr "Последняя загрузка: {when}"
+
+#: src/settings_window/status_poll.rs:263
+#, rust-format
+msgid "Uploading {done} of {total}"
+msgstr "Загрузка {done} из {total}"
+
+#: src/settings_window/status_poll.rs:289
+#: src/settings_window/status_poll.rs:295
+msgid "Up to date"
+msgstr "Синхронизировано"
+
+#: src/settings_window/status_poll.rs:292
+#, rust-format
+msgid "Problem: {err}"
+msgstr "Проблема: {err}"
+
+#: src/settings_window/status_poll.rs:298
+#, rust-format
+msgid "{n} waiting to upload"
+msgid_plural "{n} waiting to upload"
+msgstr[0] "{n} ожидает загрузки"
+msgstr[1] "{n} ожидают загрузки"
+msgstr[2] "{n} ожидают загрузки"
+
+#: src/settings_window/status_poll.rs:308
+#, rust-format
+msgid "last upload {when}"
+msgstr "последняя загрузка: {when}"
+
+#: src/settings_window/watch_folders.rs:123
+msgid "Upload Target"
+msgstr "Назначение загрузки"
+
+#: src/settings_window/watch_folders.rs:156
+msgid "Select a library or album upload target"
+msgstr "Выберите библиотеку или альбом для загрузки"
+
+#: src/settings_window/watch_folders.rs:192
+msgid "Remove Folder"
+msgstr "Удалить папку"
+
+#: src/settings_window/watch_folders/album_picker.rs:88
+#, rust-format
+msgid "Create new: \"{name}\""
+msgstr "Создать новый: \"{name}\""
+
+#: src/settings_window/watch_folders/album_picker.rs:95
+msgid "No album sync or deletion mirroring"
+msgstr "Без синхронизации альбомов и зеркалирования удалений"
+
+#: src/settings_window/watch_folders/album_picker.rs:96
+msgid "Creates album dynamically per-folder"
+msgstr "Создаёт альбом динамически для каждой папки"
+
+#: src/settings_window/watch_folders/album_picker.rs:188
+msgid "Select Upload Target"
+msgstr "Выберите назначение загрузки"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:29
+msgid "Rules"
+msgstr "Правила"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:30
+msgid "Edit folder rules"
+msgstr "Изменить правила папки"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:33
+#: src/settings_window/watch_folders/rules_dialog.rs:83
+msgid "Folder Rules"
+msgstr "Правила папки"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:172
+msgid "Uploads new photos and downloads new album photos."
+msgstr "Загружает новые фотографии и скачивает новые фотографии из альбома."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:184
+msgid "Sync Method"
+msgstr "Способ синхронизации"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:187
+msgid "Full Sync"
+msgstr "Полная синхронизация"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:188
+msgid "Upload Only"
+msgstr "Только загрузка"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:189
+msgid "Download Only"
+msgstr "Только скачивание"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:195
+msgid "Which files in this folder are checked at startup."
+msgstr "Какие файлы в этой папке проверяются при запуске."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:220
+msgid "Library uploads can only upload from this folder."
+msgstr "При загрузке в библиотеку возможна только загрузка из этой папки."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:224
+msgid "Not available for library uploads."
+msgstr "Недоступно для загрузок в библиотеку."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:245
+msgid "Deletions"
+msgstr "Удаления"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:252
+msgid "Files"
+msgstr "Файлы"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:280
+msgid "Delete from Immich Too"
+msgstr "Удалять также из Immich"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:281
+msgid "Moves the Immich copy to the Immich trash."
+msgstr "Перемещает копию Immich в корзину Immich."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:287
+msgid "Delete from This Folder Too"
+msgstr "Удалять также из этой папки"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:288
+msgid "Waiting on a Flatpak trash portal fix."
+msgstr "Ожидается исправление портала корзины Flatpak."
+
+#: src/settings_window/watch_folders/rules_dialog.rs:298
+msgid "Skip Hidden Files"
+msgstr "Пропускать скрытые файлы"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:299
+msgid "Names starting with a dot, like .thumbnails"
+msgstr "Имена, начинающиеся с точки, например .thumbnails"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:321
+msgid "Largest File in MB (empty for no limit)"
+msgstr "Максимальный размер файла в МБ (пусто — без ограничений)"
+
+#: src/settings_window/watch_folders/rules_dialog.rs:325
+msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
+msgstr "Только эти типы, например jpg, png, mp4 (пусто — для всех)"
+
+#: src/settings_window/wiring.rs:72
+msgid "Status"
+msgstr "Состояние"
+
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+msgid "Quit Mimick"
+msgstr "Завершить Mimick"
+
+#: src/settings_window/wiring.rs:101
+msgid "Main Menu"
+msgstr "Главное меню"
+
+#: src/settings_window/wiring.rs:148
+msgid "Get Started"
+msgstr "Начало работы"
+
+#: src/settings_window/wiring.rs:150
+msgid "Three steps to connect Mimick to your Immich server."
+msgstr "Три шага для подключения Mimick к вашему серверу Immich."
+
+#: src/settings_window/wiring.rs:155
+msgid "1. Enter your server"
+msgstr "1. Укажите сервер"
+
+#: src/settings_window/wiring.rs:156
+msgid "Your Immich address under Server, below."
+msgstr "Адрес вашего сервера Immich в разделе «Сервер» ниже."
+
+#: src/settings_window/wiring.rs:159
+msgid "2. Add an API key"
+msgstr "2. Добавьте ключ API"
+
+#: src/settings_window/wiring.rs:160
+msgid ""
+"In Immich: Account Settings → API Keys. The guide lists the permissions."
+msgstr "В Immich: Настройки учётной записи → Ключи API. Список разрешений см. в руководстве."
+
+#: src/settings_window/wiring.rs:163
+msgid "3. Save and Connect"
+msgstr "3. Сохранить и подключиться"
+
+#: src/settings_window/wiring.rs:165
+msgid ""
+"Your library opens next. To back up a folder too, add it under Watch Folders."
+msgstr "Затем откроется ваша библиотека. Чтобы настроить резервное копирование папки, добавьте её в разделе «Отслеживаемые папки»."
+
+#: src/settings_window/wiring.rs:177
+msgid "Guide"
+msgstr "Руководство"
+
+#: src/settings_window/wiring.rs:207
+#, rust-format
+msgid "{name} also works"
+msgstr "{name} также работает"
+
+#: src/settings_window/wiring.rs:211
+#, rust-format
+msgid "{name} unreachable"
+msgstr "{name} недоступен"
+
+#: src/settings_window/wiring.rs:219
+msgid "Couldn't reach Immich at either address"
+msgstr "Не удалось связаться с Immich ни по одному из адресов"
+
+#: src/settings_window/wiring.rs:252
+msgid "Testing…"
+msgstr "Проверка…"
+
+#: src/settings_window/wiring.rs:366
+msgid "Paused by you"
+msgstr "Приостановлено вами"
+
+#: src/settings_window/wiring.rs:425
+msgid "Invalid Selection"
+msgstr "Недопустимый выбор"
+
+#: src/settings_window/wiring.rs:426
+msgid "At least one URL (Internal or External) must be enabled."
+msgstr "Должен быть включён хотя бы один URL (внутренний или внешний)."
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:16
+msgid "Choose Diagnostics Export Folder"
+msgstr "Выберите папку для экспорта диагностики"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:49
+msgid "Diagnostics Exported"
+msgstr "Данные диагностики экспортированы"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:51
+#, rust-format
+msgid "Saved diagnostics bundle to {path}"
+msgstr "Пакет диагностики сохранён в {path}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:61
+#: src/settings_window/wiring/diagnostics_wiring.rs:68
+msgid "Diagnostics Export Failed"
+msgstr "Сбой экспорта диагностики"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:63
+#, rust-format
+msgid "Could not write diagnostics bundle: {err}"
+msgstr "Не удалось записать пакет диагностики: {err}"
+
+#: src/settings_window/wiring/diagnostics_wiring.rs:70
+#, rust-format
+msgid "Diagnostics task could not complete: {err}"
+msgstr "Задача диагностики не смогла завершиться: {err}"
+
+#: src/settings_window/wiring/folder_wiring.rs:91
+msgid "Watch Folders"
+msgstr "Отслеживаемые папки"
+
+#: src/settings_window/wiring/folder_wiring.rs:92
+msgid "Expand a folder to pick its album and rules."
+msgstr "Разверните папку, чтобы выбрать её альбом и правила."
+
+#: src/settings_window/wiring/folder_wiring.rs:114
+msgid "Add Folder…"
+msgstr "Добавить папку…"
+
+#: src/settings_window/wiring/folder_wiring.rs:152
+msgid "Select Watch Folder"
+msgstr "Выберите отслеживаемую папку"
+
+#: src/settings_window/wiring/library_wiring.rs:86
+msgid "Could Not Clear Cache"
+msgstr "Не удалось очистить кэш"
+
+#: src/startup_scan/enumeration.rs:114
+msgid "Permission lost or folder missing"
+msgstr "Утеряны права доступа или папка отсутствует"
+
+#: src/tray_icon.rs:41
+msgid "Mimick Sync"
+msgstr "Синхронизация Mimick"
+
+#: src/tray_icon.rs:84
+msgid "Pause / Resume"
+msgstr "Приостановить / Возобновить"
+
+#: src/tray_icon.rs:106
+msgid "Quit"
+msgstr "Завершить"
+
+#: src/watch_path_display.rs:18
+msgid "Selected Folder"
+msgstr "Выбранная папка"
+
+#: setup/dev.nicx.mimick.desktop:2
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:4
+msgid "Mimick"
+msgstr "Mimick"
+
+#: setup/dev.nicx.mimick.desktop:3
+msgid "Unofficial Immich desktop client and auto-sync agent"
+msgstr "Неофициальный клиент Immich для рабочего стола и агент автосинхронизации"
+
+#: setup/dev.nicx.mimick.desktop:10
+msgid ""
+"Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
+msgstr "Фотография;Фотографии;Снимок;Изображение;Видео;Синхронизация;Резервное копирование;Загрузка;Immich;Галерея;Собственный сервер;"
+
+#: setup/dev.nicx.mimick.desktop:25
+msgid "Upload with Mimick"
+msgstr "Загрузить с помощью Mimick"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:5
+msgid "Back up and browse your photos"
+msgstr "Резервное копирование и просмотр ваших фотографий"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:17
+msgid ""
+"Mimick is a native Linux desktop client for self-hosted Immich servers. It "
+"monitors your folders in the background and automatically syncs photos and "
+"videos to your server."
+msgstr "Mimick — это нативный клиент Linux для серверов Immich. Он отслеживает папки в фоновом режиме и автоматически синхронизирует фотографии и видео с сервером."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
+msgid ""
+"Per-folder sync methods: upload only, download only, or full bidirectional "
+"sync with optional deletion mirroring."
+msgstr "Способы синхронизации для каждой папки: только загрузка, только скачивание или полная двунаправленная синхронизация с возможностью зеркалирования удалений."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
+msgid ""
+"Built-in Library View for browsing your timeline, managing albums, and "
+"searching with Smart Search, OCR, and metadata filters."
+msgstr "Встроенный просмотр библиотеки для навигации по временной шкале, управления альбомами и поиска с помощью «Умного поиска», распознавания текста (OCR) и фильтров метаданных."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
+msgid ""
+"SHA-1 deduplication, parallel upload workers, and offline retry queue for "
+"reliable transfers."
+msgstr "Дедупликация по SHA-1, параллельная загрузка и очередь повторных попыток без сети для надёжной передачи данных."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
+msgid ""
+"Environment-aware: automatically pauses on battery or metered connections. "
+"Configurable quiet hours and per-folder rules."
+msgstr "Адаптация к условиям: автоматическая приостановка при работе от батареи или в лимитированных сетях. Настраиваемые часы тишины и правила для отдельных папок."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
+msgid ""
+"Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
+"sandbox support."
+msgstr "Создан на Rust с использованием GTK4 и Libadwaita. Интеграция с системным треем и поддержка изоляции Flatpak."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
+msgid ""
+"Mimick is a community-developed client and is not affiliated with or "
+"endorsed by the Immich project."
+msgstr "Mimick разрабатывается сообществом и не связан с проектом Immich и не одобрен им."
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
+msgid "Library View - Photos page with sidebar"
+msgstr "Просмотр библиотеки — страница фотографий с боковой панелью"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:43
+msgid "Explore page showing People, Places, and Things"
+msgstr "Страница обзора с людьми, местами и объектами"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:48
+msgid "Selected album view in dark mode"
+msgstr "Просмотр выбранного альбома в тёмной теме"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:53
+msgid "Lightbox viewer with details pane"
+msgstr "Просмотрщик изображений с панелью сведений"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:58
+msgid "OCR search for text inside images"
+msgstr "Поиск текста на изображениях (OCR)"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:63
+msgid "Album sync dialog with upload and download actions"
+msgstr "Диалог синхронизации альбомов с действиями загрузки и скачивания"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:68
+msgid "Settings - Server connection and watch folders"
+msgstr "Настройки — подключение к серверу и отслеживаемые папки"
+
+#: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
+msgid "Status page with sync health dashboard"
+msgstr "Страница состояния с панелью мониторинга синхронизации"
+
