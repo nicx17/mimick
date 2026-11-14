@@ -45,13 +45,13 @@ Mimick is an unofficial Immich desktop client for Linux. It syncs your photo and
 
 ## Screenshots
 
-|                    Library View (Light)                    |                    Library View (Black)                    |
-| :--------------------------------------------------------: | :--------------------------------------------------------: |
-| ![Photos page light](docs/screenshots/photos-timeline.png) | ![Photos page black](docs/screenshots/photos-timeline-black.png) |
-|                        Explore View                        |                 Sync Status Dashboard                      |
-|     ![Explore View](docs/screenshots/explore-page.png)     |   ![Status dashboard](docs/screenshots/status-page.png)    |
-|                Settings & Watch Folders                    |                    Mobile View (Phone)                     |
-| ![Settings & Watch Folders](docs/screenshots/settings-server-and-watch-folders.png) |     ![Mobile view](docs/screenshots/photos-phone.png)      |
+|                                Library View (Light)                                 |                       Library View (Black)                       |
+| :---------------------------------------------------------------------------------: | :--------------------------------------------------------------: |
+|             ![Photos page light](docs/screenshots/photos-timeline.png)              | ![Photos page black](docs/screenshots/photos-timeline-black.png) |
+|                                    Explore View                                     |                      Sync Status Dashboard                       |
+|                 ![Explore View](docs/screenshots/explore-page.png)                  |      ![Status dashboard](docs/screenshots/status-page.png)       |
+|                              Settings & Watch Folders                               |                       Mobile View (Phone)                        |
+| ![Settings & Watch Folders](docs/screenshots/settings-server-and-watch-folders.png) |        ![Mobile view](docs/screenshots/photos-phone.png)         |
 
 <div align="center">
 
@@ -161,10 +161,23 @@ flatpak run dev.nicx.mimick  # local Flatpak build
 ## Translations
 
 <!-- translations:start -->
-> **No translations yet.** See [Translations](CONTRIBUTING.md#5-translations) to add your language.
+| Language | Coverage | Progress | Strings |
+| :--- | :---: | :--- | :---: |
+| French (`fr`) | **100%** | `[████████████████████]` | 1465 / 1465 |
+| German (`de`) | **100%** | `[████████████████████]` | 1465 / 1465 |
+| Polish (`pl`) | **100%** | `[████████████████████]` | 1465 / 1465 |
+| Chinese (Simplified) (`zh_CN`) | **22%** | `[████░░░░░░░░░░░░░░░░]` | 334 / 1465 |
+| Dutch (`nl`) | **22%** | `[████░░░░░░░░░░░░░░░░]` | 334 / 1465 |
+| Hindi (`hi`) | **22%** | `[████░░░░░░░░░░░░░░░░]` | 334 / 1465 |
+| Italian (`it`) | **22%** | `[████░░░░░░░░░░░░░░░░]` | 334 / 1465 |
+| Japanese (`ja`) | **22%** | `[████░░░░░░░░░░░░░░░░]` | 334 / 1465 |
+| Konkani (Romi) (`kok@latin`) | **22%** | `[████░░░░░░░░░░░░░░░░]` | 334 / 1465 |
+| Portuguese (Brazil) (`pt_BR`) | **22%** | `[████░░░░░░░░░░░░░░░░]` | 334 / 1465 |
+| Russian (`ru`) | **22%** | `[████░░░░░░░░░░░░░░░░]` | 334 / 1465 |
+| Spanish (`es`) | **22%** | `[████░░░░░░░░░░░░░░░░]` | 334 / 1465 |
 <!-- translations:end -->
 
-Mimick uses gettext, so anyone can add a language: see [Translations](CONTRIBUTING.md#5-translations) in the contributing guide. `scripts/i18n.sh progress` redraws the chart above from the files in `po/`.
+Mimick uses gettext. See [Translations](CONTRIBUTING.md#5-translations) in the contributing guide.
 
 ## Contributing
 

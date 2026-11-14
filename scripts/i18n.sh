@@ -3,7 +3,7 @@
 # `check`: fail if po/mimick.pot is missing or has stale strings, or a po/<lang>.po is broken.
 # `install <localedir>`: compile every language in po/LINGUAS into <localedir>.
 # `merge <template> <output>`: write a translated copy of a .desktop or metainfo file.
-# `progress`: redraw the translation progress chart in README.md (`pot` does too).
+# `progress`: redraw the translation progress table in README.md (`pot` does too).
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -20,7 +20,7 @@ extract() {
         setup/metainfo/dev.nicx.mimick.metainfo.xml
 }
 
-# The README's translation progress chart sits between these markers; `progress` rewrites it.
+# The README's translation progress table sits between these markers; `progress` rewrites it.
 README=README.md
 PROGRESS_START='<!-- translations:start -->'
 PROGRESS_END='<!-- translations:end -->'
@@ -31,7 +31,7 @@ declare -A NAMES=(
     [de]=German [el]=Greek [eo]=Esperanto [es]=Spanish [et]=Estonian [eu]=Basque
     [fa]=Persian [fi]=Finnish [fr]=French [gl]=Galician [he]=Hebrew [hi]=Hindi
     [hr]=Croatian [hu]=Hungarian [id]=Indonesian [it]=Italian [ja]=Japanese
-    [ko]=Korean [lt]=Lithuanian [lv]=Latvian [nb]="Norwegian Bokmål" [nl]=Dutch
+    [ko]=Korean [kok]="Konkani" [kok@latin]="Konkani (Romi)" [lt]=Lithuanian [lv]=Latvian [nb]="Norwegian Bokmål" [nl]=Dutch
     [oc]=Occitan [pl]=Polish [pt]=Portuguese [pt_BR]="Portuguese (Brazil)"
     [ro]=Romanian [ru]=Russian [sk]=Slovak [sl]=Slovenian [sr]=Serbian
     [sv]=Swedish [ta]=Tamil [th]=Thai [tr]=Turkish [uk]=Ukrainian [vi]=Vietnamese
@@ -49,48 +49,37 @@ counts() {
     echo "$translated $total"
 }
 
-# Rows of "percent<TAB>name<TAB>code", fullest first.
+# Rows of "percent<TAB>name<TAB>code<TAB>translated<TAB>total", fullest first.
 rows() {
     local total=$1 lang translated pct
     for lang in $(languages); do
         read -r translated _ < <(counts "po/$lang.po")
         pct=$((total > 0 ? translated * 100 / total : 0))
-        printf '%03d\t%s\t%s\n' "$pct" "${NAMES[$lang]:-$lang}" "$lang"
+        printf '%03d\t%s\t%s\t%d\t%d\n' "$pct" "${NAMES[$lang]:-$lang}" "$lang" "$translated" "$total"
     done | sort -t$'\t' -k1,1r -k2,2
 }
 
-# A Mermaid bar chart GitHub draws in the README, or a note when there are no translations yet.
+# A progress table for the README, or a note when there are no translations yet.
 progress_block() {
-    local total listing pct name
-    local -a labels=() percents=()
+    local total listing pct name lang translated filled empty bar i
     read -r _ total < <(counts po/mimick.pot)
     listing=$(rows "$total")
     echo "$PROGRESS_START"
     if [[ -z $listing ]]; then
         echo "> **No translations yet.** See [Translations](CONTRIBUTING.md#5-translations) to add your language."
     else
-        while IFS=$'\t' read -r pct name _; do
-            labels+=("\"$name\"")
-            percents+=("$((10#$pct))")
+        echo "| Language | Coverage | Progress | Strings |"
+        echo "| :--- | :---: | :--- | :---: |"
+        while IFS=$'\t' read -r pct name lang translated _; do
+            pct=$((10#$pct))
+            filled=$((pct / 5))
+            empty=$((20 - filled))
+            bar=""
+            for ((i = 0; i < filled; i++)); do bar+="█"; done
+            for ((i = 0; i < empty; i++)); do bar+="░"; done
+            printf '| %s (`%s`) | **%d%%** | `[%s]` | %d / %d |\n' \
+                "$name" "$lang" "$pct" "$bar" "$translated" "$total"
         done <<<"$listing"
-        cat <<CHART
-\`\`\`mermaid
----
-config:
-  xyChart:
-    chartOrientation: horizontal
-    height: $((${#labels[@]} * 44 + 96))
-  themeVariables:
-    xyChart:
-      plotColorPalette: "#FF90C3"
----
-xychart-beta
-    title "Translated, of $total strings (%)"
-    x-axis [$(IFS=,; echo "${labels[*]}")]
-    y-axis 0 --> 100
-    bar [$(IFS=,; echo "${percents[*]}")]
-\`\`\`
-CHART
     fi
     echo "$PROGRESS_END"
 }
@@ -150,6 +139,9 @@ install)
         install -d "$dest/$lang/LC_MESSAGES"
         msgfmt --check --output-file="$dest/$lang/LC_MESSAGES/mimick.mo" "po/$lang.po"
     done
+    if [[ -d "$dest/kok@latin" && ! -e "$dest/kok" ]]; then
+        ln -sfT "kok@latin" "$dest/kok"
+    fi
     ;;
 merge)
     template=${2:?usage: $0 merge <template> <output>}
