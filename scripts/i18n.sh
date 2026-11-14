@@ -77,7 +77,7 @@ progress_block() {
             bar=""
             for ((i = 0; i < filled; i++)); do bar+="█"; done
             for ((i = 0; i < empty; i++)); do bar+="░"; done
-            printf '| %s (`%s`) | **%d%%** | `[%s]` | %d / %d |\n' \
+            printf "| %s (\`%s\`) | **%d%%** | \`[%s]\` | %d / %d |\n" \
                 "$name" "$lang" "$pct" "$bar" "$translated" "$total"
         done <<<"$listing"
     fi
@@ -139,8 +139,10 @@ install)
         install -d "$dest/$lang/LC_MESSAGES"
         msgfmt --check --output-file="$dest/$lang/LC_MESSAGES/mimick.mo" "po/$lang.po"
     done
-    if [[ -d "$dest/kok@latin" && ! -e "$dest/kok" ]]; then
-        ln -sfT "kok@latin" "$dest/kok"
+    if [[ -d "$dest/kok@latin" ]]; then
+        [[ -L "$dest/kok" ]] && rm -f "$dest/kok"
+        install -d "$dest/kok/LC_MESSAGES"
+        cp "$dest/kok@latin/LC_MESSAGES/mimick.mo" "$dest/kok/LC_MESSAGES/mimick.mo"
     fi
     ;;
 merge)
