@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
-"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
-"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 11:39+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Hindi\n"
@@ -41,11 +41,11 @@ msgstr "एल्बम सूची अनुपलब्ध है"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "एल्बम रीफ़्रेश करने से पहले Immich सर्वर से पुनः कनेक्ट करें।"
 
-#: src/api_client/albums.rs:180
+#: src/api_client/albums.rs:177
 msgid "Failed to fetch albums"
 msgstr "एल्बम लाने में विफल"
 
-#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
 msgid "Cannot fetch albums to verify existence"
 msgstr "मौजूदगी सत्यापित करने के लिए एल्बम नहीं लाए जा सके"
 
@@ -54,9 +54,11 @@ msgstr "मौजूदगी सत्यापित करने के ल�
 msgid ""
 "The server responded with HTTP {status}. Check the server logs and retry "
 "after confirming the current configuration."
-msgstr "सर्वर ने HTTP {status} के साथ उत्तर दिया। सर्वर लॉग की जाँच करें और वर्तमान कॉन्फ़िगरेशन की पुष्टि के बाद पुनः प्रयास करें।"
+msgstr ""
+"सर्वर ने HTTP {status} के साथ उत्तर दिया। सर्वर लॉग की जाँच करें और वर्तमान कॉन्फ़िगरेशन "
+"की पुष्टि के बाद पुनः प्रयास करें।"
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
 msgid "Immich rejected the API key"
 msgstr "Immich ने API कुंजी अस्वीकार कर दी"
 
@@ -64,7 +66,9 @@ msgstr "Immich ने API कुंजी अस्वीकार कर दी
 msgid ""
 "Update the API key in Settings and confirm it still has the required Asset "
 "and Album permissions (see README for the full list)."
-msgstr "सेटिंग्स में API कुंजी अपडेट करें और पुष्टि करें कि इसमें अभी भी आवश्यक एसेट और एल्बम अनुमतियाँ हैं (पूरी सूची के लिए README देखें)।"
+msgstr ""
+"सेटिंग्स में API कुंजी अपडेट करें और पुष्टि करें कि इसमें अभी भी आवश्यक एसेट और एल्बम अनुमतियाँ हैं "
+"(पूरी सूची के लिए README देखें)।"
 
 #: src/api_client/errors.rs:54
 msgid "An album reference is no longer valid"
@@ -74,7 +78,7 @@ msgstr "एल्बम संदर्भ अब मान्य नहीं �
 msgid "Refresh the album list or choose a different album before retrying."
 msgstr "पुनः प्रयास करने से पहले एल्बम सूची को रीफ़्रेश करें या कोई अन्य एल्बम चुनें।"
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
 msgid "Immich rejected a file as too large"
 msgstr "Immich ने फ़ाइल को बहुत बड़ी होने के कारण अस्वीकार कर दिया"
 
@@ -82,7 +86,9 @@ msgstr "Immich ने फ़ाइल को बहुत बड़ी होन
 msgid ""
 "Reduce the file size, raise the server upload limit, or skip oversized files "
 "with folder rules."
-msgstr "फ़ाइल का आकार घटाएँ, सर्वर अपलोड सीमा बढ़ाएँ, या फ़ोल्डर नियमों के साथ अत्यधिक बड़ी फ़ाइलों को छोड़ दें।"
+msgstr ""
+"फ़ाइल का आकार घटाएँ, सर्वर अपलोड सीमा बढ़ाएँ, या फ़ोल्डर नियमों के साथ अत्यधिक बड़ी "
+"फ़ाइलों को छोड़ दें।"
 
 #: src/api_client/errors.rs:65
 msgid "Immich rate-limited the request"
@@ -92,9 +98,11 @@ msgstr "Immich ने अनुरोध की दर सीमित कर �
 msgid ""
 "Wait a moment and retry. If this happens often, lower upload concurrency or "
 "check reverse proxy limits."
-msgstr "कुछ समय प्रतीक्षा करें और पुनः प्रयास करें। यदि ऐसा बार-बार होता है, तो अपलोड समवर्तीता कम करें या रिवर्स प्रॉक्सी सीमाएँ जाँचें।"
+msgstr ""
+"कुछ समय प्रतीक्षा करें और पुनः प्रयास करें। यदि ऐसा बार-बार होता है, तो अपलोड समवर्तीता "
+"कम करें या रिवर्स प्रॉक्सी सीमाएँ जाँचें।"
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
 msgid "Immich is temporarily unavailable"
 msgstr "Immich अस्थायी रूप से अनुपलब्ध है"
 
@@ -102,7 +110,9 @@ msgstr "Immich अस्थायी रूप से अनुपलब्ध �
 msgid ""
 "Wait a moment and retry. If it keeps happening, inspect the server and "
 "reverse proxy logs."
-msgstr "कुछ समय प्रतीक्षा करें और पुनः प्रयास करें। यदि ऐसा लगातार होता है, तो सर्वर और रिवर्स प्रॉक्सी लॉग का निरीक्षण करें।"
+msgstr ""
+"कुछ समय प्रतीक्षा करें और पुनः प्रयास करें। यदि ऐसा लगातार होता है, तो सर्वर और रिवर्स "
+"प्रॉक्सी लॉग का निरीक्षण करें।"
 
 #: src/api_client/errors.rs:88
 msgid "the upload"
@@ -168,7 +178,7 @@ msgstr "Immich अनुरोध का समय समाप्त (टाइ
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "नेटवर्क गुणवत्ता और सर्वर प्रतिक्रिया की जाँच करें, फिर पुनः प्रयास करें।"
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
 msgid "Could not reach the Immich server"
 msgstr "Immich सर्वर तक नहीं पहुँचा जा सका"
 
@@ -176,7 +186,8 @@ msgstr "Immich सर्वर तक नहीं पहुँचा जा स
 msgid ""
 "Check the configured URLs, your network connection, and whether the server "
 "is online."
-msgstr "कॉन्फ़िगर किए गए URL, अपने नेटवर्क कनेक्शन और सर्वर ऑनलाइन है या नहीं, इसकी जाँच करें।"
+msgstr ""
+"कॉन्फ़िगर किए गए URL, अपने नेटवर्क कनेक्शन और सर्वर ऑनलाइन है या नहीं, इसकी जाँच करें।"
 
 #: src/api_client/errors.rs:135
 msgid ""
@@ -227,20 +238,20 @@ msgstr "लाइब्रेरी आँकड़े अनुरोध पू
 msgid "The server version request failed before completion"
 msgstr "सर्वर संस्करण अनुरोध पूरा होने से पहले ही विफल हो गया"
 
-#: src/api_client/mod.rs:387
+#: src/api_client/mod.rs:526
 msgid "No active connection"
 msgstr "कोई सक्रिय कनेक्शन नहीं है"
 
-#: src/api_client/search.rs:358
+#: src/api_client/search.rs:342
 msgid "Immich can't count by file name or deleted photos"
 msgstr "Immich फ़ाइल नाम या हटाई गई तस्वीरों के अनुसार गणना नहीं कर सकता"
 
-#: src/api_client/tags.rs:76
+#: src/api_client/tags.rs:72
 #, rust-format
 msgid "Immich did not return the tag \"{value}\""
 msgstr "Immich ने टैग \"{value}\" वापस नहीं किया"
 
-#: src/api_client/tags.rs:87
+#: src/api_client/tags.rs:83
 msgid "Renaming tags needs a newer version of Immich."
 msgstr "टैग का नाम बदलने के लिए Immich के नए संस्करण की आवश्यकता है।"
 
@@ -249,62 +260,73 @@ msgstr "टैग का नाम बदलने के लिए Immich क�
 msgid "Invalid month {month}"
 msgstr "अमान्य महीना {month}"
 
-#: src/api_client/upload.rs:301
+#: src/api_client/upload.rs:316
 msgid "A queued file is no longer available"
 msgstr "कतारबद्ध फ़ाइल अब उपलब्ध नहीं है"
 
-#: src/api_client/upload.rs:303
+#: src/api_client/upload.rs:318
 msgid "Mimick could not read a queued file"
 msgstr "Mimick कतारबद्ध फ़ाइल को पढ़ नहीं सका"
 
-#: src/api_client/upload.rs:306
+#: src/api_client/upload.rs:321
 msgid ""
 "Check that the watched folder still exists and that the file was not moved "
 "or deleted before upload."
-msgstr "जाँचें कि वॉच किया गया फ़ोल्डर अभी भी मौजूद है और अपलोड से पहले फ़ाइल को स्थानांतरित या हटाया नहीं गया था।"
-
-#: src/api_client/upload.rs:308
-msgid ""
-"Verify folder permissions and make sure the file is still accessible to the "
-"app."
-msgstr "फ़ोल्डर अनुमतियों को सत्यापित करें और सुनिश्चित करें कि फ़ाइल अभी भी ऐप के लिए सुलभ है।"
-
-#: src/api_client/upload.rs:322
-msgid "Mimick could not open a queued file"
-msgstr "Mimick कतारबद्ध फ़ाइल को खोल नहीं सका"
+msgstr ""
+"जाँचें कि वॉच किया गया फ़ोल्डर अभी भी मौजूद है और अपलोड से पहले फ़ाइल को स्थानांतरित या "
+"हटाया नहीं गया था।"
 
 #: src/api_client/upload.rs:323
 msgid ""
-"The file may be locked, deleted, or outside the app's allowed folder access."
-msgstr "फ़ाइल लॉक हो सकती है, हटाई जा सकती है, या ऐप की अनुमत फ़ोल्डर पहुँच से बाहर हो सकती है।"
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr ""
+"फ़ोल्डर अनुमतियों को सत्यापित करें और सुनिश्चित करें कि फ़ाइल अभी भी ऐप के लिए सुलभ है।"
 
-#: src/api_client/upload.rs:336
+#: src/api_client/upload.rs:337
+msgid "Mimick could not open a queued file"
+msgstr "Mimick कतारबद्ध फ़ाइल को खोल नहीं सका"
+
+#: src/api_client/upload.rs:338
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr ""
+"फ़ाइल लॉक हो सकती है, हटाई जा सकती है, या ऐप की अनुमत फ़ोल्डर पहुँच से बाहर हो सकती है।"
+
+#: src/api_client/upload.rs:351
 msgid "No active server connection"
 msgstr "कोई सक्रिय सर्वर कनेक्शन नहीं है"
 
-#: src/api_client/upload.rs:337
+#: src/api_client/upload.rs:352
 msgid ""
 "Test the server connection in Settings and confirm at least one Immich URL "
 "is reachable."
-msgstr "सेटिंग्स में सर्वर कनेक्शन का परीक्षण करें और पुष्टि करें कि कम से कम एक Immich URL सुलभ है।"
+msgstr ""
+"सेटिंग्स में सर्वर कनेक्शन का परीक्षण करें और पुष्टि करें कि कम से कम एक Immich URL सुलभ है।"
 
-#: src/api_client/upload.rs:393
+#: src/api_client/upload.rs:405
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
-msgstr "फ़ाइल का आकार घटाएँ, सर्वर की अपलोड सीमाएँ बढ़ाएँ, या अत्यधिक बड़ी फ़ाइलों को छोड़ने के लिए फ़ोल्डर नियम का उपयोग करें।"
+msgstr ""
+"फ़ाइल का आकार घटाएँ, सर्वर की अपलोड सीमाएँ बढ़ाएँ, या अत्यधिक बड़ी फ़ाइलों को छोड़ने के "
+"लिए फ़ोल्डर नियम का उपयोग करें।"
 
-#: src/api_client/upload.rs:410
+#: src/api_client/upload.rs:422
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
-msgstr "कुछ समय प्रतीक्षा करें और पुनः प्रयास करें। यदि ऐसा लगातार होता है, तो सर्वर लॉग और रिवर्स प्रॉक्सी की जाँच करें।"
+msgstr ""
+"कुछ समय प्रतीक्षा करें और पुनः प्रयास करें। यदि ऐसा लगातार होता है, तो सर्वर लॉग और "
+"रिवर्स प्रॉक्सी की जाँच करें।"
 
 #: src/autostart.rs:50
 msgid ""
 "Reason for requesting background access: Mimick must run in the background "
 "to automatically sync media to Immich."
-msgstr "पृष्ठभूमि (बैकग्राउंड) पहुँच का अनुरोध करने का कारण: Immich पर मीडिया को स्वचालित रूप से सिंक करने के लिए Mimick को पृष्ठभूमि में चलना चाहिए।"
+msgstr ""
+"पृष्ठभूमि (बैकग्राउंड) पहुँच का अनुरोध करने का कारण: Immich पर मीडिया को स्वचालित रूप से "
+"सिंक करने के लिए Mimick को पृष्ठभूमि में चलना चाहिए।"
 
 #: src/autostart.rs:57
 #, rust-format
@@ -334,6 +356,30 @@ msgstr "ऑटोस्टार्ट प्रविष्टि हटान�
 #: src/autostart.rs:126 src/autostart.rs:133
 msgid "Could not locate the user config directory."
 msgstr "उपयोगकर्ता कॉन्फ़िग निर्देशिका नहीं मिल सकी।"
+
+#: src/config/headers.rs:23
+msgid "WAN only (External)"
+msgstr "केवल WAN (बाहरी)"
+
+#: src/config/headers.rs:24
+msgid "All (LAN & WAN)"
+msgstr "सभी (LAN और WAN)"
+
+#: src/config/headers.rs:25
+msgid "LAN only (Internal)"
+msgstr "केवल LAN (आंतरिक)"
+
+#: src/config/headers.rs:32
+msgid "WAN"
+msgstr "WAN"
+
+#: src/config/headers.rs:33
+msgid "ALL"
+msgstr "सभी"
+
+#: src/config/headers.rs:34
+msgid "LAN"
+msgstr "LAN"
 
 #: src/library/about_dialog.rs:40
 msgid "Repository"
@@ -395,7 +441,8 @@ msgstr "खाता"
 #: src/library/account.rs:66
 #, rust-format
 msgid "Couldn't load this. Your API key needs the “{permission}” permission."
-msgstr "इसे लोड नहीं किया जा सका। आपकी API कुंजी के लिए “{permission}” अनुमति आवश्यक है।"
+msgstr ""
+"इसे लोड नहीं किया जा सका। आपकी API कुंजी के लिए “{permission}” अनुमति आवश्यक है।"
 
 #: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
 #: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
@@ -406,13 +453,15 @@ msgstr "इसे लोड नहीं किया जा सका। आप
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/connectivity.rs:305
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "रद्द करें"
 
 #: src/library/account/avatar_crop.rs:130
 msgid "Picture to crop; drag or use the arrow keys to move it"
-msgstr "क्रॉप करने के लिए चित्र; इसे स्थानांतरित करने के लिए खींचें या तीर कुंजियों का उपयोग करें"
+msgstr ""
+"क्रॉप करने के लिए चित्र; इसे स्थानांतरित करने के लिए खींचें या तीर कुंजियों का उपयोग करें"
 
 #: src/library/account/avatar_crop.rs:407 src/library/bulk_date.rs:274
 msgid "Set"
@@ -434,7 +483,9 @@ msgstr "साइन-इन किए गए डिवाइस"
 msgid ""
 "Browsers and apps signed in to your account. Mimick uses an API key, so it "
 "isn't listed."
-msgstr "आपके खाते में साइन इन किए गए ब्राउज़र और ऐप। Mimick एक API कुंजी का उपयोग करता है, इसलिए यह सूचीबद्ध नहीं है।"
+msgstr ""
+"आपके खाते में साइन इन किए गए ब्राउज़र और ऐप। Mimick एक API कुंजी का उपयोग करता है, "
+"इसलिए यह सूचीबद्ध नहीं है।"
 
 #: src/library/account/devices.rs:28
 msgid "Devices"
@@ -535,7 +586,9 @@ msgstr "इस कुंजी के लिए एक नया सीक्र
 msgid ""
 "Mimick saves the new secret and keeps working. Anything else using this key "
 "stops working until you give it the new secret."
-msgstr "Mimick नया सीक्रेट सहेज लेगा और काम करता रहेगा। इस कुंजी का उपयोग करने वाली कोई भी अन्य चीज़ तब तक काम करना बंद कर देगी जब तक आप उसे नया सीक्रेट नहीं देते।"
+msgstr ""
+"Mimick नया सीक्रेट सहेज लेगा और काम करता रहेगा। इस कुंजी का उपयोग करने वाली कोई भी "
+"अन्य चीज़ तब तक काम करना बंद कर देगी जब तक आप उसे नया सीक्रेट नहीं देते।"
 
 #: src/library/account/keys.rs:159
 msgid "Rotate"
@@ -562,7 +615,8 @@ msgid ""
 "\n"
 "{secret}"
 msgstr ""
-"Mimick अब इसका उपयोग कर रहा है लेकिन इसे सहेज नहीं सका ({err})। इसे सेटिंग्स में पेस्ट करें ताकि यह सुरक्षित रहे:\n"
+"Mimick अब इसका उपयोग कर रहा है लेकिन इसे सहेज नहीं सका ({err})। इसे सेटिंग्स में पेस्ट करें "
+"ताकि यह सुरक्षित रहे:\n"
 "\n"
 "{secret}"
 
@@ -582,7 +636,9 @@ msgstr "यह कुंजी हटाएँ?"
 
 #: src/library/account/keys.rs:224
 msgid "Anything signing in with it stops working. This can't be undone."
-msgstr "इसके साथ साइन इन करने वाली कोई भी चीज़ काम करना बंद कर देगी। इसे पूर्ववत नहीं किया जा सकता।"
+msgstr ""
+"इसके साथ साइन इन करने वाली कोई भी चीज़ काम करना बंद कर देगी। इसे पूर्ववत नहीं किया जा "
+"सकता।"
 
 #: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
 #: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
@@ -628,7 +684,8 @@ msgstr "आपका खाता लोड नहीं किया जा स
 
 #: src/library/account/profile.rs:152
 msgid "To use one of your photos, choose Set as Profile Picture in its menu."
-msgstr "अपनी किसी फ़ोटो का उपयोग करने के लिए, उसके मेनू में 'प्रोफ़ाइल चित्र के रूप में सेट करें' चुनें।"
+msgstr ""
+"अपनी किसी फ़ोटो का उपयोग करने के लिए, उसके मेनू में 'प्रोफ़ाइल चित्र के रूप में सेट करें' चुनें।"
 
 #: src/library/account/profile.rs:163
 msgid "Images"
@@ -698,13 +755,15 @@ msgstr "आपकी फ़ोटो नहीं हैं"
 msgid ""
 "Only the owner can change where a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "केवल स्वामी ही यह बदल सकता है कि फ़ोटो कहाँ ली गई थी, और चयनित फ़ोटो अन्य लोगों की हैं।"
+msgstr ""
+"केवल स्वामी ही यह बदल सकता है कि फ़ोटो कहाँ ली गई थी, और चयनित फ़ोटो अन्य लोगों की हैं।"
 
 #: src/library/actions.rs:352
 msgid ""
 "Only the owner can change when a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "केवल स्वामी ही यह बदल सकता है कि फ़ोटो कब ली गई थी, और चयनित फ़ोटो अन्य लोगों की हैं।"
+msgstr ""
+"केवल स्वामी ही यह बदल सकता है कि फ़ोटो कब ली गई थी, और चयनित फ़ोटो अन्य लोगों की हैं।"
 
 #: src/library/actions/trash.rs:60
 #, rust-format
@@ -870,7 +929,8 @@ msgstr "“{album_name}” छोड़ें?"
 #: src/library/album_assets.rs:200
 msgid ""
 "You'll stop seeing its photos unless the owner shares it with you again."
-msgstr "जब तक स्वामी इसे आपके साथ फिर से साझा नहीं करता, तब तक आपको इसकी फ़ोटो नहीं दिखेंगी।"
+msgstr ""
+"जब तक स्वामी इसे आपके साथ फिर से साझा नहीं करता, तब तक आपको इसकी फ़ोटो नहीं दिखेंगी।"
 
 #: src/library/album_assets.rs:201
 msgid "Leave"
@@ -890,7 +950,9 @@ msgstr "एल्बम छोड़ा नहीं जा सका"
 msgid ""
 "Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
 "they don't create it again."
-msgstr "Mimick अभी भी अपलोड कर रहा है। अपलोड पूरा होने पर “{album_name}” हटाएँ, ताकि वे इसे फिर से न बनाएँ।"
+msgstr ""
+"Mimick अभी भी अपलोड कर रहा है। अपलोड पूरा होने पर “{album_name}” हटाएँ, ताकि वे "
+"इसे फिर से न बनाएँ।"
 
 #: src/library/album_delete.rs:29
 msgid "Uploads in Progress"
@@ -904,7 +966,9 @@ msgstr "पहले सेटिंग्स बंद करें"
 msgid ""
 "Deleting this album changes your watch folders, and saving the open Settings "
 "window would undo that. Close Settings, then delete the album."
-msgstr "इस एल्बम को हटाने से आपके वॉच फ़ोल्डर बदल जाते हैं, और खुली हुई सेटिंग्स विंडो को सहेजने से वह पूर्ववत हो जाएगा। सेटिंग्स बंद करें, फिर एल्बम हटाएँ।"
+msgstr ""
+"इस एल्बम को हटाने से आपके वॉच फ़ोल्डर बदल जाते हैं, और खुली हुई सेटिंग्स विंडो को सहेजने से वह "
+"पूर्ववत हो जाएगा। सेटिंग्स बंद करें, फिर एल्बम हटाएँ।"
 
 #: src/library/album_delete.rs:45
 msgid "Its photos stay in your library."
@@ -918,7 +982,8 @@ msgstr "यह उस व्यक्ति के लिए भी हटा �
 #, rust-format
 msgid "It's also removed for the {n} person it's shared with."
 msgid_plural "It's also removed for the {n} people it's shared with."
-msgstr[0] "यह उस {n} व्यक्ति के लिए भी हटा दिया जाएगा जिसके साथ इसे साझा किया गया है।"
+msgstr[0] ""
+"यह उस {n} व्यक्ति के लिए भी हटा दिया जाएगा जिसके साथ इसे साझा किया गया है।"
 msgstr[1] "यह उन {n} लोगों के लिए भी हटा दिया जाएगा जिनके साथ इसे साझा किया गया है।"
 
 #: src/library/album_delete.rs:61
@@ -950,7 +1015,9 @@ msgstr "इन फ़ोल्डरों पर नज़र रखना ब�
 msgid ""
 "So the album doesn't come back, photos in these folders go to your library "
 "instead of an album named after the folder:"
-msgstr "ताकि एल्बम वापस न आए, इन फ़ोल्डरों की फ़ोटो फ़ोल्डर के नाम वाले एल्बम के बजाय आपकी लाइब्रेरी में जाएँगी:"
+msgstr ""
+"ताकि एल्बम वापस न आए, इन फ़ोल्डरों की फ़ोटो फ़ोल्डर के नाम वाले एल्बम के बजाय आपकी "
+"लाइब्रेरी में जाएँगी:"
 
 #: src/library/album_delete.rs:221
 msgid "Could Not Delete Album"
@@ -1103,7 +1170,8 @@ msgid ""
 msgid_plural ""
 "Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
 msgstr[0] "पहले से सिंक में है। ({n} रिमोट आइटम का मिलान नहीं किया जा सका — गुम चेकसम।)"
-msgstr[1] "पहले से सिंक में है। ({n} रिमोट आइटमों का मिलान नहीं किया जा सका — गुम चेकसम।)"
+msgstr[1] ""
+"पहले से सिंक में है। ({n} रिमोट आइटमों का मिलान नहीं किया जा सका — गुम चेकसम।)"
 
 #: src/library/album_link.rs:299
 msgid "Already in sync."
@@ -1303,6 +1371,7 @@ msgid "Could Not Remove Person"
 msgstr "व्यक्ति को हटाया नहीं जा सका"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+#: src/settings_window/connectivity.rs:307
 msgid "Add"
 msgstr "जोड़ें"
 
@@ -1383,7 +1452,8 @@ msgstr "अपने किसी एल्बम को साझा करे�
 #: src/library/albums_view/stats.rs:40
 #, rust-format
 msgid "{owned} owned · {shared} shared · {not_shared} not shared"
-msgstr "{owned} स्वामित्व वाले · {shared} साझा किए गए · {not_shared} साझा नहीं किए गए"
+msgstr ""
+"{owned} स्वामित्व वाले · {shared} साझा किए गए · {not_shared} साझा नहीं किए गए"
 
 #: src/library/albums_view/tile.rs:58 src/library/download.rs:177
 #: src/library/header_format.rs:34
@@ -1734,7 +1804,9 @@ msgstr[1] "{n} फ़ोटो कॉपी की गईं"
 msgid ""
 "Pasting into an album here adds all {count}. Only {local} are on this "
 "computer, so other apps such as Files paste those; use Download for the rest."
-msgstr "यहाँ किसी एल्बम में पेस्ट करने पर सभी {count} जुड़ जाती हैं। केवल {local} इस कंप्यूटर पर हैं, इसलिए Files जैसे अन्य ऐप उन्हें ही पेस्ट करते हैं; बाकियों के लिए डाउनलोड का उपयोग करें।"
+msgstr ""
+"यहाँ किसी एल्बम में पेस्ट करने पर सभी {count} जुड़ जाती हैं। केवल {local} इस कंप्यूटर पर हैं, "
+"इसलिए Files जैसे अन्य ऐप उन्हें ही पेस्ट करते हैं; बाकियों के लिए डाउनलोड का उपयोग करें।"
 
 #: src/library/clipboard.rs:162
 msgid "Paste in Photos or albums"
@@ -1854,7 +1926,9 @@ msgid ""
 "Your API key is missing permissions required for the Library view. Please "
 "ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
 "'person.read' enabled."
-msgstr "आपकी API कुंजी में लाइब्रेरी दृश्य के लिए आवश्यक अनुमतियों की कमी है। कृपया सुनिश्चित करें कि कुंजी में 'asset.read', 'asset.view', 'asset.download', और 'person.read' सक्षम हैं।"
+msgstr ""
+"आपकी API कुंजी में लाइब्रेरी दृश्य के लिए आवश्यक अनुमतियों की कमी है। कृपया सुनिश्चित करें कि "
+"कुंजी में 'asset.read', 'asset.view', 'asset.download', और 'person.read' सक्षम हैं।"
 
 #: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
 #: src/library/shortcuts_dialog.rs:179
@@ -2108,7 +2182,9 @@ msgstr "कोई डुप्लिकेट नहीं"
 msgid ""
 "Immich hasn't found any duplicate photos. It looks for them when its "
 "duplicate detection job runs."
-msgstr "Immich को कोई डुप्लिकेट फ़ोटो नहीं मिली है। यह तब इनकी खोज करता है जब इसका डुप्लिकेट पहचान कार्य चलता है।"
+msgstr ""
+"Immich को कोई डुप्लिकेट फ़ोटो नहीं मिली है। यह तब इनकी खोज करता है जब इसका डुप्लिकेट "
+"पहचान कार्य चलता है।"
 
 #: src/library/duplicates_view.rs:123
 msgid "Tap a photo to keep it or trash it."
@@ -2598,7 +2674,9 @@ msgstr "तीव्रता"
 
 #: src/library/lightbox/edit/pages.rs:125
 msgid "Drag over what to hide. Tap a box to move, resize, or change it."
-msgstr "जिसे छिपाना है उस पर खींचें (ड्रैग करें)। किसी बॉक्स को स्थानांतरित करने, आकार बदलने या बदलने के लिए उस पर टैप करें।"
+msgstr ""
+"जिसे छिपाना है उस पर खींचें (ड्रैग करें)। किसी बॉक्स को स्थानांतरित करने, आकार बदलने या "
+"बदलने के लिए उस पर टैप करें।"
 
 #: src/library/lightbox/edit/pages.rs:135
 msgid "Hide Faces"
@@ -2657,7 +2735,9 @@ msgstr "मूल विवरण बनाए रखें"
 msgid ""
 "A saved copy keeps the original's camera details, date, place, caption, "
 "rating, and albums. Off, the copy is a new photo of its own."
-msgstr "सहेजी गई प्रतिलिपि में मूल के कैमरा विवरण, तिथि, स्थान, शीर्षक, रेटिंग और एल्बम सुरक्षित रहते हैं। बंद होने पर, प्रतिलिपि अपने आप में एक नई फ़ोटो होती है।"
+msgstr ""
+"सहेजी गई प्रतिलिपि में मूल के कैमरा विवरण, तिथि, स्थान, शीर्षक, रेटिंग और एल्बम सुरक्षित "
+"रहते हैं। बंद होने पर, प्रतिलिपि अपने आप में एक नई फ़ोटो होती है।"
 
 #: src/library/lightbox/edit/panel.rs:176
 msgid "Stack with Original"
@@ -2812,12 +2892,12 @@ msgstr "मोशन चलाएँ (Space)"
 msgid "Playback isn't available"
 msgstr "प्लेबैक उपलब्ध नहीं है"
 
-#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/live.rs:106 src/library/lightbox/video.rs:65
 #: src/library/lightbox/video.rs:108
 msgid "Playback failed"
 msgstr "प्लेबैक विफल रहा"
 
-#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+#: src/library/lightbox/live.rs:107 src/library/lightbox/video.rs:129
 msgid "Not connected to the Immich server."
 msgstr "Immich सर्वर से कनेक्ट नहीं है।"
 
@@ -3410,7 +3490,9 @@ msgstr[1] "{n} फ़ाइलें"
 msgid ""
 "Your API key is missing permissions required to view thumbnails. Please "
 "ensure the key has 'asset.view' enabled."
-msgstr "थंबनेल देखने के लिए आवश्यक अनुमतियाँ आपकी API कुंजी में मौजूद नहीं हैं। कृपया सुनिश्चित करें कि कुंजी में 'asset.view' सक्षम है।"
+msgstr ""
+"थंबनेल देखने के लिए आवश्यक अनुमतियाँ आपकी API कुंजी में मौजूद नहीं हैं। कृपया सुनिश्चित करें कि "
+"कुंजी में 'asset.view' सक्षम है।"
 
 #: src/library/memories.rs:154
 #, rust-format
@@ -3557,7 +3639,9 @@ msgstr "मिलाएँ"
 msgid ""
 "Pick the people who are really {name}. Their faces move to {name} and "
 "they're removed. This can't be undone."
-msgstr "उन लोगों को चुनें जो वास्तव में {name} हैं। उनके चेहरे {name} में चले जाएँगे और उन्हें हटा दिया जाएगा। इसे पूर्ववत नहीं किया जा सकता।"
+msgstr ""
+"उन लोगों को चुनें जो वास्तव में {name} हैं। उनके चेहरे {name} में चले जाएँगे और उन्हें हटा दिया "
+"जाएगा। इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/person_merge_dialog.rs:124
 #, rust-format
@@ -3912,7 +3996,9 @@ msgstr "सर्वर-व्यापी आँकड़ों के लि�
 msgid ""
 "Your API key must include the 'server.about', 'server.versionCheck', "
 "'server.statistics', and 'asset.statistics' permissions to view stats."
-msgstr "आँकड़े देखने के लिए आपकी API कुंजी में 'server.about', 'server.versionCheck', 'server.statistics', और 'asset.statistics' अनुमतियाँ शामिल होनी चाहिए।"
+msgstr ""
+"आँकड़े देखने के लिए आपकी API कुंजी में 'server.about', 'server.versionCheck', "
+"'server.statistics', और 'asset.statistics' अनुमतियाँ शामिल होनी चाहिए।"
 
 #: src/library/server_stats_dialog.rs:168
 msgid "Unable to load statistics"
@@ -4022,7 +4108,9 @@ msgstr "लिंक में मौजूद फ़ोटो"
 msgid ""
 "Tap photos to take them out. To add some, select them in your library and "
 "choose Add to Share Link."
-msgstr "फ़ोटो निकालने के लिए उन पर टैप करें। कुछ जोड़ने के लिए, उन्हें अपनी लाइब्रेरी में चुनें और 'शेयर लिंक में जोड़ें' चुनें।"
+msgstr ""
+"फ़ोटो निकालने के लिए उन पर टैप करें। कुछ जोड़ने के लिए, उन्हें अपनी लाइब्रेरी में चुनें और 'शेयर "
+"लिंक में जोड़ें' चुनें।"
 
 #: src/library/shared_link_photos.rs:111
 #, rust-format
@@ -4065,7 +4153,9 @@ msgstr "जोड़ने के लिए कोई लिंक नहीं 
 msgid ""
 "Albums' links always show the whole album. Make a link for some photos with "
 "Create Share Link first."
-msgstr "एल्बम के लिंक हमेशा पूरा एल्बम दिखाते हैं। पहले 'शेयर लिंक बनाएँ' से कुछ फ़ोटो के लिए लिंक बनाएँ।"
+msgstr ""
+"एल्बम के लिंक हमेशा पूरा एल्बम दिखाते हैं। पहले 'शेयर लिंक बनाएँ' से कुछ फ़ोटो के लिए लिंक "
+"बनाएँ।"
 
 #: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
 #: src/library/shared_link_qr.rs:129
@@ -4148,7 +4238,8 @@ msgstr "यह लिंक हटाएँ?"
 
 #: src/library/shared_links_view.rs:357
 msgid "Anyone using it will lose access. This can't be undone."
-msgstr "इसका उपयोग करने वाला कोई भी व्यक्ति पहुँच खो देगा। इसे पूर्ववत नहीं किया जा सकता।"
+msgstr ""
+"इसका उपयोग करने वाला कोई भी व्यक्ति पहुँच खो देगा। इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/shared_links_view.rs:373
 msgid "Could Not Delete Link"
@@ -4200,7 +4291,9 @@ msgstr "आपके साथ साझा कर रहे हैं"
 msgid ""
 "People who added you as a partner. Switch one on to see their photos in "
 "Photos."
-msgstr "वे लोग जिन्होंने आपको पार्टनर के रूप में जोड़ा है। 'फ़ोटो' में उनकी फ़ोटो देखने के लिए एक चालू करें।"
+msgstr ""
+"वे लोग जिन्होंने आपको पार्टनर के रूप में जोड़ा है। 'फ़ोटो' में उनकी फ़ोटो देखने के लिए एक चालू "
+"करें।"
 
 #: src/library/sharing_view.rs:94
 msgid "Could Not Load Partners"
@@ -4249,7 +4342,8 @@ msgstr "लोग लोड हो रहे हैं…"
 
 #: src/library/sharing_view.rs:321
 msgid "No other people found. Listing people needs the 'user.read' permission."
-msgstr "कोई अन्य लोग नहीं मिले। लोगों को सूचीबद्ध करने के लिए 'user.read' अनुमति आवश्यक है।"
+msgstr ""
+"कोई अन्य लोग नहीं मिले। लोगों को सूचीबद्ध करने के लिए 'user.read' अनुमति आवश्यक है।"
 
 #: src/library/sharing_view.rs:354
 msgid "Add Partner"
@@ -4264,7 +4358,8 @@ msgstr "{name} के साथ अपनी लाइब्रेरी सा�
 msgid ""
 "They'll be able to see all your photos and videos. You can stop sharing at "
 "any time."
-msgstr "वे आपकी सभी फ़ोटो और वीडियो देख सकेंगे। आप किसी भी समय साझा करना बंद कर सकते हैं।"
+msgstr ""
+"वे आपकी सभी फ़ोटो और वीडियो देख सकेंगे। आप किसी भी समय साझा करना बंद कर सकते हैं।"
 
 #: src/library/sharing_view.rs:381
 msgid "Share"
@@ -4278,7 +4373,7 @@ msgstr "पार्टनर जोड़ा नहीं जा सका"
 msgid "Show keyboard shortcuts"
 msgstr "कीबोर्ड शॉर्टकट दिखाएँ"
 
-#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:20
 msgid "Open Settings"
 msgstr "सेटिंग्स खोलें"
 
@@ -4386,7 +4481,8 @@ msgstr "पूरा दिन चुनें"
 #: src/library/shortcuts_dialog.rs:103
 msgid ""
 "The focused photo's day or month; or tap its date heading while selecting"
-msgstr "फ़ोकस की गई फ़ोटो का दिन या महीना; या चयन करते समय उसके दिनांक शीर्षक पर टैप करें"
+msgstr ""
+"फ़ोकस की गई फ़ोटो का दिन या महीना; या चयन करते समय उसके दिनांक शीर्षक पर टैप करें"
 
 #: src/library/shortcuts_dialog.rs:106
 msgid "Copy selection"
@@ -4636,12 +4732,12 @@ msgstr "360° तस्वीरें"
 msgid "Video"
 msgstr "वीडियो"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "कनेक्शन"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "सर्वर"
@@ -5107,7 +5203,9 @@ msgstr "यह तस्वीर आपकी तस्वीरें टा�
 msgid ""
 "Immich permanently deletes trashed items after its retention period (30 days "
 "by default)."
-msgstr "Immich अपनी प्रतिधारण अवधि (डिफ़ॉल्ट रूप से 30 दिन) के बाद ट्रैश किए गए आइटमों को स्थायी रूप से हटा देता है।"
+msgstr ""
+"Immich अपनी प्रतिधारण अवधि (डिफ़ॉल्ट रूप से 30 दिन) के बाद ट्रैश किए गए आइटमों को "
+"स्थायी रूप से हटा देता है।"
 
 #: src/library/trash_view.rs:66
 msgid "Restore All"
@@ -5148,7 +5246,8 @@ msgstr "ट्रैश खाली करें?"
 #: src/library/trash_view.rs:237
 msgid ""
 "Everything in the Immich trash is deleted permanently. This can't be undone."
-msgstr "Immich ट्रैश में मौजूद सभी चीज़ें स्थायी रूप से हटा दी जाएँगी। इसे पूर्ववत नहीं किया जा सकता।"
+msgstr ""
+"Immich ट्रैश में मौजूद सभी चीज़ें स्थायी रूप से हटा दी जाएँगी। इसे पूर्ववत नहीं किया जा सकता।"
 
 #: src/library/trash_view.rs:243
 msgid "Could Not Empty Trash"
@@ -5499,7 +5598,9 @@ msgstr "Mimick: कनेक्शन टूट गया"
 msgid ""
 "Could not reach the Immich server. Uploads will resume automatically when "
 "connectivity is restored."
-msgstr "Immich सर्वर तक नहीं पहुँचा जा सका। कनेक्टिविटी बहाल होने पर अपलोड स्वतः फिर से शुरू हो जाएँगे।"
+msgstr ""
+"Immich सर्वर तक नहीं पहुँचा जा सका। कनेक्टिविटी बहाल होने पर अपलोड स्वतः फिर से शुरू हो "
+"जाएँगे।"
 
 #: src/queue_manager.rs:241
 #, rust-format
@@ -5539,7 +5640,8 @@ msgstr "{path} के लिए अपलोड विफल रहा"
 #: src/queue_manager/progress.rs:366
 msgid ""
 "Review the latest server and permission settings, then retry the failed item."
-msgstr "नवीनतम सर्वर और अनुमति सेटिंग्स की समीक्षा करें, फिर विफल आइटम का पुनः प्रयास करें।"
+msgstr ""
+"नवीनतम सर्वर और अनुमति सेटिंग्स की समीक्षा करें, फिर विफल आइटम का पुनः प्रयास करें।"
 
 #: src/queue_manager/progress.rs:379
 msgid "Queued for retry"
@@ -5565,7 +5667,9 @@ msgstr "विस्तृत लॉग"
 #: src/settings_window/actions_ui.rs:23
 msgid ""
 "Record more while you reproduce a problem, then export. The log grows faster."
-msgstr "समस्या को दोबारा दोहराते समय अधिक विवरण रिकॉर्ड करें, फिर निर्यात करें। लॉग तेज़ी से बढ़ता है।"
+msgstr ""
+"समस्या को दोबारा दोहराते समय अधिक विवरण रिकॉर्ड करें, फिर निर्यात करें। लॉग तेज़ी से "
+"बढ़ता है।"
 
 #: src/settings_window/actions_ui.rs:28
 msgid "Export…"
@@ -5593,39 +5697,51 @@ msgstr "हल्का थीम"
 msgid "Dark Theme"
 msgstr "गहरा थीम"
 
-#: src/settings_window/apply.rs:164
+#: src/settings_window/apply.rs:168
+msgid "Secrets Stored in Files"
+msgstr "सीक्रेट फ़ाइलों में संग्रहीत हैं"
+
+#: src/settings_window/apply.rs:172
 msgid "API Key Stored in a File"
 msgstr "API कुंजी एक फ़ाइल में संग्रहीत है"
 
-#: src/settings_window/apply.rs:170
+#: src/settings_window/apply.rs:176
+msgid "Custom Proxy Headers Stored in a File"
+msgstr "कस्टम प्रॉक्सी हेडर एक फ़ाइल में संग्रहीत हैं"
+
+#: src/settings_window/apply.rs:184
 msgid "Settings Saved"
 msgstr "सेटिंग्स सहेजी गईं"
 
-#: src/settings_window/apply.rs:171
+#: src/settings_window/apply.rs:185
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick ने अद्यतित सेटिंग्स को सफलतापूर्वक सहेज लिया।"
 
-#: src/settings_window/apply.rs:207
+#: src/settings_window/apply.rs:221
 msgid "Startup Permission Needed"
 msgstr "स्टार्टअप अनुमति आवश्यक है"
 
-#: src/settings_window/apply.rs:208
+#: src/settings_window/apply.rs:222
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick को लॉगिन पर स्वचालित रूप से शुरू होने की अनुमति नहीं थी।"
 
-#: src/settings_window/apply.rs:210
+#: src/settings_window/apply.rs:224
 msgid "Could Not Update Startup Setting"
 msgstr "स्टार्टअप सेटिंग को अपडेट नहीं किया जा सका"
 
-#: src/settings_window/apply.rs:241
+#: src/settings_window/apply.rs:257
 msgid "Could Not Save API Key"
 msgstr "API कुंजी सहेजी नहीं जा सकी"
 
-#: src/settings_window/apply.rs:249
+#: src/settings_window/apply.rs:272
+msgid "Could Not Save Custom Headers"
+msgstr "कस्टम हेडर सहेजे नहीं जा सके"
+
+#: src/settings_window/apply.rs:282
 msgid "Could Not Save Settings"
 msgstr "सेटिंग्स सहेजी नहीं जा सकीं"
 
-#: src/settings_window/apply.rs:250
+#: src/settings_window/apply.rs:283
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick अद्यतित कॉन्फ़िगरेशन को डिस्क पर नहीं लिख सका।"
 
@@ -5728,47 +5844,91 @@ msgstr "जब Mimick शुरू हो, तब जाँचें"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "फ़ोल्डर अपने स्वयं के फ़ोल्डर नियमों में इसे चुन सकते हैं।"
 
-#: src/settings_window/connectivity.rs:29
+#: src/settings_window/connectivity.rs:37
 msgid "Internal URL (LAN)"
 msgstr "आंतरिक URL (LAN)"
 
-#: src/settings_window/connectivity.rs:31
+#: src/settings_window/connectivity.rs:39
 msgid "External URL (WAN)"
 msgstr "बाहरी URL (WAN)"
 
-#: src/settings_window/connectivity.rs:35
+#: src/settings_window/connectivity.rs:46
 msgid "Not tested yet"
 msgstr "अभी तक परीक्षण नहीं किया गया"
 
-#: src/settings_window/connectivity.rs:38
+#: src/settings_window/connectivity.rs:49
 msgid "Test Connection"
 msgstr "कनेक्शन का परीक्षण करें"
 
-#: src/settings_window/connectivity.rs:41
+#: src/settings_window/connectivity.rs:52
 msgid "Save and Connect"
 msgstr "सहेजें और कनेक्ट करें"
 
-#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "लाइब्रेरी खोलें"
 
-#: src/settings_window/connectivity.rs:89
+#: src/settings_window/connectivity.rs:101
 msgid "API Key"
 msgstr "API कुंजी"
 
-#: src/settings_window/connectivity.rs:137
+#: src/settings_window/connectivity.rs:120
+msgid "Custom Proxy Headers"
+msgstr "कस्टम प्रॉक्सी हेडर"
+
+#: src/settings_window/connectivity.rs:136
+msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
+msgstr "रिवर्स प्रॉक्सी के लिए वैकल्पिक HTTP हेडर (उदा. Cloudflare Access)"
+
+#: src/settings_window/connectivity.rs:139
+msgid "1 header configured"
+msgstr "1 हेडर कॉन्फ़िगर किया गया"
+
+#: src/settings_window/connectivity.rs:141
+msgid "headers configured"
+msgstr "हेडर कॉन्फ़िगर किए गए"
+
+#: src/settings_window/connectivity.rs:191
+msgid "Remove header"
+msgstr "हेडर हटाएँ"
+
+#: src/settings_window/connectivity.rs:218
+msgid "Add Header…"
+msgstr "हेडर जोड़ें…"
+
+#: src/settings_window/connectivity.rs:241
+msgid "Paste from clipboard"
+msgstr "क्लिपबोर्ड से चिपकाएँ"
+
+#: src/settings_window/connectivity.rs:278
+msgid "Header Name"
+msgstr "हेडर नाम"
+
+#: src/settings_window/connectivity.rs:286
+msgid "Secret / Value"
+msgstr "सीक्रेट / मान"
+
+#: src/settings_window/connectivity.rs:300
+msgid "Scope"
+msgstr "दायरा"
+
+#: src/settings_window/connectivity.rs:337
+msgid "Add Custom Header"
+msgstr "कस्टम हेडर जोड़ें"
+
+#: src/settings_window/connectivity.rs:407
 msgid "LAN URL"
 msgstr "LAN URL"
 
-#: src/settings_window/connectivity.rs:138
+#: src/settings_window/connectivity.rs:408
 msgid "WAN URL"
 msgstr "WAN URL"
 
-#: src/settings_window/form.rs:127
+#: src/settings_window/form.rs:133
 msgid "Invalid Internal URL"
 msgstr "अमान्य आंतरिक URL"
 
-#: src/settings_window/form.rs:132
+#: src/settings_window/form.rs:138
 msgid "Invalid External URL"
 msgstr "अमान्य बाहरी URL"
 
@@ -5864,7 +6024,9 @@ msgstr "पूर्ण RAW डिकोडिंग"
 msgid ""
 "Uses the sensor data, not the embedded preview, with every colour the camera "
 "recorded. Slower, and uses more memory."
-msgstr "कैमरे द्वारा रिकॉर्ड किए गए प्रत्येक रंग के साथ सेंसर डेटा का उपयोग करता है, एम्बेडेड पूर्वावलोकन का नहीं। धीमा है, और अधिक मेमोरी का उपयोग करता है।"
+msgstr ""
+"कैमरे द्वारा रिकॉर्ड किए गए प्रत्येक रंग के साथ सेंसर डेटा का उपयोग करता है, एम्बेडेड "
+"पूर्वावलोकन का नहीं। धीमा है, और अधिक मेमोरी का उपयोग करता है।"
 
 #: src/settings_window/library.rs:172
 msgid "Keep Decoded RAW Files"
@@ -5934,35 +6096,52 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"सेटिंग्स सहेजी गईं, लेकिन सिस्टम कीरिंग अनुपलब्ध है, इसलिए API कुंजी {path} में संग्रहीत की गई।\n"
+"सेटिंग्स सहेजी गईं, लेकिन सिस्टम कीरिंग अनुपलब्ध है, इसलिए API कुंजी {path} में संग्रहीत की "
+"गई।\n"
 "\n"
 "यह फ़ाइल केवल आपके उपयोगकर्ता खाते द्वारा पठनीय है लेकिन एन्क्रिप्टेड नहीं है।\n"
 "\n"
 "देखें: {url}"
 
-#: src/settings_window/mod.rs:141
+#: src/settings_window/mod.rs:142
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so custom proxy "
+"headers were stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"सेटिंग्स सहेजी गईं, लेकिन सिस्टम कीरिंग अनुपलब्ध है, इसलिए कस्टम प्रॉक्सी हेडर {path} में संग्रहीत किए गए।\n"
+"\n"
+"यह फ़ाइल केवल आपके उपयोगकर्ता खाते द्वारा पठनीय है लेकिन एन्क्रिप्टेड नहीं है।\n"
+"\n"
+"देखें: {url}"
+
+#: src/settings_window/mod.rs:156
 msgid "No successful sync yet"
 msgstr "अभी तक कोई सफल सिंक नहीं हुआ"
 
-#: src/settings_window/mod.rs:151
+#: src/settings_window/mod.rs:166
 msgid "Less than a minute ago"
 msgstr "एक मिनट से भी कम समय पहले"
 
-#: src/settings_window/mod.rs:157
+#: src/settings_window/mod.rs:172
 #, rust-format
 msgid "{n} minute ago"
 msgid_plural "{n} minutes ago"
 msgstr[0] "{n} मिनट पहले"
 msgstr[1] "{n} मिनट पहले"
 
-#: src/settings_window/mod.rs:161
+#: src/settings_window/mod.rs:176
 #, rust-format
 msgid "{n} hour ago"
 msgid_plural "{n} hours ago"
 msgstr[0] "{n} घंटा पहले"
 msgstr[1] "{n} घंटे पहले"
 
-#: src/settings_window/mod.rs:164
+#: src/settings_window/mod.rs:179
 #, rust-format
 msgid "{n} day ago"
 msgid_plural "{n} days ago"
@@ -6034,7 +6213,7 @@ msgid "Sync Now"
 msgstr "अभी सिंक करें"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
 msgid "Pause"
 msgstr "रोकें"
 
@@ -6050,8 +6229,8 @@ msgstr "ध्यान देने की आवश्यकता है"
 msgid "Failed uploads"
 msgstr "विफल अपलोड"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
-#: src/settings_window/wiring.rs:368
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
+#: src/settings_window/wiring.rs:375
 msgid "Resume"
 msgstr "फिर से शुरू करें"
 
@@ -6256,7 +6435,7 @@ msgstr "केवल ये प्रकार, जैसे jpg, png, mp4 (स�
 msgid "Status"
 msgstr "स्थिति"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick बंद करें"
 
@@ -6296,7 +6475,9 @@ msgstr "3. सहेजें और कनेक्ट करें"
 #: src/settings_window/wiring.rs:165
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
-msgstr "इसके बाद आपकी लाइब्रेरी खुलती है। किसी फ़ोल्डर का बैकअप लेने के लिए, उसे वॉच फ़ोल्डर के तहत जोड़ें।"
+msgstr ""
+"इसके बाद आपकी लाइब्रेरी खुलती है। किसी फ़ोल्डर का बैकअप लेने के लिए, उसे वॉच फ़ोल्डर के तहत "
+"जोड़ें।"
 
 #: src/settings_window/wiring.rs:177
 msgid "Guide"
@@ -6316,19 +6497,19 @@ msgstr "{name} अगम्य है"
 msgid "Couldn't reach Immich at either address"
 msgstr "किसी भी पते पर Immich तक नहीं पहुँचा जा सका"
 
-#: src/settings_window/wiring.rs:252
+#: src/settings_window/wiring.rs:255
 msgid "Testing…"
 msgstr "परीक्षण जारी है…"
 
-#: src/settings_window/wiring.rs:366
+#: src/settings_window/wiring.rs:373
 msgid "Paused by you"
 msgstr "आपके द्वारा रोका गया"
 
-#: src/settings_window/wiring.rs:425
+#: src/settings_window/wiring.rs:432
 msgid "Invalid Selection"
 msgstr "अमान्य चयन"
 
-#: src/settings_window/wiring.rs:426
+#: src/settings_window/wiring.rs:433
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "कम से कम एक URL (आंतरिक या बाहरी) सक्षम होना चाहिए।"
 
@@ -6414,7 +6595,7 @@ msgid ""
 "Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
 msgstr "फोटो;तस्वीरें;चित्र;वीडियो;सिंक;बैकअप;अपलोड;Immich;गैलरी;स्वयं-होस्टेड;"
 
-#: setup/dev.nicx.mimick.desktop:25
+#: setup/dev.nicx.mimick.desktop:24
 msgid "Upload with Mimick"
 msgstr "Mimick के साथ अपलोड करें"
 
@@ -6427,43 +6608,58 @@ msgid ""
 "Mimick is a native Linux desktop client for self-hosted Immich servers. It "
 "monitors your folders in the background and automatically syncs photos and "
 "videos to your server."
-msgstr "Mimick स्वयं-होस्टेड Immich सर्वरों के लिए एक नेटिव लिनक्स डेस्कटॉप क्लाइंट है। यह पृष्ठभूमि में आपके फ़ोल्डरों की निगरानी करता है और स्वचालित रूप से आपके सर्वर पर तस्वीरें और वीडियो सिंक करता है।"
+msgstr ""
+"Mimick स्वयं-होस्टेड Immich सर्वरों के लिए एक नेटिव लिनक्स डेस्कटॉप क्लाइंट है। यह पृष्ठभूमि "
+"में आपके फ़ोल्डरों की निगरानी करता है और स्वचालित रूप से आपके सर्वर पर तस्वीरें और वीडियो "
+"सिंक करता है।"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
 msgid ""
 "Per-folder sync methods: upload only, download only, or full bidirectional "
 "sync with optional deletion mirroring."
-msgstr "प्रति-फ़ोल्डर सिंक विधियाँ: केवल अपलोड, केवल डाउनलोड, या वैकल्पिक विलोपन मिररिंग के साथ पूर्ण द्विदिश सिंक।"
+msgstr ""
+"प्रति-फ़ोल्डर सिंक विधियाँ: केवल अपलोड, केवल डाउनलोड, या वैकल्पिक विलोपन मिररिंग के साथ "
+"पूर्ण द्विदिश सिंक।"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
 msgid ""
 "Built-in Library View for browsing your timeline, managing albums, and "
 "searching with Smart Search, OCR, and metadata filters."
-msgstr "आपकी टाइमलाइन ब्राउज़ करने, एल्बम प्रबंधित करने और स्मार्ट खोज, OCR तथा मेटाडेटा फ़िल्टर के साथ खोजने के लिए इन-बिल्ट लाइब्रेरी दृश्य।"
+msgstr ""
+"आपकी टाइमलाइन ब्राउज़ करने, एल्बम प्रबंधित करने और स्मार्ट खोज, OCR तथा मेटाडेटा फ़िल्टर "
+"के साथ खोजने के लिए इन-बिल्ट लाइब्रेरी दृश्य।"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
 msgid ""
 "SHA-1 deduplication, parallel upload workers, and offline retry queue for "
 "reliable transfers."
-msgstr "विश्वसनीय स्थानांतरण के लिए SHA-1 डिडुपिकेशन, समानांतर अपलोड वर्कर्स और ऑफ़लाइन पुनः प्रयास कतार।"
+msgstr ""
+"विश्वसनीय स्थानांतरण के लिए SHA-1 डिडुपिकेशन, समानांतर अपलोड वर्कर्स और ऑफ़लाइन पुनः "
+"प्रयास कतार।"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
 msgid ""
 "Environment-aware: automatically pauses on battery or metered connections. "
 "Configurable quiet hours and per-folder rules."
-msgstr "पर्यावरण-जागरूक: बैटरी या मीटर वाले कनेक्शन पर स्वचालित रूप से रुक जाता है। कॉन्फ़िगर करने योग्य शांत घंटे और प्रति-फ़ोल्डर नियम।"
+msgstr ""
+"पर्यावरण-जागरूक: बैटरी या मीटर वाले कनेक्शन पर स्वचालित रूप से रुक जाता है। कॉन्फ़िगर करने "
+"योग्य शांत घंटे और प्रति-फ़ोल्डर नियम।"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
 msgid ""
 "Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
 "sandbox support."
-msgstr "GTK4 और Libadwaita के साथ Rust में निर्मित। सिस्टम ट्रे एकीकरण और Flatpak सैंडबॉक्स समर्थन।"
+msgstr ""
+"GTK4 और Libadwaita के साथ Rust में निर्मित। सिस्टम ट्रे एकीकरण और Flatpak सैंडबॉक्स "
+"समर्थन।"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
 msgid ""
 "Mimick is a community-developed client and is not affiliated with or "
 "endorsed by the Immich project."
-msgstr "Mimick समुदाय द्वारा विकसित एक क्लाइंट है और यह Immich परियोजना से संबद्ध या समर्थित नहीं है।"
+msgstr ""
+"Mimick समुदाय द्वारा विकसित एक क्लाइंट है और यह Immich परियोजना से संबद्ध या समर्थित "
+"नहीं है।"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
 msgid "Library View - Photos page with sidebar"
@@ -6496,4 +6692,3 @@ msgstr "सेटिंग्स - सर्वर कनेक्शन और 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
 msgid "Status page with sync health dashboard"
 msgstr "सिंक स्थिति डैशबोर्ड के साथ स्थिति पृष्ठ"
-

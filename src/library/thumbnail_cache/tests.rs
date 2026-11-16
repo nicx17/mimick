@@ -31,6 +31,7 @@ fn cache(max_bytes: usize) -> ThumbnailCache {
             String::new(),
             String::new(),
             String::new(),
+            Vec::new(),
         )),
         cache_dir,
         max_bytes,

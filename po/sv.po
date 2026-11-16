@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
-"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
-"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 11:39+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Swedish\n"
@@ -41,11 +41,11 @@ msgstr "Albumlistan är inte tillgänglig"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "Återanslut till Immich-servern innan du uppdaterar album."
 
-#: src/api_client/albums.rs:180
+#: src/api_client/albums.rs:177
 msgid "Failed to fetch albums"
 msgstr "Kunde inte hämta album"
 
-#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
 msgid "Cannot fetch albums to verify existence"
 msgstr "Kan inte hämta album för att verifiera existens"
 
@@ -54,9 +54,11 @@ msgstr "Kan inte hämta album för att verifiera existens"
 msgid ""
 "The server responded with HTTP {status}. Check the server logs and retry "
 "after confirming the current configuration."
-msgstr "Servern svarade med HTTP {status}. Kontrollera serverloggarna och försök igen efter att du har bekräftat den aktuella konfigurationen."
+msgstr ""
+"Servern svarade med HTTP {status}. Kontrollera serverloggarna och försök "
+"igen efter att du har bekräftat den aktuella konfigurationen."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
 msgid "Immich rejected the API key"
 msgstr "Immich avvisade API-nyckeln"
 
@@ -64,7 +66,9 @@ msgstr "Immich avvisade API-nyckeln"
 msgid ""
 "Update the API key in Settings and confirm it still has the required Asset "
 "and Album permissions (see README for the full list)."
-msgstr "Uppdatera API-nyckeln i Inställningar och bekräfta att den fortfarande har de nödvändiga behörigheterna för media och album (se README för hela listan)."
+msgstr ""
+"Uppdatera API-nyckeln i Inställningar och bekräfta att den fortfarande har "
+"de nödvändiga behörigheterna för media och album (se README för hela listan)."
 
 #: src/api_client/errors.rs:54
 msgid "An album reference is no longer valid"
@@ -72,9 +76,10 @@ msgstr "En albumreferens är inte längre giltig"
 
 #: src/api_client/errors.rs:55
 msgid "Refresh the album list or choose a different album before retrying."
-msgstr "Uppdatera albumlistan eller välj ett annat album innan du försöker igen."
+msgstr ""
+"Uppdatera albumlistan eller välj ett annat album innan du försöker igen."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
 msgid "Immich rejected a file as too large"
 msgstr "Immich avvisade en fil som för stor"
 
@@ -82,7 +87,9 @@ msgstr "Immich avvisade en fil som för stor"
 msgid ""
 "Reduce the file size, raise the server upload limit, or skip oversized files "
 "with folder rules."
-msgstr "Minska filstorleken, höj serverns uppladdningsgräns eller hoppa över för stora filer med mappregler."
+msgstr ""
+"Minska filstorleken, höj serverns uppladdningsgräns eller hoppa över för "
+"stora filer med mappregler."
 
 #: src/api_client/errors.rs:65
 msgid "Immich rate-limited the request"
@@ -92,9 +99,11 @@ msgstr "Immich hastighetsbegränsade begäran"
 msgid ""
 "Wait a moment and retry. If this happens often, lower upload concurrency or "
 "check reverse proxy limits."
-msgstr "Vänta en stund och försök igen. Om detta inträffar ofta, sänk antalet samtidiga uppladdningar eller kontrollera gränserna för omvänd proxy."
+msgstr ""
+"Vänta en stund och försök igen. Om detta inträffar ofta, sänk antalet "
+"samtidiga uppladdningar eller kontrollera gränserna för omvänd proxy."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
 msgid "Immich is temporarily unavailable"
 msgstr "Immich är tillfälligt otillgänglig"
 
@@ -102,7 +111,9 @@ msgstr "Immich är tillfälligt otillgänglig"
 msgid ""
 "Wait a moment and retry. If it keeps happening, inspect the server and "
 "reverse proxy logs."
-msgstr "Vänta en stund och försök igen. Om det fortsätter att inträffa, kontrollera loggarna för server och omvänd proxy."
+msgstr ""
+"Vänta en stund och försök igen. Om det fortsätter att inträffa, kontrollera "
+"loggarna för server och omvänd proxy."
 
 #: src/api_client/errors.rs:88
 msgid "the upload"
@@ -166,9 +177,10 @@ msgstr "Tidsgränsen för begäran till Immich överskreds"
 
 #: src/api_client/errors.rs:122
 msgid "Check network quality and server responsiveness, then retry."
-msgstr "Kontrollera nätverkskvalitet och serverns svarstid och försök sedan igen."
+msgstr ""
+"Kontrollera nätverkskvalitet och serverns svarstid och försök sedan igen."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
 msgid "Could not reach the Immich server"
 msgstr "Kunde inte nå Immich-servern"
 
@@ -176,12 +188,16 @@ msgstr "Kunde inte nå Immich-servern"
 msgid ""
 "Check the configured URLs, your network connection, and whether the server "
 "is online."
-msgstr "Kontrollera de konfigurerade URL-adresserna, din nätverksanslutning och om servern är online."
+msgstr ""
+"Kontrollera de konfigurerade URL-adresserna, din nätverksanslutning och om "
+"servern är online."
 
 #: src/api_client/errors.rs:135
 msgid ""
 "Retry the request after checking network connectivity and server health."
-msgstr "Försök igen med begäran efter att ha kontrollerat nätverksanslutning och serverstatus."
+msgstr ""
+"Försök igen med begäran efter att ha kontrollerat nätverksanslutning och "
+"serverstatus."
 
 #: src/api_client/errors.rs:144
 msgid "The upload request failed before completion"
@@ -227,20 +243,20 @@ msgstr "Begäran om biblioteksstatistik misslyckades innan den slutfördes"
 msgid "The server version request failed before completion"
 msgstr "Begäran om serverversion misslyckades innan den slutfördes"
 
-#: src/api_client/mod.rs:387
+#: src/api_client/mod.rs:526
 msgid "No active connection"
 msgstr "Ingen aktiv anslutning"
 
-#: src/api_client/search.rs:358
+#: src/api_client/search.rs:342
 msgid "Immich can't count by file name or deleted photos"
 msgstr "Immich kan inte räkna efter filnamn eller borttagna foton"
 
-#: src/api_client/tags.rs:76
+#: src/api_client/tags.rs:72
 #, rust-format
 msgid "Immich did not return the tag \"{value}\""
 msgstr "Immich returnerade inte taggen ”{value}”"
 
-#: src/api_client/tags.rs:87
+#: src/api_client/tags.rs:83
 msgid "Renaming tags needs a newer version of Immich."
 msgstr "Att byta namn på taggar kräver en nyare version av Immich."
 
@@ -249,62 +265,76 @@ msgstr "Att byta namn på taggar kräver en nyare version av Immich."
 msgid "Invalid month {month}"
 msgstr "Ogiltig månad {month}"
 
-#: src/api_client/upload.rs:301
+#: src/api_client/upload.rs:316
 msgid "A queued file is no longer available"
 msgstr "En köad fil är inte längre tillgänglig"
 
-#: src/api_client/upload.rs:303
+#: src/api_client/upload.rs:318
 msgid "Mimick could not read a queued file"
 msgstr "Mimick kunde inte läsa en köad fil"
 
-#: src/api_client/upload.rs:306
+#: src/api_client/upload.rs:321
 msgid ""
 "Check that the watched folder still exists and that the file was not moved "
 "or deleted before upload."
-msgstr "Kontrollera att den bevakade mappen fortfarande finns och att filen inte flyttades eller togs bort före uppladdning."
-
-#: src/api_client/upload.rs:308
-msgid ""
-"Verify folder permissions and make sure the file is still accessible to the "
-"app."
-msgstr "Kontrollera mappbehörigheter och säkerställ att programmet fortfarande har åtkomst till filen."
-
-#: src/api_client/upload.rs:322
-msgid "Mimick could not open a queued file"
-msgstr "Mimick kunde inte öppna en köad fil"
+msgstr ""
+"Kontrollera att den bevakade mappen fortfarande finns och att filen inte "
+"flyttades eller togs bort före uppladdning."
 
 #: src/api_client/upload.rs:323
 msgid ""
-"The file may be locked, deleted, or outside the app's allowed folder access."
-msgstr "Filen kan vara låst, borttagen eller utanför programmets tillåtna mappåtkomst."
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr ""
+"Kontrollera mappbehörigheter och säkerställ att programmet fortfarande har "
+"åtkomst till filen."
 
-#: src/api_client/upload.rs:336
+#: src/api_client/upload.rs:337
+msgid "Mimick could not open a queued file"
+msgstr "Mimick kunde inte öppna en köad fil"
+
+#: src/api_client/upload.rs:338
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr ""
+"Filen kan vara låst, borttagen eller utanför programmets tillåtna "
+"mappåtkomst."
+
+#: src/api_client/upload.rs:351
 msgid "No active server connection"
 msgstr "Ingen aktiv serveranslutning"
 
-#: src/api_client/upload.rs:337
+#: src/api_client/upload.rs:352
 msgid ""
 "Test the server connection in Settings and confirm at least one Immich URL "
 "is reachable."
-msgstr "Testa serveranslutningen i Inställningar och bekräfta att minst en Immich-URL kan nås."
+msgstr ""
+"Testa serveranslutningen i Inställningar och bekräfta att minst en Immich-"
+"URL kan nås."
 
-#: src/api_client/upload.rs:393
+#: src/api_client/upload.rs:405
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
-msgstr "Minska filstorleken, höj serverns uppladdningsgränser eller använd en mappregel för att hoppa över för stora filer."
+msgstr ""
+"Minska filstorleken, höj serverns uppladdningsgränser eller använd en "
+"mappregel för att hoppa över för stora filer."
 
-#: src/api_client/upload.rs:410
+#: src/api_client/upload.rs:422
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
-msgstr "Vänta en stund och försök igen. Om det fortsätter att inträffa, kontrollera loggarna för server och omvänd proxy."
+msgstr ""
+"Vänta en stund och försök igen. Om det fortsätter att inträffa, kontrollera "
+"loggarna för server och omvänd proxy."
 
 #: src/autostart.rs:50
 msgid ""
 "Reason for requesting background access: Mimick must run in the background "
 "to automatically sync media to Immich."
-msgstr "Anledning till begäran om bakgrundsåtkomst: Mimick måste köras i bakgrunden för att automatiskt synkronisera media till Immich."
+msgstr ""
+"Anledning till begäran om bakgrundsåtkomst: Mimick måste köras i bakgrunden "
+"för att automatiskt synkronisera media till Immich."
 
 #: src/autostart.rs:57
 #, rust-format
@@ -334,6 +364,30 @@ msgstr "Kunde inte ta bort autostartpost: {err}"
 #: src/autostart.rs:126 src/autostart.rs:133
 msgid "Could not locate the user config directory."
 msgstr "Kunde inte hitta användarens konfigurationskatalog."
+
+#: src/config/headers.rs:23
+msgid "WAN only (External)"
+msgstr "Endast WAN (Extern)"
+
+#: src/config/headers.rs:24
+msgid "All (LAN & WAN)"
+msgstr "Alla (LAN & WAN)"
+
+#: src/config/headers.rs:25
+msgid "LAN only (Internal)"
+msgstr "Endast LAN (Intern)"
+
+#: src/config/headers.rs:32
+msgid "WAN"
+msgstr "WAN"
+
+#: src/config/headers.rs:33
+msgid "ALL"
+msgstr "ALLA"
+
+#: src/config/headers.rs:34
+msgid "LAN"
+msgstr "LAN"
 
 #: src/library/about_dialog.rs:40
 msgid "Repository"
@@ -384,7 +438,8 @@ msgid ""
 "\n"
 "{err}"
 msgstr ""
-"Din API-nyckel behöver behörigheterna 'server.about' och 'server.versionCheck'.\n"
+"Din API-nyckel behöver behörigheterna 'server.about' och "
+"'server.versionCheck'.\n"
 "\n"
 "{err}"
 
@@ -395,7 +450,8 @@ msgstr "Konto"
 #: src/library/account.rs:66
 #, rust-format
 msgid "Couldn't load this. Your API key needs the “{permission}” permission."
-msgstr "Kunde inte läsa in detta. Din API-nyckel behöver behörigheten ”{permission}”."
+msgstr ""
+"Kunde inte läsa in detta. Din API-nyckel behöver behörigheten ”{permission}”."
 
 #: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
 #: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
@@ -406,6 +462,7 @@ msgstr "Kunde inte läsa in detta. Din API-nyckel behöver behörigheten ”{per
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/connectivity.rs:305
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Avbryt"
@@ -434,7 +491,9 @@ msgstr "Inloggade enheter"
 msgid ""
 "Browsers and apps signed in to your account. Mimick uses an API key, so it "
 "isn't listed."
-msgstr "Webbläsare och program som är inloggade på ditt konto. Mimick använder en API-nyckel, så det listas inte."
+msgstr ""
+"Webbläsare och program som är inloggade på ditt konto. Mimick använder en "
+"API-nyckel, så det listas inte."
 
 #: src/library/account/devices.rs:28
 msgid "Devices"
@@ -535,7 +594,9 @@ msgstr "Hämta en ny hemlighet för denna nyckel?"
 msgid ""
 "Mimick saves the new secret and keeps working. Anything else using this key "
 "stops working until you give it the new secret."
-msgstr "Mimick sparar den nya hemligheten och fortsätter att fungera. Allt annat som använder denna nyckel slutar att fungera tills du anger den nya hemligheten."
+msgstr ""
+"Mimick sparar den nya hemligheten och fortsätter att fungera. Allt annat som "
+"använder denna nyckel slutar att fungera tills du anger den nya hemligheten."
 
 #: src/library/account/keys.rs:159
 msgid "Rotate"
@@ -562,7 +623,8 @@ msgid ""
 "\n"
 "{secret}"
 msgstr ""
-"Mimick använder den nu men kunde inte spara den ({err}). Klistra in den i Inställningar så att den behålls:\n"
+"Mimick använder den nu men kunde inte spara den ({err}). Klistra in den i "
+"Inställningar så att den behålls:\n"
 "\n"
 "{secret}"
 
@@ -628,7 +690,8 @@ msgstr "Kunde inte läsa in ditt konto: {err}"
 
 #: src/library/account/profile.rs:152
 msgid "To use one of your photos, choose Set as Profile Picture in its menu."
-msgstr "Om du vill använda ett av dina foton, välj Ange som profilbild i dess meny."
+msgstr ""
+"Om du vill använda ett av dina foton, välj Ange som profilbild i dess meny."
 
 #: src/library/account/profile.rs:163
 msgid "Images"
@@ -698,13 +761,17 @@ msgstr "Inte dina foton"
 msgid ""
 "Only the owner can change where a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "Endast ägaren kan ändra var ett foto togs, och de markerade fotona tillhör andra personer."
+msgstr ""
+"Endast ägaren kan ändra var ett foto togs, och de markerade fotona tillhör "
+"andra personer."
 
 #: src/library/actions.rs:352
 msgid ""
 "Only the owner can change when a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "Endast ägaren kan ändra när ett foto togs, och de markerade fotona tillhör andra personer."
+msgstr ""
+"Endast ägaren kan ändra när ett foto togs, och de markerade fotona tillhör "
+"andra personer."
 
 #: src/library/actions/trash.rs:60
 #, rust-format
@@ -870,7 +937,9 @@ msgstr "Lämna ”{album_name}”?"
 #: src/library/album_assets.rs:200
 msgid ""
 "You'll stop seeing its photos unless the owner shares it with you again."
-msgstr "Du kommer inte längre att se dess foton om inte ägaren delar det med dig igen."
+msgstr ""
+"Du kommer inte längre att se dess foton om inte ägaren delar det med dig "
+"igen."
 
 #: src/library/album_assets.rs:201
 msgid "Leave"
@@ -890,7 +959,9 @@ msgstr "Kunde inte lämna albumet"
 msgid ""
 "Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
 "they don't create it again."
-msgstr "Mimick laddar fortfarande upp. Ta bort ”{album_name}” när uppladdningarna är klara, så att det inte skapas igen."
+msgstr ""
+"Mimick laddar fortfarande upp. Ta bort ”{album_name}” när uppladdningarna är "
+"klara, så att det inte skapas igen."
 
 #: src/library/album_delete.rs:29
 msgid "Uploads in Progress"
@@ -904,7 +975,10 @@ msgstr "Stäng inställningarna först"
 msgid ""
 "Deleting this album changes your watch folders, and saving the open Settings "
 "window would undo that. Close Settings, then delete the album."
-msgstr "Om du tar bort detta album ändras dina bevakade mappar, och att spara det öppna inställningsfönstret skulle ångra det. Stäng Inställningar och ta sedan bort albumet."
+msgstr ""
+"Om du tar bort detta album ändras dina bevakade mappar, och att spara det "
+"öppna inställningsfönstret skulle ångra det. Stäng Inställningar och ta "
+"sedan bort albumet."
 
 #: src/library/album_delete.rs:45
 msgid "Its photos stay in your library."
@@ -950,7 +1024,9 @@ msgstr "Sluta bevaka dessa mappar"
 msgid ""
 "So the album doesn't come back, photos in these folders go to your library "
 "instead of an album named after the folder:"
-msgstr "För att albumet inte ska återkomma skickas foton i dessa mappar till ditt bibliotek istället för till ett album uppkallat efter mappen:"
+msgstr ""
+"För att albumet inte ska återkomma skickas foton i dessa mappar till ditt "
+"bibliotek istället för till ett album uppkallat efter mappen:"
 
 #: src/library/album_delete.rs:221
 msgid "Could Not Delete Album"
@@ -1102,8 +1178,12 @@ msgid ""
 "Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
 msgid_plural ""
 "Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
-msgstr[0] "Redan synkroniserat. ({n} fjärrobjekt kunde inte matchas — saknar kontrollsumma.)"
-msgstr[1] "Redan synkroniserat. ({n} fjärrobjekt kunde inte matchas — saknar kontrollsumma.)"
+msgstr[0] ""
+"Redan synkroniserat. ({n} fjärrobjekt kunde inte matchas — saknar "
+"kontrollsumma.)"
+msgstr[1] ""
+"Redan synkroniserat. ({n} fjärrobjekt kunde inte matchas — saknar "
+"kontrollsumma.)"
 
 #: src/library/album_link.rs:299
 msgid "Already in sync."
@@ -1303,6 +1383,7 @@ msgid "Could Not Remove Person"
 msgstr "Kunde inte ta bort person"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+#: src/settings_window/connectivity.rs:307
 msgid "Add"
 msgstr "Lägg till"
 
@@ -1734,7 +1815,10 @@ msgstr[1] "Kopierade {n} foton"
 msgid ""
 "Pasting into an album here adds all {count}. Only {local} are on this "
 "computer, so other apps such as Files paste those; use Download for the rest."
-msgstr "Att klistra in i ett album här lägger till alla {count}. Endast {local} finns på denna dator, så andra program som Filer klistrar in dem; använd Ladda ner för resten."
+msgstr ""
+"Att klistra in i ett album här lägger till alla {count}. Endast {local} "
+"finns på denna dator, så andra program som Filer klistrar in dem; använd "
+"Ladda ner för resten."
 
 #: src/library/clipboard.rs:162
 msgid "Paste in Photos or albums"
@@ -1854,7 +1938,10 @@ msgid ""
 "Your API key is missing permissions required for the Library view. Please "
 "ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
 "'person.read' enabled."
-msgstr "Din API-nyckel saknar behörigheter som krävs för biblioteksvyn. Se till att nyckeln har 'asset.read', 'asset.view', 'asset.download' och 'person.read' aktiverade."
+msgstr ""
+"Din API-nyckel saknar behörigheter som krävs för biblioteksvyn. Se till att "
+"nyckeln har 'asset.read', 'asset.view', 'asset.download' och 'person.read' "
+"aktiverade."
 
 #: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
 #: src/library/shortcuts_dialog.rs:179
@@ -2108,7 +2195,9 @@ msgstr "Inga duplikat"
 msgid ""
 "Immich hasn't found any duplicate photos. It looks for them when its "
 "duplicate detection job runs."
-msgstr "Immich har inte hittat några dubblettfoton. Immich söker efter dem när dess jobb för duplikatidentifiering körs."
+msgstr ""
+"Immich har inte hittat några dubblettfoton. Immich söker efter dem när dess "
+"jobb för duplikatidentifiering körs."
 
 #: src/library/duplicates_view.rs:123
 msgid "Tap a photo to keep it or trash it."
@@ -2160,7 +2249,8 @@ msgstr[1] "Ta bort {n} foton permanent?"
 
 #: src/library/duplicates_view.rs:333
 msgid "Trash is turned off on this server, so this can't be undone."
-msgstr "Papperskorgen är inaktiverad på denna server, så detta kan inte ångras."
+msgstr ""
+"Papperskorgen är inaktiverad på denna server, så detta kan inte ångras."
 
 #: src/library/duplicates_view.rs:352
 #, rust-format
@@ -2598,7 +2688,9 @@ msgstr "Styrka"
 
 #: src/library/lightbox/edit/pages.rs:125
 msgid "Drag over what to hide. Tap a box to move, resize, or change it."
-msgstr "Dra över det som ska döljas. Tryck på en ruta för att flytta, ändra storlek eller ändra den."
+msgstr ""
+"Dra över det som ska döljas. Tryck på en ruta för att flytta, ändra storlek "
+"eller ändra den."
 
 #: src/library/lightbox/edit/pages.rs:135
 msgid "Hide Faces"
@@ -2657,7 +2749,9 @@ msgstr "Behåll originaldetaljer"
 msgid ""
 "A saved copy keeps the original's camera details, date, place, caption, "
 "rating, and albums. Off, the copy is a new photo of its own."
-msgstr "En sparad kopia behåller originalets kameradetaljer, datum, plats, bildtext, betyg och album. Om inaktiverad är kopian ett eget nytt foto."
+msgstr ""
+"En sparad kopia behåller originalets kameradetaljer, datum, plats, bildtext, "
+"betyg och album. Om inaktiverad är kopian ett eget nytt foto."
 
 #: src/library/lightbox/edit/panel.rs:176
 msgid "Stack with Original"
@@ -2812,12 +2906,12 @@ msgstr "Spela rörelse (Mellanslag)"
 msgid "Playback isn't available"
 msgstr "Uppspelning är inte tillgänglig"
 
-#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/live.rs:106 src/library/lightbox/video.rs:65
 #: src/library/lightbox/video.rs:108
 msgid "Playback failed"
 msgstr "Uppspelning misslyckades"
 
-#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+#: src/library/lightbox/live.rs:107 src/library/lightbox/video.rs:129
 msgid "Not connected to the Immich server."
 msgstr "Inte ansluten till Immich-servern."
 
@@ -3163,7 +3257,8 @@ msgstr "Platstjänsten returnerade en ogiltig position."
 #, rust-format
 msgid ""
 "Location services are unavailable ({err}). Check that they are turned on."
-msgstr "Platstjänster är inte tillgängliga ({err}). Kontrollera att de är aktiverade."
+msgstr ""
+"Platstjänster är inte tillgängliga ({err}). Kontrollera att de är aktiverade."
 
 #: src/library/map/location_dialog.rs:118
 #: src/library/map/location_dialog.rs:127
@@ -3410,7 +3505,9 @@ msgstr[1] "{n} filer"
 msgid ""
 "Your API key is missing permissions required to view thumbnails. Please "
 "ensure the key has 'asset.view' enabled."
-msgstr "Din API-nyckel saknar behörigheter som krävs för att visa miniatyrbilder. Se till att nyckeln har 'asset.view' aktiverat."
+msgstr ""
+"Din API-nyckel saknar behörigheter som krävs för att visa miniatyrbilder. Se "
+"till att nyckeln har 'asset.view' aktiverat."
 
 #: src/library/memories.rs:154
 #, rust-format
@@ -3493,7 +3590,8 @@ msgstr "Inga personer"
 
 #: src/library/people_view.rs:162
 msgid "People appear here once Immich has recognized faces in your photos."
-msgstr "Personer visas här så snart Immich har identifierat ansikten i dina foton."
+msgstr ""
+"Personer visas här så snart Immich har identifierat ansikten i dina foton."
 
 #: src/library/people_view.rs:166
 msgid "No Matches"
@@ -3557,7 +3655,9 @@ msgstr "Slå samman"
 msgid ""
 "Pick the people who are really {name}. Their faces move to {name} and "
 "they're removed. This can't be undone."
-msgstr "Välj de personer som egentligen är {name}. Deras ansikten flyttas till {name} och de tas bort. Detta kan inte ångras."
+msgstr ""
+"Välj de personer som egentligen är {name}. Deras ansikten flyttas till "
+"{name} och de tas bort. Detta kan inte ångras."
 
 #: src/library/person_merge_dialog.rs:124
 #, rust-format
@@ -3912,7 +4012,10 @@ msgstr "Serverövergripande statistik kräver administratörsbehörighet."
 msgid ""
 "Your API key must include the 'server.about', 'server.versionCheck', "
 "'server.statistics', and 'asset.statistics' permissions to view stats."
-msgstr "Din API-nyckel måste inkludera behörigheterna 'server.about', 'server.versionCheck', 'server.statistics' och 'asset.statistics' för att visa statistik."
+msgstr ""
+"Din API-nyckel måste inkludera behörigheterna 'server.about', "
+"'server.versionCheck', 'server.statistics' och 'asset.statistics' för att "
+"visa statistik."
 
 #: src/library/server_stats_dialog.rs:168
 msgid "Unable to load statistics"
@@ -4022,7 +4125,9 @@ msgstr "Foton i länk"
 msgid ""
 "Tap photos to take them out. To add some, select them in your library and "
 "choose Add to Share Link."
-msgstr "Tryck på foton för att ta bort dem. För att lägga till några väljer du dem i ditt bibliotek och väljer Lägg till i delningslänk."
+msgstr ""
+"Tryck på foton för att ta bort dem. För att lägga till några väljer du dem i "
+"ditt bibliotek och väljer Lägg till i delningslänk."
 
 #: src/library/shared_link_photos.rs:111
 #, rust-format
@@ -4065,7 +4170,9 @@ msgstr "Inga länkar att lägga till i"
 msgid ""
 "Albums' links always show the whole album. Make a link for some photos with "
 "Create Share Link first."
-msgstr "Albums länkar visar alltid hela albumet. Skapa en länk för några foton med Skapa delningslänk först."
+msgstr ""
+"Albums länkar visar alltid hela albumet. Skapa en länk för några foton med "
+"Skapa delningslänk först."
 
 #: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
 #: src/library/shared_link_qr.rs:129
@@ -4120,7 +4227,9 @@ msgstr "Inga delade länkar"
 msgid ""
 "Create one from an album's or a photo's right-click menu, or from a "
 "selection."
-msgstr "Skapa en från ett albums eller ett fotos högerklicksmeny eller från en markering."
+msgstr ""
+"Skapa en från ett albums eller ett fotos högerklicksmeny eller från en "
+"markering."
 
 #: src/library/shared_links_view.rs:101
 msgid "Could Not Load Shared Links"
@@ -4200,7 +4309,9 @@ msgstr "Delar med dig"
 msgid ""
 "People who added you as a partner. Switch one on to see their photos in "
 "Photos."
-msgstr "Personer som lagt till dig som partner. Aktivera en för att se deras foton i Foton."
+msgstr ""
+"Personer som lagt till dig som partner. Aktivera en för att se deras foton i "
+"Foton."
 
 #: src/library/sharing_view.rs:94
 msgid "Could Not Load Partners"
@@ -4249,7 +4360,9 @@ msgstr "Läser in personer…"
 
 #: src/library/sharing_view.rs:321
 msgid "No other people found. Listing people needs the 'user.read' permission."
-msgstr "Inga andra personer hittades. Att lista personer kräver behörigheten 'user.read'."
+msgstr ""
+"Inga andra personer hittades. Att lista personer kräver behörigheten "
+"'user.read'."
 
 #: src/library/sharing_view.rs:354
 msgid "Add Partner"
@@ -4264,7 +4377,9 @@ msgstr "Dela ditt bibliotek med {name}?"
 msgid ""
 "They'll be able to see all your photos and videos. You can stop sharing at "
 "any time."
-msgstr "Personen kommer att kunna se alla dina foton och videor. Du kan sluta dela när som helst."
+msgstr ""
+"Personen kommer att kunna se alla dina foton och videor. Du kan sluta dela "
+"när som helst."
 
 #: src/library/sharing_view.rs:381
 msgid "Share"
@@ -4278,7 +4393,7 @@ msgstr "Kunde inte lägga till partner"
 msgid "Show keyboard shortcuts"
 msgstr "Visa tangentbordsgenvägar"
 
-#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:20
 msgid "Open Settings"
 msgstr "Öppna Inställningar"
 
@@ -4386,7 +4501,9 @@ msgstr "Markera en hel dag"
 #: src/library/shortcuts_dialog.rs:103
 msgid ""
 "The focused photo's day or month; or tap its date heading while selecting"
-msgstr "Det fokuserade fotots dag eller månad; eller klicka på dess datumrubrik vid markering"
+msgstr ""
+"Det fokuserade fotots dag eller månad; eller klicka på dess datumrubrik vid "
+"markering"
 
 #: src/library/shortcuts_dialog.rs:106
 msgid "Copy selection"
@@ -4394,7 +4511,9 @@ msgstr "Kopiera markering"
 
 #: src/library/shortcuts_dialog.rs:108
 msgid "Paste into an album to add them; one photo copies as a picture"
-msgstr "Klistra in i ett album för att lägga till dem; ett enskilt foto kopieras som en bild"
+msgstr ""
+"Klistra in i ett album för att lägga till dem; ett enskilt foto kopieras som "
+"en bild"
 
 #: src/library/shortcuts_dialog.rs:110
 msgid "Exit selection mode"
@@ -4474,7 +4593,9 @@ msgstr "Markera all igenkänd text"
 
 #: src/library/shortcuts_dialog.rs:153
 msgid "Drag across text to select it; Ctrl-click adds or removes a box"
-msgstr "Dra över text för att markera den; Ctrl-klick lägger till eller tar bort en ruta"
+msgstr ""
+"Dra över text för att markera den; Ctrl-klick lägger till eller tar bort en "
+"ruta"
 
 #: src/library/shortcuts_dialog.rs:156
 msgid "Copy recognized text"
@@ -4636,12 +4757,12 @@ msgstr "360°-foton"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Anslutning"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Server"
@@ -5107,7 +5228,9 @@ msgstr "Detta foto finns inte i din Foton-tidslinje"
 msgid ""
 "Immich permanently deletes trashed items after its retention period (30 days "
 "by default)."
-msgstr "Immich tar bort objekt i papperskorgen permanent efter sin lagringstid (30 dagar som standard)."
+msgstr ""
+"Immich tar bort objekt i papperskorgen permanent efter sin lagringstid (30 "
+"dagar som standard)."
 
 #: src/library/trash_view.rs:66
 msgid "Restore All"
@@ -5499,7 +5622,9 @@ msgstr "Mimick: Anslutningen bröts"
 msgid ""
 "Could not reach the Immich server. Uploads will resume automatically when "
 "connectivity is restored."
-msgstr "Kunde inte nå Immich-servern. Uppladdningar återupptas automatiskt när anslutningen återställs."
+msgstr ""
+"Kunde inte nå Immich-servern. Uppladdningar återupptas automatiskt när "
+"anslutningen återställs."
 
 #: src/queue_manager.rs:241
 #, rust-format
@@ -5539,7 +5664,9 @@ msgstr "Uppladdning misslyckades för {path}"
 #: src/queue_manager/progress.rs:366
 msgid ""
 "Review the latest server and permission settings, then retry the failed item."
-msgstr "Granska de senaste server- och behörighetsinställningarna och försök sedan igen med det misslyckade objektet."
+msgstr ""
+"Granska de senaste server- och behörighetsinställningarna och försök sedan "
+"igen med det misslyckade objektet."
 
 #: src/queue_manager/progress.rs:379
 msgid "Queued for retry"
@@ -5565,7 +5692,9 @@ msgstr "Detaljerade loggar"
 #: src/settings_window/actions_ui.rs:23
 msgid ""
 "Record more while you reproduce a problem, then export. The log grows faster."
-msgstr "Spela in mer medan du återskapar ett problem och exportera sedan. Loggen växer snabbare."
+msgstr ""
+"Spela in mer medan du återskapar ett problem och exportera sedan. Loggen "
+"växer snabbare."
 
 #: src/settings_window/actions_ui.rs:28
 msgid "Export…"
@@ -5579,7 +5708,9 @@ msgstr "Exportera diagnostik"
 msgid ""
 "For bug reports: settings, status, and the end of the log, with private "
 "details removed."
-msgstr "För felrapporter: inställningar, status och slutet av loggen, med privata uppgifter borttagna."
+msgstr ""
+"För felrapporter: inställningar, status och slutet av loggen, med privata "
+"uppgifter borttagna."
 
 #: src/settings_window/appearance.rs:22
 msgid "Style"
@@ -5593,39 +5724,51 @@ msgstr "Ljust tema"
 msgid "Dark Theme"
 msgstr "Mörkt tema"
 
-#: src/settings_window/apply.rs:164
+#: src/settings_window/apply.rs:168
+msgid "Secrets Stored in Files"
+msgstr "Hemligheter lagrade i filer"
+
+#: src/settings_window/apply.rs:172
 msgid "API Key Stored in a File"
 msgstr "API-nyckel lagrad i en fil"
 
-#: src/settings_window/apply.rs:170
+#: src/settings_window/apply.rs:176
+msgid "Custom Proxy Headers Stored in a File"
+msgstr "Anpassade proxyrubriker lagrade i en fil"
+
+#: src/settings_window/apply.rs:184
 msgid "Settings Saved"
 msgstr "Inställningar sparade"
 
-#: src/settings_window/apply.rs:171
+#: src/settings_window/apply.rs:185
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick sparade de uppdaterade inställningarna."
 
-#: src/settings_window/apply.rs:207
+#: src/settings_window/apply.rs:221
 msgid "Startup Permission Needed"
 msgstr "Startbehörighet krävs"
 
-#: src/settings_window/apply.rs:208
+#: src/settings_window/apply.rs:222
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick tilläts inte att starta automatiskt vid inloggning."
 
-#: src/settings_window/apply.rs:210
+#: src/settings_window/apply.rs:224
 msgid "Could Not Update Startup Setting"
 msgstr "Kunde inte uppdatera startinställning"
 
-#: src/settings_window/apply.rs:241
+#: src/settings_window/apply.rs:257
 msgid "Could Not Save API Key"
 msgstr "Kunde inte spara API-nyckel"
 
-#: src/settings_window/apply.rs:249
+#: src/settings_window/apply.rs:272
+msgid "Could Not Save Custom Headers"
+msgstr "Kunde inte spara anpassade rubriker"
+
+#: src/settings_window/apply.rs:282
 msgid "Could Not Save Settings"
 msgstr "Kunde inte spara inställningar"
 
-#: src/settings_window/apply.rs:250
+#: src/settings_window/apply.rs:283
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick kunde inte skriva den uppdaterade konfigurationen till disk."
 
@@ -5728,47 +5871,91 @@ msgstr "När Mimick startar, kontrollera"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Mappar kan välja sina egna i Mappregler."
 
-#: src/settings_window/connectivity.rs:29
+#: src/settings_window/connectivity.rs:37
 msgid "Internal URL (LAN)"
 msgstr "Intern URL (LAN)"
 
-#: src/settings_window/connectivity.rs:31
+#: src/settings_window/connectivity.rs:39
 msgid "External URL (WAN)"
 msgstr "Extern URL (WAN)"
 
-#: src/settings_window/connectivity.rs:35
+#: src/settings_window/connectivity.rs:46
 msgid "Not tested yet"
 msgstr "Inte testad än"
 
-#: src/settings_window/connectivity.rs:38
+#: src/settings_window/connectivity.rs:49
 msgid "Test Connection"
 msgstr "Testa anslutning"
 
-#: src/settings_window/connectivity.rs:41
+#: src/settings_window/connectivity.rs:52
 msgid "Save and Connect"
 msgstr "Spara och anslut"
 
-#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Öppna bibliotek"
 
-#: src/settings_window/connectivity.rs:89
+#: src/settings_window/connectivity.rs:101
 msgid "API Key"
 msgstr "API-nyckel"
 
-#: src/settings_window/connectivity.rs:137
+#: src/settings_window/connectivity.rs:120
+msgid "Custom Proxy Headers"
+msgstr "Anpassade proxyrubriker"
+
+#: src/settings_window/connectivity.rs:136
+msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
+msgstr "Valfria HTTP-rubriker för omvända proxyer (t.ex. Cloudflare Access)"
+
+#: src/settings_window/connectivity.rs:139
+msgid "1 header configured"
+msgstr "1 rubrik konfigurerad"
+
+#: src/settings_window/connectivity.rs:141
+msgid "headers configured"
+msgstr "rubriker konfigurerade"
+
+#: src/settings_window/connectivity.rs:191
+msgid "Remove header"
+msgstr "Ta bort rubrik"
+
+#: src/settings_window/connectivity.rs:218
+msgid "Add Header…"
+msgstr "Lägg till rubrik…"
+
+#: src/settings_window/connectivity.rs:241
+msgid "Paste from clipboard"
+msgstr "Klistra in från urklipp"
+
+#: src/settings_window/connectivity.rs:278
+msgid "Header Name"
+msgstr "Rubriknamn"
+
+#: src/settings_window/connectivity.rs:286
+msgid "Secret / Value"
+msgstr "Hemlighet / Värde"
+
+#: src/settings_window/connectivity.rs:300
+msgid "Scope"
+msgstr "Omfång"
+
+#: src/settings_window/connectivity.rs:337
+msgid "Add Custom Header"
+msgstr "Lägg till anpassad rubrik"
+
+#: src/settings_window/connectivity.rs:407
 msgid "LAN URL"
 msgstr "LAN-URL"
 
-#: src/settings_window/connectivity.rs:138
+#: src/settings_window/connectivity.rs:408
 msgid "WAN URL"
 msgstr "WAN-URL"
 
-#: src/settings_window/form.rs:127
+#: src/settings_window/form.rs:133
 msgid "Invalid Internal URL"
 msgstr "Ogiltig intern URL"
 
-#: src/settings_window/form.rs:132
+#: src/settings_window/form.rs:138
 msgid "Invalid External URL"
 msgstr "Ogiltig extern URL"
 
@@ -5818,7 +6005,9 @@ msgstr "Anpassa miniatyrbilder till rutor"
 
 #: src/settings_window/library.rs:106
 msgid "Preview and Full Size thumbnails use far less memory."
-msgstr "Miniatyrbilder i förhandsvisnings- och full storlek använder betydligt mindre minne."
+msgstr ""
+"Miniatyrbilder i förhandsvisnings- och full storlek använder betydligt "
+"mindre minne."
 
 #: src/settings_window/library.rs:122
 msgid "Date Headings"
@@ -5864,7 +6053,9 @@ msgstr "Fullständig RAW-avkodning"
 msgid ""
 "Uses the sensor data, not the embedded preview, with every colour the camera "
 "recorded. Slower, and uses more memory."
-msgstr "Använder sensordata, inte den inbäddade förhandsvisningen, med varje färg kameran spelade in. Långsammare och använder mer minne."
+msgstr ""
+"Använder sensordata, inte den inbäddade förhandsvisningen, med varje färg "
+"kameran spelade in. Långsammare och använder mer minne."
 
 #: src/settings_window/library.rs:172
 msgid "Keep Decoded RAW Files"
@@ -5934,35 +6125,52 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Inställningarna sparades, men systemets nyckelring är inte tillgänglig, så API-nyckeln sparades i {path}.\n"
+"Inställningarna sparades, men systemets nyckelring är inte tillgänglig, så "
+"API-nyckeln sparades i {path}.\n"
 "\n"
 "Filen kan endast läsas av ditt användarkonto men är inte krypterad.\n"
 "\n"
 "Se: {url}"
 
-#: src/settings_window/mod.rs:141
+#: src/settings_window/mod.rs:142
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so custom proxy "
+"headers were stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"Inställningarna sparades, men systemets nyckelring är inte tillgänglig, så anpassade proxyrubriker sparades i {path}.\n"
+"\n"
+"Filen kan endast läsas av ditt användarkonto men är inte krypterad.\n"
+"\n"
+"Se: {url}"
+
+#: src/settings_window/mod.rs:156
 msgid "No successful sync yet"
 msgstr "Ingen lyckad synkronisering än"
 
-#: src/settings_window/mod.rs:151
+#: src/settings_window/mod.rs:166
 msgid "Less than a minute ago"
 msgstr "För mindre än en minut sedan"
 
-#: src/settings_window/mod.rs:157
+#: src/settings_window/mod.rs:172
 #, rust-format
 msgid "{n} minute ago"
 msgid_plural "{n} minutes ago"
 msgstr[0] "För {n} minut sedan"
 msgstr[1] "För {n} minuter sedan"
 
-#: src/settings_window/mod.rs:161
+#: src/settings_window/mod.rs:176
 #, rust-format
 msgid "{n} hour ago"
 msgid_plural "{n} hours ago"
 msgstr[0] "För {n} timme sedan"
 msgstr[1] "För {n} timmar sedan"
 
-#: src/settings_window/mod.rs:164
+#: src/settings_window/mod.rs:179
 #, rust-format
 msgid "{n} day ago"
 msgid_plural "{n} days ago"
@@ -6034,7 +6242,7 @@ msgid "Sync Now"
 msgstr "Synkronisera nu"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
 msgid "Pause"
 msgstr "Pausa"
 
@@ -6050,8 +6258,8 @@ msgstr "Kräver åtgärd"
 msgid "Failed uploads"
 msgstr "Misslyckade uppladdningar"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
-#: src/settings_window/wiring.rs:368
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
+#: src/settings_window/wiring.rs:375
 msgid "Resume"
 msgstr "Återuppta"
 
@@ -6256,7 +6464,7 @@ msgstr "Endast dessa typer, t.ex. jpg, png, mp4 (tomt för alla)"
 msgid "Status"
 msgstr "Status"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Avsluta Mimick"
 
@@ -6287,7 +6495,8 @@ msgstr "2. Lägg till en API-nyckel"
 #: src/settings_window/wiring.rs:160
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
-msgstr "I Immich: Kontoinställningar → API-nycklar. Guiden listar behörigheterna."
+msgstr ""
+"I Immich: Kontoinställningar → API-nycklar. Guiden listar behörigheterna."
 
 #: src/settings_window/wiring.rs:163
 msgid "3. Save and Connect"
@@ -6296,7 +6505,9 @@ msgstr "3. Spara och anslut"
 #: src/settings_window/wiring.rs:165
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
-msgstr "Ditt bibliotek öppnas härnäst. Om du även vill säkerhetskopiera en mapp lägger du till den under Bevakade mappar."
+msgstr ""
+"Ditt bibliotek öppnas härnäst. Om du även vill säkerhetskopiera en mapp "
+"lägger du till den under Bevakade mappar."
 
 #: src/settings_window/wiring.rs:177
 msgid "Guide"
@@ -6316,19 +6527,19 @@ msgstr "{name} kan inte nås"
 msgid "Couldn't reach Immich at either address"
 msgstr "Kunde inte nå Immich på någon av adresserna"
 
-#: src/settings_window/wiring.rs:252
+#: src/settings_window/wiring.rs:255
 msgid "Testing…"
 msgstr "Testar…"
 
-#: src/settings_window/wiring.rs:366
+#: src/settings_window/wiring.rs:373
 msgid "Paused by you"
 msgstr "Pausad av dig"
 
-#: src/settings_window/wiring.rs:425
+#: src/settings_window/wiring.rs:432
 msgid "Invalid Selection"
 msgstr "Ogiltig markering"
 
-#: src/settings_window/wiring.rs:426
+#: src/settings_window/wiring.rs:433
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "Minst en URL (intern eller extern) måste vara aktiverad."
 
@@ -6407,14 +6618,15 @@ msgstr "Mimick"
 
 #: setup/dev.nicx.mimick.desktop:3
 msgid "Unofficial Immich desktop client and auto-sync agent"
-msgstr "Inofficiell Immich-skrivbordsklient och automatisk synkroniseringsagent"
+msgstr ""
+"Inofficiell Immich-skrivbordsklient och automatisk synkroniseringsagent"
 
 #: setup/dev.nicx.mimick.desktop:10
 msgid ""
 "Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
 msgstr "Foto;Foton;Bild;Bilder;Video;Videor;Synk;Synkronisering;Säkerhetskopia;Backup;Uppladdning;Immich;Galleri;Självvärd;"
 
-#: setup/dev.nicx.mimick.desktop:25
+#: setup/dev.nicx.mimick.desktop:24
 msgid "Upload with Mimick"
 msgstr "Ladda upp med Mimick"
 
@@ -6427,43 +6639,58 @@ msgid ""
 "Mimick is a native Linux desktop client for self-hosted Immich servers. It "
 "monitors your folders in the background and automatically syncs photos and "
 "videos to your server."
-msgstr "Mimick är en infödd Linux-skrivbordsklient för självhostade Immich-servrar. Den övervakar dina mappar i bakgrunden och synkroniserar automatiskt foton och videor till din server."
+msgstr ""
+"Mimick är en infödd Linux-skrivbordsklient för självhostade Immich-servrar. "
+"Den övervakar dina mappar i bakgrunden och synkroniserar automatiskt foton "
+"och videor till din server."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
 msgid ""
 "Per-folder sync methods: upload only, download only, or full bidirectional "
 "sync with optional deletion mirroring."
-msgstr "Synkroniseringsmetoder per mapp: endast uppladdning, endast nedladdning eller full tvåvägssynkronisering med valfri spegling av borttagningar."
+msgstr ""
+"Synkroniseringsmetoder per mapp: endast uppladdning, endast nedladdning "
+"eller full tvåvägssynkronisering med valfri spegling av borttagningar."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
 msgid ""
 "Built-in Library View for browsing your timeline, managing albums, and "
 "searching with Smart Search, OCR, and metadata filters."
-msgstr "Inbyggd biblioteksvy för att bläddra i din tidslinje, hantera album och söka med smart sökning, OCR och metadatafilter."
+msgstr ""
+"Inbyggd biblioteksvy för att bläddra i din tidslinje, hantera album och söka "
+"med smart sökning, OCR och metadatafilter."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
 msgid ""
 "SHA-1 deduplication, parallel upload workers, and offline retry queue for "
 "reliable transfers."
-msgstr "SHA-1-deduplicering, parallella uppladdningsarbetare och kö för frånkopplade återförsök för pålitliga överföringar."
+msgstr ""
+"SHA-1-deduplicering, parallella uppladdningsarbetare och kö för frånkopplade "
+"återförsök för pålitliga överföringar."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
 msgid ""
 "Environment-aware: automatically pauses on battery or metered connections. "
 "Configurable quiet hours and per-folder rules."
-msgstr "Omgivningsmedveten: pausar automatiskt vid batteridrift eller taxerade anslutningar. Konfigurerbara tysta timmar och mappspecifika regler."
+msgstr ""
+"Omgivningsmedveten: pausar automatiskt vid batteridrift eller taxerade "
+"anslutningar. Konfigurerbara tysta timmar och mappspecifika regler."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
 msgid ""
 "Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
 "sandbox support."
-msgstr "Byggd i Rust med GTK4 och Libadwaita. Integrering med systemfältet och stöd för Flatpak-sandlåda."
+msgstr ""
+"Byggd i Rust med GTK4 och Libadwaita. Integrering med systemfältet och stöd "
+"för Flatpak-sandlåda."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
 msgid ""
 "Mimick is a community-developed client and is not affiliated with or "
 "endorsed by the Immich project."
-msgstr "Mimick är en klient utvecklad av gemenskapen och är inte ansluten till eller godkänd av Immich-projektet."
+msgstr ""
+"Mimick är en klient utvecklad av gemenskapen och är inte ansluten till eller "
+"godkänd av Immich-projektet."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
 msgid "Library View - Photos page with sidebar"

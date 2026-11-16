@@ -14,7 +14,9 @@ use crate::config::{ApiKeyStorage, WatchPathEntry};
 use super::form::{
     ConnectionValues, SettingsForm, SettingsValues, apply_to_config, validate_connection,
 };
-use super::{FolderRowData, api_key_file_notice, show_alert, watch_path_entry};
+use super::{
+    FolderRowData, api_key_file_notice, custom_headers_file_notice, show_alert, watch_path_entry,
+};
 
 /// Non-widget state shared by the save path and the watch-folder rows.
 #[derive(Clone)]
@@ -146,7 +148,7 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
             .get_api_key()
             .unwrap_or_default()
             .is_empty();
-    let Some(key_file_notice) = write_config(form, state, &request) else {
+    let Some((key_file_notice, headers_file_notice)) = write_config(form, state, &request) else {
         state.in_flight.set(false);
         return;
     };
@@ -160,8 +162,20 @@ async fn save_and_apply(form: &SettingsForm, state: &ApplyState, request: ApplyR
 
     state.in_flight.set(false);
     sync_open_library(form, &state.ctx);
-    if let Some(notice) = key_file_notice {
+    if let (Some(api_msg), Some(hdr_msg)) = (&key_file_notice, &headers_file_notice) {
+        show_alert(
+            &form.window,
+            &gettext("Secrets Stored in Files"),
+            &format!("{api_msg}\n\n{hdr_msg}"),
+        );
+    } else if let Some(notice) = key_file_notice {
         show_alert(&form.window, &gettext("API Key Stored in a File"), &notice);
+    } else if let Some(notice) = headers_file_notice {
+        show_alert(
+            &form.window,
+            &gettext("Custom Proxy Headers Stored in a File"),
+            &notice,
+        );
     } else if first_setup && request.values.library_view_enabled {
         open_library(form, &state.ctx);
     } else if request.show_success_ack {
@@ -214,13 +228,13 @@ async fn update_autostart(form: &SettingsForm, request: &ApplyRequest) -> bool {
     false
 }
 
-/// Write config (and the API key, from the Save button). `None` after showing an error;
-/// otherwise the file-fallback notice to show, if the key couldn't go in the keyring.
+/// Write config (and the API key and custom headers, from the Save button). `None` after showing an error;
+/// otherwise the file-fallback notices to show, if secrets couldn't go in the keyring.
 fn write_config(
     form: &SettingsForm,
     state: &ApplyState,
     request: &ApplyRequest,
-) -> Option<Option<String>> {
+) -> Option<(Option<String>, Option<String>)> {
     let values = &request.values;
     let mut config = state.ctx.config.write();
     apply_to_config(
@@ -233,12 +247,31 @@ fn write_config(
     crate::library::set_raw_full_decode(values.raw_full_decode);
 
     let mut key_file_notice = None;
-    if request.include_connectivity && !request.conn.api_key.is_empty() {
-        match config.set_api_key(&request.conn.api_key) {
-            Ok(ApiKeyStorage::File(path)) => key_file_notice = Some(api_key_file_notice(&path)),
+    let mut headers_file_notice = None;
+    if request.include_connectivity {
+        if !request.conn.api_key.is_empty() {
+            match config.set_api_key(&request.conn.api_key) {
+                Ok(ApiKeyStorage::File(path)) => key_file_notice = Some(api_key_file_notice(&path)),
+                Ok(ApiKeyStorage::Keyring) => {}
+                Err(detail) => {
+                    show_alert(&form.window, &gettext("Could Not Save API Key"), &detail);
+                    return None;
+                }
+            }
+        }
+        match config.set_custom_headers(&request.conn.custom_headers) {
+            Ok(ApiKeyStorage::File(path)) => {
+                if !request.conn.custom_headers.is_empty() {
+                    headers_file_notice = Some(custom_headers_file_notice(&path));
+                }
+            }
             Ok(ApiKeyStorage::Keyring) => {}
             Err(detail) => {
-                show_alert(&form.window, &gettext("Could Not Save API Key"), &detail);
+                show_alert(
+                    &form.window,
+                    &gettext("Could Not Save Custom Headers"),
+                    &detail,
+                );
                 return None;
             }
         }
@@ -251,7 +284,7 @@ fn write_config(
         );
         return None;
     }
-    Some(key_file_notice)
+    Some((key_file_notice, headers_file_notice))
 }
 
 /// Point the API client at the new addresses; after a connection change, check it again so
@@ -260,7 +293,12 @@ async fn update_api_client(state: &ApplyState, request: &ApplyRequest) {
     let (internal, external) = request.conn.runtime_urls();
     let api_client = &state.ctx.api_client;
     api_client
-        .update_settings(internal, external, request.conn.api_key.clone())
+        .update_settings(
+            internal,
+            external,
+            request.conn.api_key.clone(),
+            request.conn.custom_headers.clone(),
+        )
         .await;
     if request.include_connectivity {
         // Startup is otherwise the only check, so Status kept the old result until a restart.

@@ -14,7 +14,7 @@ use super::VideoSource;
 
 pub(in crate::library) struct MotionPlayer {
     play: gst_play::Play,
-    api_key: Arc<Mutex<Option<String>>>,
+    headers: Arc<Mutex<Vec<(String, String)>>>,
     _bus_watch: gst::bus::BusWatchGuard,
     surface: gtk::Picture,
     active: Cell<bool>,
@@ -28,13 +28,13 @@ impl MotionPlayer {
         muted: bool,
         on_change: impl Fn(bool) + 'static,
     ) -> Result<Rc<Self>, String> {
-        let api_key = Arc::new(Mutex::new(None));
-        let (play, paintable) = super::pipeline::build_play(volume, muted, api_key.clone())?;
+        let headers = Arc::new(Mutex::new(Vec::new()));
+        let (play, paintable) = super::pipeline::build_play(volume, muted, headers.clone())?;
         let bus = play.message_bus();
         Ok(Rc::new_cyclic(|weak: &Weak<Self>| Self {
             _bus_watch: watch_bus(&bus, weak.clone()),
             play,
-            api_key,
+            headers,
             surface: motion_surface(&paintable),
             active: Cell::new(false),
             on_change: Box::new(on_change),
@@ -50,7 +50,7 @@ impl MotionPlayer {
     }
 
     pub(in crate::library) fn start(&self, source: VideoSource) {
-        *self.api_key.lock() = source.api_key;
+        *self.headers.lock() = source.headers;
         self.play.set_uri(Some(&source.uri));
         self.set_active(true);
         self.play.play();

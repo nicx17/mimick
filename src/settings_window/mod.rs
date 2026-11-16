@@ -121,11 +121,26 @@ fn watch_path_entry(
 }
 
 /// Alert text shown when the API key had to be stored in the fallback file.
-fn api_key_file_notice(path: &Path) -> String {
+pub(super) fn api_key_file_notice(path: &Path) -> String {
     fill(
         gettext(
             "Settings were saved, but the system keyring is unavailable, so the API key \
              was stored in {path}.\n\nThe file is readable only by your user account but is \
+             not encrypted.\n\nSee: {url}",
+        ),
+        &[
+            ("path", &path.display().to_string()),
+            ("url", "https://github.com/nicx17/mimick/wiki/Keyring-Setup"),
+        ],
+    )
+}
+
+/// Alert text shown when custom proxy headers had to be stored in the fallback file.
+pub(super) fn custom_headers_file_notice(path: &Path) -> String {
+    fill(
+        gettext(
+            "Settings were saved, but the system keyring is unavailable, so custom proxy headers \
+             were stored in {path}.\n\nThe file is readable only by your user account but is \
              not encrypted.\n\nSee: {url}",
         ),
         &[
@@ -180,7 +195,11 @@ pub fn build_settings_window_with_parent(
     let config = ctx.config.read().clone();
     let (window, status_page, settings_page) = open_shell(app, parent, &config);
     let status_widgets = status::build_status_group(&status_page);
-    let conn = connectivity::build_connectivity_group(&settings_page, &window);
+    let conn = connectivity::build_connectivity_group(
+        &settings_page,
+        &window,
+        config.get_custom_headers(),
+    );
     wiring::connect_test_button(&conn, ctx.api_client.clone());
     let folders_group = wiring::folders_group(&settings_page);
     let behavior = behavior::build_behavior_group(&settings_page);

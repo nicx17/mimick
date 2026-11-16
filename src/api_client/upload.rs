@@ -151,7 +151,7 @@ impl ImmichApiClient {
 
     async fn handle_upload_server_error(&self, status: u16, filename: &str) -> Option<String> {
         log::warn!("Server error {}: retrying later for {}", status, filename);
-        *self.active_url.lock().await = None;
+        self.invalidate_connection().await;
         self.set_upload_issue(temporary_server_issue()).await;
         None
     }
@@ -187,7 +187,7 @@ impl ImmichApiClient {
         time_zone: Option<String>,
     ) {
         let client = self.client.clone();
-        let api_key = self.settings.read().api_key.clone();
+        let settings = self.settings_snapshot();
 
         tokio::spawn(async move {
             let Some(time_zone) = time_zone else {
@@ -198,13 +198,28 @@ impl ImmichApiClient {
                 return;
             };
 
+            let is_external = settings.server_route(&base_url).unwrap_or(true);
+            let headers: Vec<(String, String)> = settings
+                .custom_headers
+                .into_iter()
+                .filter(|h| h.scope.matches_route(is_external) && h.is_valid_name())
+                .map(|h| (h.name, h.value))
+                .collect();
+
             // Immich can rewrite the timeline placement after the initial upload once
             // the metadata extraction job finishes. Re-apply the intended timezone
             // after a few short delays so the final stored value matches the source file.
             for delay_secs in [2_u64, 8, 20] {
                 tokio::time::sleep(Duration::from_secs(delay_secs)).await;
-                apply_asset_timezone_fixup(&client, &api_key, &base_url, &asset_id, &time_zone)
-                    .await;
+                apply_asset_timezone_fixup(
+                    &client,
+                    &settings.api_key,
+                    &headers,
+                    &base_url,
+                    &asset_id,
+                    &time_zone,
+                )
+                .await;
             }
         });
     }
@@ -351,13 +366,10 @@ impl ImmichApiClient {
         desired_time_zone: Option<String>,
         progress: Option<TransferProgressCallback>,
     ) -> Option<String> {
-        let url = format!("{}/api/assets", base_url);
-        let api_key = self.settings.read().api_key.clone();
+        let url = format!("{base_url}/api/assets");
 
         match self
-            .client
-            .post(&url)
-            .header("x-api-key", &api_key)
+            .authorized_request(reqwest::Method::POST, &url)
             .header("Accept", "application/json")
             .multipart(form)
             .send()
@@ -376,8 +388,7 @@ impl ImmichApiClient {
             }
             Err(e) => {
                 log::error!("Network error uploading {}: {}", filename, e);
-                let mut active = self.active_url.lock().await;
-                *active = None;
+                self.invalidate_connection().await;
                 self.set_issue(classify_network_issue(RequestContext::Upload, &e))
                     .await;
                 None

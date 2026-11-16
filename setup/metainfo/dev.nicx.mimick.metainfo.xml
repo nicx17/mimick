@@ -120,7 +120,7 @@
   <releases>
     <release version="9.15.2" date="2026-11-14">
       <description translate="no">
-        <p>internationalization support with 21 languages translated.</p>
+        <p>Internationalization support with 21 languages translated.</p>
         <ul>
           <li>Complete translations across 21 locales.</li>
           <li>Flatpak build locale directory migration and packaging fixes.</li>

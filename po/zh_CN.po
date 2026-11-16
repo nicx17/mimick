@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
-"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
-"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 11:39+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese (Simplified)\n"
@@ -41,11 +41,11 @@ msgstr "相册列表不可用"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "在刷新相册前重新连接到 Immich 服务器。"
 
-#: src/api_client/albums.rs:180
+#: src/api_client/albums.rs:177
 msgid "Failed to fetch albums"
 msgstr "获取相册失败"
 
-#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
 msgid "Cannot fetch albums to verify existence"
 msgstr "无法获取相册以验证其是否存在"
 
@@ -56,7 +56,7 @@ msgid ""
 "after confirming the current configuration."
 msgstr "服务器返回了 HTTP {status}。请检查服务器日志并在确认当前配置后重试。"
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
 msgid "Immich rejected the API key"
 msgstr "Immich 拒绝了该 API 密钥"
 
@@ -64,7 +64,9 @@ msgstr "Immich 拒绝了该 API 密钥"
 msgid ""
 "Update the API key in Settings and confirm it still has the required Asset "
 "and Album permissions (see README for the full list)."
-msgstr "请在“设置”中更新 API 密钥，并确认其仍具有所需的资源与相册权限（完整列表请参见 README）。"
+msgstr ""
+"请在“设置”中更新 API 密钥，并确认其仍具有所需的资源与相册权限（完整列表请参"
+"见 README）。"
 
 #: src/api_client/errors.rs:54
 msgid "An album reference is no longer valid"
@@ -74,7 +76,7 @@ msgstr "相册引用已失效"
 msgid "Refresh the album list or choose a different album before retrying."
 msgstr "在重试前请刷新相册列表或选择其他相册。"
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
 msgid "Immich rejected a file as too large"
 msgstr "Immich 因文件过大而拒绝了该文件"
 
@@ -94,7 +96,7 @@ msgid ""
 "check reverse proxy limits."
 msgstr "请稍候重试。如果经常出现此情况，请调低并发上传数或检查反向代理限制。"
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
 msgid "Immich is temporarily unavailable"
 msgstr "Immich 暂时不可用"
 
@@ -168,7 +170,7 @@ msgstr "Immich 请求超时"
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "请检查网络状况和服务器响应速度，然后重试。"
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
 msgid "Could not reach the Immich server"
 msgstr "无法访问 Immich 服务器"
 
@@ -227,20 +229,20 @@ msgstr "媒体库统计请求在完成前失败"
 msgid "The server version request failed before completion"
 msgstr "服务器版本请求在完成前失败"
 
-#: src/api_client/mod.rs:387
+#: src/api_client/mod.rs:526
 msgid "No active connection"
 msgstr "无活动连接"
 
-#: src/api_client/search.rs:358
+#: src/api_client/search.rs:342
 msgid "Immich can't count by file name or deleted photos"
 msgstr "Immich 无法按文件名或已删除照片进行统计"
 
-#: src/api_client/tags.rs:76
+#: src/api_client/tags.rs:72
 #, rust-format
 msgid "Immich did not return the tag \"{value}\""
 msgstr "Immich 未返回标签 \"{value}\""
 
-#: src/api_client/tags.rs:87
+#: src/api_client/tags.rs:83
 msgid "Renaming tags needs a newer version of Immich."
 msgstr "重命名标签需要较新版本的 Immich。"
 
@@ -249,52 +251,52 @@ msgstr "重命名标签需要较新版本的 Immich。"
 msgid "Invalid month {month}"
 msgstr "无效的月份 {month}"
 
-#: src/api_client/upload.rs:301
+#: src/api_client/upload.rs:316
 msgid "A queued file is no longer available"
 msgstr "队列中的文件已不可用"
 
-#: src/api_client/upload.rs:303
+#: src/api_client/upload.rs:318
 msgid "Mimick could not read a queued file"
 msgstr "Mimick 无法读取队列中的文件"
 
-#: src/api_client/upload.rs:306
+#: src/api_client/upload.rs:321
 msgid ""
 "Check that the watched folder still exists and that the file was not moved "
 "or deleted before upload."
 msgstr "请检查监控的文件夹是否仍然存在，且文件在上传前未被移动或删除。"
 
-#: src/api_client/upload.rs:308
+#: src/api_client/upload.rs:323
 msgid ""
 "Verify folder permissions and make sure the file is still accessible to the "
 "app."
 msgstr "请验证文件夹权限，并确保应用程序仍可访问该文件。"
 
-#: src/api_client/upload.rs:322
+#: src/api_client/upload.rs:337
 msgid "Mimick could not open a queued file"
 msgstr "Mimick 无法打开队列中的文件"
 
-#: src/api_client/upload.rs:323
+#: src/api_client/upload.rs:338
 msgid ""
 "The file may be locked, deleted, or outside the app's allowed folder access."
 msgstr "该文件可能已被锁定、删除或超出了应用程序允许访问的文件夹范围。"
 
-#: src/api_client/upload.rs:336
+#: src/api_client/upload.rs:351
 msgid "No active server connection"
 msgstr "无活动服务器连接"
 
-#: src/api_client/upload.rs:337
+#: src/api_client/upload.rs:352
 msgid ""
 "Test the server connection in Settings and confirm at least one Immich URL "
 "is reachable."
 msgstr "请在“设置”中测试服务器连接，并确认至少有一个 Immich URL 可连通。"
 
-#: src/api_client/upload.rs:393
+#: src/api_client/upload.rs:405
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
 msgstr "请减小文件大小、调高服务器的上传限制，或使用文件夹规则跳过超大文件。"
 
-#: src/api_client/upload.rs:410
+#: src/api_client/upload.rs:422
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -304,7 +306,8 @@ msgstr "请稍候重试。如果问题持续出现，请检查服务器日志和
 msgid ""
 "Reason for requesting background access: Mimick must run in the background "
 "to automatically sync media to Immich."
-msgstr "请求后台访问权限的原因：Mimick 必须在后台运行才能自动将媒体同步到 Immich。"
+msgstr ""
+"请求后台访问权限的原因：Mimick 必须在后台运行才能自动将媒体同步到 Immich。"
 
 #: src/autostart.rs:57
 #, rust-format
@@ -334,6 +337,30 @@ msgstr "无法移除自启动条目：{err}"
 #: src/autostart.rs:126 src/autostart.rs:133
 msgid "Could not locate the user config directory."
 msgstr "无法定位用户配置目录。"
+
+#: src/config/headers.rs:23
+msgid "WAN only (External)"
+msgstr "仅限 WAN（外部）"
+
+#: src/config/headers.rs:24
+msgid "All (LAN & WAN)"
+msgstr "全部（LAN 与 WAN）"
+
+#: src/config/headers.rs:25
+msgid "LAN only (Internal)"
+msgstr "仅限 LAN（内部）"
+
+#: src/config/headers.rs:32
+msgid "WAN"
+msgstr "WAN"
+
+#: src/config/headers.rs:33
+msgid "ALL"
+msgstr "全部"
+
+#: src/config/headers.rs:34
+msgid "LAN"
+msgstr "LAN"
 
 #: src/library/about_dialog.rs:40
 msgid "Repository"
@@ -406,6 +433,7 @@ msgstr "无法加载此项。您的 API 密钥需要“{permission}”权限。"
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/connectivity.rs:305
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "取消"
@@ -534,7 +562,9 @@ msgstr "获取此密钥的新机密？"
 msgid ""
 "Mimick saves the new secret and keeps working. Anything else using this key "
 "stops working until you give it the new secret."
-msgstr "Mimick 将保存新机密并继续运行。使用此密钥的其他任何程序都将停止工作，直到为其提供新机密。"
+msgstr ""
+"Mimick 将保存新机密并继续运行。使用此密钥的其他任何程序都将停止工作，直到为其"
+"提供新机密。"
 
 #: src/library/account/keys.rs:159
 msgid "Rotate"
@@ -881,7 +911,8 @@ msgstr "无法退出相册"
 msgid ""
 "Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
 "they don't create it again."
-msgstr "Mimick 仍在上传中。请在上传完成后删除“{album_name}”，以免其被再次创建。"
+msgstr ""
+"Mimick 仍在上传中。请在上传完成后删除“{album_name}”，以免其被再次创建。"
 
 #: src/library/album_delete.rs:29
 msgid "Uploads in Progress"
@@ -895,7 +926,9 @@ msgstr "请先关闭设置"
 msgid ""
 "Deleting this album changes your watch folders, and saving the open Settings "
 "window would undo that. Close Settings, then delete the album."
-msgstr "删除此相册会更改您的监控文件夹，而保存当前打开的“设置”窗口会撤销该更改。请先关闭“设置”，然后再删除该相册。"
+msgstr ""
+"删除此相册会更改您的监控文件夹，而保存当前打开的“设置”窗口会撤销该更改。请先"
+"关闭“设置”，然后再删除该相册。"
 
 #: src/library/album_delete.rs:45
 msgid "Its photos stay in your library."
@@ -940,7 +973,9 @@ msgstr "停止监控这些文件夹"
 msgid ""
 "So the album doesn't come back, photos in these folders go to your library "
 "instead of an album named after the folder:"
-msgstr "为防止相册重新创建，这些文件夹中的照片将存入您的媒体库，而非以文件夹命名的相册："
+msgstr ""
+"为防止相册重新创建，这些文件夹中的照片将存入您的媒体库，而非以文件夹命名的相"
+"册："
 
 #: src/library/album_delete.rs:221
 msgid "Could Not Delete Album"
@@ -1283,6 +1318,7 @@ msgid "Could Not Remove Person"
 msgstr "无法移除人员"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+#: src/settings_window/connectivity.rs:307
 msgid "Add"
 msgstr "添加"
 
@@ -1705,7 +1741,9 @@ msgstr[0] "已复制 {n} 张照片"
 msgid ""
 "Pasting into an album here adds all {count}. Only {local} are on this "
 "computer, so other apps such as Files paste those; use Download for the rest."
-msgstr "在此处粘贴到相册将添加全部 {count} 项。此计算机上仅有 {local} 项，因此“文件”等其他应用只会粘贴这些项；其余项目请使用“下载”。"
+msgstr ""
+"在此处粘贴到相册将添加全部 {count} 项。此计算机上仅有 {local} 项，因此“文件”"
+"等其他应用只会粘贴这些项；其余项目请使用“下载”。"
 
 #: src/library/clipboard.rs:162
 msgid "Paste in Photos or albums"
@@ -1821,7 +1859,9 @@ msgid ""
 "Your API key is missing permissions required for the Library view. Please "
 "ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
 "'person.read' enabled."
-msgstr "您的 API 密钥缺少媒体库视图所需的权限。请确保密钥已启用 'asset.read'、'asset.view'、'asset.download' 和 'person.read'。"
+msgstr ""
+"您的 API 密钥缺少媒体库视图所需的权限。请确保密钥已启用 "
+"'asset.read'、'asset.view'、'asset.download' 和 'person.read'。"
 
 #: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
 #: src/library/shortcuts_dialog.rs:179
@@ -2613,7 +2653,9 @@ msgstr "保留原始信息"
 msgid ""
 "A saved copy keeps the original's camera details, date, place, caption, "
 "rating, and albums. Off, the copy is a new photo of its own."
-msgstr "保存的副本将保留原图的相机详细信息、日期、地点、说明、评分及相册。关闭时，副本将作为一张全新的独立照片。"
+msgstr ""
+"保存的副本将保留原图的相机详细信息、日期、地点、说明、评分及相册。关闭时，副"
+"本将作为一张全新的独立照片。"
 
 #: src/library/lightbox/edit/panel.rs:176
 msgid "Stack with Original"
@@ -2768,12 +2810,12 @@ msgstr "播放动态 (空格)"
 msgid "Playback isn't available"
 msgstr "无法播放"
 
-#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/live.rs:106 src/library/lightbox/video.rs:65
 #: src/library/lightbox/video.rs:108
 msgid "Playback failed"
 msgstr "播放失败"
 
-#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+#: src/library/lightbox/live.rs:107 src/library/lightbox/video.rs:129
 msgid "Not connected to the Immich server."
 msgstr "未连接到 Immich 服务器。"
 
@@ -3506,7 +3548,9 @@ msgstr "合并"
 msgid ""
 "Pick the people who are really {name}. Their faces move to {name} and "
 "they're removed. This can't be undone."
-msgstr "选择实际上是 {name} 的人物。他们的面孔将移动至 {name} 并且其条目会被删除。此操作无法撤销。"
+msgstr ""
+"选择实际上是 {name} 的人物。他们的面孔将移动至 {name} 并且其条目会被删除。此"
+"操作无法撤销。"
 
 #: src/library/person_merge_dialog.rs:124
 #, rust-format
@@ -3860,7 +3904,10 @@ msgstr "全服务器统计信息需要管理员权限。"
 msgid ""
 "Your API key must include the 'server.about', 'server.versionCheck', "
 "'server.statistics', and 'asset.statistics' permissions to view stats."
-msgstr "您的 API 密钥必须包含“server.about”、“server.versionCheck”、“server.statistics”和“asset.statistics”权限才能查看统计信息。"
+msgstr ""
+"您的 API 密钥必须包"
+"含“server.about”、“server.versionCheck”、“server.statistics”和“asset.statistics”权"
+"限才能查看统计信息。"
 
 #: src/library/server_stats_dialog.rs:168
 msgid "Unable to load statistics"
@@ -3970,7 +4017,8 @@ msgstr "链接中的照片"
 msgid ""
 "Tap photos to take them out. To add some, select them in your library and "
 "choose Add to Share Link."
-msgstr "点击照片可将其移出。要添加照片，请在媒体库中选中它们并选择“添加到共享链接”。"
+msgstr ""
+"点击照片可将其移出。要添加照片，请在媒体库中选中它们并选择“添加到共享链接”。"
 
 #: src/library/shared_link_photos.rs:111
 #, rust-format
@@ -4224,7 +4272,7 @@ msgstr "无法添加共享伙伴"
 msgid "Show keyboard shortcuts"
 msgstr "显示键盘快捷键"
 
-#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:20
 msgid "Open Settings"
 msgstr "打开设置"
 
@@ -4582,12 +4630,12 @@ msgstr "360° 全景照片"
 msgid "Video"
 msgstr "视频"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "连接"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "服务器"
@@ -5530,39 +5578,51 @@ msgstr "浅色主题"
 msgid "Dark Theme"
 msgstr "深色主题"
 
-#: src/settings_window/apply.rs:164
+#: src/settings_window/apply.rs:168
+msgid "Secrets Stored in Files"
+msgstr "机密信息已存储在文件中"
+
+#: src/settings_window/apply.rs:172
 msgid "API Key Stored in a File"
 msgstr "API 密钥已存储在文件中"
 
-#: src/settings_window/apply.rs:170
+#: src/settings_window/apply.rs:176
+msgid "Custom Proxy Headers Stored in a File"
+msgstr "自定义代理请求头已存储在文件中"
+
+#: src/settings_window/apply.rs:184
 msgid "Settings Saved"
 msgstr "设置已保存"
 
-#: src/settings_window/apply.rs:171
+#: src/settings_window/apply.rs:185
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick 已成功保存更新的设置。"
 
-#: src/settings_window/apply.rs:207
+#: src/settings_window/apply.rs:221
 msgid "Startup Permission Needed"
 msgstr "需要开机自启权限"
 
-#: src/settings_window/apply.rs:208
+#: src/settings_window/apply.rs:222
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick 未获允许在登录时自动启动。"
 
-#: src/settings_window/apply.rs:210
+#: src/settings_window/apply.rs:224
 msgid "Could Not Update Startup Setting"
 msgstr "无法更新自启动设置"
 
-#: src/settings_window/apply.rs:241
+#: src/settings_window/apply.rs:257
 msgid "Could Not Save API Key"
 msgstr "无法保存 API 密钥"
 
-#: src/settings_window/apply.rs:249
+#: src/settings_window/apply.rs:272
+msgid "Could Not Save Custom Headers"
+msgstr "无法保存自定义请求头"
+
+#: src/settings_window/apply.rs:282
 msgid "Could Not Save Settings"
 msgstr "无法保存设置"
 
-#: src/settings_window/apply.rs:250
+#: src/settings_window/apply.rs:283
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick 无法将更新的配置写入磁盘。"
 
@@ -5665,47 +5725,91 @@ msgstr "Mimick 启动时检查"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "各文件夹可在“文件夹规则”中单独设置。"
 
-#: src/settings_window/connectivity.rs:29
+#: src/settings_window/connectivity.rs:37
 msgid "Internal URL (LAN)"
 msgstr "内部 URL (LAN)"
 
-#: src/settings_window/connectivity.rs:31
+#: src/settings_window/connectivity.rs:39
 msgid "External URL (WAN)"
 msgstr "外部 URL (WAN)"
 
-#: src/settings_window/connectivity.rs:35
+#: src/settings_window/connectivity.rs:46
 msgid "Not tested yet"
 msgstr "尚未测试"
 
-#: src/settings_window/connectivity.rs:38
+#: src/settings_window/connectivity.rs:49
 msgid "Test Connection"
 msgstr "测试连接"
 
-#: src/settings_window/connectivity.rs:41
+#: src/settings_window/connectivity.rs:52
 msgid "Save and Connect"
 msgstr "保存并连接"
 
-#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "打开媒体库"
 
-#: src/settings_window/connectivity.rs:89
+#: src/settings_window/connectivity.rs:101
 msgid "API Key"
 msgstr "API 密钥"
 
-#: src/settings_window/connectivity.rs:137
+#: src/settings_window/connectivity.rs:120
+msgid "Custom Proxy Headers"
+msgstr "自定义代理请求头"
+
+#: src/settings_window/connectivity.rs:136
+msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
+msgstr "用于反向代理的选填 HTTP 请求头（例如 Cloudflare Access）"
+
+#: src/settings_window/connectivity.rs:139
+msgid "1 header configured"
+msgstr "已配置 1 个请求头"
+
+#: src/settings_window/connectivity.rs:141
+msgid "headers configured"
+msgstr "个请求头已配置"
+
+#: src/settings_window/connectivity.rs:191
+msgid "Remove header"
+msgstr "移除请求头"
+
+#: src/settings_window/connectivity.rs:218
+msgid "Add Header…"
+msgstr "添加请求头…"
+
+#: src/settings_window/connectivity.rs:241
+msgid "Paste from clipboard"
+msgstr "从剪贴板粘贴"
+
+#: src/settings_window/connectivity.rs:278
+msgid "Header Name"
+msgstr "请求头名称"
+
+#: src/settings_window/connectivity.rs:286
+msgid "Secret / Value"
+msgstr "密钥 / 值"
+
+#: src/settings_window/connectivity.rs:300
+msgid "Scope"
+msgstr "范围"
+
+#: src/settings_window/connectivity.rs:337
+msgid "Add Custom Header"
+msgstr "添加自定义请求头"
+
+#: src/settings_window/connectivity.rs:407
 msgid "LAN URL"
 msgstr "局域网 (LAN) URL"
 
-#: src/settings_window/connectivity.rs:138
+#: src/settings_window/connectivity.rs:408
 msgid "WAN URL"
 msgstr "广域网 (WAN) URL"
 
-#: src/settings_window/form.rs:127
+#: src/settings_window/form.rs:133
 msgid "Invalid Internal URL"
 msgstr "内部 URL 无效"
 
-#: src/settings_window/form.rs:132
+#: src/settings_window/form.rs:138
 msgid "Invalid External URL"
 msgstr "外部 URL 无效"
 
@@ -5801,7 +5905,9 @@ msgstr "完整 RAW 解码"
 msgid ""
 "Uses the sensor data, not the embedded preview, with every colour the camera "
 "recorded. Slower, and uses more memory."
-msgstr "使用传感器数据而非内嵌预览图，还原相机记录的全部色彩。速度较慢且占用更多内存。"
+msgstr ""
+"使用传感器数据而非内嵌预览图，还原相机记录的全部色彩。速度较慢且占用更多内"
+"存。"
 
 #: src/settings_window/library.rs:172
 msgid "Keep Decoded RAW Files"
@@ -5877,27 +5983,43 @@ msgstr ""
 "\n"
 "详情参见：{url}"
 
-#: src/settings_window/mod.rs:141
+#: src/settings_window/mod.rs:142
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so custom proxy "
+"headers were stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"设置已保存，但系统密钥环不可用，因此自定义代理请求头已存储在 {path}。\n"
+"\n"
+"该文件仅可由您的用户账户读取，但未加密。\n"
+"\n"
+"详情参见：{url}"
+
+#: src/settings_window/mod.rs:156
 msgid "No successful sync yet"
 msgstr "尚无成功的同步记录"
 
-#: src/settings_window/mod.rs:151
+#: src/settings_window/mod.rs:166
 msgid "Less than a minute ago"
 msgstr "不到 1 分钟前"
 
-#: src/settings_window/mod.rs:157
+#: src/settings_window/mod.rs:172
 #, rust-format
 msgid "{n} minute ago"
 msgid_plural "{n} minutes ago"
 msgstr[0] "{n} 分钟前"
 
-#: src/settings_window/mod.rs:161
+#: src/settings_window/mod.rs:176
 #, rust-format
 msgid "{n} hour ago"
 msgid_plural "{n} hours ago"
 msgstr[0] "{n} 小时前"
 
-#: src/settings_window/mod.rs:164
+#: src/settings_window/mod.rs:179
 #, rust-format
 msgid "{n} day ago"
 msgid_plural "{n} days ago"
@@ -5968,7 +6090,7 @@ msgid "Sync Now"
 msgstr "立即同步"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
 msgid "Pause"
 msgstr "暂停"
 
@@ -5984,8 +6106,8 @@ msgstr "需要关注"
 msgid "Failed uploads"
 msgstr "上传失败项"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
-#: src/settings_window/wiring.rs:368
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
+#: src/settings_window/wiring.rs:375
 msgid "Resume"
 msgstr "恢复"
 
@@ -6188,7 +6310,7 @@ msgstr "仅限这些类型，例如 jpg, png, mp4（留空表示全部）"
 msgid "Status"
 msgstr "状态"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "退出 Mimick"
 
@@ -6248,19 +6370,19 @@ msgstr "{name} 无法连接"
 msgid "Couldn't reach Immich at either address"
 msgstr "无法通过任一地址访问 Immich"
 
-#: src/settings_window/wiring.rs:252
+#: src/settings_window/wiring.rs:255
 msgid "Testing…"
 msgstr "正在测试…"
 
-#: src/settings_window/wiring.rs:366
+#: src/settings_window/wiring.rs:373
 msgid "Paused by you"
 msgstr "已由您暂停"
 
-#: src/settings_window/wiring.rs:425
+#: src/settings_window/wiring.rs:432
 msgid "Invalid Selection"
 msgstr "选择无效"
 
-#: src/settings_window/wiring.rs:426
+#: src/settings_window/wiring.rs:433
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "必须启用至少一个 URL（内部或外部）。"
 
@@ -6346,7 +6468,7 @@ msgid ""
 "Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
 msgstr "照片;图片;视频;同步;备份;上传;Immich;相册;图库;自建;自托管;"
 
-#: setup/dev.nicx.mimick.desktop:25
+#: setup/dev.nicx.mimick.desktop:24
 msgid "Upload with Mimick"
 msgstr "使用 Mimick 上传"
 
@@ -6359,43 +6481,55 @@ msgid ""
 "Mimick is a native Linux desktop client for self-hosted Immich servers. It "
 "monitors your folders in the background and automatically syncs photos and "
 "videos to your server."
-msgstr "Mimick 是一款适用于自建 Immich 服务器的原生 Linux 桌面客户端。它在后台监控您的文件夹，并自动将照片和视频同步到您的服务器。"
+msgstr ""
+"Mimick 是一款适用于自建 Immich 服务器的原生 Linux 桌面客户端。它在后台监控您"
+"的文件夹，并自动将照片和视频同步到您的服务器。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
 msgid ""
 "Per-folder sync methods: upload only, download only, or full bidirectional "
 "sync with optional deletion mirroring."
-msgstr "支持针对每个文件夹配置同步方式：仅上传、仅下载或完整的双向同步（支持可选的删除镜像）。"
+msgstr ""
+"支持针对每个文件夹配置同步方式：仅上传、仅下载或完整的双向同步（支持可选的删"
+"除镜像）。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
 msgid ""
 "Built-in Library View for browsing your timeline, managing albums, and "
 "searching with Smart Search, OCR, and metadata filters."
-msgstr "内置媒体库视图，可浏览时间线、管理相册，并通过智能搜索、OCR 和元数据筛选器进行搜索。"
+msgstr ""
+"内置媒体库视图，可浏览时间线、管理相册，并通过智能搜索、OCR 和元数据筛选器进"
+"行搜索。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
 msgid ""
 "SHA-1 deduplication, parallel upload workers, and offline retry queue for "
 "reliable transfers."
-msgstr "具备 SHA-1 重复数据删除、并行上传工作线程和离线重试队列，确保传输可靠稳定。"
+msgstr ""
+"具备 SHA-1 重复数据删除、并行上传工作线程和离线重试队列，确保传输可靠稳定。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
 msgid ""
 "Environment-aware: automatically pauses on battery or metered connections. "
 "Configurable quiet hours and per-folder rules."
-msgstr "环境感知：使用电池或按流量计费的连接时自动暂停。支持可配置的免打扰时段和针对每个文件夹的规则。"
+msgstr ""
+"环境感知：使用电池或按流量计费的连接时自动暂停。支持可配置的免打扰时段和针对"
+"每个文件夹的规则。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
 msgid ""
 "Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
 "sandbox support."
-msgstr "使用 Rust 语言、GTK4 和 Libadwaita 构建。支持系统托盘集成与 Flatpak 沙盒环境。"
+msgstr ""
+"使用 Rust 语言、GTK4 和 Libadwaita 构建。支持系统托盘集成与 Flatpak 沙盒环"
+"境。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
 msgid ""
 "Mimick is a community-developed client and is not affiliated with or "
 "endorsed by the Immich project."
-msgstr "Mimick 是一款由社区开发的客户端，与 Immich 项目无附属关系，亦未获得其背书。"
+msgstr ""
+"Mimick 是一款由社区开发的客户端，与 Immich 项目无附属关系，亦未获得其背书。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
 msgid "Library View - Photos page with sidebar"
@@ -6428,4 +6562,3 @@ msgstr "设置 - 服务器连接与监控文件夹"
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
 msgid "Status page with sync health dashboard"
 msgstr "带有同步健康状况仪表盘的状态页面"
-

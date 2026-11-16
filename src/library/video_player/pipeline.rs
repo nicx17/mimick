@@ -9,7 +9,7 @@ use parking_lot::Mutex;
 pub(super) fn build_play(
     volume: f64,
     muted: bool,
-    api_key: Arc<Mutex<Option<String>>>,
+    headers: Arc<Mutex<Vec<(String, String)>>>,
 ) -> Result<(gst_play::Play, gtk::gdk::Paintable), String> {
     let (sink, paintable) = video_sink()?;
     let play = gst_play::Play::new(None::<gst_play::PlayVideoRenderer>);
@@ -22,7 +22,7 @@ pub(super) fn build_play(
     if let Ok(tempo) = gst::ElementFactory::make("scaletempo").build() {
         pipeline.set_property("audio-filter", &tempo);
     }
-    connect_api_key_header(&pipeline, api_key);
+    connect_headers(&pipeline, headers);
     play.set_volume(volume);
     play.set_mute(muted);
     Ok((play, paintable))
@@ -58,14 +58,16 @@ fn video_sink() -> Result<(gst::Element, gtk::gdk::Paintable), String> {
     Ok((gl_sink, paintable))
 }
 
-fn connect_api_key_header(pipeline: &gst::Element, api_key: Arc<Mutex<Option<String>>>) {
+fn connect_headers(pipeline: &gst::Element, headers_store: Arc<Mutex<Vec<(String, String)>>>) {
     pipeline.connect("source-setup", false, move |args| {
         let source = args[1].get::<gst::Element>().ok()?;
-        let key = api_key.lock().clone()?;
-        if source.has_property("extra-headers") {
-            let headers = gst::Structure::builder("extra-headers")
-                .field("x-api-key", key)
-                .build();
+        let pairs = headers_store.lock().clone();
+        if source.has_property("extra-headers") && !pairs.is_empty() {
+            let mut builder = gst::Structure::builder("extra-headers");
+            for (name, val) in pairs {
+                builder = builder.field(&name, val);
+            }
+            let headers = builder.build();
             source.set_property("extra-headers", headers);
         }
         None

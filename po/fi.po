@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
-"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
-"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 11:39+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
@@ -39,13 +39,14 @@ msgstr "Albumiluettelo ei ole saatavilla"
 
 #: src/api_client/albums.rs:71
 msgid "Reconnect to the Immich server before refreshing albums."
-msgstr "Muodosta yhteys Immich-palvelimeen uudelleen ennen albumien päivittämistä."
+msgstr ""
+"Muodosta yhteys Immich-palvelimeen uudelleen ennen albumien päivittämistä."
 
-#: src/api_client/albums.rs:180
+#: src/api_client/albums.rs:177
 msgid "Failed to fetch albums"
 msgstr "Albumien noutaminen epäonnistui"
 
-#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
 msgid "Cannot fetch albums to verify existence"
 msgstr "Albumeja ei voi noutaa olemassaolon tarkistamiseksi"
 
@@ -54,9 +55,11 @@ msgstr "Albumeja ei voi noutaa olemassaolon tarkistamiseksi"
 msgid ""
 "The server responded with HTTP {status}. Check the server logs and retry "
 "after confirming the current configuration."
-msgstr "Palvelin vastasi HTTP-tilakoodilla {status}. Tarkista palvelimen lokit ja yritä uudelleen nykyisen määrityksen vahvistamisen jälkeen."
+msgstr ""
+"Palvelin vastasi HTTP-tilakoodilla {status}. Tarkista palvelimen lokit ja "
+"yritä uudelleen nykyisen määrityksen vahvistamisen jälkeen."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
 msgid "Immich rejected the API key"
 msgstr "Immich hylkäsi API-avaimen"
 
@@ -64,7 +67,9 @@ msgstr "Immich hylkäsi API-avaimen"
 msgid ""
 "Update the API key in Settings and confirm it still has the required Asset "
 "and Album permissions (see README for the full list)."
-msgstr "Päivitä API-avain asetuksissa ja varmista, että sillä on edelleen vaaditut kohde- ja albumioikeudet (katso koko luettelo README-tiedostosta)."
+msgstr ""
+"Päivitä API-avain asetuksissa ja varmista, että sillä on edelleen vaaditut "
+"kohde- ja albumioikeudet (katso koko luettelo README-tiedostosta)."
 
 #: src/api_client/errors.rs:54
 msgid "An album reference is no longer valid"
@@ -72,9 +77,10 @@ msgstr "Albumin viite ei ole enää kelvollinen"
 
 #: src/api_client/errors.rs:55
 msgid "Refresh the album list or choose a different album before retrying."
-msgstr "Päivitä albumiluettelo tai valitse toinen albumi ennen kuin yrität uudelleen."
+msgstr ""
+"Päivitä albumiluettelo tai valitse toinen albumi ennen kuin yrität uudelleen."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
 msgid "Immich rejected a file as too large"
 msgstr "Immich hylkäsi tiedoston liian suurena"
 
@@ -82,7 +88,9 @@ msgstr "Immich hylkäsi tiedoston liian suurena"
 msgid ""
 "Reduce the file size, raise the server upload limit, or skip oversized files "
 "with folder rules."
-msgstr "Pienennä tiedostokokoa, korota palvelimen lähetysrajoitusta tai ohita liian suuret tiedostot kansiosäännöillä."
+msgstr ""
+"Pienennä tiedostokokoa, korota palvelimen lähetysrajoitusta tai ohita liian "
+"suuret tiedostot kansiosäännöillä."
 
 #: src/api_client/errors.rs:65
 msgid "Immich rate-limited the request"
@@ -92,9 +100,12 @@ msgstr "Immich rajoitti pyyntönopeutta"
 msgid ""
 "Wait a moment and retry. If this happens often, lower upload concurrency or "
 "check reverse proxy limits."
-msgstr "Odota hetki ja yritä uudelleen. Jos tämä toistuu usein, vähennä samanaikaisten lähetysten määrää tai tarkista käänteisvälityspalvelimen rajoitukset."
+msgstr ""
+"Odota hetki ja yritä uudelleen. Jos tämä toistuu usein, vähennä "
+"samanaikaisten lähetysten määrää tai tarkista käänteisvälityspalvelimen "
+"rajoitukset."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
 msgid "Immich is temporarily unavailable"
 msgstr "Immich ei ole tilapäisesti saatavilla"
 
@@ -102,7 +113,9 @@ msgstr "Immich ei ole tilapäisesti saatavilla"
 msgid ""
 "Wait a moment and retry. If it keeps happening, inspect the server and "
 "reverse proxy logs."
-msgstr "Odota hetki ja yritä uudelleen. Jos ongelma toistuu, tarkista palvelimen ja käänteisvälityspalvelimen lokit."
+msgstr ""
+"Odota hetki ja yritä uudelleen. Jos ongelma toistuu, tarkista palvelimen ja "
+"käänteisvälityspalvelimen lokit."
 
 #: src/api_client/errors.rs:88
 msgid "the upload"
@@ -166,9 +179,10 @@ msgstr "Immich-pyyntö aikakatkaistiin"
 
 #: src/api_client/errors.rs:122
 msgid "Check network quality and server responsiveness, then retry."
-msgstr "Tarkista verkon laatu ja palvelimen vasteaika, ja yritä sitten uudelleen."
+msgstr ""
+"Tarkista verkon laatu ja palvelimen vasteaika, ja yritä sitten uudelleen."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
 msgid "Could not reach the Immich server"
 msgstr "Immich-palvelimeen ei saatu yhteyttä"
 
@@ -176,12 +190,15 @@ msgstr "Immich-palvelimeen ei saatu yhteyttä"
 msgid ""
 "Check the configured URLs, your network connection, and whether the server "
 "is online."
-msgstr "Tarkista määritetyt URL-osoitteet, verkkoyhteys ja se, onko palvelin verkossa."
+msgstr ""
+"Tarkista määritetyt URL-osoitteet, verkkoyhteys ja se, onko palvelin "
+"verkossa."
 
 #: src/api_client/errors.rs:135
 msgid ""
 "Retry the request after checking network connectivity and server health."
-msgstr "Yritä pyyntöä uudelleen tarkistettuasi verkkoyhteyden ja palvelimen tilan."
+msgstr ""
+"Yritä pyyntöä uudelleen tarkistettuasi verkkoyhteyden ja palvelimen tilan."
 
 #: src/api_client/errors.rs:144
 msgid "The upload request failed before completion"
@@ -227,20 +244,21 @@ msgstr "Kirjastotilastojen pyyntö epäonnistui ennen valmistumistaan"
 msgid "The server version request failed before completion"
 msgstr "Palvelinversion pyyntö epäonnistui ennen valmistumistaan"
 
-#: src/api_client/mod.rs:387
+#: src/api_client/mod.rs:526
 msgid "No active connection"
 msgstr "Ei aktiivista yhteyttä"
 
-#: src/api_client/search.rs:358
+#: src/api_client/search.rs:342
 msgid "Immich can't count by file name or deleted photos"
-msgstr "Immich ei voi laskea tiedostonimen tai poistettujen valokuvien perusteella"
+msgstr ""
+"Immich ei voi laskea tiedostonimen tai poistettujen valokuvien perusteella"
 
-#: src/api_client/tags.rs:76
+#: src/api_client/tags.rs:72
 #, rust-format
 msgid "Immich did not return the tag \"{value}\""
 msgstr "Immich ei palauttanut tunnistetta ”{value}”"
 
-#: src/api_client/tags.rs:87
+#: src/api_client/tags.rs:83
 msgid "Renaming tags needs a newer version of Immich."
 msgstr "Tunnisteiden nimeäminen uudelleen vaatii uudemman Immich-version."
 
@@ -249,62 +267,76 @@ msgstr "Tunnisteiden nimeäminen uudelleen vaatii uudemman Immich-version."
 msgid "Invalid month {month}"
 msgstr "Virheellinen kuukausi {month}"
 
-#: src/api_client/upload.rs:301
+#: src/api_client/upload.rs:316
 msgid "A queued file is no longer available"
 msgstr "Jonossa oleva tiedosto ei ole enää saatavilla"
 
-#: src/api_client/upload.rs:303
+#: src/api_client/upload.rs:318
 msgid "Mimick could not read a queued file"
 msgstr "Mimick ei voinut lukea jonossa olevaa tiedostoa"
 
-#: src/api_client/upload.rs:306
+#: src/api_client/upload.rs:321
 msgid ""
 "Check that the watched folder still exists and that the file was not moved "
 "or deleted before upload."
-msgstr "Varmista, että valvottu kansio on edelleen olemassa ja että tiedostoa ei siirretty tai poistettu ennen lähetystä."
-
-#: src/api_client/upload.rs:308
-msgid ""
-"Verify folder permissions and make sure the file is still accessible to the "
-"app."
-msgstr "Tarkista kansion käyttöoikeudet ja varmista, että sovellus pääsee edelleen tiedostoon käsiksi."
-
-#: src/api_client/upload.rs:322
-msgid "Mimick could not open a queued file"
-msgstr "Mimick ei voinut avata jonossa olevaa tiedostoa"
+msgstr ""
+"Varmista, että valvottu kansio on edelleen olemassa ja että tiedostoa ei "
+"siirretty tai poistettu ennen lähetystä."
 
 #: src/api_client/upload.rs:323
 msgid ""
-"The file may be locked, deleted, or outside the app's allowed folder access."
-msgstr "Tiedosto saattaa olla lukittu, poistettu tai sovelluksen sallitun kansiopääsyn ulkopuolella."
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr ""
+"Tarkista kansion käyttöoikeudet ja varmista, että sovellus pääsee edelleen "
+"tiedostoon käsiksi."
 
-#: src/api_client/upload.rs:336
+#: src/api_client/upload.rs:337
+msgid "Mimick could not open a queued file"
+msgstr "Mimick ei voinut avata jonossa olevaa tiedostoa"
+
+#: src/api_client/upload.rs:338
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr ""
+"Tiedosto saattaa olla lukittu, poistettu tai sovelluksen sallitun "
+"kansiopääsyn ulkopuolella."
+
+#: src/api_client/upload.rs:351
 msgid "No active server connection"
 msgstr "Ei aktiivista palvelinyhteyttä"
 
-#: src/api_client/upload.rs:337
+#: src/api_client/upload.rs:352
 msgid ""
 "Test the server connection in Settings and confirm at least one Immich URL "
 "is reachable."
-msgstr "Testaa palvelinyhteyttä asetuksissa ja varmista, että vähintään yksi Immichin URL-osoite on tavoitettavissa."
+msgstr ""
+"Testaa palvelinyhteyttä asetuksissa ja varmista, että vähintään yksi "
+"Immichin URL-osoite on tavoitettavissa."
 
-#: src/api_client/upload.rs:393
+#: src/api_client/upload.rs:405
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
-msgstr "Pienennä tiedostokokoa, korota palvelimen lähetysrajoituksia tai ohita liian suuret tiedostot kansiosäännöllä."
+msgstr ""
+"Pienennä tiedostokokoa, korota palvelimen lähetysrajoituksia tai ohita liian "
+"suuret tiedostot kansiosäännöllä."
 
-#: src/api_client/upload.rs:410
+#: src/api_client/upload.rs:422
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
-msgstr "Odota hetki ja yritä uudelleen. Jos ongelma toistuu, tarkista palvelimen ja käänteisvälityspalvelimen lokit."
+msgstr ""
+"Odota hetki ja yritä uudelleen. Jos ongelma toistuu, tarkista palvelimen ja "
+"käänteisvälityspalvelimen lokit."
 
 #: src/autostart.rs:50
 msgid ""
 "Reason for requesting background access: Mimick must run in the background "
 "to automatically sync media to Immich."
-msgstr "Syy taustakäyttöoikeuden pyytämiseen: Mimickin on toimittava taustalla, jotta se voi automaattisesti synkronoida median Immichiin."
+msgstr ""
+"Syy taustakäyttöoikeuden pyytämiseen: Mimickin on toimittava taustalla, "
+"jotta se voi automaattisesti synkronoida median Immichiin."
 
 #: src/autostart.rs:57
 #, rust-format
@@ -334,6 +366,30 @@ msgstr "Automaattikäynnistystietueen poistaminen epäonnistui: {err}"
 #: src/autostart.rs:126 src/autostart.rs:133
 msgid "Could not locate the user config directory."
 msgstr "Käyttäjän asetushakemistoa ei löytynyt."
+
+#: src/config/headers.rs:23
+msgid "WAN only (External)"
+msgstr "Vain laajaverkko (ulkoinen)"
+
+#: src/config/headers.rs:24
+msgid "All (LAN & WAN)"
+msgstr "Kaikki (lähi- ja laajaverkko)"
+
+#: src/config/headers.rs:25
+msgid "LAN only (Internal)"
+msgstr "Vain lähiverkko (sisäinen)"
+
+#: src/config/headers.rs:32
+msgid "WAN"
+msgstr "WAN"
+
+#: src/config/headers.rs:33
+msgid "ALL"
+msgstr "KAIKKI"
+
+#: src/config/headers.rs:34
+msgid "LAN"
+msgstr "LAN"
 
 #: src/library/about_dialog.rs:40
 msgid "Repository"
@@ -384,7 +440,8 @@ msgid ""
 "\n"
 "{err}"
 msgstr ""
-"API-avaimesi tarvitsee käyttöoikeudet 'server.about' ja 'server.versionCheck'.\n"
+"API-avaimesi tarvitsee käyttöoikeudet 'server.about' ja "
+"'server.versionCheck'.\n"
 "\n"
 "{err}"
 
@@ -395,7 +452,8 @@ msgstr "Tili"
 #: src/library/account.rs:66
 #, rust-format
 msgid "Couldn't load this. Your API key needs the “{permission}” permission."
-msgstr "Tätä ei voitu ladata. API-avaimesi tarvitsee käyttöoikeuden ”{permission}”."
+msgstr ""
+"Tätä ei voitu ladata. API-avaimesi tarvitsee käyttöoikeuden ”{permission}”."
 
 #: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
 #: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
@@ -406,6 +464,7 @@ msgstr "Tätä ei voitu ladata. API-avaimesi tarvitsee käyttöoikeuden ”{perm
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/connectivity.rs:305
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Peru"
@@ -434,7 +493,9 @@ msgstr "Sisäänkirjautuneet laitteet"
 msgid ""
 "Browsers and apps signed in to your account. Mimick uses an API key, so it "
 "isn't listed."
-msgstr "Tiliisi sisäänkirjautuneet selaimet ja sovellukset. Mimick käyttää API-avainta, joten sitä ei ole luettelossa."
+msgstr ""
+"Tiliisi sisäänkirjautuneet selaimet ja sovellukset. Mimick käyttää API-"
+"avainta, joten sitä ei ole luettelossa."
 
 #: src/library/account/devices.rs:28
 msgid "Devices"
@@ -535,7 +596,9 @@ msgstr "Haetaanko tälle avaimelle uusi salaisuus?"
 msgid ""
 "Mimick saves the new secret and keeps working. Anything else using this key "
 "stops working until you give it the new secret."
-msgstr "Mimick tallentaa uuden salaisuuden ja jatkaa toimintaansa. Kaikki muu tätä avainta käyttävä lakkaa toimimasta, kunnes annat sille uuden salaisuuden."
+msgstr ""
+"Mimick tallentaa uuden salaisuuden ja jatkaa toimintaansa. Kaikki muu tätä "
+"avainta käyttävä lakkaa toimimasta, kunnes annat sille uuden salaisuuden."
 
 #: src/library/account/keys.rs:159
 msgid "Rotate"
@@ -562,7 +625,8 @@ msgid ""
 "\n"
 "{secret}"
 msgstr ""
-"Mimick käyttää sitä nyt, mutta ei voinut tallentaa sitä ({err}). Liitä se asetuksiin, jotta se säilyy:\n"
+"Mimick käyttää sitä nyt, mutta ei voinut tallentaa sitä ({err}). Liitä se "
+"asetuksiin, jotta se säilyy:\n"
 "\n"
 "{secret}"
 
@@ -628,7 +692,9 @@ msgstr "Tiliäsi ei voitu ladata: {err}"
 
 #: src/library/account/profile.rs:152
 msgid "To use one of your photos, choose Set as Profile Picture in its menu."
-msgstr "Jos haluat käyttää jotakin valokuvistasi, valitse sen valikosta ”Aseta profiilikuvaksi”."
+msgstr ""
+"Jos haluat käyttää jotakin valokuvistasi, valitse sen valikosta ”Aseta "
+"profiilikuvaksi”."
 
 #: src/library/account/profile.rs:163
 msgid "Images"
@@ -698,13 +764,17 @@ msgstr "Valokuvat eivät ole omiasi"
 msgid ""
 "Only the owner can change where a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "Vain omistaja voi muuttaa valokuvan ottopaikkaa, ja valitut valokuvat kuuluvat muille."
+msgstr ""
+"Vain omistaja voi muuttaa valokuvan ottopaikkaa, ja valitut valokuvat "
+"kuuluvat muille."
 
 #: src/library/actions.rs:352
 msgid ""
 "Only the owner can change when a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "Vain omistaja voi muuttaa valokuvan ottoaikaa, ja valitut valokuvat kuuluvat muille."
+msgstr ""
+"Vain omistaja voi muuttaa valokuvan ottoaikaa, ja valitut valokuvat kuuluvat "
+"muille."
 
 #: src/library/actions/trash.rs:60
 #, rust-format
@@ -890,7 +960,9 @@ msgstr "Albumista poistuminen epäonnistui"
 msgid ""
 "Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
 "they don't create it again."
-msgstr "Mimick lähettää vielä. Poista ”{album_name}”, kun lähetykset valmistuvat, jotta sitä ei luoda uudelleen."
+msgstr ""
+"Mimick lähettää vielä. Poista ”{album_name}”, kun lähetykset valmistuvat, "
+"jotta sitä ei luoda uudelleen."
 
 #: src/library/album_delete.rs:29
 msgid "Uploads in Progress"
@@ -904,7 +976,10 @@ msgstr "Sulje asetukset ensin"
 msgid ""
 "Deleting this album changes your watch folders, and saving the open Settings "
 "window would undo that. Close Settings, then delete the album."
-msgstr "Tämän albumin poistaminen muuttaa valvottuja kansioitasi, ja avoimen asetusikkunan tallentaminen kumoaisi sen. Sulje asetukset ja poista albumi sitten."
+msgstr ""
+"Tämän albumin poistaminen muuttaa valvottuja kansioitasi, ja avoimen "
+"asetusikkunan tallentaminen kumoaisi sen. Sulje asetukset ja poista albumi "
+"sitten."
 
 #: src/library/album_delete.rs:45
 msgid "Its photos stay in your library."
@@ -919,7 +994,8 @@ msgstr "Se poistetaan myös siltä henkilöltä, jonka kanssa se on jaettu."
 msgid "It's also removed for the {n} person it's shared with."
 msgid_plural "It's also removed for the {n} people it's shared with."
 msgstr[0] "Se poistetaan myös siltä {n} henkilöltä, jonka kanssa se on jaettu."
-msgstr[1] "Se poistetaan myös niiltä {n} henkilöltä, joiden kanssa se on jaettu."
+msgstr[1] ""
+"Se poistetaan myös niiltä {n} henkilöltä, joiden kanssa se on jaettu."
 
 #: src/library/album_delete.rs:61
 msgid "Its shared links stop working."
@@ -950,7 +1026,9 @@ msgstr "Lopeta näiden kansioiden valvonta"
 msgid ""
 "So the album doesn't come back, photos in these folders go to your library "
 "instead of an album named after the folder:"
-msgstr "Jotta albumi ei palaa takaisin, näiden kansioiden valokuvat menevät kirjastoosi kansion mukaan nimetyn albumin sijaan:"
+msgstr ""
+"Jotta albumi ei palaa takaisin, näiden kansioiden valokuvat menevät "
+"kirjastoosi kansion mukaan nimetyn albumin sijaan:"
 
 #: src/library/album_delete.rs:221
 msgid "Could Not Delete Album"
@@ -1102,8 +1180,12 @@ msgid ""
 "Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
 msgid_plural ""
 "Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
-msgstr[0] "Jo synkronoitu. ({n} etäkohdetta ei voitu täsmäyttää — puuttuva tarkistussumma.)"
-msgstr[1] "Jo synkronoitu. ({n} etäkohdetta ei voitu täsmäyttää — puuttuva tarkistussumma.)"
+msgstr[0] ""
+"Jo synkronoitu. ({n} etäkohdetta ei voitu täsmäyttää — puuttuva "
+"tarkistussumma.)"
+msgstr[1] ""
+"Jo synkronoitu. ({n} etäkohdetta ei voitu täsmäyttää — puuttuva "
+"tarkistussumma.)"
 
 #: src/library/album_link.rs:299
 msgid "Already in sync."
@@ -1303,6 +1385,7 @@ msgid "Could Not Remove Person"
 msgstr "Henkilöä ei voitu poistaa"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+#: src/settings_window/connectivity.rs:307
 msgid "Add"
 msgstr "Lisää"
 
@@ -1734,7 +1817,10 @@ msgstr[1] "Kopioitu {n} valokuvaa"
 msgid ""
 "Pasting into an album here adds all {count}. Only {local} are on this "
 "computer, so other apps such as Files paste those; use Download for the rest."
-msgstr "Liittäminen albumiin tässä lisää kaikki {count}. Vain {local} on tällä tietokoneella, joten muut sovellukset kuten Tiedostot liittävät ne; käytä lataustoimintoa muihin."
+msgstr ""
+"Liittäminen albumiin tässä lisää kaikki {count}. Vain {local} on tällä "
+"tietokoneella, joten muut sovellukset kuten Tiedostot liittävät ne; käytä "
+"lataustoimintoa muihin."
 
 #: src/library/clipboard.rs:162
 msgid "Paste in Photos or albums"
@@ -1854,7 +1940,10 @@ msgid ""
 "Your API key is missing permissions required for the Library view. Please "
 "ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
 "'person.read' enabled."
-msgstr "API-avaimeltasi puuttuu kirjastonäkymän vaatimia käyttöoikeuksia. Varmista, että avaimella on käytössä 'asset.read', 'asset.view', 'asset.download' ja 'person.read'."
+msgstr ""
+"API-avaimeltasi puuttuu kirjastonäkymän vaatimia käyttöoikeuksia. Varmista, "
+"että avaimella on käytössä 'asset.read', 'asset.view', 'asset.download' ja "
+"'person.read'."
 
 #: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
 #: src/library/shortcuts_dialog.rs:179
@@ -2108,11 +2197,14 @@ msgstr "Ei kaksoiskappaleita"
 msgid ""
 "Immich hasn't found any duplicate photos. It looks for them when its "
 "duplicate detection job runs."
-msgstr "Immich ei ole löytänyt kaksoiskappaleita. Se etsii niitä, kun kaksoiskappaleiden tunnistustyö suoritetaan."
+msgstr ""
+"Immich ei ole löytänyt kaksoiskappaleita. Se etsii niitä, kun "
+"kaksoiskappaleiden tunnistustyö suoritetaan."
 
 #: src/library/duplicates_view.rs:123
 msgid "Tap a photo to keep it or trash it."
-msgstr "Napsauta valokuvaa säilyttääksesi sen tai siirtääksesi sen roskakoriin."
+msgstr ""
+"Napsauta valokuvaa säilyttääksesi sen tai siirtääksesi sen roskakoriin."
 
 #: src/library/duplicates_view.rs:212
 msgid "Could Not Load Duplicates"
@@ -2160,7 +2252,8 @@ msgstr[1] "Poistetaanko {n} valokuvaa pysyvästi?"
 
 #: src/library/duplicates_view.rs:333
 msgid "Trash is turned off on this server, so this can't be undone."
-msgstr "Roskakori on poistettu käytöstä tällä palvelimella, joten tätä ei voi kumota."
+msgstr ""
+"Roskakori on poistettu käytöstä tällä palvelimella, joten tätä ei voi kumota."
 
 #: src/library/duplicates_view.rs:352
 #, rust-format
@@ -2598,7 +2691,9 @@ msgstr "Voimakkuus"
 
 #: src/library/lightbox/edit/pages.rs:125
 msgid "Drag over what to hide. Tap a box to move, resize, or change it."
-msgstr "Vedä piilotettavan alueen yli. Siirrä, muuta kokoa tai muokkaa ruutua napauttamalla sitä."
+msgstr ""
+"Vedä piilotettavan alueen yli. Siirrä, muuta kokoa tai muokkaa ruutua "
+"napauttamalla sitä."
 
 #: src/library/lightbox/edit/pages.rs:135
 msgid "Hide Faces"
@@ -2657,7 +2752,10 @@ msgstr "Säilytä alkuperäiset tiedot"
 msgid ""
 "A saved copy keeps the original's camera details, date, place, caption, "
 "rating, and albums. Off, the copy is a new photo of its own."
-msgstr "Tallennettu kopio säilyttää alkuperäisen kameratiedot, päivämäärän, paikan, kuvatekstin, arvosanan ja albumit. Pois päältä ollessa kopio on täysin oma uusi valokuvansa."
+msgstr ""
+"Tallennettu kopio säilyttää alkuperäisen kameratiedot, päivämäärän, paikan, "
+"kuvatekstin, arvosanan ja albumit. Pois päältä ollessa kopio on täysin oma "
+"uusi valokuvansa."
 
 #: src/library/lightbox/edit/panel.rs:176
 msgid "Stack with Original"
@@ -2665,7 +2763,8 @@ msgstr "Pinoa alkuperäisen kanssa"
 
 #: src/library/lightbox/edit/panel.rs:177
 msgid "A saved copy becomes the cover of a stack, with the original under it."
-msgstr "Tallennetusta kopiosta tulee pinon kansi, ja alkuperäinen jää sen alle."
+msgstr ""
+"Tallennetusta kopiosta tulee pinon kansi, ja alkuperäinen jää sen alle."
 
 #: src/library/lightbox/edit/saving.rs:73
 msgid "Revert to the Original?"
@@ -2812,12 +2911,12 @@ msgstr "Toista liike (Välilyönti)"
 msgid "Playback isn't available"
 msgstr "Toisto ei ole saatavilla"
 
-#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/live.rs:106 src/library/lightbox/video.rs:65
 #: src/library/lightbox/video.rs:108
 msgid "Playback failed"
 msgstr "Toisto epäonnistui"
 
-#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+#: src/library/lightbox/live.rs:107 src/library/lightbox/video.rs:129
 msgid "Not connected to the Immich server."
 msgstr "Ei yhteyttä Immich-palvelimeen."
 
@@ -3163,7 +3262,9 @@ msgstr "Sijaintipalvelu palautti virheellisen sijainnin."
 #, rust-format
 msgid ""
 "Location services are unavailable ({err}). Check that they are turned on."
-msgstr "Sijaintipalvelut eivät ole käytettävissä ({err}). Tarkista, että ne ovat päällä."
+msgstr ""
+"Sijaintipalvelut eivät ole käytettävissä ({err}). Tarkista, että ne ovat "
+"päällä."
 
 #: src/library/map/location_dialog.rs:118
 #: src/library/map/location_dialog.rs:127
@@ -3344,7 +3445,8 @@ msgstr "Ei valokuvia, joissa on sijainti"
 
 #: src/library/map/status.rs:32
 msgid "Photos with GPS data, or a location you set, appear here"
-msgstr "Valokuvat, joissa on GPS-tietoja tai määrittämäsi sijainti, näkyvät täällä"
+msgstr ""
+"Valokuvat, joissa on GPS-tietoja tai määrittämäsi sijainti, näkyvät täällä"
 
 #: src/library/map/status.rs:34
 msgid "Could Not Load the Map"
@@ -3410,7 +3512,9 @@ msgstr[1] "{n} tiedostoa"
 msgid ""
 "Your API key is missing permissions required to view thumbnails. Please "
 "ensure the key has 'asset.view' enabled."
-msgstr "API-avaimeltasi puuttuu pikkukuvien katseluun vaadittavia käyttöoikeuksia. Varmista, että avaimella on käytössä 'asset.view'."
+msgstr ""
+"API-avaimeltasi puuttuu pikkukuvien katseluun vaadittavia käyttöoikeuksia. "
+"Varmista, että avaimella on käytössä 'asset.view'."
 
 #: src/library/memories.rs:154
 #, rust-format
@@ -3493,7 +3597,9 @@ msgstr "Ei ihmisiä"
 
 #: src/library/people_view.rs:162
 msgid "People appear here once Immich has recognized faces in your photos."
-msgstr "Ihmiset tulevat näkyviin tänne, kun Immich on tunnistanut kasvoja valokuvissasi."
+msgstr ""
+"Ihmiset tulevat näkyviin tänne, kun Immich on tunnistanut kasvoja "
+"valokuvissasi."
 
 #: src/library/people_view.rs:166
 msgid "No Matches"
@@ -3557,7 +3663,10 @@ msgstr "Yhdistä"
 msgid ""
 "Pick the people who are really {name}. Their faces move to {name} and "
 "they're removed. This can't be undone."
-msgstr "Valitse henkilöt, jotka ovat todellisuudessa {name}. Heidän kasvonsa siirretään henkilölle {name} ja heidät poistetaan. Tätä toimintoa ei voi kumota."
+msgstr ""
+"Valitse henkilöt, jotka ovat todellisuudessa {name}. Heidän kasvonsa "
+"siirretään henkilölle {name} ja heidät poistetaan. Tätä toimintoa ei voi "
+"kumota."
 
 #: src/library/person_merge_dialog.rs:124
 #, rust-format
@@ -3912,7 +4021,10 @@ msgstr "Koko palvelimen laajuiset tilastot vaativat ylläpitäjän oikeudet."
 msgid ""
 "Your API key must include the 'server.about', 'server.versionCheck', "
 "'server.statistics', and 'asset.statistics' permissions to view stats."
-msgstr "API-avaimesi on sisällettävä käyttöoikeudet 'server.about', 'server.versionCheck', 'server.statistics' ja 'asset.statistics' tilastojen katseluun."
+msgstr ""
+"API-avaimesi on sisällettävä käyttöoikeudet 'server.about', "
+"'server.versionCheck', 'server.statistics' ja 'asset.statistics' tilastojen "
+"katseluun."
 
 #: src/library/server_stats_dialog.rs:168
 msgid "Unable to load statistics"
@@ -4022,7 +4134,9 @@ msgstr "Linkin valokuvat"
 msgid ""
 "Tap photos to take them out. To add some, select them in your library and "
 "choose Add to Share Link."
-msgstr "Poista valokuvia napauttamalla niitä. Lisää valokuvia valitsemalla ne kirjastossasi ja valitsemalla ”Lisää jakolinkkiin”."
+msgstr ""
+"Poista valokuvia napauttamalla niitä. Lisää valokuvia valitsemalla ne "
+"kirjastossasi ja valitsemalla ”Lisää jakolinkkiin”."
 
 #: src/library/shared_link_photos.rs:111
 #, rust-format
@@ -4065,7 +4179,9 @@ msgstr "Ei linkkejä, joihin lisätä"
 msgid ""
 "Albums' links always show the whole album. Make a link for some photos with "
 "Create Share Link first."
-msgstr "Albumien linkit näyttävät aina koko albumin. Luo ensin linkki tietyille valokuville valitsemalla ”Luo jakolinkki”."
+msgstr ""
+"Albumien linkit näyttävät aina koko albumin. Luo ensin linkki tietyille "
+"valokuville valitsemalla ”Luo jakolinkki”."
 
 #: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
 #: src/library/shared_link_qr.rs:129
@@ -4200,7 +4316,9 @@ msgstr "Jakaa kanssasi"
 msgid ""
 "People who added you as a partner. Switch one on to see their photos in "
 "Photos."
-msgstr "Ihmiset, jotka ovat lisänneet sinut kumppanikseen. Ota käyttöön nähdäksesi heidän valokuvansa Valokuvat-näkymässä."
+msgstr ""
+"Ihmiset, jotka ovat lisänneet sinut kumppanikseen. Ota käyttöön nähdäksesi "
+"heidän valokuvansa Valokuvat-näkymässä."
 
 #: src/library/sharing_view.rs:94
 msgid "Could Not Load Partners"
@@ -4249,7 +4367,9 @@ msgstr "Ladataan ihmisiä…"
 
 #: src/library/sharing_view.rs:321
 msgid "No other people found. Listing people needs the 'user.read' permission."
-msgstr "Muita ihmisiä ei löytynyt. Ihmisten luetteleminen vaatii käyttöoikeuden 'user.read'."
+msgstr ""
+"Muita ihmisiä ei löytynyt. Ihmisten luetteleminen vaatii käyttöoikeuden "
+"'user.read'."
 
 #: src/library/sharing_view.rs:354
 msgid "Add Partner"
@@ -4264,7 +4384,9 @@ msgstr "Jaetaanko kirjastosi henkilön {name} kanssa?"
 msgid ""
 "They'll be able to see all your photos and videos. You can stop sharing at "
 "any time."
-msgstr "Hän näkee kaikki valokuvasi ja videosi. Voit lopettaa jakamisen milloin tahansa."
+msgstr ""
+"Hän näkee kaikki valokuvasi ja videosi. Voit lopettaa jakamisen milloin "
+"tahansa."
 
 #: src/library/sharing_view.rs:381
 msgid "Share"
@@ -4278,7 +4400,7 @@ msgstr "Kumppania ei voitu lisätä"
 msgid "Show keyboard shortcuts"
 msgstr "Näytä pikanäppäimet"
 
-#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:20
 msgid "Open Settings"
 msgstr "Avaa asetukset"
 
@@ -4386,7 +4508,9 @@ msgstr "Valitse koko päivä"
 #: src/library/shortcuts_dialog.rs:103
 msgid ""
 "The focused photo's day or month; or tap its date heading while selecting"
-msgstr "Kohdistetun valokuvan päivä tai kuukausi; tai napauta sen päivämääräotsikkoa valinnan aikana"
+msgstr ""
+"Kohdistetun valokuvan päivä tai kuukausi; tai napauta sen päivämääräotsikkoa "
+"valinnan aikana"
 
 #: src/library/shortcuts_dialog.rs:106
 msgid "Copy selection"
@@ -4474,7 +4598,8 @@ msgstr "Valitse kaikki tunnistettu teksti"
 
 #: src/library/shortcuts_dialog.rs:153
 msgid "Drag across text to select it; Ctrl-click adds or removes a box"
-msgstr "Valitse teksti vetämällä sen yli; Ctrl-napsautus lisää tai poistaa laatikon"
+msgstr ""
+"Valitse teksti vetämällä sen yli; Ctrl-napsautus lisää tai poistaa laatikon"
 
 #: src/library/shortcuts_dialog.rs:156
 msgid "Copy recognized text"
@@ -4636,12 +4761,12 @@ msgstr "360°-valokuvat"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Yhteys"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Palvelin"
@@ -4898,8 +5023,10 @@ msgstr "Lähetys jonossa"
 msgid "{n} file queued for upload. Progress is visible in the queue inspector."
 msgid_plural ""
 "{n} files queued for upload. Progress is visible in the queue inspector."
-msgstr[0] "{n} tiedosto lisätty lähetysjonoon. Edistyminen näkyy jonotarkastimessa."
-msgstr[1] "{n} tiedostoa lisätty lähetysjonoon. Edistyminen näkyy jonotarkastimessa."
+msgstr[0] ""
+"{n} tiedosto lisätty lähetysjonoon. Edistyminen näkyy jonotarkastimessa."
+msgstr[1] ""
+"{n} tiedostoa lisätty lähetysjonoon. Edistyminen näkyy jonotarkastimessa."
 
 #: src/library/staging_view/album_picker.rs:62
 msgid "Upload Failed"
@@ -4909,8 +5036,11 @@ msgstr "Lähetys epäonnistui"
 #, rust-format
 msgid "{n} file failed to enqueue. Check the logs for details."
 msgid_plural "All {n} files failed to enqueue. Check the logs for details."
-msgstr[0] "{n} tiedoston lisääminen jonoon epäonnistui. Tarkista lisätiedot lokeista."
-msgstr[1] "Kaikkien {n} tiedoston lisääminen jonoon epäonnistui. Tarkista lisätiedot lokeista."
+msgstr[0] ""
+"{n} tiedoston lisääminen jonoon epäonnistui. Tarkista lisätiedot lokeista."
+msgstr[1] ""
+"Kaikkien {n} tiedoston lisääminen jonoon epäonnistui. Tarkista lisätiedot "
+"lokeista."
 
 #: src/library/staging_view/album_picker.rs:74
 msgid "Upload Partially Queued"
@@ -4920,8 +5050,12 @@ msgstr "Lähetys osittain jonossa"
 #, rust-format
 msgid "{n} file queued, {skipped} skipped (hash or path errors)."
 msgid_plural "{n} files queued, {skipped} skipped (hash or path errors)."
-msgstr[0] "{n} tiedosto lisätty jonoon, {skipped} ohitettu (tarkistussumma- tai polkuvirheitä)."
-msgstr[1] "{n} tiedostoa lisätty jonoon, {skipped} ohitettu (tarkistussumma- tai polkuvirheitä)."
+msgstr[0] ""
+"{n} tiedosto lisätty jonoon, {skipped} ohitettu (tarkistussumma- tai "
+"polkuvirheitä)."
+msgstr[1] ""
+"{n} tiedostoa lisätty jonoon, {skipped} ohitettu (tarkistussumma- tai "
+"polkuvirheitä)."
 
 #: src/library/tags_view.rs:38 src/library/tags_view.rs:249
 msgid "New Tag"
@@ -4942,7 +5076,9 @@ msgstr "Ei tunnisteita"
 #: src/library/tags_view.rs:115
 msgid ""
 "Create a tag with New Tag, or tag photos from the lightbox details pane."
-msgstr "Luo tunniste valitsemalla ”Uusi tunniste” tai lisää valokuviin tunnisteita katseluohjelman lisätietoruudusta."
+msgstr ""
+"Luo tunniste valitsemalla ”Uusi tunniste” tai lisää valokuviin tunnisteita "
+"katseluohjelman lisätietoruudusta."
 
 #: src/library/tags_view.rs:118
 msgid "No Tags Inside"
@@ -5107,7 +5243,9 @@ msgstr "Tämä valokuva ei ole Kuvat-aikajanallasi"
 msgid ""
 "Immich permanently deletes trashed items after its retention period (30 days "
 "by default)."
-msgstr "Immich poistaa roskakorissa olevat kohteet pysyvästi säilytysajan jälkeen (oletuksena 30 päivää)."
+msgstr ""
+"Immich poistaa roskakorissa olevat kohteet pysyvästi säilytysajan jälkeen "
+"(oletuksena 30 päivää)."
 
 #: src/library/trash_view.rs:66
 msgid "Restore All"
@@ -5135,7 +5273,8 @@ msgstr "Poistetaanko tämä kohde pysyvästi?"
 
 #: src/library/trash_view.rs:188
 msgid "This can't be undone. Local copies in your watch folders are kept."
-msgstr "Tätä ei voi kumota. Paikalliset kopiot valvotuissa kansioissa säilytetään."
+msgstr ""
+"Tätä ei voi kumota. Paikalliset kopiot valvotuissa kansioissa säilytetään."
 
 #: src/library/trash_view.rs:217
 msgid "Could Not Delete"
@@ -5148,7 +5287,8 @@ msgstr "Tyhjennetäänkö roskakori?"
 #: src/library/trash_view.rs:237
 msgid ""
 "Everything in the Immich trash is deleted permanently. This can't be undone."
-msgstr "Kaikki Immichin roskakorissa oleva poistetaan pysyvästi. Tätä ei voi kumota."
+msgstr ""
+"Kaikki Immichin roskakorissa oleva poistetaan pysyvästi. Tätä ei voi kumota."
 
 #: src/library/trash_view.rs:243
 msgid "Could Not Empty Trash"
@@ -5242,7 +5382,9 @@ msgstr "Näytä vain kahden päivän välillä otetut valokuvat"
 
 #: src/library/utilities/controls.rs:101
 msgid "Show the photos without a place taken between these days."
-msgstr "Näytä ilman sijaintia olevat valokuvat, jotka on otettu näiden päivien välillä."
+msgstr ""
+"Näytä ilman sijaintia olevat valokuvat, jotka on otettu näiden päivien "
+"välillä."
 
 #: src/library/utilities/controls.rs:142
 #, rust-format
@@ -5499,7 +5641,9 @@ msgstr "Mimick: Yhteys katkesi"
 msgid ""
 "Could not reach the Immich server. Uploads will resume automatically when "
 "connectivity is restored."
-msgstr "Immich-palvelimeen ei saatu yhteyttä. Lähetykset jatkuvat automaattisesti, kun yhteys palautuu."
+msgstr ""
+"Immich-palvelimeen ei saatu yhteyttä. Lähetykset jatkuvat automaattisesti, "
+"kun yhteys palautuu."
 
 #: src/queue_manager.rs:241
 #, rust-format
@@ -5539,7 +5683,9 @@ msgstr "Lähetys epäonnistui kohteelle {path}"
 #: src/queue_manager/progress.rs:366
 msgid ""
 "Review the latest server and permission settings, then retry the failed item."
-msgstr "Tarkista uusimmat palvelin- ja käyttöoikeusasetukset ja yritä sitten epäonnistunutta kohdetta uudelleen."
+msgstr ""
+"Tarkista uusimmat palvelin- ja käyttöoikeusasetukset ja yritä sitten "
+"epäonnistunutta kohdetta uudelleen."
 
 #: src/queue_manager/progress.rs:379
 msgid "Queued for retry"
@@ -5565,7 +5711,9 @@ msgstr "Yksityiskohtaiset lokit"
 #: src/settings_window/actions_ui.rs:23
 msgid ""
 "Record more while you reproduce a problem, then export. The log grows faster."
-msgstr "Tallenna enemmän toistaessasi ongelmaa ja vie loki sitten. Lokitiedosto kasvaa nopeammin."
+msgstr ""
+"Tallenna enemmän toistaessasi ongelmaa ja vie loki sitten. Lokitiedosto "
+"kasvaa nopeammin."
 
 #: src/settings_window/actions_ui.rs:28
 msgid "Export…"
@@ -5579,7 +5727,9 @@ msgstr "Vie diagnostiikka"
 msgid ""
 "For bug reports: settings, status, and the end of the log, with private "
 "details removed."
-msgstr "Virheraportteja varten: asetukset, tila ja lokin loppuosa ilman yksityisiä tietoja."
+msgstr ""
+"Virheraportteja varten: asetukset, tila ja lokin loppuosa ilman yksityisiä "
+"tietoja."
 
 #: src/settings_window/appearance.rs:22
 msgid "Style"
@@ -5593,39 +5743,53 @@ msgstr "Vaalea teema"
 msgid "Dark Theme"
 msgstr "Tumma teema"
 
-#: src/settings_window/apply.rs:164
+#: src/settings_window/apply.rs:168
+msgid "Secrets Stored in Files"
+msgstr "Salaisuudet tallennettu tiedostoihin"
+
+#: src/settings_window/apply.rs:172
 msgid "API Key Stored in a File"
 msgstr "API-avain tallennettu tiedostoon"
 
-#: src/settings_window/apply.rs:170
+#: src/settings_window/apply.rs:176
+msgid "Custom Proxy Headers Stored in a File"
+msgstr "Mukautetut välityspalvelimen otsakkeet tallennettu tiedostoon"
+
+#: src/settings_window/apply.rs:184
 msgid "Settings Saved"
 msgstr "Asetukset tallennettu"
 
-#: src/settings_window/apply.rs:171
+#: src/settings_window/apply.rs:185
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick tallensi päivitetyt asetukset onnistuneesti."
 
-#: src/settings_window/apply.rs:207
+#: src/settings_window/apply.rs:221
 msgid "Startup Permission Needed"
 msgstr "Automaattisen käynnistyksen lupa tarvitaan"
 
-#: src/settings_window/apply.rs:208
+#: src/settings_window/apply.rs:222
 msgid "Mimick was not allowed to start automatically at login."
-msgstr "Mimickin ei sallittu käynnistyä automaattisesti sisäänkirjautumisen yhteydessä."
+msgstr ""
+"Mimickin ei sallittu käynnistyä automaattisesti sisäänkirjautumisen "
+"yhteydessä."
 
-#: src/settings_window/apply.rs:210
+#: src/settings_window/apply.rs:224
 msgid "Could Not Update Startup Setting"
 msgstr "Automaattisen käynnistyksen asetusta ei voitu päivittää"
 
-#: src/settings_window/apply.rs:241
+#: src/settings_window/apply.rs:257
 msgid "Could Not Save API Key"
 msgstr "API-avainta ei voitu tallentaa"
 
-#: src/settings_window/apply.rs:249
+#: src/settings_window/apply.rs:272
+msgid "Could Not Save Custom Headers"
+msgstr "Mukautettuja otsakkeita ei voitu tallentaa"
+
+#: src/settings_window/apply.rs:282
 msgid "Could Not Save Settings"
 msgstr "Asetuksia ei voitu tallentaa"
 
-#: src/settings_window/apply.rs:250
+#: src/settings_window/apply.rs:283
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick ei voinut kirjoittaa päivitettyjä asetuksia levylle."
 
@@ -5728,47 +5892,91 @@ msgstr "Kun Mimick käynnistyy, tarkista"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Kansioille voidaan valita omat asetukset kansiosäännöissä."
 
-#: src/settings_window/connectivity.rs:29
+#: src/settings_window/connectivity.rs:37
 msgid "Internal URL (LAN)"
 msgstr "Sisäinen URL (lähiverkko)"
 
-#: src/settings_window/connectivity.rs:31
+#: src/settings_window/connectivity.rs:39
 msgid "External URL (WAN)"
 msgstr "Ulkoinen URL (laajaverkko)"
 
-#: src/settings_window/connectivity.rs:35
+#: src/settings_window/connectivity.rs:46
 msgid "Not tested yet"
 msgstr "Ei vielä testattu"
 
-#: src/settings_window/connectivity.rs:38
+#: src/settings_window/connectivity.rs:49
 msgid "Test Connection"
 msgstr "Testaa yhteys"
 
-#: src/settings_window/connectivity.rs:41
+#: src/settings_window/connectivity.rs:52
 msgid "Save and Connect"
 msgstr "Tallenna ja yhdistä"
 
-#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Avaa kirjasto"
 
-#: src/settings_window/connectivity.rs:89
+#: src/settings_window/connectivity.rs:101
 msgid "API Key"
 msgstr "API-avain"
 
-#: src/settings_window/connectivity.rs:137
+#: src/settings_window/connectivity.rs:120
+msgid "Custom Proxy Headers"
+msgstr "Mukautetut välityspalvelimen otsakkeet"
+
+#: src/settings_window/connectivity.rs:136
+msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
+msgstr "Valinnaiset HTTP-otsakkeet käänteisille välityspalvelimille (esim. Cloudflare Access)"
+
+#: src/settings_window/connectivity.rs:139
+msgid "1 header configured"
+msgstr "1 otsake määritetty"
+
+#: src/settings_window/connectivity.rs:141
+msgid "headers configured"
+msgstr "otsaketta määritetty"
+
+#: src/settings_window/connectivity.rs:191
+msgid "Remove header"
+msgstr "Poista otsake"
+
+#: src/settings_window/connectivity.rs:218
+msgid "Add Header…"
+msgstr "Lisää otsake…"
+
+#: src/settings_window/connectivity.rs:241
+msgid "Paste from clipboard"
+msgstr "Liitä leikepöydältä"
+
+#: src/settings_window/connectivity.rs:278
+msgid "Header Name"
+msgstr "Otsakkeen nimi"
+
+#: src/settings_window/connectivity.rs:286
+msgid "Secret / Value"
+msgstr "Salaisuus / Arvo"
+
+#: src/settings_window/connectivity.rs:300
+msgid "Scope"
+msgstr "Laajuus"
+
+#: src/settings_window/connectivity.rs:337
+msgid "Add Custom Header"
+msgstr "Lisää mukautettu otsake"
+
+#: src/settings_window/connectivity.rs:407
 msgid "LAN URL"
 msgstr "LAN-URL"
 
-#: src/settings_window/connectivity.rs:138
+#: src/settings_window/connectivity.rs:408
 msgid "WAN URL"
 msgstr "WAN-URL"
 
-#: src/settings_window/form.rs:127
+#: src/settings_window/form.rs:133
 msgid "Invalid Internal URL"
 msgstr "Virheellinen sisäinen URL"
 
-#: src/settings_window/form.rs:132
+#: src/settings_window/form.rs:138
 msgid "Invalid External URL"
 msgstr "Virheellinen ulkoinen URL"
 
@@ -5818,7 +6026,9 @@ msgstr "Sovita pikkukuvat ruutuihin"
 
 #: src/settings_window/library.rs:106
 msgid "Preview and Full Size thumbnails use far less memory."
-msgstr "Esikatselu- ja täysikokoiset pikkukuvat käyttävät huomattavasti vähemmän muistia."
+msgstr ""
+"Esikatselu- ja täysikokoiset pikkukuvat käyttävät huomattavasti vähemmän "
+"muistia."
 
 #: src/settings_window/library.rs:122
 msgid "Date Headings"
@@ -5826,7 +6036,9 @@ msgstr "Päivämääräotsikot"
 
 #: src/settings_window/library.rs:124
 msgid "Dates between photos in Photos, albums, and other timelines."
-msgstr "Päivämäärät valokuvien välissä Kuvat-näkymässä, albumeissa ja muilla aikajanoilla."
+msgstr ""
+"Päivämäärät valokuvien välissä Kuvat-näkymässä, albumeissa ja muilla "
+"aikajanoilla."
 
 #: src/settings_window/library.rs:127
 msgid "By Day"
@@ -5864,7 +6076,9 @@ msgstr "Täysi RAW-purku"
 msgid ""
 "Uses the sensor data, not the embedded preview, with every colour the camera "
 "recorded. Slower, and uses more memory."
-msgstr "Käyttää kennon tietoja upotetun esikatselun sijaan kaikkien kameran tallentamien värien kera. Hitaampi ja käyttää enemmän muistia."
+msgstr ""
+"Käyttää kennon tietoja upotetun esikatselun sijaan kaikkien kameran "
+"tallentamien värien kera. Hitaampi ja käyttää enemmän muistia."
 
 #: src/settings_window/library.rs:172
 msgid "Keep Decoded RAW Files"
@@ -5934,35 +6148,52 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Asetukset tallennettiin, mutta järjestelmän avainnippu ei ole käytettävissä, joten API-avain tallennettiin kohteeseen {path}.\n"
+"Asetukset tallennettiin, mutta järjestelmän avainnippu ei ole käytettävissä, "
+"joten API-avain tallennettiin kohteeseen {path}.\n"
 "\n"
 "Tiedosto on vain käyttäjätilisi luettavissa, mutta sitä ei ole salattu.\n"
 "\n"
 "Katso: {url}"
 
-#: src/settings_window/mod.rs:141
+#: src/settings_window/mod.rs:142
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so custom proxy "
+"headers were stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"Asetukset tallennettiin, mutta järjestelmän avainnippu ei ole käytettävissä, joten mukautetut välityspalvelimen otsakkeet tallennettiin kohteeseen {path}.\n"
+"\n"
+"Tiedosto on vain käyttäjätilisi luettavissa, mutta sitä ei ole salattu.\n"
+"\n"
+"Katso: {url}"
+
+#: src/settings_window/mod.rs:156
 msgid "No successful sync yet"
 msgstr "Ei onnistunutta synkronointia vielä"
 
-#: src/settings_window/mod.rs:151
+#: src/settings_window/mod.rs:166
 msgid "Less than a minute ago"
 msgstr "Alle minuutti sitten"
 
-#: src/settings_window/mod.rs:157
+#: src/settings_window/mod.rs:172
 #, rust-format
 msgid "{n} minute ago"
 msgid_plural "{n} minutes ago"
 msgstr[0] "{n} minuutti sitten"
 msgstr[1] "{n} minuuttia sitten"
 
-#: src/settings_window/mod.rs:161
+#: src/settings_window/mod.rs:176
 #, rust-format
 msgid "{n} hour ago"
 msgid_plural "{n} hours ago"
 msgstr[0] "{n} tunti sitten"
 msgstr[1] "{n} tuntia sitten"
 
-#: src/settings_window/mod.rs:164
+#: src/settings_window/mod.rs:179
 #, rust-format
 msgid "{n} day ago"
 msgid_plural "{n} days ago"
@@ -6034,7 +6265,7 @@ msgid "Sync Now"
 msgstr "Synkronoi nyt"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
 msgid "Pause"
 msgstr "Keskeytä"
 
@@ -6050,8 +6281,8 @@ msgstr "Vaatii huomiota"
 msgid "Failed uploads"
 msgstr "Epäonnistuneet lähetykset"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
-#: src/settings_window/wiring.rs:368
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
+#: src/settings_window/wiring.rs:375
 msgid "Resume"
 msgstr "Jatka"
 
@@ -6104,7 +6335,9 @@ msgstr "Odotetaan Immichiä"
 
 #: src/settings_window/status_poll.rs:237
 msgid "Failed uploads retry when the server is reachable."
-msgstr "Epäonnistuneita lähetyksiä yritetään uudelleen, kun palvelin on tavoitettavissa."
+msgstr ""
+"Epäonnistuneita lähetyksiä yritetään uudelleen, kun palvelin on "
+"tavoitettavissa."
 
 #: src/settings_window/status_poll.rs:246
 #, rust-format
@@ -6256,7 +6489,7 @@ msgstr "Vain nämä tyypit, esim. jpg, png, mp4 (tyhjä tarkoittaa kaikkia)"
 msgid "Status"
 msgstr "Tila"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Lopeta Mimick"
 
@@ -6287,7 +6520,8 @@ msgstr "2. Lisää API-avain"
 #: src/settings_window/wiring.rs:160
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
-msgstr "Immichissä: Tilin asetukset → API-avaimet. Ohjeessa luetellaan oikeudet."
+msgstr ""
+"Immichissä: Tilin asetukset → API-avaimet. Ohjeessa luetellaan oikeudet."
 
 #: src/settings_window/wiring.rs:163
 msgid "3. Save and Connect"
@@ -6296,7 +6530,9 @@ msgstr "3. Tallenna ja yhdistä"
 #: src/settings_window/wiring.rs:165
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
-msgstr "Kirjastosi avautuu seuraavaksi. Jos haluat myös varmuuskopioida kansion, lisää se kohdassa Valvotut kansiot."
+msgstr ""
+"Kirjastosi avautuu seuraavaksi. Jos haluat myös varmuuskopioida kansion, "
+"lisää se kohdassa Valvotut kansiot."
 
 #: src/settings_window/wiring.rs:177
 msgid "Guide"
@@ -6316,21 +6552,22 @@ msgstr "{name} ei tavoitettavissa"
 msgid "Couldn't reach Immich at either address"
 msgstr "Immichiin ei saatu yhteyttä kummastakaan osoitteesta"
 
-#: src/settings_window/wiring.rs:252
+#: src/settings_window/wiring.rs:255
 msgid "Testing…"
 msgstr "Testataan…"
 
-#: src/settings_window/wiring.rs:366
+#: src/settings_window/wiring.rs:373
 msgid "Paused by you"
 msgstr "Sinun keskeyttämäsi"
 
-#: src/settings_window/wiring.rs:425
+#: src/settings_window/wiring.rs:432
 msgid "Invalid Selection"
 msgstr "Virheellinen valinta"
 
-#: src/settings_window/wiring.rs:426
+#: src/settings_window/wiring.rs:433
 msgid "At least one URL (Internal or External) must be enabled."
-msgstr "Vähintään yhden URL-osoitteen (sisäisen tai ulkoisen) on oltava käytössä."
+msgstr ""
+"Vähintään yhden URL-osoitteen (sisäisen tai ulkoisen) on oltava käytössä."
 
 #: src/settings_window/wiring/diagnostics_wiring.rs:16
 msgid "Choose Diagnostics Export Folder"
@@ -6407,14 +6644,16 @@ msgstr "Mimick"
 
 #: setup/dev.nicx.mimick.desktop:3
 msgid "Unofficial Immich desktop client and auto-sync agent"
-msgstr "Epävirallinen Immich-työpöytäsovellus ja automaattisen synkronoinnin taustaohjelma"
+msgstr ""
+"Epävirallinen Immich-työpöytäsovellus ja automaattisen synkronoinnin "
+"taustaohjelma"
 
 #: setup/dev.nicx.mimick.desktop:10
 msgid ""
 "Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
 msgstr "Valokuva;Valokuvat;Kuva;Kuvat;Video;Videot;Synkronointi;Sync;Varmuuskopio;Varmuuskopiointi;Lähetä;Lataus;Immich;Galleria;Itseisännöity;"
 
-#: setup/dev.nicx.mimick.desktop:25
+#: setup/dev.nicx.mimick.desktop:24
 msgid "Upload with Mimick"
 msgstr "Lähetä Mimickillä"
 
@@ -6427,43 +6666,60 @@ msgid ""
 "Mimick is a native Linux desktop client for self-hosted Immich servers. It "
 "monitors your folders in the background and automatically syncs photos and "
 "videos to your server."
-msgstr "Mimick on natiivi Linux-työpöytäsovellus itseisännöidyille Immich-palvelimille. Se valvoo kansioitasi taustalla ja synkronoi valokuvat ja videot automaattisesti palvelimellesi."
+msgstr ""
+"Mimick on natiivi Linux-työpöytäsovellus itseisännöidyille Immich-"
+"palvelimille. Se valvoo kansioitasi taustalla ja synkronoi valokuvat ja "
+"videot automaattisesti palvelimellesi."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
 msgid ""
 "Per-folder sync methods: upload only, download only, or full bidirectional "
 "sync with optional deletion mirroring."
-msgstr "Kansiokohtaiset synkronointitavat: vain lähetys, vain lataus tai täysi kaksisuuntainen synkronointi valinnaisella poistojen peilauksella."
+msgstr ""
+"Kansiokohtaiset synkronointitavat: vain lähetys, vain lataus tai täysi "
+"kaksisuuntainen synkronointi valinnaisella poistojen peilauksella."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
 msgid ""
 "Built-in Library View for browsing your timeline, managing albums, and "
 "searching with Smart Search, OCR, and metadata filters."
-msgstr "Sisäänrakennettu kirjastonäkymä aikajanan selaamiseen, albumien hallintaan ja hakuun älykkään haun, OCR-tekstintunnistuksen ja metatietosuodattimien avulla."
+msgstr ""
+"Sisäänrakennettu kirjastonäkymä aikajanan selaamiseen, albumien hallintaan "
+"ja hakuun älykkään haun, OCR-tekstintunnistuksen ja metatietosuodattimien "
+"avulla."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
 msgid ""
 "SHA-1 deduplication, parallel upload workers, and offline retry queue for "
 "reliable transfers."
-msgstr "SHA-1-kaksoiskappaleiden poisto, rinnakkaiset lähetyssäikeet ja yhteydettömän tilan uudelleenyritysjono luotettavia siirtoja varten."
+msgstr ""
+"SHA-1-kaksoiskappaleiden poisto, rinnakkaiset lähetyssäikeet ja "
+"yhteydettömän tilan uudelleenyritysjono luotettavia siirtoja varten."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
 msgid ""
 "Environment-aware: automatically pauses on battery or metered connections. "
 "Configurable quiet hours and per-folder rules."
-msgstr "Ympäristötietoinen: keskeyttää toiminnan automaattisesti akkuvirralla tai käytön mukaan laskutettavassa verkossa. Mukautettavat hiljaiset tunnit ja kansiokohtaiset säännöt."
+msgstr ""
+"Ympäristötietoinen: keskeyttää toiminnan automaattisesti akkuvirralla tai "
+"käytön mukaan laskutettavassa verkossa. Mukautettavat hiljaiset tunnit ja "
+"kansiokohtaiset säännöt."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
 msgid ""
 "Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
 "sandbox support."
-msgstr "Rakennettu Rustilla hyödyntäen GTK4- ja Libadwaita-kirjastoja. Ilmoitusalueen integraatio ja Flatpak-hiekkalaatikon tuki."
+msgstr ""
+"Rakennettu Rustilla hyödyntäen GTK4- ja Libadwaita-kirjastoja. "
+"Ilmoitusalueen integraatio ja Flatpak-hiekkalaatikon tuki."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
 msgid ""
 "Mimick is a community-developed client and is not affiliated with or "
 "endorsed by the Immich project."
-msgstr "Mimick on yhteisön kehittämä sovellus, eikä se ole sidoksissa Immich-projektiin tai sen tukema."
+msgstr ""
+"Mimick on yhteisön kehittämä sovellus, eikä se ole sidoksissa Immich-"
+"projektiin tai sen tukema."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
 msgid "Library View - Photos page with sidebar"

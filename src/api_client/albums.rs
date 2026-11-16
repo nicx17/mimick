@@ -76,13 +76,10 @@ impl ImmichApiClient {
         };
 
         let url = format!("{}/api/albums", base_url);
-        let api_key = self.settings.read().api_key.clone();
         log::info!("Fetching album list...");
 
         let result = self
-            .client
-            .get(&url)
-            .header("x-api-key", &api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(10))
             .send()
@@ -125,8 +122,7 @@ impl ImmichApiClient {
             }
             Err(e) => {
                 log::error!("Network error fetching albums: {}", e);
-                let mut active = self.active_url.lock().await;
-                *active = None;
+                self.invalidate_connection().await;
                 self.set_issue(classify_network_issue(RequestContext::Albums, &e))
                     .await;
             }
@@ -190,7 +186,6 @@ impl ImmichApiClient {
     pub async fn create_album(&self, album_name: &str) -> Result<Option<String>, String> {
         let base_url = self.require_active_url().await?;
         let url = format!("{}/api/albums", base_url);
-        let api_key = self.settings.read().api_key.clone();
 
         log::info!("Creating album: '{}'", album_name);
 
@@ -200,9 +195,7 @@ impl ImmichApiClient {
         });
 
         let result = self
-            .client
-            .post(&url)
-            .header("x-api-key", &api_key)
+            .authorized_request(reqwest::Method::POST, &url)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
             .json(&body)
@@ -323,7 +316,6 @@ impl ImmichApiClient {
         };
 
         let url = format!("{}/api/albums/{}/assets", base_url, album_id);
-        let api_key = self.settings.read().api_key.clone();
         let body = serde_json::json!({ "ids": asset_ids });
 
         log::info!(
@@ -333,9 +325,7 @@ impl ImmichApiClient {
         );
 
         let result = self
-            .client
-            .put(&url)
-            .header("x-api-key", &api_key)
+            .authorized_request(reqwest::Method::PUT, &url)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
             .json(&body)
@@ -382,11 +372,8 @@ impl ImmichApiClient {
     pub async fn count_albums_for_asset(&self, asset_id: &str) -> Option<usize> {
         let base_url = self.get_active_url().await?;
         let url = format!("{}/api/albums?assetId={}", base_url, asset_id);
-        let api_key = self.settings.read().api_key.clone();
         match self
-            .client
-            .get(&url)
-            .header("x-api-key", &api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(10))
             .send()
@@ -423,12 +410,9 @@ impl ImmichApiClient {
             None => return false,
         };
         let url = format!("{}/api/albums/{}/assets", base_url, album_id);
-        let api_key = self.settings.read().api_key.clone();
         let body = serde_json::json!({ "ids": asset_ids });
         match self
-            .client
-            .delete(&url)
-            .header("x-api-key", &api_key)
+            .authorized_request(reqwest::Method::DELETE, &url)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
             .json(&body)

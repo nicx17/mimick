@@ -39,10 +39,9 @@ impl ImmichApiClient {
         progress: Option<TransferProgressCallback>,
     ) -> Result<(), String> {
         let base_url = self.require_active_url().await?;
+        let url = format!("{base_url}/api/download/archive");
         let resp = self
-            .client
-            .post(format!("{base_url}/api/download/archive"))
-            .header("x-api-key", self.settings_snapshot().api_key)
+            .authorized_request(reqwest::Method::POST, &url)
             .header("Accept", "application/octet-stream")
             .json(&serde_json::json!({ "assetIds": asset_ids }))
             .timeout(ARCHIVE_TIMEOUT)

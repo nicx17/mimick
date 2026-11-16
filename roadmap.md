@@ -17,6 +17,7 @@ Per-release highlights and live open issues are on the [roadmap page](https://mi
 
 ### Immich API Client
 - [x] Smart URL routing — LAN first, WAN fallback.
+- [x] Custom HTTP proxy headers with route-based scoping (`WAN only`, `All`, `LAN only`) for Cloudflare Access service tokens and reverse proxies (#341).
 - [x] Pre-upload deduplication via SHA-1 + 409 Conflict detection.
 - [x] Multipart streaming upload (disk → network, no full RAM load).
 - [x] ISO 8601 UTC timestamps (no chrono dependency, pure arithmetic).
@@ -132,7 +133,7 @@ Per-release highlights and live open issues are on the [roadmap page](https://mi
 
 Finished on `main` and coming in the next release (see the Unreleased section of [CHANGELOG.md](CHANGELOG.md)).
 
-Nothing merged yet since 9.15.2.
+- **Custom Proxy Headers** — Route-scoped HTTP headers for Cloudflare Access service tokens and other reverse proxies (#341).
 
 ---
 

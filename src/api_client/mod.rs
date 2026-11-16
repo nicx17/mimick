@@ -100,6 +100,44 @@ pub(super) struct ApiClientSettings {
     pub(super) external_url: String,
     /// Immich authorization API key.
     pub(super) api_key: String,
+    /// Custom HTTP headers (e.g. Cloudflare Access service tokens).
+    pub(super) custom_headers: Vec<crate::config::CustomHeader>,
+}
+
+impl ApiClientSettings {
+    /// Determine whether `url` targets this Immich server, and if so, whether the route is WAN (external).
+    /// Returns `Some(true)` for WAN, `Some(false)` for LAN, or `None` if the URL is not an Immich endpoint.
+    pub(super) fn server_route(&self, url: &str) -> Option<bool> {
+        let trimmed_url = url.trim_end_matches('/');
+        let ext = self.external_url.trim_end_matches('/');
+        let int = self.internal_url.trim_end_matches('/');
+
+        let matches_ext =
+            !ext.is_empty() && (trimmed_url == ext || trimmed_url.starts_with(&format!("{ext}/")));
+        let matches_int =
+            !int.is_empty() && (trimmed_url == int || trimmed_url.starts_with(&format!("{int}/")));
+
+        if matches_ext && !matches_int {
+            Some(true)
+        } else if matches_int && !matches_ext {
+            Some(false)
+        } else if matches_ext && matches_int {
+            // When both URLs are identical and no active connection is known,
+            // default to LAN (false) because connectivity probes select LAN first.
+            Some(false)
+        } else {
+            None
+        }
+    }
+}
+
+/// Represents the currently active server connection and route classification.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ActiveConnection {
+    /// Active base URL.
+    pub url: String,
+    /// `true` if connected via the WAN/external route; `false` if LAN/internal.
+    pub is_external: bool,
 }
 
 /// Simplified album summary response from Immich.
@@ -118,8 +156,8 @@ pub struct ImmichApiClient {
     pub client: Client,
     /// Configuration settings wrapper.
     settings: RwLock<ApiClientSettings>,
-    /// The currently active base URL, selected by the last successful connectivity check.
-    pub active_url: Mutex<Option<String>>,
+    /// The currently active connection and its selected route (LAN vs WAN).
+    pub active_connection: parking_lot::RwLock<Option<ActiveConnection>>,
     /// Most recent actionable API/client problem, used for the dashboard and diagnostics.
     last_issue: Mutex<Option<ApiIssue>>,
     /// Caches album names to album IDs to avoid repeated list/create API calls.
@@ -148,7 +186,12 @@ const PREVIEW_DOWNLOADS: usize = 8;
 
 impl ImmichApiClient {
     /// Initialize a new ImmichApiClient.
-    pub fn new(internal_url: String, external_url: String, api_key: String) -> Self {
+    pub fn new(
+        internal_url: String,
+        external_url: String,
+        api_key: String,
+        custom_headers: Vec<crate::config::CustomHeader>,
+    ) -> Self {
         let client = Client::builder()
             .timeout(Duration::from_secs(300))
             .pool_max_idle_per_host(THUMBNAIL_DOWNLOADS + PREVIEW_DOWNLOADS) // reuse connections across thumbnail bursts
@@ -171,8 +214,9 @@ impl ImmichApiClient {
                 internal_url: int,
                 external_url: ext,
                 api_key,
+                custom_headers,
             }),
-            active_url: Mutex::new(None),
+            active_connection: parking_lot::RwLock::new(None),
             last_issue: Mutex::new(None),
             album_cache: Mutex::new(HashMap::new()),
             album_create_locks: Mutex::new(HashMap::new()),
@@ -185,6 +229,66 @@ impl ImmichApiClient {
         }
     }
 
+    /// Invalidate the active connection, forcing subsequent requests to reconnect.
+    pub async fn invalidate_connection(&self) {
+        *self.active_connection.write() = None;
+    }
+
+    /// Determine whether a target URL belongs to the internal (LAN) or external (WAN) route.
+    /// Prefers the actively selected connection's route if the URL matches.
+    pub(super) fn is_external_route(&self, target_url: &str) -> Option<bool> {
+        let trimmed_target = target_url.trim_end_matches('/');
+        if let Some(conn) = self.active_connection.read().as_ref() {
+            let trimmed_conn = conn.url.trim_end_matches('/');
+            if trimmed_target == trimmed_conn
+                || trimmed_target.starts_with(&format!("{trimmed_conn}/"))
+            {
+                return Some(conn.is_external);
+            }
+        }
+        self.settings_snapshot().server_route(target_url)
+    }
+
+    /// Retrieve matching custom headers for a target URL based on route scoping.
+    pub fn matching_custom_headers(&self, target_url: &str) -> Vec<(String, String)> {
+        let mut result = Vec::new();
+        if let Some(is_external) = self.is_external_route(target_url) {
+            let settings = self.settings_snapshot();
+            for header in &settings.custom_headers {
+                if header.scope.matches_route(is_external) && header.is_valid_name() {
+                    result.push((header.name.clone(), header.value.clone()));
+                }
+            }
+        }
+        result
+    }
+
+    /// Apply any configured custom headers matching the target URL route (LAN/WAN/All).
+    pub(super) fn apply_custom_headers(
+        &self,
+        mut request: reqwest::RequestBuilder,
+        target_url: &str,
+    ) -> reqwest::RequestBuilder {
+        for (name, value) in self.matching_custom_headers(target_url) {
+            request = request.header(&name, &value);
+        }
+        request
+    }
+
+    /// Construct a request with the Immich API key and matching custom headers applied.
+    pub(super) fn authorized_request(
+        &self,
+        method: reqwest::Method,
+        url: &str,
+    ) -> reqwest::RequestBuilder {
+        let settings = self.settings_snapshot();
+        let request = self
+            .client
+            .request(method, url)
+            .header("x-api-key", &settings.api_key);
+        self.apply_custom_headers(request, url)
+    }
+
     /// Send a JSON request to `path` and fail on a non-success status.
     pub(super) async fn send_json(
         &self,
@@ -193,10 +297,9 @@ impl ImmichApiClient {
         body: Option<serde_json::Value>,
     ) -> Result<reqwest::Response, String> {
         let base_url = self.require_active_url().await?;
+        let url = format!("{base_url}{path}");
         let mut request = self
-            .client
-            .request(method, format!("{}{}", base_url, path))
-            .header("x-api-key", self.settings_snapshot().api_key)
+            .authorized_request(method, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(15));
         if let Some(body) = body {
@@ -212,8 +315,12 @@ impl ImmichApiClient {
 
     /// Retrieve the route label (LAN/WAN) for the currently active connection URL.
     pub async fn active_route_label(&self) -> Option<String> {
-        let active = self.active_url.lock().await.clone()?;
-        Some(self.route_label_for_url(&active))
+        let conn = self.active_connection.read().clone()?;
+        Some(if conn.is_external {
+            "WAN".to_string()
+        } else {
+            "LAN".to_string()
+        })
     }
 
     /// Retrieve the most recently recorded API issue.
@@ -227,15 +334,17 @@ impl ImmichApiClient {
         internal_url: String,
         external_url: String,
         api_key: String,
+        custom_headers: Vec<crate::config::CustomHeader>,
     ) {
         {
             let mut settings = self.settings.write();
             settings.internal_url = internal_url.trim_end_matches('/').to_string();
             settings.external_url = external_url.trim_end_matches('/').to_string();
             settings.api_key = api_key;
+            settings.custom_headers = custom_headers;
         }
 
-        *self.active_url.lock().await = None;
+        *self.active_connection.write() = None;
         self.refresh_album_cache().await;
         self.clear_issue().await;
     }
@@ -243,6 +352,11 @@ impl ImmichApiClient {
     /// Swap in a new secret for the same key; the connection stays as it is.
     pub fn replace_api_key(&self, api_key: String) {
         self.settings.write().api_key = api_key;
+    }
+
+    /// Replace the in-memory custom headers without resetting the connection.
+    pub fn replace_custom_headers(&self, custom_headers: Vec<crate::config::CustomHeader>) {
+        self.settings.write().custom_headers = custom_headers;
     }
 
     /// Set the last encountered API issue.
@@ -260,24 +374,11 @@ impl ImmichApiClient {
         self.settings.read().clone()
     }
 
-    /// Retrieve the LAN/WAN/Custom route label matching a specific URL.
-    pub(super) fn route_label_for_url(&self, url: &str) -> String {
-        let settings = self.settings.read().clone();
-        let trimmed = url.trim_end_matches('/');
-        if !settings.internal_url.is_empty() && trimmed == settings.internal_url {
-            "LAN".to_string()
-        } else if !settings.external_url.is_empty() && trimmed == settings.external_url {
-            "WAN".to_string()
-        } else {
-            "Custom".to_string()
-        }
-    }
-
     /// Determine which base URL to use, preferring the internal address when reachable.
     pub async fn check_connection(&self) -> bool {
         let _check_guard = self.connection_check_lock.lock().await;
 
-        if self.active_url.lock().await.is_some()
+        if self.active_connection.read().is_some()
             && let Some(when) = *self.last_successful_check.lock().await
             && when.elapsed() < Duration::from_secs(1)
         {
@@ -286,15 +387,25 @@ impl ImmichApiClient {
 
         log::debug!("Checking connectivity...");
         let settings = self.settings.read().clone();
-        let was_active = self.active_url.lock().await.clone();
+        let was_active = self.active_connection.read().clone();
 
-        for url in [&settings.internal_url, &settings.external_url] {
-            if self.try_activate_url(url, was_active.is_none()).await {
-                return true;
-            }
+        if !settings.internal_url.is_empty()
+            && self
+                .try_activate_url(&settings.internal_url, false, was_active.is_none())
+                .await
+        {
+            return true;
         }
 
-        *self.active_url.lock().await = None;
+        if !settings.external_url.is_empty()
+            && self
+                .try_activate_url(&settings.external_url, true, was_active.is_none())
+                .await
+        {
+            return true;
+        }
+
+        self.invalidate_connection().await;
         if was_active.is_some() {
             log::error!("Could not connect to Immich server.");
         } else {
@@ -309,14 +420,21 @@ impl ImmichApiClient {
         false
     }
 
-    async fn try_activate_url(&self, url: &str, was_offline: bool) -> bool {
-        if !self.ping_url(url).await {
+    async fn try_activate_url(&self, url: &str, is_external: bool, was_offline: bool) -> bool {
+        let settings = self.settings_snapshot();
+        if !self
+            .ping_url_custom(url, is_external, &settings.custom_headers)
+            .await
+        {
             return false;
         }
-        *self.active_url.lock().await = Some(url.to_string());
+        *self.active_connection.write() = Some(ActiveConnection {
+            url: url.to_string(),
+            is_external,
+        });
         *self.last_successful_check.lock().await = Some(Instant::now());
         self.clear_issue().await;
-        let label = self.route_label_for_url(url);
+        let label = if is_external { "WAN" } else { "LAN" };
         if was_offline {
             log::info!("Connected via {}: {}", label, url);
         } else {
@@ -327,19 +445,34 @@ impl ImmichApiClient {
 
     /// Ping a specific Immich base URL and validate that it returns a real `pong` response.
     pub async fn ping_url(&self, url: &str) -> bool {
+        let settings = self.settings_snapshot();
+        let is_external = settings.server_route(url).unwrap_or(false);
+        self.ping_url_custom(url, is_external, &settings.custom_headers)
+            .await
+    }
+
+    /// Ping a specific base URL using the provided route and headers (useful for testing unsaved settings).
+    pub async fn ping_url_custom(
+        &self,
+        url: &str,
+        is_external: bool,
+        custom_headers: &[crate::config::CustomHeader],
+    ) -> bool {
         if url.is_empty() {
             return false;
         }
         let endpoint = format!("{}/api/server/ping", url.trim_end_matches('/'));
         log::debug!("Pinging: {}", endpoint);
 
-        match self
-            .client
-            .get(&endpoint)
-            .timeout(Duration::from_secs(2))
-            .send()
-            .await
-        {
+        let mut request = self.client.get(&endpoint).timeout(Duration::from_secs(5));
+
+        for header in custom_headers {
+            if header.scope.matches_route(is_external) && header.is_valid_name() {
+                request = request.header(&header.name, &header.value);
+            }
+        }
+
+        match request.send().await {
             Ok(resp) if resp.status().as_u16() == 200 => {
                 match resp.json::<serde_json::Value>().await {
                     Ok(json)
@@ -368,14 +501,14 @@ impl ImmichApiClient {
     /// Return the cached active base URL, resolving connectivity first if needed.
     pub(super) async fn get_active_url(&self) -> Option<String> {
         {
-            let active = self.active_url.lock().await;
-            if active.is_some() {
-                return active.clone();
+            let conn = self.active_connection.read();
+            if let Some(c) = conn.as_ref() {
+                return Some(c.url.clone());
             }
         }
         if self.check_connection().await {
-            let active = self.active_url.lock().await;
-            return active.clone();
+            let conn = self.active_connection.read();
+            return conn.as_ref().map(|c| c.url.clone());
         }
         None
     }

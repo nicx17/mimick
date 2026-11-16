@@ -235,6 +235,8 @@ pub(super) fn connect_test_button(
         conn.internal_entry,
         #[weak(rename_to = external_entry)]
         conn.external_entry,
+        #[strong(rename_to = custom_headers)]
+        conn.custom_headers,
         move |btn| {
             btn.set_sensitive(false);
             // Collect only plain values: no GTK types cross into the Tokio task.
@@ -247,11 +249,12 @@ pub(super) fn connect_test_button(
             };
             let internal = enabled_url(&internal_switch, &internal_entry);
             let external = enabled_url(&external_switch, &external_entry);
+            let headers = custom_headers.borrow().clone();
             let (internal_on, external_on) = (!internal.is_empty(), !external.is_empty());
             if let Some(row) = status_row.upgrade() {
                 row.set_subtitle(&gettext("Testing…"));
             }
-            let rx = spawn_ping(api_client.clone(), internal, external);
+            let rx = spawn_ping(api_client.clone(), internal, external, headers);
             let (status_row, btn) = (status_row.clone(), btn.clone());
             glib::MainContext::default().spawn_local(async move {
                 let Ok((int_ok, ext_ok)) = rx.await else {
@@ -278,15 +281,19 @@ fn spawn_ping(
     api_client: Arc<crate::api_client::ImmichApiClient>,
     internal: String,
     external: String,
+    headers: Vec<crate::config::CustomHeader>,
 ) -> tokio::sync::oneshot::Receiver<(bool, bool)> {
     let (tx, rx) = tokio::sync::oneshot::channel();
     tokio::spawn(async move {
-        let ping = |url: String| {
-            let client = api_client.clone();
-            async move { !url.is_empty() && client.ping_url(&url).await }
-        };
-        let int_ok = ping(internal).await;
-        let ext_ok = ping(external).await;
+        let headers_ref = &headers;
+        let int_ok = !internal.is_empty()
+            && api_client
+                .ping_url_custom(&internal, false, headers_ref)
+                .await;
+        let ext_ok = !external.is_empty()
+            && api_client
+                .ping_url_custom(&external, true, headers_ref)
+                .await;
         let _ = tx.send((int_ok, ext_ok));
     });
     rx

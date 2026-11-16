@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
-"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
-"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 11:39+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Korean\n"
@@ -41,11 +41,11 @@ msgstr "앨범 목록을 사용할 수 없습니다"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "앨범을 새로 고치기 전에 Immich 서버에 다시 연결하세요."
 
-#: src/api_client/albums.rs:180
+#: src/api_client/albums.rs:177
 msgid "Failed to fetch albums"
 msgstr "앨범을 가져오지 못했습니다"
 
-#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
 msgid "Cannot fetch albums to verify existence"
 msgstr "존재 여부를 확인할 앨범을 가져올 수 없습니다"
 
@@ -54,9 +54,11 @@ msgstr "존재 여부를 확인할 앨범을 가져올 수 없습니다"
 msgid ""
 "The server responded with HTTP {status}. Check the server logs and retry "
 "after confirming the current configuration."
-msgstr "서버가 HTTP {status} 응답을 반환했습니다. 서버 로그를 확인하고 현재 구성을 검토한 후 다시 시도하세요."
+msgstr ""
+"서버가 HTTP {status} 응답을 반환했습니다. 서버 로그를 확인하고 현재 구성을 검"
+"토한 후 다시 시도하세요."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
 msgid "Immich rejected the API key"
 msgstr "Immich에서 API 키를 거부했습니다"
 
@@ -64,7 +66,9 @@ msgstr "Immich에서 API 키를 거부했습니다"
 msgid ""
 "Update the API key in Settings and confirm it still has the required Asset "
 "and Album permissions (see README for the full list)."
-msgstr "설정에서 API 키를 업데이트하고 필요한 자산 및 앨범 권한이 여전히 있는지 확인하세요(전체 목록은 README 참조)."
+msgstr ""
+"설정에서 API 키를 업데이트하고 필요한 자산 및 앨범 권한이 여전히 있는지 확인"
+"하세요(전체 목록은 README 참조)."
 
 #: src/api_client/errors.rs:54
 msgid "An album reference is no longer valid"
@@ -74,7 +78,7 @@ msgstr "앨범 참조가 더 이상 유효하지 않습니다"
 msgid "Refresh the album list or choose a different album before retrying."
 msgstr "다시 시도하기 전에 앨범 목록을 새로 고치거나 다른 앨범을 선택하세요."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
 msgid "Immich rejected a file as too large"
 msgstr "파일 크기가 너무 커서 Immich에서 거부했습니다"
 
@@ -82,7 +86,9 @@ msgstr "파일 크기가 너무 커서 Immich에서 거부했습니다"
 msgid ""
 "Reduce the file size, raise the server upload limit, or skip oversized files "
 "with folder rules."
-msgstr "파일 크기를 줄이거나, 서버의 업로드 제한을 늘리거나, 폴더 규칙을 사용하여 너무 큰 파일을 건너뛰세요."
+msgstr ""
+"파일 크기를 줄이거나, 서버의 업로드 제한을 늘리거나, 폴더 규칙을 사용하여 너"
+"무 큰 파일을 건너뛰세요."
 
 #: src/api_client/errors.rs:65
 msgid "Immich rate-limited the request"
@@ -92,9 +98,11 @@ msgstr "Immich에서 요청 속도를 제한했습니다"
 msgid ""
 "Wait a moment and retry. If this happens often, lower upload concurrency or "
 "check reverse proxy limits."
-msgstr "잠시 후 다시 시도하세요. 문제가 자주 발생하면 동시 업로드 수를 줄이거나 역방향 프록시 제한을 확인하세요."
+msgstr ""
+"잠시 후 다시 시도하세요. 문제가 자주 발생하면 동시 업로드 수를 줄이거나 역방"
+"향 프록시 제한을 확인하세요."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
 msgid "Immich is temporarily unavailable"
 msgstr "Immich를 일시적으로 사용할 수 없습니다"
 
@@ -102,7 +110,9 @@ msgstr "Immich를 일시적으로 사용할 수 없습니다"
 msgid ""
 "Wait a moment and retry. If it keeps happening, inspect the server and "
 "reverse proxy logs."
-msgstr "잠시 후 다시 시도하세요. 문제가 지속되면 서버 및 역방향 프록시 로그를 검사하세요."
+msgstr ""
+"잠시 후 다시 시도하세요. 문제가 지속되면 서버 및 역방향 프록시 로그를 검사하"
+"세요."
 
 #: src/api_client/errors.rs:88
 msgid "the upload"
@@ -168,7 +178,7 @@ msgstr "Immich 요청 시간이 초과되었습니다"
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "네트워크 상태와 서버 응답성을 확인한 후 다시 시도하세요."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
 msgid "Could not reach the Immich server"
 msgstr "Immich 서버에 연결할 수 없습니다"
 
@@ -227,20 +237,20 @@ msgstr "라이브러리 통계 요청이 완료되기 전에 실패했습니다"
 msgid "The server version request failed before completion"
 msgstr "서버 버전 요청이 완료되기 전에 실패했습니다"
 
-#: src/api_client/mod.rs:387
+#: src/api_client/mod.rs:526
 msgid "No active connection"
 msgstr "활성 연결 없음"
 
-#: src/api_client/search.rs:358
+#: src/api_client/search.rs:342
 msgid "Immich can't count by file name or deleted photos"
 msgstr "Immich는 파일 이름이나 삭제된 사진 기준으로 개수를 셀 수 없습니다"
 
-#: src/api_client/tags.rs:76
+#: src/api_client/tags.rs:72
 #, rust-format
 msgid "Immich did not return the tag \"{value}\""
 msgstr "Immich에서 \"{value}\" 태그를 반환하지 않았습니다"
 
-#: src/api_client/tags.rs:87
+#: src/api_client/tags.rs:83
 msgid "Renaming tags needs a newer version of Immich."
 msgstr "태그 이름을 바꾸려면 더 최신 버전의 Immich가 필요합니다."
 
@@ -249,62 +259,74 @@ msgstr "태그 이름을 바꾸려면 더 최신 버전의 Immich가 필요합�
 msgid "Invalid month {month}"
 msgstr "잘못된 월 {month}"
 
-#: src/api_client/upload.rs:301
+#: src/api_client/upload.rs:316
 msgid "A queued file is no longer available"
 msgstr "대기열의 파일을 더 이상 사용할 수 없습니다"
 
-#: src/api_client/upload.rs:303
+#: src/api_client/upload.rs:318
 msgid "Mimick could not read a queued file"
 msgstr "Mimick에서 대기열의 파일을 읽을 수 없습니다"
 
-#: src/api_client/upload.rs:306
+#: src/api_client/upload.rs:321
 msgid ""
 "Check that the watched folder still exists and that the file was not moved "
 "or deleted before upload."
-msgstr "감시 대상 폴더가 여전히 존재하는지, 업로드 전에 파일이 이동되거나 삭제되지 않았는지 확인하세요."
+msgstr ""
+"감시 대상 폴더가 여전히 존재하는지, 업로드 전에 파일이 이동되거나 삭제되지 않"
+"았는지 확인하세요."
 
-#: src/api_client/upload.rs:308
+#: src/api_client/upload.rs:323
 msgid ""
 "Verify folder permissions and make sure the file is still accessible to the "
 "app."
 msgstr "폴더 권한을 확인하고 앱에서 파일에 계속 접근할 수 있는지 확인하세요."
 
-#: src/api_client/upload.rs:322
+#: src/api_client/upload.rs:337
 msgid "Mimick could not open a queued file"
 msgstr "Mimick에서 대기열의 파일을 열 수 없습니다"
 
-#: src/api_client/upload.rs:323
+#: src/api_client/upload.rs:338
 msgid ""
 "The file may be locked, deleted, or outside the app's allowed folder access."
-msgstr "파일이 잠겨 있거나 삭제되었거나 앱의 허용된 폴더 접근 권한 외부에 있을 수 있습니다."
+msgstr ""
+"파일이 잠겨 있거나 삭제되었거나 앱의 허용된 폴더 접근 권한 외부에 있을 수 있"
+"습니다."
 
-#: src/api_client/upload.rs:336
+#: src/api_client/upload.rs:351
 msgid "No active server connection"
 msgstr "활성 서버 연결 없음"
 
-#: src/api_client/upload.rs:337
+#: src/api_client/upload.rs:352
 msgid ""
 "Test the server connection in Settings and confirm at least one Immich URL "
 "is reachable."
-msgstr "설정에서 서버 연결을 테스트하고 최소 하나의 Immich URL에 연결할 수 있는지 확인하세요."
+msgstr ""
+"설정에서 서버 연결을 테스트하고 최소 하나의 Immich URL에 연결할 수 있는지 확"
+"인하세요."
 
-#: src/api_client/upload.rs:393
+#: src/api_client/upload.rs:405
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
-msgstr "파일 크기를 줄이거나, 서버의 업로드 제한을 늘리거나, 폴더 규칙을 사용하여 너무 큰 파일을 건너뛰세요."
+msgstr ""
+"파일 크기를 줄이거나, 서버의 업로드 제한을 늘리거나, 폴더 규칙을 사용하여 너"
+"무 큰 파일을 건너뛰세요."
 
-#: src/api_client/upload.rs:410
+#: src/api_client/upload.rs:422
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
-msgstr "잠시 후 다시 시도하세요. 문제가 지속되면 서버 로그와 역방향 프록시를 확인하세요."
+msgstr ""
+"잠시 후 다시 시도하세요. 문제가 지속되면 서버 로그와 역방향 프록시를 확인하세"
+"요."
 
 #: src/autostart.rs:50
 msgid ""
 "Reason for requesting background access: Mimick must run in the background "
 "to automatically sync media to Immich."
-msgstr "백그라운드 접근을 요청하는 이유: Mimick이 미디어를 Immich에 자동으로 동기화하려면 백그라운드에서 실행되어야 합니다."
+msgstr ""
+"백그라운드 접근을 요청하는 이유: Mimick이 미디어를 Immich에 자동으로 동기화하"
+"려면 백그라운드에서 실행되어야 합니다."
 
 #: src/autostart.rs:57
 #, rust-format
@@ -334,6 +356,30 @@ msgstr "자동 시작 항목을 제거하지 못했습니다: {err}"
 #: src/autostart.rs:126 src/autostart.rs:133
 msgid "Could not locate the user config directory."
 msgstr "사용자 설정 디렉터리를 찾을 수 없습니다."
+
+#: src/config/headers.rs:23
+msgid "WAN only (External)"
+msgstr "WAN 전용(외부)"
+
+#: src/config/headers.rs:24
+msgid "All (LAN & WAN)"
+msgstr "전체(LAN 및 WAN)"
+
+#: src/config/headers.rs:25
+msgid "LAN only (Internal)"
+msgstr "LAN 전용(내부)"
+
+#: src/config/headers.rs:32
+msgid "WAN"
+msgstr "WAN"
+
+#: src/config/headers.rs:33
+msgid "ALL"
+msgstr "전체"
+
+#: src/config/headers.rs:34
+msgid "LAN"
+msgstr "LAN"
 
 #: src/library/about_dialog.rs:40
 msgid "Repository"
@@ -406,6 +452,7 @@ msgstr "불러올 수 없습니다. API 키에 “{permission}” 권한이 필�
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/connectivity.rs:305
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "취소"
@@ -434,7 +481,9 @@ msgstr "로그인된 장치"
 msgid ""
 "Browsers and apps signed in to your account. Mimick uses an API key, so it "
 "isn't listed."
-msgstr "계정에 로그인된 브라우저 및 앱입니다. Mimick은 API 키를 사용하므로 목록에 표시되지 않습니다."
+msgstr ""
+"계정에 로그인된 브라우저 및 앱입니다. Mimick은 API 키를 사용하므로 목록에 표"
+"시되지 않습니다."
 
 #: src/library/account/devices.rs:28
 msgid "Devices"
@@ -534,7 +583,9 @@ msgstr "이 키의 새 시크릿을 받으시겠습니까?"
 msgid ""
 "Mimick saves the new secret and keeps working. Anything else using this key "
 "stops working until you give it the new secret."
-msgstr "Mimick은 새 시크릿을 저장하고 계속 작동합니다. 이 키를 사용하는 다른 모든 프로그램은 새 시크릿을 입력할 때까지 작동이 중단됩니다."
+msgstr ""
+"Mimick은 새 시크릿을 저장하고 계속 작동합니다. 이 키를 사용하는 다른 모든 프"
+"로그램은 새 시크릿을 입력할 때까지 작동이 중단됩니다."
 
 #: src/library/account/keys.rs:159
 msgid "Rotate"
@@ -561,7 +612,8 @@ msgid ""
 "\n"
 "{secret}"
 msgstr ""
-"Mimick이 지금 사용 중이지만 저장하지 못했습니다({err}). 계속 유지할 수 있도록 설정에 붙여넣으세요:\n"
+"Mimick이 지금 사용 중이지만 저장하지 못했습니다({err}). 계속 유지할 수 있도"
+"록 설정에 붙여넣으세요:\n"
 "\n"
 "{secret}"
 
@@ -581,7 +633,9 @@ msgstr "이 키를 삭제하시겠습니까?"
 
 #: src/library/account/keys.rs:224
 msgid "Anything signing in with it stops working. This can't be undone."
-msgstr "이 키로 로그인하는 모든 항목의 작동이 중단됩니다. 이 작업은 취소할 수 없습니다."
+msgstr ""
+"이 키로 로그인하는 모든 항목의 작동이 중단됩니다. 이 작업은 취소할 수 없습니"
+"다."
 
 #: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
 #: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
@@ -627,7 +681,9 @@ msgstr "계정을 불러올 수 없습니다: {err}"
 
 #: src/library/account/profile.rs:152
 msgid "To use one of your photos, choose Set as Profile Picture in its menu."
-msgstr "내 사진 중 하나를 사용하려면 해당 메뉴에서 '프로필 사진으로 설정'을 선택하세요."
+msgstr ""
+"내 사진 중 하나를 사용하려면 해당 메뉴에서 '프로필 사진으로 설정'을 선택하세"
+"요."
 
 #: src/library/account/profile.rs:163
 msgid "Images"
@@ -695,13 +751,17 @@ msgstr "내 사진이 아님"
 msgid ""
 "Only the owner can change where a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "사진의 촬영 위치는 소유자만 변경할 수 있으며, 선택한 사진은 다른 사람의 소유입니다."
+msgstr ""
+"사진의 촬영 위치는 소유자만 변경할 수 있으며, 선택한 사진은 다른 사람의 소유"
+"입니다."
 
 #: src/library/actions.rs:352
 msgid ""
 "Only the owner can change when a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "사진의 촬영 시간은 소유자만 변경할 수 있으며, 선택한 사진은 다른 사람의 소유입니다."
+msgstr ""
+"사진의 촬영 시간은 소유자만 변경할 수 있으며, 선택한 사진은 다른 사람의 소유"
+"입니다."
 
 #: src/library/actions/trash.rs:60
 #, rust-format
@@ -861,7 +921,8 @@ msgstr "“{album_name}”에서 나가시겠습니까?"
 #: src/library/album_assets.rs:200
 msgid ""
 "You'll stop seeing its photos unless the owner shares it with you again."
-msgstr "소유자가 다시 공유하지 않는 한 이 앨범의 사진을 더 이상 볼 수 없습니다."
+msgstr ""
+"소유자가 다시 공유하지 않는 한 이 앨범의 사진을 더 이상 볼 수 없습니다."
 
 #: src/library/album_assets.rs:201
 msgid "Leave"
@@ -881,7 +942,9 @@ msgstr "앨범에서 나갈 수 없습니다"
 msgid ""
 "Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
 "they don't create it again."
-msgstr "Mimick이 아직 업로드 중입니다. 앨범이 다시 생성되지 않도록 업로드가 끝난 후 “{album_name}”을(를) 삭제하세요."
+msgstr ""
+"Mimick이 아직 업로드 중입니다. 앨범이 다시 생성되지 않도록 업로드가 끝난 후 "
+"“{album_name}”을(를) 삭제하세요."
 
 #: src/library/album_delete.rs:29
 msgid "Uploads in Progress"
@@ -895,7 +958,9 @@ msgstr "설정을 먼저 닫으세요"
 msgid ""
 "Deleting this album changes your watch folders, and saving the open Settings "
 "window would undo that. Close Settings, then delete the album."
-msgstr "이 앨범을 삭제하면 감시 폴더가 변경되며, 열려 있는 설정 창을 저장하면 해당 변경 사항이 취소됩니다. 설정을 닫은 다음 앨범을 삭제하세요."
+msgstr ""
+"이 앨범을 삭제하면 감시 폴더가 변경되며, 열려 있는 설정 창을 저장하면 해당 변"
+"경 사항이 취소됩니다. 설정을 닫은 다음 앨범을 삭제하세요."
 
 #: src/library/album_delete.rs:45
 msgid "Its photos stay in your library."
@@ -940,7 +1005,9 @@ msgstr "이 폴더들의 감시 중지"
 msgid ""
 "So the album doesn't come back, photos in these folders go to your library "
 "instead of an album named after the folder:"
-msgstr "앨범이 다시 생성되지 않도록 이 폴더들의 사진은 폴더 이름의 앨범 대신 라이브러리로 이동합니다:"
+msgstr ""
+"앨범이 다시 생성되지 않도록 이 폴더들의 사진은 폴더 이름의 앨범 대신 라이브러"
+"리로 이동합니다:"
 
 #: src/library/album_delete.rs:221
 msgid "Could Not Delete Album"
@@ -1087,7 +1154,9 @@ msgid ""
 "Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
 msgid_plural ""
 "Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
-msgstr[0] "이미 동기화되어 있습니다. (원격 항목 {n}개는 체크섬이 없어 일치시킬 수 없습니다.)"
+msgstr[0] ""
+"이미 동기화되어 있습니다. (원격 항목 {n}개는 체크섬이 없어 일치시킬 수 없습니"
+"다.)"
 
 #: src/library/album_link.rs:299
 msgid "Already in sync."
@@ -1283,6 +1352,7 @@ msgid "Could Not Remove Person"
 msgstr "사용자를 제거할 수 없음"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+#: src/settings_window/connectivity.rs:307
 msgid "Add"
 msgstr "추가"
 
@@ -1705,7 +1775,10 @@ msgstr[0] "사진 {n}장을 복사했습니다"
 msgid ""
 "Pasting into an album here adds all {count}. Only {local} are on this "
 "computer, so other apps such as Files paste those; use Download for the rest."
-msgstr "여기서 앨범에 붙여넣으면 전체 {count}개가 추가됩니다. 이 컴퓨터에는 {local}개만 있으므로 '파일' 등의 다른 앱에서는 해당 항목만 붙여넣습니다. 나머지는 '다운로드'를 사용하세요."
+msgstr ""
+"여기서 앨범에 붙여넣으면 전체 {count}개가 추가됩니다. 이 컴퓨터에는 {local}개"
+"만 있으므로 '파일' 등의 다른 앱에서는 해당 항목만 붙여넣습니다. 나머지는 '다"
+"운로드'를 사용하세요."
 
 #: src/library/clipboard.rs:162
 msgid "Paste in Photos or albums"
@@ -1821,7 +1894,10 @@ msgid ""
 "Your API key is missing permissions required for the Library view. Please "
 "ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
 "'person.read' enabled."
-msgstr "API 키에 라이브러리 보기에 필요한 권한이 없습니다. 키에 'asset.read', 'asset.view', 'asset.download', 'person.read' 권한이 활성화되어 있는지 확인하세요."
+msgstr ""
+"API 키에 라이브러리 보기에 필요한 권한이 없습니다. 키에 'asset.read', "
+"'asset.view', 'asset.download', 'person.read' 권한이 활성화되어 있는지 확인하"
+"세요."
 
 #: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
 #: src/library/shortcuts_dialog.rs:179
@@ -2073,7 +2149,9 @@ msgstr "중복 항목 없음"
 msgid ""
 "Immich hasn't found any duplicate photos. It looks for them when its "
 "duplicate detection job runs."
-msgstr "Immich에서 중복 사진을 찾지 못했습니다. 중복 감지 작업이 실행될 때 검색됩니다."
+msgstr ""
+"Immich에서 중복 사진을 찾지 못했습니다. 중복 감지 작업이 실행될 때 검색됩니"
+"다."
 
 #: src/library/duplicates_view.rs:123
 msgid "Tap a photo to keep it or trash it."
@@ -2554,7 +2632,9 @@ msgstr "강도"
 
 #: src/library/lightbox/edit/pages.rs:125
 msgid "Drag over what to hide. Tap a box to move, resize, or change it."
-msgstr "가릴 부분을 드래그하세요. 상자를 탭하여 이동, 크기 조절 또는 변경할 수 있습니다."
+msgstr ""
+"가릴 부분을 드래그하세요. 상자를 탭하여 이동, 크기 조절 또는 변경할 수 있습니"
+"다."
 
 #: src/library/lightbox/edit/pages.rs:135
 msgid "Hide Faces"
@@ -2613,7 +2693,9 @@ msgstr "원본 세부 정보 유지"
 msgid ""
 "A saved copy keeps the original's camera details, date, place, caption, "
 "rating, and albums. Off, the copy is a new photo of its own."
-msgstr "저장된 사본은 원본의 카메라 세부 정보, 날짜, 장소, 설명, 평점 및 앨범을 유지합니다. 끄면 사본은 완전히 새로운 독립된 사진이 됩니다."
+msgstr ""
+"저장된 사본은 원본의 카메라 세부 정보, 날짜, 장소, 설명, 평점 및 앨범을 유지"
+"합니다. 끄면 사본은 완전히 새로운 독립된 사진이 됩니다."
 
 #: src/library/lightbox/edit/panel.rs:176
 msgid "Stack with Original"
@@ -2697,7 +2779,8 @@ msgstr "얼굴을 불러올 수 없습니다"
 
 #: src/library/lightbox/faces.rs:227
 msgid "No faces yet. Drag around one to tag it."
-msgstr "아직 인식된 얼굴이 없습니다. 태그를 지정하려면 얼굴 주위를 드래그하세요."
+msgstr ""
+"아직 인식된 얼굴이 없습니다. 태그를 지정하려면 얼굴 주위를 드래그하세요."
 
 #: src/library/lightbox/faces.rs:298
 msgid "Choose Person…"
@@ -2768,12 +2851,12 @@ msgstr "모션 재생 (스페이스바)"
 msgid "Playback isn't available"
 msgstr "재생할 수 없습니다"
 
-#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/live.rs:106 src/library/lightbox/video.rs:65
 #: src/library/lightbox/video.rs:108
 msgid "Playback failed"
 msgstr "재생 실패"
 
-#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+#: src/library/lightbox/live.rs:107 src/library/lightbox/video.rs:129
 msgid "Not connected to the Immich server."
 msgstr "Immich 서버에 연결되지 않았습니다."
 
@@ -3360,7 +3443,9 @@ msgstr[0] "파일 {n}개"
 msgid ""
 "Your API key is missing permissions required to view thumbnails. Please "
 "ensure the key has 'asset.view' enabled."
-msgstr "API 키에 섬네일을 보는 데 필요한 권한이 없습니다. 키에 'asset.view' 권한이 활성화되어 있는지 확인하세요."
+msgstr ""
+"API 키에 섬네일을 보는 데 필요한 권한이 없습니다. 키에 'asset.view' 권한이 활"
+"성화되어 있는지 확인하세요."
 
 #: src/library/memories.rs:154
 #, rust-format
@@ -3506,7 +3591,9 @@ msgstr "병합"
 msgid ""
 "Pick the people who are really {name}. Their faces move to {name} and "
 "they're removed. This can't be undone."
-msgstr "실제 {name}인 사람들을 선택하세요. 해당 인물의 얼굴이 {name}(으)로 이동하고 원래 항목은 제거됩니다. 이 작업은 취소할 수 없습니다."
+msgstr ""
+"실제 {name}인 사람들을 선택하세요. 해당 인물의 얼굴이 {name}(으)로 이동하고 "
+"원래 항목은 제거됩니다. 이 작업은 취소할 수 없습니다."
 
 #: src/library/person_merge_dialog.rs:124
 #, rust-format
@@ -3860,7 +3947,9 @@ msgstr "서버 전체 통계를 보려면 관리자 권한이 필요합니다."
 msgid ""
 "Your API key must include the 'server.about', 'server.versionCheck', "
 "'server.statistics', and 'asset.statistics' permissions to view stats."
-msgstr "통계를 보려면 API 키에 'server.about', 'server.versionCheck', 'server.statistics', 'asset.statistics' 권한이 포함되어 있어야 합니다."
+msgstr ""
+"통계를 보려면 API 키에 'server.about', 'server.versionCheck', "
+"'server.statistics', 'asset.statistics' 권한이 포함되어 있어야 합니다."
 
 #: src/library/server_stats_dialog.rs:168
 msgid "Unable to load statistics"
@@ -3970,7 +4059,9 @@ msgstr "링크에 포함된 사진"
 msgid ""
 "Tap photos to take them out. To add some, select them in your library and "
 "choose Add to Share Link."
-msgstr "사진을 탭하여 링크에서 제외할 수 있습니다. 추가하려면 라이브러리에서 사진을 선택한 다음 '공유 링크에 추가'를 선택하세요."
+msgstr ""
+"사진을 탭하여 링크에서 제외할 수 있습니다. 추가하려면 라이브러리에서 사진을 "
+"선택한 다음 '공유 링크에 추가'를 선택하세요."
 
 #: src/library/shared_link_photos.rs:111
 #, rust-format
@@ -4012,7 +4103,9 @@ msgstr "추가할 링크 없음"
 msgid ""
 "Albums' links always show the whole album. Make a link for some photos with "
 "Create Share Link first."
-msgstr "앨범 링크는 항상 앨범 전체를 표시합니다. 일부 사진만 공유하려면 먼저 '공유 링크 만들기'로 링크를 생성하세요."
+msgstr ""
+"앨범 링크는 항상 앨범 전체를 표시합니다. 일부 사진만 공유하려면 먼저 '공유 링"
+"크 만들기'로 링크를 생성하세요."
 
 #: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
 #: src/library/shared_link_qr.rs:129
@@ -4066,7 +4159,9 @@ msgstr "공유 링크 없음"
 msgid ""
 "Create one from an album's or a photo's right-click menu, or from a "
 "selection."
-msgstr "앨범 또는 사진의 마우스 오른쪽 버튼 메뉴나 선택 항목에서 링크를 만들 수 있습니다."
+msgstr ""
+"앨범 또는 사진의 마우스 오른쪽 버튼 메뉴나 선택 항목에서 링크를 만들 수 있습"
+"니다."
 
 #: src/library/shared_links_view.rs:101
 msgid "Could Not Load Shared Links"
@@ -4094,7 +4189,9 @@ msgstr "이 링크를 삭제하시겠습니까?"
 
 #: src/library/shared_links_view.rs:357
 msgid "Anyone using it will lose access. This can't be undone."
-msgstr "이 링크를 사용하는 모든 사용자가 접근 권한을 잃게 됩니다. 이 작업은 취소할 수 없습니다."
+msgstr ""
+"이 링크를 사용하는 모든 사용자가 접근 권한을 잃게 됩니다. 이 작업은 취소할 "
+"수 없습니다."
 
 #: src/library/shared_links_view.rs:373
 msgid "Could Not Delete Link"
@@ -4146,7 +4243,9 @@ msgstr "나에게 공유하는 상대"
 msgid ""
 "People who added you as a partner. Switch one on to see their photos in "
 "Photos."
-msgstr "나를 파트너로 추가한 사람들입니다. 스위치를 켜면 '사진'에서 상대방의 사진을 볼 수 있습니다."
+msgstr ""
+"나를 파트너로 추가한 사람들입니다. 스위치를 켜면 '사진'에서 상대방의 사진을 "
+"볼 수 있습니다."
 
 #: src/library/sharing_view.rs:94
 msgid "Could Not Load Partners"
@@ -4195,7 +4294,9 @@ msgstr "사용자 불러오는 중…"
 
 #: src/library/sharing_view.rs:321
 msgid "No other people found. Listing people needs the 'user.read' permission."
-msgstr "다른 사용자를 찾을 수 없습니다. 사용자 목록을 표시하려면 'user.read' 권한이 필요합니다."
+msgstr ""
+"다른 사용자를 찾을 수 없습니다. 사용자 목록을 표시하려면 'user.read' 권한이 "
+"필요합니다."
 
 #: src/library/sharing_view.rs:354
 msgid "Add Partner"
@@ -4210,7 +4311,9 @@ msgstr "{name} 님과 라이브러리를 공유하시겠습니까?"
 msgid ""
 "They'll be able to see all your photos and videos. You can stop sharing at "
 "any time."
-msgstr "상대방이 내 모든 사진과 동영상을 볼 수 있게 됩니다. 공유는 언제든지 중지할 수 있습니다."
+msgstr ""
+"상대방이 내 모든 사진과 동영상을 볼 수 있게 됩니다. 공유는 언제든지 중지할 "
+"수 있습니다."
 
 #: src/library/sharing_view.rs:381
 msgid "Share"
@@ -4224,7 +4327,7 @@ msgstr "파트너를 추가할 수 없음"
 msgid "Show keyboard shortcuts"
 msgstr "키보드 단축키 표시"
 
-#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:20
 msgid "Open Settings"
 msgstr "설정 열기"
 
@@ -4582,12 +4685,12 @@ msgstr "360° 사진"
 msgid "Video"
 msgstr "동영상"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "연결"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "서버"
@@ -4842,7 +4945,9 @@ msgstr "업로드 대기열에 추가됨"
 msgid "{n} file queued for upload. Progress is visible in the queue inspector."
 msgid_plural ""
 "{n} files queued for upload. Progress is visible in the queue inspector."
-msgstr[0] "업로드 대기열에 파일 {n}개가 추가되었습니다. 대기열 검사기에서 진행 상황을 확인할 수 있습니다."
+msgstr[0] ""
+"업로드 대기열에 파일 {n}개가 추가되었습니다. 대기열 검사기에서 진행 상황을 확"
+"인할 수 있습니다."
 
 #: src/library/staging_view/album_picker.rs:62
 msgid "Upload Failed"
@@ -4852,7 +4957,8 @@ msgstr "업로드 실패"
 #, rust-format
 msgid "{n} file failed to enqueue. Check the logs for details."
 msgid_plural "All {n} files failed to enqueue. Check the logs for details."
-msgstr[0] "파일 {n}개를 대기열에 추가하지 못했습니다. 자세한 내용은 로그를 확인하세요."
+msgstr[0] ""
+"파일 {n}개를 대기열에 추가하지 못했습니다. 자세한 내용은 로그를 확인하세요."
 
 #: src/library/staging_view/album_picker.rs:74
 msgid "Upload Partially Queued"
@@ -4862,7 +4968,9 @@ msgstr "업로드 일부 대기열에 추가됨"
 #, rust-format
 msgid "{n} file queued, {skipped} skipped (hash or path errors)."
 msgid_plural "{n} files queued, {skipped} skipped (hash or path errors)."
-msgstr[0] "파일 {n}개가 대기열에 추가되었고, {skipped}개는 건너뛰었습니다(해시 또는 경로 오류)."
+msgstr[0] ""
+"파일 {n}개가 대기열에 추가되었고, {skipped}개는 건너뛰었습니다(해시 또는 경"
+"로 오류)."
 
 #: src/library/tags_view.rs:38 src/library/tags_view.rs:249
 msgid "New Tag"
@@ -4883,7 +4991,9 @@ msgstr "태그 없음"
 #: src/library/tags_view.rs:115
 msgid ""
 "Create a tag with New Tag, or tag photos from the lightbox details pane."
-msgstr "'새 태그'로 태그를 만들거나 라이트박스 세부 정보 창에서 사진에 태그를 지정하세요."
+msgstr ""
+"'새 태그'로 태그를 만들거나 라이트박스 세부 정보 창에서 사진에 태그를 지정하"
+"세요."
 
 #: src/library/tags_view.rs:118
 msgid "No Tags Inside"
@@ -5047,7 +5157,9 @@ msgstr "이 사진은 '사진' 타임라인에 없습니다"
 msgid ""
 "Immich permanently deletes trashed items after its retention period (30 days "
 "by default)."
-msgstr "Immich는 보관 기간(기본값 30일)이 지나면 휴지통의 항목을 영구적으로 삭제합니다."
+msgstr ""
+"Immich는 보관 기간(기본값 30일)이 지나면 휴지통의 항목을 영구적으로 삭제합니"
+"다."
 
 #: src/library/trash_view.rs:66
 msgid "Restore All"
@@ -5088,7 +5200,9 @@ msgstr "휴지통을 비우시겠습니까?"
 #: src/library/trash_view.rs:237
 msgid ""
 "Everything in the Immich trash is deleted permanently. This can't be undone."
-msgstr "Immich 휴지통의 모든 항목이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다."
+msgstr ""
+"Immich 휴지통의 모든 항목이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니"
+"다."
 
 #: src/library/trash_view.rs:243
 msgid "Could Not Empty Trash"
@@ -5436,7 +5550,9 @@ msgstr "Mimick: 연결 끊김"
 msgid ""
 "Could not reach the Immich server. Uploads will resume automatically when "
 "connectivity is restored."
-msgstr "Immich 서버에 연결할 수 없습니다. 연결이 복원되면 업로드가 자동으로 재개됩니다."
+msgstr ""
+"Immich 서버에 연결할 수 없습니다. 연결이 복원되면 업로드가 자동으로 재개됩니"
+"다."
 
 #: src/queue_manager.rs:241
 #, rust-format
@@ -5502,7 +5618,9 @@ msgstr "상세 로그"
 #: src/settings_window/actions_ui.rs:23
 msgid ""
 "Record more while you reproduce a problem, then export. The log grows faster."
-msgstr "문제를 재현하는 동안 더 많은 정보를 기록한 다음 내보냅니다. 로그 파일 크기가 빠르게 증가합니다."
+msgstr ""
+"문제를 재현하는 동안 더 많은 정보를 기록한 다음 내보냅니다. 로그 파일 크기가 "
+"빠르게 증가합니다."
 
 #: src/settings_window/actions_ui.rs:28
 msgid "Export…"
@@ -5530,39 +5648,51 @@ msgstr "밝은 테마"
 msgid "Dark Theme"
 msgstr "어두운 테마"
 
-#: src/settings_window/apply.rs:164
+#: src/settings_window/apply.rs:168
+msgid "Secrets Stored in Files"
+msgstr "보안 비밀이 파일에 저장됨"
+
+#: src/settings_window/apply.rs:172
 msgid "API Key Stored in a File"
 msgstr "API 키가 파일에 저장됨"
 
-#: src/settings_window/apply.rs:170
+#: src/settings_window/apply.rs:176
+msgid "Custom Proxy Headers Stored in a File"
+msgstr "사용자 지정 프록시 헤더가 파일에 저장됨"
+
+#: src/settings_window/apply.rs:184
 msgid "Settings Saved"
 msgstr "설정 저장됨"
 
-#: src/settings_window/apply.rs:171
+#: src/settings_window/apply.rs:185
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick이 업데이트된 설정을 성공적으로 저장했습니다."
 
-#: src/settings_window/apply.rs:207
+#: src/settings_window/apply.rs:221
 msgid "Startup Permission Needed"
 msgstr "시작 시 실행 권한 필요"
 
-#: src/settings_window/apply.rs:208
+#: src/settings_window/apply.rs:222
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick이 로그인 시 자동으로 시작되도록 허용되지 않았습니다."
 
-#: src/settings_window/apply.rs:210
+#: src/settings_window/apply.rs:224
 msgid "Could Not Update Startup Setting"
 msgstr "시작 설정을 업데이트할 수 없음"
 
-#: src/settings_window/apply.rs:241
+#: src/settings_window/apply.rs:257
 msgid "Could Not Save API Key"
 msgstr "API 키를 저장할 수 없음"
 
-#: src/settings_window/apply.rs:249
+#: src/settings_window/apply.rs:272
+msgid "Could Not Save Custom Headers"
+msgstr "사용자 지정 헤더를 저장할 수 없음"
+
+#: src/settings_window/apply.rs:282
 msgid "Could Not Save Settings"
 msgstr "설정을 저장할 수 없음"
 
-#: src/settings_window/apply.rs:250
+#: src/settings_window/apply.rs:283
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick이 업데이트된 구성을 디스크에 쓸 수 없습니다."
 
@@ -5665,47 +5795,91 @@ msgstr "Mimick 시작 시 검사 대상"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "폴더별로 '폴더 규칙'에서 자체 설정을 선택할 수 있습니다."
 
-#: src/settings_window/connectivity.rs:29
+#: src/settings_window/connectivity.rs:37
 msgid "Internal URL (LAN)"
 msgstr "내부 URL (LAN)"
 
-#: src/settings_window/connectivity.rs:31
+#: src/settings_window/connectivity.rs:39
 msgid "External URL (WAN)"
 msgstr "외부 URL (WAN)"
 
-#: src/settings_window/connectivity.rs:35
+#: src/settings_window/connectivity.rs:46
 msgid "Not tested yet"
 msgstr "아직 테스트되지 않음"
 
-#: src/settings_window/connectivity.rs:38
+#: src/settings_window/connectivity.rs:49
 msgid "Test Connection"
 msgstr "연결 테스트"
 
-#: src/settings_window/connectivity.rs:41
+#: src/settings_window/connectivity.rs:52
 msgid "Save and Connect"
 msgstr "저장 및 연결"
 
-#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "라이브러리 열기"
 
-#: src/settings_window/connectivity.rs:89
+#: src/settings_window/connectivity.rs:101
 msgid "API Key"
 msgstr "API 키"
 
-#: src/settings_window/connectivity.rs:137
+#: src/settings_window/connectivity.rs:120
+msgid "Custom Proxy Headers"
+msgstr "사용자 지정 프록시 헤더"
+
+#: src/settings_window/connectivity.rs:136
+msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
+msgstr "역방향 프록시용 선택적 HTTP 헤더(예: Cloudflare Access)"
+
+#: src/settings_window/connectivity.rs:139
+msgid "1 header configured"
+msgstr "헤더 1개 구성됨"
+
+#: src/settings_window/connectivity.rs:141
+msgid "headers configured"
+msgstr "개 헤더 구성됨"
+
+#: src/settings_window/connectivity.rs:191
+msgid "Remove header"
+msgstr "헤더 제거"
+
+#: src/settings_window/connectivity.rs:218
+msgid "Add Header…"
+msgstr "헤더 추가…"
+
+#: src/settings_window/connectivity.rs:241
+msgid "Paste from clipboard"
+msgstr "클립보드에서 붙여넣기"
+
+#: src/settings_window/connectivity.rs:278
+msgid "Header Name"
+msgstr "헤더 이름"
+
+#: src/settings_window/connectivity.rs:286
+msgid "Secret / Value"
+msgstr "보안 비밀 / 값"
+
+#: src/settings_window/connectivity.rs:300
+msgid "Scope"
+msgstr "범위"
+
+#: src/settings_window/connectivity.rs:337
+msgid "Add Custom Header"
+msgstr "사용자 지정 헤더 추가"
+
+#: src/settings_window/connectivity.rs:407
 msgid "LAN URL"
 msgstr "LAN URL"
 
-#: src/settings_window/connectivity.rs:138
+#: src/settings_window/connectivity.rs:408
 msgid "WAN URL"
 msgstr "WAN URL"
 
-#: src/settings_window/form.rs:127
+#: src/settings_window/form.rs:133
 msgid "Invalid Internal URL"
 msgstr "잘못된 내부 URL"
 
-#: src/settings_window/form.rs:132
+#: src/settings_window/form.rs:138
 msgid "Invalid External URL"
 msgstr "잘못된 외부 URL"
 
@@ -5801,7 +5975,9 @@ msgstr "전체 RAW 디코딩"
 msgid ""
 "Uses the sensor data, not the embedded preview, with every colour the camera "
 "recorded. Slower, and uses more memory."
-msgstr "내장된 미리보기 대신 센서 데이터를 사용하여 카메라가 기록한 모든 색상을 재현합니다. 속도가 느리고 메모리를 더 많이 사용합니다."
+msgstr ""
+"내장된 미리보기 대신 센서 데이터를 사용하여 카메라가 기록한 모든 색상을 재현"
+"합니다. 속도가 느리고 메모리를 더 많이 사용합니다."
 
 #: src/settings_window/library.rs:172
 msgid "Keep Decoded RAW Files"
@@ -5871,33 +6047,50 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"설정이 저장되었지만 시스템 키링을 사용할 수 없어 API 키가 {path}에 저장되었습니다.\n"
+"설정이 저장되었지만 시스템 키링을 사용할 수 없어 API 키가 {path}에 저장되었습"
+"니다.\n"
 "\n"
 "이 파일은 사용자 계정으로만 읽을 수 있지만 암호화되지는 않았습니다.\n"
 "\n"
 "참조: {url}"
 
-#: src/settings_window/mod.rs:141
+#: src/settings_window/mod.rs:142
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so custom proxy "
+"headers were stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"설정이 저장되었지만 시스템 키링을 사용할 수 없어 사용자 지정 프록시 헤더가 {path}에 저장되었습니다.\n"
+"\n"
+"이 파일은 사용자 계정으로만 읽을 수 있지만 암호화되지는 않았습니다.\n"
+"\n"
+"참조: {url}"
+
+#: src/settings_window/mod.rs:156
 msgid "No successful sync yet"
 msgstr "아직 성공한 동기화 없음"
 
-#: src/settings_window/mod.rs:151
+#: src/settings_window/mod.rs:166
 msgid "Less than a minute ago"
 msgstr "1분 미만 전"
 
-#: src/settings_window/mod.rs:157
+#: src/settings_window/mod.rs:172
 #, rust-format
 msgid "{n} minute ago"
 msgid_plural "{n} minutes ago"
 msgstr[0] "{n}분 전"
 
-#: src/settings_window/mod.rs:161
+#: src/settings_window/mod.rs:176
 #, rust-format
 msgid "{n} hour ago"
 msgid_plural "{n} hours ago"
 msgstr[0] "{n}시간 전"
 
-#: src/settings_window/mod.rs:164
+#: src/settings_window/mod.rs:179
 #, rust-format
 msgid "{n} day ago"
 msgid_plural "{n} days ago"
@@ -5968,7 +6161,7 @@ msgid "Sync Now"
 msgstr "지금 동기화"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
 msgid "Pause"
 msgstr "일시 중지"
 
@@ -5984,8 +6177,8 @@ msgstr "확인 필요"
 msgid "Failed uploads"
 msgstr "실패한 업로드"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
-#: src/settings_window/wiring.rs:368
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
+#: src/settings_window/wiring.rs:375
 msgid "Resume"
 msgstr "다시 시작"
 
@@ -6188,7 +6381,7 @@ msgstr "지정된 유형만, 예: jpg, png, mp4 (전체는 비워 둠)"
 msgid "Status"
 msgstr "상태"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick 종료"
 
@@ -6228,7 +6421,9 @@ msgstr "3. 저장 및 연결"
 #: src/settings_window/wiring.rs:165
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
-msgstr "다음으로 라이브러리가 열립니다. 폴더도 백업하려면 '감시 폴더' 아래에 추가하세요."
+msgstr ""
+"다음으로 라이브러리가 열립니다. 폴더도 백업하려면 '감시 폴더' 아래에 추가하세"
+"요."
 
 #: src/settings_window/wiring.rs:177
 msgid "Guide"
@@ -6248,19 +6443,19 @@ msgstr "{name}에 연결할 수 없음"
 msgid "Couldn't reach Immich at either address"
 msgstr "두 주소 모두에서 Immich에 연결할 수 없습니다"
 
-#: src/settings_window/wiring.rs:252
+#: src/settings_window/wiring.rs:255
 msgid "Testing…"
 msgstr "테스트 중…"
 
-#: src/settings_window/wiring.rs:366
+#: src/settings_window/wiring.rs:373
 msgid "Paused by you"
 msgstr "사용자에 의해 일시 중지됨"
 
-#: src/settings_window/wiring.rs:425
+#: src/settings_window/wiring.rs:432
 msgid "Invalid Selection"
 msgstr "잘못된 선택"
 
-#: src/settings_window/wiring.rs:426
+#: src/settings_window/wiring.rs:433
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "하나 이상의 URL(내부 또는 외부)을 활성화해야 합니다."
 
@@ -6344,9 +6539,11 @@ msgstr "비공식 Immich 데스크톱 클라이언트 및 자동 동기화 에�
 #: setup/dev.nicx.mimick.desktop:10
 msgid ""
 "Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
-msgstr "Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;사진;동영상;비디오;이미지;동기화;백업;업로드;갤러리;셀프호스팅;"
+msgstr ""
+"Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;사"
+"진;동영상;비디오;이미지;동기화;백업;업로드;갤러리;셀프호스팅;"
 
-#: setup/dev.nicx.mimick.desktop:25
+#: setup/dev.nicx.mimick.desktop:24
 msgid "Upload with Mimick"
 msgstr "Mimick으로 업로드"
 
@@ -6359,43 +6556,58 @@ msgid ""
 "Mimick is a native Linux desktop client for self-hosted Immich servers. It "
 "monitors your folders in the background and automatically syncs photos and "
 "videos to your server."
-msgstr "Mimick은 자체 호스팅 Immich 서버를 위한 네이티브 Linux 데스크톱 클라이언트입니다. 백그라운드에서 폴더를 감시하고 사진 및 동영상을 서버에 자동으로 동기화합니다."
+msgstr ""
+"Mimick은 자체 호스팅 Immich 서버를 위한 네이티브 Linux 데스크톱 클라이언트입"
+"니다. 백그라운드에서 폴더를 감시하고 사진 및 동영상을 서버에 자동으로 동기화"
+"합니다."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
 msgid ""
 "Per-folder sync methods: upload only, download only, or full bidirectional "
 "sync with optional deletion mirroring."
-msgstr "폴더별 동기화 방식: 업로드 전용, 다운로드 전용 또는 선택적 삭제 미러링을 포함한 완전한 양방향 동기화."
+msgstr ""
+"폴더별 동기화 방식: 업로드 전용, 다운로드 전용 또는 선택적 삭제 미러링을 포함"
+"한 완전한 양방향 동기화."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
 msgid ""
 "Built-in Library View for browsing your timeline, managing albums, and "
 "searching with Smart Search, OCR, and metadata filters."
-msgstr "타임라인 탐색, 앨범 관리, 스마트 검색, OCR 및 메타데이터 필터를 통한 검색을 지원하는 기본 제공 라이브러리 보기."
+msgstr ""
+"타임라인 탐색, 앨범 관리, 스마트 검색, OCR 및 메타데이터 필터를 통한 검색을 "
+"지원하는 기본 제공 라이브러리 보기."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
 msgid ""
 "SHA-1 deduplication, parallel upload workers, and offline retry queue for "
 "reliable transfers."
-msgstr "안정적인 전송을 위한 SHA-1 중복 제거, 병렬 업로드 작업자 및 오프라인 재시도 대기열."
+msgstr ""
+"안정적인 전송을 위한 SHA-1 중복 제거, 병렬 업로드 작업자 및 오프라인 재시도 "
+"대기열."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
 msgid ""
 "Environment-aware: automatically pauses on battery or metered connections. "
 "Configurable quiet hours and per-folder rules."
-msgstr "환경 인식: 배터리 사용 또는 종량제 네트워크 연결 시 자동으로 일시 중지됩니다. 구성 가능한 방해 금지 시간대 및 폴더별 규칙 제공."
+msgstr ""
+"환경 인식: 배터리 사용 또는 종량제 네트워크 연결 시 자동으로 일시 중지됩니"
+"다. 구성 가능한 방해 금지 시간대 및 폴더별 규칙 제공."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
 msgid ""
 "Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
 "sandbox support."
-msgstr "Rust, GTK4 및 Libadwaita로 제작되었습니다. 시스템 트레이 통합 및 Flatpak 샌드박스를 지원합니다."
+msgstr ""
+"Rust, GTK4 및 Libadwaita로 제작되었습니다. 시스템 트레이 통합 및 Flatpak 샌드"
+"박스를 지원합니다."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
 msgid ""
 "Mimick is a community-developed client and is not affiliated with or "
 "endorsed by the Immich project."
-msgstr "Mimick은 커뮤니티에서 개발한 클라이언트이며 Immich 프로젝트와 제휴하거나 보증하지 않습니다."
+msgstr ""
+"Mimick은 커뮤니티에서 개발한 클라이언트이며 Immich 프로젝트와 제휴하거나 보증"
+"하지 않습니다."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
 msgid "Library View - Photos page with sidebar"

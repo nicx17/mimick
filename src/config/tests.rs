@@ -485,3 +485,60 @@ fn renaming_an_album_updates_linked_watch_paths() {
         "X"
     ));
 }
+
+#[test]
+fn test_custom_header_validation_and_matching() {
+    let valid_header = CustomHeader::new("CF-Access-Client-Id", "value-123", HeaderScope::Wan);
+    assert!(valid_header.is_valid_name());
+    assert!(valid_header.scope.matches_route(true));
+    assert!(!valid_header.scope.matches_route(false));
+
+    let all_header = CustomHeader::new("X-Custom_Header-1", "all-val", HeaderScope::All);
+    assert!(all_header.is_valid_name());
+    assert!(all_header.scope.matches_route(true));
+    assert!(all_header.scope.matches_route(false));
+
+    let lan_header = CustomHeader::new("LocalHeader", "lan-val", HeaderScope::Lan);
+    assert!(lan_header.is_valid_name());
+    assert!(!lan_header.scope.matches_route(true));
+    assert!(lan_header.scope.matches_route(false));
+
+    // Invalid header names
+    assert!(!CustomHeader::new("", "val", HeaderScope::Wan).is_valid_name());
+    assert!(!CustomHeader::new("Header With Spaces", "val", HeaderScope::Wan).is_valid_name());
+    assert!(!CustomHeader::new("Header:Colon", "val", HeaderScope::Wan).is_valid_name());
+    assert!(!CustomHeader::new("Header\nNewline", "val", HeaderScope::Wan).is_valid_name());
+}
+
+#[test]
+fn test_custom_headers_fallback_file_cycle() {
+    #[cfg(unix)]
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = tempfile::tempdir().unwrap();
+    let config_file = dir.path().join("config.json");
+    let fallback_path = custom_headers_fallback_path(&config_file);
+
+    assert_eq!(read_custom_headers_file_fallback(&config_file), None);
+
+    let headers = vec![
+        CustomHeader::new("CF-Access-Client-Id", "id-token", HeaderScope::Wan),
+        CustomHeader::new("X-Secret", "sec-token", HeaderScope::All),
+    ];
+
+    write_custom_headers_file_fallback(&config_file, &headers).unwrap();
+    assert!(fallback_path.exists());
+
+    #[cfg(unix)]
+    assert_eq!(
+        fs::metadata(&fallback_path).unwrap().permissions().mode() & 0o777,
+        0o600
+    );
+
+    let read_back = read_custom_headers_file_fallback(&config_file).unwrap();
+    assert_eq!(read_back, headers);
+
+    remove_custom_headers_file_fallback(&config_file);
+    assert!(!fallback_path.exists());
+    assert_eq!(read_custom_headers_file_fallback(&config_file), None);
+}
