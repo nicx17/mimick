@@ -1,4 +1,4 @@
-use super::*;
+use super::{ActiveConnection, ApiClientSettings, ImmichApiClient};
 use crate::config::{CustomHeader, HeaderScope};
 
 fn settings(internal_url: &str, external_url: &str) -> ApiClientSettings {
