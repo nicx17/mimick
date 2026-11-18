@@ -2732,14 +2732,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/lcms2-sys/lcms2-sys-4.0.7.crate",
-        "sha256": "264db0b78119c5a37d78bb41fb355daab29b3b29430b53cd92e3da51f0ab06cc",
-        "dest": "cargo/vendor/lcms2-sys-4.0.7"
+        "url": "https://static.crates.io/crates/lcms2-sys/lcms2-sys-4.1.0.crate",
+        "sha256": "9b37be72dca0c07b7bf15f3b7410ce6fb7a517f98c04f2448279d5cdd2255cb0",
+        "dest": "cargo/vendor/lcms2-sys-4.1.0"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"264db0b78119c5a37d78bb41fb355daab29b3b29430b53cd92e3da51f0ab06cc\", \"files\": {}}",
-        "dest": "cargo/vendor/lcms2-sys-4.0.7",
+        "contents": "{\"package\": \"9b37be72dca0c07b7bf15f3b7410ce6fb7a517f98c04f2448279d5cdd2255cb0\", \"files\": {}}",
+        "dest": "cargo/vendor/lcms2-sys-4.1.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {
@@ -4565,14 +4565,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/smallvec/smallvec-1.16.5.crate",
-        "sha256": "149309498a5f7334b12ddae0cad8aba81ce785fe91755068867e017cf98fee46",
-        "dest": "cargo/vendor/smallvec-1.16.5"
+        "url": "https://static.crates.io/crates/smallvec/smallvec-1.16.6.crate",
+        "sha256": "3244542535d5de959d90ec55d1b5ff0fd2bb7b1310223907d5f11932847f7b59",
+        "dest": "cargo/vendor/smallvec-1.16.6"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"149309498a5f7334b12ddae0cad8aba81ce785fe91755068867e017cf98fee46\", \"files\": {}}",
-        "dest": "cargo/vendor/smallvec-1.16.5",
+        "contents": "{\"package\": \"3244542535d5de959d90ec55d1b5ff0fd2bb7b1310223907d5f11932847f7b59\", \"files\": {}}",
+        "dest": "cargo/vendor/smallvec-1.16.6",
         "dest-filename": ".cargo-checksum.json"
     },
     {
