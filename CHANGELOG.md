@@ -7,15 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.15.3] - 2026-11-18
+
 ### Added
 
-- Added support for custom HTTP proxy headers (e.g. Cloudflare Access service tokens `CF-Access-Client-Id` and `CF-Access-Client-Secret`) (#341):
+- Added support for custom HTTP proxy headers (e.g. Cloudflare Access service tokens `CF-Access-Client-Id` and `CF-Access-Client-Secret`) (#341, #344):
   - Configurable route scope per header: `WAN only (External)` (default), `All (LAN & WAN)`, or `LAN only (Internal)`.
   - Sleek Libadwaita UI with an expandable group in Settings → Server, subtitle count summary, trash button for removal, and an "Add Header" dialog with one-click clipboard paste buttons for header names and secrets.
   - Secure credential storage in the system keyring via `oo7` with base64-encoded file fallback (`0600` permissions) to protect sensitive proxy tokens.
   - Transparent header injection into all Immich API requests, connectivity pings, video streaming pipeline (`souphttpsrc`), asset downloads, and background timezone fixups.
   - Strict host-matching guard preventing proxy header leakage to third-party endpoints (e.g. map tiles and Photon geocoding).
 - Updated project dependencies to their latest compatible versions (`dirs`, `lru`, `parking_lot`, `phf`, `base64`, `ashpd`, `oo7`, `jpeg2k`, `resvg`, `libheif-rs`).
+
+### Fixed
+
+- Preserved active connection route scoping when LAN and WAN URLs are identical (#344).
+- Surfaced fallback-file notification for custom proxy headers when keyring is unavailable (#344).
+- Refactored connectivity wiring into dedicated `connectivity_wiring` module to improve maintainability (#344).
 
 ## [9.15.2] - 2026-11-14
 
