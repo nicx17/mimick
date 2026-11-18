@@ -98,10 +98,7 @@ impl Lightbox {
                 return;
             }
             match source {
-                Some((uri, api_key)) => motion.start(VideoSource {
-                    uri,
-                    api_key: Some(api_key),
-                }),
+                Some((uri, headers)) => motion.start(VideoSource { uri, headers }),
                 None => {
                     lb.live_button.set_active(false);
                     show_error_toast(

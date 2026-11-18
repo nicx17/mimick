@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
-"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
-"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
@@ -41,11 +41,11 @@ msgstr "アルバム一覧を利用できません"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "アルバムを更新する前に Immich サーバーに再接続してください。"
 
-#: src/api_client/albums.rs:180
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "アルバムの取得に失敗しました"
 
-#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "存在を確認するためのアルバム一覧を取得できません"
 
@@ -54,9 +54,11 @@ msgstr "存在を確認するためのアルバム一覧を取得できません
 msgid ""
 "The server responded with HTTP {status}. Check the server logs and retry "
 "after confirming the current configuration."
-msgstr "サーバーが HTTP {status} を返しました。サーバーのログを確認し、現在の設定を確認した後に再試行してください。"
+msgstr ""
+"サーバーが HTTP {status} を返しました。サーバーのログを確認し、現在の設定を確"
+"認した後に再試行してください。"
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich が API キーを拒否しました"
 
@@ -64,7 +66,9 @@ msgstr "Immich が API キーを拒否しました"
 msgid ""
 "Update the API key in Settings and confirm it still has the required Asset "
 "and Album permissions (see README for the full list)."
-msgstr "設定で API キーを更新し、必要なアセットおよびアルバムの権限がまだあることを確認してください (一覧は README を参照してください)。"
+msgstr ""
+"設定で API キーを更新し、必要なアセットおよびアルバムの権限がまだあることを確"
+"認してください (一覧は README を参照してください)。"
 
 #: src/api_client/errors.rs:54
 msgid "An album reference is no longer valid"
@@ -72,9 +76,10 @@ msgstr "アルバムの参照が有効ではなくなりました"
 
 #: src/api_client/errors.rs:55
 msgid "Refresh the album list or choose a different album before retrying."
-msgstr "アルバム一覧を更新するか、別のアルバムを選択してから再試行してください。"
+msgstr ""
+"アルバム一覧を更新するか、別のアルバムを選択してから再試行してください。"
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich がファイルサイズ超過のため拒否しました"
 
@@ -82,7 +87,9 @@ msgstr "Immich がファイルサイズ超過のため拒否しました"
 msgid ""
 "Reduce the file size, raise the server upload limit, or skip oversized files "
 "with folder rules."
-msgstr "ファイルサイズを小さくするか、サーバーのアップロード制限を引き上げるか、フォルダーのルールでサイズ超過のファイルをスキップしてください。"
+msgstr ""
+"ファイルサイズを小さくするか、サーバーのアップロード制限を引き上げるか、フォ"
+"ルダーのルールでサイズ超過のファイルをスキップしてください。"
 
 #: src/api_client/errors.rs:65
 msgid "Immich rate-limited the request"
@@ -92,9 +99,11 @@ msgstr "Immich のレート制限によりリクエストが制限されまし�
 msgid ""
 "Wait a moment and retry. If this happens often, lower upload concurrency or "
 "check reverse proxy limits."
-msgstr "しばらく待ってから再試行してください。頻繁に発生する場合は、並行アップロード数を減らすか、リバースプロキシの制限を確認してください。"
+msgstr ""
+"しばらく待ってから再試行してください。頻繁に発生する場合は、並行アップロード"
+"数を減らすか、リバースプロキシの制限を確認してください。"
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich は一時的に利用できません"
 
@@ -102,7 +111,9 @@ msgstr "Immich は一時的に利用できません"
 msgid ""
 "Wait a moment and retry. If it keeps happening, inspect the server and "
 "reverse proxy logs."
-msgstr "しばらく待ってから再試行してください。問題が解決しない場合は、サーバーおよびリバースプロキシのログを確認してください。"
+msgstr ""
+"しばらく待ってから再試行してください。問題が解決しない場合は、サーバーおよび"
+"リバースプロキシのログを確認してください。"
 
 #: src/api_client/errors.rs:88
 msgid "the upload"
@@ -168,7 +179,7 @@ msgstr "Immich へのリクエストがタイムアウトしました"
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "ネットワークの状態とサーバーの応答性を確認し、再試行してください。"
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Immich サーバーに接続できませんでした"
 
@@ -176,12 +187,16 @@ msgstr "Immich サーバーに接続できませんでした"
 msgid ""
 "Check the configured URLs, your network connection, and whether the server "
 "is online."
-msgstr "設定された URL、ネットワーク接続、およびサーバーがオンラインであるかを確認してください。"
+msgstr ""
+"設定された URL、ネットワーク接続、およびサーバーがオンラインであるかを確認し"
+"てください。"
 
 #: src/api_client/errors.rs:135
 msgid ""
 "Retry the request after checking network connectivity and server health."
-msgstr "ネットワークの接続状況とサーバーの状態を確認した後、リクエストを再試行してください。"
+msgstr ""
+"ネットワークの接続状況とサーバーの状態を確認した後、リクエストを再試行してく"
+"ださい。"
 
 #: src/api_client/errors.rs:144
 msgid "The upload request failed before completion"
@@ -227,20 +242,20 @@ msgstr "ライブラリ統計情報のリクエストが完了前に失敗しま
 msgid "The server version request failed before completion"
 msgstr "サーバーバージョンリクエストが完了前に失敗しました"
 
-#: src/api_client/mod.rs:387
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "アクティブな接続がありません"
 
-#: src/api_client/search.rs:358
+#: src/api_client/search.rs:342
 msgid "Immich can't count by file name or deleted photos"
 msgstr "Immich はファイル名または削除された写真でカウントできません"
 
-#: src/api_client/tags.rs:76
+#: src/api_client/tags.rs:72
 #, rust-format
 msgid "Immich did not return the tag \"{value}\""
 msgstr "Immich はタグ \"{value}\" を返しませんでした"
 
-#: src/api_client/tags.rs:87
+#: src/api_client/tags.rs:83
 msgid "Renaming tags needs a newer version of Immich."
 msgstr "タグの名前を変更するには、より新しいバージョンの Immich が必要です。"
 
@@ -249,62 +264,76 @@ msgstr "タグの名前を変更するには、より新しいバージョンの
 msgid "Invalid month {month}"
 msgstr "無効な月: {month}"
 
-#: src/api_client/upload.rs:301
+#: src/api_client/upload.rs:316
 msgid "A queued file is no longer available"
 msgstr "キュー内のファイルが利用できなくなりました"
 
-#: src/api_client/upload.rs:303
+#: src/api_client/upload.rs:318
 msgid "Mimick could not read a queued file"
 msgstr "Mimick はキュー内のファイルを読み込めませんでした"
 
-#: src/api_client/upload.rs:306
+#: src/api_client/upload.rs:321
 msgid ""
 "Check that the watched folder still exists and that the file was not moved "
 "or deleted before upload."
-msgstr "監視フォルダーがまだ存在すること、およびアップロード前にファイルが移動または削除されていないことを確認してください。"
-
-#: src/api_client/upload.rs:308
-msgid ""
-"Verify folder permissions and make sure the file is still accessible to the "
-"app."
-msgstr "フォルダーの権限を確認し、アプリからファイルに引き続きアクセスできることを確認してください。"
-
-#: src/api_client/upload.rs:322
-msgid "Mimick could not open a queued file"
-msgstr "Mimick はキュー内のファイルを開くことができませんでした"
+msgstr ""
+"監視フォルダーがまだ存在すること、およびアップロード前にファイルが移動または"
+"削除されていないことを確認してください。"
 
 #: src/api_client/upload.rs:323
 msgid ""
-"The file may be locked, deleted, or outside the app's allowed folder access."
-msgstr "ファイルがロックされているか、削除されているか、アプリの許可されたフォルダーアクセスの範囲外にある可能性があります。"
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr ""
+"フォルダーの権限を確認し、アプリからファイルに引き続きアクセスできることを確"
+"認してください。"
 
-#: src/api_client/upload.rs:336
+#: src/api_client/upload.rs:337
+msgid "Mimick could not open a queued file"
+msgstr "Mimick はキュー内のファイルを開くことができませんでした"
+
+#: src/api_client/upload.rs:338
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr ""
+"ファイルがロックされているか、削除されているか、アプリの許可されたフォルダー"
+"アクセスの範囲外にある可能性があります。"
+
+#: src/api_client/upload.rs:351
 msgid "No active server connection"
 msgstr "アクティブなサーバー接続がありません"
 
-#: src/api_client/upload.rs:337
+#: src/api_client/upload.rs:352
 msgid ""
 "Test the server connection in Settings and confirm at least one Immich URL "
 "is reachable."
-msgstr "設定でサーバー接続をテストし、少なくとも 1 つの Immich URL に到達できることを確認してください。"
+msgstr ""
+"設定でサーバー接続をテストし、少なくとも 1 つの Immich URL に到達できることを"
+"確認してください。"
 
-#: src/api_client/upload.rs:393
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
-msgstr "ファイルサイズを小さくするか、サーバーのアップロード制限を引き上げるか、フォルダーのルールを使用してサイズ超過のファイルをスキップしてください。"
+msgstr ""
+"ファイルサイズを小さくするか、サーバーのアップロード制限を引き上げるか、フォ"
+"ルダーのルールを使用してサイズ超過のファイルをスキップしてください。"
 
-#: src/api_client/upload.rs:410
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
-msgstr "しばらく待ってから再試行してください。問題が解決しない場合は、サーバーログおよびリバースプロキシを確認してください。"
+msgstr ""
+"しばらく待ってから再試行してください。問題が解決しない場合は、サーバーログお"
+"よびリバースプロキシを確認してください。"
 
 #: src/autostart.rs:50
 msgid ""
 "Reason for requesting background access: Mimick must run in the background "
 "to automatically sync media to Immich."
-msgstr "バックグラウンドアクセスを要求する理由: Mimick がメディアを Immich に自動同期するにはバックグラウンドで実行する必要があります。"
+msgstr ""
+"バックグラウンドアクセスを要求する理由: Mimick がメディアを Immich に自動同期"
+"するにはバックグラウンドで実行する必要があります。"
 
 #: src/autostart.rs:57
 #, rust-format
@@ -334,6 +363,30 @@ msgstr "自動起動エントリの削除に失敗しました: {err}"
 #: src/autostart.rs:126 src/autostart.rs:133
 msgid "Could not locate the user config directory."
 msgstr "ユーザー設定ディレクトリが見つかりませんでした。"
+
+#: src/config/headers.rs:23
+msgid "WAN only (External)"
+msgstr "WAN のみ (外部)"
+
+#: src/config/headers.rs:24
+msgid "All (LAN & WAN)"
+msgstr "すべて (LAN & WAN)"
+
+#: src/config/headers.rs:25
+msgid "LAN only (Internal)"
+msgstr "LAN のみ (内部)"
+
+#: src/config/headers.rs:32
+msgid "WAN"
+msgstr "WAN"
+
+#: src/config/headers.rs:33
+msgid "ALL"
+msgstr "すべて"
+
+#: src/config/headers.rs:34
+msgid "LAN"
+msgstr "LAN"
 
 #: src/library/about_dialog.rs:40
 msgid "Repository"
@@ -395,7 +448,8 @@ msgstr "アカウント"
 #: src/library/account.rs:66
 #, rust-format
 msgid "Couldn't load this. Your API key needs the “{permission}” permission."
-msgstr "これを読み込めませんでした。API キーには「{permission}」権限が必要です。"
+msgstr ""
+"これを読み込めませんでした。API キーには「{permission}」権限が必要です。"
 
 #: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
 #: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
@@ -406,6 +460,7 @@ msgstr "これを読み込めませんでした。API キーには「{permission
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "キャンセル"
@@ -434,7 +489,9 @@ msgstr "ログイン中のデバイス"
 msgid ""
 "Browsers and apps signed in to your account. Mimick uses an API key, so it "
 "isn't listed."
-msgstr "アカウントにログインしているブラウザーとアプリ。Mimick は API キーを使用しているため、ここには表示されません。"
+msgstr ""
+"アカウントにログインしているブラウザーとアプリ。Mimick は API キーを使用して"
+"いるため、ここには表示されません。"
 
 #: src/library/account/devices.rs:28
 msgid "Devices"
@@ -534,7 +591,9 @@ msgstr "このキーの新しいシークレットを取得しますか?"
 msgid ""
 "Mimick saves the new secret and keeps working. Anything else using this key "
 "stops working until you give it the new secret."
-msgstr "Mimick は新しいシークレットを保存して動作を継続します。このキーを使用している他のすべてのものは、新しいシークレットを提供するまで動作しなくなります。"
+msgstr ""
+"Mimick は新しいシークレットを保存して動作を継続します。このキーを使用している"
+"他のすべてのものは、新しいシークレットを提供するまで動作しなくなります。"
 
 #: src/library/account/keys.rs:159
 msgid "Rotate"
@@ -561,7 +620,8 @@ msgid ""
 "\n"
 "{secret}"
 msgstr ""
-"Mimick は現在これを使用していますが、保存できませんでした ({err})。保持されるように「設定」に貼り付けてください:\n"
+"Mimick は現在これを使用していますが、保存できませんでした ({err})。保持される"
+"ように「設定」に貼り付けてください:\n"
 "\n"
 "{secret}"
 
@@ -581,7 +641,9 @@ msgstr "このキーを削除しますか?"
 
 #: src/library/account/keys.rs:224
 msgid "Anything signing in with it stops working. This can't be undone."
-msgstr "このキーでログインしているものはすべて動作しなくなります。この操作は取り消せません。"
+msgstr ""
+"このキーでログインしているものはすべて動作しなくなります。この操作は取り消せ"
+"ません。"
 
 #: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
 #: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
@@ -627,7 +689,9 @@ msgstr "アカウントを読み込めませんでした: {err}"
 
 #: src/library/account/profile.rs:152
 msgid "To use one of your photos, choose Set as Profile Picture in its menu."
-msgstr "写真の 1 つを使用するには、そのメニューから「プロフィール写真に設定」を選択してください。"
+msgstr ""
+"写真の 1 つを使用するには、そのメニューから「プロフィール写真に設定」を選択し"
+"てください。"
 
 #: src/library/account/profile.rs:163
 msgid "Images"
@@ -695,13 +759,17 @@ msgstr "あなたの写真ではありません"
 msgid ""
 "Only the owner can change where a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "写真の撮影場所を変更できるのは所有者のみです。選択した写真は他の人のものです。"
+msgstr ""
+"写真の撮影場所を変更できるのは所有者のみです。選択した写真は他の人のもので"
+"す。"
 
 #: src/library/actions.rs:352
 msgid ""
 "Only the owner can change when a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "写真の撮影日時を変更できるのは所有者のみです。選択した写真は他の人のものです。"
+msgstr ""
+"写真の撮影日時を変更できるのは所有者のみです。選択した写真は他の人のもので"
+"す。"
 
 #: src/library/actions/trash.rs:60
 #, rust-format
@@ -881,7 +949,9 @@ msgstr "アルバムから退出できませんでした"
 msgid ""
 "Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
 "they don't create it again."
-msgstr "Mimick はまだアップロード中です。再度作成されないよう、アップロードが完了してから「{album_name}」を削除してください。"
+msgstr ""
+"Mimick はまだアップロード中です。再度作成されないよう、アップロードが完了して"
+"から「{album_name}」を削除してください。"
 
 #: src/library/album_delete.rs:29
 msgid "Uploads in Progress"
@@ -895,7 +965,10 @@ msgstr "先に設定を閉じてください"
 msgid ""
 "Deleting this album changes your watch folders, and saving the open Settings "
 "window would undo that. Close Settings, then delete the album."
-msgstr "このアルバムを削除すると監視フォルダーが変更されますが、開いている「設定」ウィンドウを保存するとそれが元に戻ってしまいます。「設定」を閉じてからアルバムを削除してください。"
+msgstr ""
+"このアルバムを削除すると監視フォルダーが変更されますが、開いている「設定」"
+"ウィンドウを保存するとそれが元に戻ってしまいます。「設定」を閉じてからアルバ"
+"ムを削除してください。"
 
 #: src/library/album_delete.rs:45
 msgid "Its photos stay in your library."
@@ -940,7 +1013,9 @@ msgstr "これらのフォルダーの監視を停止する"
 msgid ""
 "So the album doesn't come back, photos in these folders go to your library "
 "instead of an album named after the folder:"
-msgstr "アルバムが再作成されないように、これらのフォルダー内の写真はフォルダー名のアルバムではなくライブラリに保存されます:"
+msgstr ""
+"アルバムが再作成されないように、これらのフォルダー内の写真はフォルダー名のア"
+"ルバムではなくライブラリに保存されます:"
 
 #: src/library/album_delete.rs:221
 msgid "Could Not Delete Album"
@@ -1039,7 +1114,9 @@ msgstr "リンクされているローカルフォルダーはありません"
 
 #: src/library/album_link.rs:56 src/library/window_layout.rs:494
 msgid "Drop files in the linked folder to sync this album"
-msgstr "このアルバムを同期するには、リンクされたフォルダーにファイルをドロップしてください"
+msgstr ""
+"このアルバムを同期するには、リンクされたフォルダーにファイルをドロップしてく"
+"ださい"
 
 #: src/library/album_link.rs:60 src/library/window_layout/responsive.rs:178
 msgid "Link folder…"
@@ -1087,7 +1164,9 @@ msgid ""
 "Already in sync. ({n} remote item couldn't be matched — missing checksum.)"
 msgid_plural ""
 "Already in sync. ({n} remote items couldn't be matched — missing checksum.)"
-msgstr[0] "すでに同期されています。({n} 件のリモート項目はチェックサムがないため一致できませんでした。)"
+msgstr[0] ""
+"すでに同期されています。({n} 件のリモート項目はチェックサムがないため一致でき"
+"ませんでした。)"
 
 #: src/library/album_link.rs:299
 msgid "Already in sync."
@@ -1097,7 +1176,8 @@ msgstr "すでに同期されています。"
 #, rust-format
 msgid "{n} remote item couldn't be matched (missing checksum)."
 msgid_plural "{n} remote items couldn't be matched (missing checksum)."
-msgstr[0] "{n} 件のリモート項目が一致しませんでした (チェックサムがありません)。"
+msgstr[0] ""
+"{n} 件のリモート項目が一致しませんでした (チェックサムがありません)。"
 
 #: src/library/album_link.rs:430
 #, rust-format
@@ -1283,6 +1363,7 @@ msgid "Could Not Remove Person"
 msgstr "ユーザーを削除できませんでした"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "追加"
 
@@ -1705,7 +1786,10 @@ msgstr[0] "{n} 枚の写真をコピーしました"
 msgid ""
 "Pasting into an album here adds all {count}. Only {local} are on this "
 "computer, so other apps such as Files paste those; use Download for the rest."
-msgstr "ここにあるアルバムに貼り付けると {count} 件すべてが追加されます。このコンピューター上にあるのは {local} 件のみであるため、「ファイル」などの他のアプリではそれらのみが貼り付けられます。残りは「ダウンロード」を使用してください。"
+msgstr ""
+"ここにあるアルバムに貼り付けると {count} 件すべてが追加されます。このコン"
+"ピューター上にあるのは {local} 件のみであるため、「ファイル」などの他のアプリ"
+"ではそれらのみが貼り付けられます。残りは「ダウンロード」を使用してください。"
 
 #: src/library/clipboard.rs:162
 msgid "Paste in Photos or albums"
@@ -1782,12 +1866,12 @@ msgid "Version unavailable"
 msgstr "バージョン情報を利用できません"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "LAN 経由で接続中"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "WAN 経由で接続中"
 
@@ -1821,7 +1905,10 @@ msgid ""
 "Your API key is missing permissions required for the Library view. Please "
 "ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
 "'person.read' enabled."
-msgstr "API キーにライブラリビューに必要な権限がありません。キーに 'asset.read'、'asset.view'、'asset.download'、および 'person.read' が有効になっていることを確認してください。"
+msgstr ""
+"API キーにライブラリビューに必要な権限がありません。キーに "
+"'asset.read'、'asset.view'、'asset.download'、および 'person.read' が有効に"
+"なっていることを確認してください。"
 
 #: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
 #: src/library/shortcuts_dialog.rs:179
@@ -2073,7 +2160,9 @@ msgstr "重複はありません"
 msgid ""
 "Immich hasn't found any duplicate photos. It looks for them when its "
 "duplicate detection job runs."
-msgstr "Immich は重複した写真を見つけていません。重複検出ジョブの実行時に検索されます。"
+msgstr ""
+"Immich は重複した写真を見つけていません。重複検出ジョブの実行時に検索されま"
+"す。"
 
 #: src/library/duplicates_view.rs:123
 msgid "Tap a photo to keep it or trash it."
@@ -2122,7 +2211,9 @@ msgstr[0] "{n} 枚の写真を完全に削除しますか?"
 
 #: src/library/duplicates_view.rs:333
 msgid "Trash is turned off on this server, so this can't be undone."
-msgstr "このサーバーではゴミ箱が無効になっているため、この操作を取り消すことはできません。"
+msgstr ""
+"このサーバーではゴミ箱が無効になっているため、この操作を取り消すことはできま"
+"せん。"
 
 #: src/library/duplicates_view.rs:352
 #, rust-format
@@ -2554,7 +2645,9 @@ msgstr "強度"
 
 #: src/library/lightbox/edit/pages.rs:125
 msgid "Drag over what to hide. Tap a box to move, resize, or change it."
-msgstr "隠したい部分をドラッグします。枠をタップして移動、サイズ変更、または変更できます。"
+msgstr ""
+"隠したい部分をドラッグします。枠をタップして移動、サイズ変更、または変更でき"
+"ます。"
 
 #: src/library/lightbox/edit/pages.rs:135
 msgid "Hide Faces"
@@ -2613,7 +2706,9 @@ msgstr "元の詳細情報を保持"
 msgid ""
 "A saved copy keeps the original's camera details, date, place, caption, "
 "rating, and albums. Off, the copy is a new photo of its own."
-msgstr "保存されたコピーは、元のカメラ情報、日時、場所、キャプション、評価、およびアルバム情報を保持します。オフの場合、コピーは独立した新しい写真になります。"
+msgstr ""
+"保存されたコピーは、元のカメラ情報、日時、場所、キャプション、評価、およびア"
+"ルバム情報を保持します。オフの場合、コピーは独立した新しい写真になります。"
 
 #: src/library/lightbox/edit/panel.rs:176
 msgid "Stack with Original"
@@ -2621,7 +2716,8 @@ msgstr "元の写真とスタック"
 
 #: src/library/lightbox/edit/panel.rs:177
 msgid "A saved copy becomes the cover of a stack, with the original under it."
-msgstr "保存されたコピーがスタックのカバーになり、元の写真はその下に配置されます。"
+msgstr ""
+"保存されたコピーがスタックのカバーになり、元の写真はその下に配置されます。"
 
 #: src/library/lightbox/edit/saving.rs:73
 msgid "Revert to the Original?"
@@ -2697,7 +2793,8 @@ msgstr "顔を読み込めませんでした"
 
 #: src/library/lightbox/faces.rs:227
 msgid "No faces yet. Drag around one to tag it."
-msgstr "まだ顔がありません。タグ付けするには顔を囲むようにドラッグしてください。"
+msgstr ""
+"まだ顔がありません。タグ付けするには顔を囲むようにドラッグしてください。"
 
 #: src/library/lightbox/faces.rs:298
 msgid "Choose Person…"
@@ -2768,12 +2865,12 @@ msgstr "モーションを再生 (Space)"
 msgid "Playback isn't available"
 msgstr "再生を利用できません"
 
-#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/live.rs:106 src/library/lightbox/video.rs:65
 #: src/library/lightbox/video.rs:108
 msgid "Playback failed"
 msgstr "再生に失敗しました"
 
-#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+#: src/library/lightbox/live.rs:107 src/library/lightbox/video.rs:129
 msgid "Not connected to the Immich server."
 msgstr "Immich サーバーに接続されていません。"
 
@@ -3115,7 +3212,9 @@ msgstr "位置情報サービスが無効な位置を返しました。"
 #, rust-format
 msgid ""
 "Location services are unavailable ({err}). Check that they are turned on."
-msgstr "位置情報サービスを利用できません ({err})。有効になっているか確認してください。"
+msgstr ""
+"位置情報サービスを利用できません ({err})。有効になっているか確認してくださ"
+"い。"
 
 #: src/library/map/location_dialog.rs:118
 #: src/library/map/location_dialog.rs:127
@@ -3360,7 +3459,9 @@ msgstr[0] "{n} 件のファイル"
 msgid ""
 "Your API key is missing permissions required to view thumbnails. Please "
 "ensure the key has 'asset.view' enabled."
-msgstr "API キーにサムネイルを表示するために必要な権限がありません。キーで 'asset.view' が有効になっていることを確認してください。"
+msgstr ""
+"API キーにサムネイルを表示するために必要な権限がありません。キーで "
+"'asset.view' が有効になっていることを確認してください。"
 
 #: src/library/memories.rs:154
 #, rust-format
@@ -3506,7 +3607,9 @@ msgstr "統合"
 msgid ""
 "Pick the people who are really {name}. Their faces move to {name} and "
 "they're removed. This can't be undone."
-msgstr "実際に {name} である人物を選択してください。その顔写真は {name} に移動され、元の人物は削除されます。この操作は元に戻せません。"
+msgstr ""
+"実際に {name} である人物を選択してください。その顔写真は {name} に移動され、"
+"元の人物は削除されます。この操作は元に戻せません。"
 
 #: src/library/person_merge_dialog.rs:124
 #, rust-format
@@ -3829,7 +3932,8 @@ msgstr "選択するためにすべての写真を読み込み中…"
 
 #: src/library/select_all.rs:48
 msgid "Some photos couldn't be loaded, so not all are selected"
-msgstr "一部の写真を読み込めなかったため、すべてが選択されているわけではありません"
+msgstr ""
+"一部の写真を読み込めなかったため、すべてが選択されているわけではありません"
 
 #: src/library/server_stats_dialog.rs:23
 msgid "Server statistics"
@@ -3860,7 +3964,10 @@ msgstr "サーバー全体の統計情報を表示するには管理者権限が
 msgid ""
 "Your API key must include the 'server.about', 'server.versionCheck', "
 "'server.statistics', and 'asset.statistics' permissions to view stats."
-msgstr "統計情報を表示するには、API キーに 'server.about'、'server.versionCheck'、'server.statistics'、および 'asset.statistics' の権限が含まれている必要があります。"
+msgstr ""
+"統計情報を表示するには、API キーに "
+"'server.about'、'server.versionCheck'、'server.statistics'、および "
+"'asset.statistics' の権限が含まれている必要があります。"
 
 #: src/library/server_stats_dialog.rs:168
 msgid "Unable to load statistics"
@@ -3970,7 +4077,9 @@ msgstr "リンク内の写真"
 msgid ""
 "Tap photos to take them out. To add some, select them in your library and "
 "choose Add to Share Link."
-msgstr "写真をタップして除外します。写真を追加するには、ライブラリで写真を選択し、「共有リンクに追加」を選択してください。"
+msgstr ""
+"写真をタップして除外します。写真を追加するには、ライブラリで写真を選択し、"
+"「共有リンクに追加」を選択してください。"
 
 #: src/library/shared_link_photos.rs:111
 #, rust-format
@@ -4012,7 +4121,9 @@ msgstr "追加先のリンクがありません"
 msgid ""
 "Albums' links always show the whole album. Make a link for some photos with "
 "Create Share Link first."
-msgstr "アルバムのリンクには常にアルバム全体が表示されます。一部の写真のリンクを作成するには、まず「共有リンクを作成」を使用してください。"
+msgstr ""
+"アルバムのリンクには常にアルバム全体が表示されます。一部の写真のリンクを作成"
+"するには、まず「共有リンクを作成」を使用してください。"
 
 #: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
 #: src/library/shared_link_qr.rs:129
@@ -4094,7 +4205,9 @@ msgstr "このリンクを削除しますか？"
 
 #: src/library/shared_links_view.rs:357
 msgid "Anyone using it will lose access. This can't be undone."
-msgstr "このリンクを使用しているすべての人がアクセスできなくなります。この操作は元に戻せません。"
+msgstr ""
+"このリンクを使用しているすべての人がアクセスできなくなります。この操作は元に"
+"戻せません。"
 
 #: src/library/shared_links_view.rs:373
 msgid "Could Not Delete Link"
@@ -4146,7 +4259,9 @@ msgstr "あなたに共有中"
 msgid ""
 "People who added you as a partner. Switch one on to see their photos in "
 "Photos."
-msgstr "あなたをパートナーとして追加したユーザーです。有効にすると「写真」でそのユーザーの写真を表示できます。"
+msgstr ""
+"あなたをパートナーとして追加したユーザーです。有効にすると「写真」でそのユー"
+"ザーの写真を表示できます。"
 
 #: src/library/sharing_view.rs:94
 msgid "Could Not Load Partners"
@@ -4195,7 +4310,9 @@ msgstr "人物を読み込み中…"
 
 #: src/library/sharing_view.rs:321
 msgid "No other people found. Listing people needs the 'user.read' permission."
-msgstr "他のユーザーが見つかりません。ユーザー一覧を表示するには 'user.read' 権限が必要です。"
+msgstr ""
+"他のユーザーが見つかりません。ユーザー一覧を表示するには 'user.read' 権限が必"
+"要です。"
 
 #: src/library/sharing_view.rs:354
 msgid "Add Partner"
@@ -4210,7 +4327,9 @@ msgstr "ライブラリを {name} と共有しますか？"
 msgid ""
 "They'll be able to see all your photos and videos. You can stop sharing at "
 "any time."
-msgstr "相手はあなたのすべての写真と動画を見ることができるようになります。共有はいつでも停止できます。"
+msgstr ""
+"相手はあなたのすべての写真と動画を見ることができるようになります。共有はいつ"
+"でも停止できます。"
 
 #: src/library/sharing_view.rs:381
 msgid "Share"
@@ -4224,7 +4343,7 @@ msgstr "パートナーを追加できませんでした"
 msgid "Show keyboard shortcuts"
 msgstr "キーボードショートカットを表示"
 
-#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:20
 msgid "Open Settings"
 msgstr "設定を開く"
 
@@ -4332,7 +4451,8 @@ msgstr "1日分をすべて選択"
 #: src/library/shortcuts_dialog.rs:103
 msgid ""
 "The focused photo's day or month; or tap its date heading while selecting"
-msgstr "フォーカスされた写真の日付または月。または選択中にその日付の見出しをタップ"
+msgstr ""
+"フォーカスされた写真の日付または月。または選択中にその日付の見出しをタップ"
 
 #: src/library/shortcuts_dialog.rs:106
 msgid "Copy selection"
@@ -4420,7 +4540,9 @@ msgstr "認識されたすべてのテキストを選択"
 
 #: src/library/shortcuts_dialog.rs:153
 msgid "Drag across text to select it; Ctrl-click adds or removes a box"
-msgstr "テキスト上をドラッグして選択します。Ctrl を押しながらクリックすると枠を追加または除外できます"
+msgstr ""
+"テキスト上をドラッグして選択します。Ctrl を押しながらクリックすると枠を追加ま"
+"たは除外できます"
 
 #: src/library/shortcuts_dialog.rs:156
 msgid "Copy recognized text"
@@ -4582,12 +4704,12 @@ msgstr "360° 写真"
 msgid "Video"
 msgstr "動画"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "接続"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "サーバー"
@@ -4842,7 +4964,9 @@ msgstr "アップロードをキューに追加しました"
 msgid "{n} file queued for upload. Progress is visible in the queue inspector."
 msgid_plural ""
 "{n} files queued for upload. Progress is visible in the queue inspector."
-msgstr[0] "{n} 件のファイルをアップロードキューに追加しました。進行状況はキューインスペクターで確認できます。"
+msgstr[0] ""
+"{n} 件のファイルをアップロードキューに追加しました。進行状況はキューインスペ"
+"クターで確認できます。"
 
 #: src/library/staging_view/album_picker.rs:62
 msgid "Upload Failed"
@@ -4852,7 +4976,9 @@ msgstr "アップロードに失敗しました"
 #, rust-format
 msgid "{n} file failed to enqueue. Check the logs for details."
 msgid_plural "All {n} files failed to enqueue. Check the logs for details."
-msgstr[0] "{n} 件のファイルをキューに追加できませんでした。詳細はログを確認してください。"
+msgstr[0] ""
+"{n} 件のファイルをキューに追加できませんでした。詳細はログを確認してくださ"
+"い。"
 
 #: src/library/staging_view/album_picker.rs:74
 msgid "Upload Partially Queued"
@@ -4862,7 +4988,9 @@ msgstr "一部のアップロードをキューに追加しました"
 #, rust-format
 msgid "{n} file queued, {skipped} skipped (hash or path errors)."
 msgid_plural "{n} files queued, {skipped} skipped (hash or path errors)."
-msgstr[0] "{n} 件のファイルをキューに追加しました ({skipped} 件はハッシュまたはパスのエラーのためスキップ)。"
+msgstr[0] ""
+"{n} 件のファイルをキューに追加しました ({skipped} 件はハッシュまたはパスのエ"
+"ラーのためスキップ)。"
 
 #: src/library/tags_view.rs:38 src/library/tags_view.rs:249
 msgid "New Tag"
@@ -4883,7 +5011,9 @@ msgstr "タグがありません"
 #: src/library/tags_view.rs:115
 msgid ""
 "Create a tag with New Tag, or tag photos from the lightbox details pane."
-msgstr "「新規タグ」でタグを作成するか、ライトボックスの詳細ペインから写真にタグを付けます。"
+msgstr ""
+"「新規タグ」でタグを作成するか、ライトボックスの詳細ペインから写真にタグを付"
+"けます。"
 
 #: src/library/tags_view.rs:118
 msgid "No Tags Inside"
@@ -5047,7 +5177,9 @@ msgstr "この写真は「写真」タイムラインにありません"
 msgid ""
 "Immich permanently deletes trashed items after its retention period (30 days "
 "by default)."
-msgstr "Immich は保持期間 (デフォルトでは 30 日間) を過ぎたゴミ箱の項目を完全に削除します。"
+msgstr ""
+"Immich は保持期間 (デフォルトでは 30 日間) を過ぎたゴミ箱の項目を完全に削除し"
+"ます。"
 
 #: src/library/trash_view.rs:66
 msgid "Restore All"
@@ -5075,7 +5207,8 @@ msgstr "この項目を完全に削除しますか？"
 
 #: src/library/trash_view.rs:188
 msgid "This can't be undone. Local copies in your watch folders are kept."
-msgstr "この操作は取り消せません。監視フォルダー内のローカルコピーは保持されます。"
+msgstr ""
+"この操作は取り消せません。監視フォルダー内のローカルコピーは保持されます。"
 
 #: src/library/trash_view.rs:217
 msgid "Could Not Delete"
@@ -5088,7 +5221,9 @@ msgstr "ゴミ箱を空にしますか？"
 #: src/library/trash_view.rs:237
 msgid ""
 "Everything in the Immich trash is deleted permanently. This can't be undone."
-msgstr "Immich のゴミ箱内のすべての項目が完全に削除されます。この操作は取り消せません。"
+msgstr ""
+"Immich のゴミ箱内のすべての項目が完全に削除されます。この操作は取り消せませ"
+"ん。"
 
 #: src/library/trash_view.rs:243
 msgid "Could Not Empty Trash"
@@ -5272,7 +5407,8 @@ msgstr "音量"
 
 #: src/library/video_player/pipeline.rs:44
 msgid "The GStreamer GTK 4 video sink (gst-plugin-gtk4) is not installed."
-msgstr "GStreamer GTK 4 動画シンク (gst-plugin-gtk4) がインストールされていません。"
+msgstr ""
+"GStreamer GTK 4 動画シンク (gst-plugin-gtk4) がインストールされていません。"
 
 #: src/library/video_player/tracks.rs:34
 msgid "Audio"
@@ -5314,7 +5450,7 @@ msgstr "アセットを選択 (Esc で終了)"
 msgid "Queue Inspector"
 msgstr "キューインスペクター"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "設定"
@@ -5323,7 +5459,7 @@ msgstr "設定"
 msgid "Keyboard Shortcuts"
 msgstr "キーボードショートカット"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Mimick について"
 
@@ -5436,7 +5572,9 @@ msgstr "Mimick: 接続が切断されました"
 msgid ""
 "Could not reach the Immich server. Uploads will resume automatically when "
 "connectivity is restored."
-msgstr "Immich サーバーに到達できませんでした。接続が復旧するとアップロードは自動的に再開されます。"
+msgstr ""
+"Immich サーバーに到達できませんでした。接続が復旧するとアップロードは自動的に"
+"再開されます。"
 
 #: src/queue_manager.rs:241
 #, rust-format
@@ -5476,7 +5614,8 @@ msgstr "{path} のアップロードに失敗しました"
 #: src/queue_manager/progress.rs:366
 msgid ""
 "Review the latest server and permission settings, then retry the failed item."
-msgstr "最新のサーバー設定と権限設定を確認し、失敗したアイテムを再試行してください。"
+msgstr ""
+"最新のサーバー設定と権限設定を確認し、失敗したアイテムを再試行してください。"
 
 #: src/queue_manager/progress.rs:379
 msgid "Queued for retry"
@@ -5502,7 +5641,9 @@ msgstr "詳細ログ"
 #: src/settings_window/actions_ui.rs:23
 msgid ""
 "Record more while you reproduce a problem, then export. The log grows faster."
-msgstr "問題を再現する間により多くの情報を記録し、その後エクスポートします。ログのサイズが急速に増加します。"
+msgstr ""
+"問題を再現する間により多くの情報を記録し、その後エクスポートします。ログのサ"
+"イズが急速に増加します。"
 
 #: src/settings_window/actions_ui.rs:28
 msgid "Export…"
@@ -5530,41 +5671,53 @@ msgstr "ライトテーマ"
 msgid "Dark Theme"
 msgstr "ダークテーマ"
 
-#: src/settings_window/apply.rs:164
+#: src/settings_window/apply.rs:183
+msgid "Secrets Stored in Files"
+msgstr "シークレットがファイルに保存されました"
+
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API キーがファイルに保存されました"
 
-#: src/settings_window/apply.rs:170
+#: src/settings_window/apply.rs:191
+msgid "Custom Proxy Headers Stored in a File"
+msgstr "カスタムプロキシヘッダーがファイルに保存されました"
+
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "設定を保存しました"
 
-#: src/settings_window/apply.rs:171
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick は更新された設定を正常に保存しました。"
 
-#: src/settings_window/apply.rs:207
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "自動起動の権限が必要です"
 
-#: src/settings_window/apply.rs:208
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick のログイン時の自動起動が許可されませんでした。"
 
-#: src/settings_window/apply.rs:210
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "自動起動設定を更新できませんでした"
 
-#: src/settings_window/apply.rs:241
-msgid "Could Not Save API Key"
-msgstr "API キーを保存できませんでした"
-
-#: src/settings_window/apply.rs:249
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "設定を保存できませんでした"
 
-#: src/settings_window/apply.rs:250
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick は更新された設定をディスクに書き込めませんでした。"
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "API キーを保存できませんでした"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "カスタムヘッダーを保存できませんでした"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5665,47 +5818,91 @@ msgstr "Mimick 起動時の確認対象"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "フォルダーごとに「フォルダーのルール」で個別に選択できます。"
 
-#: src/settings_window/connectivity.rs:29
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "内部 URL (LAN)"
 
-#: src/settings_window/connectivity.rs:31
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "外部 URL (WAN)"
 
-#: src/settings_window/connectivity.rs:35
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "未テスト"
 
-#: src/settings_window/connectivity.rs:38
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "接続をテスト"
 
-#: src/settings_window/connectivity.rs:41
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "保存して接続"
 
-#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "ライブラリを開く"
 
-#: src/settings_window/connectivity.rs:89
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API キー"
 
-#: src/settings_window/connectivity.rs:137
+#: src/settings_window/connectivity.rs:158
+msgid "Custom Proxy Headers"
+msgstr "カスタムプロキシヘッダー"
+
+#: src/settings_window/connectivity.rs:174
+msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
+msgstr "リバースプロキシ用のオプション HTTP ヘッダー（例：Cloudflare Access）"
+
+#: src/settings_window/connectivity.rs:177
+msgid "1 header configured"
+msgstr "1 件のヘッダーを設定済み"
+
+#: src/settings_window/connectivity.rs:179
+msgid "headers configured"
+msgstr "件のヘッダーを設定済み"
+
+#: src/settings_window/connectivity.rs:229
+msgid "Remove header"
+msgstr "ヘッダーを削除"
+
+#: src/settings_window/connectivity.rs:256
+msgid "Add Header…"
+msgstr "ヘッダーを追加…"
+
+#: src/settings_window/connectivity.rs:279
+msgid "Paste from clipboard"
+msgstr "クリップボードから貼り付け"
+
+#: src/settings_window/connectivity.rs:353
+msgid "Header Name"
+msgstr "ヘッダー名"
+
+#: src/settings_window/connectivity.rs:364
+msgid "Secret / Value"
+msgstr "シークレット / 値"
+
+#: src/settings_window/connectivity.rs:381
+msgid "Scope"
+msgstr "スコープ"
+
+#: src/settings_window/connectivity.rs:406
+msgid "Add Custom Header"
+msgstr "カスタムヘッダーを追加"
+
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN URL"
 
-#: src/settings_window/connectivity.rs:138
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN URL"
 
-#: src/settings_window/form.rs:127
+#: src/settings_window/form.rs:133
 msgid "Invalid Internal URL"
 msgstr "無効な内部 URL"
 
-#: src/settings_window/form.rs:132
+#: src/settings_window/form.rs:138
 msgid "Invalid External URL"
 msgstr "無効な外部 URL"
 
@@ -5755,7 +5952,9 @@ msgstr "サムネイルをタイルに合わせる"
 
 #: src/settings_window/library.rs:106
 msgid "Preview and Full Size thumbnails use far less memory."
-msgstr "「プレビュー」や「フルサイズ」のサムネイルは、はるかに少ないメモリしか消費しません。"
+msgstr ""
+"「プレビュー」や「フルサイズ」のサムネイルは、はるかに少ないメモリしか消費し"
+"ません。"
 
 #: src/settings_window/library.rs:122
 msgid "Date Headings"
@@ -5801,7 +6000,9 @@ msgstr "完全な RAW デコード"
 msgid ""
 "Uses the sensor data, not the embedded preview, with every colour the camera "
 "recorded. Slower, and uses more memory."
-msgstr "埋め込みプレビューではなく、カメラが記録したすべての色を含むセンサーデータを使用します。処理が遅くなり、より多くのメモリを使用します。"
+msgstr ""
+"埋め込みプレビューではなく、カメラが記録したすべての色を含むセンサーデータを"
+"使用します。処理が遅くなり、より多くのメモリを使用します。"
 
 #: src/settings_window/library.rs:172
 msgid "Keep Decoded RAW Files"
@@ -5871,33 +6072,53 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"設定は保存されましたが、システムのキーリングが利用できないため、API キーは {path} に保存されました。\n"
+"設定は保存されましたが、システムのキーリングが利用できないため、API キーは "
+"{path} に保存されました。\n"
 "\n"
-"このファイルはあなたのユーザーアカウントからのみ読み取り可能ですが、暗号化されていません。\n"
+"このファイルはあなたのユーザーアカウントからのみ読み取り可能ですが、暗号化さ"
+"れていません。\n"
 "\n"
 "詳細: {url}"
 
-#: src/settings_window/mod.rs:141
+#: src/settings_window/mod.rs:142
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so custom proxy "
+"headers were stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"設定は保存されましたが、システムのキーリングが利用できないため、カスタムプロ"
+"キシヘッダーは {path} に保存されました。\n"
+"\n"
+"このファイルはあなたのユーザーアカウントからのみ読み取り可能ですが、暗号化さ"
+"れていません。\n"
+"\n"
+"詳細: {url}"
+
+#: src/settings_window/mod.rs:156
 msgid "No successful sync yet"
 msgstr "まだ同期が成功していません"
 
-#: src/settings_window/mod.rs:151
+#: src/settings_window/mod.rs:166
 msgid "Less than a minute ago"
 msgstr "1 分未満前"
 
-#: src/settings_window/mod.rs:157
+#: src/settings_window/mod.rs:172
 #, rust-format
 msgid "{n} minute ago"
 msgid_plural "{n} minutes ago"
 msgstr[0] "{n} 分前"
 
-#: src/settings_window/mod.rs:161
+#: src/settings_window/mod.rs:176
 #, rust-format
 msgid "{n} hour ago"
 msgid_plural "{n} hours ago"
 msgstr[0] "{n} 時間前"
 
-#: src/settings_window/mod.rs:164
+#: src/settings_window/mod.rs:179
 #, rust-format
 msgid "{n} day ago"
 msgid_plural "{n} days ago"
@@ -5968,7 +6189,7 @@ msgid "Sync Now"
 msgstr "今すぐ同期"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "一時停止"
 
@@ -5984,8 +6205,8 @@ msgstr "要確認"
 msgid "Failed uploads"
 msgstr "失敗したアップロード"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
-#: src/settings_window/wiring.rs:368
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "再開"
 
@@ -6138,7 +6359,9 @@ msgstr "起動時にこのフォルダー内のどのファイルを確認する
 
 #: src/settings_window/watch_folders/rules_dialog.rs:220
 msgid "Library uploads can only upload from this folder."
-msgstr "ライブラリへのアップロードでは、このフォルダーからのアップロードのみ可能です。"
+msgstr ""
+"ライブラリへのアップロードでは、このフォルダーからのアップロードのみ可能で"
+"す。"
 
 #: src/settings_window/watch_folders/rules_dialog.rs:224
 msgid "Not available for library uploads."
@@ -6184,83 +6407,87 @@ msgstr "最大ファイルサイズ (MB) (無制限の場合は空欄)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "指定の種類のみ (例: jpg, png, mp4、すべて許可する場合は空欄)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "状態"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick を終了"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "メインメニュー"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "はじめに"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Mimick を Immich サーバーに接続するための 3 つのステップ。"
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. サーバーの入力"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "下の「サーバー」欄に Immich のアドレスを入力します。"
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. API キーの追加"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
-msgstr "Immich で アカウント設定 → API キー を開きます。必要な権限についてはガイドを参照してください。"
+msgstr ""
+"Immich で アカウント設定 → API キー を開きます。必要な権限についてはガイドを"
+"参照してください。"
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. 保存して接続"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
-msgstr "次にライブラリが開きます。フォルダーもバックアップする場合は、「監視フォルダー」に追加してください。"
+msgstr ""
+"次にライブラリが開きます。フォルダーもバックアップする場合は、「監視フォル"
+"ダー」に追加してください。"
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "ガイド"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "ユーザーにより一時停止中"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} も利用可能です"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} に到達できません"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "どちらのアドレスでも Immich に到達できませんでした"
 
-#: src/settings_window/wiring.rs:252
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "テスト中…"
 
-#: src/settings_window/wiring.rs:366
-msgid "Paused by you"
-msgstr "ユーザーにより一時停止中"
-
-#: src/settings_window/wiring.rs:425
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "無効な選択"
 
-#: src/settings_window/wiring.rs:426
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "少なくとも 1 つの URL (内部または外部) を有効にする必要があります。"
 
@@ -6344,9 +6571,11 @@ msgstr "非公式の Immich デスクトップクライアントおよび自動�
 #: setup/dev.nicx.mimick.desktop:10
 msgid ""
 "Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
-msgstr "写真;フォト;画像;動画;ビデオ;同期;バックアップ;アップロード;Immich;ギャラリー;セルフホスト;"
+msgstr ""
+"写真;フォト;画像;動画;ビデオ;同期;バックアップ;アップロード;Immich;ギャラ"
+"リー;セルフホスト;"
 
-#: setup/dev.nicx.mimick.desktop:25
+#: setup/dev.nicx.mimick.desktop:24
 msgid "Upload with Mimick"
 msgstr "Mimick でアップロード"
 
@@ -6359,43 +6588,58 @@ msgid ""
 "Mimick is a native Linux desktop client for self-hosted Immich servers. It "
 "monitors your folders in the background and automatically syncs photos and "
 "videos to your server."
-msgstr "Mimick はセルフホストの Immich サーバー向けネイティブ Linux デスクトップクライアントです。バックグラウンドでフォルダーを監視し、写真や動画をサーバーに自動同期します。"
+msgstr ""
+"Mimick はセルフホストの Immich サーバー向けネイティブ Linux デスクトップクラ"
+"イアントです。バックグラウンドでフォルダーを監視し、写真や動画をサーバーに自"
+"動同期します。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
 msgid ""
 "Per-folder sync methods: upload only, download only, or full bidirectional "
 "sync with optional deletion mirroring."
-msgstr "フォルダーごとの同期方法: アップロードのみ、ダウンロードのみ、または削除のミラーリング (任意) を備えた完全双方向同期。"
+msgstr ""
+"フォルダーごとの同期方法: アップロードのみ、ダウンロードのみ、または削除のミ"
+"ラーリング (任意) を備えた完全双方向同期。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
 msgid ""
 "Built-in Library View for browsing your timeline, managing albums, and "
 "searching with Smart Search, OCR, and metadata filters."
-msgstr "タイムラインの閲覧、アルバムの管理、スマート検索・OCR・メタデータフィルターによる検索が可能な内蔵ライブラリビュー。"
+msgstr ""
+"タイムラインの閲覧、アルバムの管理、スマート検索・OCR・メタデータフィルターに"
+"よる検索が可能な内蔵ライブラリビュー。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
 msgid ""
 "SHA-1 deduplication, parallel upload workers, and offline retry queue for "
 "reliable transfers."
-msgstr "確実な転送を実現する SHA-1 重複排除、並列アップロードワーカー、オフライン再試行キュー。"
+msgstr ""
+"確実な転送を実現する SHA-1 重複排除、並列アップロードワーカー、オフライン再試"
+"行キュー。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
 msgid ""
 "Environment-aware: automatically pauses on battery or metered connections. "
 "Configurable quiet hours and per-folder rules."
-msgstr "環境認識: バッテリー駆動時や従量制課金接続時に自動で一時停止。設定可能なサイレント時間帯とフォルダーごとのルール。"
+msgstr ""
+"環境認識: バッテリー駆動時や従量制課金接続時に自動で一時停止。設定可能なサイ"
+"レント時間帯とフォルダーごとのルール。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
 msgid ""
 "Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
 "sandbox support."
-msgstr "GTK4 と Libadwaita を使用して Rust で構築。システムトレイ統合と Flatpak サンドボックスに対応。"
+msgstr ""
+"GTK4 と Libadwaita を使用して Rust で構築。システムトレイ統合と Flatpak サン"
+"ドボックスに対応。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
 msgid ""
 "Mimick is a community-developed client and is not affiliated with or "
 "endorsed by the Immich project."
-msgstr "Mimick はコミュニティによって開発されたクライアントであり、Immich プロジェクトとは提携しておらず、承認も受けていません。"
+msgstr ""
+"Mimick はコミュニティによって開発されたクライアントであり、Immich プロジェク"
+"トとは提携しておらず、承認も受けていません。"
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
 msgid "Library View - Photos page with sidebar"
@@ -6428,4 +6672,3 @@ msgstr "設定 - サーバー接続と監視フォルダー"
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
 msgid "Status page with sync health dashboard"
 msgstr "同期健全性ダッシュボードを備えた状態ページ"
-

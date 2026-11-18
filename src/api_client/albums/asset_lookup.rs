@@ -18,7 +18,6 @@ impl ImmichApiClient {
             return out;
         };
         let url = format!("{}/api/assets/bulk-upload-check", base_url);
-        let api_key = self.settings.read().api_key.clone();
 
         for chunk in checksums.chunks(CHUNK) {
             let assets: Vec<_> = chunk
@@ -28,9 +27,7 @@ impl ImmichApiClient {
             let body = serde_json::json!({ "assets": assets });
 
             match self
-                .client
-                .post(&url)
-                .header("x-api-key", &api_key)
+                .authorized_request(reqwest::Method::POST, &url)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .json(&body)
@@ -62,7 +59,6 @@ impl ImmichApiClient {
     pub async fn find_existing_asset_id(&self, checksum: &str) -> Option<String> {
         let base_url = self.get_active_url().await?;
         let url = format!("{}/api/assets/bulk-upload-check", base_url);
-        let api_key = self.settings.read().api_key.clone();
         let body = serde_json::json!({
             "assets": [
                 {
@@ -73,9 +69,7 @@ impl ImmichApiClient {
         });
 
         match self
-            .client
-            .post(&url)
-            .header("x-api-key", &api_key)
+            .authorized_request(reqwest::Method::POST, &url)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
             .json(&body)

@@ -20,13 +20,10 @@ impl ImmichApiClient {
     /// `Err` is returned. Caller should fall back to per-user asset counts.
     pub async fn fetch_server_statistics(&self) -> Result<ServerStatistics, String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{}/api/server/statistics", base_url);
 
         match self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(10))
             .send()
@@ -67,12 +64,9 @@ impl ImmichApiClient {
         T: serde::de::DeserializeOwned,
     {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{base_url}{endpoint}");
         let response = self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(10))
             .send()
@@ -91,7 +85,7 @@ impl ImmichApiClient {
                 Err(format!("HTTP {status}"))
             }
             Err(err) => {
-                *self.active_url.lock().await = None;
+                self.invalidate_connection().await;
                 self.set_issue(classify_network_issue(context, &err)).await;
                 Err(err.to_string())
             }

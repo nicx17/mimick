@@ -13,6 +13,10 @@ If you turned it off, or upgraded from a version where it was off:
 1. Turn on **Settings → App → Library View**. It saves right away.
 2. Close the window and open Mimick again. The tray menu's library entry appears after a restart.
 
+## Reverse-proxy headers
+
+If your Immich server sits behind a proxy that requires service-token headers, add them in **Settings → Server → Custom Proxy Headers**. Each header can apply to the WAN URL, LAN URL, or both. Values are stored in the system keyring; if it is unavailable, Mimick warns before using a user-readable `0600` fallback file.
+
 |                                               Photos (Light)                                               |                                                Photos (Phone)                                                |
 | :--------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
 | ![Photos light](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos-timeline.png) | ![Photos on a phone](https://raw.githubusercontent.com/nicx17/mimick/main/docs/screenshots/photos-phone.png) |

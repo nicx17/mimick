@@ -5,9 +5,9 @@ edition = "2024"
 license = "GPL-3.0-or-later"
 
 [dependencies]
-ashpd = { version = "0.13.10", features = ["background", "gtk4", "location", "trash"] }
+ashpd = { version = "0.14.0", features = ["background", "gtk4", "location", "trash"] }
 chrono = "0.4.44"
-dirs = "6.0.0"
+dirs = "7.0.0"
 gdk4 = "0.11"
 gettext-rs = { version = "0.8.0", features = ["gettext-system"] }
 glib = { version = "0.22.7", features = ["v2_68"] }
@@ -16,14 +16,14 @@ ksni = "0.3.4"
 libadwaita = { version = "0.9.1", features = ["v1_10"] }
 shumate = { version = "0.8.1", package = "libshumate", features = ["v1_7", "gtk_v4_18"] }
 log = "0.4.29"
-lru = "0.18.0"
-parking_lot = "0.12.5"
+lru = "0.19.0"
+parking_lot = "0.13.0"
 blake3 = "1.8.5"
 url = "2.5.8"
 notify = "8.2.0"
 num_cpus = "1.17.0"
-phf = { version = "0.13.1", features = ["macros"] }
-oo7 = { version = "0.6.0", default-features = false, features = [
+phf = { version = "0.14.0", features = ["macros"] }
+oo7 = { version = "0.7.1", default-features = false, features = [
     "tokio",
     "native_crypto",
 ] }
@@ -52,7 +52,7 @@ tokio = { version = "1.52.1", features = [
     "signal",
 ] }
 flexi_logger = "0.31.8"
-base64 = "0.22"
+base64 = "0.23"
 # Reads photos' ICC colour profiles and converts the ones GTK can't describe.
 lcms2 = "6.2.0"
 nom-exif = "3.4.2"
@@ -64,19 +64,19 @@ image = { version = "0.25.10", default-features = false, features = [
     "tiff",
     "webp",
 ] }
-libheif-rs = { version = "2.7.0", default-features = false, features = [
+libheif-rs = { version = "3.0.0", default-features = false, features = [
     "v1_21",
 ] }
 jxl-oxide = "0.12.5"
 
 rsraw-sys = "0.1.1"
-resvg = { version = "0.47.0", default-features = false, features = [
+resvg = { version = "0.50.0", default-features = false, features = [
     "text",
     "system-fonts",
     "raster-images",
 ] }
-jpeg2k = { version = "0.10.1", default-features = false, features = [
-    "openjpeg-sys",
+jpeg2k = { version = "0.11.0", default-features = false, features = [
+    "image",
     "threads",
 ] }
 turbojpeg = { version = "1.4.0", default-features = false, features = [

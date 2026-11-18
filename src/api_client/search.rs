@@ -24,16 +24,13 @@ impl ImmichApiClient {
     /// Fetch the list of recognized people faces from the server.
     pub async fn fetch_people(&self, include_hidden: bool) -> Result<Vec<Person>, String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!(
             "{}/api/people?withHidden={}",
             base_url,
             if include_hidden { "true" } else { "false" }
         );
         match self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(10))
             .send()
@@ -86,7 +83,6 @@ impl ImmichApiClient {
     /// per city. Caps at 500 pages to bound runtime on very large libraries.
     async fn walk_places(&self) -> Result<Vec<PlaceItem>, String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{}/api/search/metadata", base_url);
 
         let mut seen: std::collections::HashMap<String, String> = std::collections::HashMap::new();
@@ -95,9 +91,7 @@ impl ImmichApiClient {
         let start = std::time::Instant::now();
 
         loop {
-            let parsed = self
-                .fetch_places_page(&url, &settings.api_key, page)
-                .await?;
+            let parsed = self.fetch_places_page(&url, page).await?;
             let has_more = parsed.assets.next_page.is_some();
             for asset in parsed.assets.items {
                 if let Some(city) = asset.exif_info.as_ref().and_then(|e| e.city.clone()) {
@@ -124,12 +118,7 @@ impl ImmichApiClient {
         Ok(places)
     }
 
-    async fn fetch_places_page(
-        &self,
-        url: &str,
-        api_key: &str,
-        page: u32,
-    ) -> Result<ExifSearchResponse, String> {
+    async fn fetch_places_page(&self, url: &str, page: u32) -> Result<ExifSearchResponse, String> {
         const PAGE_SIZE: u32 = 250;
         let body = serde_json::json!({
             "withExif": true,
@@ -137,9 +126,7 @@ impl ImmichApiClient {
             "size": PAGE_SIZE,
         });
         let resp = match self
-            .client
-            .post(url)
-            .header("x-api-key", api_key)
+            .authorized_request(reqwest::Method::POST, url)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
             .json(&body)
@@ -163,12 +150,9 @@ impl ImmichApiClient {
             .await
             .map_err(|err| err.to_string())?;
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{}/api/people/{}/thumbnail", base_url, person_id);
         match self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/octet-stream")
             .timeout(Duration::from_secs(10))
             .send()
@@ -396,13 +380,10 @@ impl ImmichApiClient {
         subject: Option<&str>,
     ) -> Result<(Vec<LibraryAsset>, bool), String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{}{}", base_url, endpoint);
 
         match self
-            .client
-            .post(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::POST, &url)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
             .json(&body)
@@ -429,7 +410,7 @@ impl ImmichApiClient {
                 Err(format!("HTTP {}", resp.status()))
             }
             Err(err) => {
-                *self.active_url.lock().await = None;
+                self.invalidate_connection().await;
                 self.set_issue(classify_network_issue(context, &err)).await;
                 Err(err.to_string())
             }

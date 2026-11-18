@@ -22,17 +22,20 @@ macro_rules! settings_form {
         #[derive(Clone)]
         pub(super) struct SettingsForm {
             $(pub $field: $ty,)*
+            pub custom_headers: std::rc::Rc<std::cell::RefCell<Vec<crate::config::CustomHeader>>>,
         }
 
         /// Weak references to the form, for handlers attached to its own widgets.
         pub(super) struct SettingsFormWeak {
             $($field: glib::WeakRef<$ty>,)*
+            pub custom_headers: std::rc::Weak<std::cell::RefCell<Vec<crate::config::CustomHeader>>>,
         }
 
         impl SettingsForm {
             pub(super) fn downgrade(&self) -> SettingsFormWeak {
                 SettingsFormWeak {
                     $($field: self.$field.downgrade(),)*
+                    custom_headers: std::rc::Rc::downgrade(&self.custom_headers),
                 }
             }
         }
@@ -42,6 +45,7 @@ macro_rules! settings_form {
             pub(super) fn upgrade(&self) -> Option<SettingsForm> {
                 Some(SettingsForm {
                     $($field: self.$field.upgrade()?,)*
+                    custom_headers: self.custom_headers.upgrade()?,
                 })
             }
         }
@@ -84,6 +88,7 @@ pub(super) struct ConnectionValues {
     pub internal_url: String,
     pub external_url: String,
     pub api_key: String,
+    pub custom_headers: Vec<crate::config::CustomHeader>,
 }
 
 impl ConnectionValues {
@@ -94,6 +99,7 @@ impl ConnectionValues {
             internal_url: config.data.internal_url.clone(),
             external_url: config.data.external_url.clone(),
             api_key: config.get_api_key().unwrap_or_default(),
+            custom_headers: config.get_custom_headers(),
         }
     }
 
@@ -201,6 +207,7 @@ impl SettingsForm {
             internal_entry: conn.internal_entry.clone(),
             external_entry: conn.external_entry.clone(),
             api_key_entry: conn.api_key_entry.clone(),
+            custom_headers: conn.custom_headers.clone(),
             startup_row: behavior.startup_row.clone(),
             background_sync_row: behavior.background_sync_row.clone(),
             metered_row: behavior.metered_row.clone(),
@@ -229,6 +236,7 @@ impl SettingsForm {
             internal_url: self.internal_entry.text().to_string(),
             external_url: self.external_entry.text().to_string(),
             api_key: self.api_key_entry.text().to_string(),
+            custom_headers: self.custom_headers.borrow().clone(),
         }
     }
 
@@ -343,6 +351,7 @@ mod tests {
             internal_url: "http://192.168.1.50:2283".into(),
             external_url: "https://photos.example.com".into(),
             api_key: "secret".into(),
+            custom_headers: Vec::new(),
         }
     }
 

@@ -11,7 +11,7 @@ cd "$(dirname "$0")/.."
 languages() { sed -e 's/#.*//' -e '/^[[:space:]]*$/d' po/LINGUAS; }
 
 extract() {
-    git ls-files 'src/*.rs' | xargs xgettext --language=Rust --from-code=UTF-8 \
+    git ls-files --cached --others --exclude-standard 'src/*.rs' | xargs xgettext --language=Rust --from-code=UTF-8 \
         --package-name=mimick --msgid-bugs-address=https://github.com/nicx17/mimick/issues \
         --keyword=gettext_noop --add-comments=Translators: --sort-by-file --output="$1"
     xgettext --join-existing --from-code=UTF-8 --output="$1" setup/dev.nicx.mimick.desktop

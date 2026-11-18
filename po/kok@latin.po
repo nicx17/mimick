@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
-"Report-Msgid-Bugs-To: https://github.com/nicx17/mimick/issues\n"
-"POT-Creation-Date: 2026-11-09 20:57+0530\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Konkani (Romi)\n"
@@ -41,11 +41,11 @@ msgstr "Albumanchi volleri uplobdh na"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "Album novsorche adim Immich serverak porot zoddat."
 
-#: src/api_client/albums.rs:180
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Album mellovpak fottlem"
 
-#: src/api_client/albums.rs:267 src/api_client/albums.rs:295
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Astitv topasunk album mellovnk zaina"
 
@@ -54,9 +54,11 @@ msgstr "Astitv topasunk album mellovnk zaina"
 msgid ""
 "The server responded with HTTP {status}. Check the server logs and retry "
 "after confirming the current configuration."
-msgstr "Serveran HTTP {status} zabab dilo. Serverache log topasat ani chalik axil'li manddavoll khatri korun porot proyotn korat."
+msgstr ""
+"Serveran HTTP {status} zabab dilo. Serverache log topasat ani chalik axil'li "
+"manddavoll khatri korun porot proyotn korat."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:400
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich-an API key nhekarli"
 
@@ -64,7 +66,9 @@ msgstr "Immich-an API key nhekarli"
 msgid ""
 "Update the API key in Settings and confirm it still has the required Asset "
 "and Album permissions (see README for the full list)."
-msgstr "Manddavollint API key sudharat ani tika azunui gorjeche Asset ani Album porvanngi asat mhonn khatri korat (purnn vollerikhatir README polleyat)."
+msgstr ""
+"Manddavollint API key sudharat ani tika azunui gorjeche Asset ani Album "
+"porvanngi asat mhonn khatri korat (purnn vollerikhatir README polleyat)."
 
 #: src/api_client/errors.rs:54
 msgid "An album reference is no longer valid"
@@ -72,9 +76,10 @@ msgstr "Albumacho sondorbh atam lagu zaina"
 
 #: src/api_client/errors.rs:55
 msgid "Refresh the album list or choose a different album before retrying."
-msgstr "Porot proyotn korche adim albumanchi volleri novsorat vo dusro album vinchat."
+msgstr ""
+"Porot proyotn korche adim albumanchi volleri novsorat vo dusro album vinchat."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:391
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich-an khub vhoddli mhonn ek fayl nhekarli"
 
@@ -82,7 +87,9 @@ msgstr "Immich-an khub vhoddli mhonn ek fayl nhekarli"
 msgid ""
 "Reduce the file size, raise the server upload limit, or skip oversized files "
 "with folder rules."
-msgstr "Faylicho akar unno korat, serverachi upload xim' vaddoit, vo folderachea nemamni khub vhoddleo fayli soddun diat."
+msgstr ""
+"Faylicho akar unno korat, serverachi upload xim' vaddoit, vo folderachea "
+"nemamni khub vhoddleo fayli soddun diat."
 
 #: src/api_client/errors.rs:65
 msgid "Immich rate-limited the request"
@@ -92,9 +99,11 @@ msgstr "Immich-an vinovnnicher bondhon ghatlem"
 msgid ""
 "Wait a moment and retry. If this happens often, lower upload concurrency or "
 "check reverse proxy limits."
-msgstr "Ek khin ravun porot proyotn korat. Hem chodd pavtti ghoddot zalear, ekach vellar zauñche upload unne korat vo reverse proxy-cheo xim' topasat."
+msgstr ""
+"Ek khin ravun porot proyotn korat. Hem chodd pavtti ghoddot zalear, ekach "
+"vellar zauñche upload unne korat vo reverse proxy-cheo xim' topasat."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:408
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich thoddea kallakhatir uplobdh na"
 
@@ -102,7 +111,9 @@ msgstr "Immich thoddea kallakhatir uplobdh na"
 msgid ""
 "Wait a moment and retry. If it keeps happening, inspect the server and "
 "reverse proxy logs."
-msgstr "Ek khin ravun porot proyotn korat. Hem chalu urlar, server ani reverse proxy-che log topasat."
+msgstr ""
+"Ek khin ravun porot proyotn korat. Hem chalu urlar, server ani reverse proxy-"
+"che log topasat."
 
 #: src/api_client/errors.rs:88
 msgid "the upload"
@@ -166,9 +177,11 @@ msgstr "Immich vinovnnecho vell somplo"
 
 #: src/api_client/errors.rs:122
 msgid "Check network quality and server responsiveness, then retry."
-msgstr "Network gunnvotta ani serverachean poddttolo protisad topasat, uprant porot proyotn korat."
+msgstr ""
+"Network gunnvotta ani serverachean poddttolo protisad topasat, uprant porot "
+"proyotn korat."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:304
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Immich serverak pauonk xoklem na"
 
@@ -176,12 +189,15 @@ msgstr "Immich serverak pauonk xoklem na"
 msgid ""
 "Check the configured URLs, your network connection, and whether the server "
 "is online."
-msgstr "Manddlole URLs, tumchem network connection, ani server chalu asa kai na tem topasat."
+msgstr ""
+"Manddlole URLs, tumchem network connection, ani server chalu asa kai na tem "
+"topasat."
 
 #: src/api_client/errors.rs:135
 msgid ""
 "Retry the request after checking network connectivity and server health."
-msgstr "Network connection ani serverachi sthiti topaslea uprant porot proyotn korat."
+msgstr ""
+"Network connection ani serverachi sthiti topaslea uprant porot proyotn korat."
 
 #: src/api_client/errors.rs:144
 msgid "The upload request failed before completion"
@@ -227,20 +243,21 @@ msgstr "Library ankddevari vinovnni purnn zauñche adim fottli"
 msgid "The server version request failed before completion"
 msgstr "Server avruti vinovnni purnn zauñche adim fottli"
 
-#: src/api_client/mod.rs:387
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Koslem-i sakriy connection na"
 
-#: src/api_client/search.rs:358
+#: src/api_client/search.rs:342
 msgid "Immich can't count by file name or deleted photos"
-msgstr "Immich faylichea nanvan vo kaddun uddoil'lea fotvam vorvim mevp korunk xokna"
+msgstr ""
+"Immich faylichea nanvan vo kaddun uddoil'lea fotvam vorvim mevp korunk xokna"
 
-#: src/api_client/tags.rs:76
+#: src/api_client/tags.rs:72
 #, rust-format
 msgid "Immich did not return the tag \"{value}\""
 msgstr "Immich-an \"{value}\" tag porot dilo na"
 
-#: src/api_client/tags.rs:87
+#: src/api_client/tags.rs:83
 msgid "Renaming tags needs a newer version of Immich."
 msgstr "Tagachem nanv bodolpak Immich-achi novi avruti zai."
 
@@ -249,62 +266,76 @@ msgstr "Tagachem nanv bodolpak Immich-achi novi avruti zai."
 msgid "Invalid month {month}"
 msgstr "Omany mhoino {month}"
 
-#: src/api_client/upload.rs:301
+#: src/api_client/upload.rs:316
 msgid "A queued file is no longer available"
 msgstr "Ranger axil'li ek fayl atam uplobdh na"
 
-#: src/api_client/upload.rs:303
+#: src/api_client/upload.rs:318
 msgid "Mimick could not read a queued file"
 msgstr "Mimick ranger axil'li ek fayl vachunk xoklem na"
 
-#: src/api_client/upload.rs:306
+#: src/api_client/upload.rs:321
 msgid ""
 "Check that the watched folder still exists and that the file was not moved "
 "or deleted before upload."
-msgstr "Watch kel'lo folder azunui astitvant asa kai na ani upload zauñche adim fayl haloil'li vo kaddun uddoil'li na mhonn topasat."
-
-#: src/api_client/upload.rs:308
-msgid ""
-"Verify folder permissions and make sure the file is still accessible to the "
-"app."
-msgstr "Folderacheo porvanngiyo topasat ani app-ak azunui fayl melltta mhonn khatri korat."
-
-#: src/api_client/upload.rs:322
-msgid "Mimick could not open a queued file"
-msgstr "Mimick ranger axil'li ek fayl ugddunk xoklem na"
+msgstr ""
+"Watch kel'lo folder azunui astitvant asa kai na ani upload zauñche adim fayl "
+"haloil'li vo kaddun uddoil'li na mhonn topasat."
 
 #: src/api_client/upload.rs:323
 msgid ""
-"The file may be locked, deleted, or outside the app's allowed folder access."
-msgstr "Fayl kulup kel'li asot, kaddun uddoil'li asot, vo app-ak porvanngi dil'lea foldera bhayr asot."
+"Verify folder permissions and make sure the file is still accessible to the "
+"app."
+msgstr ""
+"Folderacheo porvanngiyo topasat ani app-ak azunui fayl melltta mhonn khatri "
+"korat."
 
-#: src/api_client/upload.rs:336
+#: src/api_client/upload.rs:337
+msgid "Mimick could not open a queued file"
+msgstr "Mimick ranger axil'li ek fayl ugddunk xoklem na"
+
+#: src/api_client/upload.rs:338
+msgid ""
+"The file may be locked, deleted, or outside the app's allowed folder access."
+msgstr ""
+"Fayl kulup kel'li asot, kaddun uddoil'li asot, vo app-ak porvanngi dil'lea "
+"foldera bhayr asot."
+
+#: src/api_client/upload.rs:351
 msgid "No active server connection"
 msgstr "Serverak koslem-i sakriy connection na"
 
-#: src/api_client/upload.rs:337
+#: src/api_client/upload.rs:352
 msgid ""
 "Test the server connection in Settings and confirm at least one Immich URL "
 "is reachable."
-msgstr "Manddavollint server connection topasat ani unneant-unno ek tari Immich URL pavta mhonn khatri korat."
+msgstr ""
+"Manddavollint server connection topasat ani unneant-unno ek tari Immich URL "
+"pavta mhonn khatri korat."
 
-#: src/api_client/upload.rs:393
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
-msgstr "Faylicho akar unno korat, serverachi upload xim' vaddoit, vo folderachea neman khub vhoddleo fayli soddun diat."
+msgstr ""
+"Faylicho akar unno korat, serverachi upload xim' vaddoit, vo folderachea "
+"neman khub vhoddleo fayli soddun diat."
 
-#: src/api_client/upload.rs:410
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
-msgstr "Ek khin ravun porot proyotn korat. Hem chalu urlar, serverache log ani reverse proxy topasat."
+msgstr ""
+"Ek khin ravun porot proyotn korat. Hem chalu urlar, serverache log ani "
+"reverse proxy topasat."
 
 #: src/autostart.rs:50
 msgid ""
 "Reason for requesting background access: Mimick must run in the background "
 "to automatically sync media to Immich."
-msgstr "Background access magpachem karonn: Media ap-xik Immich-ak sync korpak Mimick fattlean (background) cholunk zai."
+msgstr ""
+"Background access magpachem karonn: Media ap-xik Immich-ak sync korpak "
+"Mimick fattlean (background) cholunk zai."
 
 #: src/autostart.rs:57
 #, rust-format
@@ -334,6 +365,30 @@ msgstr "Autostart nond kaddun uddovpak fottlem: {err}"
 #: src/autostart.rs:126 src/autostart.rs:133
 msgid "Could not locate the user config directory."
 msgstr "Vapropkarachi config directory sodun kaddunk zaina."
+
+#: src/config/headers.rs:23
+msgid "WAN only (External)"
+msgstr "Fokot WAN (Bhailem)"
+
+#: src/config/headers.rs:24
+msgid "All (LAN & WAN)"
+msgstr "Soglle (LAN ani WAN)"
+
+#: src/config/headers.rs:25
+msgid "LAN only (Internal)"
+msgstr "Fokot LAN (Bhitorlem)"
+
+#: src/config/headers.rs:32
+msgid "WAN"
+msgstr "WAN"
+
+#: src/config/headers.rs:33
+msgid "ALL"
+msgstr "SOGLLE"
+
+#: src/config/headers.rs:34
+msgid "LAN"
+msgstr "LAN"
 
 #: src/library/about_dialog.rs:40
 msgid "Repository"
@@ -384,7 +439,8 @@ msgid ""
 "\n"
 "{err}"
 msgstr ""
-"Tumchea API key-k 'server.about' ani 'server.versionCheck' porvanngiyo gorjecheo asat.\n"
+"Tumchea API key-k 'server.about' ani 'server.versionCheck' porvanngiyo "
+"gorjecheo asat.\n"
 "\n"
 "{err}"
 
@@ -395,7 +451,9 @@ msgstr "Account"
 #: src/library/account.rs:66
 #, rust-format
 msgid "Couldn't load this. Your API key needs the “{permission}” permission."
-msgstr "Hem load korunk zalem na. Tumchea API key-k “{permission}” porvanngi gorjechi asa."
+msgstr ""
+"Hem load korunk zalem na. Tumchea API key-k “{permission}” porvanngi "
+"gorjechi asa."
 
 #: src/library/account.rs:80 src/library/account/avatar_crop.rs:414
 #: src/library/actions/trash.rs:183 src/library/album_delete.rs:123
@@ -406,6 +464,7 @@ msgstr "Hem load korunk zalem na. Tumchea API key-k “{permission}” porvanngi
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Rodd kor"
@@ -434,7 +493,9 @@ msgstr "Sign-in Kel'lim Sadhonam"
 msgid ""
 "Browsers and apps signed in to your account. Mimick uses an API key, so it "
 "isn't listed."
-msgstr "Tumchea accountant sign-in zal'le browsers ani apps. Mimick API key vaporta, dekhun tem vollerint na."
+msgstr ""
+"Tumchea accountant sign-in zal'le browsers ani apps. Mimick API key vaporta, "
+"dekhun tem vollerint na."
 
 #: src/library/account/devices.rs:28
 msgid "Devices"
@@ -535,7 +596,9 @@ msgstr "Hea key-khatir novo secret mellovcho?"
 msgid ""
 "Mimick saves the new secret and keeps working. Anything else using this key "
 "stops working until you give it the new secret."
-msgstr "Mimick novo secret sambhalltta ani kam chalu dovorpa. Hi key vaporpi her sagllem, tumi novo secret dinasot mhonnsor kam korpachem thambtolem."
+msgstr ""
+"Mimick novo secret sambhalltta ani kam chalu dovorpa. Hi key vaporpi her "
+"sagllem, tumi novo secret dinasot mhonnsor kam korpachem thambtolem."
 
 #: src/library/account/keys.rs:159
 msgid "Rotate"
@@ -562,7 +625,8 @@ msgid ""
 "\n"
 "{secret}"
 msgstr ""
-"Mimick to atam vaporta punn sambhallunk xoklem na ({err}). To dovorpak Manddavollint paste korat:\n"
+"Mimick to atam vaporta punn sambhallunk xoklem na ({err}). To dovorpak "
+"Manddavollint paste korat:\n"
 "\n"
 "{secret}"
 
@@ -582,7 +646,9 @@ msgstr "Hi key kaddun uddovchi?"
 
 #: src/library/account/keys.rs:224
 msgid "Anything signing in with it stops working. This can't be undone."
-msgstr "Hache vorvim sign-in zauñpi sagllem kam korpachem thambtolem. Hem porot bori korunk zaina."
+msgstr ""
+"Hache vorvim sign-in zauñpi sagllem kam korpachem thambtolem. Hem porot bori "
+"korunk zaina."
 
 #: src/library/account/keys.rs:225 src/library/actions/trash.rs:187
 #: src/library/album_activity/feed.rs:245 src/library/duplicates_view.rs:334
@@ -628,7 +694,9 @@ msgstr "Tumchem account load korunk zalem na: {err}"
 
 #: src/library/account/profile.rs:152
 msgid "To use one of your photos, choose Set as Profile Picture in its menu."
-msgstr "Tumchea eka fotvacho vapor korpak, tachea menunt Profile Chitr Mhonn Set Korat vinchat."
+msgstr ""
+"Tumchea eka fotvacho vapor korpak, tachea menunt Profile Chitr Mhonn Set "
+"Korat vinchat."
 
 #: src/library/account/profile.rs:163
 msgid "Images"
@@ -698,13 +766,17 @@ msgstr "Tumche Fotov Nhoit"
 msgid ""
 "Only the owner can change where a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "Fokot dhoni fotov khuin kaddil'lo tem bodlunk xokta, ani vinchil'le fotov dusrea lokanche asat."
+msgstr ""
+"Fokot dhoni fotov khuin kaddil'lo tem bodlunk xokta, ani vinchil'le fotov "
+"dusrea lokanche asat."
 
 #: src/library/actions.rs:352
 msgid ""
 "Only the owner can change when a photo was taken, and the selected photos "
 "belong to other people."
-msgstr "Fokot dhoni fotov kednam kaddil'lo tem bodlunk xokta, ani vinchil'le fotov dusrea lokanche asat."
+msgstr ""
+"Fokot dhoni fotov kednam kaddil'lo tem bodlunk xokta, ani vinchil'le fotov "
+"dusrea lokanche asat."
 
 #: src/library/actions/trash.rs:60
 #, rust-format
@@ -870,7 +942,9 @@ msgstr "“{album_name}” soddcho?"
 #: src/library/album_assets.rs:200
 msgid ""
 "You'll stop seeing its photos unless the owner shares it with you again."
-msgstr "Dhoni to porot tumchea lagim share korina zalear tumkam tache fotov dische bond zatole."
+msgstr ""
+"Dhoni to porot tumchea lagim share korina zalear tumkam tache fotov dische "
+"bond zatole."
 
 #: src/library/album_assets.rs:201
 msgid "Leave"
@@ -890,7 +964,9 @@ msgstr "Album soddunk zalem na"
 msgid ""
 "Mimick is still uploading. Delete “{album_name}” when uploads finish, so "
 "they don't create it again."
-msgstr "Mimick azunui upload korta. Uploads somptoch “{album_name}” kaddun uddoyat, zachean te to porot toiar korchenant."
+msgstr ""
+"Mimick azunui upload korta. Uploads somptoch “{album_name}” kaddun uddoyat, "
+"zachean te to porot toiar korchenant."
 
 #: src/library/album_delete.rs:29
 msgid "Uploads in Progress"
@@ -904,7 +980,10 @@ msgstr "Poylean Manddavoll Bond Korat"
 msgid ""
 "Deleting this album changes your watch folders, and saving the open Settings "
 "window would undo that. Close Settings, then delete the album."
-msgstr "Ho album kaddun uddoilear tumchea watch folders-ant bodol zata, ani ugtem Manddavoll window sambhall'lear to bodol rodh zatolo. Manddavoll bond korat, uprant album kaddun uddoyat."
+msgstr ""
+"Ho album kaddun uddoilear tumchea watch folders-ant bodol zata, ani ugtem "
+"Manddavoll window sambhall'lear to bodol rodh zatolo. Manddavoll bond korat, "
+"uprant album kaddun uddoyat."
 
 #: src/library/album_delete.rs:45
 msgid "Its photos stay in your library."
@@ -918,8 +997,10 @@ msgstr "Zache lagim to share kela tea monxakhatir porian to kaddun uddoitolim."
 #, rust-format
 msgid "It's also removed for the {n} person it's shared with."
 msgid_plural "It's also removed for the {n} people it's shared with."
-msgstr[0] "Zache lagim to share kela tea {n} monxakhatir porian to kaddun uddoitolim."
-msgstr[1] "Zanche lagim to share kela tea {n} lokankhatir porian to kaddun uddoitolim."
+msgstr[0] ""
+"Zache lagim to share kela tea {n} monxakhatir porian to kaddun uddoitolim."
+msgstr[1] ""
+"Zanche lagim to share kela tea {n} lokankhatir porian to kaddun uddoitolim."
 
 #: src/library/album_delete.rs:61
 msgid "Its shared links stop working."
@@ -950,7 +1031,9 @@ msgstr "Hea folderrancher nodor dovorpachem thamboyat"
 msgid ""
 "So the album doesn't come back, photos in these folders go to your library "
 "instead of an album named after the folder:"
-msgstr "Album porot yeunchem nhoi mhonn, hea folderantle fotov folderachea nanvachea albumachea bodla tumchea library-nt vetole:"
+msgstr ""
+"Album porot yeunchem nhoi mhonn, hea folderantle fotov folderachea nanvachea "
+"albumachea bodla tumchea library-nt vetole:"
 
 #: src/library/album_delete.rs:221
 msgid "Could Not Delete Album"
@@ -1303,6 +1386,7 @@ msgid "Could Not Remove Person"
 msgstr "Monxak Kaddun Uddovpak Zalem Na"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Zoddik Korat"
 
@@ -1378,12 +1462,15 @@ msgstr "Kosleach Shared Albumam Nant"
 
 #: src/library/albums_view.rs:358
 msgid "Share one of your albums, or ask someone to share one with you."
-msgstr "Tumcho ek album share korat, vo konnak tari tumchea lagim album share korpak sangtat."
+msgstr ""
+"Tumcho ek album share korat, vo konnak tari tumchea lagim album share korpak "
+"sangtat."
 
 #: src/library/albums_view/stats.rs:40
 #, rust-format
 msgid "{owned} owned · {shared} shared · {not_shared} not shared"
-msgstr "{owned} aple · {shared} share kel'le · {not_shared} share korunk nasil'le"
+msgstr ""
+"{owned} aple · {shared} share kel'le · {not_shared} share korunk nasil'le"
 
 #: src/library/albums_view/tile.rs:58 src/library/download.rs:177
 #: src/library/header_format.rs:34
@@ -1734,7 +1821,10 @@ msgstr[1] "{n} fotvam copy kelim"
 msgid ""
 "Pasting into an album here adds all {count}. Only {local} are on this "
 "computer, so other apps such as Files paste those; use Download for the rest."
-msgstr "Hanga eka albumant paste korlear saglleo {count} zoddik zatoleo. Fokot {local} hea computeracher asat, dekhun Files sarke her apps teo paste kortat; urloleamkhatir Download vaprat."
+msgstr ""
+"Hanga eka albumant paste korlear saglleo {count} zoddik zatoleo. Fokot "
+"{local} hea computeracher asat, dekhun Files sarke her apps teo paste "
+"kortat; urloleamkhatir Download vaprat."
 
 #: src/library/clipboard.rs:162
 msgid "Paste in Photos or albums"
@@ -1815,12 +1905,12 @@ msgid "Version unavailable"
 msgstr "Avruti uplobdh na"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "LAN vorvim zoddlil'lem"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "WAN vorvim zoddlil'lem"
 
@@ -1854,7 +1944,10 @@ msgid ""
 "Your API key is missing permissions required for the Library view. Please "
 "ensure the key has 'asset.read', 'asset.view', 'asset.download', and "
 "'person.read' enabled."
-msgstr "Tumche API key-k Library dekhaveakhatir gorjecheo porvanngi nant. Dhoyakorun key-nt 'asset.read', 'asset.view', 'asset.download', ani 'person.read' chalu asat mhonn khatri korat."
+msgstr ""
+"Tumche API key-k Library dekhaveakhatir gorjecheo porvanngi nant. Dhoyakorun "
+"key-nt 'asset.read', 'asset.view', 'asset.download', ani 'person.read' chalu "
+"asat mhonn khatri korat."
 
 #: src/library/content_state.rs:369 src/library/server_stats_dialog.rs:27
 #: src/library/shortcuts_dialog.rs:179
@@ -2108,7 +2201,9 @@ msgstr "Kosle-i Duplicates Nant"
 msgid ""
 "Immich hasn't found any duplicate photos. It looks for them when its "
 "duplicate detection job runs."
-msgstr "Immich-ak kosle-i duplicate fotvam mellunk nant. Duplicate sodpachem kary chalu asta tednam tem te sodta."
+msgstr ""
+"Immich-ak kosle-i duplicate fotvam mellunk nant. Duplicate sodpachem kary "
+"chalu asta tednam tem te sodta."
 
 #: src/library/duplicates_view.rs:123
 msgid "Tap a photo to keep it or trash it."
@@ -2598,7 +2693,9 @@ msgstr "Takot"
 
 #: src/library/lightbox/edit/pages.rs:125
 msgid "Drag over what to hide. Tap a box to move, resize, or change it."
-msgstr "Kitem lipovnk zai tacher drag korat. Halovnk, akar bodolnk, vo bodlat korunk box-acher tap korat."
+msgstr ""
+"Kitem lipovnk zai tacher drag korat. Halovnk, akar bodolnk, vo bodlat korunk "
+"box-acher tap korat."
 
 #: src/library/lightbox/edit/pages.rs:135
 msgid "Hide Faces"
@@ -2657,7 +2754,10 @@ msgstr "Muull Bariksanni Sambhallat"
 msgid ""
 "A saved copy keeps the original's camera details, date, place, caption, "
 "rating, and albums. Off, the copy is a new photo of its own."
-msgstr "Sambhall'li ek prot muull fotvachi camera bariksanni, tarik, zago, caption, rating, ani album sambhallun dovorta. Bond asta tednam, ti prot ek apleach rupacho novo fotov asta."
+msgstr ""
+"Sambhall'li ek prot muull fotvachi camera bariksanni, tarik, zago, caption, "
+"rating, ani album sambhallun dovorta. Bond asta tednam, ti prot ek apleach "
+"rupacho novo fotov asta."
 
 #: src/library/lightbox/edit/panel.rs:176
 msgid "Stack with Original"
@@ -2665,7 +2765,8 @@ msgstr "Muull Fotva soit Stack Korat"
 
 #: src/library/lightbox/edit/panel.rs:177
 msgid "A saved copy becomes the cover of a stack, with the original under it."
-msgstr "Sambhall'li prot stack-achem cover zata, ani muull fotov tache sokla urta."
+msgstr ""
+"Sambhall'li prot stack-achem cover zata, ani muull fotov tache sokla urta."
 
 #: src/library/lightbox/edit/saving.rs:73
 msgid "Revert to the Original?"
@@ -2741,7 +2842,8 @@ msgstr "Tonddam load korunk zalem na"
 
 #: src/library/lightbox/faces.rs:227
 msgid "No faces yet. Drag around one to tag it."
-msgstr "Azun koslim-i tonddam nant. Tag korpak eka tondda bhonvtonnim drag korat."
+msgstr ""
+"Azun koslim-i tonddam nant. Tag korpak eka tondda bhonvtonnim drag korat."
 
 #: src/library/lightbox/faces.rs:298
 msgid "Choose Person…"
@@ -2812,12 +2914,12 @@ msgstr "Halchal chaloviat (Space)"
 msgid "Playback isn't available"
 msgstr "Playback uplobdh na"
 
-#: src/library/lightbox/live.rs:109 src/library/lightbox/video.rs:65
+#: src/library/lightbox/live.rs:106 src/library/lightbox/video.rs:65
 #: src/library/lightbox/video.rs:108
 msgid "Playback failed"
 msgstr "Playback fottlem"
 
-#: src/library/lightbox/live.rs:110 src/library/lightbox/video.rs:129
+#: src/library/lightbox/live.rs:107 src/library/lightbox/video.rs:129
 msgid "Not connected to the Immich server."
 msgstr "Immich serverak zoddunk na."
 
@@ -3344,7 +3446,8 @@ msgstr "Zago Aslole Kosle-i Fotov Nant"
 
 #: src/library/map/status.rs:32
 msgid "Photos with GPS data, or a location you set, appear here"
-msgstr "GPS data aslole, vo tumi manddil'lo zago aslole fotov hanga disun yetat"
+msgstr ""
+"GPS data aslole, vo tumi manddil'lo zago aslole fotov hanga disun yetat"
 
 #: src/library/map/status.rs:34
 msgid "Could Not Load the Map"
@@ -3410,7 +3513,9 @@ msgstr[1] "{n} fayli"
 msgid ""
 "Your API key is missing permissions required to view thumbnails. Please "
 "ensure the key has 'asset.view' enabled."
-msgstr "Thumbnails pollovpak gorjecheo porvanngi tumchea API key-nt nant. Doyakurun key-nt 'asset.view' sakriy kelam mhonn khatri korat."
+msgstr ""
+"Thumbnails pollovpak gorjecheo porvanngi tumchea API key-nt nant. Doyakurun "
+"key-nt 'asset.view' sakriy kelam mhonn khatri korat."
 
 #: src/library/memories.rs:154
 #, rust-format
@@ -3557,7 +3662,9 @@ msgstr "Ektthaim Korat"
 msgid ""
 "Pick the people who are really {name}. Their faces move to {name} and "
 "they're removed. This can't be undone."
-msgstr "Khoro rupan {name} aslolea lokank vinchat. Tanche chehre {name}-ak yetole ani te kaddun uddoile zatole. Hem porot fattlean ghevnk zaina."
+msgstr ""
+"Khoro rupan {name} aslolea lokank vinchat. Tanche chehre {name}-ak yetole "
+"ani te kaddun uddoile zatole. Hem porot fattlean ghevnk zaina."
 
 #: src/library/person_merge_dialog.rs:124
 #, rust-format
@@ -3912,7 +4019,10 @@ msgstr "Akhea serverachi ankddevari pollovpak administrator access zai."
 msgid ""
 "Your API key must include the 'server.about', 'server.versionCheck', "
 "'server.statistics', and 'asset.statistics' permissions to view stats."
-msgstr "Ankddevari pollovpak tumchea API key-nt 'server.about', 'server.versionCheck', 'server.statistics', ani 'asset.statistics' porvanngi asunk zai."
+msgstr ""
+"Ankddevari pollovpak tumchea API key-nt 'server.about', "
+"'server.versionCheck', 'server.statistics', ani 'asset.statistics' porvanngi "
+"asunk zai."
 
 #: src/library/server_stats_dialog.rs:168
 msgid "Unable to load statistics"
@@ -4022,7 +4132,9 @@ msgstr "Linkintle Fotov"
 msgid ""
 "Tap photos to take them out. To add some, select them in your library and "
 "choose Add to Share Link."
-msgstr "Fotov bhair kaddunk tanchecher tap korat. Kaim zoddik korpak, tumchea library-nt te vinchat ani Add to Share Link vinchat."
+msgstr ""
+"Fotov bhair kaddunk tanchecher tap korat. Kaim zoddik korpak, tumchea "
+"library-nt te vinchat ani Add to Share Link vinchat."
 
 #: src/library/shared_link_photos.rs:111
 #, rust-format
@@ -4065,7 +4177,9 @@ msgstr "Zoddik korpak kosleo-i linki nant"
 msgid ""
 "Albums' links always show the whole album. Make a link for some photos with "
 "Create Share Link first."
-msgstr "Albumancheo linki sodanch akho album dakhovtat. Poilim Create Share Link vorvim kaim fotvankhatir link toiar korat."
+msgstr ""
+"Albumancheo linki sodanch akho album dakhovtat. Poilim Create Share Link "
+"vorvim kaim fotvankhatir link toiar korat."
 
 #: src/library/shared_link_photos.rs:339 src/library/shared_link_qr.rs:115
 #: src/library/shared_link_qr.rs:129
@@ -4120,7 +4234,8 @@ msgstr "Kosleo-i Share Kel'leo Linki Nant"
 msgid ""
 "Create one from an album's or a photo's right-click menu, or from a "
 "selection."
-msgstr "Albumachea vo fotvachea uzvea-click menu thaun, vo vinchovn toiar korat."
+msgstr ""
+"Albumachea vo fotvachea uzvea-click menu thaun, vo vinchovn toiar korat."
 
 #: src/library/shared_links_view.rs:101
 msgid "Could Not Load Shared Links"
@@ -4148,7 +4263,8 @@ msgstr "Hi link kaddun uddovchi?"
 
 #: src/library/shared_links_view.rs:357
 msgid "Anyone using it will lose access. This can't be undone."
-msgstr "Ti vaporpi konn-ui tacho access sanddtolo. Hem porot fattlean ghevnk zaina."
+msgstr ""
+"Ti vaporpi konn-ui tacho access sanddtolo. Hem porot fattlean ghevnk zaina."
 
 #: src/library/shared_links_view.rs:373
 msgid "Could Not Delete Link"
@@ -4200,7 +4316,9 @@ msgstr "Tumche Lagim Share Korta"
 msgid ""
 "People who added you as a partner. Switch one on to see their photos in "
 "Photos."
-msgstr "Lok zanni tumka partner mhonn zoddik kela. Tanche fotov Fotvam-ant pollovpak ek chalu korat."
+msgstr ""
+"Lok zanni tumka partner mhonn zoddik kela. Tanche fotov Fotvam-ant pollovpak "
+"ek chalu korat."
 
 #: src/library/sharing_view.rs:94
 msgid "Could Not Load Partners"
@@ -4249,7 +4367,9 @@ msgstr "Lok load kortat…"
 
 #: src/library/sharing_view.rs:321
 msgid "No other people found. Listing people needs the 'user.read' permission."
-msgstr "Dusre koslech lok mellunk nant. Lokanchi volleri korpak 'user.read' porvanngi zai."
+msgstr ""
+"Dusre koslech lok mellunk nant. Lokanchi volleri korpak 'user.read' "
+"porvanngi zai."
 
 #: src/library/sharing_view.rs:354
 msgid "Add Partner"
@@ -4264,7 +4384,9 @@ msgstr "{name} lagim tumchi library share korchi?"
 msgid ""
 "They'll be able to see all your photos and videos. You can stop sharing at "
 "any time."
-msgstr "Te tumche soglle fotov ani videos pollovnk xoktole. Tumi kedna-i share korop thambovnk xoktat."
+msgstr ""
+"Te tumche soglle fotov ani videos pollovnk xoktole. Tumi kedna-i share korop "
+"thambovnk xoktat."
 
 #: src/library/sharing_view.rs:381
 msgid "Share"
@@ -4278,7 +4400,7 @@ msgstr "Partner Zoddik Korunk Zalem Na"
 msgid "Show keyboard shortcuts"
 msgstr "Keyboard shortcuts dakhoiat"
 
-#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:21
+#: src/library/shortcuts_dialog.rs:30 setup/dev.nicx.mimick.desktop:20
 msgid "Open Settings"
 msgstr "Manddavoll Ugoddat"
 
@@ -4386,7 +4508,9 @@ msgstr "Akho dis vinchat"
 #: src/library/shortcuts_dialog.rs:103
 msgid ""
 "The focused photo's day or month; or tap its date heading while selecting"
-msgstr "Focus kel'lea fotvacho dis vo mhoino; vo vinchtana tachea tarkechea mathalleacher tap korat"
+msgstr ""
+"Focus kel'lea fotvacho dis vo mhoino; vo vinchtana tachea tarkechea "
+"mathalleacher tap korat"
 
 #: src/library/shortcuts_dialog.rs:106
 msgid "Copy selection"
@@ -4394,7 +4518,8 @@ msgstr "Vinchil'lem copy korat"
 
 #: src/library/shortcuts_dialog.rs:108
 msgid "Paste into an album to add them; one photo copies as a picture"
-msgstr "Tanka zoddik korpak albumant paste korat; ek foto chitr mhonn copy zata"
+msgstr ""
+"Tanka zoddik korpak albumant paste korat; ek foto chitr mhonn copy zata"
 
 #: src/library/shortcuts_dialog.rs:110
 msgid "Exit selection mode"
@@ -4474,7 +4599,8 @@ msgstr "Sagllo ollkhil'lo borovp vinchat"
 
 #: src/library/shortcuts_dialog.rs:153
 msgid "Drag across text to select it; Ctrl-click adds or removes a box"
-msgstr "Vinchunk borvpacher drag korat; Ctrl-click box zoddik korta vo kaddun uddoita"
+msgstr ""
+"Vinchunk borvpacher drag korat; Ctrl-click box zoddik korta vo kaddun uddoita"
 
 #: src/library/shortcuts_dialog.rs:156
 msgid "Copy recognized text"
@@ -4482,7 +4608,8 @@ msgstr "Ollkhil'lo borovp copy korat"
 
 #: src/library/shortcuts_dialog.rs:158
 msgid "Copies the selection, or all text when nothing is selected"
-msgstr "Vinchil'lem copy korta, vo kainch vinchunk na tedna sagllo borovp copy korta"
+msgstr ""
+"Vinchil'lem copy korta, vo kainch vinchunk na tedna sagllo borovp copy korta"
 
 #: src/library/shortcuts_dialog.rs:164
 msgid "Or hold Ctrl and scroll"
@@ -4636,12 +4763,12 @@ msgstr "360° Fotvam"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:34
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Connection"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:24
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Server"
@@ -4898,8 +5025,12 @@ msgstr "Upload Rangent Dovorlem"
 msgid "{n} file queued for upload. Progress is visible in the queue inspector."
 msgid_plural ""
 "{n} files queued for upload. Progress is visible in the queue inspector."
-msgstr[0] "{n} fayl upload-akhatir rangent dovorlea. Progoti rang topaspeant dixtti poddtta."
-msgstr[1] "{n} fayli upload-akhatir rangent dovorleat. Progoti rang topaspeant dixtti poddtta."
+msgstr[0] ""
+"{n} fayl upload-akhatir rangent dovorlea. Progoti rang topaspeant dixtti "
+"poddtta."
+msgstr[1] ""
+"{n} fayli upload-akhatir rangent dovorleat. Progoti rang topaspeant dixtti "
+"poddtta."
 
 #: src/library/staging_view/album_picker.rs:62
 msgid "Upload Failed"
@@ -4910,7 +5041,8 @@ msgstr "Upload Fottlem"
 msgid "{n} file failed to enqueue. Check the logs for details."
 msgid_plural "All {n} files failed to enqueue. Check the logs for details."
 msgstr[0] "{n} fayl rangent ghalpak fottli. Bariksannikhatir log topasat."
-msgstr[1] "Saglleo {n} fayli rangent ghalpak fottleo. Bariksannikhatir log topasat."
+msgstr[1] ""
+"Saglleo {n} fayli rangent ghalpak fottleo. Bariksannikhatir log topasat."
 
 #: src/library/staging_view/album_picker.rs:74
 msgid "Upload Partially Queued"
@@ -4942,7 +5074,9 @@ msgstr "Kosle-i Tags Nant"
 #: src/library/tags_view.rs:115
 msgid ""
 "Create a tag with New Tag, or tag photos from the lightbox details pane."
-msgstr "Novi Tag vaporun tag toiar korat, vo lightbox bariksannichea panantlean fotvank tag korat."
+msgstr ""
+"Novi Tag vaporun tag toiar korat, vo lightbox bariksannichea panantlean "
+"fotvank tag korat."
 
 #: src/library/tags_view.rs:118
 msgid "No Tags Inside"
@@ -5107,7 +5241,9 @@ msgstr "Ho fotov tumchea Fotvanchi timeline-ant na"
 msgid ""
 "Immich permanently deletes trashed items after its retention period (30 days "
 "by default)."
-msgstr "Immich tachea dovorpachea mudoti uprant (default 30 dis) kachreantle (trash) vostu sodamkhatir kaddun uddoita."
+msgstr ""
+"Immich tachea dovorpachea mudoti uprant (default 30 dis) kachreantle (trash) "
+"vostu sodamkhatir kaddun uddoita."
 
 #: src/library/trash_view.rs:66
 msgid "Restore All"
@@ -5135,7 +5271,8 @@ msgstr "Hi vost sodamkhatir kaddun uddovchi?"
 
 #: src/library/trash_view.rs:188
 msgid "This can't be undone. Local copies in your watch folders are kept."
-msgstr "Hem portunk zaina. Tumchea watch folders modhleo local proti dovorleat."
+msgstr ""
+"Hem portunk zaina. Tumchea watch folders modhleo local proti dovorleat."
 
 #: src/library/trash_view.rs:217
 msgid "Could Not Delete"
@@ -5148,7 +5285,8 @@ msgstr "Trash khali korchi?"
 #: src/library/trash_view.rs:237
 msgid ""
 "Everything in the Immich trash is deleted permanently. This can't be undone."
-msgstr "Immich trashantlem sagllem sodamkhatir kaddun uddoita. Hem portunk zaina."
+msgstr ""
+"Immich trashantlem sagllem sodamkhatir kaddun uddoita. Hem portunk zaina."
 
 #: src/library/trash_view.rs:243
 msgid "Could Not Empty Trash"
@@ -5375,7 +5513,7 @@ msgstr "Assets vinchat (Bhair sorunk Esc)"
 msgid "Queue Inspector"
 msgstr "Rang Topaspi"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Manddavoll"
@@ -5384,7 +5522,7 @@ msgstr "Manddavoll"
 msgid "Keyboard Shortcuts"
 msgstr "Keyboard Shortcuts"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Mimick-a Vixim"
 
@@ -5499,7 +5637,9 @@ msgstr "Mimick: Connection sanddlem"
 msgid ""
 "Could not reach the Immich server. Uploads will resume automatically when "
 "connectivity is restored."
-msgstr "Immich serverak pauonk xoklem na. Connection porot yetanch upload ap-xik suru zatole."
+msgstr ""
+"Immich serverak pauonk xoklem na. Connection porot yetanch upload ap-xik "
+"suru zatole."
 
 #: src/queue_manager.rs:241
 #, rust-format
@@ -5539,7 +5679,9 @@ msgstr "{path}-akhatir upload fottlem"
 #: src/queue_manager/progress.rs:366
 msgid ""
 "Review the latest server and permission settings, then retry the failed item."
-msgstr "Taja server ani porvanngi manddavoll topasat, uprant fottlolea vostukhatir porot proyotn korat."
+msgstr ""
+"Taja server ani porvanngi manddavoll topasat, uprant fottlolea vostukhatir "
+"porot proyotn korat."
 
 #: src/queue_manager/progress.rs:379
 msgid "Queued for retry"
@@ -5565,7 +5707,9 @@ msgstr "Bariksanniche Log"
 #: src/settings_window/actions_ui.rs:23
 msgid ""
 "Record more while you reproduce a problem, then export. The log grows faster."
-msgstr "Oddchonn porot yetana chodd nond korat, uprant export korat. Log begobeg vhodd zata."
+msgstr ""
+"Oddchonn porot yetana chodd nond korat, uprant export korat. Log begobeg "
+"vhodd zata."
 
 #: src/settings_window/actions_ui.rs:28
 msgid "Export…"
@@ -5579,7 +5723,9 @@ msgstr "Diagnostics Export Korat"
 msgid ""
 "For bug reports: settings, status, and the end of the log, with private "
 "details removed."
-msgstr "Bug reportamkhatir: manddavoll, sthiti, ani khasgi mahiti kaddun log-acho xevott."
+msgstr ""
+"Bug reportamkhatir: manddavoll, sthiti, ani khasgi mahiti kaddun log-acho "
+"xevott."
 
 #: src/settings_window/appearance.rs:22
 msgid "Style"
@@ -5593,41 +5739,53 @@ msgstr "Uzvadd Theme"
 msgid "Dark Theme"
 msgstr "Kalluk Theme"
 
-#: src/settings_window/apply.rs:164
+#: src/settings_window/apply.rs:183
+msgid "Secrets Stored in Files"
+msgstr "Gutt Faylint Dovorleant"
+
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API Key Eka Faylint Dovorlea"
 
-#: src/settings_window/apply.rs:170
+#: src/settings_window/apply.rs:191
+msgid "Custom Proxy Headers Stored in a File"
+msgstr "Custom Proxy Headers Eka Faylint Dovorleant"
+
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Manddavoll Sambhall'lli"
 
-#: src/settings_window/apply.rs:171
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick-an sudharit manddavoll yoxosvi ritin sambhall'lli."
 
-#: src/settings_window/apply.rs:207
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Startup Porvanngi Gorjechi"
 
-#: src/settings_window/apply.rs:208
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Login vellar Mimick-ak ap-xik suru zauñk porvanngi mellunk na."
 
-#: src/settings_window/apply.rs:210
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Startup Manddavoll Sudharunk Zalem Na"
 
-#: src/settings_window/apply.rs:241
-msgid "Could Not Save API Key"
-msgstr "API Key Sambhallunk Zalem Na"
-
-#: src/settings_window/apply.rs:249
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Manddavoll Sambhallunk Zalem Na"
 
-#: src/settings_window/apply.rs:250
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick sudharit manddavoll diskacher borovnk xoklem na."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "API Key Sambhallunk Zalem Na"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Custom Headers Sambhallunk Zalem Na"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5728,47 +5886,92 @@ msgstr "Mimick Suru Zatanach, Topasat"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Folder Rules hantunt folder aplo vinchovn ghevnk xoktat."
 
-#: src/settings_window/connectivity.rs:29
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "Internal URL (LAN)"
 
-#: src/settings_window/connectivity.rs:31
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "External URL (WAN)"
 
-#: src/settings_window/connectivity.rs:35
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Azun topasunk na"
 
-#: src/settings_window/connectivity.rs:38
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Connection Topasat"
 
-#: src/settings_window/connectivity.rs:41
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Sambhallat ani Zoddat"
 
-#: src/settings_window/connectivity.rs:46 setup/dev.nicx.mimick.desktop:17
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Library Ugoddat"
 
-#: src/settings_window/connectivity.rs:89
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API Key"
 
-#: src/settings_window/connectivity.rs:137
+#: src/settings_window/connectivity.rs:158
+msgid "Custom Proxy Headers"
+msgstr "Custom Proxy Headers"
+
+#: src/settings_window/connectivity.rs:174
+msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
+msgstr ""
+"Reverse proxies khatir optional HTTP headers (udharonnak Cloudflare Access)"
+
+#: src/settings_window/connectivity.rs:177
+msgid "1 header configured"
+msgstr "1 header configure kelam"
+
+#: src/settings_window/connectivity.rs:179
+msgid "headers configured"
+msgstr "headers configure keleant"
+
+#: src/settings_window/connectivity.rs:229
+msgid "Remove header"
+msgstr "Header kaddat"
+
+#: src/settings_window/connectivity.rs:256
+msgid "Add Header…"
+msgstr "Header Zoddik Korat…"
+
+#: src/settings_window/connectivity.rs:279
+msgid "Paste from clipboard"
+msgstr "Clipboard-antlean Paste Korat"
+
+#: src/settings_window/connectivity.rs:353
+msgid "Header Name"
+msgstr "Header-achem Naum"
+
+#: src/settings_window/connectivity.rs:364
+msgid "Secret / Value"
+msgstr "Gutt / Mol"
+
+#: src/settings_window/connectivity.rs:381
+msgid "Scope"
+msgstr "Scope"
+
+#: src/settings_window/connectivity.rs:406
+msgid "Add Custom Header"
+msgstr "Custom Header Zoddik Korat"
+
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN URL"
 
-#: src/settings_window/connectivity.rs:138
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN URL"
 
-#: src/settings_window/form.rs:127
+#: src/settings_window/form.rs:133
 msgid "Invalid Internal URL"
 msgstr "Omany Internal URL"
 
-#: src/settings_window/form.rs:132
+#: src/settings_window/form.rs:138
 msgid "Invalid External URL"
 msgstr "Omany External URL"
 
@@ -5864,7 +6067,9 @@ msgstr "Purnn RAW Decoding"
 msgid ""
 "Uses the sensor data, not the embedded preview, with every colour the camera "
 "recorded. Slower, and uses more memory."
-msgstr "Kameran nond kel'lea dor eka ronga soit sensoracho data vaporta, bhitor axil'lo preview nhoi. Sopoxtt vell lagta ani chodd memory vaporta."
+msgstr ""
+"Kameran nond kel'lea dor eka ronga soit sensoracho data vaporta, bhitor "
+"axil'lo preview nhoi. Sopoxtt vell lagta ani chodd memory vaporta."
 
 #: src/settings_window/library.rs:172
 msgid "Keep Decoded RAW Files"
@@ -5934,35 +6139,55 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Manddavoll sambhall'lli, punn system keyring uplobdh na, dekhun API key {path}-ant dovorlea.\n"
+"Manddavoll sambhall'lli, punn system keyring uplobdh na, dekhun API key "
+"{path}-ant dovorlea.\n"
 "\n"
-"Hi fayl fokot tumchea user account vorvim vachunk zata punn encrypt korunk na.\n"
+"Hi fayl fokot tumchea user account vorvim vachunk zata punn encrypt korunk "
+"na.\n"
 "\n"
 "Polleyat: {url}"
 
-#: src/settings_window/mod.rs:141
+#: src/settings_window/mod.rs:142
+#, rust-format
+msgid ""
+"Settings were saved, but the system keyring is unavailable, so custom proxy "
+"headers were stored in {path}.\n"
+"\n"
+"The file is readable only by your user account but is not encrypted.\n"
+"\n"
+"See: {url}"
+msgstr ""
+"Manddavoll sambhall'lli, punn system keyring uplobdh na, dekhun custom proxy "
+"headers {path}-ant dovorleant.\n"
+"\n"
+"Hi fayl fokot tumchea user account vorvim vachunk zata punn encrypt korunk "
+"na.\n"
+"\n"
+"Polleyat: {url}"
+
+#: src/settings_window/mod.rs:156
 msgid "No successful sync yet"
 msgstr "Azun koslem-i sync yoxosvi zauñk na"
 
-#: src/settings_window/mod.rs:151
+#: src/settings_window/mod.rs:166
 msgid "Less than a minute ago"
 msgstr "Eka minita poros unnea vella adim"
 
-#: src/settings_window/mod.rs:157
+#: src/settings_window/mod.rs:172
 #, rust-format
 msgid "{n} minute ago"
 msgid_plural "{n} minutes ago"
 msgstr[0] "{n} minit adim"
 msgstr[1] "{n} minitam adim"
 
-#: src/settings_window/mod.rs:161
+#: src/settings_window/mod.rs:176
 #, rust-format
 msgid "{n} hour ago"
 msgid_plural "{n} hours ago"
 msgstr[0] "{n} vor adim"
 msgstr[1] "{n} voram adim"
 
-#: src/settings_window/mod.rs:164
+#: src/settings_window/mod.rs:179
 #, rust-format
 msgid "{n} day ago"
 msgid_plural "{n} days ago"
@@ -6034,7 +6259,7 @@ msgid "Sync Now"
 msgstr "Atanch Sync Korat"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:349 src/settings_window/wiring.rs:370
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Thamboyat"
 
@@ -6050,8 +6275,8 @@ msgstr "Lakx Divnk Zai"
 msgid "Failed uploads"
 msgstr "Fottlole uploads"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:347
-#: src/settings_window/wiring.rs:368
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Porot Suru Korat"
 
@@ -6252,83 +6477,87 @@ msgstr "Soglleanvodd Fayl MB-nt (kosli-i xim' naka zalear rikami)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Fokot He Prokaranche, zoxem jpg, png, mp4 (saglleankhatir rikami)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Sthiti"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:29
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick thaun Bhair Sorat"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Mukhy Menu"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Suru Korat"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Mimick tumchea Immich serverak zoddunk tin panvlam."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Tumcho server bhorat"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Sokoil Server hachea pondak tumcho Immich namo."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. API key zoddik korat"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
-msgstr "Immich-ant: Account Settings → API Keys. Guide-ant porvanngiyanchi volleri asa."
+msgstr ""
+"Immich-ant: Account Settings → API Keys. Guide-ant porvanngiyanchi volleri "
+"asa."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Sambhallat ani Zoddat"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
-msgstr "Tumi fuddem votanch tumchi library ugoddttoli. Folderacho backup korpak, taka Watch Folders pondak zoddik korat."
+msgstr ""
+"Tumi fuddem votanch tumchi library ugoddttoli. Folderacho backup korpak, "
+"taka Watch Folders pondak zoddik korat."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Guide"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Tumi thamboilam"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} porian kam korta"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name}-ak pauonk zaina"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "Khuincheach nameancher Immich-ak pauonk zalem na"
 
-#: src/settings_window/wiring.rs:252
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Topasta…"
 
-#: src/settings_window/wiring.rs:366
-msgid "Paused by you"
-msgstr "Tumi thamboilam"
-
-#: src/settings_window/wiring.rs:425
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Omany Vinchovn"
 
-#: src/settings_window/wiring.rs:426
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "Unneant-unno ek tari URL (Internal vo External) chalu asunk zai."
 
@@ -6412,9 +6641,10 @@ msgstr "Onodhrokrut Immich desktop client ani ap-xik sync agent"
 #: setup/dev.nicx.mimick.desktop:10
 msgid ""
 "Photo;Photos;Picture;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
-msgstr "Fotov;Fotvam;Chitr;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
+msgstr ""
+"Fotov;Fotvam;Chitr;Video;Sync;Backup;Upload;Immich;Gallery;Self-hosted;"
 
-#: setup/dev.nicx.mimick.desktop:25
+#: setup/dev.nicx.mimick.desktop:24
 msgid "Upload with Mimick"
 msgstr "Mimick vorvim Upload Korat"
 
@@ -6427,43 +6657,59 @@ msgid ""
 "Mimick is a native Linux desktop client for self-hosted Immich servers. It "
 "monitors your folders in the background and automatically syncs photos and "
 "videos to your server."
-msgstr "Mimick self-hosted Immich servers-khatir ek native Linux desktop client asa. Tem fattlean (background) tumchea folderrancher nodor dovorta ani tumchea serveracher fotov ani video ap-xik sync korta."
+msgstr ""
+"Mimick self-hosted Immich servers-khatir ek native Linux desktop client asa. "
+"Tem fattlean (background) tumchea folderrancher nodor dovorta ani tumchea "
+"serveracher fotov ani video ap-xik sync korta."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:20
 msgid ""
 "Per-folder sync methods: upload only, download only, or full bidirectional "
 "sync with optional deletion mirroring."
-msgstr "Dor eka foldera pormonnem sync pothoti: fokot upload, fokot download, vo donuy vattenchi purnn sync zantunt aplea khuxen kaddun uddovpachem mirroring asta."
+msgstr ""
+"Dor eka foldera pormonnem sync pothoti: fokot upload, fokot download, vo "
+"donuy vattenchi purnn sync zantunt aplea khuxen kaddun uddovpachem mirroring "
+"asta."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:22
 msgid ""
 "Built-in Library View for browsing your timeline, managing albums, and "
 "searching with Smart Search, OCR, and metadata filters."
-msgstr "Tumchi timeline pollounk, albumanchem karbhar cholovnk, ani Smart Search, OCR, toxench metadata filters vorvim sodunk bhitor axil'lo Library View."
+msgstr ""
+"Tumchi timeline pollounk, albumanchem karbhar cholovnk, ani Smart Search, "
+"OCR, toxench metadata filters vorvim sodunk bhitor axil'lo Library View."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:24
 msgid ""
 "SHA-1 deduplication, parallel upload workers, and offline retry queue for "
 "reliable transfers."
-msgstr "Bhorvaxeachea transferankhatir SHA-1 deduplication, samantar upload workers, ani offline retry rang."
+msgstr ""
+"Bhorvaxeachea transferankhatir SHA-1 deduplication, samantar upload workers, "
+"ani offline retry rang."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:26
 msgid ""
 "Environment-aware: automatically pauses on battery or metered connections. "
 "Configurable quiet hours and per-folder rules."
-msgstr "Poryavoronn somzun ghevpi: battery vo metered connections-acher ap-xik thambta. Khaxa quiet hours ani dor foldera pormonnem nemam."
+msgstr ""
+"Poryavoronn somzun ghevpi: battery vo metered connections-acher ap-xik "
+"thambta. Khaxa quiet hours ani dor foldera pormonnem nemam."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:28
 msgid ""
 "Built in Rust with GTK4 and Libadwaita. System tray integration and Flatpak "
 "sandbox support."
-msgstr "Rust, GTK4 ani Libadwaita vorvim toiar kelam. System tray integration ani Flatpak sandbox asro."
+msgstr ""
+"Rust, GTK4 ani Libadwaita vorvim toiar kelam. System tray integration ani "
+"Flatpak sandbox asro."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:31
 msgid ""
 "Mimick is a community-developed client and is not affiliated with or "
 "endorsed by the Immich project."
-msgstr "Mimick he eka somazachean vikasit kel'lo client asa ani to Immich project-a lagim kosloi sombondh vo tachi manyotai dhorina."
+msgstr ""
+"Mimick he eka somazachean vikasit kel'lo client asa ani to Immich project-a "
+"lagim kosloi sombondh vo tachi manyotai dhorina."
 
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:38
 msgid "Library View - Photos page with sidebar"
@@ -6496,4 +6742,3 @@ msgstr "Manddavoll - Server connection ani watch folders"
 #: setup/metainfo/dev.nicx.mimick.metainfo.xml:73
 msgid "Status page with sync health dashboard"
 msgstr "Sync bholaiki dashboard soit sthiti pan"
-

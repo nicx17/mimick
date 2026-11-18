@@ -19,6 +19,7 @@ pub(super) fn mime_for_path(path: &Path) -> &'static str {
 pub(super) async fn apply_asset_timezone_fixup(
     client: &Client,
     api_key: &str,
+    custom_headers: &[(String, String)],
     base_url: &str,
     asset_id: &str,
     time_zone: &str,
@@ -29,14 +30,16 @@ pub(super) async fn apply_asset_timezone_fixup(
         "timeZone": time_zone,
     });
 
-    match client
+    let mut req = client
         .put(&url)
         .header("x-api-key", api_key)
-        .header("Accept", "application/json")
-        .json(&body)
-        .send()
-        .await
-    {
+        .header("Accept", "application/json");
+
+    for (name, val) in custom_headers {
+        req = req.header(name, val);
+    }
+
+    match req.json(&body).send().await {
         Ok(resp) if resp.status().is_success() => {
             log::debug!("Updated timezone for asset {} to {}", asset_id, time_zone);
         }

@@ -85,10 +85,9 @@ impl ImmichApiClient {
             .text("fileModifiedAt", chrono::Utc::now().to_rfc3339())
             .text("filename", copy.filename)
             .text("isFavorite", copy.favorite.to_string());
+        let url = format!("{base_url}/api/assets");
         let resp = self
-            .client
-            .post(format!("{base_url}/api/assets"))
-            .header("x-api-key", self.settings_snapshot().api_key)
+            .authorized_request(reqwest::Method::POST, &url)
             .header("Accept", "application/json")
             .timeout(std::time::Duration::from_secs(300))
             .multipart(form)

@@ -29,7 +29,7 @@ const SEEK_SETTLE: Duration = Duration::from_millis(400);
 
 pub(super) struct VideoSource {
     pub(super) uri: String,
-    pub(super) api_key: Option<String>,
+    pub(super) headers: Vec<(String, String)>,
 }
 
 pub(super) struct VideoHooks {
@@ -40,7 +40,7 @@ pub(super) struct VideoHooks {
 
 pub(super) struct VideoPlayer {
     play: gst_play::Play,
-    api_key: Arc<Mutex<Option<String>>>,
+    headers: Arc<Mutex<Vec<(String, String)>>>,
     _bus_watch: gst::bus::BusWatchGuard,
     surface: gtk::Picture,
     badge: gtk::Button,
@@ -66,13 +66,13 @@ impl VideoPlayer {
         muted: bool,
         hooks: VideoHooks,
     ) -> Result<Rc<Self>, String> {
-        let api_key = Arc::new(Mutex::new(None));
-        let (play, paintable) = pipeline::build_play(volume, muted, api_key.clone())?;
+        let headers = Arc::new(Mutex::new(Vec::new()));
+        let (play, paintable) = pipeline::build_play(volume, muted, headers.clone())?;
         let bus = play.message_bus();
         let player = Rc::new_cyclic(|weak: &Weak<Self>| Self {
             _bus_watch: watch_bus(&bus, weak.clone()),
             play,
-            api_key,
+            headers,
             surface: video_surface(&paintable),
             badge: badge.clone(),
             controls: Controls::new(volume, muted),
@@ -149,13 +149,13 @@ impl VideoPlayer {
     }
 
     pub(super) fn load(&self, source: VideoSource) {
-        let origin = if source.api_key.is_some() {
+        let origin = if !source.headers.is_empty() {
             "server"
         } else {
             "local"
         };
         log::debug!("Video load source={origin}");
-        *self.api_key.lock() = source.api_key;
+        *self.headers.lock() = source.headers;
         self.loaded.set(true);
         self.play.set_uri(Some(&source.uri));
         self.play.set_subtitle_track_enabled(false);

@@ -1,62 +1,36 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mimick – Immich Desktop Client and Photo Sync for Linux</title>
-    <meta
-      name="description"
-      content="Mimick is a free, open-source Immich desktop app for Linux. Back up photo and video folders to your self-hosted Immich server and browse your library."
-    />
-    <link rel="canonical" href="https://mimick.nicx.dev/" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Mimick" />
-    <meta
-      property="og:title"
-      content="Mimick – Immich Desktop Client for Linux"
-    />
-    <meta
-      property="og:description"
-      content="Back up photo and video folders to your self-hosted Immich server and browse your library from a native GTK4 app."
-    />
-    <meta property="og:url" content="https://mimick.nicx.dev/" />
-    <meta property="og:image" content="https://mimick.nicx.dev/og-image.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta
-      property="og:image:alt"
-      content="Mimick showing an Immich photo library on the Linux desktop"
-    />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="Mimick – Immich Desktop Client for Linux"
-    />
-    <meta
-      name="twitter:description"
-      content="Back up photo and video folders to your self-hosted Immich server and browse your library from a native GTK4 app."
-    />
-    <meta name="twitter:image" content="https://mimick.nicx.dev/og-image.jpg" />
-    <link
-      rel="preload"
-      href="fonts/manrope-latin.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="fonts/newsreader-latin.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <meta name="theme-color" content="#000000" />
-    <link rel="icon" href="icon.png" sizes="192x192" type="image/png" />
-    <link rel="shortcut icon" href="icon.png" type="image/png" />
-    <link rel="apple-touch-icon" href="icon.png" />
-    <link rel="stylesheet" href="styles.css" />
-    <script type="application/ld+json">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mimick – Immich Desktop Client and Photo Sync for Linux</title>
+  <meta name="description"
+    content="Mimick is a free, open-source Immich desktop app for Linux. Back up photo and video folders to your self-hosted Immich server and browse your library." />
+  <link rel="canonical" href="https://mimick.nicx.dev/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Mimick" />
+  <meta property="og:title" content="Mimick – Immich Desktop Client for Linux" />
+  <meta property="og:description"
+    content="Back up photo and video folders to your self-hosted Immich server and browse your library from a native GTK4 app." />
+  <meta property="og:url" content="https://mimick.nicx.dev/" />
+  <meta property="og:image" content="https://mimick.nicx.dev/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Mimick showing an Immich photo library on the Linux desktop" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Mimick – Immich Desktop Client for Linux" />
+  <meta name="twitter:description"
+    content="Back up photo and video folders to your self-hosted Immich server and browse your library from a native GTK4 app." />
+  <meta name="twitter:image" content="https://mimick.nicx.dev/og-image.jpg" />
+  <link rel="preload" href="fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <meta name="theme-color" content="#000000" />
+  <link rel="icon" href="icon.png" sizes="192x192" type="image/png" />
+  <link rel="shortcut icon" href="icon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
@@ -90,584 +64,502 @@
         ]
       }
     </script>
-  </head>
-  <body class="home-page">
-    <main>
-      <div class="container">
-        <div class="top-controls page-nav">
-          <nav class="nav-links" aria-label="Main Navigation">
-            <a class="nav-link" href="roadmap.html">Roadmap</a>
-            <a class="nav-link" href="screenshots.html">Screenshots</a>
-            <a class="nav-link" href="https://flathub.org/apps/dev.nicx.mimick" target="_blank" rel="noopener">Flathub</a>
-            <a class="nav-link" href="https://github.com/nicx17/mimick" target="_blank" rel="noopener">GitHub</a>
-            <a class="nav-link" href="docs/">Docs</a>
-          </nav>
-          <button
-            id="theme-toggle"
-            class="theme-toggle"
-            type="button"
-            aria-pressed="false"
-          >
-            Light Mode
-          </button>
+</head>
+
+<body class="home-page">
+  <main>
+    <div class="container">
+      <div class="top-controls page-nav">
+        <nav class="nav-links" aria-label="Main Navigation">
+          <a class="nav-link" href="roadmap.html">Roadmap</a>
+          <a class="nav-link" href="screenshots.html">Screenshots</a>
+          <a class="nav-link" href="https://flathub.org/apps/dev.nicx.mimick" target="_blank" rel="noopener">Flathub</a>
+          <a class="nav-link" href="https://github.com/nicx17/mimick" target="_blank" rel="noopener">GitHub</a>
+          <a class="nav-link" href="docs/">Docs</a>
+        </nav>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false">
+          Light Mode
+        </button>
+      </div>
+      <header>
+        <div class="icon-frame">
+          <img class="hero-icon" src="icon.png" alt="Mimick app icon" />
         </div>
-        <header>
-          <div class="icon-frame">
-            <img class="hero-icon" src="icon.png" alt="Mimick app icon" />
-          </div>
-          <p class="eyebrow">Unofficial Immich Desktop Client for Linux</p>
-          <h1>Mimick</h1>
-          <p class="subtitle">
-            Sync local folders to Immich, browse your library, manage albums,
-            and search assets — from a native GTK4 desktop app.
-          </p>
-          <div class="badge-container">
-            <a href="https://flathub.org/apps/dev.nicx.mimick">
-              <img
-                width="240"
-                alt="Get it on Flathub"
-                src="https://flathub.org/api/badge?locale=en"
-              />
-            </a>
-          </div>
-        </header>
-
-        <div class="hero-split">
-          <section class="feature-summary" aria-label="About Mimick">
-            <p class="install-label">Overview</p>
-            <p>
-              Mimick is an unofficial Immich desktop client for Linux. It backs up
-              your photo and video folders to a self-hosted Immich server in the
-              background, and its optional library browser lets you view, search,
-              and manage your Immich photos from the desktop.
-            </p>
-            <ul class="summary-points">
-              <li>Native GTK4 and Libadwaita interface with OLED black and light palettes</li>
-              <li>Two-way folder backup with checksum-based duplicate avoidance</li>
-              <li>Complete photo timeline, faces, OCR text recognition, and map browser</li>
-            </ul>
-          </section>
-
-          <section class="install-card">
-            <div class="install-header">
-              <p class="install-label">Install</p>
-            </div>
-            <div class="install-grid">
-              <article class="install-method">
-                <div class="method-header">
-                  <p class="method-title">Install from Flathub</p>
-                  <button
-                    class="copy-button"
-                    type="button"
-                    data-copy-target="install-flathub"
-                    aria-label="Copy install command"
-                  >
-                    Copy
-                  </button>
-                </div>
-                <pre><code id="install-flathub">flatpak install flathub dev.nicx.mimick</code></pre>
-              </article>
-              <article class="install-method">
-                <div class="method-header">
-                  <p class="method-title">Install from Arch AUR</p>
-                  <button
-                    class="copy-button"
-                    type="button"
-                    data-copy-target="install-aur"
-                    aria-label="Copy AUR install command"
-                  >
-                    Copy
-                  </button>
-                </div>
-                <pre><code id="install-aur">yay -S mimick</code></pre>
-              </article>
-            </div>
-            <p class="install-note">
-              <strong>Note:</strong> Ensure you have the
-              <a href="https://flathub.org/setup" target="_blank" rel="noopener"
-                >Flathub</a
-              >
-              remote configured on your system. Also available on <a href="https://aur.archlinux.org/packages/mimick" target="_blank" rel="noopener">AUR</a> and as standalone <a href="https://github.com/nicx17/mimick/releases/latest" target="_blank" rel="noopener">AppImages</a>.
-            </p>
-          </section>
+        <p class="eyebrow">Unofficial Immich Desktop Client for Linux</p>
+        <h1>Mimick</h1>
+        <p class="subtitle">
+          Sync local folders to Immich, browse your library, manage albums,
+          and search assets — from a native GTK4 desktop app.
+        </p>
+        <div class="badge-container">
+          <a href="https://flathub.org/apps/dev.nicx.mimick">
+            <img width="240" alt="Get it on Flathub" src="https://flathub.org/api/badge?locale=en" />
+          </a>
         </div>
+      </header>
 
-        <section class="info-section" aria-labelledby="features-heading">
-          <h2 id="features-heading">Features</h2>
-          <div class="feature-grid">
-            <article>
-              <h3>Your whole Immich library</h3>
-              <p>
-                A Photos timeline with a date scrubber, albums, Explore, People,
-                Tags, Folders, Favorites, Archive, and Trash in a native GTK4
-                window. Rate, archive, and change the date, time zone, or place
-                of many photos at once.
-              </p>
-            </article>
-            <article>
-              <h3>Memories, stacks, and live photos</h3>
-              <p>
-                "On this day" memories above Photos, bursts and RAW+JPEG pairs
-                grouped into stacks, and live and motion photos that play their
-                clip right in the viewer.
-              </p>
-            </article>
-            <article>
-              <h3>A viewer built for big photos</h3>
-              <p>
-                Swipe between photos, zoom to 2000% of the real pixels with the
-                full resolution loading as you go, watch hardware-decoded video
-                streamed from Immich, and run slideshows with crossfade and
-                shuffle. RAW previews included.
-              </p>
-            </article>
-            <article>
-              <h3>Edit without touching the original</h3>
-              <p>
-                Crop, rotate, flip, and straighten; adjust light and colour;
-                apply filters; and redact faces or text. Crops are kept in
-                Immich and can be reverted, and other edits save as a new copy
-                that keeps the original's metadata.
-              </p>
-            </article>
-            <article>
-              <h3>Tag the people in your photos</h3>
-              <p>
-                Name, move, or remove the faces Immich found, draw a box around
-                ones it missed, and point at a face to see who it is.
-              </p>
-            </article>
-            <article>
-              <h3>Find any photo</h3>
-              <p>
-                Smart search, search by the text in a photo (OCR) and copy that
-                text, find similar photos, jump to a photo's place in the
-                timeline, and clear out look-alikes on the Duplicates page.
-              </p>
-            </article>
-            <article>
-              <h3>Your photos on a map</h3>
-              <p>
-                See where your photos were taken, search for any place or
-                address, and pick from Immich's own map style, VersaTiles
-                styles, satellite imagery, or OpenStreetMap.
-              </p>
-            </article>
-            <article>
-              <h3>Share and comment</h3>
-              <p>
-                Shared albums with Viewer and Editor roles, likes and comments,
-                public shared links, and partner sharing, including browsing a
-                partner's photos.
-              </p>
-            </article>
-            <article>
-              <h3>Automatic folder backup</h3>
-              <p>
-                Watch any folder and upload new photos and videos as they
-                appear, to your library, an album, or an album named after the
-                folder. Choose Upload Only, Download Only, or Full sync for each
-                folder; checksums skip files already on your server.
-              </p>
-            </article>
-            <article>
-              <h3>Reliable on any network</h3>
-              <p>
-                Failed uploads are saved and retried, Mimick switches between
-                your home and remote server addresses, and it can pause on
-                metered networks, on battery, or during quiet hours.
-              </p>
-            </article>
-            <article>
-              <h3>Made for the Linux desktop</h3>
-              <p>
-                Tray icon, start on login, drag and drop, Open With Mimick from
-                your file manager, and keyboard shortcuts for nearly everything.
-                The Flatpak only reads folders you pick, and your API key stays
-                in the keyring.
-              </p>
-            </article>
-            <article>
-              <h3>Works on Linux phones</h3>
-              <p>
-                The layout adapts down to 360 pixels wide with a bottom
-                navigation bar, and you can swipe, pinch to zoom, and long-press
-                for menus, so Mimick runs on Linux phones as well as desktops.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <section class="links-container" aria-label="Repository links">
-          <a class="link-block" href="https://flathub.org/apps/dev.nicx.mimick">
-            <span class="link-icon">01</span>
-            <span class="link-copy">
-              <strong>View on Flathub</strong>
-              <span>Install Mimick from the official Flathub repository.</span>
-            </span>
-          </a>
-          <a class="link-block" href="https://github.com/nicx17/mimick">
-            <span class="link-icon">02</span>
-            <span class="link-copy">
-              <strong>View on GitHub</strong>
-              <span>Browse source, releases, and issues.</span>
-            </span>
-          </a>
-          <a
-            class="link-block"
-            href="https://github.com/nicx17/mimick/blob/main/CHANGELOG.md"
-          >
-            <span class="link-icon">03</span>
-            <span class="link-copy">
-              <strong>Read the changelog</strong>
-              <span>See the latest app and packaging changes.</span>
-            </span>
-          </a>
-          <a class="link-block" href="docs/">
-            <span class="link-icon">04</span>
-            <span class="link-copy">
-              <strong>Browse the API docs</strong>
-              <span>Rustdoc reference for the Mimick source.</span>
-            </span>
-          </a>
-          <a class="link-block" href="roadmap.html">
-            <span class="link-icon">05</span>
-            <span class="link-copy">
-              <strong>See the roadmap</strong>
-              <span>What's shipped, and what's planned next.</span>
-            </span>
-          </a>
-        </section>
-
-        <section class="screenshots-section" aria-labelledby="screenshots-heading">
-          <div class="section-header-split">
-            <div>
-              <h2 id="screenshots-heading">Screenshots</h2>
-              <p class="section-subhead">A visual tour of the native GTK4 interface.</p>
-            </div>
-            <a class="view-all-link" href="screenshots.html">View all 90+ screenshots &rarr;</a>
-          </div>
-          <div class="screenshots-grid">
-            <button type="button" class="screenshot-item">
-              <img
-                src="screenshots/thumbs/photos-timeline.webp"
-                data-full="screenshots/photos-timeline.png"
-                alt="Mimick Immich client: Library (Light)"
-                loading="lazy"
-                width="300"
-                height="169"
-              />
-              <span class="figcaption">Library Timeline</span>
-            </button>
-            <button type="button" class="screenshot-item">
-              <img
-                src="screenshots/thumbs/album-view-dark.webp"
-                data-full="screenshots/album-view-dark.png"
-                alt="Mimick Immich client: Selected Album (Dark)"
-                loading="lazy"
-                width="300"
-                height="169"
-              />
-              <span class="figcaption">Album View (Dark)</span>
-            </button>
-            <button type="button" class="screenshot-item">
-              <img
-                src="screenshots/thumbs/map-photos-in-area.webp"
-                data-full="screenshots/map-photos-in-area.png"
-                alt="Mimick Immich client: Map"
-                loading="lazy"
-                width="300"
-                height="169"
-              />
-              <span class="figcaption">Map & Places</span>
-            </button>
-            <button type="button" class="screenshot-item">
-              <img
-                src="screenshots/thumbs/lightbox-details-on.webp"
-                data-full="screenshots/lightbox-details-on.png"
-                alt="Mimick Immich client: Lightbox (Details On)"
-                loading="lazy"
-                width="300"
-                height="169"
-              />
-              <span class="figcaption">Lightbox & Faces</span>
-            </button>
-            <button type="button" class="screenshot-item">
-              <img
-                src="screenshots/thumbs/explore-page.webp"
-                data-full="screenshots/explore-page.png"
-                alt="Mimick Immich client: Explore Page"
-                loading="lazy"
-                width="300"
-                height="169"
-              />
-              <span class="figcaption">Explore & Calendar</span>
-            </button>
-            <button type="button" class="screenshot-item">
-              <img
-                src="screenshots/thumbs/search-filters.webp"
-                data-full="screenshots/search-filters.png"
-                alt="Mimick Immich client: Advanced Filters"
-                loading="lazy"
-                width="300"
-                height="169"
-              />
-              <span class="figcaption">Search & Filters</span>
-            </button>
-            <button type="button" class="screenshot-item">
-              <img
-                src="screenshots/thumbs/settings-server-and-watch-folders.webp"
-                data-full="screenshots/settings-server-and-watch-folders.png"
-                alt="Mimick Immich client: Server and Watch Folders"
-                loading="lazy"
-                width="300"
-                height="169"
-              />
-              <span class="figcaption">Watch Folders</span>
-            </button>
-            <button type="button" class="screenshot-item">
-              <img
-                src="screenshots/thumbs/status-page.webp"
-                data-full="screenshots/status-page.png"
-                alt="Mimick Immich client: Status and Health Dashboard"
-                loading="lazy"
-                width="300"
-                height="169"
-              />
-              <span class="figcaption">Health & Diagnostics</span>
-            </button>
-          </div>
-          <p class="gallery-more">
-            <a href="screenshots.html">View all 90+ screenshots across 10 sections &rarr;</a>
+      <div class="hero-split">
+        <section class="feature-summary" aria-label="About Mimick">
+          <p class="install-label">Overview</p>
+          <p>
+            Mimick is an unofficial Immich desktop client for Linux. It backs up
+            your photo and video folders to a self-hosted Immich server in the
+            background, and its optional library browser lets you view, search,
+            and manage your Immich photos from the desktop.
           </p>
+          <ul class="summary-points">
+            <li>Native GTK4 and Libadwaita interface with OLED black and light palettes</li>
+            <li>Two-way folder backup with checksum-based duplicate avoidance</li>
+            <li>Complete photo timeline, faces, OCR text recognition, and map browser</li>
+          </ul>
         </section>
 
-        <section class="info-section" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Frequently Asked Questions</h2>
-          <div class="faq-list">
-            <div class="faq-item">
-              <h3>Is there an Immich desktop app for Linux?</h3>
-              <p>
-                Yes. Mimick is a free, open-source Immich desktop client for
-                Linux. It is a community project and not made by the Immich team.
-              </p>
-            </div>
-            <div class="faq-item">
-              <h3>How do I back up a folder to Immich automatically?</h3>
-              <p>
-                Install Mimick from Flathub, enter your server address and an
-                Immich API key, and add the folder under Watch Folders. New photos
-                and videos upload in the background from then on.
-              </p>
-            </div>
-            <div class="faq-item">
-              <h3>Which Linux distributions does it run on?</h3>
-              <p>
-                Any distribution with Flatpak, including Fedora, Ubuntu, Debian,
-                Arch Linux, openSUSE, Linux Mint, and Pop!_OS, on GNOME, KDE
-                Plasma, and other desktops.
-              </p>
-            </div>
-            <div class="faq-item">
-              <h3>Will Mimick change or delete my local files?</h3>
-              <p>
-                Not by default. Folders start as Upload Only, which never changes
-                local files. Download Only and Full sync add your album's photos
-                to the folder.
-              </p>
-            </div>
-            <div class="faq-item">
-              <h3>Which Immich versions are supported?</h3>
-              <p>Immich v3.0.0 and later.</p>
-            </div>
+        <section class="install-card">
+          <div class="install-header">
+            <p class="install-label">Install</p>
           </div>
-        </section>
-
-        <section class="support-card" id="donate" aria-labelledby="donate-title">
-          <div class="support-header">
-            <p class="install-label" id="donate-title">Support</p>
-          </div>
-          <div class="support-body">
-            <div class="support-qr-frame">
-              <img
-                src="donate-upi.png"
-                alt="UPI Donation QR Code"
-                class="support-qr-img"
-                width="180"
-                height="235"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div class="support-info">
-              <h3>Support Mimick</h3>
-              <p>
-                Mimick is free and open-source software. If it saves you time and you'd like to support ongoing development, donations are welcome via UPI.
-              </p>
-              <div class="upi-box">
-                <code id="upi-id">nick14@ptyes</code>
-                <button
-                  class="copy-button"
-                  type="button"
-                  data-copy-target="upi-id"
-                  aria-label="Copy UPI ID"
-                >
+          <div class="install-grid">
+            <article class="install-method">
+              <div class="method-header">
+                <p class="method-title">Install from Flathub</p>
+                <button class="copy-button" type="button" data-copy-target="install-flathub"
+                  aria-label="Copy install command">
                   Copy
                 </button>
               </div>
-              <div class="upi-actions">
-                <a
-                  class="upi-action-btn"
-                  href="upi://pay?pa=nick14@ptyes&amp;pn=Nick&amp;tn=Do%20care%20to%20donate%20%3A)&amp;cu=INR"
-                  aria-label="Donate with UPI"
-                >
-                  <img
-                    src="donate-upi-button.svg"
-                    width="204"
-                    height="44"
-                    alt="Donate with UPI"
-                  />
-                </a>
+              <pre><code id="install-flathub">flatpak install flathub dev.nicx.mimick</code></pre>
+            </article>
+            <article class="install-method">
+              <div class="method-header">
+                <p class="method-title">Install from Arch AUR</p>
+                <button class="copy-button" type="button" data-copy-target="install-aur"
+                  aria-label="Copy AUR install command">
+                  Copy
+                </button>
               </div>
-              <span class="upi-hint">Scan with any UPI app on desktop, or tap above on mobile.</span>
-            </div>
+              <pre><code id="install-aur">yay -S mimick</code></pre>
+            </article>
           </div>
+          <p class="install-note">
+            <strong>Note:</strong> Ensure you have the
+            <a href="https://flathub.org/setup" target="_blank" rel="noopener">Flathub</a>
+            remote configured on your system. Also available on <a href="https://aur.archlinux.org/packages/mimick"
+              target="_blank" rel="noopener">AUR</a> and as standalone <a
+              href="https://github.com/nicx17/mimick/releases/latest" target="_blank" rel="noopener">AppImages</a>.
+          </p>
         </section>
       </div>
-    </main>
 
-    <dialog id="image-modal" class="modal">
-      <button
-        type="button"
-        id="modal-close"
-        class="modal-close"
-        aria-label="Close image"
-      >
-        ×
-      </button>
-      <div class="modal-content">
-        <img
-          id="modal-img"
-          src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-          alt="Fullscreen view"
-        />
-        <div id="modal-caption" class="modal-caption"></div>
-      </div>
-    </dialog>
-    <footer>
-      <div class="footer-inner">
-        <p>
-          <span class="footer-label">App ID</span> <code>dev.nicx.mimick</code>
+      <section class="info-section" aria-labelledby="features-heading">
+        <h2 id="features-heading">Features</h2>
+        <div class="feature-grid">
+          <article>
+            <h3>Your whole Immich library</h3>
+            <p>
+              A Photos timeline with a date scrubber, albums, Explore, People,
+              Tags, Folders, Favorites, Archive, and Trash in a native GTK4
+              window. Rate, archive, and change the date, time zone, or place
+              of many photos at once.
+            </p>
+          </article>
+          <article>
+            <h3>Memories, stacks, and live photos</h3>
+            <p>
+              "On this day" memories above Photos, bursts and RAW+JPEG pairs
+              grouped into stacks, and live and motion photos that play their
+              clip right in the viewer.
+            </p>
+          </article>
+          <article>
+            <h3>A viewer built for big photos</h3>
+            <p>
+              Swipe between photos, zoom to 2000% of the real pixels with the
+              full resolution loading as you go, watch hardware-decoded video
+              streamed from Immich, and run slideshows with crossfade and
+              shuffle. RAW previews included.
+            </p>
+          </article>
+          <article>
+            <h3>Edit without touching the original</h3>
+            <p>
+              Crop, rotate, flip, and straighten; adjust light and colour;
+              apply filters; and redact faces or text. Crops are kept in
+              Immich and can be reverted, and other edits save as a new copy
+              that keeps the original's metadata.
+            </p>
+          </article>
+          <article>
+            <h3>Tag the people in your photos</h3>
+            <p>
+              Name, move, or remove the faces Immich found, draw a box around
+              ones it missed, and point at a face to see who it is.
+            </p>
+          </article>
+          <article>
+            <h3>Find any photo</h3>
+            <p>
+              Smart search, search by the text in a photo (OCR) and copy that
+              text, find similar photos, jump to a photo's place in the
+              timeline, and clear out look-alikes on the Duplicates page.
+            </p>
+          </article>
+          <article>
+            <h3>Your photos on a map</h3>
+            <p>
+              See where your photos were taken, search for any place or
+              address, and pick from Immich's own map style, VersaTiles
+              styles, satellite imagery, or OpenStreetMap.
+            </p>
+          </article>
+          <article>
+            <h3>Share and comment</h3>
+            <p>
+              Shared albums with Viewer and Editor roles, likes and comments,
+              public shared links, and partner sharing, including browsing a
+              partner's photos.
+            </p>
+          </article>
+          <article>
+            <h3>Automatic folder backup</h3>
+            <p>
+              Watch any folder and upload new photos and videos as they
+              appear, to your library, an album, or an album named after the
+              folder. Choose Upload Only, Download Only, or Full sync for each
+              folder; checksums skip files already on your server.
+            </p>
+          </article>
+          <article>
+            <h3>Reliable on any network</h3>
+            <p>
+              Failed uploads are saved and retried, Mimick switches between
+              your home and remote server addresses, and it can pause on
+              metered networks, on battery, or during quiet hours.
+            </p>
+          </article>
+          <article>
+            <h3>Made for the Linux desktop</h3>
+            <p>
+              Tray icon, start on login, drag and drop, Open With Mimick from
+              your file manager, and keyboard shortcuts for nearly everything.
+              The Flatpak only reads folders you pick, and your API key stays
+              in the keyring.
+            </p>
+          </article>
+          <article>
+            <h3>Works on Linux phones</h3>
+            <p>
+              The layout adapts down to 360 pixels wide with a bottom
+              navigation bar, and you can swipe, pinch to zoom, and long-press
+              for menus, so Mimick runs on Linux phones as well as desktops.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="links-container" aria-label="Repository links">
+        <a class="link-block" href="https://flathub.org/apps/dev.nicx.mimick">
+          <span class="link-icon">01</span>
+          <span class="link-copy">
+            <strong>View on Flathub</strong>
+            <span>Install Mimick from the official Flathub repository.</span>
+          </span>
+        </a>
+        <a class="link-block" href="https://github.com/nicx17/mimick">
+          <span class="link-icon">02</span>
+          <span class="link-copy">
+            <strong>View on GitHub</strong>
+            <span>Browse source, releases, and issues.</span>
+          </span>
+        </a>
+        <a class="link-block" href="https://github.com/nicx17/mimick/blob/main/CHANGELOG.md">
+          <span class="link-icon">03</span>
+          <span class="link-copy">
+            <strong>Read the changelog</strong>
+            <span>See the latest app and packaging changes.</span>
+          </span>
+        </a>
+        <a class="link-block" href="docs/">
+          <span class="link-icon">04</span>
+          <span class="link-copy">
+            <strong>Browse the API docs</strong>
+            <span>Rustdoc reference for the Mimick source.</span>
+          </span>
+        </a>
+        <a class="link-block" href="roadmap.html">
+          <span class="link-icon">05</span>
+          <span class="link-copy">
+            <strong>See the roadmap</strong>
+            <span>What's shipped, and what's planned next.</span>
+          </span>
+        </a>
+      </section>
+
+      <section class="screenshots-section" aria-labelledby="screenshots-heading">
+        <div class="section-header-split">
+          <div>
+            <h2 id="screenshots-heading">Screenshots</h2>
+            <p class="section-subhead">A visual tour of the native GTK4 interface.</p>
+          </div>
+          <a class="view-all-link" href="screenshots.html">View all 90+ screenshots &rarr;</a>
+        </div>
+        <div class="screenshots-grid">
+          <button type="button" class="screenshot-item">
+            <img src="screenshots/thumbs/photos-timeline.webp" data-full="screenshots/photos-timeline.png"
+              alt="Mimick Immich client: Library (Light)" loading="lazy" width="300" height="169" />
+            <span class="figcaption">Library Timeline</span>
+          </button>
+          <button type="button" class="screenshot-item">
+            <img src="screenshots/thumbs/album-view-dark.webp" data-full="screenshots/album-view-dark.png"
+              alt="Mimick Immich client: Selected Album (Dark)" loading="lazy" width="300" height="169" />
+            <span class="figcaption">Album View (Dark)</span>
+          </button>
+          <button type="button" class="screenshot-item">
+            <img src="screenshots/thumbs/map-photos-in-area.webp" data-full="screenshots/map-photos-in-area.png"
+              alt="Mimick Immich client: Map" loading="lazy" width="300" height="169" />
+            <span class="figcaption">Map & Places</span>
+          </button>
+          <button type="button" class="screenshot-item">
+            <img src="screenshots/thumbs/lightbox-details-on.webp" data-full="screenshots/lightbox-details-on.png"
+              alt="Mimick Immich client: Lightbox (Details On)" loading="lazy" width="300" height="169" />
+            <span class="figcaption">Lightbox & Faces</span>
+          </button>
+          <button type="button" class="screenshot-item">
+            <img src="screenshots/thumbs/explore-page.webp" data-full="screenshots/explore-page.png"
+              alt="Mimick Immich client: Explore Page" loading="lazy" width="300" height="169" />
+            <span class="figcaption">Explore & Calendar</span>
+          </button>
+          <button type="button" class="screenshot-item">
+            <img src="screenshots/thumbs/search-filters.webp" data-full="screenshots/search-filters.png"
+              alt="Mimick Immich client: Advanced Filters" loading="lazy" width="300" height="169" />
+            <span class="figcaption">Search & Filters</span>
+          </button>
+          <button type="button" class="screenshot-item">
+            <img src="screenshots/thumbs/settings-server-and-watch-folders.webp"
+              data-full="screenshots/settings-server-and-watch-folders.png"
+              alt="Mimick Immich client: Server and Watch Folders" loading="lazy" width="300" height="169" />
+            <span class="figcaption">Watch Folders</span>
+          </button>
+          <button type="button" class="screenshot-item">
+            <img src="screenshots/thumbs/status-page.webp" data-full="screenshots/status-page.png"
+              alt="Mimick Immich client: Status and Health Dashboard" loading="lazy" width="300" height="169" />
+            <span class="figcaption">Health & Diagnostics</span>
+          </button>
+        </div>
+        <p class="gallery-more">
+          <a href="screenshots.html">View all 90+ screenshots across 10 sections &rarr;</a>
         </p>
-        <a class="footer-link" href="https://mimick.nicx.dev/"
-          >mimick.nicx.dev</a
-        >
-      </div>
-    </footer>
+      </section>
 
-    <script>
-      const root = document.documentElement;
-      const themeToggle = document.getElementById("theme-toggle");
-      const themeMeta = document.querySelector('meta[name="theme-color"]');
-      const themeKey = "mimick-theme";
+      <section class="info-section" aria-labelledby="faq-heading">
+        <h2 id="faq-heading">Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <h3>Is there an Immich desktop app for Linux?</h3>
+            <p>
+              Yes. Mimick is a free, open-source Immich desktop client for
+              Linux. It is a community project and not made by the Immich team.
+            </p>
+          </div>
+          <div class="faq-item">
+            <h3>How do I back up a folder to Immich automatically?</h3>
+            <p>
+              Install Mimick from Flathub, enter your server address and an
+              Immich API key, and add the folder under Watch Folders. New photos
+              and videos upload in the background from then on.
+            </p>
+          </div>
+          <div class="faq-item">
+            <h3>Which Linux distributions does it run on?</h3>
+            <p>
+              Any distribution with Flatpak, including Fedora, Ubuntu, Debian,
+              Arch Linux, openSUSE, Linux Mint, and Pop!_OS, on GNOME, KDE
+              Plasma, and other desktops.
+            </p>
+          </div>
+          <div class="faq-item">
+            <h3>Will Mimick change or delete my local files?</h3>
+            <p>
+              Not by default. Folders start as Upload Only, which never changes
+              local files. Download Only and Full sync add your album's photos
+              to the folder.
+            </p>
+          </div>
+          <div class="faq-item">
+            <h3>Which Immich versions are supported?</h3>
+            <p>Immich v3.0.0 and later.</p>
+          </div>
+        </div>
+      </section>
 
-      const setTheme = (theme) => {
-        const isLight = theme === "light";
-        root.dataset.theme = isLight ? "light" : "dark";
-        if (themeMeta) {
-          themeMeta.setAttribute("content", isLight ? "#f8f5ef" : "#000000");
-        }
-        if (themeToggle) {
-          themeToggle.textContent = isLight ? "Dark Mode" : "Light Mode";
-          themeToggle.setAttribute("aria-pressed", isLight ? "true" : "false");
-        }
-      };
+      <section class="support-card" id="donate" aria-labelledby="donate-title">
+        <div class="support-header">
+          <p class="install-label" id="donate-title">Support</p>
+        </div>
+        <div class="support-body">
+          <div class="support-qr-frame">
+            <img src="donate-upi.png" alt="UPI Donation QR Code" class="support-qr-img" width="180" height="235"
+              loading="lazy" decoding="async" />
+          </div>
+          <div class="support-info">
+            <h3>Support Mimick</h3>
+            <p>
+              Mimick is free and open-source software. If it saves you time and you'd like to support ongoing
+              development, donations are welcome via UPI (India) or Buy Me a Coffee (worldwide).
+            </p>
+            <div class="upi-box">
+              <code id="upi-id">nick14@ptyes</code>
+              <button class="copy-button" type="button" data-copy-target="upi-id" aria-label="Copy UPI ID">
+                Copy
+              </button>
+            </div>
+            <div class="donate-actions">
+              <a class="upi-action-btn"
+                href="upi://pay?pa=nick14@ptyes&amp;pn=Nick&amp;tn=Do%20care%20to%20donate%20%3A)&amp;cu=INR"
+                aria-label="Donate with UPI">
+                <img src="donate-upi-button.svg" width="204" height="44" alt="Donate with UPI" />
+              </a>
+              <div class="bmc-btn-container">
+                <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+                  data-name="bmc-button" data-slug="nickcardoso" data-color="#FFDD00" data-emoji="☕" data-font="Cookie"
+                  data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000"
+                  data-coffee-color="#ffffff"></script>
+              </div>
+            </div>
+            <span class="upi-hint">Scan with any UPI app on desktop, tap above on mobile, or support via Buy Me a
+              Coffee.</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
 
-      const savedTheme = localStorage.getItem(themeKey);
-      const prefersLight = globalThis.matchMedia(
-        "(prefers-color-scheme: light)",
-      ).matches;
-      let initialTheme = prefersLight ? "light" : "dark";
-      if (savedTheme === "light" || savedTheme === "dark") {
-        initialTheme = savedTheme;
+  <dialog id="image-modal" class="modal">
+    <button type="button" id="modal-close" class="modal-close" aria-label="Close image">
+      ×
+    </button>
+    <div class="modal-content">
+      <img id="modal-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+        alt="Fullscreen view" />
+      <div id="modal-caption" class="modal-caption"></div>
+    </div>
+  </dialog>
+  <footer>
+    <div class="footer-inner">
+      <p>
+        <span class="footer-label">App ID</span> <code>dev.nicx.mimick</code>
+      </p>
+      <a class="footer-link" href="https://mimick.nicx.dev/">mimick.nicx.dev</a>
+    </div>
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById("theme-toggle");
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    const themeKey = "mimick-theme";
+
+    const setTheme = (theme) => {
+      const isLight = theme === "light";
+      root.dataset.theme = isLight ? "light" : "dark";
+      if (themeMeta) {
+        themeMeta.setAttribute("content", isLight ? "#f8f5ef" : "#000000");
       }
-      setTheme(initialTheme);
-
       if (themeToggle) {
-        themeToggle.addEventListener("click", () => {
-          const nextTheme = root.dataset.theme === "light" ? "dark" : "light";
-          setTheme(nextTheme);
-          localStorage.setItem(themeKey, nextTheme);
-        });
+        themeToggle.textContent = isLight ? "Dark Mode" : "Light Mode";
+        themeToggle.setAttribute("aria-pressed", isLight ? "true" : "false");
       }
+    };
 
-      // Modal Logic
-      const modal = document.getElementById("image-modal");
-      const modalImg = document.getElementById("modal-img");
-      const modalCaption = document.getElementById("modal-caption");
-      const modalClose = document.getElementById("modal-close");
+    const savedTheme = localStorage.getItem(themeKey);
+    const prefersLight = globalThis.matchMedia(
+      "(prefers-color-scheme: light)",
+    ).matches;
+    let initialTheme = prefersLight ? "light" : "dark";
+    if (savedTheme === "light" || savedTheme === "dark") {
+      initialTheme = savedTheme;
+    }
+    setTheme(initialTheme);
 
-      document.querySelectorAll(".screenshot-item img").forEach((img) => {
-        const figure = img.closest(".screenshot-item");
-
-        const openModal = () => {
-          modalImg.src = img.dataset.full ?? img.src;
-          modalImg.alt = img.alt;
-          modalCaption.textContent =
-            figure.querySelector(".figcaption").textContent;
-          modal.showModal();
-          modal.classList.add("visible");
-          document.body.style.overflow = "hidden";
-        };
-
-        figure.addEventListener("click", openModal);
-        figure.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            openModal();
-          }
-        });
+    if (themeToggle) {
+      themeToggle.addEventListener("click", () => {
+        const nextTheme = root.dataset.theme === "light" ? "dark" : "light";
+        setTheme(nextTheme);
+        localStorage.setItem(themeKey, nextTheme);
       });
+    }
 
-      const closeModal = () => {
-        modal.classList.remove("visible");
-        modal.close();
-        document.body.style.overflow = "";
+    // Modal Logic
+    const modal = document.getElementById("image-modal");
+    const modalImg = document.getElementById("modal-img");
+    const modalCaption = document.getElementById("modal-caption");
+    const modalClose = document.getElementById("modal-close");
+
+    document.querySelectorAll(".screenshot-item img").forEach((img) => {
+      const figure = img.closest(".screenshot-item");
+
+      const openModal = () => {
+        modalImg.src = img.dataset.full ?? img.src;
+        modalImg.alt = img.alt;
+        modalCaption.textContent =
+          figure.querySelector(".figcaption").textContent;
+        modal.showModal();
+        modal.classList.add("visible");
+        document.body.style.overflow = "hidden";
       };
 
-      modalClose.addEventListener("click", closeModal);
-      modal.addEventListener("click", (e) => {
-        if (
-          e.target === modal ||
-          e.target.classList.contains("modal-content")
-        ) {
-          closeModal();
+      figure.addEventListener("click", openModal);
+      figure.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openModal();
         }
       });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && modal.classList.contains("visible")) {
-          closeModal();
+    });
+
+    const closeModal = () => {
+      modal.classList.remove("visible");
+      modal.close();
+      document.body.style.overflow = "";
+    };
+
+    modalClose.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => {
+      if (
+        e.target === modal ||
+        e.target.classList.contains("modal-content")
+      ) {
+        closeModal();
+      }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("visible")) {
+        closeModal();
+      }
+    });
+
+    document.querySelectorAll(".copy-button").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const targetId = btn.dataset.copyTarget;
+        const codeBlock = targetId ? document.getElementById(targetId) : null;
+        if (!codeBlock) return;
+
+        const originalLabel = btn.textContent;
+        try {
+          await navigator.clipboard.writeText(codeBlock.textContent.trim());
+          btn.textContent = "Copied";
+        } catch {
+          btn.textContent = "Failed";
         }
+        setTimeout(() => {
+          btn.textContent = originalLabel;
+        }, 1600);
       });
+    });
+  </script>
+  <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
+    data-id="nickcardoso" data-description="Support me on Buy me a coffee!"
+    data-message="Consider donating if this helps you." data-color="#FF813F" data-position="Right" data-x_margin="18"
+    data-y_margin="18"></script>
+</body>
 
-      document.querySelectorAll(".copy-button").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-          const targetId = btn.dataset.copyTarget;
-          const codeBlock = targetId ? document.getElementById(targetId) : null;
-          if (!codeBlock) return;
-
-          const originalLabel = btn.textContent;
-          try {
-            await navigator.clipboard.writeText(codeBlock.textContent.trim());
-            btn.textContent = "Copied";
-          } catch {
-            btn.textContent = "Failed";
-          }
-          setTimeout(() => {
-            btn.textContent = originalLabel;
-          }, 1600);
-        });
-      });
-    </script>
-  </body>
 </html>

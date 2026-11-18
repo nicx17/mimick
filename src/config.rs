@@ -9,14 +9,18 @@
 
 mod folders;
 pub use folders::*;
+mod headers;
+pub use headers::{CustomHeader, HeaderScope};
 mod schema;
 pub use schema::{ConfigData, DateHeadings, MapDateRange, MapFilters};
 mod keyring;
 pub use keyring::ApiKeyStorage;
 #[cfg(test)]
 use keyring::{
-    KeyringError, api_key_fallback_path, keyring_error_message, pick_api_key,
-    read_api_key_file_fallback, remove_api_key_file_fallback, write_api_key_file_fallback,
+    KeyringError, api_key_fallback_path, custom_headers_fallback_path, keyring_error_message,
+    pick_api_key, read_api_key_file_fallback, read_custom_headers_file_fallback,
+    remove_api_key_file_fallback, remove_custom_headers_file_fallback, write_api_key_file_fallback,
+    write_custom_headers_file_fallback,
 };
 use std::fs;
 #[cfg(test)]

@@ -77,10 +77,9 @@ impl ImmichApiClient {
             .mime_str(mime)
             .map_err(|err| err.to_string())?;
         let form = reqwest::multipart::Form::new().part("file", part);
+        let url = format!("{base_url}/api/users/profile-image");
         let resp = self
-            .client
-            .post(format!("{base_url}/api/users/profile-image"))
-            .header("x-api-key", self.settings_snapshot().api_key)
+            .authorized_request(reqwest::Method::POST, &url)
             .timeout(std::time::Duration::from_secs(60))
             .multipart(form)
             .send()

@@ -1368,8 +1368,28 @@ html:has(.screenshots-page) {
     color: var(--text-main);
 }
 
-.upi-actions {
-    margin-bottom: 0.5rem;
+.upi-actions,
+.donate-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 0.65rem;
+}
+
+.bmc-btn-container {
+    display: inline-flex;
+    align-items: center;
+}
+
+.bmc-btn-container a.bmc-button {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
+    transition: transform 0.18s ease, opacity 0.18s ease !important;
+}
+
+.bmc-btn-container a.bmc-button:hover {
+    transform: translateY(-1px);
+    opacity: 0.94;
 }
 
 .upi-action-btn {

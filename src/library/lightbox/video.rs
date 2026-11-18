@@ -114,23 +114,20 @@ impl Lightbox {
         if !info.local_path.is_empty() && std::path::Path::new(&info.local_path).exists() {
             return Ok(VideoSource {
                 uri: gtk::gio::File::for_path(&info.local_path).uri().to_string(),
-                api_key: None,
+                headers: Vec::new(),
             });
         }
         if info.is_local() {
             return Err(gettext("The video file is no longer on disk."));
         }
-        let (uri, api_key) = self
+        let (uri, headers) = self
             .ui
             .ctx
             .api_client
             .video_playback_source(&info.asset_id)
             .await
             .ok_or_else(|| gettext("Not connected to the Immich server."))?;
-        Ok(VideoSource {
-            uri,
-            api_key: Some(api_key),
-        })
+        Ok(VideoSource { uri, headers })
     }
 
     pub(super) fn handle_video_key(self: &Rc<Self>, key: gtk::gdk::Key) -> bool {

@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use super::Config;
+use super::{Config, CustomHeader};
 
 const KEYRING_CONNECT_TIMEOUT: Duration = Duration::from_secs(5);
 static KEYRING_UNRESPONSIVE: AtomicBool = AtomicBool::new(false);
@@ -118,6 +118,123 @@ impl Config {
                 }
             }
         }
+    }
+
+    /// Look up custom proxy headers, preferring the file fallback over the keyring.
+    pub fn get_custom_headers(&self) -> Vec<CustomHeader> {
+        if let Some(headers) = read_custom_headers_file_fallback(&self.config_file) {
+            return headers;
+        }
+        self.get_custom_headers_from_keyring().unwrap_or_default()
+    }
+
+    fn get_custom_headers_from_keyring(&self) -> Option<Vec<CustomHeader>> {
+        log::debug!("Attempting to read custom headers from keyring...");
+        let result = tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                let keyring = keyring_with_dbus_fallback().await?;
+                let account = crate::profile::keyring_account();
+                let attributes: Vec<(&str, &str)> = vec![
+                    ("service", "mimick"),
+                    ("account", account.as_str()),
+                    ("kind", "custom_headers"),
+                ];
+                let items = keyring.search_items(&attributes).await?;
+                if let Some(item) = items.first() {
+                    let secret = item.secret().await?;
+                    let text = String::from_utf8_lossy(&secret);
+                    let headers = serde_json::from_str::<Vec<CustomHeader>>(&text).ok();
+                    return Ok::<Option<Vec<CustomHeader>>, KeyringError>(headers);
+                }
+                Ok(None)
+            })
+        });
+
+        match result {
+            Ok(headers) => headers,
+            Err(e) => {
+                log::warn!(
+                    "Keyring headers lookup failed ({}): {:?}",
+                    keyring_error_hint(&e),
+                    e
+                );
+                None
+            }
+        }
+    }
+
+    /// Store custom headers in the desktop keyring, falling back to a file.
+    pub fn set_custom_headers(&self, headers: &[CustomHeader]) -> Result<ApiKeyStorage, String> {
+        log::debug!("Attempting to save custom headers to keyring...");
+        let json = serde_json::to_string(headers).unwrap_or_else(|_| "[]".to_string());
+        let is_empty = headers.is_empty();
+        match self.save_custom_headers_in_keyring(&json, is_empty) {
+            Ok(()) => {
+                remove_custom_headers_file_fallback(&self.config_file);
+                Ok(ApiKeyStorage::Keyring)
+            }
+            Err(error) => self.save_custom_headers_file_fallback(headers, is_empty, error),
+        }
+    }
+
+    fn save_custom_headers_in_keyring(
+        &self,
+        json: &str,
+        is_empty: bool,
+    ) -> Result<(), KeyringError> {
+        let json = json.to_owned();
+        tokio::task::block_in_place(|| {
+            tokio::runtime::Handle::current().block_on(async {
+                let keyring = keyring_with_dbus_fallback().await?;
+                let account = crate::profile::keyring_account();
+                let attributes: Vec<(&str, &str)> = vec![
+                    ("service", "mimick"),
+                    ("account", account.as_str()),
+                    ("kind", "custom_headers"),
+                ];
+                if is_empty {
+                    let items = keyring.search_items(&attributes).await?;
+                    for item in items {
+                        let _ = item.delete().await;
+                    }
+                    return Ok::<(), KeyringError>(());
+                }
+                let label = match crate::profile::name() {
+                    Some(profile) => format!("Mimick Custom Headers ({})", profile),
+                    None => "Mimick Custom Headers".to_string(),
+                };
+                keyring
+                    .create_item(&label, &attributes, json.as_bytes(), true)
+                    .await?;
+                Ok::<(), KeyringError>(())
+            })
+        })
+    }
+
+    fn save_custom_headers_file_fallback(
+        &self,
+        headers: &[CustomHeader],
+        is_empty: bool,
+        keyring_error: KeyringError,
+    ) -> Result<ApiKeyStorage, String> {
+        log::error!(
+            "Failed to save custom headers via oo7 keyring: {:?} -- using file fallback",
+            keyring_error
+        );
+        let path = custom_headers_fallback_path(&self.config_file);
+        if is_empty {
+            remove_custom_headers_file_fallback(&self.config_file);
+            return Ok(ApiKeyStorage::File(path));
+        }
+        write_custom_headers_file_fallback(&self.config_file, headers)
+            .map(|()| ApiKeyStorage::File(path))
+            .map_err(|file_error| {
+                format!(
+                    "{}\n\nFile fallback also failed: {}",
+                    keyring_error_message(&keyring_error),
+                    file_error
+                )
+            })
     }
 }
 
@@ -294,23 +411,17 @@ pub(super) fn read_api_key_file_fallback(config_file: &Path) -> Option<String> {
     }
 }
 
-/// Write the API key to the base64-encoded fallback file with
-/// restrictive permissions (owner read/write only).
-pub(super) fn write_api_key_file_fallback(config_file: &Path, key: &str) -> Result<(), String> {
-    use base64::Engine;
-    let path = api_key_fallback_path(config_file);
-
-    // Ensure parent directory exists.
+/// Helper to write sensitive data to a fallback file with 0600 permissions.
+fn write_secure_file(path: &Path, content: &[u8]) -> Result<(), String> {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent).map_err(|e| format!("cannot create dir: {}", e))?;
     }
 
-    let encoded = base64::engine::general_purpose::STANDARD.encode(key.as_bytes());
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_nanos();
-    let temporary_path = path.with_extension(format!("key.tmp.{}.{}", std::process::id(), nonce));
+    let temporary_path = path.with_extension(format!("tmp.{}.{}", std::process::id(), nonce));
 
     let write_result = (|| -> Result<(), String> {
         let mut options = fs::OpenOptions::new();
@@ -324,30 +435,39 @@ pub(super) fn write_api_key_file_fallback(config_file: &Path, key: &str) -> Resu
             .open(&temporary_path)
             .map_err(|e| format!("cannot create {}: {}", temporary_path.display(), e))?;
         temporary
-            .write_all(encoded.as_bytes())
+            .write_all(content)
             .map_err(|e| format!("cannot write {}: {}", temporary_path.display(), e))?;
         temporary
             .sync_all()
             .map_err(|e| format!("cannot sync {}: {}", temporary_path.display(), e))?;
-        fs::rename(&temporary_path, &path)
+        fs::rename(&temporary_path, path)
             .map_err(|e| format!("cannot replace {}: {}", path.display(), e))?;
         Ok(())
     })();
+
     if write_result.is_err() {
         let _ = fs::remove_file(&temporary_path);
     }
     write_result?;
 
-    // Ensure pre-existing files are also owner-readable and owner-writable only.
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
         let perms = std::fs::Permissions::from_mode(0o600);
-        fs::set_permissions(&path, perms)
+        fs::set_permissions(path, perms)
             .map_err(|e| format!("cannot secure {}: {}", path.display(), e))?;
     }
 
     Ok(())
+}
+
+/// Write the API key to the base64-encoded fallback file with
+/// restrictive permissions (owner read/write only).
+pub(super) fn write_api_key_file_fallback(config_file: &Path, key: &str) -> Result<(), String> {
+    use base64::Engine;
+    let path = api_key_fallback_path(config_file);
+    let encoded = base64::engine::general_purpose::STANDARD.encode(key.as_bytes());
+    write_secure_file(&path, encoded.as_bytes())
 }
 
 /// Remove the fallback file when the keyring is working again.
@@ -358,6 +478,51 @@ pub(super) fn remove_api_key_file_fallback(config_file: &Path) {
             log::debug!("Could not remove fallback key file: {}", e);
         } else {
             log::info!("Removed file fallback key (keyring is now working).");
+        }
+    }
+}
+
+/// File path for the base64-encoded custom headers fallback file.
+pub(super) fn custom_headers_fallback_path(config_file: &Path) -> PathBuf {
+    let account = crate::profile::keyring_account();
+    config_file
+        .parent()
+        .unwrap_or_else(|| Path::new("."))
+        .join(format!(".{}.headers", account))
+}
+
+/// Read custom headers from the base64-encoded fallback file.
+pub(super) fn read_custom_headers_file_fallback(config_file: &Path) -> Option<Vec<CustomHeader>> {
+    use base64::Engine;
+    let path = custom_headers_fallback_path(config_file);
+    let encoded = fs::read_to_string(&path).ok()?;
+    let decoded = base64::engine::general_purpose::STANDARD
+        .decode(encoded.trim())
+        .ok()?;
+    let text = String::from_utf8(decoded).ok()?;
+    serde_json::from_str(&text).ok()
+}
+
+/// Write custom headers to the base64-encoded fallback file.
+pub(super) fn write_custom_headers_file_fallback(
+    config_file: &Path,
+    headers: &[CustomHeader],
+) -> Result<(), String> {
+    use base64::Engine;
+    let path = custom_headers_fallback_path(config_file);
+    let json = serde_json::to_string(headers).map_err(|e| e.to_string())?;
+    let encoded = base64::engine::general_purpose::STANDARD.encode(json.as_bytes());
+    write_secure_file(&path, encoded.as_bytes())
+}
+
+/// Remove the custom headers fallback file when the keyring is working again.
+pub(super) fn remove_custom_headers_file_fallback(config_file: &Path) {
+    let path = custom_headers_fallback_path(config_file);
+    if path.exists() {
+        if let Err(e) = fs::remove_file(&path) {
+            log::debug!("Could not remove fallback headers file: {}", e);
+        } else {
+            log::info!("Removed file fallback headers (keyring is now working).");
         }
     }
 }

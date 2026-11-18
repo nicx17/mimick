@@ -388,10 +388,33 @@ async fn test_active_route_label_tracks_selected_url() {
         "http://lan.example".into(),
         "https://wan.example".into(),
         "token".into(),
+        Vec::new(),
     );
-    *client.active_url.lock().await = Some("https://wan.example".into());
+    *client.active_connection.write() = Some(ActiveConnection {
+        url: "https://wan.example".into(),
+        is_external: true,
+    });
 
     assert_eq!(client.active_route_label().await.as_deref(), Some("WAN"));
+}
+
+#[tokio::test]
+async fn invalidating_connection_clears_the_active_route() {
+    let client = ImmichApiClient::new(
+        "http://lan.example".into(),
+        "https://wan.example".into(),
+        "token".into(),
+        Vec::new(),
+    );
+    *client.active_connection.write() = Some(ActiveConnection {
+        url: "https://wan.example".into(),
+        is_external: true,
+    });
+
+    client.invalidate_connection().await;
+
+    assert!(client.active_connection.read().is_none());
+    assert!(client.active_route_label().await.is_none());
 }
 
 #[test]

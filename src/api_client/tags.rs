@@ -32,11 +32,9 @@ impl ImmichApiClient {
     /// All tags on the server, sorted by their full path.
     pub async fn fetch_tags(&self) -> Result<Vec<Tag>, String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
+        let url = format!("{}/api/tags", base_url);
         let resp = self
-            .client
-            .get(format!("{}/api/tags", base_url))
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(15))
             .send()
@@ -53,11 +51,9 @@ impl ImmichApiClient {
     /// Create a tag (and any missing parents for a `Parent/Child` path), or return it if it exists.
     pub async fn create_tag(&self, value: &str) -> Result<Tag, String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
+        let url = format!("{}/api/tags", base_url);
         let resp = self
-            .client
-            .put(format!("{}/api/tags", base_url))
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::PUT, &url)
             .header("Accept", "application/json")
             .json(&serde_json::json!({ "tags": [value] }))
             .timeout(Duration::from_secs(15))
@@ -129,11 +125,9 @@ impl ImmichApiClient {
         asset_id: &str,
     ) -> Result<(), String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
+        let url = format!("{}/api/tags/{}/assets", base_url, tag_id);
         let resp = self
-            .client
-            .request(method, format!("{}/api/tags/{}/assets", base_url, tag_id))
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(method, &url)
             .header("Accept", "application/json")
             .json(&serde_json::json!({ "ids": [asset_id] }))
             .timeout(Duration::from_secs(15))

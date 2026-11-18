@@ -103,13 +103,10 @@ impl ImmichApiClient {
     /// Retrieve the complete list of albums from the Immich server for library display.
     pub async fn fetch_library_albums(&self) -> Result<Vec<LibraryAlbum>, String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{}/api/albums", base_url);
 
         match self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(10))
             .send()
@@ -133,7 +130,7 @@ impl ImmichApiClient {
                 Err(format!("HTTP {}", resp.status()))
             }
             Err(err) => {
-                *self.active_url.lock().await = None;
+                self.invalidate_connection().await;
                 self.set_issue(classify_network_issue(RequestContext::Albums, &err))
                     .await;
                 Err(err.to_string())
@@ -188,12 +185,9 @@ impl ImmichApiClient {
             .await
             .map_err(|err| err.to_string())?;
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{base_url}{}", thumbnail_path(asset_id, size, edited));
         let result = self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/octet-stream")
             .timeout(Duration::from_secs(10))
             .send()
@@ -222,7 +216,7 @@ impl ImmichApiClient {
                 Err(format!("HTTP {}", resp.status()))
             }
             Err(err) => {
-                *self.active_url.lock().await = None;
+                self.invalidate_connection().await;
                 self.set_issue(classify_network_issue(RequestContext::ThumbnailFetch, &err))
                     .await;
                 Err(err.to_string())
@@ -236,12 +230,9 @@ impl ImmichApiClient {
         asset_id: &str,
     ) -> Result<T, String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{}/api/assets/{}", base_url, asset_id);
         match self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(10))
             .send()
@@ -265,10 +256,16 @@ impl ImmichApiClient {
         self.fetch_asset_generic(asset_id).await
     }
 
-    pub async fn video_playback_source(&self, asset_id: &str) -> Option<(String, String)> {
+    pub async fn video_playback_source(
+        &self,
+        asset_id: &str,
+    ) -> Option<(String, Vec<(String, String)>)> {
         let base_url = self.get_active_url().await?;
         let url = format!("{}/api/assets/{}/video/playback", base_url, asset_id);
-        Some((url, self.settings_snapshot().api_key))
+        let settings = self.settings_snapshot();
+        let mut headers = vec![("x-api-key".to_string(), settings.api_key)];
+        headers.extend(self.matching_custom_headers(&url));
+        Some((url, headers))
     }
 
     /// Download original source file of a given asset ID and save it locally.
@@ -304,13 +301,10 @@ impl ImmichApiClient {
         progress: Option<TransferProgressCallback>,
     ) -> Result<(), String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{base_url}{path}");
 
         match self
-            .client
-            .get(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::GET, &url)
             .header("Accept", "application/octet-stream")
             .timeout(Duration::from_secs(300))
             .send()
@@ -331,7 +325,7 @@ impl ImmichApiClient {
                 Err(format!("HTTP {}", resp.status()))
             }
             Err(err) => {
-                *self.active_url.lock().await = None;
+                self.invalidate_connection().await;
                 self.set_issue(classify_network_issue(RequestContext::AssetDownload, &err))
                     .await;
                 Err(err.to_string())
@@ -356,12 +350,9 @@ impl ImmichApiClient {
     /// Update an asset's description, capture date, or favorite flag.
     pub async fn update_asset(&self, asset_id: &str, update: &AssetUpdate) -> Result<(), String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{}/api/assets/{}", base_url, asset_id);
         match self
-            .client
-            .put(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::PUT, &url)
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(15))
             .json(update)
@@ -441,13 +432,10 @@ impl ImmichApiClient {
             return Ok(());
         }
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
         let url = format!("{}/api/assets", base_url);
         let body = delete_request_body(asset_ids, force);
         match self
-            .client
-            .delete(&url)
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::DELETE, &url)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
             .timeout(Duration::from_secs(15))

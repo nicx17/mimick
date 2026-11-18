@@ -51,11 +51,9 @@ impl ImmichApiClient {
         body: Option<serde_json::Value>,
     ) -> Result<u64, String> {
         let base_url = self.require_active_url().await?;
-        let settings = self.settings_snapshot();
+        let url = format!("{base_url}{path}");
         let mut request = self
-            .client
-            .post(format!("{}{}", base_url, path))
-            .header("x-api-key", &settings.api_key)
+            .authorized_request(reqwest::Method::POST, &url)
             .header("Accept", "application/json")
             // Emptying a large trash can take a while server-side.
             .timeout(Duration::from_secs(60));

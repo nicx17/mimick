@@ -382,7 +382,13 @@ fn build_api_client(config: &Config) -> ImmichApiClient {
              Library data will not load until an API key is set in Settings."
         );
     }
-    ImmichApiClient::new(runtime_internal_url, runtime_external_url, api_key)
+    let custom_headers = config.get_custom_headers();
+    ImmichApiClient::new(
+        runtime_internal_url,
+        runtime_external_url,
+        api_key,
+        custom_headers,
+    )
 }
 
 /// Flush the sync index every 10s so a crash loses at most that much progress.
