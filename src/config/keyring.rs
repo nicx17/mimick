@@ -168,7 +168,22 @@ impl Config {
         log::debug!("Attempting to save custom headers to keyring...");
         let json = serde_json::to_string(headers).unwrap_or_else(|_| "[]".to_string());
         let is_empty = headers.is_empty();
-        let result = tokio::task::block_in_place(|| {
+        match self.save_custom_headers_in_keyring(&json, is_empty) {
+            Ok(()) => {
+                remove_custom_headers_file_fallback(&self.config_file);
+                Ok(ApiKeyStorage::Keyring)
+            }
+            Err(error) => self.save_custom_headers_file_fallback(headers, is_empty, error),
+        }
+    }
+
+    fn save_custom_headers_in_keyring(
+        &self,
+        json: &str,
+        is_empty: bool,
+    ) -> Result<(), KeyringError> {
+        let json = json.to_owned();
+        tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async {
                 let keyring = keyring_with_dbus_fallback().await?;
                 let account = crate::profile::keyring_account();
@@ -193,37 +208,33 @@ impl Config {
                     .await?;
                 Ok::<(), KeyringError>(())
             })
-        });
+        })
+    }
 
-        match result {
-            Ok(()) => {
-                remove_custom_headers_file_fallback(&self.config_file);
-                Ok(ApiKeyStorage::Keyring)
-            }
-            Err(e) => {
-                log::error!(
-                    "Failed to save custom headers via oo7 keyring: {:?} -- using file fallback",
-                    e
-                );
-                if is_empty {
-                    remove_custom_headers_file_fallback(&self.config_file);
-                    Ok(ApiKeyStorage::File(custom_headers_fallback_path(
-                        &self.config_file,
-                    )))
-                } else {
-                    match write_custom_headers_file_fallback(&self.config_file, headers) {
-                        Ok(()) => Ok(ApiKeyStorage::File(custom_headers_fallback_path(
-                            &self.config_file,
-                        ))),
-                        Err(file_err) => Err(format!(
-                            "{}\n\nFile fallback also failed: {}",
-                            keyring_error_message(&e),
-                            file_err
-                        )),
-                    }
-                }
-            }
+    fn save_custom_headers_file_fallback(
+        &self,
+        headers: &[CustomHeader],
+        is_empty: bool,
+        keyring_error: KeyringError,
+    ) -> Result<ApiKeyStorage, String> {
+        log::error!(
+            "Failed to save custom headers via oo7 keyring: {:?} -- using file fallback",
+            keyring_error
+        );
+        let path = custom_headers_fallback_path(&self.config_file);
+        if is_empty {
+            remove_custom_headers_file_fallback(&self.config_file);
+            return Ok(ApiKeyStorage::File(path));
         }
+        write_custom_headers_file_fallback(&self.config_file, headers)
+            .map(|()| ApiKeyStorage::File(path))
+            .map_err(|file_error| {
+                format!(
+                    "{}\n\nFile fallback also failed: {}",
+                    keyring_error_message(&keyring_error),
+                    file_error
+                )
+            })
     }
 }
 

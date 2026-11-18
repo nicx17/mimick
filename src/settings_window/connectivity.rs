@@ -23,6 +23,13 @@ pub struct ConnectivityWidgets {
     pub status_row: adw::ActionRow,
 }
 
+struct ConnectionActions {
+    status_row: adw::ActionRow,
+    test_btn: Button,
+    save_btn: Button,
+    open_library_btn: Button,
+}
+
 pub fn build_connectivity_group(
     settings_page: &adw::PreferencesPage,
     window: &adw::ApplicationWindow,
@@ -33,29 +40,42 @@ pub fn build_connectivity_group(
         .build();
     settings_page.add(&conn_group);
 
-    let (internal_row, internal_switch, internal_entry) =
-        add_url_row(&conn_group, &gettext("Internal URL (LAN)"), "http://...");
-    let (external_row, external_switch, external_entry) =
-        add_url_row(&conn_group, &gettext("External URL (WAN)"), "https://...");
-    let api_key_entry = add_api_key_row(&conn_group);
+    let urls = add_server_url_rows(&conn_group, window);
     let (_custom_headers_row, custom_headers) =
         add_custom_headers_row(&conn_group, window, initial_headers);
+    let actions = add_connection_actions(&conn_group);
 
-    let status_row = adw::ActionRow::builder()
-        .title(gettext("Connection"))
-        .subtitle(gettext("Not tested yet"))
-        .build();
-    conn_group.add(&status_row);
-    let test_btn = add_group_button(&conn_group, &gettext("Test Connection"), None, 12);
-    let save_btn = add_group_button(
-        &conn_group,
-        &gettext("Save and Connect"),
-        Some("suggested-action"),
-        6,
-    );
-    // Shown once a key is saved and the library view is on; see `apply::sync_open_library`.
-    let open_library_btn = add_group_button(&conn_group, &gettext("Open Library"), None, 6);
-    open_library_btn.set_visible(false);
+    ConnectivityWidgets {
+        internal_switch: urls.internal_switch,
+        external_switch: urls.external_switch,
+        internal_entry: urls.internal_entry,
+        external_entry: urls.external_entry,
+        api_key_entry: urls.api_key_entry,
+        custom_headers,
+        test_btn: actions.test_btn,
+        save_btn: actions.save_btn,
+        open_library_btn: actions.open_library_btn,
+        status_row: actions.status_row,
+    }
+}
+
+struct ServerUrlInputs {
+    internal_switch: gtk::Switch,
+    external_switch: gtk::Switch,
+    internal_entry: gtk::Entry,
+    external_entry: gtk::Entry,
+    api_key_entry: PasswordEntry,
+}
+
+fn add_server_url_rows(
+    group: &adw::PreferencesGroup,
+    window: &adw::ApplicationWindow,
+) -> ServerUrlInputs {
+    let (internal_row, internal_switch, internal_entry) =
+        add_url_row(group, &gettext("Internal URL (LAN)"), "http://...");
+    let (external_row, external_switch, external_entry) =
+        add_url_row(group, &gettext("External URL (WAN)"), "https://...");
+    let api_key_entry = add_api_key_row(group);
 
     add_connectivity_breakpoint(
         window,
@@ -66,17 +86,35 @@ pub fn build_connectivity_group(
         &api_key_entry,
     );
 
-    ConnectivityWidgets {
+    ServerUrlInputs {
         internal_switch,
         external_switch,
         internal_entry,
         external_entry,
         api_key_entry,
-        custom_headers,
+    }
+}
+
+fn add_connection_actions(group: &adw::PreferencesGroup) -> ConnectionActions {
+    let status_row = adw::ActionRow::builder()
+        .title(gettext("Connection"))
+        .subtitle(gettext("Not tested yet"))
+        .build();
+    group.add(&status_row);
+    let test_btn = add_group_button(group, &gettext("Test Connection"), None, 12);
+    let save_btn = add_group_button(
+        group,
+        &gettext("Save and Connect"),
+        Some("suggested-action"),
+        6,
+    );
+    let open_library_btn = add_group_button(group, &gettext("Open Library"), None, 6);
+    open_library_btn.set_visible(false);
+    ConnectionActions {
+        status_row,
         test_btn,
         save_btn,
         open_library_btn,
-        status_row,
     }
 }
 
@@ -268,12 +306,49 @@ fn validate_add_button(
     add_btn.set_sensitive(valid);
 }
 
+struct HeaderDialog {
+    dialog: adw::Dialog,
+    name_row: adw::EntryRow,
+    val_row: adw::PasswordEntryRow,
+    scope_row: adw::ComboRow,
+    cancel_btn: gtk::Button,
+    add_btn: gtk::Button,
+}
+
 fn show_add_header_dialog(
     window: &adw::ApplicationWindow,
     expander: &adw::ExpanderRow,
     headers: &Rc<RefCell<Vec<CustomHeader>>>,
     rows_tracker: &Rc<RefCell<Vec<adw::ActionRow>>>,
 ) {
+    let header_dialog = build_header_dialog();
+    connect_header_dialog_validation(&header_dialog);
+    connect_header_dialog_actions(&header_dialog, window, expander, headers, rows_tracker);
+    header_dialog.dialog.present(Some(window));
+}
+
+fn build_header_dialog() -> HeaderDialog {
+    let name_row = header_name_row();
+    let val_row = header_value_row();
+    let scope_row = header_scope_row();
+    let cancel_btn = gtk::Button::builder().label(gettext("Cancel")).build();
+    let add_btn = gtk::Button::builder()
+        .label(gettext("Add"))
+        .css_classes(["suggested-action"])
+        .sensitive(false)
+        .build();
+    let dialog = header_dialog_shell(&name_row, &val_row, &scope_row, &cancel_btn, &add_btn);
+    HeaderDialog {
+        dialog,
+        name_row,
+        val_row,
+        scope_row,
+        cancel_btn,
+        add_btn,
+    }
+}
+
+fn header_name_row() -> adw::EntryRow {
     let name_row = adw::EntryRow::builder()
         .title(gettext("Header Name"))
         .build();
@@ -281,7 +356,10 @@ fn show_add_header_dialog(
     name_row.add_suffix(&make_paste_button(move |text| {
         n_clone.set_text(&text);
     }));
+    name_row
+}
 
+fn header_value_row() -> adw::PasswordEntryRow {
     let val_row = adw::PasswordEntryRow::builder()
         .title(gettext("Secret / Value"))
         .build();
@@ -289,67 +367,84 @@ fn show_add_header_dialog(
     val_row.add_suffix(&make_paste_button(move |text| {
         v_clone.set_text(&text);
     }));
+    val_row
+}
 
+fn header_scope_row() -> adw::ComboRow {
     let scopes = [
         HeaderScope::Wan.label(),
         HeaderScope::All.label(),
         HeaderScope::Lan.label(),
     ];
     let string_list = gtk::StringList::new(&[&scopes[0], &scopes[1], &scopes[2]]);
-    let scope_row = adw::ComboRow::builder()
+    adw::ComboRow::builder()
         .title(gettext("Scope"))
         .model(&string_list)
         .selected(0)
-        .build();
+        .build()
+}
 
-    let cancel_btn = gtk::Button::builder().label(gettext("Cancel")).build();
-    let add_btn = gtk::Button::builder()
-        .label(gettext("Add"))
-        .css_classes(["suggested-action"])
-        .sensitive(false)
-        .build();
+fn header_dialog_shell(
+    name_row: &adw::EntryRow,
+    val_row: &adw::PasswordEntryRow,
+    scope_row: &adw::ComboRow,
+    cancel_btn: &gtk::Button,
+    add_btn: &gtk::Button,
+) -> adw::Dialog {
+    let header_bar = adw::HeaderBar::builder().build();
+    header_bar.pack_start(cancel_btn);
+    header_bar.pack_end(add_btn);
+    let group = adw::PreferencesGroup::new();
+    group.add(name_row);
+    group.add(val_row);
+    group.add(scope_row);
+    let page = adw::PreferencesPage::new();
+    page.add(&group);
+    let toolbar = adw::ToolbarView::builder().content(&page).build();
+    toolbar.add_top_bar(&header_bar);
+    adw::Dialog::builder()
+        .title(gettext("Add Custom Header"))
+        .content_width(420)
+        .child(&toolbar)
+        .build()
+}
 
-    let (n_val, v_val, a_val) = (name_row.clone(), val_row.clone(), add_btn.clone());
+fn connect_header_dialog_validation(header_dialog: &HeaderDialog) {
+    let (n_val, v_val, a_val) = (
+        header_dialog.name_row.clone(),
+        header_dialog.val_row.clone(),
+        header_dialog.add_btn.clone(),
+    );
     let update_validity = Rc::new(move || {
         validate_add_button(&n_val, &v_val, &a_val);
     });
     let uv1 = update_validity.clone();
-    name_row.connect_changed(move |_| uv1());
+    header_dialog.name_row.connect_changed(move |_| uv1());
     let uv2 = update_validity;
-    val_row.connect_changed(move |_| uv2());
+    header_dialog.val_row.connect_changed(move |_| uv2());
+}
 
-    let header_bar = adw::HeaderBar::builder().build();
-    header_bar.pack_start(&cancel_btn);
-    header_bar.pack_end(&add_btn);
-
-    let group = adw::PreferencesGroup::new();
-    group.add(&name_row);
-    group.add(&val_row);
-    group.add(&scope_row);
-
-    let page = adw::PreferencesPage::new();
-    page.add(&group);
-
-    let toolbar = adw::ToolbarView::builder().content(&page).build();
-    toolbar.add_top_bar(&header_bar);
-
-    let dialog = adw::Dialog::builder()
-        .title(gettext("Add Custom Header"))
-        .content_width(420)
-        .child(&toolbar)
-        .build();
-
-    let d_cancel = dialog.clone();
-    cancel_btn.connect_clicked(move |_| {
+fn connect_header_dialog_actions(
+    header_dialog: &HeaderDialog,
+    window: &adw::ApplicationWindow,
+    expander: &adw::ExpanderRow,
+    headers: &Rc<RefCell<Vec<CustomHeader>>>,
+    rows_tracker: &Rc<RefCell<Vec<adw::ActionRow>>>,
+) {
+    let d_cancel = header_dialog.dialog.clone();
+    header_dialog.cancel_btn.connect_clicked(move |_| {
         d_cancel.close();
     });
 
-    let d_add = dialog.clone();
+    let d_add = header_dialog.dialog.clone();
+    let name_row = header_dialog.name_row.clone();
+    let val_row = header_dialog.val_row.clone();
+    let scope_row = header_dialog.scope_row.clone();
     let headers = headers.clone();
     let expander = expander.clone();
     let window_clone = window.clone();
     let rows_tracker = rows_tracker.clone();
-    add_btn.connect_clicked(move |_| {
+    header_dialog.add_btn.connect_clicked(move |_| {
         let name = name_row.text().trim().to_string();
         let val = val_row.text().trim().to_string();
         let scope = match scope_row.selected() {
@@ -364,8 +459,6 @@ fn show_add_header_dialog(
         rebuild_headers_list(&window_clone, &expander, &headers, &rows_tracker);
         d_add.close();
     });
-
-    dialog.present(Some(window));
 }
 
 fn text_entry(placeholder: &str) -> Entry {

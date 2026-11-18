@@ -238,40 +238,72 @@ pub(super) fn connect_test_button(
         #[strong(rename_to = custom_headers)]
         conn.custom_headers,
         move |btn| {
-            btn.set_sensitive(false);
-            // Collect only plain values: no GTK types cross into the Tokio task.
-            let enabled_url = |switch: &gtk::Switch, entry: &gtk::Entry| {
-                if switch.is_active() {
-                    entry.text().to_string()
-                } else {
-                    String::new()
-                }
-            };
-            let internal = enabled_url(&internal_switch, &internal_entry);
-            let external = enabled_url(&external_switch, &external_entry);
-            let headers = custom_headers.borrow().clone();
-            let (internal_on, external_on) = (!internal.is_empty(), !external.is_empty());
-            if let Some(row) = status_row.upgrade() {
-                row.set_subtitle(&gettext("Testing…"));
-            }
-            let rx = spawn_ping(api_client.clone(), internal, external, headers);
-            let (status_row, btn) = (status_row.clone(), btn.clone());
-            glib::MainContext::default().spawn_local(async move {
-                let Ok((int_ok, ext_ok)) = rx.await else {
-                    return;
-                };
-                btn.set_sensitive(true);
-                if let Some(row) = status_row.upgrade() {
-                    row.set_subtitle(&connection_summary(
-                        int_ok,
-                        ext_ok,
-                        internal_on,
-                        external_on,
-                    ));
-                }
-            });
+            let input = ping_input(
+                &internal_switch,
+                &internal_entry,
+                &external_switch,
+                &external_entry,
+                &custom_headers,
+            );
+            handle_test_click(btn, &status_row, api_client.clone(), input);
         }
     ));
+}
+
+fn handle_test_click(
+    btn: &gtk::Button,
+    status_row: &glib::WeakRef<adw::ActionRow>,
+    api_client: Arc<crate::api_client::ImmichApiClient>,
+    input: PingInput,
+) {
+    btn.set_sensitive(false);
+    let (internal_on, external_on) = (!input.internal.is_empty(), !input.external.is_empty());
+    if let Some(row) = status_row.upgrade() {
+        row.set_subtitle(&gettext("Testing…"));
+    }
+    let rx = spawn_ping(api_client, input);
+    let (status_row, btn) = (status_row.clone(), btn.clone());
+    glib::MainContext::default().spawn_local(async move {
+        let Ok((int_ok, ext_ok)) = rx.await else {
+            return;
+        };
+        btn.set_sensitive(true);
+        if let Some(row) = status_row.upgrade() {
+            row.set_subtitle(&connection_summary(
+                int_ok,
+                ext_ok,
+                internal_on,
+                external_on,
+            ));
+        }
+    });
+}
+
+struct PingInput {
+    internal: String,
+    external: String,
+    headers: Vec<crate::config::CustomHeader>,
+}
+
+fn ping_input(
+    internal_switch: &gtk::Switch,
+    internal_entry: &gtk::Entry,
+    external_switch: &gtk::Switch,
+    external_entry: &gtk::Entry,
+    custom_headers: &std::rc::Rc<std::cell::RefCell<Vec<crate::config::CustomHeader>>>,
+) -> PingInput {
+    let enabled_url = |switch: &gtk::Switch, entry: &gtk::Entry| {
+        if switch.is_active() {
+            entry.text().to_string()
+        } else {
+            String::new()
+        }
+    };
+    PingInput {
+        internal: enabled_url(internal_switch, internal_entry),
+        external: enabled_url(external_switch, external_entry),
+        headers: custom_headers.borrow().clone(),
+    }
 }
 
 /// Ping both addresses on Tokio; resolves to `(internal_ok, external_ok)`.
@@ -279,20 +311,18 @@ pub(super) fn connect_test_button(
 /// that lingers ~30s after the test completes.
 fn spawn_ping(
     api_client: Arc<crate::api_client::ImmichApiClient>,
-    internal: String,
-    external: String,
-    headers: Vec<crate::config::CustomHeader>,
+    input: PingInput,
 ) -> tokio::sync::oneshot::Receiver<(bool, bool)> {
     let (tx, rx) = tokio::sync::oneshot::channel();
     tokio::spawn(async move {
-        let headers_ref = &headers;
-        let int_ok = !internal.is_empty()
+        let headers = &input.headers;
+        let int_ok = !input.internal.is_empty()
             && api_client
-                .ping_url_custom(&internal, false, headers_ref)
+                .ping_url_custom(&input.internal, false, headers)
                 .await;
-        let ext_ok = !external.is_empty()
+        let ext_ok = !input.external.is_empty()
             && api_client
-                .ping_url_custom(&external, true, headers_ref)
+                .ping_url_custom(&input.external, true, headers)
                 .await;
         let _ = tx.send((int_ok, ext_ok));
     });

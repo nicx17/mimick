@@ -522,4 +522,6 @@ impl ImmichApiClient {
 }
 
 #[cfg(test)]
+mod header_tests;
+#[cfg(test)]
 mod tests;

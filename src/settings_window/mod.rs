@@ -187,6 +187,63 @@ pub fn build_settings_window(app: &adw::Application, ctx: Arc<AppContext>) {
 }
 
 /// Construct and present the settings window, optionally transient for a parent window.
+struct SettingsGroups {
+    status_widgets: status::StatusWidgets,
+    conn: connectivity::ConnectivityWidgets,
+    behavior: behavior::BehaviorWidgets,
+    library: library::LibraryWidgets,
+    troubleshooting: actions_ui::TroubleshootingWidgets,
+    folders_group: adw::PreferencesGroup,
+}
+
+fn build_settings_groups(
+    settings_page: &adw::PreferencesPage,
+    status_page: &adw::PreferencesPage,
+    window: &adw::ApplicationWindow,
+    ctx: &Arc<AppContext>,
+    config: &Config,
+) -> SettingsGroups {
+    let status_widgets = status::build_status_group(status_page);
+    let conn =
+        connectivity::build_connectivity_group(settings_page, window, config.get_custom_headers());
+    wiring::connect_test_button(&conn, ctx.api_client.clone());
+    let folders_group = wiring::folders_group(settings_page);
+    let behavior = behavior::build_behavior_group(settings_page);
+    wiring::connect_quiet_hours_sensitivity(&behavior);
+    appearance::build_appearance_group(settings_page, ctx);
+    let library = library::build_library_group(settings_page);
+    let troubleshooting = actions_ui::build_troubleshooting_group(settings_page);
+    wiring::connect_library_rows(ctx, &library, &behavior.library_view_row);
+    wiring::connect_download_folder(ctx, &library, window);
+    SettingsGroups {
+        status_widgets,
+        conn,
+        behavior,
+        library,
+        troubleshooting,
+        folders_group,
+    }
+}
+
+fn wire_settings_interactions(
+    window: &adw::ApplicationWindow,
+    ctx: &Arc<AppContext>,
+    groups: &SettingsGroups,
+    state: &apply::ApplyState,
+    auto_apply: Rc<dyn Fn()>,
+    config: &Config,
+) {
+    wiring::fetch_albums_for_picker(window, state);
+    wiring::add_folders_group(&groups.folders_group, window, config, state, auto_apply);
+    wiring::connect_action_buttons(
+        window,
+        ctx,
+        &groups.status_widgets,
+        &groups.troubleshooting.export_btn,
+    );
+    wiring::connect_detailed_logs_row(ctx, &groups.troubleshooting.detailed_logs_row);
+}
+
 pub fn build_settings_window_with_parent(
     app: &adw::Application,
     ctx: Arc<AppContext>,
@@ -194,53 +251,39 @@ pub fn build_settings_window_with_parent(
 ) {
     let config = ctx.config.read().clone();
     let (window, status_page, settings_page) = open_shell(app, parent, &config);
-    let status_widgets = status::build_status_group(&status_page);
-    let conn = connectivity::build_connectivity_group(
-        &settings_page,
-        &window,
-        config.get_custom_headers(),
-    );
-    wiring::connect_test_button(&conn, ctx.api_client.clone());
-    let folders_group = wiring::folders_group(&settings_page);
-    let behavior = behavior::build_behavior_group(&settings_page);
-    wiring::connect_quiet_hours_sensitivity(&behavior);
-    appearance::build_appearance_group(&settings_page, &ctx);
-    let library = library::build_library_group(&settings_page);
-    let troubleshooting = actions_ui::build_troubleshooting_group(&settings_page);
-    wiring::connect_library_rows(&ctx, &library, &behavior.library_view_row);
-    wiring::connect_download_folder(&ctx, &library, &window);
+    let groups = build_settings_groups(&settings_page, &status_page, &window, &ctx, &config);
 
-    let form = form::SettingsForm::new(&window, &conn, &behavior, &library);
+    let form = form::SettingsForm::new(&window, &groups.conn, &groups.behavior, &groups.library);
     let state = apply::ApplyState::new(
         &ctx,
         config.data.run_on_startup,
         config.data.background_sync_enabled,
     );
     let apply_settings = apply::make_apply_settings(&form, state.clone());
-    let auto_apply: Rc<dyn Fn()> = {
-        let apply_settings = apply_settings.clone();
-        Rc::new(move || apply_settings(false, false))
-    };
-    wiring::fetch_albums_for_picker(&window, &state);
-    wiring::add_folders_group(&folders_group, &window, &config, &state, auto_apply.clone());
-    wiring::connect_action_buttons(&window, &ctx, &status_widgets, &troubleshooting.export_btn);
-    wiring::connect_detailed_logs_row(&ctx, &troubleshooting.detailed_logs_row);
-    conn.save_btn
+    let auto_apply = without_connectivity_apply(apply_settings.clone());
+    wire_settings_interactions(&window, &ctx, &groups, &state, auto_apply.clone(), &config);
+    groups
+        .conn
+        .save_btn
         .connect_clicked(move |_| apply_settings(true, true));
 
     // Populate before connecting auto-apply so loading saved values doesn't trigger a save.
     form.populate(&config);
-    connect_open_library(&form, &conn, &ctx);
-    wiring::connect_url_switches(&window, &conn);
+    connect_open_library(&form, &groups.conn, &ctx);
+    wiring::connect_url_switches(&window, &groups.conn);
     wiring::connect_auto_apply(&form, auto_apply);
     wiring::connect_close_request(&window, app, &ctx);
     status_poll::start_status_poller(
-        status_widgets,
+        groups.status_widgets,
         state.tracked_rows.clone(),
         ctx.state.clone(),
         ctx.config.clone(),
     );
     window.present();
+}
+
+fn without_connectivity_apply(apply_settings: Rc<dyn Fn(bool, bool)>) -> Rc<dyn Fn()> {
+    Rc::new(move || apply_settings(false, false))
 }
 
 /// The window shell. Until a key is saved there's nothing to show on Status,
