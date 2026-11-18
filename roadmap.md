@@ -101,6 +101,10 @@ Per-release highlights and live open issues are on the [roadmap page](https://mi
 - [x] **AUR Package** — `mimick` on the Arch User Repository (#295).
 - [x] **AppImages** — x86_64 and aarch64 AppImages attached to each release (#295).
 
+### 9.15.3 Proxy Headers & Enhancements
+- [x] **Custom Proxy Headers** — Route-scoped HTTP headers for Cloudflare Access service tokens and reverse proxies, with secure keyring storage, UI manager, and live testing (#341, #344).
+- [x] **Complete Localization** — Updated all 21 languages to 100% coverage (1,486 strings each) with gettext plural support (#344).
+
 ### 9.15.2 Internationalization Release
 - [x] **Full 21-Language Localization** — Complete translations across 21 locales with 100% coverage (1,465 strings each) and gettext plural handling (#338).
 - [x] **Flatpak Build and Packaging Fixes** — Locale directory migration fix for Flatpak builds and ShellCheck script cleanups (#338).
@@ -133,7 +137,7 @@ Per-release highlights and live open issues are on the [roadmap page](https://mi
 
 Finished on `main` and coming in the next release (see the Unreleased section of [CHANGELOG.md](CHANGELOG.md)).
 
-- **Custom Proxy Headers** — Route-scoped HTTP headers for Cloudflare Access service tokens and other reverse proxies (#341).
+Nothing merged yet since 9.15.3.
 
 ---
 

@@ -2191,9 +2191,9 @@ dependencies = [
 
 [[package]]
 name = "lcms2-sys"
-version = "4.0.7"
+version = "4.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "264db0b78119c5a37d78bb41fb355daab29b3b29430b53cd92e3da51f0ab06cc"
+checksum = "9b37be72dca0c07b7bf15f3b7410ce6fb7a517f98c04f2448279d5cdd2255cb0"
 dependencies = [
  "cc",
  "dunce",
@@ -2429,7 +2429,7 @@ dependencies = [
 
 [[package]]
 name = "mimick"
-version = "9.15.2"
+version = "9.15.3"
 dependencies = [
  "ashpd",
  "base64",
@@ -3652,9 +3652,9 @@ dependencies = [
 
 [[package]]
 name = "smallvec"
-version = "1.16.5"
+version = "1.16.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "149309498a5f7334b12ddae0cad8aba81ce785fe91755068867e017cf98fee46"
+checksum = "3244542535d5de959d90ec55d1b5ff0fd2bb7b1310223907d5f11932847f7b59"
 
 [[package]]
 name = "socket2"

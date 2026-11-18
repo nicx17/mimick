@@ -118,6 +118,14 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="9.15.3" date="2026-11-18">
+      <description translate="no">
+        <p>Custom reverse proxy headers</p>
+        <ul>
+          <li>Custom proxy headers support with LAN/WAN route scoping and secure keyring storage.</li>
+        </ul>
+      </description>
+    </release>
     <release version="9.15.2" date="2026-11-14">
       <description translate="no">
         <p>Internationalization support with 21 languages translated.</p>
