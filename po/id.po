@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Indonesian\n"
@@ -41,11 +41,11 @@ msgstr "Daftar album tidak tersedia"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "Sambungkan kembali ke server Immich sebelum menyegarkan album."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Gagal mengambil album"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Tidak dapat mengambil album untuk memverifikasi keberadaan"
 
@@ -58,7 +58,7 @@ msgstr ""
 "Server merespons dengan HTTP {status}. Periksa log server dan coba lagi "
 "setelah mengonfirmasi konfigurasi saat ini."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich menolak kunci API"
 
@@ -78,7 +78,7 @@ msgstr "Referensi album sudah tidak valid lagi"
 msgid "Refresh the album list or choose a different album before retrying."
 msgstr "Segarkan daftar album atau pilih album lain sebelum mencoba lagi."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich menolak berkas karena terlalu besar"
 
@@ -102,7 +102,7 @@ msgstr ""
 "Tunggu sebentar dan coba lagi. Jika ini sering terjadi, turunkan konkurensi "
 "unggahan atau periksa batas proksi terbalik."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich tidak tersedia untuk sementara"
 
@@ -178,7 +178,7 @@ msgstr "Permintaan Immich kehabisan waktu"
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "Periksa kualitas jaringan dan responsivitas server, lalu coba lagi."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Tidak dapat menjangkau server Immich"
 
@@ -241,7 +241,7 @@ msgstr "Permintaan statistik pustaka gagal sebelum selesai"
 msgid "The server version request failed before completion"
 msgstr "Permintaan versi server gagal sebelum selesai"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Tidak ada koneksi aktif"
 
@@ -310,7 +310,7 @@ msgstr ""
 "Uji koneksi server di Pengaturan dan pastikan setidaknya satu URL Immich "
 "dapat dijangkau."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -318,7 +318,7 @@ msgstr ""
 "Kurangi ukuran berkas, tingkatkan batas unggah server, atau gunakan aturan "
 "folder untuk melewati berkas yang terlalu besar."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -458,7 +458,7 @@ msgstr "Tidak dapat memuat ini. Kunci API Anda memerlukan izin “{permission}�
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Batal"
@@ -1362,7 +1362,7 @@ msgid "Could Not Remove Person"
 msgstr "Tidak Dapat Menghapus Orang"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Tambah"
 
@@ -1869,12 +1869,12 @@ msgid "Version unavailable"
 msgstr "Versi tidak tersedia"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "Terhubung melalui LAN"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "Terhubung melalui WAN"
 
@@ -4711,12 +4711,12 @@ msgstr "Foto 360°"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Koneksi"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Server"
@@ -5454,7 +5454,7 @@ msgstr "Pilih aset (Esc untuk keluar)"
 msgid "Queue Inspector"
 msgstr "Pemeriksa Antrean"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Pengaturan"
@@ -5463,7 +5463,7 @@ msgstr "Pengaturan"
 msgid "Keyboard Shortcuts"
 msgstr "Pintasan Papan Tik"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Tentang Mimick"
 
@@ -5677,53 +5677,53 @@ msgstr "Tema Terang"
 msgid "Dark Theme"
 msgstr "Tema Gelap"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "Rahasia Disimpan dalam Berkas"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "Kunci API Disimpan dalam Berkas"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "Header Proksi Kustom Disimpan dalam Berkas"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Pengaturan Disimpan"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick berhasil menyimpan pengaturan yang diperbarui."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Izin Mulai Otomatis Diperlukan"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick tidak diizinkan untuk memulai secara otomatis saat masuk."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Tidak Dapat Memperbarui Pengaturan Mulai Otomatis"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "Tidak Dapat Menyimpan Kunci API"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "Tidak Dapat Menyimpan Header Kustom"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Tidak Dapat Menyimpan Pengaturan"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick tidak dapat menulis konfigurasi yang diperbarui ke diska."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "Tidak Dapat Menyimpan Kunci API"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Tidak Dapat Menyimpan Header Kustom"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5824,83 +5824,83 @@ msgstr "Saat Mimick Dimulai, Periksa"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Folder dapat memilih pengaturannya sendiri di Aturan Folder."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "URL Internal (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "URL Eksternal (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Belum diuji"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Uji Koneksi"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Simpan dan Sambungkan"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Buka Pustaka"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "Kunci API"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "Header Proksi Kustom"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
 msgstr "Header HTTP opsional untuk reverse proxy (mis. Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 header dikonfigurasi"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "header dikonfigurasi"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "Hapus header"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "Tambah Header…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "Tempel dari Papan Klip"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "Nama Header"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "Rahasia / Nilai"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "Cakupan"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "Tambah Header Kustom"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "URL LAN"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "URL WAN"
 
@@ -6097,9 +6097,11 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Pengaturan disimpan, tetapi keyring sistem tidak tersedia, sehingga header proksi kustom disimpan di {path}.\n"
+"Pengaturan disimpan, tetapi keyring sistem tidak tersedia, sehingga header "
+"proksi kustom disimpan di {path}.\n"
 "\n"
-"Berkas tersebut hanya dapat dibaca oleh akun pengguna Anda, tetapi tidak dienkripsi.\n"
+"Berkas tersebut hanya dapat dibaca oleh akun pengguna Anda, tetapi tidak "
+"dienkripsi.\n"
 "\n"
 "Lihat: {url}"
 
@@ -6194,7 +6196,7 @@ msgid "Sync Now"
 msgstr "Sinkronkan Sekarang"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Jeda"
 
@@ -6210,8 +6212,8 @@ msgstr "Perlu Perhatian"
 msgid "Failed uploads"
 msgstr "Unggahan gagal"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Lanjutkan"
 
@@ -6410,87 +6412,87 @@ msgstr "Berkas Terbesar dalam MB (kosongkan jika tanpa batas)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Hanya Jenis Ini, misal: jpg, png, mp4 (kosongkan untuk semua)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Status"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Keluar dari Mimick"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Menu Utama"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Mulai"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Tiga langkah untuk menghubungkan Mimick ke server Immich Anda."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Masukkan server Anda"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Alamat Immich Anda di bawah Server, di bawah ini."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. Tambahkan kunci API"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "Di Immich: Pengaturan Akun → Kunci API. Panduan mencantumkan izin yang "
 "diperlukan."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Simpan dan Sambungkan"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "Pustaka Anda akan terbuka berikutnya. Untuk mencadangkan folder juga, "
 "tambahkan di Folder Pantauan."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Panduan"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Dijeda oleh Anda"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} juga berfungsi"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} tidak dapat dijangkau"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "Tidak dapat menjangkau Immich di kedua alamat"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Menguji…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "Dijeda oleh Anda"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Pilihan Tidak Valid"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "Setidaknya satu URL (Internal atau Eksternal) harus diaktifkan."
 

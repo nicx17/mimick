@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Konkani (Romi)\n"
@@ -41,11 +41,11 @@ msgstr "Albumanchi volleri uplobdh na"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "Album novsorche adim Immich serverak porot zoddat."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Album mellovpak fottlem"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Astitv topasunk album mellovnk zaina"
 
@@ -58,7 +58,7 @@ msgstr ""
 "Serveran HTTP {status} zabab dilo. Serverache log topasat ani chalik axil'li "
 "manddavoll khatri korun porot proyotn korat."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich-an API key nhekarli"
 
@@ -79,7 +79,7 @@ msgid "Refresh the album list or choose a different album before retrying."
 msgstr ""
 "Porot proyotn korche adim albumanchi volleri novsorat vo dusro album vinchat."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich-an khub vhoddli mhonn ek fayl nhekarli"
 
@@ -103,7 +103,7 @@ msgstr ""
 "Ek khin ravun porot proyotn korat. Hem chodd pavtti ghoddot zalear, ekach "
 "vellar zauñche upload unne korat vo reverse proxy-cheo xim' topasat."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich thoddea kallakhatir uplobdh na"
 
@@ -181,7 +181,7 @@ msgstr ""
 "Network gunnvotta ani serverachean poddttolo protisad topasat, uprant porot "
 "proyotn korat."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Immich serverak pauonk xoklem na"
 
@@ -243,7 +243,7 @@ msgstr "Library ankddevari vinovnni purnn zauñche adim fottli"
 msgid "The server version request failed before completion"
 msgstr "Server avruti vinovnni purnn zauñche adim fottli"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Koslem-i sakriy connection na"
 
@@ -313,7 +313,7 @@ msgstr ""
 "Manddavollint server connection topasat ani unneant-unno ek tari Immich URL "
 "pavta mhonn khatri korat."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -321,7 +321,7 @@ msgstr ""
 "Faylicho akar unno korat, serverachi upload xim' vaddoit, vo folderachea "
 "neman khub vhoddleo fayli soddun diat."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -464,7 +464,7 @@ msgstr ""
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Rodd kor"
@@ -1386,7 +1386,7 @@ msgid "Could Not Remove Person"
 msgstr "Monxak Kaddun Uddovpak Zalem Na"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Zoddik Korat"
 
@@ -1905,12 +1905,12 @@ msgid "Version unavailable"
 msgstr "Avruti uplobdh na"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "LAN vorvim zoddlil'lem"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "WAN vorvim zoddlil'lem"
 
@@ -4763,12 +4763,12 @@ msgstr "360° Fotvam"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Connection"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Server"
@@ -5513,7 +5513,7 @@ msgstr "Assets vinchat (Bhair sorunk Esc)"
 msgid "Queue Inspector"
 msgstr "Rang Topaspi"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Manddavoll"
@@ -5522,7 +5522,7 @@ msgstr "Manddavoll"
 msgid "Keyboard Shortcuts"
 msgstr "Keyboard Shortcuts"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Mimick-a Vixim"
 
@@ -5739,53 +5739,53 @@ msgstr "Uzvadd Theme"
 msgid "Dark Theme"
 msgstr "Kalluk Theme"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "Gutt Faylint Dovorleant"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API Key Eka Faylint Dovorlea"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "Custom Proxy Headers Eka Faylint Dovorleant"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Manddavoll Sambhall'lli"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick-an sudharit manddavoll yoxosvi ritin sambhall'lli."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Startup Porvanngi Gorjechi"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Login vellar Mimick-ak ap-xik suru zauñk porvanngi mellunk na."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Startup Manddavoll Sudharunk Zalem Na"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "API Key Sambhallunk Zalem Na"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "Custom Headers Sambhallunk Zalem Na"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Manddavoll Sambhallunk Zalem Na"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick sudharit manddavoll diskacher borovnk xoklem na."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "API Key Sambhallunk Zalem Na"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Custom Headers Sambhallunk Zalem Na"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5886,83 +5886,84 @@ msgstr "Mimick Suru Zatanach, Topasat"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Folder Rules hantunt folder aplo vinchovn ghevnk xoktat."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "Internal URL (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "External URL (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Azun topasunk na"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Connection Topasat"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Sambhallat ani Zoddat"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Library Ugoddat"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API Key"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "Custom Proxy Headers"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
-msgstr "Reverse proxies khatir optional HTTP headers (udharonnak Cloudflare Access)"
+msgstr ""
+"Reverse proxies khatir optional HTTP headers (udharonnak Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 header configure kelam"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "headers configure keleant"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "Header kaddat"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "Header Zoddik Korat…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "Clipboard-antlean Paste Korat"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "Header-achem Naum"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "Gutt / Mol"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "Scope"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "Custom Header Zoddik Korat"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN URL"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN URL"
 
@@ -6156,9 +6157,11 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Manddavoll sambhall'lli, punn system keyring uplobdh na, dekhun custom proxy headers {path}-ant dovorleant.\n"
+"Manddavoll sambhall'lli, punn system keyring uplobdh na, dekhun custom proxy "
+"headers {path}-ant dovorleant.\n"
 "\n"
-"Hi fayl fokot tumchea user account vorvim vachunk zata punn encrypt korunk na.\n"
+"Hi fayl fokot tumchea user account vorvim vachunk zata punn encrypt korunk "
+"na.\n"
 "\n"
 "Polleyat: {url}"
 
@@ -6256,7 +6259,7 @@ msgid "Sync Now"
 msgstr "Atanch Sync Korat"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Thamboyat"
 
@@ -6272,8 +6275,8 @@ msgstr "Lakx Divnk Zai"
 msgid "Failed uploads"
 msgstr "Fottlole uploads"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Porot Suru Korat"
 
@@ -6474,87 +6477,87 @@ msgstr "Soglleanvodd Fayl MB-nt (kosli-i xim' naka zalear rikami)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Fokot He Prokaranche, zoxem jpg, png, mp4 (saglleankhatir rikami)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Sthiti"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick thaun Bhair Sorat"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Mukhy Menu"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Suru Korat"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Mimick tumchea Immich serverak zoddunk tin panvlam."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Tumcho server bhorat"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Sokoil Server hachea pondak tumcho Immich namo."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. API key zoddik korat"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "Immich-ant: Account Settings → API Keys. Guide-ant porvanngiyanchi volleri "
 "asa."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Sambhallat ani Zoddat"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "Tumi fuddem votanch tumchi library ugoddttoli. Folderacho backup korpak, "
 "taka Watch Folders pondak zoddik korat."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Guide"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Tumi thamboilam"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} porian kam korta"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name}-ak pauonk zaina"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "Khuincheach nameancher Immich-ak pauonk zalem na"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Topasta…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "Tumi thamboilam"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Omany Vinchovn"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "Unneant-unno ek tari URL (Internal vo External) chalu asunk zai."
 

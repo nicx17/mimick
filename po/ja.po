@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
@@ -41,11 +41,11 @@ msgstr "アルバム一覧を利用できません"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "アルバムを更新する前に Immich サーバーに再接続してください。"
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "アルバムの取得に失敗しました"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "存在を確認するためのアルバム一覧を取得できません"
 
@@ -58,7 +58,7 @@ msgstr ""
 "サーバーが HTTP {status} を返しました。サーバーのログを確認し、現在の設定を確"
 "認した後に再試行してください。"
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich が API キーを拒否しました"
 
@@ -79,7 +79,7 @@ msgid "Refresh the album list or choose a different album before retrying."
 msgstr ""
 "アルバム一覧を更新するか、別のアルバムを選択してから再試行してください。"
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich がファイルサイズ超過のため拒否しました"
 
@@ -103,7 +103,7 @@ msgstr ""
 "しばらく待ってから再試行してください。頻繁に発生する場合は、並行アップロード"
 "数を減らすか、リバースプロキシの制限を確認してください。"
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich は一時的に利用できません"
 
@@ -179,7 +179,7 @@ msgstr "Immich へのリクエストがタイムアウトしました"
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "ネットワークの状態とサーバーの応答性を確認し、再試行してください。"
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Immich サーバーに接続できませんでした"
 
@@ -242,7 +242,7 @@ msgstr "ライブラリ統計情報のリクエストが完了前に失敗しま
 msgid "The server version request failed before completion"
 msgstr "サーバーバージョンリクエストが完了前に失敗しました"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "アクティブな接続がありません"
 
@@ -311,7 +311,7 @@ msgstr ""
 "設定でサーバー接続をテストし、少なくとも 1 つの Immich URL に到達できることを"
 "確認してください。"
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -319,7 +319,7 @@ msgstr ""
 "ファイルサイズを小さくするか、サーバーのアップロード制限を引き上げるか、フォ"
 "ルダーのルールを使用してサイズ超過のファイルをスキップしてください。"
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -460,7 +460,7 @@ msgstr ""
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "キャンセル"
@@ -1363,7 +1363,7 @@ msgid "Could Not Remove Person"
 msgstr "ユーザーを削除できませんでした"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "追加"
 
@@ -1866,12 +1866,12 @@ msgid "Version unavailable"
 msgstr "バージョン情報を利用できません"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "LAN 経由で接続中"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "WAN 経由で接続中"
 
@@ -4704,12 +4704,12 @@ msgstr "360° 写真"
 msgid "Video"
 msgstr "動画"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "接続"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "サーバー"
@@ -5450,7 +5450,7 @@ msgstr "アセットを選択 (Esc で終了)"
 msgid "Queue Inspector"
 msgstr "キューインスペクター"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "設定"
@@ -5459,7 +5459,7 @@ msgstr "設定"
 msgid "Keyboard Shortcuts"
 msgstr "キーボードショートカット"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Mimick について"
 
@@ -5671,53 +5671,53 @@ msgstr "ライトテーマ"
 msgid "Dark Theme"
 msgstr "ダークテーマ"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "シークレットがファイルに保存されました"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API キーがファイルに保存されました"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "カスタムプロキシヘッダーがファイルに保存されました"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "設定を保存しました"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick は更新された設定を正常に保存しました。"
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "自動起動の権限が必要です"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick のログイン時の自動起動が許可されませんでした。"
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "自動起動設定を更新できませんでした"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "API キーを保存できませんでした"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "カスタムヘッダーを保存できませんでした"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "設定を保存できませんでした"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick は更新された設定をディスクに書き込めませんでした。"
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "API キーを保存できませんでした"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "カスタムヘッダーを保存できませんでした"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5818,83 +5818,83 @@ msgstr "Mimick 起動時の確認対象"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "フォルダーごとに「フォルダーのルール」で個別に選択できます。"
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "内部 URL (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "外部 URL (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "未テスト"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "接続をテスト"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "保存して接続"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "ライブラリを開く"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API キー"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "カスタムプロキシヘッダー"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
 msgstr "リバースプロキシ用のオプション HTTP ヘッダー（例：Cloudflare Access）"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 件のヘッダーを設定済み"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "件のヘッダーを設定済み"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "ヘッダーを削除"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "ヘッダーを追加…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "クリップボードから貼り付け"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "ヘッダー名"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "シークレット / 値"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "スコープ"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "カスタムヘッダーを追加"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN URL"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN URL"
 
@@ -6090,9 +6090,11 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"設定は保存されましたが、システムのキーリングが利用できないため、カスタムプロキシヘッダーは {path} に保存されました。\n"
+"設定は保存されましたが、システムのキーリングが利用できないため、カスタムプロ"
+"キシヘッダーは {path} に保存されました。\n"
 "\n"
-"このファイルはあなたのユーザーアカウントからのみ読み取り可能ですが、暗号化されていません。\n"
+"このファイルはあなたのユーザーアカウントからのみ読み取り可能ですが、暗号化さ"
+"れていません。\n"
 "\n"
 "詳細: {url}"
 
@@ -6187,7 +6189,7 @@ msgid "Sync Now"
 msgstr "今すぐ同期"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "一時停止"
 
@@ -6203,8 +6205,8 @@ msgstr "要確認"
 msgid "Failed uploads"
 msgstr "失敗したアップロード"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "再開"
 
@@ -6405,87 +6407,87 @@ msgstr "最大ファイルサイズ (MB) (無制限の場合は空欄)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "指定の種類のみ (例: jpg, png, mp4、すべて許可する場合は空欄)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "状態"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick を終了"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "メインメニュー"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "はじめに"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Mimick を Immich サーバーに接続するための 3 つのステップ。"
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. サーバーの入力"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "下の「サーバー」欄に Immich のアドレスを入力します。"
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. API キーの追加"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "Immich で アカウント設定 → API キー を開きます。必要な権限についてはガイドを"
 "参照してください。"
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. 保存して接続"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "次にライブラリが開きます。フォルダーもバックアップする場合は、「監視フォル"
 "ダー」に追加してください。"
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "ガイド"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "ユーザーにより一時停止中"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} も利用可能です"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} に到達できません"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "どちらのアドレスでも Immich に到達できませんでした"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "テスト中…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "ユーザーにより一時停止中"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "無効な選択"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "少なくとも 1 つの URL (内部または外部) を有効にする必要があります。"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese (Traditional)\n"
@@ -41,11 +41,11 @@ msgstr "相簿清單無法使用"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "在重新整理相簿前請先重新連線至 Immich 伺服器。"
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "取得相簿失敗"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "無法取得相簿以驗證其是否存在"
 
@@ -56,7 +56,7 @@ msgid ""
 "after confirming the current configuration."
 msgstr "伺服器回應了 HTTP {status}。請檢查伺服器記錄並在確認目前的設定後重試。"
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich 拒絕了此 API 金鑰"
 
@@ -76,7 +76,7 @@ msgstr "相簿參照已失效"
 msgid "Refresh the album list or choose a different album before retrying."
 msgstr "重試前請先重新整理相簿清單或選擇其他相簿。"
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich 因檔案過大而拒絕了該檔案"
 
@@ -97,7 +97,7 @@ msgid ""
 msgstr ""
 "請稍候重試。如果經常發生此情況，請降低並行上傳數或檢查反向代理伺服器限制。"
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich 暫時無法使用"
 
@@ -171,7 +171,7 @@ msgstr "Immich 請求逾時"
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "請檢查網路連線品質與伺服器回應速度，然後重試。"
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "無法連線至 Immich 伺服器"
 
@@ -230,7 +230,7 @@ msgstr "媒體庫統計資料請求在完成前失敗"
 msgid "The server version request failed before completion"
 msgstr "伺服器版本請求在完成前失敗"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "沒有使用中的連線"
 
@@ -291,13 +291,13 @@ msgid ""
 "is reachable."
 msgstr "請在「設定」中測試伺服器連線，並確認至少有一個 Immich 網址可連線。"
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
 msgstr "請縮小檔案大小、提高伺服器的上傳限制，或使用資料夾規則略過過大的檔案。"
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -434,7 +434,7 @@ msgstr "無法載入此項目。您的 API 金鑰需要「{permission}」權限�
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "取消"
@@ -1319,7 +1319,7 @@ msgid "Could Not Remove Person"
 msgstr "無法移除成員"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "新增"
 
@@ -1821,12 +1821,12 @@ msgid "Version unavailable"
 msgstr "版本資訊無法使用"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "已透過區域網路連線"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "已透過廣域網路連線"
 
@@ -4633,12 +4633,12 @@ msgstr "360° 全景相片"
 msgid "Video"
 msgstr "影片"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "連線"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "伺服器"
@@ -5365,7 +5365,7 @@ msgstr "選取資產 (按 Esc 退出)"
 msgid "Queue Inspector"
 msgstr "佇列檢查器"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "設定"
@@ -5374,7 +5374,7 @@ msgstr "設定"
 msgid "Keyboard Shortcuts"
 msgstr "鍵盤快速鍵"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "關於 Mimick"
 
@@ -5581,53 +5581,53 @@ msgstr "淺色主題"
 msgid "Dark Theme"
 msgstr "深色主題"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "機密資料已儲存在檔案中"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API 金鑰已儲存在檔案中"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "自訂代理標頭已儲存在檔案中"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "設定已儲存"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick 已成功儲存更新的設定。"
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "需要自動啟動權限"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick 未獲允許在登入時自動啟動。"
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "無法更新自動啟動設定"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "無法儲存 API 金鑰"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "無法儲存自訂標頭"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "無法儲存設定"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick 無法將更新的設定寫入磁碟。"
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "無法儲存 API 金鑰"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "無法儲存自訂標頭"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5728,83 +5728,83 @@ msgstr "Mimick 啟動時檢查"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "各資料夾可在「資料夾規則」中個別設定。"
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "內部網址 (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "外部網址 (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "尚未測試"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "測試連線"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "儲存並連線"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "開啟圖庫"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API 金鑰"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "自訂代理標頭"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
 msgstr "用於反向代理伺服器的選用 HTTP 標頭（例如 Cloudflare Access）"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "已設定 1 個標頭"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "個標頭已設定"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "移除標頭"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "新增標頭…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "從剪貼簿貼上"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "標頭名稱"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "密鑰 / 數值"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "範圍"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "新增自訂標頭"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "區域網路 (LAN) 網址"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "廣域網路 (WAN) 網址"
 
@@ -6093,7 +6093,7 @@ msgid "Sync Now"
 msgstr "立即同步"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "暫停"
 
@@ -6109,8 +6109,8 @@ msgstr "需要注意"
 msgid "Failed uploads"
 msgstr "失敗的上傳項目"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "繼續"
 
@@ -6309,83 +6309,83 @@ msgstr "最大檔案大小 (MB)（留空表示無限制）"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "僅限這些類型，例如 jpg, png, mp4（留空表示全部）"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "狀態"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "結束 Mimick"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "主選單"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "開始使用"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "只需三個步驟即可將 Mimick 連線至您的 Immich 伺服器。"
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. 輸入您的伺服器"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "在下方的「伺服器」處輸入您的 Immich 位址。"
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. 新增 API 金鑰"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr "在 Immich 中：「帳號設定 → API 金鑰」。指南中列出了所需權限。"
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. 儲存並連線"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr "接下來將開啟您的圖庫。如需一併備份資料夾，請在「監控資料夾」下新增。"
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "指南"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "已由您暫停"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} 也可正常運作"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "無法連線至 {name}"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "無法透過任一位址連線至 Immich"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "正在測試…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "已由您暫停"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "無效的選取"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "必須啟用至少一個網址（內部或外部）。"
 

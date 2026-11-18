@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Ukrainian\n"
@@ -42,11 +42,11 @@ msgstr "Список альбомів недоступний"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "Повторно під'єднайтеся до сервера Immich перед оновленням альбомів."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Не вдалося отримати альбоми"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Не вдалося отримати альбоми для перевірки їхнього існування"
 
@@ -59,7 +59,7 @@ msgstr ""
 "Сервер відповів кодом HTTP {status}. Перевірте журнали сервера та повторіть "
 "спробу після перевірки поточної конфігурації."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich відхилив ключ API"
 
@@ -80,7 +80,7 @@ msgid "Refresh the album list or choose a different album before retrying."
 msgstr ""
 "Оновіть список альбомів або виберіть інший альбом перед повторною спробою."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich відхилив файл як завеликий"
 
@@ -104,7 +104,7 @@ msgstr ""
 "Зачекайте трохи та повторіть спробу. Якщо це трапляється часто, зменшіть "
 "кількість одночасних вивантажень або перевірте обмеження зворотного проксі."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich тимчасово недоступний"
 
@@ -182,7 +182,7 @@ msgstr ""
 "Перевірте якість мережі та швидкість відповіді сервера, а потім повторіть "
 "спробу."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Не вдалося зв'язатися з сервером Immich"
 
@@ -242,7 +242,7 @@ msgstr "Запит статистики бібліотеки зазнав збо
 msgid "The server version request failed before completion"
 msgstr "Запит версії сервера зазнав збою до завершення"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Немає активного з'єднання"
 
@@ -311,7 +311,7 @@ msgstr ""
 "Перевірте з'єднання з сервером у «Параметрах» і переконайтеся, що принаймні "
 "одна URL-адреса Immich є досяжною."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -319,7 +319,7 @@ msgstr ""
 "Зменшіть розмір файлу, збільште обмеження на вивантаження на сервері або "
 "використайте правило теки для пропуску завеликих файлів."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -462,7 +462,7 @@ msgstr ""
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Скасувати"
@@ -1417,7 +1417,7 @@ msgid "Could Not Remove Person"
 msgstr "Не вдалося вилучити особу"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Додати"
 
@@ -1948,12 +1948,12 @@ msgid "Version unavailable"
 msgstr "Версія недоступна"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "Під'єднано через LAN"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "Під'єднано через WAN"
 
@@ -4827,12 +4827,12 @@ msgstr "Фотографії 360°"
 msgid "Video"
 msgstr "Відео"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "З'єднання"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Сервер"
@@ -5588,7 +5588,7 @@ msgstr "Вибрати елементи (Esc для виходу)"
 msgid "Queue Inspector"
 msgstr "Інспектор черги"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Параметри"
@@ -5597,7 +5597,7 @@ msgstr "Параметри"
 msgid "Keyboard Shortcuts"
 msgstr "Комбінації клавіш"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Про Mimick"
 
@@ -5816,53 +5816,53 @@ msgstr "Світла тема"
 msgid "Dark Theme"
 msgstr "Темна тема"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "Секрети збережено у файлах"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "Ключ API збережено у файлі"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "Користувацькі заголовки проксі збережено у файлі"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Параметри збережено"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick успішно зберіг оновлені параметри."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Потрібен дозвіл на автозапуск"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick не має дозволу запускатися автоматично під час входу в систему."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Не вдалося оновити параметр автозапуску"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "Не вдалося зберегти ключ API"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "Не вдалося зберегти власні заголовки"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Не вдалося зберегти параметри"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick не вдалося записати оновлену конфігурацію на диск."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "Не вдалося зберегти ключ API"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Не вдалося зберегти власні заголовки"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5965,83 +5965,85 @@ msgstr "Під час запуску Mimick перевіряти"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Для тек можна вказати власні правила у «Правилах тек»."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "Внутрішня URL-адреса (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "Зовнішня URL-адреса (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Ще не перевірялося"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Перевірити з'єднання"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Зберегти та під'єднатися"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Відкрити бібліотеку"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "Ключ API"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "Користувацькі заголовки проксі"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
-msgstr "Необов'язкові заголовки HTTP для зворотних проксі (наприклад, Cloudflare Access)"
+msgstr ""
+"Необов'язкові заголовки HTTP для зворотних проксі (наприклад, Cloudflare "
+"Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "Налаштовано 1 заголовок"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "налаштованих заголовків"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "Вилучити заголовок"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "Додати заголовок…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "Вставити з буфера обміну"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "Назва заголовка"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "Секрет / Значення"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "Область застосування"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "Додати власний заголовок"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "URL локальної мережі (LAN)"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "URL зовнішньої мережі (WAN)"
 
@@ -6239,9 +6241,11 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Параметри збережено, але системна зв'язка ключів недоступна, тому користувацькі заголовки проксі збережено в {path}.\n"
+"Параметри збережено, але системна зв'язка ключів недоступна, тому "
+"користувацькі заголовки проксі збережено в {path}.\n"
 "\n"
-"Файл доступний для читання лише вашому обліковому запису, але не зашифрований.\n"
+"Файл доступний для читання лише вашому обліковому запису, але не "
+"зашифрований.\n"
 "\n"
 "Див.: {url}"
 
@@ -6342,7 +6346,7 @@ msgid "Sync Now"
 msgstr "Синхронізувати зараз"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Призупинити"
 
@@ -6358,8 +6362,8 @@ msgstr "Потребує уваги"
 msgid "Failed uploads"
 msgstr "Невдалі вивантаження"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Відновити"
 
@@ -6562,87 +6566,87 @@ msgstr "Максимальний розмір файлу в МБ (порожнь
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Лише ці типи, наприклад jpg, png, mp4 (порожньо — для всіх)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Стан"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Вийти з Mimick"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Головне меню"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Початок роботи"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Три кроки для під'єднання Mimick до вашого сервера Immich."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Вкажіть сервер"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Адреса вашого Immich у розділі «Сервер» нижче."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. Додайте ключ API"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "В Immich: «Параметри облікового запису» → «Ключі API». Список дозволів "
 "наведено у посібнику."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Зберегти та під'єднатися"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "Після цього відкриється ваша бібліотека. Щоб налаштувати резервне копіювання "
 "теки, додайте її у «Відстежуваних теках»."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Посібник"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Призупинено вами"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} також працює"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} недосяжний"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "Не вдалося зв'язатися з Immich за жодною з адрес"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Перевірка…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "Призупинено вами"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Неприпустимий вибір"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr ""
 "Повинна бути ввімкнена принаймні одна URL-адреса (внутрішня або зовнішня)."

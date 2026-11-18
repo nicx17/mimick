@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: German\n"
@@ -43,11 +43,11 @@ msgstr ""
 "Stellen Sie die Verbindung zum Immich-Server wieder her, bevor Sie Alben "
 "aktualisieren."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Alben konnten nicht abgerufen werden"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Alben können nicht abgerufen werden, um ihre Existenz zu überprüfen"
 
@@ -61,7 +61,7 @@ msgstr ""
 "Serverprotokolle und versuchen Sie es nach Bestätigung der aktuellen "
 "Konfiguration erneut."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich hat den API-Schlüssel abgelehnt"
 
@@ -84,7 +84,7 @@ msgstr ""
 "Aktualisieren Sie die Albenliste oder wählen Sie ein anderes Album, bevor "
 "Sie es erneut versuchen."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich hat eine Datei als zu groß abgelehnt"
 
@@ -109,7 +109,7 @@ msgstr ""
 "vorkommt, verringern Sie die Anzahl gleichzeitiger Uploads oder überprüfen "
 "Sie die Limits des Reverse-Proxys."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich ist vorübergehend nicht verfügbar"
 
@@ -188,7 +188,7 @@ msgstr ""
 "Überprüfen Sie die Netzwerkqualität und die Serverantwortzeit und versuchen "
 "Sie es dann erneut."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Der Immich-Server konnte nicht erreicht werden"
 
@@ -258,7 +258,7 @@ msgid "The server version request failed before completion"
 msgstr ""
 "Die Anfrage nach der Serverversion ist vor dem Abschluss fehlgeschlagen"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Keine aktive Verbindung"
 
@@ -328,7 +328,7 @@ msgstr ""
 "Testen Sie die Serververbindung in den Einstellungen und bestätigen Sie, "
 "dass mindestens eine Immich-URL erreichbar ist."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -336,7 +336,7 @@ msgstr ""
 "Verringern Sie die Dateigröße, erhöhen Sie die Upload-Limits des Servers "
 "oder verwenden Sie eine Ordnerregel, um zu große Dateien zu überspringen."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -481,7 +481,7 @@ msgstr ""
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -1418,7 +1418,7 @@ msgid "Could Not Remove Person"
 msgstr "Person konnte nicht entfernt werden"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Hinzufügen"
 
@@ -1936,12 +1936,12 @@ msgid "Version unavailable"
 msgstr "Version nicht verfügbar"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "Über LAN verbunden"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "Über WAN verbunden"
 
@@ -4816,12 +4816,12 @@ msgstr "360°-Fotos"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Verbindung"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Server"
@@ -5580,7 +5580,7 @@ msgstr "Medien auswählen (Esc zum Beenden)"
 msgid "Queue Inspector"
 msgstr "Warteschlangen-Inspektor"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Einstellungen"
@@ -5589,7 +5589,7 @@ msgstr "Einstellungen"
 msgid "Keyboard Shortcuts"
 msgstr "Tastaturkürzel"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Info zu Mimick"
 
@@ -5806,55 +5806,55 @@ msgstr "Helles Design"
 msgid "Dark Theme"
 msgstr "Dunkles Design"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "Geheimnisse in Dateien gespeichert"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API-Schlüssel in einer Datei gespeichert"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "Benutzerdefinierte Proxy-Header in einer Datei gespeichert"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Einstellungen gespeichert"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick hat die aktualisierten Einstellungen erfolgreich gespeichert."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Autostart-Berechtigung erforderlich"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick durfte beim Anmelden nicht automatisch gestartet werden."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Autostart-Einstellung konnte nicht aktualisiert werden"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "API-Schlüssel konnte nicht gespeichert werden"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "Benutzerdefinierte Header konnten nicht gespeichert werden"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Einstellungen konnten nicht gespeichert werden"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr ""
 "Mimick konnte die aktualisierte Konfiguration nicht auf die Festplatte "
 "schreiben."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "API-Schlüssel konnte nicht gespeichert werden"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Benutzerdefinierte Header konnten nicht gespeichert werden"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5956,83 +5956,83 @@ msgstr "Beim Start von Mimick prüfen"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Ordner können in den Ordnerregeln eine eigene Auswahl treffen."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "Interne URL (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "Externe URL (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Noch nicht getestet"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Verbindung testen"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Speichern und verbinden"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Bibliothek öffnen"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API-Schlüssel"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "Benutzerdefinierte Proxy-Header"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
 msgstr "Optionale HTTP-Header für Reverse-Proxies (z. B. Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 Header konfiguriert"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "Header konfiguriert"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "Header entfernen"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "Header hinzufügen…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "Aus Zwischenablage einfügen"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "Header-Name"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "Geheimnis / Wert"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "Geltungsbereich"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "Benutzerdefinierten Header hinzufügen"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN-URL"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN-URL"
 
@@ -6230,9 +6230,12 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Die Einstellungen wurden gespeichert, aber der System-Schlüsselbund ist nicht verfügbar. Daher wurden die benutzerdefinierten Proxy-Header in {path} gespeichert.\n"
+"Die Einstellungen wurden gespeichert, aber der System-Schlüsselbund ist "
+"nicht verfügbar. Daher wurden die benutzerdefinierten Proxy-Header in {path} "
+"gespeichert.\n"
 "\n"
-"Die Datei kann nur von Ihrem Benutzerkonto gelesen werden, ist jedoch nicht verschlüsselt.\n"
+"Die Datei kann nur von Ihrem Benutzerkonto gelesen werden, ist jedoch nicht "
+"verschlüsselt.\n"
 "\n"
 "Siehe: {url}"
 
@@ -6330,7 +6333,7 @@ msgid "Sync Now"
 msgstr "Jetzt synchronisieren"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Pausieren"
 
@@ -6346,8 +6349,8 @@ msgstr "Aufmerksamkeit erforderlich"
 msgid "Failed uploads"
 msgstr "Fehlgeschlagene Uploads"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Fortsetzen"
 
@@ -6549,87 +6552,87 @@ msgstr "Maximale Dateigröße in MB (leer für unbegrenzt)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Nur diese Typen, z. B. jpg, png, mp4 (leer für alle)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Status"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick beenden"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Erste Schritte"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Drei Schritte, um Mimick mit Ihrem Immich-Server zu verbinden."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Server eingeben"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Ihre Immich-Adresse unten unter »Server«."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. API-Schlüssel hinzufügen"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "In Immich: Kontoeinstellungen → API-Schlüssel. Die Anleitung listet die "
 "Berechtigungen auf."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Speichern und verbinden"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "Ihre Bibliothek wird als Nächstes geöffnet. Um auch einen Ordner zu sichern, "
 "fügen Sie ihn unter »Überwachte Ordner« hinzu."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Anleitung"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Von Ihnen pausiert"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} funktioniert ebenfalls"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} nicht erreichbar"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "Immich konnte unter keiner der beiden Adressen erreicht werden"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Wird getestet…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "Von Ihnen pausiert"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Ungültige Auswahl"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "Mindestens eine URL (intern oder extern) muss aktiviert sein."
 

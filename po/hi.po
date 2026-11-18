@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Hindi\n"
@@ -41,11 +41,11 @@ msgstr "एल्बम सूची अनुपलब्ध है"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "एल्बम रीफ़्रेश करने से पहले Immich सर्वर से पुनः कनेक्ट करें।"
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "एल्बम लाने में विफल"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "मौजूदगी सत्यापित करने के लिए एल्बम नहीं लाए जा सके"
 
@@ -58,7 +58,7 @@ msgstr ""
 "सर्वर ने HTTP {status} के साथ उत्तर दिया। सर्वर लॉग की जाँच करें और वर्तमान कॉन्फ़िगरेशन "
 "की पुष्टि के बाद पुनः प्रयास करें।"
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich ने API कुंजी अस्वीकार कर दी"
 
@@ -78,7 +78,7 @@ msgstr "एल्बम संदर्भ अब मान्य नहीं �
 msgid "Refresh the album list or choose a different album before retrying."
 msgstr "पुनः प्रयास करने से पहले एल्बम सूची को रीफ़्रेश करें या कोई अन्य एल्बम चुनें।"
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich ने फ़ाइल को बहुत बड़ी होने के कारण अस्वीकार कर दिया"
 
@@ -102,7 +102,7 @@ msgstr ""
 "कुछ समय प्रतीक्षा करें और पुनः प्रयास करें। यदि ऐसा बार-बार होता है, तो अपलोड समवर्तीता "
 "कम करें या रिवर्स प्रॉक्सी सीमाएँ जाँचें।"
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich अस्थायी रूप से अनुपलब्ध है"
 
@@ -178,7 +178,7 @@ msgstr "Immich अनुरोध का समय समाप्त (टाइ
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "नेटवर्क गुणवत्ता और सर्वर प्रतिक्रिया की जाँच करें, फिर पुनः प्रयास करें।"
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Immich सर्वर तक नहीं पहुँचा जा सका"
 
@@ -238,7 +238,7 @@ msgstr "लाइब्रेरी आँकड़े अनुरोध पू
 msgid "The server version request failed before completion"
 msgstr "सर्वर संस्करण अनुरोध पूरा होने से पहले ही विफल हो गया"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "कोई सक्रिय कनेक्शन नहीं है"
 
@@ -304,7 +304,7 @@ msgid ""
 msgstr ""
 "सेटिंग्स में सर्वर कनेक्शन का परीक्षण करें और पुष्टि करें कि कम से कम एक Immich URL सुलभ है।"
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -312,7 +312,7 @@ msgstr ""
 "फ़ाइल का आकार घटाएँ, सर्वर की अपलोड सीमाएँ बढ़ाएँ, या अत्यधिक बड़ी फ़ाइलों को छोड़ने के "
 "लिए फ़ोल्डर नियम का उपयोग करें।"
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -453,7 +453,7 @@ msgstr ""
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "रद्द करें"
@@ -1371,7 +1371,7 @@ msgid "Could Not Remove Person"
 msgstr "व्यक्ति को हटाया नहीं जा सका"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "जोड़ें"
 
@@ -1887,12 +1887,12 @@ msgid "Version unavailable"
 msgstr "संस्करण अनुपलब्ध है"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "LAN के माध्यम से कनेक्टेड"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "WAN के माध्यम से कनेक्टेड"
 
@@ -4732,12 +4732,12 @@ msgstr "360° तस्वीरें"
 msgid "Video"
 msgstr "वीडियो"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "कनेक्शन"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "सर्वर"
@@ -5474,7 +5474,7 @@ msgstr "एसेट चुनें (बाहर निकलने के ल
 msgid "Queue Inspector"
 msgstr "कतार निरीक्षक"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "सेटिंग्स"
@@ -5483,7 +5483,7 @@ msgstr "सेटिंग्स"
 msgid "Keyboard Shortcuts"
 msgstr "कीबोर्ड शॉर्टकट"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Mimick के बारे में"
 
@@ -5697,53 +5697,53 @@ msgstr "हल्का थीम"
 msgid "Dark Theme"
 msgstr "गहरा थीम"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "सीक्रेट फ़ाइलों में संग्रहीत हैं"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API कुंजी एक फ़ाइल में संग्रहीत है"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "कस्टम प्रॉक्सी हेडर एक फ़ाइल में संग्रहीत हैं"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "सेटिंग्स सहेजी गईं"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick ने अद्यतित सेटिंग्स को सफलतापूर्वक सहेज लिया।"
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "स्टार्टअप अनुमति आवश्यक है"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick को लॉगिन पर स्वचालित रूप से शुरू होने की अनुमति नहीं थी।"
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "स्टार्टअप सेटिंग को अपडेट नहीं किया जा सका"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "API कुंजी सहेजी नहीं जा सकी"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "कस्टम हेडर सहेजे नहीं जा सके"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "सेटिंग्स सहेजी नहीं जा सकीं"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick अद्यतित कॉन्फ़िगरेशन को डिस्क पर नहीं लिख सका।"
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "API कुंजी सहेजी नहीं जा सकी"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "कस्टम हेडर सहेजे नहीं जा सके"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5844,83 +5844,83 @@ msgstr "जब Mimick शुरू हो, तब जाँचें"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "फ़ोल्डर अपने स्वयं के फ़ोल्डर नियमों में इसे चुन सकते हैं।"
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "आंतरिक URL (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "बाहरी URL (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "अभी तक परीक्षण नहीं किया गया"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "कनेक्शन का परीक्षण करें"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "सहेजें और कनेक्ट करें"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "लाइब्रेरी खोलें"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API कुंजी"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "कस्टम प्रॉक्सी हेडर"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
 msgstr "रिवर्स प्रॉक्सी के लिए वैकल्पिक HTTP हेडर (उदा. Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 हेडर कॉन्फ़िगर किया गया"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "हेडर कॉन्फ़िगर किए गए"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "हेडर हटाएँ"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "हेडर जोड़ें…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "क्लिपबोर्ड से चिपकाएँ"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "हेडर नाम"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "सीक्रेट / मान"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "दायरा"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "कस्टम हेडर जोड़ें"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN URL"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN URL"
 
@@ -6113,7 +6113,8 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"सेटिंग्स सहेजी गईं, लेकिन सिस्टम कीरिंग अनुपलब्ध है, इसलिए कस्टम प्रॉक्सी हेडर {path} में संग्रहीत किए गए।\n"
+"सेटिंग्स सहेजी गईं, लेकिन सिस्टम कीरिंग अनुपलब्ध है, इसलिए कस्टम प्रॉक्सी हेडर {path} में "
+"संग्रहीत किए गए।\n"
 "\n"
 "यह फ़ाइल केवल आपके उपयोगकर्ता खाते द्वारा पठनीय है लेकिन एन्क्रिप्टेड नहीं है।\n"
 "\n"
@@ -6213,7 +6214,7 @@ msgid "Sync Now"
 msgstr "अभी सिंक करें"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "रोकें"
 
@@ -6229,8 +6230,8 @@ msgstr "ध्यान देने की आवश्यकता है"
 msgid "Failed uploads"
 msgstr "विफल अपलोड"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "फिर से शुरू करें"
 
@@ -6431,85 +6432,85 @@ msgstr "अधिकतम फ़ाइल आकार MB में (बिन�
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "केवल ये प्रकार, जैसे jpg, png, mp4 (सभी के लिए खाली रखें)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "स्थिति"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick बंद करें"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "मुख्य मेनू"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "शुरू करें"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Mimick को अपने Immich सर्वर से कनेक्ट करने के तीन चरण।"
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. अपना सर्वर दर्ज करें"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "नीचे सर्वर के अंतर्गत आपका Immich पता।"
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. एक API कुंजी जोड़ें"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr "Immich में: खाता सेटिंग्स → API कुंजियाँ। मार्गदर्शिका अनुमतियों को सूचीबद्ध करती है।"
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. सहेजें और कनेक्ट करें"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "इसके बाद आपकी लाइब्रेरी खुलती है। किसी फ़ोल्डर का बैकअप लेने के लिए, उसे वॉच फ़ोल्डर के तहत "
 "जोड़ें।"
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "मार्गदर्शिका"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "आपके द्वारा रोका गया"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} भी काम करता है"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} अगम्य है"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "किसी भी पते पर Immich तक नहीं पहुँचा जा सका"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "परीक्षण जारी है…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "आपके द्वारा रोका गया"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "अमान्य चयन"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "कम से कम एक URL (आंतरिक या बाहरी) सक्षम होना चाहिए।"
 

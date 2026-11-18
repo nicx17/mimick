@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
@@ -41,11 +41,11 @@ msgstr "Albüm listesi kullanılamıyor"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "Albümleri yenilemeden önce Immich sunucusuna yeniden bağlanın."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Albümler alınamadı"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Varlıklarını doğrulamak için albümler alınamıyor"
 
@@ -58,7 +58,7 @@ msgstr ""
 "Sunucu HTTP {status} ile yanıt verdi. Sunucu günlüklerini denetleyin ve "
 "geçerli yapılandırmayı doğruladıktan sonra yeniden deneyin."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich API anahtarını reddetti"
 
@@ -79,7 +79,7 @@ msgid "Refresh the album list or choose a different album before retrying."
 msgstr ""
 "Yeniden denemeden önce albüm listesini yenileyin veya farklı bir albüm seçin."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich çok büyük olduğu için bir dosyayı reddetti"
 
@@ -103,7 +103,7 @@ msgstr ""
 "Bir süre bekleyip yeniden deneyin. Bu durum sık yaşanıyorsa yükleme "
 "eşzamanlılığını azaltın veya ters vekil sunucu sınırlarını denetleyin."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich geçici olarak kullanılamıyor"
 
@@ -181,7 +181,7 @@ msgstr ""
 "Ağ kalitesini ve sunucu yanıt verebilirliğini denetleyin, ardından yeniden "
 "deneyin."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Immich sunucusuna ulaşılamadı"
 
@@ -244,7 +244,7 @@ msgstr "Kitaplık istatistikleri isteği tamamlanamadan başarısız oldu"
 msgid "The server version request failed before completion"
 msgstr "Sunucu sürümü isteği tamamlanamadan başarısız oldu"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Etkin bağlantı yok"
 
@@ -313,7 +313,7 @@ msgstr ""
 "Ayarlar'da sunucu bağlantısını sınayın ve en az bir Immich URL'sinin "
 "erişilebilir olduğunu doğrulayın."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -321,7 +321,7 @@ msgstr ""
 "Dosya boyutunu küçültün, sunucunun yükleme sınırlarını artırın veya aşırı "
 "büyük dosyaları atlamak için bir klasör kuralı kullanın."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -462,7 +462,7 @@ msgstr "Bu yüklenemedi. API anahtarınız “{permission}” iznine gerek duyuy
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "İptal"
@@ -1382,7 +1382,7 @@ msgid "Could Not Remove Person"
 msgstr "Kişi Kaldırılamadı"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Ekle"
 
@@ -1899,12 +1899,12 @@ msgid "Version unavailable"
 msgstr "Sürüm bilgisi kullanılamıyor"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "LAN üzerinden bağlı"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "WAN üzerinden bağlı"
 
@@ -4757,12 +4757,12 @@ msgstr "360° Fotoğraflar"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Bağlantı"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Sunucu"
@@ -5509,7 +5509,7 @@ msgstr "Ögeleri seç (Çıkmak için Esc)"
 msgid "Queue Inspector"
 msgstr "Kuyruk Denetleyicisi"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Ayarlar"
@@ -5518,7 +5518,7 @@ msgstr "Ayarlar"
 msgid "Keyboard Shortcuts"
 msgstr "Klavye Kısayolları"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Mimick Hakkında"
 
@@ -5735,53 +5735,53 @@ msgstr "Açık Tema"
 msgid "Dark Theme"
 msgstr "Koyu Tema"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "Gizli Bilgiler Dosyalarda Saklandı"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API Anahtarı Bir Dosyada Saklandı"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "Özel Proxy Başlıkları Bir Dosyada Saklandı"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Ayarlar Kaydedildi"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick güncellenen ayarları başarıyla kaydetti."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Başlangıç İzni Gerekiyor"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick'in oturum açılışında kendiliğinden başlamasına izin verilmedi."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Başlangıç Ayarı Güncellenemedi"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "API Anahtarı Kaydedilemedi"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "Özel Başlıklar Kaydedilemedi"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Ayarlar Kaydedilemedi"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick güncellenen yapılandırmayı diske yazamadı."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "API Anahtarı Kaydedilemedi"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Özel Başlıklar Kaydedilemedi"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5883,83 +5883,84 @@ msgstr "Mimick Başladığında Denetle"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Klasörler Klasör Kuralları altında kendi seçimlerini yapabilir."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "Dahili URL (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "Harici URL (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Henüz sınanmadı"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Bağlantıyı Sına"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Kaydet ve Bağlan"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Kitaplığı Aç"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API Anahtarı"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "Özel Proxy Başlıkları"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
-msgstr "Ters proxy'ler için isteğe bağlı HTTP başlıkları (örn. Cloudflare Access)"
+msgstr ""
+"Ters proxy'ler için isteğe bağlı HTTP başlıkları (örn. Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 başlık yapılandırıldı"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "başlık yapılandırıldı"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "Başlığı kaldır"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "Başlık Ekle…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "Panodan Yapıştır"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "Başlık Adı"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "Gizli Anahtar / Değer"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "Kapsam"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "Özel Başlık Ekle"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN URL'si"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN URL'si"
 
@@ -6155,9 +6156,11 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Ayarlar kaydedildi ancak sistem anahtarlığı kullanılamadığından özel proxy başlıkları {path} yolunda saklandı.\n"
+"Ayarlar kaydedildi ancak sistem anahtarlığı kullanılamadığından özel proxy "
+"başlıkları {path} yolunda saklandı.\n"
 "\n"
-"Dosya yalnızca kullanıcı hesabınız tarafından okunabilir ancak şifrelenmemiştir.\n"
+"Dosya yalnızca kullanıcı hesabınız tarafından okunabilir ancak "
+"şifrelenmemiştir.\n"
 "\n"
 "Bkz: {url}"
 
@@ -6255,7 +6258,7 @@ msgid "Sync Now"
 msgstr "Şimdi Eşzamanla"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Duraklat"
 
@@ -6271,8 +6274,8 @@ msgstr "Dikkat Gerekiyor"
 msgid "Failed uploads"
 msgstr "Başarısız yüklemeler"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Sürdür"
 
@@ -6473,87 +6476,87 @@ msgstr "MB cinsinden En Büyük Dosya (sınırsız için boş bırakın)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Yalnızca Bu Türler, örn. jpg, png, mp4 (tümü için boş bırakın)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Durum"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick'ten Çık"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Ana Menü"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Başlarken"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Mimick'i Immich sunucunuza bağlamak için üç adım."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Sunucunuzu girin"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Aşağıda Sunucu altındaki Immich adresiniz."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. Bir API anahtarı ekleyin"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "Immich içinde: Hesap Ayarları → API Anahtarları. Kılavuzda izinler "
 "listelenmiştir."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Kaydet ve Bağlan"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "Ardından kitaplığınız açılır. Bir klasörü de yedeklemek için İzlenen "
 "Klasörler altına ekleyin."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Kılavuz"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Sizin tarafınızdan duraklatıldı"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} da çalışıyor"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} ulaşılamaz"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "Her iki adresten de Immich'e ulaşılamadı"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Sınanıyor…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "Sizin tarafınızdan duraklatıldı"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Geçersiz Seçim"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "En az bir URL (Dahili veya Harici) etkinleştirilmelidir."
 

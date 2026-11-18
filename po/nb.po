@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Norwegian Bokmål\n"
@@ -41,11 +41,11 @@ msgstr "Albumlisten er ikke tilgjengelig"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "Koble til Immich-tjeneren på nytt før du oppdaterer albumer."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Kunne ikke hente albumer"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Kan ikke hente albumer for å bekrefte at de finnes"
 
@@ -58,7 +58,7 @@ msgstr ""
 "Tjeneren svarte med HTTP {status}. Sjekk tjenerloggene og prøv igjen etter å "
 "ha bekreftet gjeldende konfigurasjon."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich avviste API-nøkkelen"
 
@@ -79,7 +79,7 @@ msgstr "En albumreferanse er ikke lenger gyldig"
 msgid "Refresh the album list or choose a different album before retrying."
 msgstr "Oppdater albumlisten eller velg et annet album før du prøver igjen."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich avviste en fil fordi den er for stor"
 
@@ -103,7 +103,7 @@ msgstr ""
 "Vent et øyeblikk og prøv igjen. Hvis dette skjer ofte, bør du redusere "
 "antall samtidige opplastinger eller sjekke grensene for omvendt proxy."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich er midlertidig utilgjengelig"
 
@@ -180,7 +180,7 @@ msgid "Check network quality and server responsiveness, then retry."
 msgstr ""
 "Sjekk nettverkskvaliteten og tjenerens responstid, og prøv deretter igjen."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Kunne ikke nå Immich-tjeneren"
 
@@ -243,7 +243,7 @@ msgstr "Forespørselen om bibliotekstatistikk mislyktes før den ble fullført"
 msgid "The server version request failed before completion"
 msgstr "Forespørselen om tjenerversjon mislyktes før den ble fullført"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Ingen aktiv tilkobling"
 
@@ -311,7 +311,7 @@ msgstr ""
 "Test tjenertilkoblingen i Innstillinger og bekreft at minst én Immich-URL "
 "kan nås."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -319,7 +319,7 @@ msgstr ""
 "Reduser filstørrelsen, øk tjenerens opplastingsgrenser, eller bruk en "
 "mapperegel for å hoppe over for store filer."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -462,7 +462,7 @@ msgstr ""
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Avbryt"
@@ -1383,7 +1383,7 @@ msgid "Could Not Remove Person"
 msgstr "Kunne ikke fjerne person"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Legg til"
 
@@ -1899,12 +1899,12 @@ msgid "Version unavailable"
 msgstr "Versjon er ikke tilgjengelig"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "Tilkoblet via LAN"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "Tilkoblet via WAN"
 
@@ -4752,12 +4752,12 @@ msgstr "360°-bilder"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Tilkobling"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Tjener"
@@ -5503,7 +5503,7 @@ msgstr "Velg elementer (Esc for å avslutte)"
 msgid "Queue Inspector"
 msgstr "Køinspektør"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Innstillinger"
@@ -5512,7 +5512,7 @@ msgstr "Innstillinger"
 msgid "Keyboard Shortcuts"
 msgstr "Tastatursnarveier"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Om Mimick"
 
@@ -5729,53 +5729,53 @@ msgstr "Lyst tema"
 msgid "Dark Theme"
 msgstr "Mørkt tema"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "Hemmeligheter lagret i filer"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API-nøkkel lagret i en fil"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "Egendefinerte proxy-headere lagret i en fil"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Innstillinger lagret"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick lagret de oppdaterte innstillingene."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Oppstartstillatelse nødvendig"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick fikk ikke tillatelse til å starte automatisk ved innlogging."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Kunne ikke oppdatere oppstartsinnstilling"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "Kunne ikke lagre API-nøkkel"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "Kunne ikke lagre egendefinerte headere"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Kunne ikke lagre innstillinger"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick kunne ikke skrive den oppdaterte konfigurasjonen til disk."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "Kunne ikke lagre API-nøkkel"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Kunne ikke lagre egendefinerte headere"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5876,83 +5876,83 @@ msgstr "Når Mimick starter, sjekk"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Mapper kan velge sine egne under Mapperegler."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "Intern URL (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "Ekstern URL (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Ikke testet ennå"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Test tilkobling"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Lagre og koble til"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Åpne bibliotek"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API-nøkkel"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "Egendefinerte proxy-headere"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
 msgstr "Valgfrie HTTP-headere for omvendte proxyer (f.eks. Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 header konfigurert"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "headere konfigurert"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "Fjern header"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "Legg til header…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "Lim inn fra utklippstavlen"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "Headernavn"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "Hemmelighet / Verdi"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "Omfang"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "Legg til egendefinert header"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN-URL"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN-URL"
 
@@ -6146,7 +6146,8 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Innstillingene ble lagret, men systemets nøkkelring er utilgjengelig, så egendefinerte proxy-headere ble lagret i {path}.\n"
+"Innstillingene ble lagret, men systemets nøkkelring er utilgjengelig, så "
+"egendefinerte proxy-headere ble lagret i {path}.\n"
 "\n"
 "Filen kan bare leses av brukerkontoen din, men er ikke kryptert.\n"
 "\n"
@@ -6246,7 +6247,7 @@ msgid "Sync Now"
 msgstr "Synkroniser nå"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Pause"
 
@@ -6262,8 +6263,8 @@ msgstr "Krever oppmerksomhet"
 msgid "Failed uploads"
 msgstr "Mislykkede opplastinger"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Fortsett"
 
@@ -6464,86 +6465,86 @@ msgstr "Største fil i MB (tomt for ubegrenset)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Bare disse typene, f.eks. jpg, png, mp4 (tomt for alle)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Status"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Avslutt Mimick"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Hovedmeny"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Kom i gang"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Tre steg for å koble Mimick til Immich-tjeneren din."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Angi tjeneren din"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Immich-adressen din under Tjener nedenfor."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. Legg til en API-nøkkel"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "I Immich: Kontoinnstillinger → API-nøkler. Veiledningen viser tillatelsene."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Lagre og koble til"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "Biblioteket ditt åpnes deretter. For å sikkerhetskopiere en mappe også, legg "
 "den til under Overvåkede mapper."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Veiledning"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Satt på pause av deg"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} fungerer også"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} kan ikke nås"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "Kunne ikke nå Immich på noen av adressene"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Tester…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "Satt på pause av deg"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Ugyldig utvalg"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "Minst én URL (intern eller ekstern) må være aktivert."
 

@@ -1,6 +1,5 @@
 //! Settings window construction helpers and signal wiring.
 
-use crate::i18n::fill;
 use gettextrs::gettext;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -14,14 +13,15 @@ use libadwaita as adw;
 use crate::app_context::AppContext;
 
 use super::behavior::BehaviorWidgets;
-use super::connectivity::ConnectivityWidgets;
 use super::form::SettingsForm;
+use super::show_queue_inspector;
 use super::status::StatusWidgets;
-use super::{show_alert, show_queue_inspector};
 
+mod connectivity_wiring;
 mod diagnostics_wiring;
 mod folder_wiring;
 mod library_wiring;
+pub(super) use connectivity_wiring::{connect_test_button, connect_url_switches};
 pub(super) use folder_wiring::{
     add_folders_group, connect_download_folder, fetch_albums_for_picker, folders_group,
 };
@@ -57,14 +57,7 @@ pub(super) fn build_window_shell(
         .vexpand(true)
         .hexpand(true)
         .build();
-    let toolbar_view = adw::ToolbarView::builder().build();
-    let (header, switcher) = build_header_bar(app, &window, &view_stack);
-    toolbar_view.add_top_bar(&header);
-    toolbar_view.set_content(Some(&view_stack));
-    let switcher_bar = adw::ViewSwitcherBar::builder().stack(&view_stack).build();
-    toolbar_view.add_bottom_bar(&switcher_bar);
-    window.set_content(Some(&toolbar_view));
-    add_narrow_switcher(&window, &switcher, &switcher_bar);
+    configure_toolbar_view(app, &window, &view_stack);
 
     let status_page = add_page(
         &view_stack,
@@ -80,6 +73,21 @@ pub(super) fn build_window_shell(
     );
     view_stack.set_visible_child_name(start_page);
     (window, status_page, settings_page)
+}
+
+fn configure_toolbar_view(
+    app: &adw::Application,
+    window: &adw::ApplicationWindow,
+    view_stack: &adw::ViewStack,
+) {
+    let toolbar_view = adw::ToolbarView::builder().build();
+    let (header, switcher) = build_header_bar(app, window, view_stack);
+    toolbar_view.add_top_bar(&header);
+    toolbar_view.set_content(Some(view_stack));
+    let switcher_bar = adw::ViewSwitcherBar::builder().stack(view_stack).build();
+    toolbar_view.add_bottom_bar(&switcher_bar);
+    window.set_content(Some(&toolbar_view));
+    add_narrow_switcher(window, &switcher, &switcher_bar);
 }
 
 /// Header with the Status / Settings switcher and a main menu (About, Quit).
@@ -173,160 +181,27 @@ pub(super) fn add_welcome_group(settings_page: &adw::PreferencesPage) {
             .subtitle_lines(3)
             .build();
         if index == 1 {
-            let guide = Button::builder()
-                .label(gettext("Guide"))
-                .valign(gtk::Align::Center)
-                .build();
-            guide.connect_clicked(|_| {
-                let uri = "https://github.com/nicx17/mimick/wiki/Configuration-and-First-Run";
-                if let Err(e) = gtk::gio::AppInfo::launch_default_for_uri(
-                    uri,
-                    None::<&gtk::gio::AppLaunchContext>,
-                ) {
-                    log::error!("Failed to open browser: {}", e);
-                }
-            });
-            row.add_suffix(&guide);
+            row.add_suffix(&build_guide_button());
         }
         welcome_group.add(&row);
     }
     settings_page.add(&welcome_group);
 }
 
-/// One line for a connection test: which address worked, and how the other fared.
-fn connection_summary(
-    internal_ok: bool,
-    external_ok: bool,
-    internal_on: bool,
-    external_on: bool,
-) -> String {
-    let other = |name: &str, on: bool, ok: bool| match (on, ok) {
-        (false, _) => String::new(),
-        (true, true) => format!(
-            " · {}",
-            fill(gettext("{name} also works"), &[("name", name)])
-        ),
-        (true, false) => format!(
-            " · {}",
-            fill(gettext("{name} unreachable"), &[("name", name)])
-        ),
-    };
-    if internal_ok {
-        gettext("Connected through LAN") + &other("WAN", external_on, external_ok)
-    } else if external_ok {
-        gettext("Connected through WAN") + &other("LAN", internal_on, internal_ok)
-    } else {
-        gettext("Couldn't reach Immich at either address")
-    }
-}
-
-/// Ping the enabled addresses off the GTK thread and show the result in the Connection row.
-pub(super) fn connect_test_button(
-    conn: &ConnectivityWidgets,
-    api_client: Arc<crate::api_client::ImmichApiClient>,
-) {
-    let status_row = conn.status_row.downgrade();
-    conn.test_btn.connect_clicked(clone!(
-        #[weak(rename_to = internal_switch)]
-        conn.internal_switch,
-        #[weak(rename_to = external_switch)]
-        conn.external_switch,
-        #[weak(rename_to = internal_entry)]
-        conn.internal_entry,
-        #[weak(rename_to = external_entry)]
-        conn.external_entry,
-        #[strong(rename_to = custom_headers)]
-        conn.custom_headers,
-        move |btn| {
-            let input = ping_input(
-                &internal_switch,
-                &internal_entry,
-                &external_switch,
-                &external_entry,
-                &custom_headers,
-            );
-            handle_test_click(btn, &status_row, api_client.clone(), input);
-        }
-    ));
-}
-
-fn handle_test_click(
-    btn: &gtk::Button,
-    status_row: &glib::WeakRef<adw::ActionRow>,
-    api_client: Arc<crate::api_client::ImmichApiClient>,
-    input: PingInput,
-) {
-    btn.set_sensitive(false);
-    let (internal_on, external_on) = (!input.internal.is_empty(), !input.external.is_empty());
-    if let Some(row) = status_row.upgrade() {
-        row.set_subtitle(&gettext("Testing…"));
-    }
-    let rx = spawn_ping(api_client, input);
-    let (status_row, btn) = (status_row.clone(), btn.clone());
-    glib::MainContext::default().spawn_local(async move {
-        let Ok((int_ok, ext_ok)) = rx.await else {
-            return;
-        };
-        btn.set_sensitive(true);
-        if let Some(row) = status_row.upgrade() {
-            row.set_subtitle(&connection_summary(
-                int_ok,
-                ext_ok,
-                internal_on,
-                external_on,
-            ));
+fn build_guide_button() -> Button {
+    let guide = Button::builder()
+        .label(gettext("Guide"))
+        .valign(gtk::Align::Center)
+        .build();
+    guide.connect_clicked(|_| {
+        let uri = "https://github.com/nicx17/mimick/wiki/Configuration-and-First-Run";
+        if let Err(e) =
+            gtk::gio::AppInfo::launch_default_for_uri(uri, None::<&gtk::gio::AppLaunchContext>)
+        {
+            log::error!("Failed to open browser: {}", e);
         }
     });
-}
-
-struct PingInput {
-    internal: String,
-    external: String,
-    headers: Vec<crate::config::CustomHeader>,
-}
-
-fn ping_input(
-    internal_switch: &gtk::Switch,
-    internal_entry: &gtk::Entry,
-    external_switch: &gtk::Switch,
-    external_entry: &gtk::Entry,
-    custom_headers: &std::rc::Rc<std::cell::RefCell<Vec<crate::config::CustomHeader>>>,
-) -> PingInput {
-    let enabled_url = |switch: &gtk::Switch, entry: &gtk::Entry| {
-        if switch.is_active() {
-            entry.text().to_string()
-        } else {
-            String::new()
-        }
-    };
-    PingInput {
-        internal: enabled_url(internal_switch, internal_entry),
-        external: enabled_url(external_switch, external_entry),
-        headers: custom_headers.borrow().clone(),
-    }
-}
-
-/// Ping both addresses on Tokio; resolves to `(internal_ok, external_ok)`.
-/// Reuses the app-wide API client: a new one per click opens a connection pool
-/// that lingers ~30s after the test completes.
-fn spawn_ping(
-    api_client: Arc<crate::api_client::ImmichApiClient>,
-    input: PingInput,
-) -> tokio::sync::oneshot::Receiver<(bool, bool)> {
-    let (tx, rx) = tokio::sync::oneshot::channel();
-    tokio::spawn(async move {
-        let headers = &input.headers;
-        let int_ok = !input.internal.is_empty()
-            && api_client
-                .ping_url_custom(&input.internal, false, headers)
-                .await;
-        let ext_ok = !input.external.is_empty()
-            && api_client
-                .ping_url_custom(&input.external, true, headers)
-                .await;
-        let _ = tx.send((int_ok, ext_ok));
-    });
-    rx
+    guide
 }
 
 /// Show the From / Until rows only while quiet hours are on.
@@ -432,43 +307,6 @@ pub(super) fn connect_detailed_logs_row(ctx: &Arc<AppContext>, row: &adw::Switch
     });
 }
 
-/// At least one server URL must stay enabled; each entry is editable only while enabled.
-pub(super) fn connect_url_switches(window: &adw::ApplicationWindow, conn: &ConnectivityWidgets) {
-    let pairs = [
-        (
-            &conn.internal_switch,
-            &conn.external_switch,
-            &conn.internal_entry,
-        ),
-        (
-            &conn.external_switch,
-            &conn.internal_switch,
-            &conn.external_entry,
-        ),
-    ];
-    for (switch, other, entry) in pairs {
-        switch.connect_active_notify(clone!(
-            #[weak]
-            other,
-            #[weak]
-            entry,
-            #[weak]
-            window,
-            move |switch| {
-                if !switch.is_active() && !other.is_active() {
-                    switch.set_active(true);
-                    show_alert(
-                        &window,
-                        &gettext("Invalid Selection"),
-                        &gettext("At least one URL (Internal or External) must be enabled."),
-                    );
-                }
-                entry.set_sensitive(switch.is_active());
-            }
-        ));
-    }
-}
-
 /// Save behavior and appearance changes as soon as they're made.
 pub(super) fn connect_auto_apply(form: &SettingsForm, auto_apply: Rc<dyn Fn()>) {
     let switches = [
@@ -522,30 +360,6 @@ pub(super) fn connect_close_request(
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn connection_summary_names_what_worked() {
-        assert_eq!(
-            connection_summary(true, false, true, true),
-            "Connected through LAN · WAN unreachable"
-        );
-        assert_eq!(
-            connection_summary(true, true, true, true),
-            "Connected through LAN · WAN also works"
-        );
-        assert_eq!(
-            connection_summary(false, true, true, true),
-            "Connected through WAN · LAN unreachable"
-        );
-        assert_eq!(
-            connection_summary(true, false, true, false),
-            "Connected through LAN"
-        );
-        assert_eq!(
-            connection_summary(false, false, true, true),
-            "Couldn't reach Immich at either address"
-        );
-    }
 
     #[test]
     fn grid_quality_round_trips() {

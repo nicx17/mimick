@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
@@ -42,11 +42,11 @@ msgid "Reconnect to the Immich server before refreshing albums."
 msgstr ""
 "Muodosta yhteys Immich-palvelimeen uudelleen ennen albumien päivittämistä."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Albumien noutaminen epäonnistui"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Albumeja ei voi noutaa olemassaolon tarkistamiseksi"
 
@@ -59,7 +59,7 @@ msgstr ""
 "Palvelin vastasi HTTP-tilakoodilla {status}. Tarkista palvelimen lokit ja "
 "yritä uudelleen nykyisen määrityksen vahvistamisen jälkeen."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich hylkäsi API-avaimen"
 
@@ -80,7 +80,7 @@ msgid "Refresh the album list or choose a different album before retrying."
 msgstr ""
 "Päivitä albumiluettelo tai valitse toinen albumi ennen kuin yrität uudelleen."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich hylkäsi tiedoston liian suurena"
 
@@ -105,7 +105,7 @@ msgstr ""
 "samanaikaisten lähetysten määrää tai tarkista käänteisvälityspalvelimen "
 "rajoitukset."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich ei ole tilapäisesti saatavilla"
 
@@ -182,7 +182,7 @@ msgid "Check network quality and server responsiveness, then retry."
 msgstr ""
 "Tarkista verkon laatu ja palvelimen vasteaika, ja yritä sitten uudelleen."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Immich-palvelimeen ei saatu yhteyttä"
 
@@ -244,7 +244,7 @@ msgstr "Kirjastotilastojen pyyntö epäonnistui ennen valmistumistaan"
 msgid "The server version request failed before completion"
 msgstr "Palvelinversion pyyntö epäonnistui ennen valmistumistaan"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Ei aktiivista yhteyttä"
 
@@ -314,7 +314,7 @@ msgstr ""
 "Testaa palvelinyhteyttä asetuksissa ja varmista, että vähintään yksi "
 "Immichin URL-osoite on tavoitettavissa."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -322,7 +322,7 @@ msgstr ""
 "Pienennä tiedostokokoa, korota palvelimen lähetysrajoituksia tai ohita liian "
 "suuret tiedostot kansiosäännöllä."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -464,7 +464,7 @@ msgstr ""
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Peru"
@@ -1385,7 +1385,7 @@ msgid "Could Not Remove Person"
 msgstr "Henkilöä ei voitu poistaa"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Lisää"
 
@@ -1901,12 +1901,12 @@ msgid "Version unavailable"
 msgstr "Versio ei ole saatavilla"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "Yhdistetty lähiverkon kautta"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "Yhdistetty WAN-verkon kautta"
 
@@ -4761,12 +4761,12 @@ msgstr "360°-valokuvat"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Yhteys"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Palvelin"
@@ -5517,7 +5517,7 @@ msgstr "Valitse kohteet (Esc poistuu)"
 msgid "Queue Inspector"
 msgstr "Jonotarkastin"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Asetukset"
@@ -5526,7 +5526,7 @@ msgstr "Asetukset"
 msgid "Keyboard Shortcuts"
 msgstr "Pikanäppäimet"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Tietoja – Mimick"
 
@@ -5743,55 +5743,55 @@ msgstr "Vaalea teema"
 msgid "Dark Theme"
 msgstr "Tumma teema"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "Salaisuudet tallennettu tiedostoihin"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API-avain tallennettu tiedostoon"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "Mukautetut välityspalvelimen otsakkeet tallennettu tiedostoon"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Asetukset tallennettu"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick tallensi päivitetyt asetukset onnistuneesti."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Automaattisen käynnistyksen lupa tarvitaan"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr ""
 "Mimickin ei sallittu käynnistyä automaattisesti sisäänkirjautumisen "
 "yhteydessä."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Automaattisen käynnistyksen asetusta ei voitu päivittää"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "API-avainta ei voitu tallentaa"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "Mukautettuja otsakkeita ei voitu tallentaa"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Asetuksia ei voitu tallentaa"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick ei voinut kirjoittaa päivitettyjä asetuksia levylle."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "API-avainta ei voitu tallentaa"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Mukautettuja otsakkeita ei voitu tallentaa"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5892,83 +5892,85 @@ msgstr "Kun Mimick käynnistyy, tarkista"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Kansioille voidaan valita omat asetukset kansiosäännöissä."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "Sisäinen URL (lähiverkko)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "Ulkoinen URL (laajaverkko)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Ei vielä testattu"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Testaa yhteys"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Tallenna ja yhdistä"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Avaa kirjasto"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API-avain"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "Mukautetut välityspalvelimen otsakkeet"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
-msgstr "Valinnaiset HTTP-otsakkeet käänteisille välityspalvelimille (esim. Cloudflare Access)"
+msgstr ""
+"Valinnaiset HTTP-otsakkeet käänteisille välityspalvelimille (esim. "
+"Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 otsake määritetty"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "otsaketta määritetty"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "Poista otsake"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "Lisää otsake…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "Liitä leikepöydältä"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "Otsakkeen nimi"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "Salaisuus / Arvo"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "Laajuus"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "Lisää mukautettu otsake"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN-URL"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN-URL"
 
@@ -6165,7 +6167,9 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Asetukset tallennettiin, mutta järjestelmän avainnippu ei ole käytettävissä, joten mukautetut välityspalvelimen otsakkeet tallennettiin kohteeseen {path}.\n"
+"Asetukset tallennettiin, mutta järjestelmän avainnippu ei ole käytettävissä, "
+"joten mukautetut välityspalvelimen otsakkeet tallennettiin kohteeseen "
+"{path}.\n"
 "\n"
 "Tiedosto on vain käyttäjätilisi luettavissa, mutta sitä ei ole salattu.\n"
 "\n"
@@ -6265,7 +6269,7 @@ msgid "Sync Now"
 msgstr "Synkronoi nyt"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Keskeytä"
 
@@ -6281,8 +6285,8 @@ msgstr "Vaatii huomiota"
 msgid "Failed uploads"
 msgstr "Epäonnistuneet lähetykset"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Jatka"
 
@@ -6485,86 +6489,86 @@ msgstr "Suurin tiedosto megatavuina (tyhjä tarkoittaa ei rajaa)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Vain nämä tyypit, esim. jpg, png, mp4 (tyhjä tarkoittaa kaikkia)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Tila"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Lopeta Mimick"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Päävalikko"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Aloita"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Kolme vaihetta Mimickin yhdistämiseksi Immich-palvelimeesi."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Anna palvelimesi"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Immich-osoitteesi alla kohdassa Palvelin."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. Lisää API-avain"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "Immichissä: Tilin asetukset → API-avaimet. Ohjeessa luetellaan oikeudet."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Tallenna ja yhdistä"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "Kirjastosi avautuu seuraavaksi. Jos haluat myös varmuuskopioida kansion, "
 "lisää se kohdassa Valvotut kansiot."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Ohje"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Sinun keskeyttämäsi"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} toimii myös"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} ei tavoitettavissa"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "Immichiin ei saatu yhteyttä kummastakaan osoitteesta"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Testataan…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "Sinun keskeyttämäsi"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Virheellinen valinta"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr ""
 "Vähintään yhden URL-osoitteen (sisäisen tai ulkoisen) on oltava käytössä."

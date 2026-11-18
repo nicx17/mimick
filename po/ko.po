@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Korean\n"
@@ -41,11 +41,11 @@ msgstr "앨범 목록을 사용할 수 없습니다"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "앨범을 새로 고치기 전에 Immich 서버에 다시 연결하세요."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "앨범을 가져오지 못했습니다"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "존재 여부를 확인할 앨범을 가져올 수 없습니다"
 
@@ -58,7 +58,7 @@ msgstr ""
 "서버가 HTTP {status} 응답을 반환했습니다. 서버 로그를 확인하고 현재 구성을 검"
 "토한 후 다시 시도하세요."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich에서 API 키를 거부했습니다"
 
@@ -78,7 +78,7 @@ msgstr "앨범 참조가 더 이상 유효하지 않습니다"
 msgid "Refresh the album list or choose a different album before retrying."
 msgstr "다시 시도하기 전에 앨범 목록을 새로 고치거나 다른 앨범을 선택하세요."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "파일 크기가 너무 커서 Immich에서 거부했습니다"
 
@@ -102,7 +102,7 @@ msgstr ""
 "잠시 후 다시 시도하세요. 문제가 자주 발생하면 동시 업로드 수를 줄이거나 역방"
 "향 프록시 제한을 확인하세요."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich를 일시적으로 사용할 수 없습니다"
 
@@ -178,7 +178,7 @@ msgstr "Immich 요청 시간이 초과되었습니다"
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "네트워크 상태와 서버 응답성을 확인한 후 다시 시도하세요."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Immich 서버에 연결할 수 없습니다"
 
@@ -237,7 +237,7 @@ msgstr "라이브러리 통계 요청이 완료되기 전에 실패했습니다"
 msgid "The server version request failed before completion"
 msgstr "서버 버전 요청이 완료되기 전에 실패했습니다"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "활성 연결 없음"
 
@@ -304,7 +304,7 @@ msgstr ""
 "설정에서 서버 연결을 테스트하고 최소 하나의 Immich URL에 연결할 수 있는지 확"
 "인하세요."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -312,7 +312,7 @@ msgstr ""
 "파일 크기를 줄이거나, 서버의 업로드 제한을 늘리거나, 폴더 규칙을 사용하여 너"
 "무 큰 파일을 건너뛰세요."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -452,7 +452,7 @@ msgstr "불러올 수 없습니다. API 키에 “{permission}” 권한이 필�
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "취소"
@@ -1352,7 +1352,7 @@ msgid "Could Not Remove Person"
 msgstr "사용자를 제거할 수 없음"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "추가"
 
@@ -1855,12 +1855,12 @@ msgid "Version unavailable"
 msgstr "버전 정보를 사용할 수 없음"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "LAN을 통해 연결됨"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "WAN을 통해 연결됨"
 
@@ -4685,12 +4685,12 @@ msgstr "360° 사진"
 msgid "Video"
 msgstr "동영상"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "연결"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "서버"
@@ -5428,7 +5428,7 @@ msgstr "자산 선택 (Esc 키를 눌러 종료)"
 msgid "Queue Inspector"
 msgstr "대기열 검사기"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "설정"
@@ -5437,7 +5437,7 @@ msgstr "설정"
 msgid "Keyboard Shortcuts"
 msgstr "키보드 단축키"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Mimick 정보"
 
@@ -5648,53 +5648,53 @@ msgstr "밝은 테마"
 msgid "Dark Theme"
 msgstr "어두운 테마"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "보안 비밀이 파일에 저장됨"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API 키가 파일에 저장됨"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "사용자 지정 프록시 헤더가 파일에 저장됨"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "설정 저장됨"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick이 업데이트된 설정을 성공적으로 저장했습니다."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "시작 시 실행 권한 필요"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Mimick이 로그인 시 자동으로 시작되도록 허용되지 않았습니다."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "시작 설정을 업데이트할 수 없음"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "API 키를 저장할 수 없음"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "사용자 지정 헤더를 저장할 수 없음"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "설정을 저장할 수 없음"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick이 업데이트된 구성을 디스크에 쓸 수 없습니다."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "API 키를 저장할 수 없음"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "사용자 지정 헤더를 저장할 수 없음"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5795,83 +5795,83 @@ msgstr "Mimick 시작 시 검사 대상"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "폴더별로 '폴더 규칙'에서 자체 설정을 선택할 수 있습니다."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "내부 URL (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "외부 URL (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "아직 테스트되지 않음"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "연결 테스트"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "저장 및 연결"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "라이브러리 열기"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API 키"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "사용자 지정 프록시 헤더"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
 msgstr "역방향 프록시용 선택적 HTTP 헤더(예: Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "헤더 1개 구성됨"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "개 헤더 구성됨"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "헤더 제거"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "헤더 추가…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "클립보드에서 붙여넣기"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "헤더 이름"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "보안 비밀 / 값"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "범위"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "사용자 지정 헤더 추가"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN URL"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN URL"
 
@@ -6064,7 +6064,8 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"설정이 저장되었지만 시스템 키링을 사용할 수 없어 사용자 지정 프록시 헤더가 {path}에 저장되었습니다.\n"
+"설정이 저장되었지만 시스템 키링을 사용할 수 없어 사용자 지정 프록시 헤더가 "
+"{path}에 저장되었습니다.\n"
 "\n"
 "이 파일은 사용자 계정으로만 읽을 수 있지만 암호화되지는 않았습니다.\n"
 "\n"
@@ -6161,7 +6162,7 @@ msgid "Sync Now"
 msgstr "지금 동기화"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "일시 중지"
 
@@ -6177,8 +6178,8 @@ msgstr "확인 필요"
 msgid "Failed uploads"
 msgstr "실패한 업로드"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "다시 시작"
 
@@ -6377,85 +6378,85 @@ msgstr "최대 파일 크기(MB, 제한 없으면 비워 둠)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "지정된 유형만, 예: jpg, png, mp4 (전체는 비워 둠)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "상태"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick 종료"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "주 메뉴"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "시작하기"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Mimick을 Immich 서버에 연결하는 세 단계입니다."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. 서버 주소 입력"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "아래의 '서버' 항목에 Immich 주소를 입력하세요."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. API 키 추가"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr "Immich에서: 계정 설정 → API 키. 가이드에 필요한 권한이 나와 있습니다."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. 저장 및 연결"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "다음으로 라이브러리가 열립니다. 폴더도 백업하려면 '감시 폴더' 아래에 추가하세"
 "요."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "가이드"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "사용자에 의해 일시 중지됨"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name}도 사용 가능"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name}에 연결할 수 없음"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "두 주소 모두에서 Immich에 연결할 수 없습니다"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "테스트 중…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "사용자에 의해 일시 중지됨"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "잘못된 선택"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "하나 이상의 URL(내부 또는 외부)을 활성화해야 합니다."
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Czech\n"
@@ -41,11 +41,11 @@ msgstr "Seznam alb není k dispozici"
 msgid "Reconnect to the Immich server before refreshing albums."
 msgstr "Před obnovením alb se znovu připojte k serveru Immich."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Nepodařilo se načíst alba"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Nelze načíst alba pro ověření jejich existence"
 
@@ -58,7 +58,7 @@ msgstr ""
 "Server odpověděl kódem HTTP {status}. Zkontrolujte záznamy serveru a po "
 "potvrzení aktuální konfigurace to zkuste znovu."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Server Immich odmítl klíč API"
 
@@ -78,7 +78,7 @@ msgstr "Odkaz na album již není platný"
 msgid "Refresh the album list or choose a different album before retrying."
 msgstr "Před dalším pokusem obnovte seznam alb nebo vyberte jiné album."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Server Immich odmítl soubor jako příliš velký"
 
@@ -102,7 +102,7 @@ msgstr ""
 "Chvíli počkejte a zkuste to znovu. Pokud k tomu dochází často, snižte počet "
 "souběžných nahrávání nebo zkontrolujte limity reverzní proxy."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Server Immich je dočasně nedostupný"
 
@@ -178,7 +178,7 @@ msgstr "Vypršel časový limit požadavku na server Immich"
 msgid "Check network quality and server responsiveness, then retry."
 msgstr "Zkontrolujte kvalitu sítě a odezvu serveru a zkuste to znovu."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "K serveru Immich se nelze připojit"
 
@@ -240,7 +240,7 @@ msgstr "Požadavek na statistiky knihovny selhal před dokončením"
 msgid "The server version request failed before completion"
 msgstr "Požadavek na verzi serveru selhal před dokončením"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Žádné aktivní připojení"
 
@@ -310,7 +310,7 @@ msgstr ""
 "Otestujte připojení k serveru v Nastavení a ověřte, že je dostupná alespoň "
 "jedna adresa URL serveru Immich."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -318,7 +318,7 @@ msgstr ""
 "Zmenšete velikost souboru, zvyšte limity pro nahrávání na serveru nebo "
 "použijte pravidlo složky k přeskočení příliš velkých souborů."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -458,7 +458,7 @@ msgstr "Toto nelze načíst. Váš klíč API vyžaduje oprávnění „{permiss
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Zrušit"
@@ -1407,7 +1407,7 @@ msgid "Could Not Remove Person"
 msgstr "Osobu nelze odebrat"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Přidat"
 
@@ -1938,12 +1938,12 @@ msgid "Version unavailable"
 msgstr "Verze není k dispozici"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "Připojeno přes LAN"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "Připojeno přes WAN"
 
@@ -4817,12 +4817,12 @@ msgstr "360° fotografie"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Připojení"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Server"
@@ -5586,7 +5586,7 @@ msgstr "Vybrat položky (Esc pro ukončení)"
 msgid "Queue Inspector"
 msgstr "Inspektor fronty"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Nastavení"
@@ -5595,7 +5595,7 @@ msgstr "Nastavení"
 msgid "Keyboard Shortcuts"
 msgstr "Klávesové zkratky"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "O aplikaci Mimick"
 
@@ -5814,53 +5814,53 @@ msgstr "Světlý motiv"
 msgid "Dark Theme"
 msgstr "Tmavý motiv"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "Tajné klíče uloženy v souborech"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "Klíč API uložen v souboru"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "Vlastní hlavičky proxy uloženy v souboru"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Nastavení uloženo"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick úspěšně uložil aktualizované nastavení."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Vyžadováno oprávnění k automatickému spuštění"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr "Aplikaci Mimick nebylo povoleno automatické spuštění při přihlášení."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Nelze aktualizovat nastavení automatického spuštění"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "Nelze uložit klíč API"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "Nelze uložit vlastní hlavičky"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Nelze uložit nastavení"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick nemohl zapsat aktualizovanou konfiguraci na disk."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "Nelze uložit klíč API"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Nelze uložit vlastní hlavičky"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5961,83 +5961,83 @@ msgstr "Při spuštění aplikace Mimick zkontrolovat"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Složky si mohou zvolit vlastní volbu v Pravidlech složky."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "Interní adresa URL (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "Externí adresa URL (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Dosud netestováno"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Otestovat připojení"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Uložit a připojit"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Otevřít knihovnu"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "Klíč API"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "Vlastní hlavičky proxy"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
 msgstr "Volitelné hlavičky HTTP pro reverzní proxy (např. Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 nakonfigurovaná hlavička"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "nakonfigurovaných hlaviček"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "Odebrat hlavičku"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "Přidat hlavičku…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "Vložit ze schránky"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "Název hlavičky"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "Tajný klíč / Hodnota"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "Rozsah"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "Přidat vlastní hlavičku"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "Adresa URL LAN"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "Adresa URL WAN"
 
@@ -6232,7 +6232,8 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"Nastavení byla uložena, ale systémová klíčenka není dostupná, takže vlastní hlavičky proxy byly uloženy do {path}.\n"
+"Nastavení byla uložena, ale systémová klíčenka není dostupná, takže vlastní "
+"hlavičky proxy byly uloženy do {path}.\n"
 "\n"
 "Soubor je čitelný pouze pro váš uživatelský účet, ale není šifrován.\n"
 "\n"
@@ -6335,7 +6336,7 @@ msgid "Sync Now"
 msgstr "Synchronizovat nyní"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Pozastavit"
 
@@ -6351,8 +6352,8 @@ msgstr "Vyžaduje pozornost"
 msgid "Failed uploads"
 msgstr "Neúspěšná nahrávání"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Pokračovat"
 
@@ -6555,87 +6556,87 @@ msgstr "Největší velikost souboru v MB (prázdné pro bez limitu)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Pouze tyto typy, např. jpg, png, mp4 (prázdné pro všechny)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Stav"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Ukončit Mimick"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Hlavní nabídka"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Začínáme"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Tři kroky k propojení aplikace Mimick s vaším serverem Immich."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Zadejte svůj server"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Adresa vašeho serveru Immich v sekci Server níže."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. Přidejte klíč API"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "V aplikaci Immich: Nastavení účtu → Klíče API. Průvodce uvádí potřebná "
 "oprávnění."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Uložit a připojit"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "Poté se otevře vaše knihovna. Chcete-li také zálohovat složku, přidejte ji v "
 "Sledovaných složkách."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Průvodce"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Pozastaveno vámi"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} také funguje"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} je nedostupný"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "K serveru Immich se nepodařilo připojit na žádné z adres"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Testování…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "Pozastaveno vámi"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Neplatný výběr"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "Musí být povolena alespoň jedna adresa URL (interní nebo externí)."
 

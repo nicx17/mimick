@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mimick\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 11:39+0530\n"
+"POT-Creation-Date: 2026-11-18 12:10+0530\n"
 "PO-Revision-Date: 2026-11-09 20:57+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
@@ -42,11 +42,11 @@ msgid "Reconnect to the Immich server before refreshing albums."
 msgstr ""
 "Maak opnieuw verbinding met de Immich-server voordat u albums vernieuwt."
 
-#: src/api_client/albums.rs:177
+#: src/api_client/albums.rs:176
 msgid "Failed to fetch albums"
 msgstr "Ophalen van albums mislukt"
 
-#: src/api_client/albums.rs:261 src/api_client/albums.rs:289
+#: src/api_client/albums.rs:260 src/api_client/albums.rs:288
 msgid "Cannot fetch albums to verify existence"
 msgstr "Kan albums niet ophalen om het bestaan te controleren"
 
@@ -59,7 +59,7 @@ msgstr ""
 "De server reageerde met HTTP {status}. Controleer de serverlogboeken en "
 "probeer het opnieuw na het controleren van de huidige configuratie."
 
-#: src/api_client/errors.rs:43 src/api_client/upload.rs:412
+#: src/api_client/errors.rs:43 src/api_client/upload.rs:411
 msgid "Immich rejected the API key"
 msgstr "Immich heeft de API-sleutel geweigerd"
 
@@ -82,7 +82,7 @@ msgstr ""
 "Vernieuw de albumlijst of kies een ander album voordat u het opnieuw "
 "probeert."
 
-#: src/api_client/errors.rs:59 src/api_client/upload.rs:403
+#: src/api_client/errors.rs:59 src/api_client/upload.rs:402
 msgid "Immich rejected a file as too large"
 msgstr "Immich heeft een bestand geweigerd omdat het te groot is"
 
@@ -106,7 +106,7 @@ msgstr ""
 "Wacht even en probeer het opnieuw. Als dit vaak gebeurt, verlaag dan het "
 "aantal gelijktijdige uploads of controleer de limieten van de reverse-proxy."
 
-#: src/api_client/errors.rs:71 src/api_client/upload.rs:420
+#: src/api_client/errors.rs:71 src/api_client/upload.rs:419
 msgid "Immich is temporarily unavailable"
 msgstr "Immich is tijdelijk niet beschikbaar"
 
@@ -184,7 +184,7 @@ msgstr ""
 "Controleer de netwerkkwaliteit en de reactiesnelheid van de server en "
 "probeer het opnieuw."
 
-#: src/api_client/errors.rs:126 src/api_client/mod.rs:420
+#: src/api_client/errors.rs:126 src/api_client/mod.rs:415
 msgid "Could not reach the Immich server"
 msgstr "Kon de Immich-server niet bereiken"
 
@@ -247,7 +247,7 @@ msgstr "De aanvraag voor bibliotheekstatistieken is mislukt voor voltooiing"
 msgid "The server version request failed before completion"
 msgstr "De aanvraag voor de serverversie is mislukt voor voltooiing"
 
-#: src/api_client/mod.rs:526
+#: src/api_client/mod.rs:520
 msgid "No active connection"
 msgstr "Geen actieve verbinding"
 
@@ -317,7 +317,7 @@ msgstr ""
 "Test de serververbinding in Instellingen en controleer of ten minste één "
 "Immich-URL bereikbaar is."
 
-#: src/api_client/upload.rs:405
+#: src/api_client/upload.rs:404
 msgid ""
 "Reduce the file size, raise the server's upload limits, or use a folder rule "
 "to skip oversized files."
@@ -325,7 +325,7 @@ msgstr ""
 "Verklein de bestandsgrootte, verhoog de uploadlimieten van de server of "
 "gebruik een mapregel om te grote bestanden over te slaan."
 
-#: src/api_client/upload.rs:422
+#: src/api_client/upload.rs:421
 msgid ""
 "Wait a moment and retry. If it keeps happening, check the server logs and "
 "reverse proxy."
@@ -467,7 +467,7 @@ msgstr ""
 #: src/library/map/location_dialog.rs:113 src/library/people_view.rs:456
 #: src/library/shared_links_view.rs:360 src/library/sharing_view.rs:380
 #: src/library/tags_view.rs:334 src/library/trash_view.rs:262
-#: src/settings_window/connectivity.rs:305
+#: src/settings_window/connectivity.rs:334
 #: src/settings_window/watch_folders/rules_dialog.rs:120
 msgid "Cancel"
 msgstr "Annuleren"
@@ -1401,7 +1401,7 @@ msgid "Could Not Remove Person"
 msgstr "Kon persoon niet verwijderen"
 
 #: src/library/album_share_dialog.rs:191 src/library/sharing_view.rs:368
-#: src/settings_window/connectivity.rs:307
+#: src/settings_window/connectivity.rs:336
 msgid "Add"
 msgstr "Toevoegen"
 
@@ -1918,12 +1918,12 @@ msgid "Version unavailable"
 msgstr "Versie niet beschikbaar"
 
 #: src/library/content_state.rs:140 src/settings_window/status_poll.rs:181
-#: src/settings_window/wiring.rs:215
+#: src/settings_window/wiring/connectivity_wiring.rs:34
 msgid "Connected through LAN"
 msgstr "Verbonden via LAN"
 
 #: src/library/content_state.rs:141 src/settings_window/status_poll.rs:182
-#: src/settings_window/wiring.rs:217
+#: src/settings_window/wiring/connectivity_wiring.rs:36
 msgid "Connected through WAN"
 msgstr "Verbonden via WAN"
 
@@ -4793,12 +4793,12 @@ msgstr "360°-foto's"
 msgid "Video"
 msgstr "Video"
 
-#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:45
+#: src/library/sidebar.rs:35 src/settings_window/connectivity.rs:100
 #: src/settings_window/status.rs:48
 msgid "Connection"
 msgstr "Verbinding"
 
-#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:32
+#: src/library/sidebar.rs:36 src/settings_window/connectivity.rs:39
 #: src/settings_window/status.rs:50
 msgid "Server"
 msgstr "Server"
@@ -5554,7 +5554,7 @@ msgstr "Items selecteren (Esc om te sluiten)"
 msgid "Queue Inspector"
 msgstr "Wachtrij-inspecteur"
 
-#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:78
+#: src/library/window_layout.rs:336 src/settings_window/wiring.rs:71
 #: src/tray_icon.rs:73
 msgid "Settings"
 msgstr "Instellingen"
@@ -5563,7 +5563,7 @@ msgstr "Instellingen"
 msgid "Keyboard Shortcuts"
 msgstr "Sneltoetsen"
 
-#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:97
+#: src/library/window_layout.rs:338 src/settings_window/wiring.rs:105
 msgid "About Mimick"
 msgstr "Over Mimick"
 
@@ -5780,54 +5780,54 @@ msgstr "Licht thema"
 msgid "Dark Theme"
 msgstr "Donker thema"
 
-#: src/settings_window/apply.rs:168
+#: src/settings_window/apply.rs:183
 msgid "Secrets Stored in Files"
 msgstr "Geheimen opgeslagen in bestanden"
 
-#: src/settings_window/apply.rs:172
+#: src/settings_window/apply.rs:187
 msgid "API Key Stored in a File"
 msgstr "API-sleutel opgeslagen in een bestand"
 
-#: src/settings_window/apply.rs:176
+#: src/settings_window/apply.rs:191
 msgid "Custom Proxy Headers Stored in a File"
 msgstr "Aangepaste proxyheaders opgeslagen in een bestand"
 
-#: src/settings_window/apply.rs:184
+#: src/settings_window/apply.rs:199
 msgid "Settings Saved"
 msgstr "Instellingen opgeslagen"
 
-#: src/settings_window/apply.rs:185
+#: src/settings_window/apply.rs:200
 msgid "Mimick saved the updated settings successfully."
 msgstr "Mimick heeft de bijgewerkte instellingen succesvol opgeslagen."
 
-#: src/settings_window/apply.rs:221
+#: src/settings_window/apply.rs:236
 msgid "Startup Permission Needed"
 msgstr "Toestemming voor automatisch opstarten vereist"
 
-#: src/settings_window/apply.rs:222
+#: src/settings_window/apply.rs:237
 msgid "Mimick was not allowed to start automatically at login."
 msgstr ""
 "Mimick had geen toestemming om automatisch te starten bij het aanmelden."
 
-#: src/settings_window/apply.rs:224
+#: src/settings_window/apply.rs:239
 msgid "Could Not Update Startup Setting"
 msgstr "Kon instelling voor automatisch opstarten niet bijwerken"
 
-#: src/settings_window/apply.rs:257
-msgid "Could Not Save API Key"
-msgstr "Kon API-sleutel niet opslaan"
-
-#: src/settings_window/apply.rs:272
-msgid "Could Not Save Custom Headers"
-msgstr "Kon aangepaste headers niet opslaan"
-
-#: src/settings_window/apply.rs:282
+#: src/settings_window/apply.rs:267
 msgid "Could Not Save Settings"
 msgstr "Kon instellingen niet opslaan"
 
-#: src/settings_window/apply.rs:283
+#: src/settings_window/apply.rs:268
 msgid "Mimick could not write the updated configuration to disk."
 msgstr "Mimick kon de bijgewerkte configuratie niet naar schijf schrijven."
+
+#: src/settings_window/apply.rs:300
+msgid "Could Not Save API Key"
+msgstr "Kon API-sleutel niet opslaan"
+
+#: src/settings_window/apply.rs:319
+msgid "Could Not Save Custom Headers"
+msgstr "Kon aangepaste headers niet opslaan"
 
 #: src/settings_window/behavior.rs:53
 msgid "Uploads"
@@ -5928,83 +5928,83 @@ msgstr "Controleren wanneer Mimick start"
 msgid "Folders can choose their own in Folder Rules."
 msgstr "Mappen kunnen hun eigen instelling kiezen in Mapregels."
 
-#: src/settings_window/connectivity.rs:37
+#: src/settings_window/connectivity.rs:75
 msgid "Internal URL (LAN)"
 msgstr "Interne URL (LAN)"
 
-#: src/settings_window/connectivity.rs:39
+#: src/settings_window/connectivity.rs:77
 msgid "External URL (WAN)"
 msgstr "Externe URL (WAN)"
 
-#: src/settings_window/connectivity.rs:46
+#: src/settings_window/connectivity.rs:101
 msgid "Not tested yet"
 msgstr "Nog niet getest"
 
-#: src/settings_window/connectivity.rs:49
+#: src/settings_window/connectivity.rs:104
 msgid "Test Connection"
 msgstr "Verbinding testen"
 
-#: src/settings_window/connectivity.rs:52
+#: src/settings_window/connectivity.rs:107
 msgid "Save and Connect"
 msgstr "Opslaan en verbinden"
 
-#: src/settings_window/connectivity.rs:57 setup/dev.nicx.mimick.desktop:16
+#: src/settings_window/connectivity.rs:111 setup/dev.nicx.mimick.desktop:16
 msgid "Open Library"
 msgstr "Bibliotheek openen"
 
-#: src/settings_window/connectivity.rs:101
+#: src/settings_window/connectivity.rs:139
 msgid "API Key"
 msgstr "API-sleutel"
 
-#: src/settings_window/connectivity.rs:120
+#: src/settings_window/connectivity.rs:158
 msgid "Custom Proxy Headers"
 msgstr "Aangepaste proxyheaders"
 
-#: src/settings_window/connectivity.rs:136
+#: src/settings_window/connectivity.rs:174
 msgid "Optional HTTP headers for reverse proxies (e.g. Cloudflare Access)"
 msgstr "Optionele HTTP-headers voor reverse-proxy's (bijv. Cloudflare Access)"
 
-#: src/settings_window/connectivity.rs:139
+#: src/settings_window/connectivity.rs:177
 msgid "1 header configured"
 msgstr "1 header geconfigureerd"
 
-#: src/settings_window/connectivity.rs:141
+#: src/settings_window/connectivity.rs:179
 msgid "headers configured"
 msgstr "headers geconfigureerd"
 
-#: src/settings_window/connectivity.rs:191
+#: src/settings_window/connectivity.rs:229
 msgid "Remove header"
 msgstr "Header verwijderen"
 
-#: src/settings_window/connectivity.rs:218
+#: src/settings_window/connectivity.rs:256
 msgid "Add Header…"
 msgstr "Header toevoegen…"
 
-#: src/settings_window/connectivity.rs:241
+#: src/settings_window/connectivity.rs:279
 msgid "Paste from clipboard"
 msgstr "Plakken vanaf klembord"
 
-#: src/settings_window/connectivity.rs:278
+#: src/settings_window/connectivity.rs:353
 msgid "Header Name"
 msgstr "Headernaam"
 
-#: src/settings_window/connectivity.rs:286
+#: src/settings_window/connectivity.rs:364
 msgid "Secret / Value"
 msgstr "Geheim / Waarde"
 
-#: src/settings_window/connectivity.rs:300
+#: src/settings_window/connectivity.rs:381
 msgid "Scope"
 msgstr "Bereik"
 
-#: src/settings_window/connectivity.rs:337
+#: src/settings_window/connectivity.rs:406
 msgid "Add Custom Header"
 msgstr "Aangepaste header toevoegen"
 
-#: src/settings_window/connectivity.rs:407
+#: src/settings_window/connectivity.rs:500
 msgid "LAN URL"
 msgstr "LAN-URL"
 
-#: src/settings_window/connectivity.rs:408
+#: src/settings_window/connectivity.rs:501
 msgid "WAN URL"
 msgstr "WAN-URL"
 
@@ -6200,9 +6200,11 @@ msgid ""
 "\n"
 "See: {url}"
 msgstr ""
-"De instellingen zijn opgeslagen, maar de sleutelbos van het systeem is niet beschikbaar, waardoor aangepaste proxyheaders zijn opgeslagen in {path}.\n"
+"De instellingen zijn opgeslagen, maar de sleutelbos van het systeem is niet "
+"beschikbaar, waardoor aangepaste proxyheaders zijn opgeslagen in {path}.\n"
 "\n"
-"Het bestand is alleen leesbaar voor uw gebruikersaccount, maar is niet versleuteld.\n"
+"Het bestand is alleen leesbaar voor uw gebruikersaccount, maar is niet "
+"versleuteld.\n"
 "\n"
 "Zie: {url}"
 
@@ -6300,7 +6302,7 @@ msgid "Sync Now"
 msgstr "Nu synchroniseren"
 
 #: src/settings_window/status.rs:154 src/settings_window/status_poll.rs:115
-#: src/settings_window/wiring.rs:356 src/settings_window/wiring.rs:377
+#: src/settings_window/wiring.rs:261 src/settings_window/wiring.rs:282
 msgid "Pause"
 msgstr "Pauzeren"
 
@@ -6316,8 +6318,8 @@ msgstr "Aandacht vereist"
 msgid "Failed uploads"
 msgstr "Mislukte uploads"
 
-#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:354
-#: src/settings_window/wiring.rs:375
+#: src/settings_window/status_poll.rs:113 src/settings_window/wiring.rs:259
+#: src/settings_window/wiring.rs:280
 msgid "Resume"
 msgstr "Hervatten"
 
@@ -6519,87 +6521,87 @@ msgstr "Grootste bestand in MB (leeg voor geen limiet)"
 msgid "Only These Types, e.g. jpg, png, mp4 (empty for all)"
 msgstr "Alleen deze typen, bijv. jpg, png, mp4 (leeg voor alle)"
 
-#: src/settings_window/wiring.rs:72
+#: src/settings_window/wiring.rs:65
 msgid "Status"
 msgstr "Status"
 
-#: src/settings_window/wiring.rs:98 setup/dev.nicx.mimick.desktop:28
+#: src/settings_window/wiring.rs:106 setup/dev.nicx.mimick.desktop:28
 msgid "Quit Mimick"
 msgstr "Mimick afsluiten"
 
-#: src/settings_window/wiring.rs:101
+#: src/settings_window/wiring.rs:109
 msgid "Main Menu"
 msgstr "Hoofdmenu"
 
-#: src/settings_window/wiring.rs:148
+#: src/settings_window/wiring.rs:156
 msgid "Get Started"
 msgstr "Aan de slag"
 
-#: src/settings_window/wiring.rs:150
+#: src/settings_window/wiring.rs:158
 msgid "Three steps to connect Mimick to your Immich server."
 msgstr "Drie stappen om Mimick te verbinden met uw Immich-server."
 
-#: src/settings_window/wiring.rs:155
+#: src/settings_window/wiring.rs:163
 msgid "1. Enter your server"
 msgstr "1. Voer uw server in"
 
-#: src/settings_window/wiring.rs:156
+#: src/settings_window/wiring.rs:164
 msgid "Your Immich address under Server, below."
 msgstr "Uw Immich-adres onder Server, hieronder."
 
-#: src/settings_window/wiring.rs:159
+#: src/settings_window/wiring.rs:167
 msgid "2. Add an API key"
 msgstr "2. Voeg een API-sleutel toe"
 
-#: src/settings_window/wiring.rs:160
+#: src/settings_window/wiring.rs:168
 msgid ""
 "In Immich: Account Settings → API Keys. The guide lists the permissions."
 msgstr ""
 "In Immich: Accountinstellingen → API-sleutels. De handleiding vermeldt de "
 "machtigingen."
 
-#: src/settings_window/wiring.rs:163
+#: src/settings_window/wiring.rs:171
 msgid "3. Save and Connect"
 msgstr "3. Opslaan en verbinden"
 
-#: src/settings_window/wiring.rs:165
+#: src/settings_window/wiring.rs:173
 msgid ""
 "Your library opens next. To back up a folder too, add it under Watch Folders."
 msgstr ""
 "Uw bibliotheek wordt hierna geopend. Om ook een map te back-uppen, voegt u "
 "deze toe onder Bewaakte mappen."
 
-#: src/settings_window/wiring.rs:177
+#: src/settings_window/wiring.rs:193
 msgid "Guide"
 msgstr "Handleiding"
 
-#: src/settings_window/wiring.rs:207
+#: src/settings_window/wiring.rs:278
+msgid "Paused by you"
+msgstr "Door u gepauzeerd"
+
+#: src/settings_window/wiring/connectivity_wiring.rs:26
 #, rust-format
 msgid "{name} also works"
 msgstr "{name} werkt ook"
 
-#: src/settings_window/wiring.rs:211
+#: src/settings_window/wiring/connectivity_wiring.rs:30
 #, rust-format
 msgid "{name} unreachable"
 msgstr "{name} onbereikbaar"
 
-#: src/settings_window/wiring.rs:219
+#: src/settings_window/wiring/connectivity_wiring.rs:38
 msgid "Couldn't reach Immich at either address"
 msgstr "Kon Immich op geen van beide adressen bereiken"
 
-#: src/settings_window/wiring.rs:255
+#: src/settings_window/wiring/connectivity_wiring.rs:78
 msgid "Testing…"
 msgstr "Testen…"
 
-#: src/settings_window/wiring.rs:373
-msgid "Paused by you"
-msgstr "Door u gepauzeerd"
-
-#: src/settings_window/wiring.rs:432
+#: src/settings_window/wiring/connectivity_wiring.rs:175
 msgid "Invalid Selection"
 msgstr "Ongeldige selectie"
 
-#: src/settings_window/wiring.rs:433
+#: src/settings_window/wiring/connectivity_wiring.rs:176
 msgid "At least one URL (Internal or External) must be enabled."
 msgstr "Ten minste één URL (intern of extern) moet zijn ingeschakeld."
 
