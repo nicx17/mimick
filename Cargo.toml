@@ -87,7 +87,7 @@ psd = "0.3.5"
 tempfile = "3.27.0"
 gstreamer = "0.25.4"
 gstreamer-play = "0.25.0"
-qrcode = { version = "0.14.1", default-features = false }
+qrcode = { version = "0.15.0", default-features = false }
 
 [dev-dependencies]
 
